@@ -135,7 +135,7 @@ func walkSchemaConstraints(filePath, scope string, schema *openapi3.Schema, opts
 			if propRef.Ref == "" && p.Description == "" {
 				*out = append(*out, Violation{File: filePath,
 					Message:  fmt.Sprintf(`Schema %q — property %q is missing a description.`, scope, propName),
-					Severity: classifyDesignIssue(opts), RuleNumber: 37})
+					Severity: classifyIssue(opts), RuleNumber: 37})
 			}
 
 			// Rule 38: string constraints. A `const` value is inherently
@@ -147,7 +147,7 @@ func walkSchemaConstraints(filePath, scope string, schema *openapi3.Schema, opts
 				if !hasConstraint {
 					*out = append(*out, Violation{File: filePath,
 						Message:  fmt.Sprintf(`Schema %q — string property %q has no validation constraint (minLength, maxLength, pattern, or format).`, scope, propName),
-						Severity: classifyDesignIssue(opts), RuleNumber: 38})
+						Severity: classifyIssue(opts), RuleNumber: 38})
 				}
 			}
 
@@ -160,7 +160,7 @@ func walkSchemaConstraints(filePath, scope string, schema *openapi3.Schema, opts
 				if !hasBound {
 					*out = append(*out, Violation{File: filePath,
 						Message:  fmt.Sprintf(`Schema %q — %s property %q has no bounds (minimum/maximum).`, scope, p.Type.Slice()[0], propName),
-						Severity: classifyDesignIssue(opts), RuleNumber: 39})
+						Severity: classifyIssue(opts), RuleNumber: 39})
 				}
 			}
 
@@ -178,7 +178,7 @@ func walkSchemaConstraints(filePath, scope string, schema *openapi3.Schema, opts
 					*out = append(*out, Violation{File: filePath,
 						Message: fmt.Sprintf(`Schema %q — ID property %q should have format: uuid, use a $ref to a UUID schema, or add x-id-format: external.`,
 							scope, propName),
-						Severity: classifyDesignIssue(opts), RuleNumber: 40})
+						Severity: classifyIssue(opts), RuleNumber: 40})
 				}
 			}
 
@@ -187,7 +187,7 @@ func walkSchemaConstraints(filePath, scope string, schema *openapi3.Schema, opts
 				if p.Min == nil || *p.Min < 1.0 {
 					*out = append(*out, Violation{File: filePath,
 						Message:  fmt.Sprintf(`Schema %q — page-size property %q must have minimum: 1.`, scope, propName),
-						Severity: classifyDesignIssue(opts), RuleNumber: 41})
+						Severity: classifyIssue(opts), RuleNumber: 41})
 				}
 			}
 

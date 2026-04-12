@@ -118,11 +118,7 @@ func extractConstructName(filePath string) string {
 // reportDuplicateSchemas checks the accumulated fingerprints and returns
 // violations for schemas that appear in multiple constructs.
 func reportDuplicateSchemas(fingerprints map[string][]schemaLocation, opts AuditOptions) []Violation {
-	sev := classifyContractIssue(opts)
-	if sev == nil {
-		return nil
-	}
-
+	sev := classifyIssue(opts)
 	var violations []Violation
 
 	for _, entries := range fingerprints {
@@ -160,7 +156,7 @@ func reportDuplicateSchemas(fingerprints map[string][]schemaLocation, opts Audit
 				"Duplicate schema structure detected across constructs: %s. "+
 					"Consider using a cross-construct `$ref` to a single canonical definition "+
 					"to avoid type drift.", locations),
-			Severity:   *sev,
+			Severity:   sev,
 			RuleNumber: 29,
 		})
 	}

@@ -15,11 +15,7 @@ import (
 
 // checkRule8 validates that newly introduced enum values are lowercase.
 func checkRule8(filePath, relFile string, doc *openapi3.T, opts AuditOptions, baselineRef string) []Violation {
-	sev := classifyStyleIssue(opts)
-	if sev == nil {
-		return nil
-	}
-
+	sev := classifyIssue(opts)
 	if doc == nil || doc.Components == nil || doc.Components.Schemas == nil {
 		return nil
 	}
@@ -34,7 +30,7 @@ func checkRule8(filePath, relFile string, doc *openapi3.T, opts AuditOptions, ba
 		}
 		// Use relFile (repo-relative) so that violations match advisory baseline keys.
 		visitEnumsInSchema(schemaRef.Value, fmt.Sprintf("Schema %q", schemaName),
-			baselineEnums, *sev, relFile, &violations)
+			baselineEnums, sev, relFile, &violations)
 	}
 
 	return violations

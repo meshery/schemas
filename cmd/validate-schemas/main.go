@@ -7,8 +7,7 @@
 //	go run ./cmd/validate-schemas                                    # blocking violations only
 //	go run ./cmd/validate-schemas --warn                             # include advisory warnings
 //	go run ./cmd/validate-schemas --warn --no-baseline               # full advisory backlog
-//	go run ./cmd/validate-schemas --warn --no-baseline --style-debt  # include legacy style debt
-//	go run ./cmd/validate-schemas --strict-consistency --style-debt --contract-debt  # fail on all debt
+//	go run ./cmd/validate-schemas --strict-consistency               # fail on all issues
 package main
 
 import (
@@ -23,13 +22,7 @@ import (
 func main() {
 	warn := flag.Bool("warn", false, "Include advisory warnings in output (exit 0)")
 	noBaseline := flag.Bool("no-baseline", false, "Ignore advisory baseline file")
-	styleDebt := flag.Bool("style-debt", false, "Include legacy style debt")
-	contractDebt := flag.Bool("contract-debt", false, "Include legacy contract debt")
-	strict := flag.Bool("strict-consistency", false, "Fail on all style/design/contract debt")
-
-	// Accept legacy flag aliases — bound to the same variables as their canonical counterparts.
-	flag.BoolVar(styleDebt, "legacy-style", false, "Alias for --style-debt")
-	flag.BoolVar(contractDebt, "compat-debt", false, "Alias for --contract-debt")
+	strict := flag.Bool("strict-consistency", false, "Fail on all advisory and design issues")
 	flag.BoolVar(strict, "strict-debt", false, "Alias for --strict-consistency")
 
 	flag.Parse()
@@ -44,12 +37,10 @@ func main() {
 	}
 
 	opts := validation.AuditOptions{
-		RootDir:      rootDir,
-		Strict:       *strict,
-		Warn:         *warn,
-		NoBaseline:   *noBaseline,
-		StyleDebt:    *styleDebt,
-		ContractDebt: *contractDebt,
+		RootDir:    rootDir,
+		Strict:     *strict,
+		Warn:       *warn,
+		NoBaseline: *noBaseline,
 	}
 
 	result := validation.Audit(opts)

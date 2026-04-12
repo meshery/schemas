@@ -320,7 +320,7 @@ func checkRule27(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 			if _, ok := tags["yaml"]; ok {
 				out = append(out, Violation{File: filePath,
 					Message:  fmt.Sprintf("Schema %q — property %q has a manual `yaml:` tag in x-oapi-codegen-extra-tags. YAML struct tags are automatically added by the Go generator — remove this to avoid conflicts.", name, propName),
-					Severity: classifyDesignIssue(opts), RuleNumber: 27})
+					Severity: classifyIssue(opts), RuleNumber: 27})
 			}
 		}
 	}

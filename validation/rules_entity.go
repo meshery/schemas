@@ -235,8 +235,8 @@ func entityRawPropGormColumn(entity *entitySchema, propName string) string {
 // --- Rule 6 for entity schemas: property name casing ---
 
 func checkRule6ForEntity(filePath string, entity *entitySchema, opts AuditOptions) []Violation {
-	sev := classifyStyleIssue(opts)
-	if sev == nil || entity == nil || entity.Properties == nil {
+	sev := classifyIssue(opts)
+	if entity == nil || entity.Properties == nil {
 		return nil
 	}
 	var out []Violation
@@ -258,7 +258,7 @@ func checkRule6ForEntity(filePath string, entity *entitySchema, opts AuditOption
 				msg += fmt.Sprintf(` Use: %q.`, suggestion)
 			}
 			msg += ` See AGENTS.md § "Casing rules at a glance".`
-			out = append(out, Violation{File: filePath, Message: msg, Severity: *sev, RuleNumber: 6})
+			out = append(out, Violation{File: filePath, Message: msg, Severity: sev, RuleNumber: 6})
 		}
 	}
 	return out
@@ -359,7 +359,7 @@ func walkEntityPropertyConstraints(filePath, scope string, properties map[string
 		if propDef.Description == "" && rawDesc == "" {
 			*out = append(*out, Violation{File: filePath,
 				Message:  fmt.Sprintf(`Entity property %q is missing a description.`, propName),
-				Severity: classifyDesignIssue(opts), RuleNumber: 37})
+				Severity: classifyIssue(opts), RuleNumber: 37})
 		}
 
 		// Rule 38: string constraints. A `const` value is inherently
@@ -370,7 +370,7 @@ func walkEntityPropertyConstraints(filePath, scope string, properties map[string
 			if !hasConstraint {
 				*out = append(*out, Violation{File: filePath,
 					Message:  fmt.Sprintf(`Entity string property %q has no validation constraint (minLength, maxLength, pattern, or format).`, propName),
-					Severity: classifyDesignIssue(opts), RuleNumber: 38})
+					Severity: classifyIssue(opts), RuleNumber: 38})
 			}
 		}
 
@@ -379,7 +379,7 @@ func walkEntityPropertyConstraints(filePath, scope string, properties map[string
 			if propDef.Minimum == nil && propDef.Maximum == nil && len(propDef.Enum) == 0 && propDef.Const == nil {
 				*out = append(*out, Violation{File: filePath,
 					Message:  fmt.Sprintf(`Entity %s property %q has no bounds (minimum/maximum).`, propDef.Type, propName),
-					Severity: classifyDesignIssue(opts), RuleNumber: 39})
+					Severity: classifyIssue(opts), RuleNumber: 39})
 			}
 		}
 
@@ -397,7 +397,7 @@ func walkEntityPropertyConstraints(filePath, scope string, properties map[string
 					*out = append(*out, Violation{File: filePath,
 						Message: fmt.Sprintf(`Entity ID property %q should have format: uuid, use a $ref to a UUID schema, or add x-id-format: external.`,
 							propName),
-						Severity: classifyDesignIssue(opts), RuleNumber: 40})
+						Severity: classifyIssue(opts), RuleNumber: 40})
 				}
 			}
 		}
@@ -407,7 +407,7 @@ func walkEntityPropertyConstraints(filePath, scope string, properties map[string
 			if propDef.Minimum == nil || *propDef.Minimum < 1.0 {
 				*out = append(*out, Violation{File: filePath,
 					Message:  fmt.Sprintf(`Entity page-size property %q must have minimum: 1.`, propName),
-					Severity: classifyDesignIssue(opts), RuleNumber: 41})
+					Severity: classifyIssue(opts), RuleNumber: 41})
 			}
 		}
 

@@ -225,7 +225,7 @@ func TestCheckRule8_BaselineExemptsExistingValues(t *testing.T) {
 		},
 	}
 
-	opts := AuditOptions{StyleDebt: true}
+	opts := AuditOptions{}
 
 	// Pass a non-existent baseline ref so loadBaselineDoc returns nil (no git).
 	violations := checkRule8("/abs/path/api.yml", "rel/api.yml", doc, opts, "")
@@ -239,7 +239,7 @@ func TestCheckRule8_BaselineExemptsExistingValues(t *testing.T) {
 	}
 }
 
-func TestCheckRule8_SuppressedWhenNotStyleDebt(t *testing.T) {
+func TestCheckRule8_AdvisoryByDefault(t *testing.T) {
 	doc := &openapi3.T{
 		OpenAPI: "3.0.0",
 		Info:    &openapi3.Info{Title: "Test", Version: "v1"},
@@ -251,9 +251,9 @@ func TestCheckRule8_SuppressedWhenNotStyleDebt(t *testing.T) {
 			},
 		},
 	}
-	// Default opts — style issues suppressed.
+	// Advisory by default.
 	violations := checkRule8("/abs/path/api.yml", "rel/api.yml", doc, AuditOptions{}, "")
-	if len(violations) != 0 {
-		t.Errorf("expected 0 violations (style suppressed by default), got %d", len(violations))
+	if len(violations) != 1 {
+		t.Errorf("expected 1 violation (advisory by default), got %d", len(violations))
 	}
 }

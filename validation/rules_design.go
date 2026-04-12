@@ -255,16 +255,16 @@ func checkRule23(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 			isPublic := isExplicitlyPublic(op, doc)
 
 			if !isPublic && !codes["401"] {
-				out = append(out, Violation{File: filePath, Message: fmt.Sprintf("%s — missing `401` (Unauthorized) response.", label), Severity: classifyDesignIssue(opts), RuleNumber: 23})
+				out = append(out, Violation{File: filePath, Message: fmt.Sprintf("%s — missing `401` (Unauthorized) response.", label), Severity: classifyIssue(opts), RuleNumber: 23})
 			}
 			if !codes["500"] {
-				out = append(out, Violation{File: filePath, Message: fmt.Sprintf("%s — missing `500` (Internal Server Error) response.", label), Severity: classifyDesignIssue(opts), RuleNumber: 23})
+				out = append(out, Violation{File: filePath, Message: fmt.Sprintf("%s — missing `500` (Internal Server Error) response.", label), Severity: classifyIssue(opts), RuleNumber: 23})
 			}
 			if (method == "post" || method == "put" || method == "patch") && !codes["400"] {
-				out = append(out, Violation{File: filePath, Message: fmt.Sprintf("%s — missing `400` (Bad Request) response.", label), Severity: classifyDesignIssue(opts), RuleNumber: 23})
+				out = append(out, Violation{File: filePath, Message: fmt.Sprintf("%s — missing `400` (Bad Request) response.", label), Severity: classifyIssue(opts), RuleNumber: 23})
 			}
 			if strings.Contains(path, "{") && !codes["404"] {
-				out = append(out, Violation{File: filePath, Message: fmt.Sprintf("%s — missing `404` (Not Found) response.", label), Severity: classifyDesignIssue(opts), RuleNumber: 23})
+				out = append(out, Violation{File: filePath, Message: fmt.Sprintf("%s — missing `404` (Not Found) response.", label), Severity: classifyIssue(opts), RuleNumber: 23})
 			}
 		}
 	}
@@ -282,7 +282,7 @@ func checkRule24(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 	if schemes == nil || schemes.SecuritySchemes == nil || len(schemes.SecuritySchemes) == 0 {
 		out = append(out, Violation{
 			File: filePath, Message: "No security schemes declared. api.yml files with path operations must define at least one entry under `components.securitySchemes`.",
-			Severity: classifyDesignIssue(opts), RuleNumber: 24,
+			Severity: classifyIssue(opts), RuleNumber: 24,
 		})
 	}
 	return out
@@ -316,7 +316,7 @@ func checkRule25(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 				File: filePath,
 				Message: fmt.Sprintf("GET %s — list endpoint (returns array or paged response) is missing pagination parameter(s): %s. Reference the shared parameters from v1alpha1/core/api.yml for consistent pagination across all list endpoints.",
 					path, strings.Join(missing, ", ")),
-				Severity: classifyDesignIssue(opts), RuleNumber: 25,
+				Severity: classifyIssue(opts), RuleNumber: 25,
 			})
 		}
 	}
@@ -348,7 +348,7 @@ func checkRule26(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 								out = append(out, Violation{
 									File:     filePath,
 									Message:  fmt.Sprintf("%s — response %s has an inline schema with %d properties. Extract it to `components/schemas`.", label, code, len(media.Schema.Value.Properties)),
-									Severity: classifyDesignIssue(opts), RuleNumber: 26,
+									Severity: classifyIssue(opts), RuleNumber: 26,
 								})
 							}
 						}
@@ -368,10 +368,7 @@ var (
 )
 
 func checkRule28(filePath string, doc *openapi3.T, opts AuditOptions) []Violation {
-	sev := classifyContractIssue(opts)
-	if sev == nil {
-		return nil
-	}
+	sev := classifyIssue(opts)
 	if doc == nil || doc.Paths == nil {
 		return nil
 	}
@@ -389,7 +386,7 @@ func checkRule28(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 					}
 					msg += " appears to create a resource but uses 200 instead of 201 (Created). Use 201 for POST endpoints that exclusively create new resources."
 					out = append(out, Violation{File: filePath,
-						Message: msg, Severity: *sev, RuleNumber: 28})
+						Message: msg, Severity: sev, RuleNumber: 28})
 				}
 			}
 		}
@@ -400,7 +397,7 @@ func checkRule28(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 				if codes["200"] && !codes["204"] {
 					out = append(out, Violation{File: filePath,
 						Message:  fmt.Sprintf("DELETE %s — single-resource DELETE should return 204 (No Content) instead of 200.", path),
-						Severity: *sev, RuleNumber: 28})
+						Severity: sev, RuleNumber: 28})
 				}
 			}
 		}
@@ -438,7 +435,7 @@ func checkRule30(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 							out = append(out, Violation{File: filePath,
 								Message: fmt.Sprintf("%s %s — response %s returns an array with inline item schema (%d properties). Extract to `components/schemas`.",
 									strings.ToUpper(method), path, code, len(s.Items.Value.Properties)),
-								Severity: classifyDesignIssue(opts), RuleNumber: 30})
+								Severity: classifyIssue(opts), RuleNumber: 30})
 						}
 					}
 				}
@@ -471,7 +468,7 @@ func checkRule31(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 				if successfullyRE.MatchString(*resp.Value.Description) {
 					out = append(out, Violation{File: filePath,
 						Message:  fmt.Sprintf(`%s — response %s description contains the word "successfully". Use neutral wording.`, label, code),
-						Severity: classifyDesignIssue(opts), RuleNumber: 31})
+						Severity: classifyIssue(opts), RuleNumber: 31})
 				}
 			}
 		}
@@ -500,7 +497,7 @@ func checkRule36(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 			}
 			label := fmt.Sprintf("%s %s", strings.ToUpper(method), path)
 			if len(op.Tags) == 0 {
-				out = append(out, Violation{File: filePath, Message: fmt.Sprintf("%s — operation is missing `tags`.", label), Severity: classifyDesignIssue(opts), RuleNumber: 36})
+				out = append(out, Violation{File: filePath, Message: fmt.Sprintf("%s — operation is missing `tags`.", label), Severity: classifyIssue(opts), RuleNumber: 36})
 				continue
 			}
 			if len(declaredTags) > 0 {
@@ -508,7 +505,7 @@ func checkRule36(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 					if !declaredTags[tag] {
 						out = append(out, Violation{File: filePath,
 							Message:  fmt.Sprintf(`%s — operation tag %q is not declared in the document-root tags section.`, label, tag),
-							Severity: classifyDesignIssue(opts), RuleNumber: 36})
+							Severity: classifyIssue(opts), RuleNumber: 36})
 					}
 				}
 			}

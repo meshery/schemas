@@ -56,12 +56,6 @@ type AuditOptions struct {
 
 	// NoBaseline disables advisory baseline filtering.
 	NoBaseline bool
-
-	// StyleDebt includes legacy style debt in advisory output.
-	StyleDebt bool
-
-	// ContractDebt includes legacy contract debt in advisory output.
-	ContractDebt bool
 }
 
 // AuditResult holds the outcome of a full schema audit.

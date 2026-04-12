@@ -9,10 +9,7 @@ import (
 
 // Rule 3: operationId must be lower camelCase verbNoun.
 func checkRule3(filePath string, doc *openapi3.T, opts AuditOptions) []Violation {
-	sev := classifyStyleIssue(opts)
-	if sev == nil {
-		return nil
-	}
+	sev := classifyIssue(opts)
 	if doc == nil || doc.Paths == nil {
 		return nil
 	}
@@ -30,7 +27,7 @@ func checkRule3(filePath string, doc *openapi3.T, opts AuditOptions) []Violation
 				out = append(out, Violation{
 					File:       filePath,
 					Message:    fmt.Sprintf(`%s — operationId %q must use lower camelCase verbNoun (e.g. "getPatterns"). See AGENTS.md § "Naming conventions".`, label, opID),
-					Severity:   *sev,
+					Severity:   sev,
 					RuleNumber: 3,
 				})
 			} else if HasScreamingOperationIDSuffix(opID) {
@@ -38,7 +35,7 @@ func checkRule3(filePath string, doc *openapi3.T, opts AuditOptions) []Violation
 				out = append(out, Violation{
 					File:       filePath,
 					Message:    fmt.Sprintf(`%s — operationId %q uses "ID" suffix instead of "Id". Use: %q. See AGENTS.md § "Casing rules at a glance".`, label, opID, suggestion),
-					Severity:   *sev,
+					Severity:   sev,
 					RuleNumber: 3,
 				})
 			}
@@ -49,10 +46,7 @@ func checkRule3(filePath string, doc *openapi3.T, opts AuditOptions) []Violation
 
 // Rule 4: path parameters must be camelCase with Id suffix.
 func checkRule4(filePath string, doc *openapi3.T, opts AuditOptions) []Violation {
-	sev := classifyStyleIssue(opts)
-	if sev == nil {
-		return nil
-	}
+	sev := classifyIssue(opts)
 	if doc == nil || doc.Paths == nil {
 		return nil
 	}
@@ -66,7 +60,7 @@ func checkRule4(filePath string, doc *openapi3.T, opts AuditOptions) []Violation
 				out = append(out, Violation{
 					File:       filePath,
 					Message:    fmt.Sprintf(`Path %q — parameter {%s} uses incorrect casing. Use camelCase with "Id" suffix: {%s}. See AGENTS.md § "Naming conventions".`, path, param, suggestion),
-					Severity:   *sev,
+					Severity:   sev,
 					RuleNumber: 4,
 				})
 			}
@@ -77,10 +71,7 @@ func checkRule4(filePath string, doc *openapi3.T, opts AuditOptions) []Violation
 
 // Rule 6: schema property names (on api.yml components/schemas).
 func checkRule6ForAPI(filePath string, doc *openapi3.T, opts AuditOptions) []Violation {
-	sev := classifyStyleIssue(opts)
-	if sev == nil {
-		return nil
-	}
+	sev := classifyIssue(opts)
 	if doc == nil || doc.Components == nil || doc.Components.Schemas == nil {
 		return nil
 	}
@@ -89,7 +80,7 @@ func checkRule6ForAPI(filePath string, doc *openapi3.T, opts AuditOptions) []Vio
 		if schemaRef == nil || schemaRef.Value == nil {
 			continue
 		}
-		out = append(out, checkPropertyNameCasing(filePath, schemaName, schemaRef.Value, *sev)...)
+		out = append(out, checkPropertyNameCasing(filePath, schemaName, schemaRef.Value, sev)...)
 	}
 	return out
 }
@@ -125,10 +116,7 @@ func checkPropertyNameCasing(filePath, schemaName string, schema *openapi3.Schem
 
 // Rule 7: components/schemas names must be PascalCase.
 func checkRule7(filePath string, doc *openapi3.T, opts AuditOptions) []Violation {
-	sev := classifyStyleIssue(opts)
-	if sev == nil {
-		return nil
-	}
+	sev := classifyIssue(opts)
 	if doc == nil || doc.Components == nil || doc.Components.Schemas == nil {
 		return nil
 	}
@@ -139,7 +127,7 @@ func checkRule7(filePath string, doc *openapi3.T, opts AuditOptions) []Violation
 			out = append(out, Violation{
 				File:       filePath,
 				Message:    fmt.Sprintf(`Schema component name %q must be PascalCase. Suggested: %q. See AGENTS.md § "Casing rules at a glance".`, name, suggestion),
-				Severity:   *sev,
+				Severity:   sev,
 				RuleNumber: 7,
 			})
 		}
@@ -149,10 +137,7 @@ func checkRule7(filePath string, doc *openapi3.T, opts AuditOptions) []Violation
 
 // Rule 9: query/header parameter names must be camelCase.
 func checkRule9(filePath string, doc *openapi3.T, opts AuditOptions) []Violation {
-	sev := classifyStyleIssue(opts)
-	if sev == nil {
-		return nil
-	}
+	sev := classifyIssue(opts)
 	if doc == nil || doc.Paths == nil {
 		return nil
 	}
@@ -175,7 +160,7 @@ func checkRule9(filePath string, doc *openapi3.T, opts AuditOptions) []Violation
 				if suggestion != "" {
 					msg += fmt.Sprintf(` Use camelCase instead: %q.`, suggestion)
 				}
-				out = append(out, Violation{File: filePath, Message: msg, Severity: *sev, RuleNumber: 9})
+				out = append(out, Violation{File: filePath, Message: msg, Severity: sev, RuleNumber: 9})
 			}
 		}
 	}
@@ -184,10 +169,7 @@ func checkRule9(filePath string, doc *openapi3.T, opts AuditOptions) []Violation
 
 // Rule 10: path segments must be kebab-case.
 func checkRule10(filePath string, doc *openapi3.T, opts AuditOptions) []Violation {
-	sev := classifyStyleIssue(opts)
-	if sev == nil {
-		return nil
-	}
+	sev := classifyIssue(opts)
 	if doc == nil || doc.Paths == nil {
 		return nil
 	}
@@ -203,7 +185,7 @@ func checkRule10(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 				out = append(out, Violation{
 					File:       filePath,
 					Message:    fmt.Sprintf(`Path %q — segment %q must be kebab-case. Suggested: %q. See AGENTS.md § "Casing rules at a glance".`, path, seg, suggestion),
-					Severity:   *sev,
+					Severity:   sev,
 					RuleNumber: 10,
 				})
 			}
