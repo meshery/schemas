@@ -645,5 +645,5 @@ components:
           type: array
           items:
             type: string
-            enum: ["by_model", "by_kind", "by_type", "by_subtype"]
+            enum: ["byModel", "byKind", "byType", "bySubType"]
           description: "Criteria for grouping the summary."

@@ -108,9 +108,8 @@ components:
           default: "enabled"
           maxLength: 50
         annotations:
-          type: string
+          type: boolean
           description: "Filter by annotations."
-          enum: ["true", "false"]
         registrant:
           type: string
           description: "Filter by registrant name."
@@ -119,5 +118,5 @@ components:
           type: array
           items:
             type: string
-            enum: ["by_model", "by_category", "by_registrant"]
+            enum: ["byModel", "byCategory", "byRegistrant"]
           description: "Criteria for grouping the summary."
