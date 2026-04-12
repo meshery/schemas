@@ -775,3 +775,119 @@ func TestCheckRule28_DeleteCollectionPathIgnored(t *testing.T) {
 		t.Errorf("expected 0 violations for collection DELETE, got %d", len(vs))
 	}
 }
+// ---------------------------------------------------------------------------
+// Rule 47: 2xx responses (except 204 and 205) must have content and schema
+// ---------------------------------------------------------------------------
+
+func TestCheckRule47_MissingContent(t *testing.T) {
+	doc := &openapi3.T{
+		OpenAPI: "3.0.0",
+		Info:    &openapi3.Info{Title: "Test", Version: "v1"},
+		Paths:   openapi3.NewPaths(),
+	}
+	responses := openapi3.NewResponses()
+	desc := "Success"
+	responses.Set("200", &openapi3.ResponseRef{Value: &openapi3.Response{Description: &desc}})
+	doc.Paths.Set("/api/test", &openapi3.PathItem{
+		Get: &openapi3.Operation{Responses: responses},
+	})
+
+	vs := checkRule47("api.yml", doc, AuditOptions{})
+	if len(vs) != 1 {
+		t.Fatalf("expected 1 violation for missing content on 200, got %d", len(vs))
+	}
+	if !strings.Contains(vs[0].Message, "missing a `content` block") {
+		t.Errorf("expected message about missing content, got %q", vs[0].Message)
+	}
+}
+
+func TestCheckRule47_MissingSchema(t *testing.T) {
+	doc := &openapi3.T{
+		OpenAPI: "3.0.0",
+		Info:    &openapi3.Info{Title: "Test", Version: "v1"},
+		Paths:   openapi3.NewPaths(),
+	}
+	responses := openapi3.NewResponses()
+	desc := "Success"
+	responses.Set("201", &openapi3.ResponseRef{Value: &openapi3.Response{
+		Description: &desc,
+		Content: openapi3.Content{
+			"application/json": &openapi3.MediaType{}, // Missing Schema
+		},
+	}})
+	doc.Paths.Set("/api/test", &openapi3.PathItem{
+		Post: &openapi3.Operation{Responses: responses},
+	})
+
+	vs := checkRule47("api.yml", doc, AuditOptions{})
+	if len(vs) != 1 {
+		t.Fatalf("expected 1 violation for missing schema, got %d", len(vs))
+	}
+	if !strings.Contains(vs[0].Message, "missing a `schema`") {
+		t.Errorf("expected message about missing schema, got %q", vs[0].Message)
+	}
+}
+
+func TestCheckRule47_Valid204(t *testing.T) {
+	doc := &openapi3.T{
+		OpenAPI: "3.0.0",
+		Info:    &openapi3.Info{Title: "Test", Version: "v1"},
+		Paths:   openapi3.NewPaths(),
+	}
+	responses := openapi3.NewResponses()
+	desc := "No Content"
+	responses.Set("204", &openapi3.ResponseRef{Value: &openapi3.Response{Description: &desc}})
+	doc.Paths.Set("/api/test", &openapi3.PathItem{
+		Delete: &openapi3.Operation{Responses: responses},
+	})
+
+	vs := checkRule47("api.yml", doc, AuditOptions{})
+	if len(vs) != 0 {
+		t.Errorf("expected 0 violations for 204 response without content, got %d", len(vs))
+	}
+}
+
+func TestCheckRule47_Valid200(t *testing.T) {
+	doc := &openapi3.T{
+		OpenAPI: "3.0.0",
+		Info:    &openapi3.Info{Title: "Test", Version: "v1"},
+		Paths:   openapi3.NewPaths(),
+	}
+	responses := openapi3.NewResponses()
+	desc := "Success"
+	responses.Set("200", &openapi3.ResponseRef{Value: &openapi3.Response{
+		Description: &desc,
+		Content: openapi3.Content{
+			"application/json": &openapi3.MediaType{
+				Schema: &openapi3.SchemaRef{Value: openapi3.NewObjectSchema()},
+			},
+		},
+	}})
+	doc.Paths.Set("/api/test", &openapi3.PathItem{
+		Get: &openapi3.Operation{Responses: responses},
+	})
+
+	vs := checkRule47("api.yml", doc, AuditOptions{})
+	if len(vs) != 0 {
+		t.Errorf("expected 0 violations for valid 200 response, got %d", len(vs))
+	}
+}
+
+func TestCheckRule47_Valid205(t *testing.T) {
+	doc := &openapi3.T{
+		OpenAPI: "3.0.0",
+		Info:    &openapi3.Info{Title: "Test", Version: "v1"},
+		Paths:   openapi3.NewPaths(),
+	}
+	responses := openapi3.NewResponses()
+	desc := "Reset Content"
+	responses.Set("205", &openapi3.ResponseRef{Value: &openapi3.Response{Description: &desc}})
+	doc.Paths.Set("/api/test", &openapi3.PathItem{
+		Post: &openapi3.Operation{Responses: responses},
+	})
+
+	vs := checkRule47("api.yml", doc, AuditOptions{})
+	if len(vs) != 0 {
+		t.Errorf("expected 0 violations for 205 response without content, got %d", len(vs))
+	}
+}
