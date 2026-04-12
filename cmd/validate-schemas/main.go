@@ -22,7 +22,7 @@ import (
 func main() {
 	warn := flag.Bool("warn", false, "Include advisory warnings in output (exit 0)")
 	noBaseline := flag.Bool("no-baseline", false, "Ignore advisory baseline file")
-	strict := flag.Bool("strict-consistency", false, "Fail on all advisory and design issues")
+	strict := flag.Bool("strict-consistency", false, "Fail on all advisory issues")
 	flag.BoolVar(strict, "strict-debt", false, "Alias for --strict-consistency")
 
 	flag.Parse()
