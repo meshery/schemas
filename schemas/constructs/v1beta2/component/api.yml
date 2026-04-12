@@ -39,3 +39,85 @@ components:
         - version
         - kind
         - schema
+
+    ComponentGroupEntry:
+      type: object
+      description: "A grouping of components by a specific key (e.g., model name)."
+      required:
+        - key
+        - count
+      properties:
+        key:
+          type: string
+          description: "The name of the group."
+          maxLength: 500
+        count:
+          type: integer
+          format: int32
+          description: "The number of components in this group."
+          minimum: 0
+
+    ComponentSummary:
+      type: object
+      description: "Summary of components grouped by various criteria."
+      required:
+        - total
+      additionalProperties: false
+      properties:
+        total:
+          type: integer
+          format: int64
+          description: "Total number of components."
+          minimum: 0
+        byModel:
+          type: array
+          items:
+            $ref: "#/components/schemas/ComponentGroupEntry"
+          description: "Components grouped by model."
+        byCategory:
+          type: array
+          items:
+            $ref: "#/components/schemas/ComponentGroupEntry"
+          description: "Components grouped by category."
+        byRegistrant:
+          type: array
+          items:
+            $ref: "#/components/schemas/ComponentGroupEntry"
+          description: "Components grouped by registrant."
+
+    ComponentSummaryFilter:
+      type: object
+      description: "Filter parameters for component summary."
+      additionalProperties: false
+      properties:
+        modelName:
+          type: string
+          description: "Filter by model name."
+          maxLength: 500
+        categoryName:
+          type: string
+          description: "Filter by category name."
+          maxLength: 500
+        version:
+          type: string
+          description: "Filter by version."
+          maxLength: 100
+        status:
+          type: string
+          description: "Filter by status (e.g., enabled, disabled)."
+          default: "enabled"
+          maxLength: 50
+        annotations:
+          type: string
+          description: "Filter by annotations."
+          enum: ["true", "false"]
+        registrant:
+          type: string
+          description: "Filter by registrant name."
+          maxLength: 500
+        include:
+          type: array
+          items:
+            type: string
+            enum: ["by_model", "by_category", "by_registrant"]
+          description: "Criteria for grouping the summary."
