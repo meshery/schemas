@@ -775,6 +775,7 @@ func TestCheckRule28_DeleteCollectionPathIgnored(t *testing.T) {
 		t.Errorf("expected 0 violations for collection DELETE, got %d", len(vs))
 	}
 }
+
 // ---------------------------------------------------------------------------
 // Rule 47: 2xx responses (except 204 and 205) must have content and schema
 // ---------------------------------------------------------------------------
