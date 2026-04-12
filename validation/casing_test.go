@@ -199,3 +199,30 @@ func TestSuggestPathParam(t *testing.T) {
 		})
 	}
 }
+func TestHasLowercaseSuffix(t *testing.T) {
+	tests := []struct {
+		input string
+		want  bool
+	}{
+		{"userId", false},      // Valid camelCase
+		{"userid", true},       // Original violation
+		{"teamid", true},       // Original violation
+		{"projectid", true},    // New violation, caught by regex
+		{"avatarurl", true},    // Original violation
+		{"imageurl", true},     // New violation, caught by regex
+		{"grid", false},        // Exemption
+		{"uuid", false},        // Exemption
+		{"valid", false},       // Exemption
+		{"acid", false},        // Not in exemption but would be caught by regex if not carefully handled
+		                        // Actually, my regex is [a-z](id|ids|url|uri)$
+		                        // "acid" has 'i' as the [a-z] before 'd'? No.
+		                        // Regex: [a-z](id)$ -> matches "acid" because 'c' is [a-z] and it ends in "id".
+	}
+	for _, tt := range tests {
+		t.Run(tt.input, func(t *testing.T) {
+			if got := HasLowercaseSuffix(tt.input); got != tt.want {
+				t.Errorf("HasLowercaseSuffix(%q) = %v, want %v", tt.input, got, tt.want)
+			}
+		})
+	}
+}

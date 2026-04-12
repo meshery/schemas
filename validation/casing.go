@@ -32,18 +32,13 @@ var (
 	lowercaseSuffixPattern = regexp.MustCompile(`[a-z](id|ids|url|uri)$`)
 )
 
-// knownLowercaseSuffixViolations lists compound property names that end in
-// a known suffix ("id", "url", "uri") but are incorrectly all-lowercase.
-var knownLowercaseSuffixViolations = map[string]bool{
-	"userid": true, "orgid": true, "teamid": true, "workspaceid": true,
-	"modelid": true, "designid": true, "connectionid": true,
-	"environmentid": true, "credentialid": true, "subscriptionid": true,
-	"invitationid": true, "tokenid": true, "eventid": true, "keyid": true,
-	"roleid": true, "badgeid": true, "planid": true, "schemaid": true,
-	"registrantid": true, "componentid": true, "categoryid": true,
-	"pageurl": true, "avatarurl": true, "snapshoturl": true,
-	"callbackurl": true, "redirecturl": true,
+// lowercaseSuffixExemptions lists common words that end with a known suffix
+// but are not casing violations (e.g., "grid", "uuid").
+var lowercaseSuffixExemptions = map[string]bool{
+	"grid": true, "uuid": true, "mid": true, "valid": true,
+	"acid": true, "solid": true, "fluid": true,
 }
+
 
 // dbMirroredFields are known contract-stable snake_case fields that may not
 // carry explicit db tags but are DB-backed.
@@ -95,9 +90,14 @@ func HasScreamingIDToken(s string) bool {
 	return screamingIDRE.MatchString(s)
 }
 
-// HasLowercaseSuffix returns true if s is a known lowercase-suffix violation.
+// HasLowercaseSuffix returns true if s ends with a known suffix ("id", "url", etc.)
+// in all-lowercase, which usually indicates it is a compound word that should
+// be camelCased (e.g., "userid" → "userId").
 func HasLowercaseSuffix(s string) bool {
-	return knownLowercaseSuffixViolations[s]
+	if lowercaseSuffixExemptions[strings.ToLower(s)] {
+		return false
+	}
+	return lowercaseSuffixPattern.MatchString(s)
 }
 
 // ToCamelCase converts a property name to its expected camelCase form.
