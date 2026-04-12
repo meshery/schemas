@@ -213,10 +213,9 @@ func TestHasLowercaseSuffix(t *testing.T) {
 		{"grid", false},        // Exemption
 		{"uuid", false},        // Exemption
 		{"valid", false},       // Exemption
-		{"acid", false},        // Not in exemption but would be caught by regex if not carefully handled
-		                        // Actually, my regex is [a-z](id|ids|url|uri)$
-		                        // "acid" has 'i' as the [a-z] before 'd'? No.
-		                        // Regex: [a-z](id)$ -> matches "acid" because 'c' is [a-z] and it ends in "id".
+		{"rapids", false},      // Plural exemption (rapid + s)
+		{"hybrids", false},     // Plural exemption (hybrid + s)
+		{"acid", false},        // Exemption
 	}
 	for _, tt := range tests {
 		t.Run(tt.input, func(t *testing.T) {

@@ -281,6 +281,42 @@ func TestCheckRule12_NilDoc(t *testing.T) {
 }
 
 // ---------------------------------------------------------------------------
+// Rule 13: api.yml must have info.title and info.version
+// ---------------------------------------------------------------------------
+
+func TestCheckRule13(t *testing.T) {
+	tests := []struct {
+		name      string
+		title     string
+		version   string
+		wantCount int
+	}{
+		{"valid", "Meshery", "v1", 0},
+		{"missing title", "", "v1", 1},
+		{"missing version", "Meshery", "", 1},
+		{"missing both", "", "", 2},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			doc := &openapi3.T{Info: &openapi3.Info{Title: tt.title, Version: tt.version}}
+			vs := checkRule13("api.yml", doc, AuditOptions{})
+			if len(vs) != tt.wantCount {
+				t.Errorf("checkRule13(title=%q, version=%q) got %d violations, want %d", tt.title, tt.version, len(vs), tt.wantCount)
+			}
+		})
+	}
+}
+
+func TestCheckRule13_MissingInfo(t *testing.T) {
+	doc := &openapi3.T{}
+	vs := checkRule13("api.yml", doc, AuditOptions{})
+	if len(vs) != 1 {
+		t.Fatalf("expected 1 violation for missing info section, got %d", len(vs))
+	}
+}
+
+
+// ---------------------------------------------------------------------------
 // Rule 19: No unnecessary single-entry allOf
 // ---------------------------------------------------------------------------
 

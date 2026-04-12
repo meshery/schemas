@@ -37,6 +37,9 @@ var (
 var lowercaseSuffixExemptions = map[string]bool{
 	"grid": true, "uuid": true, "mid": true, "valid": true,
 	"acid": true, "solid": true, "fluid": true,
+	"invalid": true, "hybrid": true, "rapid": true, "liquid": true,
+	"void": true, "paid": true, "said": true, "avoid": true,
+	"rigid": true, "vivid": true, "curl": true,
 }
 
 
@@ -94,7 +97,8 @@ func HasScreamingIDToken(s string) bool {
 // in all-lowercase, which usually indicates it is a compound word that should
 // be camelCased (e.g., "userid" → "userId").
 func HasLowercaseSuffix(s string) bool {
-	if lowercaseSuffixExemptions[strings.ToLower(s)] {
+	lower := strings.ToLower(s)
+	if lowercaseSuffixExemptions[lower] || lowercaseSuffixExemptions[strings.TrimSuffix(lower, "s")] {
 		return false
 	}
 	return lowercaseSuffixPattern.MatchString(s)
