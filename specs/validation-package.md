@@ -1,12 +1,14 @@
 # Design: Schema-Backed `Validate()` Methods on meshery/schemas Entity Types
 
-**Status:** Draft
+**Status:** Phase 0 Complete (build-time auditing migrated to Go; runtime validation API next)
 **Author:** Meshery CLI Working Group
-**Date:** 2026-03-13
+**Date:** 2026-03-13 (Phase 0 completed 2026-04-08)
 **Related PRs:** [meshery/meshery#17923](https://github.com/meshery/meshery/pull/17923), [meshery/meshkit#932](https://github.com/meshery/meshkit/pull/932)
 **Target repos:** [meshery/meshery](https://github.com/meshery/meshery), [meshery/meshkit](https://github.com/meshery/meshkit), and [meshery/schemas](https://github.com/meshery/schemas)
 
-**Revision note:** This document was updated after `meshery/meshkit#932` merged. The original draft assumed that schema-driven validation in Go required either hand-written rule duplication or a heavy runtime schema-loading path. That assumption is no longer accurate.
+**Revision note (2026-04-08):** Phase 0 is now implemented. The `github.com/meshery/schemas/validation` leaf package exists with 41 build-time schema auditing rules ported from the former JavaScript validator. The package uses `kin-openapi` (v0.133.0) for OpenAPI spec parsing and `yaml.v3` for entity schema loading. It imports neither MeshKit nor `meshery/schemas/models/...`, satisfying the dependency-leaf constraint. The next step is adding runtime document validation functions (`ValidateDocument`, `ValidateAny`) and then refactoring `meshkit/schema` to wrap this leaf package (Phase 1).
+
+**Original revision note:** This document was updated after `meshery/meshkit#932` merged. The original draft assumed that schema-driven validation in Go required either hand-written rule duplication or a heavy runtime schema-loading path. That assumption is no longer accurate.
 
 ---
 

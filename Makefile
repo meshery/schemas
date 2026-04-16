@@ -90,27 +90,27 @@ golangci: dep-check
 
 ## Validate schema design rules (Dual-Schema Pattern, additionalProperties)
 validate-schemas:
-	node build/validate-schemas.js
+	go run ./cmd/validate-schemas
 
 ## Fail on all schema design, style, and contract debt across validated APIs
 validate-schemas-strict:
-	node build/validate-schemas.js --strict-consistency --style-debt --contract-debt
+	go run ./cmd/validate-schemas --strict-consistency --style-debt --contract-debt
 
 ## Report new advisory schema issues without failing the build (uses advisory baseline)
 audit-schemas:
-	node build/validate-schemas.js --warn
+	go run ./cmd/validate-schemas --warn
 
 ## Report the full actionable advisory schema backlog without failing the build
 audit-schemas-full:
-	node build/validate-schemas.js --warn --no-baseline
+	go run ./cmd/validate-schemas --warn --no-baseline
 
 ## Report the full advisory backlog including legacy style debt without failing the build
 audit-schemas-style-full:
-	node build/validate-schemas.js --warn --no-baseline --style-debt
+	go run ./cmd/validate-schemas --warn --no-baseline --style-debt
 
 ## Report the full advisory backlog including legacy style and contract debt without failing the build
 audit-schemas-debt-full:
-	node build/validate-schemas.js --warn --no-baseline --style-debt --contract-debt
+	go run ./cmd/validate-schemas --warn --no-baseline --style-debt --contract-debt
 
 #-----------------------------------------------------------------------------
 # Schema information

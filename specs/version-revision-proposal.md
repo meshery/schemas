@@ -8,7 +8,6 @@
 | v1alpha2 | 1 (catalog) | Single-purpose — CatalogData for designs | Go + TS | No |
 | v1alpha3 | 2 (relationship, selector) | Domain — relationship definitions | Go + TS | No |
 | v1beta1 | 27 constructs | Production API surface | Go + TS | Yes |
-| v1beta2-draft | 2 (catalog_data, draft schema) | Experimental | None | Yes (empty) |
 
 **Dependency graph:**
 ```
@@ -134,14 +133,6 @@ v1beta1 (27 constructs)
 
 ---
 
-### Tier 6: Remove `v1beta2-draft` directory
-
-**Rationale:** The current v1beta2-draft contains 2 preliminary YAML files with no api.yml, no generated code, and no consumers. With a proper v1beta2 being introduced for the constructs above, the draft directory should be removed to avoid confusion.
-
-**Scope:** Delete `schemas/constructs/v1beta2-draft/`.
-
----
-
 ## Execution Order
 
 The tiers are ordered by dependency and risk:
@@ -149,8 +140,7 @@ The tiers are ordered by dependency and risk:
 ```
 Phase 1 (foundation):  Tier 1 (core → v1beta1) + Tier 4 (capability → v1beta1)
 Phase 2 (domain):      Tier 2 (catalog → v1beta1) + Tier 3 (relationship → v1beta1)
-Phase 3 (cleanup):     Tier 6 (remove v1beta2-draft)
-Phase 4 (increment):   Tier 5 (v1beta1 → v1beta2 for 7 constructs)
+Phase 3 (increment):   Tier 5 (v1beta1 → v1beta2 for 7 constructs)
 ```
 
 Phase 1 and 2 can be done in a single PR — they are mechanical refactors with no wire-format changes. Phase 4 is the wire-format breaking change and requires coordinated deployment across meshery/meshery and meshery-cloud.
@@ -186,7 +176,7 @@ All alpha versions eliminated. Every construct is beta.
 - [ ] For v1beta2 constructs: update Pop model field access if applicable
 
 ### meshery/schemas
-- [ ] Update `VALIDATED_VERSIONS` in validate-schemas.js to include v1beta2
+- [x] ~~Update `VALIDATED_VERSIONS` in validate-schemas.js to include v1beta2~~ — Validator migrated to Go (`validation/` package); v1beta2 already included in `validatedVersions`
 - [ ] Update `build/lib/config.js` exclusion list for promoted constructs
 - [ ] Update `DB_MIRRORED_FIELDS` if pagination fields change
 - [ ] Update advisory baseline for v1beta2 known issues

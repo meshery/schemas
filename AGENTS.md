@@ -177,7 +177,7 @@ Every element in the API has exactly one correct casing. The table below is the 
 
 ## Per-Property Validation Constraints
 
-The schema validator (`build/validate-schemas.js`) enforces per-property constraints as advisory rules (Rules 37–42). These do not block CI but are reported on `--warn` runs and should be resolved in new schemas.
+The schema validator (`validation/` Go package, invoked via `go run ./cmd/validate-schemas`) enforces per-property constraints as advisory rules (Rules 37–42). These do not block CI but are reported on `--warn` runs and should be resolved in new schemas.
 
 | Rule | What it checks |
 |---|---|

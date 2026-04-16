@@ -38,10 +38,10 @@ A property with the same semantic name may use different casing in different con
 
 ## Schema Validation Rules
 
-This repository enforces 34 schema validation rules via `build/validate-schemas.js`. For full details, see:
+This repository enforces 41 schema validation rules via the `validation/` Go package (invoked by `go run ./cmd/validate-schemas`). For full details, see:
 - `AGENTS.md` — casing rules, HTTP design principles, dual-schema pattern
 - `specs/casing-rules.md` — definitive casing reference with ORM implications
-- `build/validate-schemas.js` — rule implementations (header comments document each rule)
+- `validation/` — Go rule implementations (one file per rule category)
 
 Key casing rules:
 - DB-backed fields: exact snake_case matching the database column name

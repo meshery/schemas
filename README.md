@@ -885,7 +885,7 @@ make validate-schemas
 
 ### Schema Validation Modes
 
-`build/validate-schemas.js` enforces 33 rules organized into four issue tiers. Different `make` targets control which tiers are visible and whether violations block the build.
+The `validation/` Go package (invoked via `go run ./cmd/validate-schemas`) enforces 41 rules organized into four issue tiers. Different `make` targets control which tiers are visible and whether violations block the build.
 
 | Mode | Command | Blocking | Style | Design | Contract |
 | --- | --- | --- | --- | --- | --- |
@@ -897,14 +897,14 @@ make validate-schemas
 | Strict CI gate | `make validate-schemas-strict` | Exit 1 | Error | Error | Error |
 
 - **Blocking** (Rules 1-2, 5, 11-22, 27, 32-33): Always enforced. Break code generation or violate structural contracts.
-- **Style** (Rules 3-4, 6-10, 19): Naming conventions. Silent by default; visible with `--style-debt`; blocking in v1beta2-draft files and `--strict-consistency`.
+- **Style** (Rules 3-4, 6-10, 19): Naming conventions. Silent by default; visible with `--style-debt`; blocking with `--strict-consistency`.
 - **Design** (Rules 23-26, 30-31): API design patterns. Visible as advisories in `--warn` mode.
 - **Contract** (Rules 28-29): Published API contract checks (response codes, duplicate schemas). Visible as advisories in `--warn` mode.
 
 Run unit tests for the validation logic:
 
 ```bash
-npm run test:validate-schemas
+go test ./validation/...
 ```
 
 ### Build Pipeline
@@ -915,8 +915,8 @@ npm run test:validate-schemas
 schemas/constructs/          (OpenAPI YAML source files)
         |
         v
-[1] validate-schemas         node build/validate-schemas.js
-        |                    34 rules: casing, dual-schema, templates, pagination
+[1] validate-schemas         go run ./cmd/validate-schemas
+        |                    41 rules: casing, dual-schema, templates, pagination
         v
 [2] bundle-openapi           node build/bundle-openapi.js
         |                    Per-construct: in-repo dereference to merged-openapi.json

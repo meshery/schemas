@@ -17,7 +17,7 @@ You are an expert-level engineering agent specialized in OpenAPI schema developm
 - **JSON Schema & OpenAPI v3** definitions for versioned constructs (v1beta1, v1beta2). Alpha versions (v1alpha1, v1alpha2, v1alpha3) are legacy.
 - **Automated Code Generation** for Go (structs via oapi-codegen) and TypeScript (types via openapi-typescript).
 - **Template Management**: Ensuring `*_template.json`/`*_template.yaml` files match schema property types (enforced by Rule 34).
-- **Schema Validation**: 34 rules enforced by `build/validate-schemas.js` covering casing, dual-schema pattern, template types, pagination, and DB-backed field names.
+- **Schema Validation**: 41 rules enforced by the `validation/` Go package (`go run ./cmd/validate-schemas`) covering casing, dual-schema pattern, template types, pagination, and DB-backed field names. Uses [kin-openapi](https://github.com/getkin/kin-openapi) for OpenAPI spec parsing.
 
 ## Critical Constraints (DO NOT VIOLATE)
 
@@ -42,7 +42,7 @@ You are an expert-level engineering agent specialized in OpenAPI schema developm
 - **Specifications**: OpenAPI 3.x, JSON Schema
 - **Languages**: YAML, JSON, Go (v1.24.0), TypeScript
 - **Code Generation**: `oapi-codegen` (Go), custom TypeScript generators
-- **Validation**: `build/validate-schemas.js` (34 rules)
+- **Validation**: `validation/` Go package (41 rules, using kin-openapi) — run via `go run ./cmd/validate-schemas` or `make validate-schemas`
 
 ### DevOps & Tools
 

@@ -703,13 +703,14 @@ These are the most common mistakes. If you catch yourself doing any of them, sto
 
 ```bash
 # Run schema design validator (enforces all naming/casing/design rules)
-node build/validate-schemas.js          # fails on violations
-node build/validate-schemas.js --warn   # reports only
+go run ./cmd/validate-schemas              # fails on violations
+go run ./cmd/validate-schemas --warn       # reports only
+make validate-schemas                      # same via Makefile
 
 # Full build (validates + generates everything — validator is step 1)
 make build
 
-# Run Go tests
+# Run Go tests (including validation tests)
 go test ./...
 
 # Run TypeScript build
@@ -721,7 +722,7 @@ make
 
 ### What the validator enforces
 
-The validator (`build/validate-schemas.js`) checks 34 rules covering every naming convention, structural requirement, code-generation annotation, template accuracy, and API design principle. By default, blocking violations fail the build (exit 1). Use `--warn` to report advisories without failing (exit 0). Deprecated constructs (`x-deprecated: true`) are skipped entirely.
+The validator (`validation/` Go package, using kin-openapi for spec parsing) checks 41 rules covering every naming convention, structural requirement, code-generation annotation, template accuracy, and API design principle. By default, blocking violations fail the build (exit 1). Use `--warn` to report advisories without failing (exit 0). Deprecated constructs (`x-deprecated: true`) are skipped entirely.
 
 **Naming rules (1-11):**
 - `additionalProperties: false` on entity schemas

@@ -134,9 +134,7 @@ const packageNameOverrides = {
 };
 
 // Packages to skip entirely
-const excludePackages = [
-  // "v1beta2-draft/somepkg"
-];
+const excludePackages = [];
 
 // Packages to exclude from merged OpenAPI spec (but still generate Go code)
 const excludeFromMerge = [
