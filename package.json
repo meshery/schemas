@@ -66,7 +66,6 @@
   "license": "ISC",
   "devDependencies": {
     "@apidevtools/json-schema-ref-parser": "^15.2.0",
-    "@openapi-contrib/openapi-schema-to-json-schema": "^5.1.0",
     "@reduxjs/toolkit": "^2.8.1",
     "@rtk-query/codegen-openapi": "^2.2.0",
     "csv-parse": "^6.1.0",
@@ -78,6 +77,7 @@
     "json-schema-faker": "^0.5.9",
     "json-schema-to-typescript": "^15.0.4",
     "lodash.merge": "^4.6.2",
+    "openapi-typescript": "^7.13.0",
     "ts-node": "^10.9.2",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3"
