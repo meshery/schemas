@@ -16,36 +16,36 @@ var validatedVersions = []string{"v1beta1", "v1beta2"}
 // httpMethods are the HTTP methods checked in path-item operations.
 var httpMethods = []string{"get", "post", "put", "patch", "delete"}
 
-// Audit runs the full schema design validation across all constructs in the
-// repository. It returns blocking and advisory violations.
-func Audit(opts AuditOptions) AuditResult {
-	result := AuditResult{}
-	constructsDir := filepath.Join(opts.RootDir, "schemas", "constructs")
-	modelsDir := filepath.Join(opts.RootDir, "models")
-	baselinePath := filepath.Join(opts.RootDir, "build", "validate-schemas.advisory-baseline.txt")
+// constructSpec is the per-construct scratchpad passed to walkValidatedConstructSpecs
+// callbacks. It carries everything both the validator and the endpoint indexer need
+// about one <version>/<construct>/api.yml, resolved in one place.
+type constructSpec struct {
+	Version      string
+	Construct    string
+	ConstructDir string
+	APIYMLPath   string
+	RelativePath string
+	APIExists    bool
+	Doc          *openapi3.T
+	LoadErr      error
+}
 
-	// Load advisory baseline.
-	var baseline map[string]bool
-	if opts.Warn && !opts.NoBaseline {
-		baseline = loadAdvisoryBaseline(baselinePath)
-	} else {
-		baseline = make(map[string]bool)
-	}
+// walkValidatedConstructSpecs is the single, canonical walker for the
+// schemas/constructs tree. It visits every non-deprecated construct spec in
+// deterministic sorted order and invokes fn for each one. Both the schema
+// validator (Audit) and the consumer-audit endpoint indexer use this function
+// so the walk logic, filtering, and load behaviour stay in sync.
+func walkValidatedConstructSpecs(rootDir string, fn func(constructSpec) error) error {
+	constructsDir := filepath.Join(rootDir, "schemas", "constructs")
 
-	// Detect git baseline for enum comparison.
-	enumBaselineRef := detectEnumBaselineRef(opts.RootDir)
-
-	// Cross-construct fingerprints for Rule 29.
-	fingerprints := make(map[string][]schemaLocation)
-
-	// Walk validated versions.
-	if info, err := os.Stat(constructsDir); err != nil || !info.IsDir() {
-		return result
+	info, err := os.Stat(constructsDir)
+	if err != nil || !info.IsDir() {
+		return nil
 	}
 
 	versionEntries, err := os.ReadDir(constructsDir)
 	if err != nil {
-		return result
+		return err
 	}
 	sort.Slice(versionEntries, func(i, j int) bool {
 		return versionEntries[i].Name() < versionEntries[j].Name()
@@ -73,39 +73,78 @@ func Audit(opts AuditOptions) AuditResult {
 			if !cEntry.IsDir() {
 				continue
 			}
+
 			constructDir := filepath.Join(versionDir, cEntry.Name())
 			apiYmlPath := filepath.Join(constructDir, "api.yml")
+			spec := constructSpec{
+				Version:      version,
+				Construct:    cEntry.Name(),
+				ConstructDir: constructDir,
+				APIYMLPath:   apiYmlPath,
+				RelativePath: relativeToRoot(apiYmlPath, rootDir),
+			}
 
-			// Load api.yml once and check deprecation from the same doc to
-			// avoid redundant file I/O. If the file doesn't exist or fails to
-			// load, we still run entity/template audits.
-			var apiDoc *openapi3.T
-			apiExists := false
 			if _, err := os.Stat(apiYmlPath); err == nil {
-				apiExists = true
+				spec.APIExists = true
 				doc, loadErr := loadAPISpec(apiYmlPath)
-				if loadErr == nil {
-					// Skip deprecated constructs entirely.
+				if loadErr != nil {
+					spec.LoadErr = loadErr
+				} else {
 					if isDeprecatedDoc(doc) {
 						continue
 					}
-					apiDoc = doc
+					spec.Doc = doc
 				}
 			}
 
-			// Validate entity schemas (*.yaml, not api.yml).
-			auditEntitySchemas(constructDir, opts, baseline, &result)
-
-			// Validate template files (Rule 18, 34).
-			auditTemplateFiles(constructDir, cEntry.Name(), opts, baseline, &result)
-
-			// Validate api.yml if it exists.
-			if apiExists {
-				auditAPISpec(apiYmlPath, constructDir, opts, baseline, &result,
-					fingerprints, enumBaselineRef, apiDoc)
+			if err := fn(spec); err != nil {
+				return err
 			}
 		}
 	}
+
+	return nil
+}
+
+// Audit runs the full schema design validation across all constructs in the
+// repository. It returns blocking and advisory violations.
+func Audit(opts AuditOptions) AuditResult {
+	result := AuditResult{}
+	modelsDir := filepath.Join(opts.RootDir, "models")
+	baselinePath := filepath.Join(opts.RootDir, "build", "validate-schemas.advisory-baseline.txt")
+
+	// Load advisory baseline.
+	var baseline map[string]bool
+	if opts.Warn && !opts.NoBaseline {
+		baseline = loadAdvisoryBaseline(baselinePath)
+	} else {
+		baseline = make(map[string]bool)
+	}
+
+	// Detect git baseline for enum comparison.
+	enumBaselineRef := detectEnumBaselineRef(opts.RootDir)
+
+	// Cross-construct fingerprints for Rule 29.
+	fingerprints := make(map[string][]schemaLocation)
+
+	// Walk validated construct specs. Errors are intentionally ignored:
+	// Audit returns AuditResult, not error, and individual load failures
+	// are reported as blocking violations inside auditAPISpec.
+	_ = walkValidatedConstructSpecs(opts.RootDir, func(spec constructSpec) error {
+		// Validate entity schemas (*.yaml, not api.yml).
+		auditEntitySchemas(spec.ConstructDir, opts, baseline, &result)
+
+		// Validate template files (Rule 18, 34).
+		auditTemplateFiles(spec.ConstructDir, spec.Construct, opts, baseline, &result)
+
+		// Validate api.yml if it exists. spec.Doc is nil when load failed;
+		// auditAPISpec handles nil docs by reporting a blocking violation.
+		if spec.APIExists {
+			auditAPISpec(spec.APIYMLPath, spec.ConstructDir, opts, baseline, &result,
+				fingerprints, enumBaselineRef, spec.Doc)
+		}
+		return nil
+	})
 
 	// Rule 29: report cross-construct duplicates.
 	for _, v := range reportDuplicateSchemas(fingerprints, opts) {

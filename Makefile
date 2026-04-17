@@ -113,6 +113,36 @@ audit-schemas-debt-full:
 	go run ./cmd/validate-schemas --warn --no-baseline --style-debt --contract-debt
 
 #-----------------------------------------------------------------------------
+# Consumer audit (schemas vs. consumer repos)
+#-----------------------------------------------------------------------------
+.PHONY: consumer-audit consumer-audit-update
+
+# Override via: make consumer-audit MESHERY_REPO=../meshery CLOUD_REPO=../meshery-cloud
+MESHERY_REPO ?=
+CLOUD_REPO   ?=
+SHEET_ID     ?=
+CREDENTIALS  ?=
+
+## Dry-run the consumer audit without reconciling or updating Google Sheets.
+consumer-audit:
+	@go run ./cmd/consumer-audit \
+		$(if $(MESHERY_REPO),--meshery-repo=$(MESHERY_REPO)) \
+		$(if $(CLOUD_REPO),--cloud-repo=$(CLOUD_REPO)) \
+		$(if $(VERBOSE),--verbose)
+
+## Reconcile the consumer audit against the canonical Google Sheet and update it.
+consumer-audit-update:
+	@if [ -z "$(SHEET_ID)" ] || [ -z "$(CREDENTIALS)" ]; then \
+		echo "consumer-audit-update: SHEET_ID and CREDENTIALS are required"; exit 1; \
+	fi
+	@go run ./cmd/consumer-audit \
+		$(if $(MESHERY_REPO),--meshery-repo=$(MESHERY_REPO)) \
+		$(if $(CLOUD_REPO),--cloud-repo=$(CLOUD_REPO)) \
+		$(if $(VERBOSE),--verbose) \
+		--sheet-id=$(SHEET_ID) \
+		--credentials=$(CREDENTIALS)
+
+#-----------------------------------------------------------------------------
 # Schema information
 #-----------------------------------------------------------------------------
 .PHONY: schemas-versions schemas-versions-latest

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/google/uuid"
 	core "github.com/meshery/schemas/models/core"
 )
 
@@ -55,6 +56,19 @@ func (p *Preference) Scan(src interface{}) error {
 	mapVal := core.Map{}
 	if err := mapVal.Scan(src); err != nil {
 		return err
+	}
+
+	// Legacy rows may hold an empty string (or other non-UUID content) under
+	// selectedOrganizationId — e.g. the v1.0.1 key rename carried empty values
+	// over verbatim. The current schema types that field as a required UUID,
+	// so leaving bad input in place would fail MapToStruct and block callers
+	// like OAuth sign-in. Drop the key instead; the zero UUID will be written
+	// on the next preference update.
+	if v, ok := mapVal["selectedOrganizationId"]; ok {
+		s, isStr := v.(string)
+		if !isStr || uuid.Validate(s) != nil {
+			delete(mapVal, "selectedOrganizationId")
+		}
 	}
 
 	return core.MapToStruct(mapVal, p)

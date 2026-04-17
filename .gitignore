@@ -8,6 +8,10 @@ mesheryctl/mesheryctl
 mesheryctl/default.profraw
 main
 
+# api-audit local binary (built via `go build ./cmd/api-audit`)
+/api-audit
+# consumer-audit local binary (built via `go build ./cmd/consumer-audit`)
+/consumer-audit
 
 # Binaries for programs and plugins
 *.exe
