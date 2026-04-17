@@ -190,7 +190,7 @@ func auditEntitySchemas(constructDir string, opts AuditOptions,
 			addViolation(result, v, baseline)
 		}
 
-		// Rules 36–41: property-constraint advisories.
+		// Rules 37–41: property-constraint advisories.
 		for _, v := range checkEntityPropertyConstraints(relPath, entity, opts) {
 			addViolation(result, v, baseline)
 		}
@@ -247,7 +247,7 @@ func auditAPISpec(apiYmlPath, constructDir string, opts AuditOptions,
 		checkRule17, checkRule19, checkRule21, checkRule23,
 		checkRule24, checkRule25, checkRule26, checkRule27,
 		checkRule28, checkRule30, checkRule31, checkRule35,
-		checkRule37,
+		checkRule36,
 	}
 
 	for _, check := range ruleChecks {
@@ -276,7 +276,7 @@ func auditAPISpec(apiYmlPath, constructDir string, opts AuditOptions,
 		addViolation(result, v, baseline)
 	}
 
-	// Rules 36-41: property constraints.
+	// Rules 37-41: property constraints.
 	for _, v := range checkPropertyConstraints(relPath, doc, opts) {
 		addViolation(result, v, baseline)
 	}

@@ -272,15 +272,15 @@ func TestCheckEntityPropertyConstraints_RecursesIntoNestedProperties(t *testing.
 		},
 	}
 	vs := checkEntityPropertyConstraints("entity.yaml", entity, AuditOptions{})
-	foundR36 := false
+	foundR37 := false
 	for _, v := range vs {
-		if v.RuleNumber == 36 && contains(v.Message, "label") {
-			foundR36 = true
+		if v.RuleNumber == 37 && contains(v.Message, "label") {
+			foundR37 = true
 			break
 		}
 	}
-	if !foundR36 {
-		t.Errorf("expected Rule 36 violation for nested property 'label' without description; got %d violations", len(vs))
+	if !foundR37 {
+		t.Errorf("expected Rule 37 violation for nested property 'label' without description; got %d violations", len(vs))
 		for _, v := range vs {
 			t.Logf("  violation: %s", v.Message)
 		}

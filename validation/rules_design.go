@@ -479,9 +479,9 @@ func checkRule31(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 	return out
 }
 
-// --- Rule 37: Operations must have tags ---
+// --- Rule 36: Operations must have tags ---
 
-func checkRule37(filePath string, doc *openapi3.T, opts AuditOptions) []Violation {
+func checkRule36(filePath string, doc *openapi3.T, opts AuditOptions) []Violation {
 	if doc == nil || doc.Paths == nil {
 		return nil
 	}
@@ -500,7 +500,7 @@ func checkRule37(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 			}
 			label := fmt.Sprintf("%s %s", strings.ToUpper(method), path)
 			if len(op.Tags) == 0 {
-				out = append(out, Violation{File: filePath, Message: fmt.Sprintf("%s — operation is missing `tags`.", label), Severity: classifyDesignIssue(opts), RuleNumber: 37})
+				out = append(out, Violation{File: filePath, Message: fmt.Sprintf("%s — operation is missing `tags`.", label), Severity: classifyDesignIssue(opts), RuleNumber: 36})
 				continue
 			}
 			if len(declaredTags) > 0 {
@@ -508,7 +508,7 @@ func checkRule37(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 					if !declaredTags[tag] {
 						out = append(out, Violation{File: filePath,
 							Message:  fmt.Sprintf(`%s — operation tag %q is not declared in the document-root tags section.`, label, tag),
-							Severity: classifyDesignIssue(opts), RuleNumber: 37})
+							Severity: classifyDesignIssue(opts), RuleNumber: 36})
 					}
 				}
 			}

@@ -131,11 +131,11 @@ func walkSchemaConstraints(filePath, scope string, schema *openapi3.Schema, opts
 			}
 			fullScope += propName
 
-			// Rule 36: description.
+			// Rule 37: description.
 			if propRef.Ref == "" && p.Description == "" {
 				*out = append(*out, Violation{File: filePath,
 					Message:  fmt.Sprintf(`Schema %q — property %q is missing a description.`, scope, propName),
-					Severity: classifyDesignIssue(opts), RuleNumber: 36})
+					Severity: classifyDesignIssue(opts), RuleNumber: 37})
 			}
 
 			// Rule 38: string constraints. A `const` value is inherently

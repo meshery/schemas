@@ -354,12 +354,12 @@ func walkEntityPropertyConstraints(filePath, scope string, properties map[string
 
 		fullScope := scope + "." + propName
 
-		// Rule 36: description.
+		// Rule 37: description.
 		rawDesc, _ := rawMapString(raw, "description")
 		if propDef.Description == "" && rawDesc == "" {
 			*out = append(*out, Violation{File: filePath,
 				Message:  fmt.Sprintf(`Entity property %q is missing a description.`, propName),
-				Severity: classifyDesignIssue(opts), RuleNumber: 36})
+				Severity: classifyDesignIssue(opts), RuleNumber: 37})
 		}
 
 		// Rule 38: string constraints. A `const` value is inherently

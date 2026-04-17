@@ -47,9 +47,6 @@ const CredentialSchema: Record<string, unknown> = {
   "paths": {
     "/api/integrations/credentials": {
       "get": {
-        "x-internal": [
-          "cloud"
-        ],
         "tags": [
           "credentials"
         ],
@@ -266,9 +263,6 @@ const CredentialSchema: Record<string, unknown> = {
         }
       },
       "post": {
-        "x-internal": [
-          "cloud"
-        ],
         "tags": [
           "credentials"
         ],
@@ -541,9 +535,6 @@ const CredentialSchema: Record<string, unknown> = {
         }
       },
       "put": {
-        "x-internal": [
-          "cloud"
-        ],
         "tags": [
           "credentials"
         ],
@@ -826,9 +817,6 @@ const CredentialSchema: Record<string, unknown> = {
         }
       },
       "delete": {
-        "x-internal": [
-          "cloud"
-        ],
         "tags": [
           "credentials"
         ],
@@ -901,9 +889,6 @@ const CredentialSchema: Record<string, unknown> = {
     },
     "/api/integrations/credentials/{id}": {
       "get": {
-        "x-internal": [
-          "cloud"
-        ],
         "tags": [
           "credentials"
         ],
