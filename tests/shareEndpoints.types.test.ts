@@ -75,3 +75,38 @@ export const _resourceArg: HandleResourceShareApiArg = {
   resourceId: "id",
   body: {},
 };
+
+// --- pathPrefix option type-checks -----------------------------------------
+
+// Positive: passing a well-formed `opts` object with `pathPrefix` type-checks
+// and returns the same endpoint-definitions shape the consumer slice expects.
+const sharingWithPrefix = scratchApi.injectEndpoints({
+  endpoints: (build) =>
+    buildShareEndpoints(
+      build as unknown as EndpointBuilder<
+        ShareEndpointsBaseQuery,
+        (typeof SHARE_ENDPOINT_TAG_TYPES)[number],
+        "scratchShareApi"
+      >,
+      { pathPrefix: "/api/extensions" },
+    ),
+});
+export const _shareViewPrefixed = sharingWithPrefix.endpoints.shareView.initiate;
+
+// Negative: a numeric `pathPrefix` is not assignable to `string | undefined`.
+const _castBuilder = undefined as unknown as EndpointBuilder<
+  ShareEndpointsBaseQuery,
+  (typeof SHARE_ENDPOINT_TAG_TYPES)[number],
+  "scratchShareApi"
+>;
+
+buildShareEndpoints(_castBuilder, {
+  // @ts-expect-error -- pathPrefix must be a string
+  pathPrefix: 42,
+});
+
+// Negative: an unknown option key is not part of the opts shape.
+buildShareEndpoints(_castBuilder, {
+  // @ts-expect-error -- `wrong` is not a valid option
+  wrong: "key",
+});
