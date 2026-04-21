@@ -175,19 +175,26 @@ function MyComponent() {
 
 The content-share endpoints (`shareView`, `shareDesign`,
 `handleResourceShare`) are published in an **injectable** shape so every
-consumer can mount them on its own `createApi` slice. There are two
-sanctioned consumption patterns, distinguished by the optional `pathPrefix`
-argument on the factory.
+consumer can mount them on its own `createApi` slice. Injection puts the
+consumer in control of reducer/middleware ownership, the cache tag
+namespace, and — most importantly — the base URL the requests actually
+hit.
 
 **Architectural rule: Kanvas -> Meshery Server -> Meshery Cloud; never
 direct.** Extensions must route share traffic through Meshery Server's
 `/api/extensions` mount; do not point an RTK slice directly at meshery-cloud
 from an extension.
 
-#### 1. Meshery Cloud's own UI (same-origin, no prefix)
-
-The default shape. URLs emit unchanged (`/api/content/view/share`, etc.)
-and hit `HandleShare` in meshery-cloud's own process.
+**URL routing:** the factory emits the meshery-cloud paths exactly as the
+schema codegen produces them (`/api/content/view/share` etc.). The factory
+does **not** take a path-prefix or per-call URL argument. To change the
+base URL the requests hit, pick (or create) a consuming slice whose
+`baseUrl` is the right root. That `baseUrl` is a deploy-time env-var
+choice, not a factory argument — which is the same convention the
+sanctioned hand-written slices `cloudBaseApi` and `mesheryBaseApi` follow
+(`RTK_CLOUD_ENDPOINT_PREFIX` and `RTK_MESHERY_ENDPOINT_PREFIX`; see
+`typescript/rtk/api.ts`). Any new hand-written slice should follow the
+same pattern.
 
 ```typescript
 import type { EndpointBuilder } from "@reduxjs/toolkit/query";
@@ -198,35 +205,18 @@ import {
   type ShareEndpointsBaseQuery,
 } from "@meshery/schemas/shareEndpoints";
 
-const cloudShareApi = createApi({
-  reducerPath: "cloudShareApi",
+// The consuming slice's baseUrl comes from a deploy-time env var — this
+// is how the consumer selects whether the emitted paths land on
+// meshery-cloud directly (same-origin UI) or on the Meshery Server
+// extension mount that proxies to meshery-cloud.
+const consumerApi = createApi({
+  reducerPath: "consumerApi",
   baseQuery: fetchBaseQuery({ baseUrl: "", credentials: "include" }),
   tagTypes: [...SHARE_ENDPOINT_TAG_TYPES],
   endpoints: () => ({}),
 });
 
-export const sharingApi = cloudShareApi.injectEndpoints({
-  endpoints: (build) =>
-    buildShareEndpoints(
-      build as unknown as EndpointBuilder<
-        ShareEndpointsBaseQuery,
-        (typeof SHARE_ENDPOINT_TAG_TYPES)[number],
-        "cloudShareApi"
-      >,
-    ), // no `pathPrefix` -> URLs unchanged
-});
-```
-
-#### 2. Extensions via Meshery Server (e.g. Kanvas / meshery-extensions)
-
-URLs get prefixed with `/api/extensions`, becoming
-`/api/extensions/api/content/view/share` etc. This routes through Meshery
-Server's extension mount, which then proxies to meshery-cloud. Passing the
-prefix here means the extension keeps using its existing RTK slice — no
-need to stand up a second `createApi` just to hold the prefix.
-
-```typescript
-export const sharingApi = extensionApi.injectEndpoints({
+export const sharingApi = consumerApi.injectEndpoints({
   // RTK's `EndpointBuilder<BaseQuery, …>` is invariant in `BaseQuery`, so
   // a `fetchBaseQuery`-derived builder cannot be assigned directly to the
   // wider `ShareEndpointsBaseQuery` parameter. One cast here bridges the
@@ -236,9 +226,8 @@ export const sharingApi = extensionApi.injectEndpoints({
       build as unknown as EndpointBuilder<
         ShareEndpointsBaseQuery,
         (typeof SHARE_ENDPOINT_TAG_TYPES)[number],
-        "extensionApi"
+        "consumerApi"
       >,
-      { pathPrefix: "/api/extensions" },
     ),
 });
 
@@ -248,9 +237,6 @@ export const {
   useHandleResourceShareMutation,
 } = sharingApi;
 ```
-
-Trailing slashes in `pathPrefix` are stripped, so `"/api/extensions"` and
-`"/api/extensions/"` produce the same URLs.
 
 > **Do not point an RTK slice directly at meshery-cloud from an extension.**
 > All share traffic from an extension must go through Meshery Server.
