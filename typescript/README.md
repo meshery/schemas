@@ -171,81 +171,31 @@ function MyComponent() {
 }
 ```
 
-### Injectable Share Endpoints
+### Env-var slice `baseUrl` convention
 
-The content-share endpoints (`shareView`, `shareDesign`,
-`handleResourceShare`) are published in an **injectable** shape so every
-consumer can mount them on its own `createApi` slice. Injection puts the
-consumer in control of reducer/middleware ownership, the cache tag
-namespace, and — most importantly — the base URL the requests actually
-hit.
+The two sanctioned hand-written slices, `cloudBaseApi` and `mesheryBaseApi`
+(`typescript/rtk/api.ts:19-20`), derive their `baseUrl` from deploy-time
+environment variables — `RTK_CLOUD_ENDPOINT_PREFIX` and
+`RTK_MESHERY_ENDPOINT_PREFIX` respectively — read at schemas build time. Any
+new hand-written slice published from this package must follow the same
+env-var-driven pattern.
 
-**Architectural rule: Kanvas -> Meshery Server -> Meshery Cloud; never
-direct.** Extensions must route share traffic through Meshery Server's
-`/api/extensions` mount; do not point an RTK slice directly at meshery-cloud
-from an extension.
+This convention is what lets the same generated endpoints land on different
+URLs depending on who is consuming them:
 
-**URL routing:** the factory emits the meshery-cloud paths exactly as the
-schema codegen produces them (`/api/content/view/share` etc.). The factory
-does **not** take a path-prefix or per-call URL argument. To change the
-base URL the requests hit, pick (or create) a consuming slice whose
-`baseUrl` is the right root. That `baseUrl` is a deploy-time env-var
-choice, not a factory argument — which is the same convention the
-sanctioned hand-written slices `cloudBaseApi` and `mesheryBaseApi` follow
-(`RTK_CLOUD_ENDPOINT_PREFIX` and `RTK_MESHERY_ENDPOINT_PREFIX`; see
-`typescript/rtk/api.ts`). Any new hand-written slice should follow the
-same pattern.
+- Meshery Cloud's own UI consumes `cloudApi` same-origin, so its
+  `RTK_CLOUD_ENDPOINT_PREFIX` resolves to an empty prefix.
+- Extension consumers sitting behind Meshery Server resolve
+  `RTK_CLOUD_ENDPOINT_PREFIX` to the server's `/api/extensions/` mount, so
+  the same emitted schema-codegen paths are proxied through Meshery Server
+  to Meshery Cloud.
 
-```typescript
-import type { EndpointBuilder } from "@reduxjs/toolkit/query";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import {
-  buildShareEndpoints,
-  SHARE_ENDPOINT_TAG_TYPES,
-  type ShareEndpointsBaseQuery,
-} from "@meshery/schemas/shareEndpoints";
-
-// The consuming slice's baseUrl comes from a deploy-time env var — this
-// is how the consumer selects whether the emitted paths land on
-// meshery-cloud directly (same-origin UI) or on the Meshery Server
-// extension mount that proxies to meshery-cloud.
-const consumerApi = createApi({
-  reducerPath: "consumerApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "", credentials: "include" }),
-  tagTypes: [...SHARE_ENDPOINT_TAG_TYPES],
-  endpoints: () => ({}),
-});
-
-export const sharingApi = consumerApi.injectEndpoints({
-  // RTK's `EndpointBuilder<BaseQuery, …>` is invariant in `BaseQuery`, so
-  // a `fetchBaseQuery`-derived builder cannot be assigned directly to the
-  // wider `ShareEndpointsBaseQuery` parameter. One cast here bridges the
-  // variance — the runtime object is structurally identical.
-  endpoints: (build) =>
-    buildShareEndpoints(
-      build as unknown as EndpointBuilder<
-        ShareEndpointsBaseQuery,
-        (typeof SHARE_ENDPOINT_TAG_TYPES)[number],
-        "consumerApi"
-      >,
-    ),
-});
-
-export const {
-  useShareViewMutation,
-  useShareDesignMutation,
-  useHandleResourceShareMutation,
-} = sharingApi;
-```
-
-> **Do not point an RTK slice directly at meshery-cloud from an extension.**
-> All share traffic from an extension must go through Meshery Server.
-
-The injected endpoints carry the same `ShareViewApiArg`, `ShareDesignApiArg`,
-and `HandleResourceShareApiArg` shapes as their `cloudApi` counterparts —
-these types are re-exported from `@meshery/schemas/shareEndpoints` for
-convenience — so existing call sites keep compiling. The `cloudApi`
-slice itself remains unchanged.
+The architectural rule — Extensions → Meshery Server → Meshery Cloud;
+never direct — is enforced through this env-var-per-slice `baseUrl`
+choice, not through per-call URL arguments on anything published by this
+package. Do not hardcode `https://cloud.layer5.io` or any other cloud
+hostname into a published slice or factory; that forecloses every
+extension consumer.
 
 ## Build Process
 

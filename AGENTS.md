@@ -205,24 +205,24 @@ The annotation is self-documenting: the exemption lives with the schema property
 
 ## Deployment Topology and Routing
 
-The schemas package ships API contracts and endpoint factories that are consumed from multiple call sites in the Meshery ecosystem. Factories published here (RTK-Query endpoint builders, URL generators, etc.) MUST be designed to work for every legitimate caller, not just meshery-cloud's own UI.
+The schemas package ships API contracts and RTK-Query slices that are consumed from multiple call sites in the Meshery ecosystem — meshery-cloud's own UI and the various extensions that sit behind Meshery Server. Anything published here (hand-written slices, endpoint factories, URL helpers) MUST be designed to work for every legitimate caller, not just meshery-cloud's same-origin UI.
 
-**The architectural rule: Kanvas → Meshery Server → Meshery Cloud; never direct.**
+**The architectural rule: Extensions → Meshery Server → Meshery Cloud; never direct.** Extension UIs must route their meshery-cloud traffic through Meshery Server's `/api/extensions/` mount; they must not point an RTK slice directly at a Meshery Cloud hostname.
 
-In practice, that rule is enforced through how consumers assemble their RTK slices — not through per-call URL arguments on factories in this repo.
+In practice, that rule is enforced through how consumers assemble their RTK slices — not through per-call URL arguments on anything published here.
 
 **URL routing convention:**
 
-- Factories published here (e.g. `buildShareEndpoints`) emit the meshery-cloud paths exactly as the schema codegen produces them (`/api/content/view/share`, etc.). Factories MUST NOT accept per-call `pathPrefix` / URL-prefix / base-URL arguments — that departs from the established convention.
-- Consumers mount a factory onto their own `createApi` slice via `injectEndpoints`. The consumer slice's `baseUrl` decides where those emitted paths actually land.
-- Slice base URLs come from deploy-time environment variables, read at schemas build time. The two sanctioned hand-written slices shipped by this package — `cloudBaseApi` (base URL from `RTK_CLOUD_ENDPOINT_PREFIX`) and `mesheryBaseApi` (from `RTK_MESHERY_ENDPOINT_PREFIX`) in `typescript/rtk/api.ts` — are the canonical reference. Any new hand-written slice must use the same env-var-driven `baseUrl` pattern.
-- Do NOT hardcode `https://cloud.layer5.io` or any other Meshery Cloud hostname into generated or hand-written clients. Do NOT publish a slice whose `baseUrl` is a fixed cloud URL — that forecloses the extension-mount consumer.
-- Extensions (Kanvas, meshery-extensions) reach meshery-cloud via Meshery Server's `/api/extensions` mount. The extension consumer expresses that routing through the `baseUrl` of the slice it injects these endpoints onto — NOT by asking the factory to prepend a path.
+- Generated endpoints emit the meshery-cloud paths exactly as the schema codegen produces them (`/api/content/view/share`, etc.). Any factory shipped from this repo MUST NOT accept per-call `pathPrefix` / URL-prefix / base-URL arguments — that departs from the established convention.
+- Consumers mount endpoints onto their own `createApi` slice (directly, or via `injectEndpoints`). The consuming slice's `baseUrl` decides where those emitted paths actually land.
+- Slice base URLs come from deploy-time environment variables, read at schemas build time. The two sanctioned hand-written slices shipped by this package — `cloudBaseApi` (base URL from `RTK_CLOUD_ENDPOINT_PREFIX`) and `mesheryBaseApi` (from `RTK_MESHERY_ENDPOINT_PREFIX`) in `typescript/rtk/api.ts` (see lines 19-20) — are the canonical reference. Any new hand-written slice must use the same env-var-driven `baseUrl` pattern.
+- Do NOT hardcode `https://cloud.layer5.io` or any other Meshery Cloud hostname into generated or hand-written clients. Do NOT publish a slice whose `baseUrl` is a fixed cloud URL — that forecloses every extension consumer that must reach meshery-cloud via Meshery Server's `/api/extensions/` proxy.
+- Extension consumers express their routing through the `baseUrl` of the slice they consume or inject onto — NOT by asking a factory to prepend a path. At deploy time, the extension's `RTK_CLOUD_ENDPOINT_PREFIX` resolves to the Meshery Server extension mount, and the emitted schema-codegen paths land there.
 
 When reviewing or proposing a new factory / endpoint group:
 
-- [ ] Factory emits the schema-codegen paths unchanged, without any per-call URL / prefix argument.
-- [ ] Factory relies on the consuming slice's `baseUrl` (not a per-call arg) for URL routing.
+- [ ] Emits the schema-codegen paths unchanged, without any per-call URL / prefix argument.
+- [ ] Relies on the consuming slice's `baseUrl` (not a per-call arg) for URL routing.
 - [ ] Consumers get the effective base URL via an env var at schemas build time, following the `cloudBaseApi` / `mesheryBaseApi` pattern in `typescript/rtk/api.ts` — not via a factory argument.
 - [ ] No hostname or cloud URL is hardcoded in the factory or any slice published by this package.
 - [ ] Runtime test asserts the emitted URL matches the schema-codegen path exactly.
