@@ -174,11 +174,20 @@ function MyComponent() {
 ### Injectable Share Endpoints
 
 The content-share endpoints (`shareView`, `shareDesign`,
-`handleResourceShare`) are also published in an **injectable** shape, so
-consumers that need to route these requests through a base URL other than
-`RTK_CLOUD_ENDPOINT_PREFIX` — for example, an extension mount on the same
-origin — can mount them on their own `createApi` slice instead of using
-the `cloudApi` export:
+`handleResourceShare`) are published in an **injectable** shape so every
+consumer can mount them on its own `createApi` slice. There are two
+sanctioned consumption patterns, distinguished by the optional `pathPrefix`
+argument on the factory.
+
+**Architectural rule: Kanvas -> Meshery Server -> Meshery Cloud; never
+direct.** Extensions must route share traffic through Meshery Server's
+`/api/extensions` mount; do not point an RTK slice directly at meshery-cloud
+from an extension.
+
+#### 1. Meshery Cloud's own UI (same-origin, no prefix)
+
+The default shape. URLs emit unchanged (`/api/content/view/share`, etc.)
+and hit `HandleShare` in meshery-cloud's own process.
 
 ```typescript
 import type { EndpointBuilder } from "@reduxjs/toolkit/query";
@@ -189,13 +198,34 @@ import {
   type ShareEndpointsBaseQuery,
 } from "@meshery/schemas/shareEndpoints";
 
-const extensionApi = createApi({
-  reducerPath: "extensionApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "/api/extensions", credentials: "include" }),
+const cloudShareApi = createApi({
+  reducerPath: "cloudShareApi",
+  baseQuery: fetchBaseQuery({ baseUrl: "", credentials: "include" }),
   tagTypes: [...SHARE_ENDPOINT_TAG_TYPES],
   endpoints: () => ({}),
 });
 
+export const sharingApi = cloudShareApi.injectEndpoints({
+  endpoints: (build) =>
+    buildShareEndpoints(
+      build as unknown as EndpointBuilder<
+        ShareEndpointsBaseQuery,
+        (typeof SHARE_ENDPOINT_TAG_TYPES)[number],
+        "cloudShareApi"
+      >,
+    ), // no `pathPrefix` -> URLs unchanged
+});
+```
+
+#### 2. Extensions via Meshery Server (e.g. Kanvas / meshery-extensions)
+
+URLs get prefixed with `/api/extensions`, becoming
+`/api/extensions/api/content/view/share` etc. This routes through Meshery
+Server's extension mount, which then proxies to meshery-cloud. Passing the
+prefix here means the extension keeps using its existing RTK slice — no
+need to stand up a second `createApi` just to hold the prefix.
+
+```typescript
 export const sharingApi = extensionApi.injectEndpoints({
   // RTK's `EndpointBuilder<BaseQuery, …>` is invariant in `BaseQuery`, so
   // a `fetchBaseQuery`-derived builder cannot be assigned directly to the
@@ -208,6 +238,7 @@ export const sharingApi = extensionApi.injectEndpoints({
         (typeof SHARE_ENDPOINT_TAG_TYPES)[number],
         "extensionApi"
       >,
+      { pathPrefix: "/api/extensions" },
     ),
 });
 
@@ -217,6 +248,12 @@ export const {
   useHandleResourceShareMutation,
 } = sharingApi;
 ```
+
+Trailing slashes in `pathPrefix` are stripped, so `"/api/extensions"` and
+`"/api/extensions/"` produce the same URLs.
+
+> **Do not point an RTK slice directly at meshery-cloud from an extension.**
+> All share traffic from an extension must go through Meshery Server.
 
 The injected endpoints carry the same `ShareViewApiArg`, `ShareDesignApiArg`,
 and `HandleResourceShareApiArg` shapes as their `cloudApi` counterparts —
