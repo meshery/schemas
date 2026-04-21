@@ -171,6 +171,46 @@ function MyComponent() {
 }
 ```
 
+### Injectable Share Endpoints
+
+The content-share endpoints (`shareView`, `shareDesign`,
+`handleResourceShare`) are also published in an **injectable** shape, so
+consumers that need to route these requests through a base URL other than
+`RTK_CLOUD_ENDPOINT_PREFIX` — for example, an extension mount on the same
+origin — can mount them on their own `createApi` slice instead of using
+the `cloudApi` export:
+
+```typescript
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import {
+  buildShareEndpoints,
+  SHARE_ENDPOINT_TAG_TYPES,
+} from "@meshery/schemas/shareEndpoints";
+
+const extensionApi = createApi({
+  reducerPath: "extensionApi",
+  baseQuery: fetchBaseQuery({ baseUrl: "/api/extensions", credentials: "include" }),
+  tagTypes: [...SHARE_ENDPOINT_TAG_TYPES],
+  endpoints: () => ({}),
+});
+
+export const sharingApi = extensionApi.injectEndpoints({
+  endpoints: buildShareEndpoints,
+});
+
+export const {
+  useShareViewMutation,
+  useShareDesignMutation,
+  useHandleResourceShareMutation,
+} = sharingApi;
+```
+
+The injected endpoints carry the same `ShareViewApiArg`, `ShareDesignApiArg`,
+and `HandleResourceShareApiArg` shapes as their `cloudApi` counterparts —
+these types are re-exported from `@meshery/schemas/shareEndpoints` for
+convenience — so existing call sites keep compiling. The `cloudApi`
+slice itself remains unchanged.
+
 ## Build Process
 
 The TypeScript types and schemas are generated from OpenAPI specifications:

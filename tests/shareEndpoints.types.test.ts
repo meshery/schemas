@@ -1,0 +1,63 @@
+/**
+ * Type-level smoke test for the injectable share-endpoints module.
+ *
+ * Not executed at runtime — it exists so the TypeScript compiler (run
+ * during `npm run build`'s dts emit, and by consumers via their own
+ * `tsc --noEmit`) checks that:
+ *
+ *   1. A fresh `createApi` slice can consume `buildShareEndpoints` via
+ *      `injectEndpoints`.
+ *   2. The resulting slice exposes `useShareViewMutation`,
+ *      `useShareDesignMutation`, and `useHandleResourceShareMutation`
+ *      as hooks typed against the same `…ApiArg` shapes the generated
+ *      `cloudApi` publishes.
+ */
+
+// Using the non-react entry so this type test does not require @types/react
+// in the schemas repo; React consumers (the whole point of the module)
+// should import from "@reduxjs/toolkit/query/react" instead. The builder
+// factory is identical either way.
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query";
+
+import {
+  buildShareEndpoints,
+  SHARE_ENDPOINT_TAG_TYPES,
+  type ShareViewApiArg,
+  type ShareDesignApiArg,
+  type HandleResourceShareApiArg,
+} from "../typescript/rtk/shareEndpoints";
+
+// The whole point: mount the share endpoints on an arbitrary slice whose
+// baseUrl points wherever the consumer likes — here, a same-origin
+// extension mount, not meshery-cloud's RTK_CLOUD_ENDPOINT_PREFIX.
+const scratchApi = createApi({
+  reducerPath: "scratchShareApi",
+  baseQuery: fetchBaseQuery({ baseUrl: "/api/extensions", credentials: "include" }),
+  tagTypes: [...SHARE_ENDPOINT_TAG_TYPES],
+  endpoints: () => ({}),
+});
+
+const sharing = scratchApi.injectEndpoints({
+  endpoints: buildShareEndpoints,
+});
+
+// If any of these references fail to type-check, the module has drifted
+// from the generated cloud.ts contract. We reach into the core mutation
+// endpoints (not the react hooks) so this file stays type-checkable
+// without @types/react pulled in by the schemas repo.
+export const _shareView = sharing.endpoints.shareView.initiate;
+export const _shareDesign = sharing.endpoints.shareDesign.initiate;
+export const _handleResourceShare = sharing.endpoints.handleResourceShare.initiate;
+
+// Arg shapes are the same ones consumers already import from `cloudApi`.
+export const _viewArg: ShareViewApiArg = {
+  body: { content_id: "id", content_type: "view", emails: [], share: true },
+};
+export const _designArg: ShareDesignApiArg = {
+  body: { content_id: "id", content_type: "pattern", emails: [], share: true },
+};
+export const _resourceArg: HandleResourceShareApiArg = {
+  resourceType: "design",
+  resourceId: "id",
+  body: {},
+};
