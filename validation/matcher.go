@@ -49,6 +49,7 @@ type consumerAssessment struct {
 
 const (
 	auditStatusTrue       = "TRUE"
+	auditStatusPartial    = "PARTIAL"
 	auditStatusFalse      = "FALSE"
 	auditStatusNotAudited = "Not Audited"
 )
@@ -316,8 +317,10 @@ func assessConsumers(consumerProvided bool, repo string, consumers []consumerEnd
 	statusRank := func(status string) int {
 		switch status {
 		case auditStatusNotAudited:
-			return 3
+			return 4
 		case auditStatusFalse:
+			return 3
+		case auditStatusPartial:
 			return 2
 		case auditStatusTrue:
 			return 1
@@ -432,18 +435,6 @@ func assessConsumer(c *consumerEndpoint, requestShape, responseShape *schemaShap
 		}
 	}
 
-	// For methods that carry no body by HTTP semantics (DELETE, HEAD),
-	// having no request or response shape in the spec is correct by design.
-	// The handler conforms by definition — return TRUE rather than Not Audited.
-	// For other methods (POST, PUT, PATCH, GET), absent shapes indicate an
-	// incomplete schema; those stay Not Audited so the gap is visible.
-	if requestShape == nil && responseShape == nil && bodylessMethod(c.Method) {
-		return consumerAssessment{
-			Status: auditStatusTrue,
-			Notes:  uniqueStrings(notes),
-		}
-	}
-
 	// Query param comparison — advisory notes only, does not affect status.
 	for _, qpNote := range assessQueryParams(specQueryParams, c.QueryParams) {
 		notes = append(notes, fmt.Sprintf("%s: %s", c.Repo, qpNote))
@@ -451,7 +442,6 @@ func assessConsumer(c *consumerEndpoint, requestShape, responseShape *schemaShap
 
 	reqAssessment := verifyShapeDetailed(requestShape, c.RequestType, true)
 	respAssessment := verifyShapeDetailed(responseShape, c.ResponseType, false)
-	assessments := []shapeAssessment{reqAssessment, respAssessment}
 
 	var hadComparable, sawDiff, sawUnverified bool
 	var drift []string
@@ -507,12 +497,42 @@ func assessConsumer(c *consumerEndpoint, requestShape, responseShape *schemaShap
 		}
 	}
 
-	for _, assessment := range assessments {
-		if assessment.status == shapeOK {
-			return consumerAssessment{
-				Status: auditStatusTrue,
-				Notes:  uniqueStrings(notes),
-			}
+	var sawComparable, sawNonDirectComparable bool
+	for _, side := range []struct {
+		name       string
+		info       *goTypeInfo
+		assessment shapeAssessment
+	}{
+		{name: "request", info: c.RequestType, assessment: reqAssessment},
+		{name: "response", info: c.ResponseType, assessment: respAssessment},
+	} {
+		if side.assessment.status != shapeOK {
+			continue
+		}
+		sawComparable = true
+		switch classifyGoTypeOrigin(side.info) {
+		case goTypeOriginDirectSchema:
+			// Fully schema-driven; no note needed.
+		case goTypeOriginSchemaAlias:
+			sawNonDirectComparable = true
+			notes = append(notes, fmt.Sprintf("%s uses local alias %q instead of a direct schema import", side.name, formatGoTypeRef(side.info)))
+		case goTypeOriginLocalStruct:
+			sawNonDirectComparable = true
+			notes = append(notes, fmt.Sprintf("%s uses local struct %q instead of a direct schema import", side.name, formatGoTypeRef(side.info)))
+		default:
+			sawNonDirectComparable = true
+			notes = append(notes, fmt.Sprintf("%s uses a non-direct schema type %q", side.name, formatGoTypeRef(side.info)))
+		}
+	}
+
+	if sawComparable {
+		status := auditStatusTrue
+		if sawNonDirectComparable {
+			status = auditStatusPartial
+		}
+		return consumerAssessment{
+			Status: status,
+			Notes:  uniqueStrings(notes),
 		}
 	}
 
@@ -619,17 +639,6 @@ func typesCompatible(openapiType, goType string) bool {
 	return openapiType == goType
 }
 
-// bodylessMethod returns true for HTTP methods that carry no body by
-// semantics. A DELETE or HEAD endpoint with no request/response shape in the
-// spec is correct by design and should be reported as TRUE, not Not Audited.
-func bodylessMethod(method string) bool {
-	switch strings.ToUpper(method) {
-	case "DELETE", "HEAD":
-		return true
-	}
-	return false
-}
-
 func isPrimitive(goType string) bool {
 	switch goType {
 	case "string", "bool", "byte", "rune",
@@ -703,4 +712,37 @@ func normalizeTypeIdentity(typeName string) (arrayDepth int, base string) {
 		s = s[i+1:]
 	}
 	return arrayDepth, s
+}
+
+func classifyGoTypeOrigin(info *goTypeInfo) goTypeOrigin {
+	if info == nil {
+		return goTypeOriginUnknown
+	}
+	if info.Origin != goTypeOriginUnknown {
+		return info.Origin
+	}
+	switch {
+	case info.IsFromSchema && info.Package != "":
+		return goTypeOriginDirectSchema
+	case info.IsFromSchema:
+		return goTypeOriginSchemaAlias
+	case len(info.Fields) > 0:
+		return goTypeOriginLocalStruct
+	default:
+		return goTypeOriginUnknown
+	}
+}
+
+func formatGoTypeRef(info *goTypeInfo) string {
+	if info == nil {
+		return "(unknown type)"
+	}
+	typeName := strings.TrimSpace(info.TypeName)
+	if typeName == "" {
+		typeName = "(unknown type)"
+	}
+	if pkg := strings.TrimSpace(info.Package); pkg != "" {
+		return pkg + "." + typeName
+	}
+	return typeName
 }

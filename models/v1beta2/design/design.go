@@ -11,6 +11,14 @@ import (
 	catalogv1alpha2 "github.com/meshery/schemas/models/v1alpha2/catalog"
 	component "github.com/meshery/schemas/models/v1beta2/component"
 	relationship "github.com/meshery/schemas/models/v1beta2/relationship"
+	openapi_types "github.com/oapi-codegen/runtime/types"
+)
+
+// Defines values for ContentSharePayloadContentType.
+const (
+	Filter  ContentSharePayloadContentType = "filter"
+	Pattern ContentSharePayloadContentType = "pattern"
+	View    ContentSharePayloadContentType = "view"
 )
 
 // DesignPreferences Design-level preferences
@@ -73,6 +81,32 @@ type CatalogRequestsPage struct {
 	// TotalCount Total number of items available.
 	TotalCount *int `json:"total_count,omitempty" yaml:"total_count,omitempty"`
 }
+
+// ContentSharePayload Payload for sharing a piece of content (design, filter, or view) with one
+// or more recipients by email. This schema backs both
+// `POST /api/content/design/share` and `POST /api/content/view/share`; the
+// server dispatches on `content_type` to decide which entity to mutate.
+type ContentSharePayload struct {
+	// ContentId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ContentId core.Uuid `json:"content_id" yaml:"content_id"`
+
+	// ContentType The kind of content being shared. Must match the entity the handler
+	// expects — `pattern` and `filter` are valid on the design share
+	// endpoint; `view` is valid on the view share endpoint.
+	ContentType ContentSharePayloadContentType `json:"content_type" yaml:"content_type"`
+
+	// Emails Email addresses of the recipients to share this content with.
+	Emails []openapi_types.Email `json:"emails" yaml:"emails"`
+
+	// Share When true, flip visibility to public and send invitation emails to
+	// the recipients. When false, revert visibility to private.
+	Share bool `json:"share" yaml:"share"`
+}
+
+// ContentSharePayloadContentType The kind of content being shared. Must match the entity the handler
+// expects — `pattern` and `filter` are valid on the design share
+// endpoint; `view` is valid on the view share endpoint.
+type ContentSharePayloadContentType string
 
 // DeletePatternModel defines model for DeletePatternModel.
 type DeletePatternModel struct {

@@ -83,6 +83,19 @@ components:
       type: string
       x-go-type-skip-optional-pointer: true
 
+    Visibility:
+      type: string
+      description: |
+        Visibility level of a resource. Controls who can see and access it.
+        - `private`: Only the owner and explicitly shared users can access.
+        - `public`: Anyone in the organization (or anonymous, depending on resource) can discover and access.
+        - `published`: Promoted to the catalog for broad discovery beyond the owning organization.
+      enum:
+        - private
+        - public
+        - published
+      x-go-type-skip-optional-pointer: true
+
     Number:
       type: integer
       x-go-type-skip-optional-pointer: true
@@ -973,7 +986,7 @@ components:
       in: query
       description: Get responses based on visibility - private, public or published
       schema:
-        type: string
+        $ref: "#/components/schemas/Visibility"
     populate:
       name: populate
       in: query

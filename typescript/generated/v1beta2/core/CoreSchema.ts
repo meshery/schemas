@@ -100,6 +100,16 @@ const CoreSchema: Record<string, unknown> = {
         "type": "string",
         "x-go-type-skip-optional-pointer": true
       },
+      "Visibility": {
+        "type": "string",
+        "description": "Visibility level of a resource. Controls who can see and access it.\n- `private`: Only the owner and explicitly shared users can access.\n- `public`: Anyone in the organization (or anonymous, depending on resource) can discover and access.\n- `published`: Promoted to the catalog for broad discovery beyond the owning organization.\n",
+        "enum": [
+          "private",
+          "public",
+          "published"
+        ],
+        "x-go-type-skip-optional-pointer": true
+      },
       "Number": {
         "type": "integer",
         "x-go-type-skip-optional-pointer": true
@@ -1860,7 +1870,14 @@ const CoreSchema: Record<string, unknown> = {
         "in": "query",
         "description": "Get responses based on visibility - private, public or published",
         "schema": {
-          "type": "string"
+          "type": "string",
+          "description": "Visibility level of a resource. Controls who can see and access it.\n- `private`: Only the owner and explicitly shared users can access.\n- `public`: Anyone in the organization (or anonymous, depending on resource) can discover and access.\n- `published`: Promoted to the catalog for broad discovery beyond the owning organization.\n",
+          "enum": [
+            "private",
+            "public",
+            "published"
+          ],
+          "x-go-type-skip-optional-pointer": true
         }
       },
       "populate": {

@@ -207,6 +207,41 @@ components:
           x-oapi-codegen-extra-tags:
             json: "metadata,omitempty"
 
+    ContentSharePayload:
+      type: object
+      description: |
+        Payload for sharing a view with one or more recipients by email. The
+        wire format matches the canonical design share payload
+        (`design.ContentSharePayload` in `v1beta2/design`), restricted to the
+        `view` content type since that is all this endpoint accepts.
+      required:
+        - content_id
+        - content_type
+        - emails
+        - share
+      properties:
+        content_id:
+          $ref: "../core/api.yml#/components/schemas/uuid"
+          description: Identifier of the view being shared.
+        content_type:
+          type: string
+          description: |
+            The kind of content being shared. Only `view` is accepted on this
+            endpoint.
+          enum:
+            - view
+        emails:
+          type: array
+          description: Email addresses of the recipients to share this view with.
+          items:
+            type: string
+            format: email
+        share:
+          type: boolean
+          description: |
+            When true, flip the view's visibility to public and send invitation
+            emails to the recipients. When false, revert visibility to private.
+
     MesheryViewPage:
       type: object
       description: Paginated list of views with location enrichment.
@@ -233,6 +268,13 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/ViewPayload"
+    contentSharePayload:
+      description: Body for sharing a view with recipients by email.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ContentSharePayload"
 
 paths:
   /api/content/views:
@@ -304,6 +346,35 @@ paths:
                 $ref: "#/components/schemas/MesheryViewPage"
         "401":
           $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/content/view/share:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - views
+      operationId: shareView
+      summary: Share a view by email
+      description: |
+        Shares a view with a list of email addresses. When `share` is true, the
+        view's visibility is flipped to public and an invitation email is sent
+        to each recipient. When `share` is false, visibility is reverted to
+        private. Only the owner of the view (or a provider admin) may change
+        its sharing mode.
+      requestBody:
+        $ref: "#/components/requestBodies/contentSharePayload"
+      responses:
+        "200":
+          description: View shared.
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          description: Caller is not the owner of the view.
+        "404":
+          $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
 

@@ -30795,6 +30795,117 @@ const DesignSchema: Record<string, unknown> = {
         }
       }
     },
+    "/api/content/design/share": {
+      "post": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "designs"
+        ],
+        "summary": "Share a design, view, or filter by email",
+        "operationId": "shareDesign",
+        "description": "Shares a design (pattern), view, or filter with a list of email\naddresses. When `share` is true, the content's visibility is flipped to\npublic and an invitation email is sent to each recipient. When `share`\nis false, visibility is reverted to private. Only the owner of the\ncontent may change its sharing mode.\n",
+        "requestBody": {
+          "description": "Body for sharing a design, filter, or view with recipients by email.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "Payload for sharing a piece of content (design, filter, or view) with one\nor more recipients by email. This schema backs both\n`POST /api/content/design/share` and `POST /api/content/view/share`; the\nserver dispatches on `content_type` to decide which entity to mutate.\n",
+                "required": [
+                  "content_id",
+                  "content_type",
+                  "emails",
+                  "share"
+                ],
+                "properties": {
+                  "content_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                    "x-go-type": "uuid.UUID",
+                    "x-go-type-import": {
+                      "path": "github.com/gofrs/uuid"
+                    }
+                  },
+                  "content_type": {
+                    "type": "string",
+                    "description": "The kind of content being shared. Must match the entity the handler\nexpects — `pattern` and `filter` are valid on the design share\nendpoint; `view` is valid on the view share endpoint.\n",
+                    "enum": [
+                      "pattern",
+                      "filter",
+                      "view"
+                    ]
+                  },
+                  "emails": {
+                    "type": "array",
+                    "description": "Email addresses of the recipients to share this content with.",
+                    "items": {
+                      "type": "string",
+                      "format": "email"
+                    }
+                  },
+                  "share": {
+                    "type": "boolean",
+                    "description": "When true, flip visibility to public and send invitation emails to\nthe recipients. When false, revert visibility to private.\n"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Content shared."
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Caller is not the owner of the content."
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/catalog/requests": {
       "get": {
         "x-internal": [
@@ -55100,6 +55211,48 @@ const DesignSchema: Record<string, unknown> = {
             "description": "The users of the resourceaccessactorsresponse."
           }
         }
+      },
+      "ContentSharePayload": {
+        "type": "object",
+        "description": "Payload for sharing a piece of content (design, filter, or view) with one\nor more recipients by email. This schema backs both\n`POST /api/content/design/share` and `POST /api/content/view/share`; the\nserver dispatches on `content_type` to decide which entity to mutate.\n",
+        "required": [
+          "content_id",
+          "content_type",
+          "emails",
+          "share"
+        ],
+        "properties": {
+          "content_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
+          "content_type": {
+            "type": "string",
+            "description": "The kind of content being shared. Must match the entity the handler\nexpects — `pattern` and `filter` are valid on the design share\nendpoint; `view` is valid on the view share endpoint.\n",
+            "enum": [
+              "pattern",
+              "filter",
+              "view"
+            ]
+          },
+          "emails": {
+            "type": "array",
+            "description": "Email addresses of the recipients to share this content with.",
+            "items": {
+              "type": "string",
+              "format": "email"
+            }
+          },
+          "share": {
+            "type": "boolean",
+            "description": "When true, flip visibility to public and send invitation emails to\nthe recipients. When false, revert visibility to private.\n"
+          }
+        }
       }
     },
     "requestBodies": {
@@ -55121,6 +55274,56 @@ const DesignSchema: Record<string, unknown> = {
             "schema": {
               "type": "object",
               "additionalProperties": true
+            }
+          }
+        }
+      },
+      "contentSharePayload": {
+        "description": "Body for sharing a design, filter, or view with recipients by email.",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "description": "Payload for sharing a piece of content (design, filter, or view) with one\nor more recipients by email. This schema backs both\n`POST /api/content/design/share` and `POST /api/content/view/share`; the\nserver dispatches on `content_type` to decide which entity to mutate.\n",
+              "required": [
+                "content_id",
+                "content_type",
+                "emails",
+                "share"
+              ],
+              "properties": {
+                "content_id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "content_type": {
+                  "type": "string",
+                  "description": "The kind of content being shared. Must match the entity the handler\nexpects — `pattern` and `filter` are valid on the design share\nendpoint; `view` is valid on the view share endpoint.\n",
+                  "enum": [
+                    "pattern",
+                    "filter",
+                    "view"
+                  ]
+                },
+                "emails": {
+                  "type": "array",
+                  "description": "Email addresses of the recipients to share this content with.",
+                  "items": {
+                    "type": "string",
+                    "format": "email"
+                  }
+                },
+                "share": {
+                  "type": "boolean",
+                  "description": "When true, flip visibility to public and send invitation emails to\nthe recipients. When false, revert visibility to private.\n"
+                }
+              }
             }
           }
         }

@@ -43,6 +43,15 @@ export interface components {
      */
     email: string;
     Text: string;
+    /**
+     * @description Visibility level of a resource. Controls who can see and access it.
+     * - `private`: Only the owner and explicitly shared users can access.
+     * - `public`: Anyone in the organization (or anonymous, depending on resource) can discover and access.
+     * - `published`: Promoted to the catalog for broad discovery beyond the owning organization.
+     *
+     * @enum {string}
+     */
+    Visibility: "private" | "public" | "published";
     number: number;
     /** @description Link for profile picture */
     avatar_url: string;
@@ -782,7 +791,7 @@ export interface components {
     /** @description Get ordered responses */
     order: string;
     /** @description Get responses based on visibility - private, public or published */
-    visibility: string;
+    visibility: "private" | "public" | "published";
     /** @description Populate the response with additional data like pattern_file */
     populate: string;
     /** @description Get responses that match search param value */

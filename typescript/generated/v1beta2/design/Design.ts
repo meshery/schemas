@@ -71,6 +71,16 @@ export interface paths {
   "/api/resource/{resourceType}/share/{resourceId}/{actorType}": {
     get: operations["getResourceAccessActorsByType"];
   };
+  "/api/content/design/share": {
+    /**
+     * Shares a design (pattern), view, or filter with a list of email
+     * addresses. When `share` is true, the content's visibility is flipped to
+     * public and an invitation email is sent to each recipient. When `share`
+     * is false, visibility is reverted to private. Only the owner of the
+     * content may change its sharing mode.
+     */
+    post: operations["shareDesign"];
+  };
   "/api/catalog/requests": {
     get: operations["getCatalogRequest"];
   };
@@ -8132,6 +8142,34 @@ export interface components {
       /** @description The users of the resourceaccessactorsresponse. */
       users?: { [key: string]: unknown }[];
     };
+    /**
+     * @description Payload for sharing a piece of content (design, filter, or view) with one
+     * or more recipients by email. This schema backs both
+     * `POST /api/content/design/share` and `POST /api/content/view/share`; the
+     * server dispatches on `content_type` to decide which entity to mutate.
+     */
+    ContentSharePayload: {
+      /**
+       * Format: uuid
+       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+       */
+      content_id: string;
+      /**
+       * @description The kind of content being shared. Must match the entity the handler
+       * expects — `pattern` and `filter` are valid on the design share
+       * endpoint; `view` is valid on the view share endpoint.
+       *
+       * @enum {string}
+       */
+      content_type: "pattern" | "filter" | "view";
+      /** @description Email addresses of the recipients to share this content with. */
+      emails: string[];
+      /**
+       * @description When true, flip visibility to public and send invitation emails to
+       * the recipients. When false, revert visibility to private.
+       */
+      share: boolean;
+    };
   };
   responses: {
     /** Invalid request body or request param */
@@ -8180,6 +8218,33 @@ export interface components {
     resourceSharePayload: {
       content: {
         "application/json": { [key: string]: unknown };
+      };
+    };
+    /** Body for sharing a design, filter, or view with recipients by email. */
+    contentSharePayload: {
+      content: {
+        "application/json": {
+          /**
+           * Format: uuid
+           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+           */
+          content_id: string;
+          /**
+           * @description The kind of content being shared. Must match the entity the handler
+           * expects — `pattern` and `filter` are valid on the design share
+           * endpoint; `view` is valid on the view share endpoint.
+           *
+           * @enum {string}
+           */
+          content_type: "pattern" | "filter" | "view";
+          /** @description Email addresses of the recipients to share this content with. */
+          emails: string[];
+          /**
+           * @description When true, flip visibility to public and send invitation emails to
+           * the recipients. When false, revert visibility to private.
+           */
+          share: boolean;
+        };
       };
     };
   };
@@ -18750,6 +18815,72 @@ export interface operations {
       500: {
         content: {
           "text/plain": string;
+        };
+      };
+    };
+  };
+  /**
+   * Shares a design (pattern), view, or filter with a list of email
+   * addresses. When `share` is true, the content's visibility is flipped to
+   * public and an invitation email is sent to each recipient. When `share`
+   * is false, visibility is reverted to private. Only the owner of the
+   * content may change its sharing mode.
+   */
+  shareDesign: {
+    responses: {
+      /** Content shared. */
+      200: unknown;
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Caller is not the owner of the content. */
+      403: unknown;
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+    /** Body for sharing a design, filter, or view with recipients by email. */
+    requestBody: {
+      content: {
+        "application/json": {
+          /**
+           * Format: uuid
+           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+           */
+          content_id: string;
+          /**
+           * @description The kind of content being shared. Must match the entity the handler
+           * expects — `pattern` and `filter` are valid on the design share
+           * endpoint; `view` is valid on the view share endpoint.
+           *
+           * @enum {string}
+           */
+          content_type: "pattern" | "filter" | "view";
+          /** @description Email addresses of the recipients to share this content with. */
+          emails: string[];
+          /**
+           * @description When true, flip visibility to public and send invitation emails to
+           * the recipients. When false, revert visibility to private.
+           */
+          share: boolean;
         };
       };
     };

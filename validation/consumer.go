@@ -28,12 +28,22 @@ type consumerEndpoint struct {
 	Notes          []string    // parser-side notes (e.g. "anonymous handler")
 }
 
+type goTypeOrigin string
+
+const (
+	goTypeOriginUnknown      goTypeOrigin = ""
+	goTypeOriginDirectSchema goTypeOrigin = "direct_schema"
+	goTypeOriginSchemaAlias  goTypeOrigin = "schema_alias"
+	goTypeOriginLocalStruct  goTypeOrigin = "local_struct"
+)
+
 // goTypeInfo describes a Go type used by a consumer handler.
 type goTypeInfo struct {
 	Package      string            // full import path
 	TypeName     string            // struct name, e.g. "ConnectionPayload"
 	Fields       map[string]string // JSON tag -> Go type string
 	IsFromSchema bool              // package starts with "github.com/meshery/schemas/models/"
+	Origin       goTypeOrigin      // direct schema import, schema alias, or local struct
 }
 
 // handlerInfo summarizes what we learn from a single handler file walk.
@@ -111,6 +121,10 @@ func indexHandlers(tree sourceTree, endpoints []consumerEndpoint) []consumerEndp
 	// file. Handler-local types live in the same package as the handler,
 	// so a per-dir map is the smallest unit that gives us correct lookups.
 	localPkgTypes := make(map[string]map[string]map[string]string)
+	// Same-package type alias index keyed by directory, so bare handler-local
+	// aliases (for example `type Foo = schema.Foo`) can be distinguished from
+	// direct schema imports.
+	localPkgAliases := make(map[string]map[string]string)
 	// Cross-package type index keyed by package name (e.g. "models").
 	// Populated from every walked directory so a handler calling
 	// `models.ConnectionPage` can resolve it even though `models` is a
@@ -123,6 +137,9 @@ func indexHandlers(tree sourceTree, endpoints []consumerEndpoint) []consumerEndp
 	for _, c := range ctxs {
 		if localPkgTypes[c.dir] == nil {
 			localPkgTypes[c.dir] = make(map[string]map[string]string)
+		}
+		if localPkgAliases[c.dir] == nil {
+			localPkgAliases[c.dir] = make(map[string]string)
 		}
 		pkgName := ""
 		if c.file.Name != nil {
@@ -150,6 +167,9 @@ func indexHandlers(tree sourceTree, endpoints []consumerEndpoint) []consumerEndp
 					if sel, ok := ts.Type.(*ast.SelectorExpr); ok {
 						if id, ok := sel.X.(*ast.Ident); ok {
 							if ipath, ok := c.imports[id.Name]; ok {
+								if _, exists := localPkgAliases[c.dir][ts.Name.Name]; !exists {
+									localPkgAliases[c.dir][ts.Name.Name] = ipath
+								}
 								if _, exists := pkgAliases[pkgName][ts.Name.Name]; !exists {
 									pkgAliases[pkgName][ts.Name.Name] = ipath
 								}
@@ -235,7 +255,7 @@ func indexHandlers(tree sourceTree, endpoints []consumerEndpoint) []consumerEndp
 				continue
 			}
 			name := fn.Name.Name
-			req, resp, delegate, qps := scanHandlerBody(fn, c.imports, localPkgTypes[c.dir], funcReturns[c.dir], allFuncReturns, pkgTypes, pkgAliases)
+			req, resp, delegate, qps := scanHandlerBody(fn, c.imports, localPkgTypes[c.dir], localPkgAliases[c.dir], funcReturns[c.dir], allFuncReturns, pkgTypes, pkgAliases)
 			handlers[name] = append(handlers[name], handlerInfo{
 				File:           c.path,
 				ImportsSchemas: importsSchemas,
@@ -539,6 +559,7 @@ func scanHandlerBody(
 	fn *ast.FuncDecl,
 	imports map[string]string,
 	localTypes map[string]map[string]string,
+	localAliases map[string]string,
 	funcReturns map[string]*goTypeInfo,
 	allFuncReturns map[string]*goTypeInfo,
 	pkgTypes map[string]map[string]map[string]string,
@@ -556,7 +577,7 @@ func scanHandlerBody(
 		if info == nil {
 			info = lookupLocalVar(arg, locals)
 		}
-		populateFields(info, imports, localTypes, pkgTypes, pkgAliases)
+		populateFields(info, imports, localTypes, localAliases, pkgTypes, pkgAliases)
 		return info
 	}
 
@@ -829,6 +850,7 @@ func populateFields(
 	info *goTypeInfo,
 	imports map[string]string,
 	localTypes map[string]map[string]string,
+	localAliases map[string]string,
 	pkgTypes map[string]map[string]map[string]string,
 	pkgAliases map[string]map[string]string,
 ) {
@@ -840,6 +862,7 @@ func populateFields(
 		importPath := imports[info.Package]
 		if importPath != "" && strings.HasPrefix(importPath, "github.com/meshery/schemas/models/") {
 			info.IsFromSchema = true
+			info.Origin = goTypeOriginDirectSchema
 			return
 		}
 		// Cross-package alias: `type X = schemas…X` in a walked local
@@ -847,6 +870,7 @@ func populateFields(
 		if aliases, ok := pkgAliases[info.Package]; ok {
 			if target, ok := aliases[typeName]; ok && strings.HasPrefix(target, "github.com/meshery/schemas/models/") {
 				info.IsFromSchema = true
+				info.Origin = goTypeOriginSchemaAlias
 				return
 			}
 		}
@@ -854,13 +878,20 @@ func populateFields(
 		if types, ok := pkgTypes[info.Package]; ok {
 			if fields, ok := types[typeName]; ok && len(fields) > 0 {
 				info.Fields = fields
+				info.Origin = goTypeOriginLocalStruct
 				return
 			}
 		}
 		return
 	}
+	if target, ok := localAliases[typeName]; ok && strings.HasPrefix(target, "github.com/meshery/schemas/models/") {
+		info.IsFromSchema = true
+		info.Origin = goTypeOriginSchemaAlias
+		return
+	}
 	if fields := localTypes[typeName]; len(fields) > 0 {
 		info.Fields = fields
+		info.Origin = goTypeOriginLocalStruct
 	}
 }
 

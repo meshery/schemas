@@ -543,6 +543,10 @@ const injectedRtkApi = api
         }),
         providesTags: ["View_views"],
       }),
+      shareView: build.mutation<ShareViewApiResponse, ShareViewApiArg>({
+        query: (queryArg) => ({ url: `/api/content/view/share`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["View_views"],
+      }),
       getViewById: build.query<GetViewByIdApiResponse, GetViewByIdApiArg>({
         query: (queryArg) => ({ url: `/api/content/views/${queryArg.viewId}` }),
         providesTags: ["View_views"],
@@ -1081,6 +1085,10 @@ const injectedRtkApi = api
           url: `/api/resource/${queryArg.resourceType}/share/${queryArg.resourceId}/${queryArg.actorType}`,
         }),
         providesTags: ["Design_designs"],
+      }),
+      shareDesign: build.mutation<ShareDesignApiResponse, ShareDesignApiArg>({
+        query: (queryArg) => ({ url: `/api/content/design/share`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Design_designs"],
       }),
       getCatalogRequest: build.query<GetCatalogRequestApiResponse, GetCatalogRequestApiArg>({
         query: (queryArg) => ({
@@ -3895,6 +3903,24 @@ export type GetViewsApiArg = {
   orgId?: string;
   /** UUID of the user whose views to retrieve. */
   userId?: string;
+};
+export type ShareViewApiResponse = unknown;
+export type ShareViewApiArg = {
+  /** Body for sharing a view with recipients by email. */
+  body: {
+    /** Identifier of the view being shared. */
+    content_id: string;
+    /** The kind of content being shared. Only `view` is accepted on this
+        endpoint.
+         */
+    content_type: "view";
+    /** Email addresses of the recipients to share this view with. */
+    emails: string[];
+    /** When true, flip the view's visibility to public and send invitation
+        emails to the recipients. When false, revert visibility to private.
+         */
+    share: boolean;
+  };
 };
 export type GetViewByIdApiResponse = /** status 200 View */ {
   /** Unique identifier for the view. */
@@ -13924,6 +13950,25 @@ export type GetResourceAccessActorsByTypeApiArg = {
   resourceId: string;
   actorType: string;
 };
+export type ShareDesignApiResponse = unknown;
+export type ShareDesignApiArg = {
+  /** Body for sharing a design, filter, or view with recipients by email. */
+  body: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    content_id: string;
+    /** The kind of content being shared. Must match the entity the handler
+        expects — `pattern` and `filter` are valid on the design share
+        endpoint; `view` is valid on the view share endpoint.
+         */
+    content_type: "pattern" | "filter" | "view";
+    /** Email addresses of the recipients to share this content with. */
+    emails: string[];
+    /** When true, flip visibility to public and send invitation emails to
+        the recipients. When false, revert visibility to private.
+         */
+    share: boolean;
+  };
+};
 export type GetCatalogRequestApiResponse = /** status 200 Catalog requests page */ {
   /** Current page number of the result set. */
   page?: number;
@@ -14858,6 +14903,7 @@ export const {
   useGetUserQuery,
   useCreateViewMutation,
   useGetViewsQuery,
+  useShareViewMutation,
   useGetViewByIdQuery,
   useUpdateViewMutation,
   useDeleteViewMutation,
@@ -14928,6 +14974,7 @@ export const {
   useCloneFilterMutation,
   useHandleResourceShareMutation,
   useGetResourceAccessActorsByTypeQuery,
+  useShareDesignMutation,
   useGetCatalogRequestQuery,
   useDeleteEventsByIdMutation,
   usePostEventsMutation,

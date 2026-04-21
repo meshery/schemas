@@ -24,6 +24,13 @@ const (
 	MesheryDesign IaCFileTypes = "meshery-design"
 )
 
+// Defines values for Visibility.
+const (
+	Private   Visibility = "private"
+	Public    Visibility = "public"
+	Published Visibility = "published"
+)
+
 // Defines values for ComponentStylesBorderStyle.
 const (
 	ComponentStylesBorderStyleDashed ComponentStylesBorderStyle = "dashed"
@@ -228,6 +235,12 @@ type Text = string
 
 // Time defines model for Time.
 type Time = time.Time
+
+// Visibility Visibility level of a resource. Controls who can see and access it.
+// - `private`: Only the owner and explicitly shared users can access.
+// - `public`: Anyone in the organization (or anonymous, depending on resource) can discover and access.
+// - `published`: Promoted to the catalog for broad discovery beyond the owning organization.
+type Visibility string
 
 // AcceptedTermsAt defines model for accepted_terms_at.
 type AcceptedTermsAt = string
@@ -870,9 +883,6 @@ type Type = string
 
 // Userid defines model for userid.
 type Userid = string
-
-// Visibility defines model for visibility.
-type Visibility = string
 
 // Getter for additional properties for ComponentStyles. Returns the specified
 // element and whether it was found

@@ -10,6 +10,16 @@ export interface paths {
     /** Creates a new view with the given filters and metadata. */
     post: operations["createView"];
   };
+  "/api/content/view/share": {
+    /**
+     * Shares a view with a list of email addresses. When `share` is true, the
+     * view's visibility is flipped to public and an invitation email is sent
+     * to each recipient. When `share` is false, visibility is reverted to
+     * private. Only the owner of the view (or a provider admin) may change
+     * its sharing mode.
+     */
+    post: operations["shareView"];
+  };
   "/api/content/views/{viewId}": {
     /** Returns a single view by its unique identifier. */
     get: operations["getViewById"];
@@ -130,6 +140,33 @@ export interface components {
       /** @description Metadata associated with the view. */
       metadata?: { [key: string]: unknown };
     };
+    /**
+     * @description Payload for sharing a view with one or more recipients by email. The
+     * wire format matches the canonical design share payload
+     * (`design.ContentSharePayload` in `v1beta2/design`), restricted to the
+     * `view` content type since that is all this endpoint accepts.
+     */
+    ContentSharePayload: {
+      /**
+       * Format: uuid
+       * @description Identifier of the view being shared.
+       */
+      content_id: string;
+      /**
+       * @description The kind of content being shared. Only `view` is accepted on this
+       * endpoint.
+       *
+       * @enum {string}
+       */
+      content_type: "view";
+      /** @description Email addresses of the recipients to share this view with. */
+      emails: string[];
+      /**
+       * @description When true, flip the view's visibility to public and send invitation
+       * emails to the recipients. When false, revert visibility to private.
+       */
+      share: boolean;
+    };
     /** @description Paginated list of views with location enrichment. */
     MesheryViewPage: {
       page?: number;
@@ -243,6 +280,32 @@ export interface components {
           visibility?: string;
           /** @description Metadata associated with the view. */
           metadata?: { [key: string]: unknown };
+        };
+      };
+    };
+    /** Body for sharing a view with recipients by email. */
+    contentSharePayload: {
+      content: {
+        "application/json": {
+          /**
+           * Format: uuid
+           * @description Identifier of the view being shared.
+           */
+          content_id: string;
+          /**
+           * @description The kind of content being shared. Only `view` is accepted on this
+           * endpoint.
+           *
+           * @enum {string}
+           */
+          content_type: "view";
+          /** @description Email addresses of the recipients to share this view with. */
+          emails: string[];
+          /**
+           * @description When true, flip the view's visibility to public and send invitation
+           * emails to the recipients. When false, revert visibility to private.
+           */
+          share: boolean;
         };
       };
     };
@@ -420,6 +483,71 @@ export interface operations {
           visibility?: string;
           /** @description Metadata associated with the view. */
           metadata?: { [key: string]: unknown };
+        };
+      };
+    };
+  };
+  /**
+   * Shares a view with a list of email addresses. When `share` is true, the
+   * view's visibility is flipped to public and an invitation email is sent
+   * to each recipient. When `share` is false, visibility is reverted to
+   * private. Only the owner of the view (or a provider admin) may change
+   * its sharing mode.
+   */
+  shareView: {
+    responses: {
+      /** View shared. */
+      200: unknown;
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Caller is not the owner of the view. */
+      403: unknown;
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+    /** Body for sharing a view with recipients by email. */
+    requestBody: {
+      content: {
+        "application/json": {
+          /**
+           * Format: uuid
+           * @description Identifier of the view being shared.
+           */
+          content_id: string;
+          /**
+           * @description The kind of content being shared. Only `view` is accepted on this
+           * endpoint.
+           *
+           * @enum {string}
+           */
+          content_type: "view";
+          /** @description Email addresses of the recipients to share this view with. */
+          emails: string[];
+          /**
+           * @description When true, flip the view's visibility to public and send invitation
+           * emails to the recipients. When false, revert visibility to private.
+           */
+          share: boolean;
         };
       };
     };

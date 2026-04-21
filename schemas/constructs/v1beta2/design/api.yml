@@ -693,6 +693,35 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
+  /api/content/design/share:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - designs
+      summary: Share a design, view, or filter by email
+      operationId: shareDesign
+      description: |
+        Shares a design (pattern), view, or filter with a list of email
+        addresses. When `share` is true, the content's visibility is flipped to
+        public and an invitation email is sent to each recipient. When `share`
+        is false, visibility is reverted to private. Only the owner of the
+        content may change its sharing mode.
+      requestBody:
+        $ref: "#/components/requestBodies/contentSharePayload"
+      responses:
+        "200":
+          description: Content shared.
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          description: Caller is not the owner of the content.
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
   /api/catalog/requests:
     get:
       x-internal: ["cloud"]
@@ -987,6 +1016,44 @@ components:
             additionalProperties: true
           description: The users of the resourceaccessactorsresponse.
 
+    ContentSharePayload:
+      type: object
+      description: |
+        Payload for sharing a piece of content (design, filter, or view) with one
+        or more recipients by email. This schema backs both
+        `POST /api/content/design/share` and `POST /api/content/view/share`; the
+        server dispatches on `content_type` to decide which entity to mutate.
+      required:
+        - content_id
+        - content_type
+        - emails
+        - share
+      properties:
+        content_id:
+          $ref: "../core/api.yml#/components/schemas/Uuid"
+          description: Identifier of the content being shared (design, filter, or view).
+        content_type:
+          type: string
+          description: |
+            The kind of content being shared. Must match the entity the handler
+            expects — `pattern` and `filter` are valid on the design share
+            endpoint; `view` is valid on the view share endpoint.
+          enum:
+            - pattern
+            - filter
+            - view
+        emails:
+          type: array
+          description: Email addresses of the recipients to share this content with.
+          items:
+            type: string
+            format: email
+        share:
+          type: boolean
+          description: |
+            When true, flip visibility to public and send invitation emails to
+            the recipients. When false, revert visibility to private.
+
   requestBodies:
     catalogContentPayload:
       required: true
@@ -1002,3 +1069,10 @@ components:
           schema:
             type: object
             additionalProperties: true
+    contentSharePayload:
+      description: Body for sharing a design, filter, or view with recipients by email.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ContentSharePayload"
