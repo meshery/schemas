@@ -17,11 +17,13 @@
 // in the schemas repo; React consumers (the whole point of the module)
 // should import from "@reduxjs/toolkit/query/react" instead. The builder
 // factory is identical either way.
+import type { EndpointBuilder } from "@reduxjs/toolkit/query";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query";
 
 import {
   buildShareEndpoints,
   SHARE_ENDPOINT_TAG_TYPES,
+  type ShareEndpointsBaseQuery,
   type ShareViewApiArg,
   type ShareDesignApiArg,
   type HandleResourceShareApiArg,
@@ -37,8 +39,20 @@ const scratchApi = createApi({
   endpoints: () => ({}),
 });
 
+// RTK note: `EndpointBuilder<BaseQuery, …>` is invariant in `BaseQuery`, so
+// TypeScript cannot unify the consumer slice's concrete base query with the
+// wider `ShareEndpointsBaseQuery` parameter on `buildShareEndpoints`. The
+// cast below is the one-line forced escape-hatch documented in the module
+// header; runtime objects are structurally identical.
 const sharing = scratchApi.injectEndpoints({
-  endpoints: buildShareEndpoints,
+  endpoints: (build) =>
+    buildShareEndpoints(
+      build as unknown as EndpointBuilder<
+        ShareEndpointsBaseQuery,
+        (typeof SHARE_ENDPOINT_TAG_TYPES)[number],
+        "scratchShareApi"
+      >,
+    ),
 });
 
 // If any of these references fail to type-check, the module has drifted

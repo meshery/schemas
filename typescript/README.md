@@ -181,10 +181,12 @@ origin — can mount them on their own `createApi` slice instead of using
 the `cloudApi` export:
 
 ```typescript
+import type { EndpointBuilder } from "@reduxjs/toolkit/query";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import {
   buildShareEndpoints,
   SHARE_ENDPOINT_TAG_TYPES,
+  type ShareEndpointsBaseQuery,
 } from "@meshery/schemas/shareEndpoints";
 
 const extensionApi = createApi({
@@ -195,7 +197,18 @@ const extensionApi = createApi({
 });
 
 export const sharingApi = extensionApi.injectEndpoints({
-  endpoints: buildShareEndpoints,
+  // RTK's `EndpointBuilder<BaseQuery, …>` is invariant in `BaseQuery`, so
+  // a `fetchBaseQuery`-derived builder cannot be assigned directly to the
+  // wider `ShareEndpointsBaseQuery` parameter. One cast here bridges the
+  // variance — the runtime object is structurally identical.
+  endpoints: (build) =>
+    buildShareEndpoints(
+      build as unknown as EndpointBuilder<
+        ShareEndpointsBaseQuery,
+        (typeof SHARE_ENDPOINT_TAG_TYPES)[number],
+        "extensionApi"
+      >,
+    ),
 });
 
 export const {
