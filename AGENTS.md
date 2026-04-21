@@ -203,6 +203,25 @@ billing_id:
 
 The annotation is self-documenting: the exemption lives with the schema property where the domain knowledge is, not in a hardcoded allowlist. Use it only for properties that genuinely hold non-UUID external identifiers.
 
+## Deployment Topology and Routing
+
+The schemas package ships API contracts and endpoint factories that are consumed from multiple call sites in the Meshery ecosystem. Factories published here (RTK-Query endpoint builders, URL generators, etc.) MUST be designed to work for every legitimate caller, not just meshery-cloud's own UI.
+
+**The architectural rule: Kanvas → Meshery Server → Meshery Cloud; never direct.**
+
+In practice, this means any endpoint factory that targets Meshery Cloud must let its consumer choose the URL prefix at call time. Two sanctioned consumption patterns exist:
+
+1. **Meshery Cloud's own UI (same-origin)** — default, no prefix. The UI's baseUrl is already Meshery Cloud.
+2. **Extensions behind Meshery Server (e.g., Kanvas / meshery-extensions)** — the consumer passes a `pathPrefix` of `/api/extensions`. Meshery Server's `ExtensionProxy` then strips that prefix and forwards the remainder to the Remote Provider (meshery-cloud).
+
+The canonical reference implementation is `typescript/rtk/shareEndpoints.ts` — its `buildShareEndpoints(build, opts?: { pathPrefix?: string })` signature is how new endpoint factories in this repo should expose configurable routing. Do NOT hardcode `https://cloud.layer5.io` or any Meshery Cloud hostname into generated or hand-written clients. Do NOT publish a slice whose `baseUrl` is a fixed cloud URL — that forecloses the extension-mount consumer.
+
+When reviewing or proposing a new factory / endpoint group:
+
+- [ ] Does the factory accept an options bag with at least `pathPrefix`?
+- [ ] Does the README show both consumption patterns (direct + via Meshery Server) side-by-side?
+- [ ] Is there a runtime test asserting that the prefix propagates correctly into emitted URLs for at least two call sites (one with and one without the prefix)?
+
 ## HTTP API Design Principles
 
 These rules govern how endpoints are structured. They are enforced in part by `make validate-schemas`.
