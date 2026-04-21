@@ -25,7 +25,6 @@ export default defineConfig({
     cloudApi: "typescript/rtk/cloud.ts",
     mesheryApi: "typescript/rtk/meshery.ts",
     api: "typescript/rtk/api.ts",
-    shareEndpoints: "typescript/rtk/shareEndpoints.ts",
     permissions: "typescript/permissions.ts",
     ...generatedEntries,
   },
