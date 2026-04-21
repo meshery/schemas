@@ -30,11 +30,13 @@ import {
 } from "../typescript/rtk/shareEndpoints";
 
 // The whole point: mount the share endpoints on an arbitrary slice whose
-// baseUrl points wherever the consumer likes — here, a same-origin
-// extension mount, not meshery-cloud's RTK_CLOUD_ENDPOINT_PREFIX.
+// baseUrl points wherever the consumer likes — the factory itself does not
+// prescribe the base URL. The baseUrl is a deploy-time env-var choice on
+// the consuming slice, per the `cloudBaseApi` / `mesheryBaseApi`
+// convention in `typescript/rtk/api.ts`.
 const scratchApi = createApi({
   reducerPath: "scratchShareApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "/api/extensions", credentials: "include" }),
+  baseQuery: fetchBaseQuery({ baseUrl: "", credentials: "include" }),
   tagTypes: [...SHARE_ENDPOINT_TAG_TYPES],
   endpoints: () => ({}),
 });
@@ -75,38 +77,3 @@ export const _resourceArg: HandleResourceShareApiArg = {
   resourceId: "id",
   body: {},
 };
-
-// --- pathPrefix option type-checks -----------------------------------------
-
-// Positive: passing a well-formed `opts` object with `pathPrefix` type-checks
-// and returns the same endpoint-definitions shape the consumer slice expects.
-const sharingWithPrefix = scratchApi.injectEndpoints({
-  endpoints: (build) =>
-    buildShareEndpoints(
-      build as unknown as EndpointBuilder<
-        ShareEndpointsBaseQuery,
-        (typeof SHARE_ENDPOINT_TAG_TYPES)[number],
-        "scratchShareApi"
-      >,
-      { pathPrefix: "/api/extensions" },
-    ),
-});
-export const _shareViewPrefixed = sharingWithPrefix.endpoints.shareView.initiate;
-
-// Negative: a numeric `pathPrefix` is not assignable to `string | undefined`.
-const _castBuilder = undefined as unknown as EndpointBuilder<
-  ShareEndpointsBaseQuery,
-  (typeof SHARE_ENDPOINT_TAG_TYPES)[number],
-  "scratchShareApi"
->;
-
-buildShareEndpoints(_castBuilder, {
-  // @ts-expect-error -- pathPrefix must be a string
-  pathPrefix: 42,
-});
-
-// Negative: an unknown option key is not part of the opts shape.
-buildShareEndpoints(_castBuilder, {
-  // @ts-expect-error -- `wrong` is not a valid option
-  wrong: "key",
-});

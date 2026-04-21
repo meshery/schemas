@@ -2,21 +2,29 @@
  * shareEndpoints.ts
  *
  * Injectable factory for the content-share endpoints (shareView,
- * shareDesign, handleResourceShare). Consumers mount the endpoints on
- * *their own* RTK Query slice, picking the base URL and — via the optional
- * `pathPrefix` — the URL prefix that fronts the meshery-cloud routes.
+ * shareDesign, handleResourceShare). The factory lets a consumer mount the
+ * endpoints on *their own* RTK Query slice, so the consumer — not this
+ * package — owns the reducer/middleware wiring, the cache tag namespace,
+ * and the base URL.
+ *
+ * URL routing rule: the emitted URLs are exactly the meshery-cloud paths as
+ * published by the schema codegen (e.g. `/api/content/view/share`) and are
+ * never wrapped or prefixed by the factory. To change the base URL the
+ * requests actually hit, configure the consuming slice's `baseUrl` via the
+ * env-var convention established in `typescript/rtk/api.ts`
+ * (`RTK_CLOUD_ENDPOINT_PREFIX`, `RTK_MESHERY_ENDPOINT_PREFIX`). Do NOT
+ * introduce per-call URL arguments on this factory — the sanctioned
+ * hand-written slices (`cloudBaseApi`, `mesheryBaseApi`) take their base
+ * URL from deploy-time environment variables, and new slices should follow
+ * that same convention.
  *
  * Architectural rule: **Kanvas -> Meshery Server -> Meshery Cloud; never
  * direct.** Any extension consumer (Kanvas, meshery-extensions) must route
  * share traffic through Meshery Server's `/api/extensions` mount, which
- * proxies to meshery-cloud. Meshery Cloud's own UI is same-origin and calls
- * the routes directly (no prefix). The two modes are expressed here:
- *
- *   - `buildShareEndpoints(build)`                               -> URLs like
- *     `/api/content/view/share` (meshery-cloud's own UI, default).
- *   - `buildShareEndpoints(build, { pathPrefix: "/api/extensions" })` ->
- *     `/api/extensions/api/content/view/share` (extension, via Meshery
- *     Server).
+ * proxies to meshery-cloud. Meshery Cloud's own UI is same-origin. Both
+ * consumers express the routing topology through their slice's `baseUrl`,
+ * which is resolved from an env var at schemas build time — not through a
+ * per-call argument here.
  *
  * The endpoint definitions here are kept in lock-step, by construction,
  * with the generated `./cloud.ts` slice: types are imported from there
@@ -25,7 +33,7 @@
  * and `npm run build:rtk` regenerates `cloud.ts` with a new URL or body
  * shape for any of the three share endpoints, update this file to match.
  *
- * USAGE (extension consumer; Kanvas-shaped)
+ * USAGE
  *
  *   import type { EndpointBuilder } from "@reduxjs/toolkit/query";
  *   import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -35,14 +43,16 @@
  *     type ShareEndpointsBaseQuery,
  *   } from "@meshery/schemas/shareEndpoints";
  *
- *   const extensionApi = createApi({
- *     reducerPath: "extensionApi",
+ *   const consumerApi = createApi({
+ *     reducerPath: "consumerApi",
+ *     // baseUrl is resolved at deploy time via env var, per the
+ *     // cloudBaseApi / mesheryBaseApi convention.
  *     baseQuery: fetchBaseQuery({ baseUrl: "", credentials: "include" }),
  *     tagTypes: [...SHARE_ENDPOINT_TAG_TYPES],
  *     endpoints: () => ({}),
  *   });
  *
- *   export const sharingApi = extensionApi.injectEndpoints({
+ *   export const sharingApi = consumerApi.injectEndpoints({
  *     // RTK's `EndpointBuilder<BaseQuery, …>` is **invariant** in `BaseQuery`,
  *     // so a `fetchBaseQuery`-derived builder cannot be assigned directly to
  *     // the wider `ShareEndpointsBaseQuery`-typed parameter. One cast here
@@ -52,9 +62,8 @@
  *         build as unknown as EndpointBuilder<
  *           ShareEndpointsBaseQuery,
  *           (typeof SHARE_ENDPOINT_TAG_TYPES)[number],
- *           "extensionApi"
+ *           "consumerApi"
  *         >,
- *         { pathPrefix: "/api/extensions" },
  *       ),
  *   });
  */
@@ -143,39 +152,17 @@ export type ShareEndpointDefinitions<ReducerPath extends string> = {
 };
 
 /**
- * Normalize a `pathPrefix` option:
- *   - `undefined` or `""` -> `""` (default; URLs emit unchanged).
- *   - A string with one or more trailing slashes -> trailing slashes
- *     stripped, so `"/api/extensions/"` and `"/api/extensions"` produce
- *     the same output.
- *
- * Kept internal on purpose — callers should pass whatever prefix reads best
- * at their call site and trust the factory to canonicalize it.
- */
-function normalizePathPrefix(prefix: string | undefined): string {
-  if (!prefix) return "";
-  return prefix.replace(/\/+$/, "");
-}
-
-/**
  * Injectable endpoints factory. Pass this directly to
  * `api.injectEndpoints({ endpoints: buildShareEndpoints })` (or via a cast
  * if your slice's base query is narrower than `ShareEndpointsBaseQuery`).
  *
- * `opts.pathPrefix` is the explicit expression of the deployment topology:
- *
- *   - Omitted (or `""`): URLs stay `/api/content/view/share` etc. This is
- *     the shape meshery-cloud's own same-origin UI uses — the request hits
- *     `HandleShare` in meshery-cloud's own process.
- *   - `"/api/extensions"` (or any other prefix): URLs become
- *     `/api/extensions/api/content/view/share` etc. This is the shape
- *     extensions (Kanvas, meshery-extensions) must use — the request goes
- *     through Meshery Server's extension mount, which proxies to
- *     meshery-cloud. Do NOT bypass Meshery Server by pointing an extension
- *     slice's `baseUrl` directly at meshery-cloud.
- *
- * Trailing slashes in `pathPrefix` are stripped so callers can pass either
- * `"/api/extensions"` or `"/api/extensions/"` interchangeably.
+ * The emitted URLs are exactly the meshery-cloud paths as published by the
+ * schema codegen (`/api/content/view/share`, `/api/content/design/share`,
+ * `/api/resource/{resourceType}/share/{resourceId}`). The factory never
+ * wraps or prefixes these. Consumers choose the effective base URL via
+ * their consuming slice's `baseUrl`, which is a deploy-time env-var choice
+ * (`RTK_CLOUD_ENDPOINT_PREFIX` / `RTK_MESHERY_ENDPOINT_PREFIX` — see
+ * `typescript/rtk/api.ts`).
  *
  * The factory is parameterised on `ReducerPath` so the returned
  * `MutationDefinition`s are keyed to the consumer slice's reducer path for
@@ -185,13 +172,11 @@ function normalizePathPrefix(prefix: string | undefined): string {
  */
 export function buildShareEndpoints<ReducerPath extends string>(
   build: EndpointBuilder<ShareEndpointsBaseQuery, ShareEndpointTagType, ReducerPath>,
-  opts?: { pathPrefix?: string },
 ): ShareEndpointDefinitions<ReducerPath> {
-  const prefix = normalizePathPrefix(opts?.pathPrefix);
   return {
     shareView: build.mutation<ShareViewApiResponse, ShareViewApiArg>({
       query: (queryArg) => ({
-        url: `${prefix}/api/content/view/share`,
+        url: `/api/content/view/share`,
         method: "POST",
         body: queryArg.body,
       }),
@@ -199,7 +184,7 @@ export function buildShareEndpoints<ReducerPath extends string>(
     }),
     shareDesign: build.mutation<ShareDesignApiResponse, ShareDesignApiArg>({
       query: (queryArg) => ({
-        url: `${prefix}/api/content/design/share`,
+        url: `/api/content/design/share`,
         method: "POST",
         body: queryArg.body,
       }),
@@ -210,7 +195,7 @@ export function buildShareEndpoints<ReducerPath extends string>(
       HandleResourceShareApiArg
     >({
       query: (queryArg) => ({
-        url: `${prefix}/api/resource/${queryArg.resourceType}/share/${queryArg.resourceId}`,
+        url: `/api/resource/${queryArg.resourceType}/share/${queryArg.resourceId}`,
         method: "POST",
         body: queryArg.body,
       }),
