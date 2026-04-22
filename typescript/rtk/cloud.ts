@@ -12765,31 +12765,27 @@ export type UpsertPatternSourceContentApiResponse = unknown;
 export type UpsertPatternSourceContentApiArg = {
   /** Design (Pattern) ID */
   id: string;
-  body: {
-    /** Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details */
-    file?: string;
-    /** The name of the pattern file being imported. */
-    fileName?: string;
-    /** Provide a name for your design file. This name will help you identify the file more easily. You can also change the name of your design after importing it. */
-    name?: string;
-    /** Provide the URL of the file you want to import. This should be a direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Also, ensure that design is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details */
-    url?: string;
-  };
+  body: Blob;
 };
 export type ImportDesignApiResponse = /** status 200 Successful Import */ {
   message?: string;
 };
 export type ImportDesignApiArg = {
-  body: {
-    /** Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details */
-    file?: string;
-    /** The name of the pattern file being imported. */
-    fileName?: string;
-    /** Provide a name for your design file. This name will help you identify the file more easily. You can also change the name of your design after importing it. */
-    name?: string;
-    /** Provide the URL of the file you want to import. This should be a direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Also, ensure that design is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details */
-    url?: string;
-  };
+  body:
+    | {
+        /** Base64-encoded file bytes. Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details. */
+        file: string;
+        /** The name of the pattern file being imported. Include the extension (e.g. `design.yaml`), as the server uses it to identify the file type. */
+        file_name: string;
+        /** Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it. */
+        name?: string;
+      }
+    | {
+        /** A direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Ensure the resource is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details. */
+        url: string;
+        /** Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it. */
+        name?: string;
+      };
 };
 export type GetCatalogContentApiResponse = /** status 200 Catalog content page */ {
   /** Current page number of the result set. */

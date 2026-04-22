@@ -436,10 +436,7 @@ export interface components {
         | {
             /** @description Name of the file being uploaded. */
             fileName: string;
-            /**
-             * Format: file
-             * @description Supported model file formats are: .tar, .tar.gz, and .tgz. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details
-             */
+            /** @description Supported model file formats are: .tar, .tar.gz, and .tgz. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details */
             modelFile: string;
           }
         | {
@@ -488,10 +485,7 @@ export interface components {
       | {
           /** @description Name of the file being uploaded. */
           fileName: string;
-          /**
-           * Format: file
-           * @description Supported model file formats are: .tar, .tar.gz, and .tgz. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details
-           */
+          /** @description Supported model file formats are: .tar, .tar.gz, and .tgz. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details */
           modelFile: string;
         }
       | {
@@ -577,10 +571,7 @@ export interface operations {
             | {
                 /** @description Name of the file being uploaded. */
                 fileName: string;
-                /**
-                 * Format: file
-                 * @description Supported model file formats are: .tar, .tar.gz, and .tgz. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details
-                 */
+                /** @description Supported model file formats are: .tar, .tar.gz, and .tgz. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details */
                 modelFile: string;
               }
             | {

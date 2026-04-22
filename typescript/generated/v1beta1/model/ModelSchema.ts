@@ -67,7 +67,6 @@ const ModelSchema: Record<string, unknown> = {
                           },
                           "modelFile": {
                             "type": "string",
-                            "format": "file",
                             "description": "Supported model file formats are: .tar, .tar.gz, and .tgz. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details"
                           }
                         }
@@ -1569,7 +1568,6 @@ const ModelSchema: Record<string, unknown> = {
                   },
                   "modelFile": {
                     "type": "string",
-                    "format": "file",
                     "description": "Supported model file formats are: .tar, .tar.gz, and .tgz. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details"
                   }
                 }
@@ -1696,7 +1694,6 @@ const ModelSchema: Record<string, unknown> = {
               },
               "modelFile": {
                 "type": "string",
-                "format": "file",
                 "description": "Supported model file formats are: .tar, .tar.gz, and .tgz. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details"
               }
             }

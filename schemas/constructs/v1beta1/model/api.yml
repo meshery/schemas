@@ -197,7 +197,15 @@ components:
               maxLength: 255
             modelFile:
               type: string
-              format: file
+              # NOTE: Stays `type: string` (no `format:`) pending a coordinated
+              # multi-repo fix. The production client (meshery/ui) serializes
+              # modelFile as a JSON array of byte integers via
+              # getUnit8ArrayDecodedFile, not as a base64 string, so switching
+              # to `format: byte` (which would make oapi-codegen emit *[]byte
+              # and expect base64) would break File Import at runtime. Once
+              # the client migrates to a canonical OpenAPI 3 encoding — either
+              # base64 (`format: byte`) or binary-in-multipart — swap this
+              # property over in lockstep with the meshery server.
               description: "Supported model file formats are: .tar, .tar.gz, and .tgz. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details"
 
         - title: URL Import
