@@ -280,15 +280,39 @@
       });
 
       const schemaCache = {};
+      let _bundledSpec = null;
 
-      function stripRefs(node) {
+      async function getBundledSpec() {
+        if (_bundledSpec) return _bundledSpec;
+        try {
+          const res = await fetch("/api/specs/meshery.yml");
+          if (res.ok) _bundledSpec = jsyaml.load(await res.text());
+        } catch (e) {}
+        return _bundledSpec;
+      }
+
+      function expandRefs(node, schemas, seen) {
+        seen = seen || new Set();
         if (node === null || typeof node !== "object") return node;
-        if (Array.isArray(node)) return node.map(stripRefs);
-        if ("$ref" in node) return {}; // Replace $ref with permissive {}
+        if (Array.isArray(node)) return node.map((n) => expandRefs(n, schemas, seen));
+        if (node["$ref"]) {
+          const ref = node["$ref"];
+          if (seen.has(ref)) return {};
+          if (ref.startsWith("#/components/schemas/")) {
+            const name = ref.slice("#/components/schemas/".length);
+            const resolved = schemas[name];
+            if (resolved) {
+              const next = new Set(seen);
+              next.add(ref);
+              return expandRefs(resolved, schemas, next);
+            }
+          }
+          return {};
+        }
         const out = {};
         for (const [k, v] of Object.entries(node)) {
           if (k.startsWith("x-")) continue;
-          out[k] = stripRefs(v);
+          out[k] = expandRefs(v, schemas, seen);
         }
         return out;
       }
@@ -297,11 +321,24 @@
         const key = `${ver}/${con}`;
         if (schemaCache[key]) return schemaCache[key];
 
+        const spec = await getBundledSpec();
+        if (spec?.components?.schemas) {
+          const schemas = spec.components.schemas;
+          const pascal = con.charAt(0).toUpperCase() + con.slice(1);
+          if (schemas[pascal]) {
+            const expanded = expandRefs(schemas[pascal], schemas, new Set());
+            delete expanded["$id"];
+            delete expanded["$schema"];
+            schemaCache[key] = expanded;
+            return expanded;
+          }
+        }
+
         const yamlUrl = `/schemas/constructs/${ver}/${con}/${con}.yaml`;
         const res = await fetch(yamlUrl);
         if (!res.ok) throw new Error(`Schema not found: ${yamlUrl}`);
         const raw = jsyaml.load(await res.text());
-        const schema = stripRefs(raw);
+        const schema = expandRefs(raw, {}, new Set());
         delete schema["$id"];
         delete schema["$schema"];
         schemaCache[key] = schema;

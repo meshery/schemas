@@ -9,8 +9,7 @@ description: The authoritative casing and naming reference for Meshery Schemas.
 # Naming Rules
 
 <p class="page-desc">
-  The single authoritative casing reference for every layer of the Meshery schema ecosystem.
-  When in doubt, come here first.
+  The authoritative casing reference for every layer of the Meshery schema stack.
 </p>
 
 <div class="callout tip">

@@ -23,8 +23,6 @@ Every helper file must start with:
 package <construct>
 ```
 
-That comment is the boundary between generated and manual code.
-
 ---
 
 ## TableName

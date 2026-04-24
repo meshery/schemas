@@ -283,6 +283,7 @@
       </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4/dist/js-yaml.min.js"></script>
     <script>
       const TREE = {
         {% assign _all_versions = site.data.constructs_all | map: "version" | uniq | sort | reverse %}
@@ -291,97 +292,28 @@
         {% endfor %}
       };
 
-      const RTK_MESHERY = {
-        connection: [
-          { method: "GET", name: "getConnections", url: "/api/integrations/connections" },
-          { method: "POST", name: "registerConnection", url: "/api/integrations/connections" },
-          { method: "GET", name: "getConnectionById", url: "/api/integrations/connections/{connectionId}" },
-          { method: "PUT", name: "updateConnection", url: "/api/integrations/connections/{connectionId}" },
-          { method: "DELETE", name: "deleteConnection", url: "/api/integrations/connections/{connectionId}" },
-          {
-            method: "DELETE",
-            name: "deleteMesheryConnection",
-            url: "/api/integrations/connections/meshery/{mesheryServerId}",
-          },
-          {
-            method: "GET",
-            name: "getKubernetesContext",
-            url: "/api/integrations/connections/kubernetes/{connectionId}/context",
-          },
-          {
-            method: "POST",
-            name: "addConnectionToEnvironment",
-            url: "/api/environments/{environmentId}/connections/{connectionId}",
-          },
-          {
-            method: "DELETE",
-            name: "removeConnectionFromEnvironment",
-            url: "/api/environments/{environmentId}/connections/{connectionId}",
-          },
-        ],
-        credential: [
-          { method: "GET", name: "getUserCredentials", url: "/api/integrations/credentials" },
-          { method: "POST", name: "saveUserCredential", url: "/api/integrations/credentials" },
-          { method: "PUT", name: "updateUserCredential", url: "/api/integrations/credentials" },
-          { method: "DELETE", name: "deleteUserCredential", url: "/api/integrations/credentials" },
-          { method: "GET", name: "getCredentialById", url: "/api/integrations/credentials/{credentialId}" },
-        ],
-        key: [
-          { method: "GET", name: "getUserKeys", url: "/api/auth/keys" },
-          { method: "POST", name: "createKey", url: "/api/auth/keys" },
-          { method: "PUT", name: "updateKey", url: "/api/auth/keys/{keyId}" },
-          { method: "DELETE", name: "deleteKey", url: "/api/auth/keys/{keyId}" },
-        ],
-        model: [
-          { method: "GET", name: "getMeshmodels", url: "/api/meshmodels" },
-          { method: "POST", name: "registerMeshmodels", url: "/api/meshmodels" },
-          { method: "GET", name: "getMeshmodelCategories", url: "/api/meshmodels/categories" },
-        ],
-        organization: [
-          { method: "GET", name: "getOrgs", url: "/api/identity/orgs" },
-          { method: "POST", name: "createOrg", url: "/api/identity/orgs" },
-          { method: "GET", name: "getOrg", url: "/api/identity/orgs/{orgId}" },
-          { method: "PUT", name: "updateOrg", url: "/api/identity/orgs/{orgId}" },
-          { method: "DELETE", name: "deleteOrg", url: "/api/identity/orgs/{orgId}" },
-        ],
-        team: [
-          { method: "GET", name: "getTeams", url: "/api/identity/teams" },
-          { method: "POST", name: "createTeam", url: "/api/identity/teams" },
-          { method: "GET", name: "getTeamById", url: "/api/identity/teams/{teamId}" },
-          { method: "PUT", name: "updateTeam", url: "/api/identity/teams/{teamId}" },
-          { method: "DELETE", name: "deleteTeam", url: "/api/identity/teams/{teamId}" },
-        ],
-        user: [
-          { method: "GET", name: "getUsers", url: "/api/identity/users" },
-          { method: "GET", name: "getCurrentUser", url: "/api/identity/users/me" },
-          { method: "PUT", name: "updateUser", url: "/api/identity/users/{userId}" },
-          { method: "DELETE", name: "deleteUser", url: "/api/identity/users/{userId}" },
-        ],
-        environment: [
-          { method: "GET", name: "getEnvironments", url: "/api/environments" },
-          { method: "POST", name: "saveEnvironment", url: "/api/environments" },
-          { method: "GET", name: "getEnvironmentById", url: "/api/environments/{environmentId}" },
-          { method: "PUT", name: "updateEnvironment", url: "/api/environments/{environmentId}" },
-          { method: "DELETE", name: "deleteEnvironment", url: "/api/environments/{environmentId}" },
-        ],
-        workspace: [
-          { method: "GET", name: "getWorkspaces", url: "/api/workspaces" },
-          { method: "POST", name: "createWorkspace", url: "/api/workspaces" },
-          { method: "GET", name: "getWorkspaceById", url: "/api/workspaces/{workspaceId}" },
-          { method: "PUT", name: "updateWorkspace", url: "/api/workspaces/{workspaceId}" },
-          { method: "DELETE", name: "deleteWorkspace", url: "/api/workspaces/{workspaceId}" },
-        ],
-        event: [
-          { method: "GET", name: "getEvents", url: "/api/events" },
-          { method: "DELETE", name: "deleteEvent", url: "/api/events/{eventId}" },
-        ],
-        pattern: [
-          { method: "GET", name: "getPatterns", url: "/api/pattern" },
-          { method: "POST", name: "importPattern", url: "/api/pattern" },
-          { method: "DELETE", name: "deletePatternById", url: "/api/pattern/{id}" },
-        ],
-        evaluation: [{ method: "POST", name: "postEvaluate", url: "/evaluate" }],
-      };
+      const RTK_MESHERY = {};
+
+      const _rtkSpecPromise = fetch("/api/specs/meshery.yml")
+        .then((r) => (r.ok ? r.text() : ""))
+        .then((text) => {
+          if (!text) return;
+          const spec = jsyaml.load(text);
+          const paths = spec.paths || {};
+          const HTTP_METHODS = ["get", "post", "put", "patch", "delete"];
+          for (const [url, methods] of Object.entries(paths)) {
+            for (const method of HTTP_METHODS) {
+              const op = methods[method];
+              if (!op) continue;
+              for (const tag of op.tags || []) {
+                const key = tag.toLowerCase();
+                if (!RTK_MESHERY[key]) RTK_MESHERY[key] = [];
+                RTK_MESHERY[key].push({ method: method.toUpperCase(), name: op.operationId || "", url });
+              }
+            }
+          }
+        })
+        .catch(() => {});
 
       const treeEl = document.getElementById("tree");
 
@@ -433,7 +365,7 @@
       let currentTab = "types";
       let lastItem = null;
 
-      function loadConstruct(ver, name, itemEl) {
+      async function loadConstruct(ver, name, itemEl) {
         if (lastItem) lastItem.classList.remove("active");
         itemEl.classList.add("active");
         lastItem = itemEl;
@@ -463,20 +395,18 @@
         document.getElementById("tab-source").innerHTML = "";
 
         const tsUrl = `/ts/generated/${ver}/${name}/${capitalized}.ts`;
-        fetch(tsUrl)
-          .then((r) => {
-            if (!r.ok) throw new Error("not found");
-            return r.text();
-          })
-          .then((src) => {
-            renderTypes(ver, name, src);
-            renderSource(src);
-            renderRTK(name);
-          })
-          .catch(() => {
-            document.getElementById("tab-types").innerHTML =
-              `<div class="empty-state"><div class="icon">⚠</div><p>Could not load <code>${tsUrl}</code></p></div>`;
-          });
+        try {
+          const r = await fetch(tsUrl);
+          if (!r.ok) throw new Error("not found");
+          const src = await r.text();
+          renderTypes(ver, name, src);
+          renderSource(src);
+          await _rtkSpecPromise;
+          renderRTK(name);
+        } catch {
+          document.getElementById("tab-types").innerHTML =
+            `<div class="empty-state"><div class="icon">⚠</div><p>Could not load <code>${tsUrl}</code></p></div>`;
+        }
       }
 
       document.querySelectorAll(".tab").forEach((tab) => {

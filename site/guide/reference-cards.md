@@ -14,7 +14,6 @@ description: Ready-to-copy schema patterns for the four canonical constructs —
 
 <p class="page-desc">
   Copy-paste starting points for the four constructs that define the dual-schema pattern in this repo.
-  When in doubt about how a new entity should look, model it on one of these.
 </p>
 
 <div class="callout tip">
@@ -25,7 +24,7 @@ description: Ready-to-copy schema patterns for the four canonical constructs —
 
 ## Connection
 
-The canonical example of an **integration entity** — backed by a database row, with a status enum and sub-type metadata.
+Integration entity with a status enum and sub-type metadata.
 
 **Files:** `schemas/constructs/v1beta1/connection/`
 
@@ -131,7 +130,7 @@ ConnectionPayload:
 
 ## Key
 
-An **auth entity** — simple, short-lived credential with an optional expiry. Shows how to handle nullable timestamps.
+Auth entity with an optional expiry timestamp (`nullTime`).
 
 **Files:** `schemas/constructs/v1beta1/key/`
 
@@ -197,7 +196,7 @@ KeyPayload:
 
 ## Team
 
-An **identity entity** — demonstrates the `members` relationship array pattern and organization scoping.
+Identity entity scoped to an organization, with separate create/update payloads.
 
 **Files:** `schemas/constructs/v1beta1/team/`
 
@@ -280,7 +279,7 @@ teamUpdatePayload:
 
 ## Environment
 
-A **content grouping entity** — demonstrates how to scope a resource to an organization and support bulk delete.
+Org-scoped entity with a bulk-delete endpoint.
 
 **Files:** `schemas/constructs/v1beta1/environment/`
 
