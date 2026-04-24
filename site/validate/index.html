@@ -141,12 +141,10 @@
     <div class="toolbar">
       <label>Version</label>
       <select id="sel-version">
-        <option value="v1beta3">v1beta3</option>
-        <option value="v1beta2">v1beta2</option>
-        <option value="v1beta1" selected>v1beta1</option>
-        <option value="v1alpha3">v1alpha3</option>
-        <option value="v1alpha2">v1alpha2</option>
-        <option value="v1alpha1">v1alpha1</option>
+        {% assign _all_versions = site.data.constructs_all | map: "version" | uniq | sort | reverse %}
+        {% for _ver in _all_versions %}
+        <option value="{{ _ver }}">{{ _ver }}</option>
+        {% endfor %}
       </select>
 
       <label>Construct</label>
@@ -209,77 +207,10 @@
 
     <script>
       const CONSTRUCTS = {
-        v1beta3: [
-          "component",
-          "connection",
-          "design",
-          "environment",
-          "event",
-          "invitation",
-          "plan",
-          "relationship",
-          "subscription",
-          "token",
-          "workspace",
-        ],
-        v1beta2: [
-          "academy",
-          "badge",
-          "catalog",
-          "component",
-          "connection",
-          "credential",
-          "design",
-          "event",
-          "invitation",
-          "key",
-          "keychain",
-          "model",
-          "organization",
-          "plan",
-          "relationship",
-          "role",
-          "schedule",
-          "selector",
-          "subscription",
-          "team",
-          "token",
-          "user",
-          "view",
-        ],
-        v1beta1: [
-          "capability",
-          "catalog",
-          "category",
-          "component",
-          "connection",
-          "credential",
-          "design",
-          "environment",
-          "evaluation",
-          "event",
-          "feature",
-          "invitation",
-          "key",
-          "keychain",
-          "model",
-          "organization",
-          "plan",
-          "relationship",
-          "role",
-          "schedule",
-          "selector",
-          "subcategory",
-          "subscription",
-          "team",
-          "token",
-          "user",
-          "view",
-          "workspace",
-        ],
-        v1alpha3: ["relationship", "selector"],
-        v1alpha2: ["catalog"],
-        v1alpha1: ["capability", "catalog_data"],
+        {% assign _all_versions = site.data.constructs_all | map: "version" | uniq | sort | reverse %}
+        {% for _ver in _all_versions %}
+        "{{ _ver }}": [{% assign _vc = site.data.constructs_all | where: "version", _ver %}{% for _c in _vc %}"{{ _c.name }}",{% endfor %}],
+        {% endfor %}
       };
 
       const cm = CodeMirror.fromTextArea(document.getElementById("editor"), {

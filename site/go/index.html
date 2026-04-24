@@ -194,7 +194,19 @@
 </div>
 
 <script>
-const TREE = {"v1alpha1":[{"name":"capability","hasHelper":false}],"v1alpha2":[{"name":"catalog","hasHelper":false}],"v1alpha3":[{"name":"relationship","hasHelper":true}],"v1beta1":[{"name":"academy","hasHelper":false},{"name":"badge","hasHelper":false},{"name":"capability","hasHelper":false},{"name":"catalog","hasHelper":false},{"name":"category","hasHelper":true},{"name":"component","hasHelper":true},{"name":"connection","hasHelper":true},{"name":"credential","hasHelper":false},{"name":"environment","hasHelper":false},{"name":"evaluation","hasHelper":false},{"name":"event","hasHelper":false},{"name":"feature","hasHelper":false},{"name":"invitation","hasHelper":false},{"name":"key","hasHelper":false},{"name":"keychain","hasHelper":false},{"name":"model","hasHelper":true},{"name":"organization","hasHelper":false},{"name":"plan","hasHelper":false},{"name":"role","hasHelper":false},{"name":"schedule","hasHelper":false},{"name":"subcategory","hasHelper":false},{"name":"subscription","hasHelper":false},{"name":"team","hasHelper":false},{"name":"token","hasHelper":false},{"name":"user","hasHelper":false},{"name":"view","hasHelper":false},{"name":"workspace","hasHelper":false}],"v1beta2":[{"name":"academy","hasHelper":false},{"name":"badge","hasHelper":false},{"name":"component","hasHelper":false},{"name":"connection","hasHelper":false},{"name":"credential","hasHelper":false},{"name":"design","hasHelper":false},{"name":"event","hasHelper":false},{"name":"invitation","hasHelper":false},{"name":"key","hasHelper":false},{"name":"keychain","hasHelper":false},{"name":"model","hasHelper":true},{"name":"organization","hasHelper":false},{"name":"plan","hasHelper":false},{"name":"relationship","hasHelper":false},{"name":"role","hasHelper":false},{"name":"schedule","hasHelper":false},{"name":"subscription","hasHelper":false},{"name":"team","hasHelper":false},{"name":"token","hasHelper":false},{"name":"user","hasHelper":false},{"name":"view","hasHelper":false}],"v1beta3":[{"name":"component","hasHelper":true},{"name":"connection","hasHelper":false},{"name":"design","hasHelper":false},{"name":"environment","hasHelper":false},{"name":"event","hasHelper":false},{"name":"invitation","hasHelper":false},{"name":"plan","hasHelper":false},{"name":"relationship","hasHelper":false},{"name":"subscription","hasHelper":false},{"name":"token","hasHelper":false},{"name":"workspace","hasHelper":false}]};
+{% assign _helper_paths = "" %}{% for sf in site.static_files %}{% if sf.path contains "_helper.go" %}{% assign _helper_paths = _helper_paths | append: sf.path | append: "|" %}{% endif %}{% endfor %}
+{% assign _all_versions = site.data.constructs_all | map: "version" | uniq | sort | reverse %}
+const TREE = {
+  {% for _ver in _all_versions %}
+  "{{ _ver }}": [
+    {% assign _ver_constructs = site.data.constructs_all | where: "version", _ver %}
+    {% for _c in _ver_constructs %}
+    {% assign _hpath = "/models/" | append: _ver | append: "/" | append: _c.name | append: "/" | append: _c.name | append: "_helper.go|" %}
+    {"name": "{{ _c.name }}", "hasHelper": {{ _helper_paths | contains: _hpath }}},
+    {% endfor %}
+  ],
+  {% endfor %}
+};
 
 const treeEl = document.getElementById('tree');
 
