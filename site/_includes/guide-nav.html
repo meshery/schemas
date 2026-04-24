@@ -1,0 +1,13 @@
+<nav class="guide-nav">
+  <p class="guide-nav-label">Guide</p>
+  <ul>
+    <li><a href="/guide/" {% if page.url == '/guide/' or page.url == '/guide/index.html' %}class="active"{% endif %}>Overview</a></li>
+    <li><a href="/guide/schema-driven-dev/" {% if page.url contains 'schema-driven-dev' %}class="active"{% endif %}>Schema-Driven Development</a></li>
+    <li><a href="/guide/add-a-construct/" {% if page.url contains 'add-a-construct' %}class="active"{% endif %}>Add a Construct</a></li>
+    <li><a href="/guide/naming-rules/" {% if page.url contains 'naming-rules' %}class="active"{% endif %}>Naming Rules</a></li>
+    <li><a href="/guide/versioning/" {% if page.url contains 'versioning' %}class="active"{% endif %}>Versioning</a></li>
+    <li><a href="/guide/build-pipeline/" {% if page.url contains 'build-pipeline' %}class="active"{% endif %}>Build Pipeline</a></li>
+    <li><a href="/guide/helpers/" {% if page.url contains 'helpers' %}class="active"{% endif %}>Helper Files</a></li>
+    <li><a href="/guide/reference-cards/" {% if page.url contains 'reference-cards' %}class="active"{% endif %}>Reference Cards</a></li>
+  </ul>
+</nav>

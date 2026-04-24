@@ -1,0 +1,310 @@
+---
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Construct — Meshery Schemas</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { overflow-y: scroll; }
+    :root {
+      --green:  #00B39F; --green-dark: #00826f;
+      --darker: #293237; --dark: #3C494F;
+      --text: #1a202c; --muted: #64748b;
+      --border: #e2e8f0; --bg: #ffffff; --bg-sub: #f8fafc;
+      --radius: 6px;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+    }
+    body { font-family: var(--font); color: var(--text); background: var(--bg); display: flex; flex-direction: column; min-height: 100vh; }
+
+    {% include site-header-styles.html %}
+
+    .breadcrumb {
+      background: var(--bg-sub); border-bottom: 1px solid var(--border);
+      padding: 0.6rem 2rem; font-size: 0.78rem; color: var(--muted);
+    }
+    .breadcrumb a { color: var(--muted); text-decoration: none; }
+    .breadcrumb a:hover { color: var(--green); }
+    .breadcrumb span { margin: 0 0.35rem; }
+
+    .hero {
+      background: linear-gradient(135deg, #1a2332 0%, #293237 60%, #00403a 100%);
+      padding: 2.5rem 2rem 2rem; color: #fff;
+    }
+    .hero-inner { max-width: 960px; margin: 0 auto; }
+    .hero-row { display: flex; align-items: baseline; gap: 0.75rem; flex-wrap: wrap; }
+    .hero h1 { font-family: var(--mono); font-size: 1.7rem; font-weight: 700; }
+    .hero-ver { font-size: 0.75rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 2rem; padding: 0.2rem 0.7rem; color: rgba(255,255,255,0.7); font-family: var(--mono); }
+    .latest-pill { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; background: var(--green); color: #fff; border-radius: 2rem; padding: 0.18em 0.65em; }
+    .hero-links { margin-top: 0.75rem; display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    .hero-link { font-size: 0.8rem; color: rgba(255,255,255,0.6); text-decoration: none; display: flex; align-items: center; gap: 0.3rem; }
+    .hero-link:hover { color: var(--green); }
+    .hero-desc { margin-top: 0.75rem; font-size: 0.9rem; color: rgba(255,255,255,0.6); max-width: 600px; }
+
+    .body { max-width: 960px; margin: 0 auto; padding: 2rem 2rem 4rem; width: 100%; }
+
+    .section-head {
+      font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.09em; color: var(--muted); margin: 2rem 0 0.75rem;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .section-head::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+
+    .prop-table { width: 100%; border-collapse: collapse; font-size: 0.83rem; margin-bottom: 1.5rem; }
+    .prop-table th {
+      background: var(--bg-sub); border: 1px solid var(--border);
+      padding: 0.5rem 0.75rem; font-weight: 600; text-align: left; font-size: 0.78rem; color: var(--dark);
+    }
+    .prop-table td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; vertical-align: top; }
+    .prop-table tr:hover td { background: #f9fafb; }
+    .prop-table td code { font-family: var(--mono); font-size: 0.78em; background: var(--bg-sub); border: 1px solid var(--border); border-radius: 3px; padding: 0.1em 0.35em; }
+    .badge-req { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; background: #fef2f2; color: #b91c1c; border: 1px solid #fca5a5; border-radius: 3px; padding: 0.1em 0.4em; letter-spacing: 0.05em; }
+    .badge-opt { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; background: var(--bg-sub); color: var(--muted); border: 1px solid var(--border); border-radius: 3px; padding: 0.1em 0.4em; letter-spacing: 0.05em; }
+    .type-pill { font-family: var(--mono); font-size: 0.75rem; color: var(--green-dark); font-weight: 600; }
+    .ref-pill { font-size: 0.75rem; color: #6d28d9; font-family: var(--mono); }
+
+    pre.example {
+      background: #1e2530; border-radius: var(--radius); padding: 1rem 1.25rem;
+      overflow-x: auto; margin: 0 0 1.5rem; border: 1px solid #2d3748;
+      font-family: var(--mono); font-size: 0.8rem; color: #e2e8f0; line-height: 1.7;
+    }
+
+    .callout { border-radius: var(--radius); padding: 0.875rem 1rem; margin: 1rem 0 1.5rem; font-size: 0.88rem; display: flex; gap: 0.75rem; align-items: flex-start; }
+    .callout-icon { flex-shrink: 0; font-size: 1rem; line-height: 1.4; }
+    .callout.info { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; }
+    .callout.warn { background: #fffbeb; border: 1px solid #fde68a; color: #78350f; }
+
+    .ap-badge {
+      display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.75rem;
+      background: #f0fdf9; border: 1px solid #a7f3d0; color: #065f46;
+      border-radius: var(--radius); padding: 0.3rem 0.7rem; margin-bottom: 1.25rem;
+    }
+
+    .not-found { text-align: center; padding: 4rem 2rem; color: var(--muted); }
+    .not-found h2 { font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--dark); }
+
+    .site-footer { background: var(--darker); border-top: 1px solid rgba(255,255,255,0.06); padding: 1.5rem 2rem; text-align: center; margin-top: auto; }
+    .site-footer p { font-size: 0.78rem; color: rgba(255,255,255,0.4); }
+    .site-footer a { color: rgba(255,255,255,0.55); text-decoration: none; }
+    .site-footer a:hover { color: var(--green); }
+    .cncf-badge { display: inline-flex; align-items: center; gap: 0.4rem; margin-bottom: 0.6rem; font-size: 0.72rem; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.06em; }
+    .cncf-badge::before, .cncf-badge::after { content: ""; display: block; width: 28px; height: 1px; background: rgba(255,255,255,0.15); }
+
+    @media (max-width: 600px) {
+      .body { padding: 1.5rem 1rem 3rem; }
+      .hero { padding: 1.5rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+{% include site-header.html %}
+
+<div class="breadcrumb">
+  <a href="/">Home</a><span>/</span>
+  <a href="/constructs/">Constructs</a><span>/</span>
+  <span id="bc-name">—</span>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-row">
+      <h1 id="hero-name">Loading…</h1>
+      <span class="hero-ver" id="hero-ver"></span>
+      <span class="latest-pill" id="hero-latest" style="display:none">Latest</span>
+    </div>
+    <div class="hero-links">
+      <a class="hero-link" id="gh-link" href="#" target="_blank" rel="noopener">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        View on GitHub
+      </a>
+      <a class="hero-link" id="api-link" href="/api/">
+        <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+        API Reference
+      </a>
+    </div>
+    <p class="hero-desc" id="hero-desc"></p>
+  </div>
+</div>
+
+<div class="body" id="body-content">
+  <p style="color:var(--muted);text-align:center;padding:3rem 0;">Loading schema…</p>
+</div>
+
+<footer class="site-footer">
+  <div class="cncf-badge">CNCF Sandbox Project</div>
+  <p>
+    <a href="https://github.com/meshery/schemas">meshery/schemas</a>
+    &nbsp;·&nbsp;<a href="https://slack.meshery.io">Slack</a>
+    &nbsp;·&nbsp;<a href="https://cncf.io">CNCF</a>
+  </p>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+<script>
+const params = new URLSearchParams(location.search);
+const VER  = params.get('ver')  || '';
+const NAME = params.get('name') || '';
+
+const ALL_VERSIONS = [...new Set([
+  {% for c in site.data.constructs %}"{{ c.version }}",{% endfor %}
+])].sort().reverse();
+
+const LATEST = ALL_VERSIONS[0] || '';
+
+function ghUrl(ver, name) {
+  return `https://github.com/meshery/schemas/tree/master/schemas/constructs/${ver}/${name}`;
+}
+
+function renderProps(props, required) {
+  if (!props || !Object.keys(props).length) return '<p style="color:var(--muted);font-size:0.85rem;">No properties defined.</p>';
+  const reqSet = new Set(required || []);
+  let html = `<table class="prop-table">
+    <thead><tr>
+      <th>Property</th><th>Type</th><th>Required</th><th>Description / Constraints</th>
+    </tr></thead><tbody>`;
+  for (const [name, schema] of Object.entries(props)) {
+    const isReq = reqSet.has(name);
+    const badge = isReq
+      ? '<span class="badge-req">required</span>'
+      : '<span class="badge-opt">optional</span>';
+
+    let typeStr = '';
+    if (schema['$ref']) {
+      const ref = schema['$ref'].split('/').pop();
+      typeStr = `<span class="ref-pill">$ref: ${ref}</span>`;
+    } else if (schema.type === 'array' && schema.items) {
+      const itemType = schema.items['$ref']
+        ? schema.items['$ref'].split('/').pop()
+        : (schema.items.type || '?');
+      typeStr = `<span class="type-pill">${itemType}[]</span>`;
+    } else {
+      typeStr = `<span class="type-pill">${schema.type || 'any'}${schema.format ? ` (${schema.format})` : ''}</span>`;
+    }
+
+    const constraints = [];
+    if (schema.enum)      constraints.push(`enum: ${schema.enum.join(', ')}`);
+    if (schema.minLength) constraints.push(`minLength: ${schema.minLength}`);
+    if (schema.maxLength) constraints.push(`maxLength: ${schema.maxLength}`);
+    if (schema.minimum !== undefined) constraints.push(`min: ${schema.minimum}`);
+    if (schema.maximum !== undefined) constraints.push(`max: ${schema.maximum}`);
+    if (schema.pattern)   constraints.push(`pattern: <code>${schema.pattern}</code>`);
+    if (schema.default !== undefined) constraints.push(`default: ${JSON.stringify(schema.default)}`);
+
+    const desc = schema.description || '';
+    const constraintStr = constraints.length ? `<br><span style="font-size:0.75rem;color:var(--muted)">${constraints.join(' · ')}</span>` : '';
+
+    html += `<tr>
+      <td><code>${name}</code></td>
+      <td>${typeStr}</td>
+      <td>${badge}</td>
+      <td>${desc}${constraintStr}</td>
+    </tr>`;
+  }
+  html += '</tbody></table>';
+  return html;
+}
+
+async function fetchTemplate(ver, name) {
+  const bases = [
+    `/schemas/constructs/${ver}/${name}/templates/${name}_template.json`,
+    `/schemas/constructs/${ver}/${name}/templates/${name}_template.yaml`,
+  ];
+  for (const url of bases) {
+    try {
+      const r = await fetch(url);
+      if (!r.ok) continue;
+      const text = await r.text();
+      try {
+        const obj = jsyaml.load(text);
+        return JSON.stringify(obj, null, 2);
+      } catch {
+        return text;
+      }
+    } catch { /* skip */ }
+  }
+  return null;
+}
+
+async function main() {
+  if (!VER || !NAME) {
+    document.getElementById('body-content').innerHTML = `
+      <div class="not-found">
+        <h2>No construct specified</h2>
+        <p>Use <a href="/constructs/">the construct grid</a> to navigate to a specific construct.</p>
+      </div>`;
+    return;
+  }
+
+  document.getElementById('bc-name').textContent = `${NAME} (${VER})`;
+  document.title = `${NAME} · ${VER} — Meshery Schemas`;
+  document.getElementById('hero-name').textContent = NAME;
+  document.getElementById('hero-ver').textContent = VER;
+  if (VER === LATEST) document.getElementById('hero-latest').style.display = '';
+  document.getElementById('gh-link').href = ghUrl(VER, NAME);
+
+  const schemaUrl = `/schemas/constructs/${VER}/${NAME}/${NAME}.yaml`;
+  let schema = null;
+  try {
+    const r = await fetch(schemaUrl);
+    if (r.ok) {
+      const text = await r.text();
+      schema = jsyaml.load(text);
+    }
+  } catch (e) {
+    console.warn('Schema fetch failed:', e);
+  }
+
+  const body = document.getElementById('body-content');
+
+  if (!schema) {
+    body.innerHTML = `
+      <div class="callout warn">
+                <div>Could not load schema for <strong>${NAME}</strong> (<code>${VER}</code>). The schema file may not exist at <code>schemas/constructs/${VER}/${NAME}/${NAME}.yaml</code>, or the site symlink may not be configured.</div>
+      </div>
+      <p><a href="/constructs/">← Back to constructs</a></p>`;
+    return;
+  }
+
+  const desc = schema.description || schema.title || '';
+  document.getElementById('hero-desc').textContent = desc;
+
+  let html = '';
+
+  if (schema.additionalProperties === false) {
+    html += `<div class="ap-badge">
+      <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+      <code>additionalProperties: false</code> — strict schema, no extra fields allowed
+    </div>`;
+  } else {
+    html += `<div class="callout warn"><div>This schema does not set <code>additionalProperties: false</code>. Entity schemas should be strict.</div></div>`;
+  }
+
+  html += `<div class="section-head">Properties</div>`;
+  html += renderProps(schema.properties, schema.required);
+
+  const tmpl = await fetchTemplate(VER, NAME);
+  if (tmpl) {
+    html += `<div class="section-head">Example (from templates/)</div>`;
+    html += `<pre class="example">${tmpl.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>`;
+  }
+
+  html += `<div class="section-head">Source</div>`;
+  html += `<p style="font-size:0.85rem">
+    <a href="${schemaUrl}" target="_blank">View raw YAML</a>
+    &nbsp;·&nbsp;
+    <a href="${ghUrl(VER, NAME)}" target="_blank" rel="noopener">Browse on GitHub</a>
+    &nbsp;·&nbsp;
+    <a href="/guide/add-a-construct/">Add a construct guide</a>
+  </p>`;
+
+  body.innerHTML = html;
+}
+
+main();
+</script>
+</body>
+</html>

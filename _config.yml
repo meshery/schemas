@@ -1,5 +1,8 @@
+source: site
+
 plugins:
   - jekyll-redirect-from
 
-include:
-  - schemas/constructs
+repository: meshery/schemas
+
+safe: false

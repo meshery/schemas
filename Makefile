@@ -18,13 +18,31 @@ include build/Makefile.show-help.mk
 #-----------------------------------------------------------------------------
 # Schemas Site and public reference
 #-----------------------------------------------------------------------------
-.PHONY: site
+.PHONY: site site-build docs-build
 
-jekyll = bundle exec jekyll
+BUNDLE ?= bundle
+jekyll  = $(BUNDLE) exec jekyll
+
+## Bundle OpenAPI specs into site/api/specs/ for the docs site
+docs-build:
+	@test -d node_modules || npm install --legacy-peer-deps
+	node build/bundle-openapi.js
+	mkdir -p site/api/specs site/_data
+	cp _openapi_build/meshery_openapi.yml site/api/specs/meshery.yml
+	cp _openapi_build/cloud_openapi.yml site/api/specs/cloud.yml
+	node build/generate-site-data.js
 
 ## Build and run schemas.meshery.io website
-site:
-	bundle install; $(jekyll) serve --drafts --incremental --livereload
+site: docs-build
+	@ruby -e 'exit if RUBY_VERSION >= "3.1"; abort "Ruby 3.1+ required (found #{RUBY_VERSION}).\nActivate a Ruby 3.1+ toolchain in your shell, then rerun make site.\nExamples: rbenv local 3.4.x, asdf shell ruby 3.4.x, mise use ruby@3.4.x, or a system package manager install."'
+	@$(BUNDLE) install
+	$(jekyll) serve --drafts --incremental --livereload --open-url
+
+## Build schemas.meshery.io for deployment (output: _site/)
+site-build: docs-build
+	@ruby -e 'exit if RUBY_VERSION >= "3.1"; abort "Ruby 3.1+ required (found #{RUBY_VERSION}).\nActivate a Ruby 3.1+ toolchain in your shell, then rerun make site-build.\nExamples: rbenv local 3.4.x, asdf shell ruby 3.4.x, mise use ruby@3.4.x, or a system package manager install."'
+	@$(BUNDLE) install
+	$(jekyll) build
 
 #-----------------------------------------------------------------------------
 # OpenAPI spec

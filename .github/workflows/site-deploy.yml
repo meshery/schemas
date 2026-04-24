@@ -1,0 +1,52 @@
+name: Deploy Site
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'site/**'
+      - '_config.yml'
+      - 'Gemfile'
+      - 'Gemfile.lock'
+      - 'schemas/**'
+      - 'build/bundle-openapi.js'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Node deps and bundle OpenAPI specs
+        run: make docs-build
+
+      - name: Resolve symlinks for Jekyll
+        run: |
+          rm site/schemas site/models site/ts
+          cp -r schemas site/schemas
+          cp -r models  site/models
+          cp -r typescript site/ts
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+
+      - name: Build site
+        run: bundle exec jekyll build --destination _site
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: _site
+          cname: schemas.meshery.io
+          commit_message: 'chore: deploy site from ${{ github.sha }}'

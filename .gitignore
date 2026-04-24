@@ -76,3 +76,4 @@ wasm/policies/temp-bundle-extract-dir/**
 
 .claude/worktrees/
 .claude/settings.local.json
+site/api/specs/

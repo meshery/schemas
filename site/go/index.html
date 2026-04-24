@@ -1,0 +1,422 @@
+---
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Go Struct Browser — Meshery Schemas</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { overflow-y: scroll; }
+    :root {
+      --green:  #00B39F;
+      --darker: #293237;
+      --dark:   #3C494F;
+      --text:   #1a202c;
+      --muted:  #64748b;
+      --border: #e2e8f0;
+      --bg:     #ffffff;
+      --bg-sub: #f8fafc;
+      --radius: 6px;
+      --font:   -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      --mono:   ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+    }
+    body { font-family: var(--font); color: var(--text); background: var(--bg); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+    {% include site-header-styles.html %}
+
+    .workspace { flex: 1; display: flex; overflow: hidden; }
+
+    .sidebar {
+      width: 220px; flex-shrink: 0; border-right: 1px solid var(--border);
+      overflow-y: auto; background: var(--bg-sub);
+    }
+    .sidebar-search {
+      padding: 0.6rem; border-bottom: 1px solid var(--border); position: sticky; top: 0;
+      background: var(--bg-sub); z-index: 1;
+    }
+    .sidebar-search input {
+      width: 100%; padding: 0.3rem 0.6rem; font-size: 0.8rem; border: 1px solid var(--border);
+      border-radius: var(--radius); background: #fff; font-family: var(--mono);
+    }
+    .sidebar-search input:focus { outline: 2px solid var(--green); outline-offset: 1px; }
+
+    .version-group { border-bottom: 1px solid var(--border); }
+    .version-label {
+      padding: 0.5rem 0.75rem; font-size: 0.68rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted);
+      cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+      user-select: none;
+    }
+    .version-label:hover { background: rgba(0,0,0,0.03); }
+    .version-label .chevron { transition: transform 0.2s; font-size: 0.7rem; }
+    .version-group.collapsed .chevron { transform: rotate(-90deg); }
+    .version-group.collapsed .construct-list { display: none; }
+
+    .construct-item {
+      padding: 0.3rem 0.75rem 0.3rem 1.25rem; font-size: 0.82rem;
+      font-family: var(--mono); color: var(--muted); cursor: pointer;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: all 0.1s;
+    }
+    .construct-item:hover { background: rgba(0,179,159,0.06); color: var(--text); }
+    .construct-item.active { background: rgba(0,179,159,0.1); color: var(--green); font-weight: 600; }
+    .helper-badge {
+      font-size: 0.6rem; padding: 0.05rem 0.3rem; border-radius: 2px;
+      background: rgba(0,179,159,0.15); color: var(--green); font-family: var(--font);
+      font-weight: 600; letter-spacing: 0.03em;
+    }
+    .latest-dot {
+      display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--green); margin-left: 5px; vertical-align: middle;
+      box-shadow: 0 0 0 2px rgba(0,179,159,0.25);
+    }
+
+    .main-panel { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+    .panel-toolbar {
+      padding: 0.6rem 1.25rem; border-bottom: 1px solid var(--border); background: var(--bg-sub);
+      display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; flex-wrap: wrap;
+    }
+    .import-path {
+      font-family: var(--mono); font-size: 0.8rem; background: var(--bg);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 0.25rem 0.6rem; color: var(--dark); flex: 1; min-width: 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .btn {
+      padding: 0.25rem 0.7rem; border-radius: var(--radius); font-size: 0.78rem;
+      font-weight: 500; border: 1px solid var(--border); cursor: pointer;
+      background: #fff; color: var(--text); white-space: nowrap; transition: all 0.15s;
+      text-decoration: none; display: inline-flex; align-items: center; gap: 0.3rem;
+    }
+    .btn:hover { background: var(--bg-sub); }
+    .btn.active { background: var(--darker); border-color: var(--darker); color: #fff; }
+
+    .panel-body { flex: 1; overflow-y: auto; padding: 1.5rem; }
+
+    .empty-state {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      height: 100%; color: var(--muted); text-align: center; gap: 0.75rem;
+    }
+    .empty-state h2 { font-size: 1.1rem; color: var(--text); }
+    .empty-state p { font-size: 0.85rem; max-width: 320px; line-height: 1.6; }
+
+    .struct-header { margin-bottom: 1.5rem; }
+    .struct-title { font-size: 1.3rem; font-weight: 700; font-family: var(--mono); margin-bottom: 0.3rem; }
+    .struct-title .type-kw { color: var(--muted); font-weight: 400; }
+    .struct-title .type-name { color: var(--green); }
+    .struct-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.6; max-width: 680px; }
+
+    .field-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin-bottom: 2rem; }
+    .field-table th {
+      background: var(--bg-sub); border: 1px solid var(--border);
+      padding: 0.45rem 0.75rem; font-weight: 600; text-align: left;
+      font-size: 0.73rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted);
+      white-space: nowrap;
+    }
+    .field-table td { border: 1px solid var(--border); padding: 0.45rem 0.75rem; vertical-align: top; }
+    .field-table tr:hover td { background: var(--bg-sub); }
+    .field-go   { font-family: var(--mono); font-weight: 600; color: var(--dark); }
+    .field-type { font-family: var(--mono); color: #7c3aed; font-size: 0.78rem; }
+    .field-tag  { font-family: var(--mono); font-size: 0.76rem; }
+    .tag-json { color: #0369a1; }
+    .tag-db   { color: #b45309; }
+    .tag-none { color: #d1d5db; }
+    .field-desc { color: var(--muted); font-size: 0.78rem; line-height: 1.4; }
+    .omit-badge {
+      font-size: 0.65rem; padding: 0.05rem 0.3rem; border-radius: 2px; margin-left: 0.3rem;
+      background: #f1f5f9; border: 1px solid var(--border); color: var(--muted); font-family: var(--font);
+    }
+    .ptr-badge {
+      font-size: 0.65rem; padding: 0.05rem 0.3rem; border-radius: 2px; margin-left: 0.3rem;
+      background: #fef9c3; border: 1px solid #fde047; color: #854d0e; font-family: var(--font);
+    }
+
+    .enum-section { margin-bottom: 2rem; }
+    .enum-section h3 { font-size: 0.85rem; font-weight: 700; font-family: var(--mono); color: var(--dark); margin-bottom: 0.5rem; }
+    .enum-values { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+    .enum-val {
+      font-family: var(--mono); font-size: 0.75rem; padding: 0.15rem 0.5rem;
+      background: var(--bg-sub); border: 1px solid var(--border); border-radius: 3px; color: var(--text);
+    }
+
+    .source-view {
+      display: none; background: #1e2530; border-radius: var(--radius);
+      padding: 1.25rem; overflow-x: auto; margin-bottom: 2rem;
+    }
+    .source-view.visible { display: block; }
+    .source-view pre { font-family: var(--mono); font-size: 0.78rem; color: #e2e8f0; line-height: 1.7; }
+
+    .helper-notice {
+      background: #f0fdf9; border: 1px solid #a7f3d0; border-radius: var(--radius);
+      padding: 0.75rem 1rem; font-size: 0.83rem; color: #065f46;
+      margin-bottom: 1.5rem; display: flex; gap: 0.6rem; align-items: flex-start;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar { width: 160px; }
+    }
+  </style>
+</head>
+<body>
+
+{% include site-header.html %}
+
+<div class="workspace">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-search">
+      <input type="search" id="search" placeholder="Filter constructs…" autocomplete="off">
+    </div>
+    <div id="tree"></div>
+  </aside>
+
+  <div class="main-panel">
+    <div class="panel-toolbar" id="panel-toolbar" style="display:none">
+      <span class="import-path" id="import-path"></span>
+      <button class="btn" id="btn-source">View source</button>
+      <a class="btn" id="btn-gh" href="#" target="_blank" rel="noopener">GitHub ↗</a>
+    </div>
+    <div class="panel-body" id="panel-body">
+      <div class="empty-state">
+        <svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="opacity:.25">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+            d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+        </svg>
+        <h2>Go Struct Browser</h2>
+        <p>Select a version and construct from the sidebar to view its generated Go struct, field mappings, and enums.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const TREE = {"v1alpha1":[{"name":"capability","hasHelper":false}],"v1alpha2":[{"name":"catalog","hasHelper":false}],"v1alpha3":[{"name":"relationship","hasHelper":true}],"v1beta1":[{"name":"academy","hasHelper":false},{"name":"badge","hasHelper":false},{"name":"capability","hasHelper":false},{"name":"catalog","hasHelper":false},{"name":"category","hasHelper":true},{"name":"component","hasHelper":true},{"name":"connection","hasHelper":true},{"name":"credential","hasHelper":false},{"name":"environment","hasHelper":false},{"name":"evaluation","hasHelper":false},{"name":"event","hasHelper":false},{"name":"feature","hasHelper":false},{"name":"invitation","hasHelper":false},{"name":"key","hasHelper":false},{"name":"keychain","hasHelper":false},{"name":"model","hasHelper":true},{"name":"organization","hasHelper":false},{"name":"plan","hasHelper":false},{"name":"role","hasHelper":false},{"name":"schedule","hasHelper":false},{"name":"subcategory","hasHelper":false},{"name":"subscription","hasHelper":false},{"name":"team","hasHelper":false},{"name":"token","hasHelper":false},{"name":"user","hasHelper":false},{"name":"view","hasHelper":false},{"name":"workspace","hasHelper":false}],"v1beta2":[{"name":"academy","hasHelper":false},{"name":"badge","hasHelper":false},{"name":"component","hasHelper":false},{"name":"connection","hasHelper":false},{"name":"credential","hasHelper":false},{"name":"design","hasHelper":false},{"name":"event","hasHelper":false},{"name":"invitation","hasHelper":false},{"name":"key","hasHelper":false},{"name":"keychain","hasHelper":false},{"name":"model","hasHelper":true},{"name":"organization","hasHelper":false},{"name":"plan","hasHelper":false},{"name":"relationship","hasHelper":false},{"name":"role","hasHelper":false},{"name":"schedule","hasHelper":false},{"name":"subscription","hasHelper":false},{"name":"team","hasHelper":false},{"name":"token","hasHelper":false},{"name":"user","hasHelper":false},{"name":"view","hasHelper":false}],"v1beta3":[{"name":"component","hasHelper":true},{"name":"connection","hasHelper":false},{"name":"design","hasHelper":false},{"name":"environment","hasHelper":false},{"name":"event","hasHelper":false},{"name":"invitation","hasHelper":false},{"name":"plan","hasHelper":false},{"name":"relationship","hasHelper":false},{"name":"subscription","hasHelper":false},{"name":"token","hasHelper":false},{"name":"workspace","hasHelper":false}]};
+
+const treeEl = document.getElementById('tree');
+
+const VERSIONS = Object.keys(TREE).sort().reverse();
+const LATEST_VER = VERSIONS[0];
+
+function buildTree(filter) {
+  treeEl.innerHTML = '';
+  for (const version of VERSIONS) {
+    const constructs = TREE[version];
+    const filtered = filter
+      ? constructs.filter(c => c.name.includes(filter) || version.includes(filter))
+      : constructs;
+    if (!filtered.length) continue;
+
+    const isLatest = version === LATEST_VER;
+    const group = document.createElement('div');
+    group.className = 'version-group' + (isLatest ? '' : ' collapsed');
+    group.innerHTML = `
+      <div class="version-label">
+        <span>${version}${isLatest ? ' <span class="latest-dot"></span>' : ''}</span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="construct-list">
+        ${filtered.map(c => `
+          <div class="construct-item" data-version="${version}" data-construct="${c.name}">
+            <span>${c.name}</span>
+            ${c.hasHelper ? '<span class="helper-badge">+helper</span>' : ''}
+          </div>`).join('')}
+      </div>`;
+
+    group.querySelector('.version-label').addEventListener('click', () => {
+      group.classList.toggle('collapsed');
+    });
+    group.querySelectorAll('.construct-item').forEach(el => {
+      el.addEventListener('click', () => {
+        document.querySelectorAll('.construct-item').forEach(i => i.classList.remove('active'));
+        el.classList.add('active');
+        loadConstruct(el.dataset.version, el.dataset.construct);
+      });
+    });
+    treeEl.appendChild(group);
+  }
+}
+buildTree('');
+
+document.getElementById('search').addEventListener('input', e => buildTree(e.target.value.trim()));
+
+function parseGoFile(src) {
+  const result = { package: '', imports: [], structs: [], enums: [], constants: [] };
+
+  const pkgM = src.match(/^package\s+(\w+)/m);
+  if (pkgM) result.package = pkgM[1];
+
+  const constBlockRe = /\/\/\s*Defines values for (\w+)\.\s*\nconst \(\s*([\s\S]*?)\)/g;
+  let cbm;
+  while ((cbm = constBlockRe.exec(src)) !== null) {
+    const typeName = cbm[1];
+    const block = cbm[2];
+    const vals = [...block.matchAll(/\w+\s+\w+\s*=\s*"([^"]+)"/g)].map(m => m[1]);
+    if (vals.length) result.enums.push({ type: typeName, values: vals });
+  }
+
+  const structRe = /(((?:^[ \t]*\/\/[^\n]*\n)+))^type\s+(\w+)\s+struct\s*\{([\s\S]*?)\n\}/gm;
+  let sm;
+  while ((sm = structRe.exec(src)) !== null) {
+    const rawComment = sm[1];
+    const desc = rawComment.replace(/^[ \t]*\/\/\s?/gm, '').trim();
+    const name = sm[3];
+    const body = sm[4];
+    const fields = parseFields(body);
+    result.structs.push({ name, desc, fields });
+  }
+
+  const structRe2 = /\ntype\s+(\w+)\s+struct\s*\{([\s\S]*?)\n\}/g;
+  let sm2;
+  while ((sm2 = structRe2.exec(src)) !== null) {
+    if (result.structs.find(s => s.name === sm2[1])) continue;
+    result.structs.push({ name: sm2[1], desc: '', fields: parseFields(sm2[2]) });
+  }
+
+  return result;
+}
+
+function parseFields(body) {
+  const fields = [];
+  const lineRe = /^\s*\/\/\s*(.*)/;
+  const fieldRe = /^\s*(\w+)\s+([\w\*\[\]\.\{\}]+(?:\s+\w+)?)\s+`([^`]+)`(?:\s*\/\/\s*(.*))?/;
+  const lines = body.split('\n');
+  let pendingComment = '';
+
+  for (const line of lines) {
+    const commentMatch = line.match(lineRe);
+    if (commentMatch) { pendingComment = commentMatch[1]; continue; }
+
+    const fieldMatch = line.match(fieldRe);
+    if (fieldMatch) {
+      const [, name, type, tags, inlineComment] = fieldMatch;
+      const desc = inlineComment || pendingComment || '';
+
+      const jsonM  = tags.match(/json:"([^"]+)"/);
+      const dbM    = tags.match(/db:"([^"]+)"/);
+      const yamlM  = tags.match(/yaml:"([^"]+)"/);
+
+      const rawJson = jsonM ? jsonM[1] : '';
+      const jsonName = rawJson.split(',')[0];
+      const omitempty = rawJson.includes('omitempty');
+      const ptr = type.startsWith('*');
+
+      fields.push({
+        name, type, desc,
+        json: jsonName, omitempty, ptr,
+        db: dbM ? dbM[1] : '',
+        yaml: yamlM ? yamlM[1].split(',')[0] : '',
+      });
+      pendingComment = '';
+    } else {
+      pendingComment = '';
+    }
+  }
+  return fields;
+}
+
+let currentSrc = '';
+
+async function loadConstruct(version, construct) {
+  const body = document.getElementById('panel-body');
+  const toolbar = document.getElementById('panel-toolbar');
+  body.innerHTML = '<div style="padding:2rem;color:var(--muted);font-size:0.85rem">Loading…</div>';
+  toolbar.style.display = 'none';
+
+  const goPath = `/models/${version}/${construct}/${construct}.go`;
+  const ghUrl  = `https://github.com/meshery/schemas/blob/master/models/${version}/${construct}/${construct}.go`;
+  const importPath = `github.com/meshery/schemas/models/${version}/${construct}`;
+
+  let src;
+  try {
+    const res = await fetch(goPath);
+    if (!res.ok) throw new Error('not found');
+    src = await res.text();
+  } catch {
+    body.innerHTML = `<div class="empty-state"><p>Go file not found at <code>${goPath}</code>.</p></div>`;
+    return;
+  }
+
+  currentSrc = src;
+  const parsed = parseGoFile(src);
+
+  const { hasHelper } = (TREE[version] || []).find(c => c.name === construct) || {};
+
+  document.getElementById('import-path').textContent = importPath;
+  document.getElementById('btn-gh').href = ghUrl;
+  toolbar.style.display = 'flex';
+
+  document.getElementById('btn-source').onclick = function() {
+    const sv = document.getElementById('source-view');
+    const visible = sv.classList.toggle('visible');
+    this.classList.toggle('active', visible);
+    this.textContent = visible ? 'Hide source' : 'View source';
+  };
+
+  let html = '';
+
+  if (hasHelper) {
+    html += `<div class="helper-notice">
+      <span>📎</span>
+      <div>This construct has a <strong>helper file</strong> with custom logic (SQL driver, entity interface, business methods).
+      <a href="https://github.com/meshery/schemas/blob/master/models/${version}/${construct}/${construct}_helper.go"
+         target="_blank" style="color:var(--green)">View ${construct}_helper.go ↗</a></div>
+    </div>`;
+  }
+
+  for (const struct of parsed.structs) {
+    html += `<div class="struct-header">
+      <div class="struct-title">
+        <span class="type-kw">type </span><span class="type-name">${struct.name}</span><span class="type-kw"> struct</span>
+      </div>
+      ${struct.desc ? `<div class="struct-desc">${escHtml(struct.desc)}</div>` : ''}
+    </div>`;
+
+    if (struct.fields.length) {
+      html += `<table class="field-table">
+        <thead><tr>
+          <th>Go field</th><th>Type</th><th>json:</th><th>db:</th><th>Description</th>
+        </tr></thead><tbody>`;
+      for (const f of struct.fields) {
+        const jsonCell = f.json
+          ? `<span class="field-tag tag-json">${escHtml(f.json)}</span>${f.omitempty ? '<span class="omit-badge">omitempty</span>' : ''}`
+          : '<span class="tag-none">—</span>';
+        const dbCell = f.db && f.db !== '-'
+          ? `<span class="field-tag tag-db">${escHtml(f.db)}</span>`
+          : '<span class="tag-none">—</span>';
+        html += `<tr>
+          <td class="field-go">${escHtml(f.name)}${f.ptr ? '<span class="ptr-badge">ptr</span>' : ''}</td>
+          <td class="field-type">${escHtml(f.type)}</td>
+          <td>${jsonCell}</td>
+          <td>${dbCell}</td>
+          <td class="field-desc">${escHtml(f.desc)}</td>
+        </tr>`;
+      }
+      html += '</tbody></table>';
+    }
+  }
+
+  if (parsed.enums.length) {
+    html += '<hr style="border:none;border-top:1px solid var(--border);margin:1.5rem 0">';
+    for (const en of parsed.enums) {
+      html += `<div class="enum-section">
+        <h3>${escHtml(en.type)}</h3>
+        <div class="enum-values">${en.values.map(v => `<span class="enum-val">${escHtml(v)}</span>`).join('')}</div>
+      </div>`;
+    }
+  }
+
+  html += `<div class="source-view" id="source-view"><pre>${escHtml(src)}</pre></div>`;
+
+  body.innerHTML = html;
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>

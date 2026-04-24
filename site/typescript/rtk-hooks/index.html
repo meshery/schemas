@@ -1,0 +1,245 @@
+---
+layout: default
+title: RTK Query Hooks — Meshery Schemas
+description: Guide to cloudApi and mesheryApi RTK Query hooks generated from Meshery OpenAPI specs.
+---
+<style>
+  .pg-hero {
+    background: linear-gradient(135deg, #1a2332 0%, #293237 60%, #00403a 100%);
+    padding: 3rem 2rem 2.5rem;
+    color: #fff;
+  }
+  .pg-hero-inner { max-width: 860px; margin: 0 auto; }
+  .pg-hero h1 { font-size: 1.9rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .pg-hero p { color: rgba(255,255,255,0.65); font-size: 0.97rem; max-width: 560px; line-height: 1.75; }
+
+  .pg-subnav {
+    background: var(--bg-subtle);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    gap: 0;
+  }
+  .pg-subnav a {
+    display: inline-block;
+    padding: 0.75rem 1.1rem;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--muted);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: all 0.12s;
+  }
+  .pg-subnav a:hover { color: var(--text); }
+  .pg-subnav a.active { color: var(--green); border-bottom-color: var(--green); }
+
+  .pg-body { max-width: 860px; margin: 0 auto; padding: 2.5rem 2rem 4rem; }
+  .pg-body h2 { font-size: 1.1rem; font-weight: 700; margin: 2rem 0 0.75rem; padding-top: 1rem; color: var(--dark); border-top: 1px solid var(--border); }
+  .pg-body h2:first-of-type { border-top: none; }
+  .pg-body h3 { font-size: 0.95rem; font-weight: 700; margin: 1.5rem 0 0.5rem; }
+  .pg-body p { font-size: 0.91rem; margin-bottom: 0.9rem; }
+  .pg-body a { color: var(--green); text-decoration: none; }
+  .pg-body a:hover { text-decoration: underline; }
+  .pg-body ul, .pg-body ol { margin: 0.5rem 0 1rem 1.5rem; font-size: 0.91rem; }
+  .pg-body li { margin-bottom: 0.3rem; }
+  .pg-body strong { font-weight: 600; }
+
+  .pg-body pre {
+    background: #1e2530; border-radius: var(--radius); padding: 1rem 1.25rem;
+    overflow-x: auto; margin: 0.75rem 0 1.25rem; border: 1px solid #2d3748;
+  }
+  .pg-body pre code { background: none; border: none; padding: 0; font-size: 0.82rem; color: #e2e8f0; line-height: 1.7; }
+  .pg-body code { font-family: var(--mono); font-size: 0.83em; background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 3px; padding: 0.1em 0.35em; }
+
+  .pg-body table { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin: 0.75rem 0 1.5rem; }
+  .pg-body th { background: var(--bg-subtle); border: 1px solid var(--border); padding: 0.45rem 0.75rem; font-weight: 600; text-align: left; font-size: 0.78rem; }
+  .pg-body td { border: 1px solid var(--border); padding: 0.45rem 0.75rem; vertical-align: top; }
+  .pg-body td code { font-size: 0.78em; }
+
+  .callout { border-radius: var(--radius); padding: 0.75rem 1rem 0.75rem 1.1rem; margin: 1.25rem 0; font-size: 0.88rem; border-left-width: 3px; border-left-style: solid; }
+  .callout-icon { flex-shrink: 0; font-size: 1rem; line-height: 1.4; }
+  .callout.tip  { background: #f0fdf9; border-color: #34d399; color: #065f46; }
+  .callout.warn { background: #fffbeb; border-color: #fbbf24; color: #78350f; }
+  .callout.info { background: #eff6ff; border-color: #60a5fa; color: #1e40af; }
+
+  /* API cards */
+  .api-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0 1.5rem; }
+  .api-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.1rem; }
+  .api-card h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.35rem; color: var(--dark); }
+  .api-card p { font-size: 0.82rem; color: var(--muted); margin: 0; }
+  .api-card code { font-size: 0.78em; }
+  @media (max-width: 600px) { .api-cards { grid-template-columns: 1fr; } }
+</style>
+
+<div class="pg-hero">
+  <div class="pg-hero-inner">
+    <h1>RTK Query Hooks</h1>
+    <p>Generated API hooks for React + Redux Toolkit — covering both Meshery Server and Layer5 Cloud endpoints.</p>
+  </div>
+</div>
+
+<nav class="pg-subnav">
+  <a href="/typescript/">Type Browser</a>
+  <a href="/typescript/package-guide/">Package Guide</a>
+  <a href="/typescript/rtk-hooks/" class="active">RTK Hooks</a>
+</nav>
+
+<div class="pg-body">
+
+<h2>What are the RTK Query hooks?</h2>
+
+<p>The build pipeline generates fully typed RTK Query API slices from the bundled OpenAPI specs. These hooks are the primary way Meshery's React UIs talk to their backends — no hand-written fetch calls, no manual type casting.</p>
+
+<div class="api-cards">
+  <div class="api-card">
+    <h4>mesheryApi</h4>
+    <p>Hooks for <strong>Meshery Server</strong> endpoints. Generated from <code>_openapi_build/meshery_openapi.yml</code> (operations tagged <code>x-internal: ["meshery"]</code>).</p>
+  </div>
+  <div class="api-card">
+    <h4>cloudApi</h4>
+    <p>Hooks for <strong>Layer5 Cloud</strong> endpoints. Generated from <code>_openapi_build/cloud_openapi.yml</code> (operations tagged <code>x-internal: ["cloud"]</code>).</p>
+  </div>
+</div>
+
+<h2>Installation</h2>
+
+<pre><code>npm install @meshery/schemas @reduxjs/toolkit react-redux</code></pre>
+
+<h2>Store setup</h2>
+
+<p>Register both API slices in your Redux store. Each slice manages its own cache, loading states, and invalidation logic automatically.</p>
+
+<pre><code>// store.ts
+import { configureStore } from "@reduxjs/toolkit";
+import { mesheryApi } from "@meshery/schemas/typescript/rtk/meshery";
+import { cloudApi } from "@meshery/schemas/typescript/rtk/cloud";
+
+export const store = configureStore({
+  reducer: {
+    [mesheryApi.reducerPath]: mesheryApi.reducer,
+    [cloudApi.reducerPath]:   cloudApi.reducer,
+  },
+  middleware: (getDefault) =>
+    getDefault()
+      .concat(mesheryApi.middleware)
+      .concat(cloudApi.middleware),
+});
+
+export type RootState = ReturnType&lt;typeof store.getState&gt;;
+export type AppDispatch = typeof store.dispatch;</code></pre>
+
+<h2>Using query hooks</h2>
+
+<p>Query hooks (generated from <code>GET</code> operations) follow the naming pattern <code>use{OperationId}Query</code>. The <code>operationId</code> in the schema (<code>getConnections</code>) becomes <code>useGetConnectionsQuery</code>.</p>
+
+<pre><code>import { useGetConnectionsQuery } from "@meshery/schemas/typescript/rtk/meshery";
+
+function ConnectionsList() {
+  const { data, isLoading, error } = useGetConnectionsQuery({
+    page: 1,
+    pageSize: 25,
+  });
+
+  if (isLoading) return &lt;Spinner /&gt;;
+  if (error)     return &lt;ErrorBanner error={error} /&gt;;
+
+  return (
+    &lt;ul&gt;
+      {data?.connections.map((c) =&gt; (
+        &lt;li key={c.id}&gt;{c.name}&lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}</code></pre>
+
+<h2>Using mutation hooks</h2>
+
+<p>Mutation hooks (generated from <code>POST</code>, <code>PUT</code>, <code>DELETE</code>) follow the naming pattern <code>use{OperationId}Mutation</code>.</p>
+
+<pre><code>import {
+  useCreateConnectionMutation,
+  useDeleteConnectionMutation,
+} from "@meshery/schemas/typescript/rtk/meshery";
+import type { ConnectionPayload } from "@meshery/schemas";
+
+function AddConnection() {
+  const [createConnection, { isLoading }] = useCreateConnectionMutation();
+
+  async function handleSubmit(payload: ConnectionPayload) {
+    try {
+      const result = await createConnection(payload).unwrap();
+      console.log("Created:", result.id);
+    } catch (err) {
+      console.error("Failed:", err);
+    }
+  }
+
+  // ...
+}</code></pre>
+
+<h2>Query argument shape</h2>
+
+<p>Query args map 1-to-1 with the OpenAPI operation parameters. All parameter names follow the camelCase schema contract — never snake_case.</p>
+
+<pre><code>// CORRECT — camelCase args matching the schema contract
+useGetWorkspacesQuery({ orgId: "abc", pageSize: 10, page: 1 });
+
+// WRONG — snake_case args (consumer audit will flag these as snake-case-param)
+useGetWorkspacesQuery({ org_id: "abc", page_size: 10 });</code></pre>
+
+<div class="callout warn">
+    <div>The <strong>consumer audit</strong> CI job scans RTK Query sites in downstream repos and flags <code>snake-case-param</code>, <code>case-flip</code>, and <code>snake-case-wrapper</code> violations. Keep all arg/body keys in camelCase to pass the audit.</div>
+</div>
+
+<h2>Cache invalidation</h2>
+
+<p>Tag-based cache invalidation keeps list queries fresh after mutations. Provide tags in the API slice or use <code>invalidatesTags</code> in your mutation endpoint:</p>
+
+<pre><code>// In a custom split API endpoint (advanced usage)
+endpoints: (builder) =&gt; ({
+  deleteConnection: builder.mutation({
+    query: ({ connectionId }) =&gt; ({
+      url: `/api/integrations/connections/${connectionId}`,
+      method: "DELETE",
+    }),
+    invalidatesTags: ["Connection"],
+  }),
+})</code></pre>
+
+<h2>Hook naming convention</h2>
+
+<table>
+  <thead>
+    <tr><th>HTTP method</th><th><code>operationId</code> (schema)</th><th>Generated hook name</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>GET</td><td><code>getConnections</code></td><td><code>useGetConnectionsQuery</code></td></tr>
+    <tr><td>GET</td><td><code>getConnectionById</code></td><td><code>useGetConnectionByIdQuery</code></td></tr>
+    <tr><td>POST</td><td><code>createConnection</code></td><td><code>useCreateConnectionMutation</code></td></tr>
+    <tr><td>PUT</td><td><code>updateConnection</code></td><td><code>useUpdateConnectionMutation</code></td></tr>
+    <tr><td>DELETE</td><td><code>deleteConnection</code></td><td><code>useDeleteConnectionMutation</code></td></tr>
+    <tr><td>POST</td><td><code>deleteConnections</code> (bulk)</td><td><code>useDeleteConnectionsMutation</code></td></tr>
+  </tbody>
+</table>
+
+<div class="callout tip">
+    <div>Browse all available hooks in the generated source at <code>typescript/rtk/meshery.ts</code> and <code>typescript/rtk/cloud.ts</code> in the <a href="https://github.com/meshery/schemas" target="_blank" rel="noopener">schemas repository</a>.</div>
+</div>
+
+<h2>Lazy queries</h2>
+
+<p>Use <code>useLazy{OperationId}Query</code> when you need to trigger a fetch imperatively (e.g. on button click or after a form submit):</p>
+
+<pre><code>import { useLazyGetConnectionsQuery } from "@meshery/schemas/typescript/rtk/meshery";
+
+function SearchConnections() {
+  const [trigger, { data, isFetching }] = useLazyGetConnectionsQuery();
+
+  return (
+    &lt;button onClick={() =&gt; trigger({ search: "kube" })}&gt;
+      {isFetching ? "Searching…" : "Search"}
+    &lt;/button&gt;
+  );
+}</code></pre>
+
+</div>

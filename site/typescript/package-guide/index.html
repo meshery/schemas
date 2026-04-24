@@ -1,0 +1,226 @@
+---
+layout: default
+title: "@meshery/schemas Package Guide"
+description: Export documentation, import paths, and TypeScript usage for the @meshery/schemas npm package.
+---
+<style>
+  .pg-hero {
+    background: linear-gradient(135deg, #1a2332 0%, #293237 60%, #00403a 100%);
+    padding: 3rem 2rem 2.5rem;
+    color: #fff;
+  }
+  .pg-hero-inner { max-width: 860px; margin: 0 auto; }
+  .pg-hero h1 { font-size: 1.9rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .pg-hero h1 code { font-size: 1.6rem; color: #5eead4; background: none; border: none; padding: 0; }
+  .pg-hero p { color: rgba(255,255,255,0.65); font-size: 0.97rem; max-width: 560px; line-height: 1.75; }
+
+  .pg-subnav {
+    background: var(--bg-subtle);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    gap: 0;
+  }
+  .pg-subnav a {
+    display: inline-block;
+    padding: 0.75rem 1.1rem;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--muted);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: all 0.12s;
+  }
+  .pg-subnav a:hover { color: var(--text); }
+  .pg-subnav a.active { color: var(--green); border-bottom-color: var(--green); }
+
+  .pg-body { max-width: 860px; margin: 0 auto; padding: 2.5rem 2rem 4rem; }
+
+  .pg-body h2 { font-size: 1.1rem; font-weight: 700; margin: 2rem 0 0.75rem; padding-top: 1rem; color: var(--dark); }
+  .pg-body h3 { font-size: 0.95rem; font-weight: 700; margin: 1.5rem 0 0.5rem; }
+  .pg-body p { font-size: 0.91rem; margin-bottom: 0.9rem; }
+  .pg-body a { color: var(--green); text-decoration: none; }
+  .pg-body a:hover { text-decoration: underline; }
+
+  .pg-body pre {
+    background: #1e2530; border-radius: var(--radius); padding: 1rem 1.25rem;
+    overflow-x: auto; margin: 0.75rem 0 1.25rem; border: 1px solid #2d3748;
+  }
+  .pg-body pre code { background: none; border: none; padding: 0; font-size: 0.82rem; color: #e2e8f0; line-height: 1.7; }
+  .pg-body code { font-family: var(--mono); font-size: 0.83em; background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 3px; padding: 0.1em 0.35em; }
+
+  .import-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin: 0.75rem 0 1.5rem; }
+  .import-table th { background: var(--bg-subtle); border: 1px solid var(--border); padding: 0.45rem 0.75rem; font-weight: 600; text-align: left; font-size: 0.78rem; }
+  .import-table td { border: 1px solid var(--border); padding: 0.45rem 0.75rem; vertical-align: top; }
+  .import-table td code { font-size: 0.78em; }
+  .import-table tr:hover td { background: var(--bg-subtle); }
+
+  .callout { border-radius: var(--radius); padding: 0.75rem 1rem 0.75rem 1.1rem; margin: 1.25rem 0; font-size: 0.88rem; border-left-width: 3px; border-left-style: solid; }
+  .callout-icon { flex-shrink: 0; font-size: 1rem; line-height: 1.4; }
+  .callout.tip  { background: #f0fdf9; border-color: #34d399; color: #065f46; }
+  .callout.info { background: #eff6ff; border-color: #60a5fa; color: #1e40af; }
+</style>
+
+<div class="pg-hero">
+  <div class="pg-hero-inner">
+    <h1><code>@meshery/schemas</code> Package Guide</h1>
+    <p>Installation, import paths, TypeScript type usage, and the complete deep-import reference for the Meshery schemas npm package.</p>
+  </div>
+</div>
+
+<nav class="pg-subnav">
+  <a href="/typescript/" >Type Browser</a>
+  <a href="/typescript/package-guide/" class="active">Package Guide</a>
+  <a href="/typescript/rtk-hooks/">RTK Hooks</a>
+</nav>
+
+<div class="pg-body">
+
+<h2>Installation</h2>
+
+<pre><code>npm install @meshery/schemas
+# or
+yarn add @meshery/schemas</code></pre>
+
+<p>The package ships pre-built TypeScript declarations. No additional build step is required in the consuming project.</p>
+
+<h2>Version compatibility</h2>
+
+<p>The package version tracks the schema repository version. Use the <a href="https://www.npmjs.com/package/@meshery/schemas" target="_blank" rel="noopener">npm registry</a> to find the latest release. The <code>latest</code> dist-tag always points to the most recent stable release.</p>
+
+<h2>Import patterns</h2>
+
+<h3>Barrel import (top-level)</h3>
+
+<p>The package root re-exports all types from all constructs and all versions. Use the top-level import for most cases:</p>
+
+<pre><code>import type { Connection, ConnectionPayload, Environment } from "@meshery/schemas";</code></pre>
+
+<h3>Deep import (per-construct)</h3>
+
+<p>For tree-shaking or when you need a specific version's types, import directly from the construct path:</p>
+
+<pre><code>import type { components } from "@meshery/schemas/typescript/generated/v1beta1/connection/Connection";
+
+type Connection = components["schemas"]["Connection"];</code></pre>
+
+<div class="callout tip">
+    <div>Deep imports give you version-pinned types. Use the <a href="/typescript/">Type Browser</a> to inspect available properties before importing.</div>
+</div>
+
+<h2>Deep-import reference</h2>
+
+<p>All exported module paths, their construct, version, and primary exported type:</p>
+
+<table class="import-table">
+  <thead>
+    <tr>
+      <th>Import path</th>
+      <th>Version</th>
+      <th>Primary types</th>
+    </tr>
+  </thead>
+  <tbody id="import-table-body">
+    <tr><td colspan="3" style="color:var(--muted);font-size:0.8rem;text-align:center;padding:1rem;">Loading…</td></tr>
+  </tbody>
+</table>
+
+<h2>Using types in TypeScript</h2>
+
+<h3>Entity types (API responses)</h3>
+
+<pre><code>import type { Connection, Environment, Workspace } from "@meshery/schemas";
+
+async function getConnection(id: string): Promise&lt;Connection&gt; {
+  const res = await fetch(`/api/integrations/connections/${id}`);
+  return res.json() as Promise&lt;Connection&gt;;
+}</code></pre>
+
+<h3>Payload types (write operations)</h3>
+
+<p>Every writable entity has a corresponding <code>*Payload</code> type that contains only client-settable fields — no <code>createdAt</code>, <code>updatedAt</code>, or other server-generated fields.</p>
+
+<pre><code>import type { ConnectionPayload } from "@meshery/schemas";
+
+const payload: ConnectionPayload = {
+  name: "my-cluster",
+  kind: "kubernetes",
+  type: "In-Cluster",
+  subType: "Kubernetes",
+};</code></pre>
+
+<h3>Type narrowing with discriminated unions</h3>
+
+<pre><code>import type { Connection } from "@meshery/schemas";
+
+function isConnected(c: Connection): boolean {
+  return c.status === "connected";
+}</code></pre>
+
+<h2>TypeScript path configuration</h2>
+
+<p>If your <code>tsconfig.json</code> uses path aliases, map <code>@meshery/schemas</code> to its <code>node_modules</code> location:</p>
+
+<pre><code>{
+  "compilerOptions": {
+    "paths": {
+      "@meshery/schemas": ["./node_modules/@meshery/schemas"],
+      "@meshery/schemas/*": ["./node_modules/@meshery/schemas/*"]
+    }
+  }
+}</code></pre>
+
+<div class="callout info">
+    <div>The package's <code>types</code> and <code>exports</code> fields in <code>package.json</code> configure resolution automatically for modern bundlers (Vite, webpack 5, esbuild). Manual path config is only needed for very old setups.</div>
+</div>
+
+</div>
+
+<script>
+const RAW_FILES = [
+  {% for f in site.static_files %}
+    {% if f.path contains '/typescript/generated/' and f.path contains '.ts' %}
+      "{{ f.path }}",
+    {% endif %}
+  {% endfor %}
+];
+
+function buildTable() {
+  const tbody = document.getElementById('import-table-body');
+  const re = /\/typescript\/generated\/(v[^/]+)\/([^/]+)\/([^/]+)\.ts$/;
+  const rows = [];
+  const seen = new Set();
+
+  for (const f of RAW_FILES) {
+    const m = f.match(re);
+    if (!m) continue;
+    const [, ver, construct, file] = m;
+    const key = `${ver}/${construct}/${file}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+
+    const importPath = `@meshery/schemas/typescript/generated/${ver}/${construct}/${file}`;
+    const primary = file; // e.g. "Connection"
+    rows.push({ ver, construct, importPath, primary });
+  }
+
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="3" style="color:var(--muted);font-size:0.8rem;text-align:center;padding:1rem;">No generated TypeScript files found. Run <code>make build</code> first.</td></tr>';
+    return;
+  }
+
+  rows.sort((a, b) => {
+    if (a.ver !== b.ver) return b.ver.localeCompare(a.ver); // latest first
+    return a.construct.localeCompare(b.construct);
+  });
+
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td><code>${r.importPath}</code></td>
+      <td><code>${r.ver}</code></td>
+      <td><code>${r.primary}</code></td>
+    </tr>`).join('');
+}
+
+buildTable();
+</script>

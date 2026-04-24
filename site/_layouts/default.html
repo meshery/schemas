@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ page.title | default: "Meshery Schemas" }}</title>
+    <meta name="description" content="{{ page.description | default: 'Logical object models for Meshery' }}" />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html { overflow-y: scroll; }
+
+      :root {
+        --green:      #00B39F;
+        --green-dark: #00826f;
+        --dark:       #3C494F;
+        --darker:     #293237;
+        --text:       #1a202c;
+        --muted:      #64748b;
+        --border:     #e2e8f0;
+        --bg:         #ffffff;
+        --bg-subtle:  #f8fafc;
+        --radius:     6px;
+        --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+      }
+
+      body {
+        font-family: var(--font);
+        color: var(--text);
+        background: var(--bg);
+        line-height: 1.5;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      {% include site-header-styles.html %}
+
+      main { flex: 1; }
+
+      .site-footer {
+        background: var(--darker);
+        border-top: 1px solid rgba(255,255,255,0.06);
+        padding: 1.5rem 2rem;
+        text-align: center;
+      }
+      .site-footer p {
+        font-size: 0.78rem;
+        color: rgba(255,255,255,0.4);
+      }
+      .site-footer a {
+        color: rgba(255,255,255,0.55);
+        text-decoration: none;
+      }
+      .site-footer a:hover { color: var(--green); }
+      .cncf-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        margin-bottom: 0.6rem;
+        font-size: 0.72rem;
+        color: rgba(255,255,255,0.35);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .cncf-badge::before, .cncf-badge::after {
+        content: "";
+        display: block;
+        width: 28px;
+        height: 1px;
+        background: rgba(255,255,255,0.15);
+      }
+
+      @media (max-width: 600px) {
+        .site-header { padding: 0 1rem; }
+        .site-nav a:not(.gh-link) { display: none; }
+      }
+    </style>
+  </head>
+  <body>
+    {% include site-header.html %}
+
+    <main>{{ content }}</main>
+
+    <footer class="site-footer">
+      <div class="cncf-badge">CNCF Sandbox Project</div>
+      <p>
+        <a href="https://github.com/meshery/schemas">meshery/schemas</a>
+        &nbsp;·&nbsp;
+        <a href="https://slack.meshery.io">Slack</a>
+        &nbsp;·&nbsp;
+        <a href="https://discuss.meshery.io">Discuss</a>
+        &nbsp;·&nbsp;
+        <a href="https://cncf.io">CNCF</a>
+      </p>
+    </footer>
+  </body>
+</html>

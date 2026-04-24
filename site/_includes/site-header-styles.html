@@ -1,0 +1,30 @@
+    .site-header {
+      background: var(--darker);
+      height: 56px;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .brand { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; }
+    .brand img { height: 22px; display: block; }
+    .brand-sep { color: rgba(255,255,255,0.25); font-size: 1.3rem; font-weight: 200; margin: 0 0.25rem; }
+    .brand-label { font-size: 0.9rem; font-weight: 500; color: rgba(255,255,255,0.85); }
+    .site-nav { margin-left: auto; display: flex; align-items: center; gap: 1.25rem; }
+    .site-nav a { font-size: 0.84rem; color: rgba(255,255,255,0.6); text-decoration: none; transition: color 0.15s; }
+    .site-nav a:hover { color: rgba(255,255,255,0.95); }
+    .site-nav .gh-link {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 6px; padding: 0.3rem 0.7rem;
+      color: rgba(255,255,255,0.8) !important; font-size: 0.8rem;
+    }
+    .site-nav .gh-link:hover { background: rgba(255,255,255,0.14); }
+    @media (max-width: 768px) {
+      .site-header { padding: 0 1rem; }
+      .site-nav a:not(.gh-link) { display: none; }
+    }

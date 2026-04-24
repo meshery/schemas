@@ -1,0 +1,867 @@
+---
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TypeScript Type Browser — Meshery Schemas</title>
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html { overflow-y: scroll; }
+      :root {
+        --green:  #00B39F;
+        --darker: #293237;
+        --dark:   #3C494F;
+        --text:   #1a202c;
+        --muted:  #64748b;
+        --border: #e2e8f0;
+        --bg:     #ffffff;
+        --bg-sub: #f8fafc;
+        --radius: 6px;
+        --font:   -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        --mono:   ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+      }
+      body { font-family: var(--font); color: var(--text); background: var(--bg); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+      {% include site-header-styles.html %}
+
+      .workspace { flex: 1; display: flex; overflow: hidden; }
+
+      .sidebar {
+        width: 220px; flex-shrink: 0; border-right: 1px solid var(--border);
+        overflow-y: auto; background: var(--bg-sub);
+      }
+      .sidebar-search {
+        padding: 0.6rem; border-bottom: 1px solid var(--border); position: sticky; top: 0;
+        background: var(--bg-sub); z-index: 1;
+      }
+      .sidebar-search input {
+        width: 100%; padding: 0.3rem 0.6rem; font-size: 0.8rem; border: 1px solid var(--border);
+        border-radius: var(--radius); background: #fff; font-family: var(--mono);
+      }
+      .sidebar-search input:focus { outline: 2px solid var(--green); outline-offset: 1px; }
+
+      .version-group { border-bottom: 1px solid var(--border); }
+      .version-label {
+        padding: 0.5rem 0.75rem; font-size: 0.68rem; font-weight: 700;
+        text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted);
+        cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+        user-select: none;
+      }
+      .version-label:hover { background: rgba(0,0,0,0.03); }
+      .version-label .chevron { transition: transform 0.2s; font-size: 0.7rem; }
+      .version-group.collapsed .chevron { transform: rotate(-90deg); }
+      .version-group.collapsed .construct-list { display: none; }
+
+      .construct-item {
+        padding: 0.3rem 0.75rem 0.3rem 1.25rem; font-size: 0.82rem;
+        font-family: var(--mono); color: var(--muted); cursor: pointer;
+        display: flex; align-items: center; justify-content: space-between;
+        transition: all 0.1s;
+      }
+      .construct-item:hover { background: rgba(0,179,159,0.06); color: var(--text); }
+      .construct-item.active { background: rgba(0,179,159,0.1); color: var(--green); font-weight: 600; }
+      .latest-dot {
+        display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+        background: var(--green); margin-left: 5px; vertical-align: middle;
+        box-shadow: 0 0 0 2px rgba(0,179,159,0.25);
+      }
+
+      .main-panel { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+      .panel-toolbar {
+        padding: 0.6rem 1.25rem; border-bottom: 1px solid var(--border); background: var(--bg-sub);
+        display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; flex-wrap: wrap;
+      }
+      .import-path {
+        font-family: var(--mono); font-size: 0.8rem; background: var(--bg);
+        border: 1px solid var(--border); border-radius: var(--radius);
+        padding: 0.25rem 0.6rem; color: var(--dark); flex: 1; min-width: 0;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      }
+      .btn {
+        padding: 0.25rem 0.7rem; border-radius: var(--radius); font-size: 0.78rem;
+        font-weight: 500; border: 1px solid var(--border); cursor: pointer;
+        background: var(--bg); color: var(--dark); white-space: nowrap; transition: all 0.12s;
+      }
+      .btn:hover { border-color: var(--green); color: var(--green); }
+      .btn.active { background: rgba(0,179,159,0.1); border-color: var(--green); color: var(--green); }
+
+      .tab-bar {
+        display: flex; gap: 0; border-bottom: 1px solid var(--border);
+        background: var(--bg-sub); flex-shrink: 0;
+      }
+      .tab {
+        padding: 0.5rem 1.1rem; font-size: 0.82rem; font-weight: 500; cursor: pointer;
+        color: var(--muted); border-bottom: 2px solid transparent; transition: all 0.12s;
+        user-select: none;
+      }
+      .tab:hover { color: var(--text); }
+      .tab.active { color: var(--green); border-bottom-color: var(--green); }
+
+      .panel-body { flex: 1; overflow: auto; padding: 1.25rem; }
+
+      .empty-state {
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        height: 100%; gap: 0.75rem; color: var(--muted);
+      }
+      .empty-state .icon { font-size: 2.5rem; opacity: 0.4; }
+      .empty-state p { font-size: 0.9rem; }
+
+      .type-section { margin-bottom: 2rem; }
+      .type-header {
+        display: flex; align-items: baseline; gap: 0.75rem; margin-bottom: 0.75rem;
+        padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);
+      }
+      .type-name {
+        font-family: var(--mono); font-size: 1rem; font-weight: 700; color: var(--text);
+      }
+      .type-kind {
+        font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+        padding: 0.1rem 0.4rem; border-radius: 3px;
+      }
+      .kind-interface { background: rgba(0,179,159,0.12); color: var(--green); }
+      .kind-enum { background: rgba(124,58,237,0.12); color: #7c3aed; }
+      .kind-type { background: rgba(59,130,246,0.12); color: #2563eb; }
+      .type-desc { font-size: 0.82rem; color: var(--muted); margin-top: 0.15rem; }
+
+      .prop-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin-top: 0.5rem; }
+      .prop-table th {
+        background: var(--bg-sub); border: 1px solid var(--border); padding: 0.4rem 0.65rem;
+        font-weight: 600; text-align: left; font-size: 0.75rem; color: var(--muted);
+        text-transform: uppercase; letter-spacing: 0.05em;
+      }
+      .prop-table td { border: 1px solid var(--border); padding: 0.4rem 0.65rem; vertical-align: top; }
+      .prop-name { font-family: var(--mono); font-weight: 600; color: var(--dark); }
+      .prop-optional { color: var(--muted); font-weight: 400; }
+      .prop-type { font-family: var(--mono); font-size: 0.78rem; color: #2563eb; }
+      .prop-type.enum-val { color: #7c3aed; }
+      .prop-desc { font-size: 0.8rem; color: var(--muted); }
+      .prop-format {
+        font-size: 0.68rem; padding: 0.05rem 0.3rem; border-radius: 2px;
+        background: rgba(59,130,246,0.1); color: #2563eb; font-family: var(--mono);
+        margin-left: 0.3rem; font-weight: 500;
+      }
+
+      .enum-chips { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.5rem; }
+      .enum-chip {
+        font-family: var(--mono); font-size: 0.75rem; padding: 0.15rem 0.5rem;
+        border-radius: 3px; background: rgba(124,58,237,0.08); color: #7c3aed;
+        border: 1px solid rgba(124,58,237,0.2);
+      }
+
+      .source-view {
+        font-family: var(--mono); font-size: 0.8rem; line-height: 1.6;
+        background: #1e2530; color: #e2e8f0; padding: 1.25rem; border-radius: var(--radius);
+        white-space: pre; overflow-x: auto;
+      }
+
+      .rtk-section { margin-bottom: 1.5rem; }
+      .rtk-header { font-size: 0.82rem; font-weight: 700; color: var(--muted); margin-bottom: 0.6rem;
+        text-transform: uppercase; letter-spacing: 0.07em; }
+      .hook-list { display: flex; flex-direction: column; gap: 0.35rem; }
+      .hook-item {
+        display: flex; align-items: flex-start; gap: 0.75rem;
+        padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: var(--radius);
+        background: var(--bg);
+      }
+      .hook-method {
+        font-family: var(--mono); font-size: 0.68rem; font-weight: 700;
+        padding: 0.15rem 0.4rem; border-radius: 3px; flex-shrink: 0; min-width: 42px;
+        text-align: center; text-transform: uppercase;
+      }
+      .method-get { background: rgba(0,179,159,0.12); color: #059669; }
+      .method-post { background: rgba(234,179,8,0.12); color: #b45309; }
+      .method-put { background: rgba(59,130,246,0.12); color: #2563eb; }
+      .method-delete { background: rgba(239,68,68,0.12); color: #dc2626; }
+      .hook-name { font-family: var(--mono); font-size: 0.82rem; font-weight: 600; color: var(--dark); }
+      .hook-url { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); }
+      .hook-kind { font-size: 0.7rem; padding: 0.1rem 0.35rem; border-radius: 3px;
+        background: rgba(0,179,159,0.1); color: var(--green); font-weight: 600; margin-left: auto; flex-shrink: 0; }
+
+      .notice {
+        display: flex; align-items: flex-start; gap: 0.6rem; padding: 0.75rem 1rem;
+        background: #eff6ff; border: 1px solid #bfdbfe; border-radius: var(--radius);
+        font-size: 0.82rem; color: #1e40af; margin-bottom: 1.25rem;
+      }
+      .notice-icon { flex-shrink: 0; }
+
+      @media (max-width: 640px) {
+        .sidebar { display: none; }
+      }
+    </style>
+  </head>
+  <body>
+    {% include site-header.html %}
+
+    <nav
+      style="
+        background: var(--bg-sub);
+        border-bottom: 1px solid var(--border);
+        padding: 0 1rem;
+        display: flex;
+        gap: 0;
+        flex-shrink: 0;
+      "
+    >
+      <a
+        href="/typescript/"
+        style="
+          display: inline-block;
+          padding: 0.6rem 0.9rem;
+          font-size: 0.8rem;
+          font-weight: 500;
+          color: var(--green);
+          border-bottom: 2px solid var(--green);
+          text-decoration: none;
+        "
+        >Type Browser</a
+      >
+      <a
+        href="/typescript/package-guide/"
+        style="
+          display: inline-block;
+          padding: 0.6rem 0.9rem;
+          font-size: 0.8rem;
+          font-weight: 500;
+          color: var(--muted);
+          border-bottom: 2px solid transparent;
+          text-decoration: none;
+        "
+        >Package Guide</a
+      >
+      <a
+        href="/typescript/rtk-hooks/"
+        style="
+          display: inline-block;
+          padding: 0.6rem 0.9rem;
+          font-size: 0.8rem;
+          font-weight: 500;
+          color: var(--muted);
+          border-bottom: 2px solid transparent;
+          text-decoration: none;
+        "
+        >RTK Hooks</a
+      >
+    </nav>
+
+    <div class="workspace">
+      <aside class="sidebar">
+        <div class="sidebar-search">
+          <input type="text" id="search" placeholder="Filter constructs…" autocomplete="off" spellcheck="false" />
+        </div>
+        <div id="tree"></div>
+      </aside>
+
+      <div class="main-panel">
+        <div id="empty-panel" class="panel-body">
+          <div class="empty-state">
+            <div class="icon">⟨T⟩</div>
+            <p>Select a construct from the sidebar</p>
+          </div>
+        </div>
+
+        <div id="detail-panel" style="display: none; flex-direction: column; flex: 1; overflow: hidden">
+          <div class="panel-toolbar">
+            <span class="import-path" id="import-path-display">—</span>
+            <button class="btn" id="btn-copy-import" title="Copy import statement">Copy import</button>
+            <a class="btn" id="btn-github" href="#" target="_blank" rel="noopener">View on GitHub ↗</a>
+          </div>
+
+          <div class="tab-bar">
+            <div class="tab active" data-tab="types">Types</div>
+            <div class="tab" data-tab="rtk">RTK Hooks</div>
+            <div class="tab" data-tab="source">Source</div>
+          </div>
+
+          <div class="panel-body" id="tab-types"></div>
+          <div class="panel-body" id="tab-rtk" style="display: none"></div>
+          <div class="panel-body" id="tab-source" style="display: none"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const TREE = {
+        v1alpha1: ["capability", "core"],
+        v1alpha2: ["catalog"],
+        v1alpha3: ["relationship"],
+        v1beta1: [
+          "academy",
+          "badge",
+          "capability",
+          "catalog",
+          "category",
+          "component",
+          "connection",
+          "core",
+          "credential",
+          "environment",
+          "evaluation",
+          "event",
+          "feature",
+          "invitation",
+          "key",
+          "keychain",
+          "model",
+          "organization",
+          "pattern",
+          "plan",
+          "relationship",
+          "role",
+          "schedule",
+          "subcategory",
+          "subscription",
+          "team",
+          "token",
+          "user",
+          "view",
+          "workspace",
+        ],
+        v1beta2: [
+          "academy",
+          "badge",
+          "catalog",
+          "component",
+          "connection",
+          "core",
+          "credential",
+          "design",
+          "event",
+          "invitation",
+          "key",
+          "keychain",
+          "model",
+          "organization",
+          "plan",
+          "relationship",
+          "role",
+          "schedule",
+          "subscription",
+          "team",
+          "token",
+          "user",
+          "view",
+        ],
+        v1beta3: [
+          "component",
+          "connection",
+          "design",
+          "environment",
+          "event",
+          "invitation",
+          "plan",
+          "relationship",
+          "subscription",
+          "token",
+          "workspace",
+        ],
+      };
+
+      const RTK_MESHERY = {
+        connection: [
+          { method: "GET", name: "getConnections", url: "/api/integrations/connections" },
+          { method: "POST", name: "registerConnection", url: "/api/integrations/connections" },
+          { method: "GET", name: "getConnectionById", url: "/api/integrations/connections/{connectionId}" },
+          { method: "PUT", name: "updateConnection", url: "/api/integrations/connections/{connectionId}" },
+          { method: "DELETE", name: "deleteConnection", url: "/api/integrations/connections/{connectionId}" },
+          {
+            method: "DELETE",
+            name: "deleteMesheryConnection",
+            url: "/api/integrations/connections/meshery/{mesheryServerId}",
+          },
+          {
+            method: "GET",
+            name: "getKubernetesContext",
+            url: "/api/integrations/connections/kubernetes/{connectionId}/context",
+          },
+          {
+            method: "POST",
+            name: "addConnectionToEnvironment",
+            url: "/api/environments/{environmentId}/connections/{connectionId}",
+          },
+          {
+            method: "DELETE",
+            name: "removeConnectionFromEnvironment",
+            url: "/api/environments/{environmentId}/connections/{connectionId}",
+          },
+        ],
+        credential: [
+          { method: "GET", name: "getUserCredentials", url: "/api/integrations/credentials" },
+          { method: "POST", name: "saveUserCredential", url: "/api/integrations/credentials" },
+          { method: "PUT", name: "updateUserCredential", url: "/api/integrations/credentials" },
+          { method: "DELETE", name: "deleteUserCredential", url: "/api/integrations/credentials" },
+          { method: "GET", name: "getCredentialById", url: "/api/integrations/credentials/{credentialId}" },
+        ],
+        key: [
+          { method: "GET", name: "getUserKeys", url: "/api/auth/keys" },
+          { method: "POST", name: "createKey", url: "/api/auth/keys" },
+          { method: "PUT", name: "updateKey", url: "/api/auth/keys/{keyId}" },
+          { method: "DELETE", name: "deleteKey", url: "/api/auth/keys/{keyId}" },
+        ],
+        model: [
+          { method: "GET", name: "getMeshmodels", url: "/api/meshmodels" },
+          { method: "POST", name: "registerMeshmodels", url: "/api/meshmodels" },
+          { method: "GET", name: "getMeshmodelCategories", url: "/api/meshmodels/categories" },
+        ],
+        organization: [
+          { method: "GET", name: "getOrgs", url: "/api/identity/orgs" },
+          { method: "POST", name: "createOrg", url: "/api/identity/orgs" },
+          { method: "GET", name: "getOrg", url: "/api/identity/orgs/{orgId}" },
+          { method: "PUT", name: "updateOrg", url: "/api/identity/orgs/{orgId}" },
+          { method: "DELETE", name: "deleteOrg", url: "/api/identity/orgs/{orgId}" },
+        ],
+        team: [
+          { method: "GET", name: "getTeams", url: "/api/identity/teams" },
+          { method: "POST", name: "createTeam", url: "/api/identity/teams" },
+          { method: "GET", name: "getTeamById", url: "/api/identity/teams/{teamId}" },
+          { method: "PUT", name: "updateTeam", url: "/api/identity/teams/{teamId}" },
+          { method: "DELETE", name: "deleteTeam", url: "/api/identity/teams/{teamId}" },
+        ],
+        user: [
+          { method: "GET", name: "getUsers", url: "/api/identity/users" },
+          { method: "GET", name: "getCurrentUser", url: "/api/identity/users/me" },
+          { method: "PUT", name: "updateUser", url: "/api/identity/users/{userId}" },
+          { method: "DELETE", name: "deleteUser", url: "/api/identity/users/{userId}" },
+        ],
+        environment: [
+          { method: "GET", name: "getEnvironments", url: "/api/environments" },
+          { method: "POST", name: "saveEnvironment", url: "/api/environments" },
+          { method: "GET", name: "getEnvironmentById", url: "/api/environments/{environmentId}" },
+          { method: "PUT", name: "updateEnvironment", url: "/api/environments/{environmentId}" },
+          { method: "DELETE", name: "deleteEnvironment", url: "/api/environments/{environmentId}" },
+        ],
+        workspace: [
+          { method: "GET", name: "getWorkspaces", url: "/api/workspaces" },
+          { method: "POST", name: "createWorkspace", url: "/api/workspaces" },
+          { method: "GET", name: "getWorkspaceById", url: "/api/workspaces/{workspaceId}" },
+          { method: "PUT", name: "updateWorkspace", url: "/api/workspaces/{workspaceId}" },
+          { method: "DELETE", name: "deleteWorkspace", url: "/api/workspaces/{workspaceId}" },
+        ],
+        event: [
+          { method: "GET", name: "getEvents", url: "/api/events" },
+          { method: "DELETE", name: "deleteEvent", url: "/api/events/{eventId}" },
+        ],
+        pattern: [
+          { method: "GET", name: "getPatterns", url: "/api/pattern" },
+          { method: "POST", name: "importPattern", url: "/api/pattern" },
+          { method: "DELETE", name: "deletePatternById", url: "/api/pattern/{id}" },
+        ],
+        evaluation: [{ method: "POST", name: "postEvaluate", url: "/evaluate" }],
+      };
+
+      const treeEl = document.getElementById("tree");
+
+      const VERSIONS = Object.keys(TREE).sort().reverse();
+      const LATEST_VER = VERSIONS[0];
+
+      VERSIONS.forEach((ver, vi) => {
+        const constructs = TREE[ver];
+        const isLatest = ver === LATEST_VER;
+
+        const group = document.createElement("div");
+        group.className = "version-group" + (isLatest ? "" : " collapsed");
+
+        const label = document.createElement("div");
+        label.className = "version-label";
+        label.innerHTML = `<span>${ver}${isLatest ? ' <span class="latest-dot"></span>' : ""}</span><span class="chevron">▾</span>`;
+        label.onclick = () => group.classList.toggle("collapsed");
+
+        const list = document.createElement("div");
+        list.className = "construct-list";
+
+        constructs.forEach((name) => {
+          const item = document.createElement("div");
+          item.className = "construct-item";
+          item.dataset.ver = ver;
+          item.dataset.construct = name;
+          item.textContent = name;
+          item.onclick = () => loadConstruct(ver, name, item);
+          list.appendChild(item);
+        });
+
+        group.appendChild(label);
+        group.appendChild(list);
+        treeEl.appendChild(group);
+      });
+
+      document.getElementById("search").addEventListener("input", function () {
+        const q = this.value.toLowerCase().trim();
+        document.querySelectorAll(".construct-item").forEach((el) => {
+          const match = !q || el.dataset.construct.includes(q);
+          el.style.display = match ? "" : "none";
+        });
+        document.querySelectorAll(".version-group").forEach((grp) => {
+          const anyVisible = [...grp.querySelectorAll(".construct-item")].some((i) => i.style.display !== "none");
+          if (q) grp.classList.toggle("collapsed", !anyVisible);
+        });
+      });
+
+      let currentTab = "types";
+      let lastItem = null;
+
+      function loadConstruct(ver, name, itemEl) {
+        if (lastItem) lastItem.classList.remove("active");
+        itemEl.classList.add("active");
+        lastItem = itemEl;
+
+        document.getElementById("empty-panel").style.display = "none";
+        const dp = document.getElementById("detail-panel");
+        dp.style.display = "flex";
+
+        const capitalized = name.charAt(0).toUpperCase() + name.slice(1);
+        const importPath = `@meshery/schemas/typescript/generated/${ver}/${name}/${capitalized}`;
+        document.getElementById("import-path-display").textContent = importPath;
+
+        document.getElementById("btn-copy-import").onclick = () => {
+          const stmt = `import type { components } from "${importPath}";`;
+          navigator.clipboard.writeText(stmt).catch(() => {});
+          const btn = document.getElementById("btn-copy-import");
+          btn.textContent = "Copied!";
+          setTimeout(() => (btn.textContent = "Copy import"), 1500);
+        };
+
+        const ghUrl = `https://github.com/meshery/schemas/blob/master/typescript/generated/${ver}/${name}/${capitalized}.ts`;
+        document.getElementById("btn-github").href = ghUrl;
+
+        document.getElementById("tab-types").innerHTML =
+          '<div class="empty-state"><div class="icon" style="font-size:1.5rem;opacity:0.3">…</div><p>Loading…</p></div>';
+        document.getElementById("tab-rtk").innerHTML = "";
+        document.getElementById("tab-source").innerHTML = "";
+
+        const tsUrl = `/ts/generated/${ver}/${name}/${capitalized}.ts`;
+        fetch(tsUrl)
+          .then((r) => {
+            if (!r.ok) throw new Error("not found");
+            return r.text();
+          })
+          .then((src) => {
+            renderTypes(ver, name, src);
+            renderSource(src);
+            renderRTK(name);
+          })
+          .catch(() => {
+            document.getElementById("tab-types").innerHTML =
+              `<div class="empty-state"><div class="icon">⚠</div><p>Could not load <code>${tsUrl}</code></p></div>`;
+          });
+      }
+
+      document.querySelectorAll(".tab").forEach((tab) => {
+        tab.onclick = () => {
+          document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
+          tab.classList.add("active");
+          currentTab = tab.dataset.tab;
+          ["types", "rtk", "source"].forEach((id) => {
+            document.getElementById("tab-" + id).style.display = id === currentTab ? "" : "none";
+          });
+        };
+      });
+
+      function renderTypes(ver, construct, src) {
+        const out = document.getElementById("tab-types");
+        const sections = parseTypes(src);
+
+        if (!sections.length) {
+          out.innerHTML = '<div class="empty-state"><div class="icon">⚠</div><p>No exported types found</p></div>';
+          return;
+        }
+
+        let html = `<div class="notice"><span class="notice-icon">📦</span>
+    <div>Install: <code>npm install @meshery/schemas</code> &nbsp;·&nbsp;
+    Import: <code>import type { components } from "${`@meshery/schemas/typescript/generated/${ver}/${construct}/${construct.charAt(0).toUpperCase() + construct.slice(1)}`}";</code></div>
+  </div>`;
+
+        sections.forEach((sec) => {
+          html += `<div class="type-section">`;
+          html += `<div class="type-header">
+      <span class="type-name">${esc(sec.name)}</span>
+      <span class="type-kind kind-${sec.kind}">${sec.kind}</span>
+    </div>`;
+          if (sec.description) {
+            html += `<div class="type-desc">${esc(sec.description)}</div>`;
+          }
+
+          if (sec.kind === "enum" || sec.kind === "type") {
+            html += `<div class="enum-chips">`;
+            sec.values.forEach((v) => {
+              html += `<span class="enum-chip">${esc(v)}</span>`;
+            });
+            html += `</div>`;
+          } else if (sec.kind === "interface" && sec.props.length) {
+            html += `<table class="prop-table">
+        <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead><tbody>`;
+            sec.props.forEach((p) => {
+              const fmt = p.format ? `<span class="prop-format">${esc(p.format)}</span>` : "";
+              html += `<tr>
+          <td><span class="prop-name">${esc(p.name)}</span>${p.optional ? '<span class="prop-optional">?</span>' : ""}</td>
+          <td><span class="prop-type">${esc(p.type)}</span>${fmt}</td>
+          <td><span class="prop-desc">${esc(p.description)}</span></td>
+        </tr>`;
+            });
+            html += `</tbody></table>`;
+          }
+          html += `</div>`;
+        });
+
+        out.innerHTML = html;
+      }
+
+      function matchingBrace(src, pos) {
+        let depth = 0;
+        let inStr = false;
+        let strChar = "";
+        for (let i = pos; i < src.length; i++) {
+          const c = src[i];
+          if (inStr) {
+            if (c === "\\") {
+              i++;
+              continue;
+            }
+            if (c === strChar) inStr = false;
+            continue;
+          }
+          if (c === '"' || c === "'") {
+            inStr = true;
+            strChar = c;
+            continue;
+          }
+          if (c === "{") depth++;
+          else if (c === "}") {
+            depth--;
+            if (depth === 0) return i + 1;
+          }
+        }
+        return src.length;
+      }
+
+      function extractSchemaEntries(schemasBlock) {
+        const entries = [];
+        let i = 0;
+        const len = schemasBlock.length;
+
+        while (i < len) {
+          while (i < len && /\s/.test(schemasBlock[i])) i++;
+          if (i >= len) break;
+
+          let jsdoc = "";
+          if (schemasBlock.startsWith("/**", i)) {
+            const end = schemasBlock.indexOf("*/", i);
+            if (end === -1) break;
+            jsdoc = schemasBlock.slice(i + 3, end);
+            i = end + 2;
+            while (i < len && /\s/.test(schemasBlock[i])) i++;
+          }
+
+          const nameMatch = schemasBlock.slice(i).match(/^(\w+)(\?)?:\s*/);
+          if (!nameMatch) {
+            i++;
+            continue;
+          }
+
+          const name = nameMatch[1];
+          i += nameMatch[0].length;
+
+          let body;
+          if (schemasBlock[i] === "{") {
+            const end = matchingBrace(schemasBlock, i);
+            body = schemasBlock.slice(i, end);
+            i = end;
+            while (i < len && /[;[\]\s]/.test(schemasBlock[i])) i++;
+          } else {
+            const semi = schemasBlock.indexOf(";", i);
+            body = semi === -1 ? schemasBlock.slice(i) : schemasBlock.slice(i, semi);
+            i = semi === -1 ? len : semi + 1;
+          }
+
+          entries.push({ name, jsdoc: jsdoc.trim(), body: body.trim() });
+        }
+        return entries;
+      }
+
+      function parseTypes(src) {
+        const sections = [];
+
+        const schemasKeyIdx = src.indexOf("schemas:");
+        let schemasBlock = src;
+        if (schemasKeyIdx !== -1) {
+          const braceIdx = src.indexOf("{", schemasKeyIdx);
+          if (braceIdx !== -1) {
+            const end = matchingBrace(src, braceIdx);
+            schemasBlock = src.slice(braceIdx + 1, end - 1);
+          }
+        }
+
+        const entries = extractSchemaEntries(schemasBlock);
+
+        for (const { name, jsdoc, body } of entries) {
+          if (name === "paths" || name === "operations" || name === "responses") continue;
+
+          const description = extractJsdocDesc(jsdoc);
+
+          if (body.startsWith("{")) {
+            const props = parseInterfaceProps(body);
+            sections.push({ name, kind: "interface", description, props, values: [] });
+          } else if (body.includes("|") || body.startsWith('"')) {
+            const values = body
+              .split("|")
+              .map((v) => v.trim().replace(/^"|"$/g, ""))
+              .filter(Boolean);
+            sections.push({ name, kind: "enum", description, props: [], values });
+          } else if (body) {
+            sections.push({ name, kind: "type", description, props: [], values: [body] });
+          }
+        }
+
+        return sections;
+      }
+
+      function extractJsdocDesc(jsdoc) {
+        const lines = jsdoc
+          .split("\n")
+          .map((l) => l.replace(/^\s*\*\s?/, "").trim())
+          .filter(Boolean);
+        const descLines = lines.filter((l) => !l.startsWith("@"));
+        return descLines.join(" ");
+      }
+
+      function parseInterfaceProps(body) {
+        const props = [];
+        const inner = body.startsWith("{") ? body.slice(1, body.length - 1) : body;
+        let i = 0;
+        const len = inner.length;
+
+        while (i < len) {
+          while (i < len && /\s/.test(inner[i])) i++;
+          if (i >= len) break;
+
+          let jsdoc = "";
+          if (inner.startsWith("/**", i)) {
+            const end = inner.indexOf("*/", i);
+            if (end === -1) break;
+            jsdoc = inner.slice(i + 3, end);
+            i = end + 2;
+            while (i < len && /\s/.test(inner[i])) i++;
+          } else if (inner.startsWith("//", i)) {
+            const end = inner.indexOf("\n", i);
+            jsdoc = inner.slice(i + 2, end === -1 ? len : end);
+            i = end === -1 ? len : end + 1;
+            while (i < len && /\s/.test(inner[i])) i++;
+          }
+
+          const nameMatch = inner.slice(i).match(/^(\w+)(\?)?:\s*/);
+          if (!nameMatch) {
+            i++;
+            continue;
+          }
+          const propName = nameMatch[1];
+          const optional = !!nameMatch[2];
+          i += nameMatch[0].length;
+
+          let typeStr;
+          if (inner[i] === "{") {
+            const end = matchingBrace(inner, i);
+            typeStr = "object";
+            i = end;
+            while (i < len && (inner[i] === "[" || inner[i] === "]")) i++;
+            if (inner[i] === ";") i++;
+          } else {
+            const semi = inner.indexOf(";", i);
+            typeStr = (semi === -1 ? inner.slice(i) : inner.slice(i, semi)).trim().replace(/\s+/g, " ");
+            i = semi === -1 ? len : semi + 1;
+          }
+
+          let description = "";
+          let format = "";
+          jsdoc.split("\n").forEach((l) => {
+            const clean = l.replace(/^\s*\*\s?/, "").trim();
+            if (clean.startsWith("@description")) description = clean.slice("@description".length).trim();
+            else if (clean.startsWith("@format")) format = clean.slice("@format".length).trim();
+            else if (!clean.startsWith("@") && clean && !description) description = clean;
+          });
+
+          props.push({ name: propName, optional, type: typeStr, description, format });
+        }
+        return props;
+      }
+      function renderSource(src) {
+        const out = document.getElementById("tab-source");
+        const highlighted = src
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/(\/\*[\s\S]*?\*\/)/g, '<span style="color:#6b7280">$1</span>')
+          .replace(
+            /\b(export|interface|type|readonly|extends|import|from|const|enum|string|number|boolean|null|undefined|object|unknown)\b/g,
+            '<span style="color:#7c3aed">$1</span>',
+          )
+          .replace(/"([^"]+)"/g, '<span style="color:#059669">"$1"</span>');
+        out.innerHTML = `<div class="source-view">${highlighted}</div>`;
+      }
+
+      function renderRTK(name) {
+        const out = document.getElementById("tab-rtk");
+        const hooks = RTK_MESHERY[name] || [];
+
+        if (!hooks.length) {
+          out.innerHTML = `<div class="empty-state">
+      <div class="icon" style="font-size:1.5rem;opacity:0.3">🔌</div>
+      <p>No RTK hooks registered for this construct</p>
+      <p style="font-size:0.78rem;margin-top:0.5rem;">Check <code>typescript/rtk/meshery.ts</code> and <code>typescript/rtk/cloud.ts</code></p>
+    </div>`;
+          return;
+        }
+
+        const queries = hooks.filter((h) => h.method === "GET");
+        const mutations = hooks.filter((h) => h.method !== "GET");
+
+        let html = `<div class="notice"><span class="notice-icon">ℹ</span>
+    <div>RTK Query hooks are generated from the OpenAPI spec. Import from <code>@meshery/schemas/typescript/rtk/meshery</code>.</div>
+  </div>`;
+
+        if (queries.length) {
+          html += `<div class="rtk-section"><div class="rtk-header">Queries (build.query)</div><div class="hook-list">`;
+          queries.forEach((h) => {
+            html += hookRow(h);
+          });
+          html += `</div></div>`;
+        }
+
+        if (mutations.length) {
+          html += `<div class="rtk-section"><div class="rtk-header">Mutations (build.mutation)</div><div class="hook-list">`;
+          mutations.forEach((h) => {
+            html += hookRow(h);
+          });
+          html += `</div></div>`;
+        }
+
+        html += `<div style="font-size:0.8rem;color:var(--muted);margin-top:0.5rem;">
+    Hook names follow the pattern: <code>use{Name}Query</code> / <code>use{Name}Mutation</code>
+  </div>`;
+
+        out.innerHTML = html;
+      }
+
+      function hookRow(h) {
+        const cls = `method-${h.method.toLowerCase()}`;
+        return `<div class="hook-item">
+    <span class="hook-method ${cls}">${h.method}</span>
+    <div>
+      <div class="hook-name">${esc(h.name)}</div>
+      <div class="hook-url">${esc(h.url)}</div>
+    </div>
+    <span class="hook-kind">${h.method === "GET" ? "query" : "mutation"}</span>
+  </div>`;
+      }
+
+      function esc(s) {
+        return String(s || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+    </script>
+  </body>
+</html>
