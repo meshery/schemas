@@ -1,0 +1,25 @@
+$id: https://schemas.meshery.io/provider.yaml
+$schema: http://json-schema.org/draft-07/schema#
+description: >-
+  Configuration for initializing the Provider Admin organization and user
+  during Meshery Cloud server boot-time. The Provider Admin is the top-level
+  platform tenant that owns and manages the deployment. This configuration
+  is loaded once at server startup from the path supplied via the
+  INIT_CONFIG environment variable; the operation is idempotent and is
+  skipped when the Provider Admin organization already exists.
+type: object
+additionalProperties: false
+required:
+  - organization
+  - user
+properties:
+  organization:
+    description: Provider Admin organization configuration.
+    x-go-type: ProviderOrganization
+    $ref: ./api.yml#/components/schemas/ProviderOrganization
+    x-order: 1
+  user:
+    description: Provider Admin user configuration.
+    x-go-type: ProviderUser
+    $ref: ./api.yml#/components/schemas/ProviderUser
+    x-order: 2

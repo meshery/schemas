@@ -1,0 +1,15 @@
+{
+  "organization": {
+    "name": "Layer5",
+    "description": "Provider Admin organization for the Meshery Cloud deployment.",
+    "country": "United States",
+    "region": "North America"
+  },
+  "user": {
+    "firstName": "Provider",
+    "lastName": "Admin",
+    "email": "admin@example.com",
+    "username": "admin@example.com",
+    "password": ""
+  }
+}
