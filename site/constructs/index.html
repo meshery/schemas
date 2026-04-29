@@ -117,7 +117,7 @@ description: All schema constructs available in Meshery Schemas, organized by AP
 
 <script>
 const RAW = [
-  {% for c in site.data.constructs %}
+  {% for c in site.data.constructs_all %}
     { name: "{{ c.name }}", version: "{{ c.version }}" },
   {% endfor %}
 ];

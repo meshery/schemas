@@ -150,7 +150,7 @@ const VER  = params.get('ver')  || '';
 const NAME = params.get('name') || '';
 
 const ALL_VERSIONS = [...new Set([
-  {% for c in site.data.constructs %}"{{ c.version }}",{% endfor %}
+  {% for c in site.data.constructs_all %}"{{ c.version }}",{% endfor %}
 ])].sort().reverse();
 
 const LATEST = ALL_VERSIONS[0] || '';

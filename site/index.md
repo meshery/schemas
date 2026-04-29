@@ -201,14 +201,11 @@ description: Logical object models and schema definitions for the Meshery platfo
 
 
 
-{% assign versions = "" | split: "" %}
-{% for c in site.data.constructs %}
-{% assign versions = versions | push: c.version %}
-{% endfor %}
-{% assign versions = versions | uniq | sort | reverse %}
+{% assign versions = site.data.constructs_all | map: "version" | uniq | sort | reverse %}
+{% assign construct_names = site.data.constructs_all | map: "name" | uniq %}
 {% assign latest_ver = versions | first %}
 
-<p class="jump-label">{{ versions.size }} versions · {{ site.data.constructs.size }} constructs</p>
+<p class="jump-label">{{ versions.size }} versions · {{ construct_names.size }} constructs</p>
 <div class="jump-nav">
 {% for ver in versions %}
   <a class="jump-chip" href="#{{ ver }}">{{ ver }}{% if ver == latest_ver %} ✦{% endif %}</a>
@@ -216,7 +213,7 @@ description: Logical object models and schema definitions for the Meshery platfo
 </div>
 
 {% for ver in versions %}
-{% assign ver_constructs = site.data.constructs | where: "version", ver %}
+{% assign ver_constructs = site.data.constructs_all | where: "version", ver %}
 
 <div class="version-card" id="{{ ver }}">
   <div class="version-card-head">

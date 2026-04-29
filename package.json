@@ -51,6 +51,7 @@
   "scripts": {
     "build": "NODE_OPTIONS=--max-old-space-size=8192 tsup",
     "build:bundle": "node ./build/bundle-openapi.js",
+    "build:site-data": "node ./build/generate-site-data.js",
     "build:golang": "node ./build/generate-golang.js",
     "build:rtk": "node ./build/generate-rtk.js",
     "build:all": "node ./build/index.js all",

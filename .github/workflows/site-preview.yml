@@ -2,8 +2,9 @@ name: PR Site Preview
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, closed]
+    types: [opened, synchronize, reopened]
     paths:
+      - 'Makefile'
       - 'site/**'
       - '_config.yml'
       - 'Gemfile'
@@ -12,12 +13,10 @@ on:
       - 'build/bundle-openapi.js'
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 jobs:
-  preview:
-    if: github.event.action != 'closed'
+  build-preview:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -47,41 +46,9 @@ jobs:
             --baseurl "/pr-${{ github.event.pull_request.number }}" \
             --destination "_site/pr-${{ github.event.pull_request.number }}"
 
-      - name: Deploy preview to gh-pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Upload preview artifact
+        uses: actions/upload-artifact@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: _site/pr-${{ github.event.pull_request.number }}
-          destination_dir: pr-${{ github.event.pull_request.number }}
-          keep_files: true
-          commit_message: 'chore: site preview for PR #${{ github.event.pull_request.number }}'
-
-      - name: Post preview comment
-        uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          header: site-preview
-          message: |
-            ### Site preview
-
-            | | |
-            |---|---|
-            | **Preview URL** | https://schemas.meshery.io/pr-${{ github.event.pull_request.number }}/ |
-            | **Commit** | ${{ github.event.pull_request.head.sha }} |
-
-            Navigation links on the preview point to the live site. The homepage and any page you load directly will reflect this PR's changes.
-
-  cleanup:
-    if: github.event.action == 'closed'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: gh-pages
-
-      - name: Remove preview directory
-        run: |
-          git config user.name  "meshery-ci"
-          git config user.email "ci@meshery.io"
-          git rm -rf "pr-${{ github.event.pull_request.number }}" || true
-          git diff --cached --quiet || git commit -m "chore: remove preview for PR #${{ github.event.pull_request.number }}"
-          git push
+          name: site-preview-pr-${{ github.event.pull_request.number }}
+          path: _site/pr-${{ github.event.pull_request.number }}
+          retention-days: 7

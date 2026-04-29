@@ -194,15 +194,13 @@
 </div>
 
 <script>
-{% assign _helper_paths = "" %}{% for sf in site.static_files %}{% if sf.path contains "_helper.go" %}{% assign _helper_paths = _helper_paths | append: sf.path | append: "|" %}{% endif %}{% endfor %}
 {% assign _all_versions = site.data.constructs_all | map: "version" | uniq | sort | reverse %}
 const TREE = {
   {% for _ver in _all_versions %}
   "{{ _ver }}": [
     {% assign _ver_constructs = site.data.constructs_all | where: "version", _ver %}
     {% for _c in _ver_constructs %}
-    {% assign _hpath = "/models/" | append: _ver | append: "/" | append: _c.name | append: "/" | append: _c.name | append: "_helper.go|" %}
-    {"name": "{{ _c.name }}", "hasHelper": {{ _helper_paths | contains: _hpath }}},
+    {"name": "{{ _c.name }}", "hasHelper": false},
     {% endfor %}
   ],
   {% endfor %}
