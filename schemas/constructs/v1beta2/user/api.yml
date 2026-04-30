@@ -123,6 +123,125 @@ paths:
           $ref: "#/components/responses/401"
         "500":
           $ref: "#/components/responses/500"
+
+  /api/user:
+    get:
+      x-internal: ["meshery"]
+      tags:
+        - users
+      operationId: getCurrentUser
+      summary: Get current user (legacy alias)
+      description: Legacy alias of getUser; served by docker-extension UI.
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/user/profile/{id}:
+    get:
+      x-internal: ["meshery"]
+      tags:
+        - users
+      operationId: getUserByIdLegacy
+      summary: Get user by ID (legacy alias)
+      description: Legacy alias of getUserProfileById; consumed by mesheryctl design export.
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "200":
+          description: User profile for the requested ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/users:
+    get:
+      x-internal: ["meshery"]
+      tags:
+        - users
+      operationId: listUsers
+      summary: List users
+      description: Canonical replacement for the deprecated GET /api/users.
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/filter"
+      responses:
+        "200":
+          description: Paginated list of users
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsersPageForNonAdmin"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/user/prefs:
+    get:
+      x-internal: ["meshery"]
+      tags:
+        - users
+      operationId: getUserPreferences
+      summary: Get user preferences
+      responses:
+        "200":
+          description: User preferences
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Preference"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      x-internal: ["meshery"]
+      tags:
+        - users
+      operationId: updateUserPreferences
+      summary: Update user preferences
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PreferencePayload"
+      responses:
+        "200":
+          description: Updated user preferences
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Preference"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
 components:
   responses:
     400:
@@ -500,6 +619,54 @@ components:
           type: string
           format: date-time
           description: Timestamp of when the resource was last updated.
+        dashboardPreferences:
+          type: object
+          additionalProperties: true
+          description: The dashboard preferences of the preference.
+        selectedOrganizationId:
+          type: string
+          description: ID of the associated selectedOrganization.
+          maxLength: 500
+          format: uuid
+        selectedWorkspaceForOrganizations:
+          type: object
+          additionalProperties:
+            type: string
+          description: The selected workspace for organizations of the preference.
+        usersExtensionPreferences:
+          type: object
+          additionalProperties: true
+          description: The users extension preferences of the preference.
+        remoteProviderPreferences:
+          type: object
+          additionalProperties: true
+          description: The remote provider preferences of the preference.
+
+    PreferencePayload:
+      type: object
+      description: Payload for creating or updating user preferences. Contains only client-settable fields.
+      properties:
+        meshAdapters:
+          type: array
+          items:
+            x-go-type: Adapter
+            $ref: "#/components/schemas/Adapter"
+          description: The mesh adapters of the preference.
+        grafana:
+          x-go-type: Grafana
+          $ref: "#/components/schemas/Grafana"
+        prometheus:
+          x-go-type: Prometheus
+          $ref: "#/components/schemas/Prometheus"
+        loadTestPrefs:
+          x-go-type: LoadTestPreferences
+          $ref: "#/components/schemas/LoadTestPreferences"
+        anonymousUsageStats:
+          type: boolean
+          description: The anonymous usage stats of the preference.
+        anonymousPerfResults:
+          type: boolean
+          description: The anonymous perf results of the preference.
         dashboardPreferences:
           type: object
           additionalProperties: true
