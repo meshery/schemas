@@ -51,6 +51,109 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
+  /api/identity/orgs/{orgId}/users/{userId}:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - users
+      operationId: addUserToOrganization
+      summary: Add user to organization
+      description: Adds a user to an organization.
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+        - $ref: "#/components/parameters/userId"
+      responses:
+        "201":
+          description: User added to organization
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      x-internal: ["cloud"]
+      tags:
+        - users
+      operationId: removeUserFromOrganization
+      summary: Remove user from organization
+      description: Removes a user from an organization.
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+        - $ref: "#/components/parameters/userId"
+      responses:
+        "204":
+          description: User removed from organization
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/orgs/{orgId}/users/bulk:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - users
+      operationId: bulkDeleteOrganizationUsers
+      summary: Bulk delete organization users
+      description: Deletes multiple users from an organization.
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BulkUserDeletePayload"
+      responses:
+        "200":
+          description: Bulk user deletion result
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/orgs/{orgId}/users/online:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - users
+      operationId: getRecentlyOnlineUsersForOrg
+      summary: Get recently online organization users
+      description: Returns recently online users for an organization.
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+      responses:
+        "200":
+          description: Recently online organization users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
   /api/users:
     get:
       x-internal: ["cloud", "meshery"]
@@ -87,6 +190,7 @@ paths:
         - users
       operationId: getUserProfileById
       summary: Get user profile by ID
+      description: Returns a user profile by ID.
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
@@ -112,6 +216,7 @@ paths:
         - users
       operationId: getUser
       summary: Get current user profile
+      description: Returns the authenticated user profile.
       responses:
         "200":
           description: Current user profile and role context
@@ -119,6 +224,350 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    put:
+      x-internal: ["cloud"]
+      tags:
+        - users
+      operationId: updateProfile
+      summary: Update current user profile
+      description: Updates a user profile.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserPayload"
+      responses:
+        "200":
+          description: User profile updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/users/profile/details:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - users
+      operationId: getProfileOverview
+      summary: Get profile details
+      description: Returns account profile details for the authenticated user.
+      responses:
+        "200":
+          description: User profile details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProfileDetails"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/users/profile/provider:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - users
+      operationId: getUserProvider
+      summary: Get user provider
+      description: Returns provider information for the authenticated user.
+      responses:
+        "200":
+          description: User provider information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProvider"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/users/{userId}:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - users
+      operationId: getUserById
+      summary: Get user by ID
+      description: Returns a user profile by ID.
+      parameters:
+        - $ref: "#/components/parameters/userId"
+      responses:
+        "200":
+          description: User profile for the requested ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      x-internal: ["cloud"]
+      tags:
+        - users
+      operationId: deleteUserById
+      summary: Delete user by ID
+      description: Deletes a user account by ID.
+      parameters:
+        - $ref: "#/components/parameters/userId"
+      responses:
+        "204":
+          description: User deleted
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/users/self:
+    delete:
+      x-internal: ["cloud"]
+      tags:
+        - users
+      operationId: deleteOwnAccount
+      summary: Delete own account
+      description: Deletes the authenticated user's account.
+      responses:
+        "204":
+          description: User account deleted
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/users/online:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - users
+      operationId: getRecentlyOnlineUsers
+      summary: Get recently online users
+      description: Returns recently online users.
+      responses:
+        "200":
+          description: Recently online users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/users/preferences:
+    put:
+      x-internal: ["cloud"]
+      tags:
+        - users
+      operationId: updateUserPreference
+      summary: Update user preferences
+      description: Updates preferences for the authenticated user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PreferencePayload"
+      responses:
+        "200":
+          description: User preferences updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Preference"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/users/notifications/preferences:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - users
+      operationId: getAvailableNotificationPreferences
+      summary: Get notification preferences
+      description: Returns available notification preferences.
+      responses:
+        "200":
+          description: Available notification preferences
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AvailableNotificationPreferences"
+        "500":
+          $ref: "#/components/responses/500"
+    put:
+      x-internal: ["cloud"]
+      tags:
+        - users
+      operationId: updateNotificationPreferences
+      summary: Update notification preferences
+      description: Updates notification preferences for the authenticated user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NotificationPreferencePayload"
+      responses:
+        "200":
+          description: Notification preferences updated
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/users/notify/comment:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - users
+      operationId: handleNotifyMentionUsers
+      summary: Notify mentioned users
+      description: Sends comment mention notifications to users.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MentionNotificationPayload"
+      responses:
+        "200":
+          description: Mention notifications processed
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/users/notify/feedback:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - users
+      operationId: handleFeedbackFormSubmission
+      summary: Submit user feedback
+      description: Sends feedback submitted by the authenticated user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserFeedbackPayload"
+      responses:
+        "200":
+          description: Feedback submitted
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/users/password:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - users
+      operationId: updateUsersPassword
+      summary: Update user password
+      description: Updates the authenticated user's password.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PasswordUpdatePayload"
+      responses:
+        "200":
+          description: User password updated
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/users/account:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - users
+      operationId: getUserAccount
+      summary: Link user account
+      description: Starts an account-linking flow for the authenticated user.
+      parameters:
+        - name: oidc
+          in: query
+          required: false
+          description: Optional account-linking provider hint.
+          schema:
+            type: string
+            maxLength: 100
+      responses:
+        "302":
+          description: Account-linking flow redirect
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/users/anonymous:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - users
+      operationId: handleAnonymousUserIdentity
+      summary: Create anonymous user identity
+      description: Creates an anonymous user identity and returns an access token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnonymousUserPayload"
+      responses:
+        "200":
+          description: Anonymous user identity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnonymousFlowResponse"
+        "400":
+          $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
         "500":
@@ -131,7 +580,7 @@ paths:
         - users
       operationId: getCurrentUser
       summary: Get current user (legacy alias)
-      description: Legacy alias of getUser; served by docker-extension UI.
+      description: Returns the authenticated user profile.
       responses:
         "200":
           description: Current user
@@ -151,7 +600,7 @@ paths:
         - users
       operationId: getUserByIdLegacy
       summary: Get user by ID (legacy alias)
-      description: Legacy alias of getUserProfileById; consumed by mesheryctl design export.
+      description: Returns a user profile by ID.
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
@@ -177,7 +626,7 @@ paths:
         - users
       operationId: listUsers
       summary: List users
-      description: Canonical replacement for the deprecated GET /api/users.
+      description: Lists users visible to the authenticated caller.
       parameters:
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/pageSize"
@@ -197,6 +646,33 @@ paths:
           $ref: "#/components/responses/401"
         "500":
           $ref: "#/components/responses/500"
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - users
+      operationId: createUser
+      summary: Create user
+      description: Creates a user record.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserPayload"
+      responses:
+        "201":
+          description: User created
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
 
   /api/user/prefs:
     get:
@@ -205,6 +681,7 @@ paths:
         - users
       operationId: getUserPreferences
       summary: Get user preferences
+      description: Returns user preferences for the authenticated user.
       responses:
         "200":
           description: User preferences
@@ -266,6 +743,14 @@ components:
       in: path
       required: true
       description: Organization ID
+      schema:
+        type: string
+        format: uuid
+    userId:
+      name: userId
+      in: path
+      required: true
+      description: User ID
       schema:
         type: string
         format: uuid
@@ -535,6 +1020,316 @@ components:
                 db: "total_count"
                 json: "totalCount"
       additionalProperties: false
+
+    UserPayload:
+      type: object
+      description: Payload for creating or updating a user profile.
+      properties:
+        id:
+          $ref: "../core/api.yml#/components/schemas/Uuid"
+          description: Existing user ID for admin profile updates; omit for self-service updates.
+        email:
+          type: string
+          format: email
+          maxLength: 300
+          description: User email address.
+        firstName:
+          type: string
+          maxLength: 200
+          description: User first name.
+        lastName:
+          type: string
+          maxLength: 300
+          description: User last name.
+        avatarUrl:
+          type: string
+          format: uri
+          maxLength: 500
+          description: URL to the user's avatar image.
+        bio:
+          type: string
+          maxLength: 1000
+          description: User biography or description.
+        country:
+          type: object
+          additionalProperties: true
+          description: User country information.
+        region:
+          type: object
+          additionalProperties: true
+          description: User region information.
+        socials:
+          type: array
+          description: Online profiles associated with the user account.
+          items:
+            $ref: "#/components/schemas/Social"
+
+    CreateUserPayload:
+      type: object
+      description: Payload received when creating a user record from an identity provider.
+      additionalProperties: true
+
+    BulkUserDeletePayload:
+      type: object
+      description: Payload for deleting multiple users from an organization.
+      required:
+        - userIds
+        - userEmails
+      properties:
+        userIds:
+          type: array
+          description: User IDs to delete.
+          minItems: 1
+          items:
+            type: string
+            format: uuid
+        userEmails:
+          type: array
+          description: Email addresses for the users to delete.
+          minItems: 1
+          items:
+            type: string
+            format: email
+
+    ProfileDetails:
+      type: object
+      description: Profile details for the authenticated user.
+      additionalProperties: true
+
+    UserProvider:
+      type: object
+      description: Provider information for the authenticated user.
+      additionalProperties: true
+
+    NotificationPreference:
+      type: object
+      description: A notification preference option.
+      properties:
+        id:
+          $ref: "../core/api.yml#/components/schemas/Uuid"
+          description: Notification preference ID.
+        name:
+          type: string
+          description: Notification preference name.
+          maxLength: 200
+        description:
+          type: string
+          description: Notification preference description.
+          maxLength: 1000
+        category:
+          type: string
+          description: Notification preference category.
+          maxLength: 200
+        subcategory:
+          type: string
+          description: Notification preference subcategory.
+          maxLength: 200
+        label:
+          type: string
+          description: Notification preference label.
+          maxLength: 200
+        createdAt:
+          $ref: "../core/api.yml#/components/schemas/Time"
+          description: Timestamp when the notification preference was created.
+        updatedAt:
+          $ref: "../core/api.yml#/components/schemas/Time"
+          description: Timestamp when the notification preference was last updated.
+
+    AvailableNotificationPreferences:
+      type: object
+      description: Available notification preferences.
+      properties:
+        notificationPreferences:
+          type: object
+          description: Notification preferences keyed by preference identifier.
+          additionalProperties:
+            $ref: "#/components/schemas/NotificationPreference"
+        totalCount:
+          type: integer
+          description: Total number of notification preferences.
+          minimum: 0
+
+    NotificationPreferencePayload:
+      type: object
+      description: Payload for updating notification preferences.
+      properties:
+        notificationPreferences:
+          type: array
+          description: Notification preference identifiers to enable.
+          items:
+            type: string
+            maxLength: 200
+        userId:
+          type: string
+          description: User ID whose notification preferences are updated.
+          format: uuid
+
+    Message:
+      type: object
+      description: Comment notification message.
+      properties:
+        firstName:
+          type: string
+          description: Sender first name.
+          maxLength: 200
+        lastName:
+          type: string
+          description: Sender last name.
+          maxLength: 300
+        avatarUrl:
+          type: string
+          description: Sender avatar URL.
+          format: uri
+          maxLength: 500
+        message:
+          type: string
+          description: Comment message text.
+          maxLength: 5000
+        timestamp:
+          $ref: "../core/api.yml#/components/schemas/Time"
+          description: Timestamp when the message was created.
+        userId:
+          $ref: "../core/api.yml#/components/schemas/Uuid"
+          description: Sender user ID.
+
+    MentionNotificationPayload:
+      type: object
+      description: Payload for sending comment mention notifications.
+      required:
+        - mentionUsers
+        - participants
+        - designId
+        - usersOptedOutOfNotifications
+        - messages
+      properties:
+        mentionUsers:
+          type: array
+          description: Users mentioned in the comment.
+          items:
+            $ref: "../core/api.yml#/components/schemas/Uuid"
+        participants:
+          type: array
+          description: Users participating in the comment thread.
+          items:
+            $ref: "../core/api.yml#/components/schemas/Uuid"
+        designId:
+          $ref: "../core/api.yml#/components/schemas/Uuid"
+          description: Design ID associated with the comment.
+        usersOptedOutOfNotifications:
+          type: array
+          description: Users excluded from comment notifications.
+          items:
+            $ref: "../core/api.yml#/components/schemas/Uuid"
+        messages:
+          type: array
+          description: Messages in the comment thread.
+          items:
+            $ref: "#/components/schemas/Message"
+
+    UserFeedbackPayload:
+      type: object
+      description: Payload for submitting user feedback.
+      required:
+        - message
+        - scope
+        - pageLocation
+      properties:
+        message:
+          type: string
+          description: Feedback message.
+          minLength: 1
+          maxLength: 5000
+        scope:
+          type: string
+          description: Product area or workflow for the feedback.
+          minLength: 1
+          maxLength: 200
+        pageLocation:
+          type: string
+          description: Page location where the feedback was submitted.
+          minLength: 1
+          maxLength: 1000
+        metadata:
+          type: object
+          description: Additional feedback metadata.
+          additionalProperties: true
+
+    PasswordUpdatePayload:
+      type: object
+      description: Payload for updating a user password.
+      additionalProperties: true
+
+    AnonymousUserPayload:
+      type: object
+      description: Payload for creating an anonymous user identity.
+      required:
+        - name
+        - kind
+        - type
+        - subType
+        - credentialSecret
+        - metadata
+        - status
+      properties:
+        id:
+          $ref: "../core/api.yml#/components/schemas/Uuid"
+          description: Existing connection ID for idempotent anonymous identity creation.
+        name:
+          type: string
+          description: Connection name.
+          minLength: 1
+          maxLength: 200
+        kind:
+          type: string
+          description: Connection kind.
+          minLength: 1
+          maxLength: 100
+        type:
+          type: string
+          description: Connection type.
+          minLength: 1
+          maxLength: 100
+        subType:
+          type: string
+          description: Connection subtype.
+          minLength: 1
+          maxLength: 100
+        credentialSecret:
+          type: object
+          description: Credential secret for the anonymous user's connection.
+          additionalProperties: true
+        metadata:
+          type: object
+          description: Metadata for the anonymous user's connection.
+          additionalProperties: true
+        status:
+          type: string
+          description: Connection status.
+          minLength: 1
+          maxLength: 100
+        credentialId:
+          $ref: "../core/api.yml#/components/schemas/Uuid"
+          description: Credential ID associated with the anonymous user's connection.
+
+    AnonymousFlowResponse:
+      type: object
+      description: Anonymous user identity response.
+      required:
+        - accessToken
+        - userId
+      properties:
+        accessToken:
+          type: string
+          description: Access token for the anonymous user.
+          minLength: 1
+          maxLength: 4096
+        capability:
+          type: object
+          description: Capability set for the anonymous user.
+          additionalProperties: true
+        userId:
+          $ref: "../core/api.yml#/components/schemas/Uuid"
+          description: Anonymous user ID.
 
     UsersPageForAdmin:
       type: object
