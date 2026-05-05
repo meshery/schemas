@@ -7,6 +7,8 @@ on:
     paths-ignore:
       - '.github/**'
       - README.md
+      - schemas/base_cloud.yml
+      - schemas/base_meshery.yml
 jobs:
   build-artifacts:
     # Skip auto-commits made by the release flow (publish-schemas.yml + publish-npm-package.yml)
