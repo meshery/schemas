@@ -1,52 +1,83 @@
-# Copilot Review Instructions for meshery/schemas
+# Copilot instructions for `meshery/schemas`
 
-## Intentional Design Decisions (Do Not Flag)
+This repository is the schema source of truth for Meshery APIs. OpenAPI under `schemas/constructs/` drives Go models, TypeScript types, runtime schema exports, and RTK Query clients that downstream repos consume. Prefer changing schema sources and manual helper/export files; avoid editing generated output directly.
 
-The following patterns are intentional and should not be flagged as issues during code review:
+## Build, test, and validation commands
 
-### 1. `SqlNullTime` vs `NullTime`
+```bash
+# Initial setup
+make setup
 
-Some entities (e.g., `Subscription.deleted_at`) use `SqlNullTime` instead of `NullTime`. This is intentional for backward compatibility with v1beta1 entities and downstream GORM/Pop consumers. Do not suggest switching to `NullTime` unless the entire entity is being migrated.
+# Primary validation and generation flow
+make validate-schemas
+make build
+npm run build
 
-### 2. Single core Go package
+# Focused generation steps
+make bundle-openapi
+make generate-golang
+make generate-rtk
+npm run generate:types
+node build/index.js bundle
+node build/index.js golang
+node build/index.js rtk
+node build/index.js types
+node build/index.js all
 
-All shared core types live in a single unversioned package: `github.com/meshery/schemas/models/core`. This includes both generated scalars (`Uuid`, `Time`, `Id`) and manual utility types (`Map`, `NullTime`, `MapObject`, SQL helpers). Schema `x-go-type-import` for any core type must use `models/core` with alias `core`. Do not reference `models/v1alpha1/core` — all core types are consolidated in the unversioned package.
+# Lint
+make golangci
 
-### 3. `x-enum-casing-exempt: true`
+# Go tests
+go test ./...
+go test ./validation/...
+go test ./validation/... -run TestRuleName
 
-Enum schemas annotated with `x-enum-casing-exempt: true` contain published enum values that will never be lowercased (e.g., `PlanName`: `"Free"`, `"Team Designer"`; `FeatureName`: `"ComponentsInDesign"`). Do not suggest lowercasing these values.
+# Node tests
+make test-rtk
+node --test tests/generate-rtk.test.js
+node --test --test-name-pattern="guardOptionalQueryParams" tests/generate-rtk.test.js
+node --test tests/validate-schemas-generate-golang.test.js
 
-### 4. `page_size` and `total_count` in pagination envelopes
+# Advisory and strict validation modes
+make audit-schemas
+make audit-schemas-full
+make audit-schemas-style-full
+make audit-schemas-debt-full
+make validate-schemas-strict
 
-Pagination envelope fields use `page_size` and `total_count` (snake_case) as a published API contract. These are NOT database-backed fields — the snake_case is a deliberate exception. Do not suggest renaming to `pageSize`/`totalCount`.
+# Cross-repo drift audit (optional sibling checkouts)
+make consumer-audit MESHERY_REPO=../meshery CLOUD_REPO=../meshery-cloud EXTENSIONS_REPO=../meshery-extensions
+```
 
-### 5. Shared query parameter names `page`, `pagesize`, `search`, `order`
+`make test-rtk` is the only Node regression test wired into the `Makefile`; the other `.test.js` files under `tests/` are run directly with `node --test`.
 
-The shared query parameters defined in `core/api.yml` (`page`, `pagesize`, `search`, `order`, `filter`) use their current casing as a published contract. `pagesize` is intentionally all-lowercase (not `pageSize`) because it is a live wire-format parameter name referenced across all list endpoints. Do not suggest renaming.
+## High-level architecture
 
-### 6. Deprecated v1beta1 constructs
+1. **Schema source layout:** each construct lives under `schemas/constructs/<version>/<construct>/`. `api.yml` is the construct entrypoint used for discovery, endpoint definitions, and `$ref` wiring. Sibling `*.yaml` files hold entity/subschemas, and `templates/` holds example JSON/YAML instances that must stay in sync with schema changes.
+2. **Discovery and bundling:** the JavaScript build layer auto-discovers constructs by walking `schemas/constructs/` for directories containing `api.yml` (`build/lib/config.js`). `bundle-openapi.js` dereferences each construct into `_openapi_build/constructs/<version>/<package>/merged-openapi.json`, then merges non-deprecated APIs into `_openapi_build/merged_openapi.yml` plus filtered `cloud_openapi.yml` and `meshery_openapi.yml`.
+3. **Code generation:** bundled specs feed `generate-golang.js`, `generate-typescript.js`, and `generate-rtk.js`, producing `models/`, `typescript/generated/`, and `typescript/rtk/`. `npm run build` then packages the published TypeScript distribution in `dist/` via `tsup`.
+4. **Manual export surface:** `typescript/index.ts` is not generated. It decides which generated types and schema objects are publicly exported, and some large schema imports stay commented out intentionally to keep the bundle smaller.
+5. **Validation and audits:** `validation/` is a dependency-leaf Go package used for build-time schema auditing (`cmd/validate-schemas`), runtime OpenAPI document validation in downstream consumers, and `cmd/consumer-audit`, which compares schemas against Meshery and Meshery Cloud routers plus RTK Query clients in Meshery, Meshery Cloud, and Meshery Extensions to catch API drift.
 
-Files with `x-deprecated: true` in their `info` section are intentionally kept for backward compatibility. They contain known style/casing violations that are fixed in the v1beta2 replacement. Do not flag issues in deprecated constructs.
+## Key conventions
 
-### 7. `deleted_at` in entity `required` lists
+- **Dual-schema pattern is the target pattern for entity constructs:** `<construct>.yaml` is the response schema for the full persisted entity. New or version-bumped writable entity APIs should usually use a separate `*Payload` schema in `api.yml`, but existing published versions may still use `*Request` bodies. Never use the entity schema as a `POST` or `PUT` request body.
+- **`api.yml` is the construct index:** adding a new subschema file is not enough; it must be referenced from that construct's `api.yml` or generation/validation will miss it.
+- **Treat generated output as derived artifacts:** do not hand-edit `models/`, `typescript/generated/`, or `dist/`. Manual extension points are schema YAML files, `models/*/*_helper.go`, `models/core/*`, `typescript/index.ts`, build scripts, and validation code.
+- **The shared Go core package is unversioned:** schema references still use `schemas/constructs/v1alpha1/core/api.yml`, but Go type imports for core types must resolve to `github.com/meshery/schemas/models/core` with alias `core`.
+- **Canonical wire naming targets camelCase:** see `docs/identifier-naming-contributor-guide.md` for the full directory. For newly authored API versions, JSON/schema/query identifiers and path parameters use camelCase, path/query IDs use an `Id` suffix, schema component names use PascalCase, and path segments use kebab-case, while DB column names stay snake_case in `db:` tags. Legacy published versions may intentionally retain snake_case on the wire, and list endpoints may still reference shared core query params such as `pagesize`; follow the contract actually used by that version rather than partially recasing it.
+- **Every operation needs `x-internal`:** it controls whether an endpoint lands in the Meshery bundle, the Cloud bundle, or both. Missing `x-internal` fails validation and bundling.
+- **Keep templates updated:** when schema shapes or defaults change, update the matching `templates/*_template.json` and `templates/*_template.yaml`.
+- **`x-generate-db-helpers` is schema-level only:** use it on named schema components stored as JSON blobs in one DB column. For amorphous objects, prefer `x-go-type: "core.Map"` instead.
+- **SQL helper behavior is type-family specific:** `core.Map`-style JSON helpers serialize nil values to JSON `"null"`, `core.NullTime` returns SQL `NULL`, and some slice helpers persist empty arrays. Match the existing helper family's nil/zero-value semantics, and make new `Scan()` implementations reset the receiver in a way that matches the type's zero value when `src` is nil.
+- **HTTP design is enforced by validation:** create-only `POST` endpoints should return `201`; bulk deletes use `POST .../delete`, not `DELETE` with a request body; `operationId` must be lower camelCase verbNoun.
+- **Two repo-specific exceptions matter:** `schemas/constructs/v1beta1/design/` generates the Go/TS package name `pattern`, and deprecated constructs remain in-tree for compatibility even when excluded from merged OpenAPI bundles.
+- **Migration rule:** while a construct is actively being migrated into this repo, the downstream implementation is the field-discovery reference. Once the schema is established here, this repo becomes authoritative and downstream code should conform to it.
 
-Some entity schemas (e.g., `AcademyCurricula`) list `deleted_at`/`deletedAt` as required. This is intentional — server-generated fields that are always present in API responses belong in `required` per AGENTS.md, even when the value is null for non-deleted resources.
+## Intentional design decisions
 
-### 8. Same field name, different casing across constructs
-
-A property with the same semantic name may use different casing in different constructs, depending on whether it maps to a database column in that specific construct. For example: `Connection.sub_type` is snake_case (DB-backed with `db: "sub_type"`), while `RelationshipDefinition.subType` is camelCase (not DB-backed — no `db:` or `gorm:` tag). Both are correct. Do not flag one as inconsistent with the other.
-
-## Schema Validation Rules
-
-This repository enforces 41 schema validation rules via the `validation/` Go package (invoked by `go run ./cmd/validate-schemas`). For full details, see:
-- `AGENTS.md` — casing rules, HTTP design principles, dual-schema pattern
-- `specs/casing-rules.md` — definitive casing reference with ORM implications
-- `validation/` — Go rule implementations (one file per rule category)
-
-Key casing rules:
-- DB-backed fields: exact snake_case matching the database column name
-- Non-DB fields: camelCase
-- Schema component names: PascalCase
-- operationId: lower camelCase verbNoun
-- Path segments: kebab-case
-- Path parameters: camelCase with `Id` suffix
+- `SqlNullTime` is still valid in some entities for backward compatibility with v1beta1 and downstream ORM consumers.
+- `x-enum-casing-exempt: true` marks published enum values that must not be lowercased.
+- `x-id-format: external` is the correct escape hatch for non-UUID identifiers such as external billing IDs.
+- Deprecated constructs marked with `info.x-deprecated: true` stay in the repository for compatibility; they are excluded from merged OpenAPI output dynamically rather than being deleted.
+- Legacy pagination fields like `page_size` and `total_count` may remain in existing published API versions, but new canonical-casing versions should use `pageSize` and `totalCount`.
