@@ -293,30 +293,36 @@ schemas/constructs/v1beta1/<construct>/
 ## Canonical RJSF form schemas
 
 [`@rjsf/core`](https://github.com/rjsf-team/react-jsonschema-form) form
-schemas live under `typescript/forms/<version>/<construct>/`. They are
-the authoritative source for every catalog-publish, design-import,
-credential-create, etc. modal rendered across the Meshery UI surface
-(meshery-cloud, meshery, sistent). The migration tracking issue is
-[meshery/schemas#866](https://github.com/meshery/schemas/issues/866);
+schemas are co-located with their construct under
+`schemas/constructs/<version>/<construct>/forms/`. They sit alongside
+`api.yml`, `<construct>.yaml`, and `templates/` so every artifact
+about a construct lives in one directory. The migration tracking
+issue is [meshery/schemas#866](https://github.com/meshery/schemas/issues/866);
 the rollout plan is at [`docs/form-schemas-roadmap.md`](docs/form-schemas-roadmap.md).
 
 ### Layout
 
 ```shell
+schemas/constructs/<version>/<construct>/
+  api.yml                       # OpenAPI spec
+  <construct>.yaml              # entity (response) schema
+  templates/
+    <construct>_template.json   # example instance
+  forms/                        # RJSF form schemas (this section)
+    <action>.json               # RJSF JSON Schema (source of truth)
+    <action>.ui.json            # RJSF UI Schema (presentation hints)
+
 typescript/forms/
-  <version>/
-    <construct>/
-      <action>.json           # RJSF JSON Schema for the form  (source of truth)
-      <action>.ui.json        # RJSF UI Schema (presentation hints)
-      index.ts                # typed re-exports under canonical names
-  index.ts                    # top-level barrel
-  types.ts                    # local RJSFSchema / UiSchema types
+  index.ts                      # imports every forms/*.json and
+                                # re-exports under canonical names
+  types.ts                      # local RJSFSchema / UiSchema types
 ```
 
-`index.ts` re-exports each form schema under
-`<Construct><Action>RjsfSchemaV<Version>` (and `…UiSchema…`), e.g.
-`CatalogPublishRjsfSchemaV1Beta2`. Top-level `typescript/index.ts`
-re-exports from `typescript/forms/` so consumers reach them via:
+`typescript/forms/index.ts` imports each JSON file directly via
+relative path (`../../schemas/constructs/<version>/<construct>/forms/<action>.json`)
+and re-exports under `<Construct><Action>RjsfSchemaV<Version>` (and
+`…UiSchema…`), e.g. `CatalogPublishRjsfSchemaV1Beta2`. Top-level
+`typescript/index.ts` re-exports those names so consumers reach them via:
 
 ```ts
 import {
@@ -349,9 +355,11 @@ rules above. Add new constructs to the case table in the same PR
 that introduces them. Run via `go test ./validation/...` (or
 `make validate-schemas`).
 
-A second test, `TestFormSchemasIndexExportsExist`, walks the
-`typescript/forms/` tree and fails if a `*.json` file lacks a
-sibling `index.ts` that imports it under the canonical name.
+A second test, `TestFormSchemasIndexExportsExist`, walks every
+`schemas/constructs/<version>/<construct>/forms/*.json` and fails
+if `typescript/forms/index.ts` does not import that file. This
+catches the common authoring mistake of adding a new form JSON
+without wiring it through the public package surface.
 
 ### Authoring checklist
 
@@ -359,20 +367,18 @@ When adding a new form schema:
 
 1. Identify the canonical OpenAPI construct (e.g.
    `schemas/constructs/v1beta3/workspace/workspace.yaml`).
-2. Create `typescript/forms/<version>/<construct>/<action>.json`
+2. Create `schemas/constructs/<version>/<construct>/forms/<action>.json`
    with only the user-input subset of fields, plus presentation
    hints. Use the same field names, types, and enum values as the
    canonical.
-3. Create `typescript/forms/<version>/<construct>/<action>.ui.json`
+3. Create `schemas/constructs/<version>/<construct>/forms/<action>.ui.json`
    for `ui:order`, `ui:widget`, etc.
-4. Create or extend `typescript/forms/<version>/<construct>/index.ts`
-   with typed `<Construct><Action>RjsfSchemaV<Version>` /
-   `<Construct><Action>RjsfUiSchemaV<Version>` exports.
-5. Re-export from `typescript/forms/index.ts` and from
-   `typescript/index.ts`.
-6. Add a row to the `cases` table in
+4. Add an `import` and a typed `<Construct><Action>RjsfSchemaV<Version>` /
+   `<Construct><Action>RjsfUiSchemaV<Version>` re-export in
+   `typescript/forms/index.ts`.
+5. Add a row to the `cases` table in
    `validation/forms_test.go::TestFormSchemasAreSubsetOfCanonical`.
-7. Run `go test ./validation/...` and `npm run build` locally.
+6. Run `go test ./validation/...` and `npm run build` locally.
 
 ## Go helper files
 

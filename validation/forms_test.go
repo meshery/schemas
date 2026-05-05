@@ -41,32 +41,32 @@ func TestFormSchemasAreSubsetOfCanonical(t *testing.T) {
 		{
 			name:      "v1beta2/catalog/publish",
 			canonical: "schemas/constructs/v1beta2/catalog/catalog.yaml",
-			form:      "typescript/forms/v1beta2/catalog/publish.json",
+			form:      "schemas/constructs/v1beta2/catalog/forms/publish.json",
 		},
 		{
 			name:      "v1beta3/environment/createOrEdit",
 			canonical: "schemas/constructs/v1beta3/environment/environment.yaml",
-			form:      "typescript/forms/v1beta3/environment/createOrEdit.json",
+			form:      "schemas/constructs/v1beta3/environment/forms/createOrEdit.json",
 		},
 		{
 			name:      "v1beta3/workspace/createOrEdit",
 			canonical: "schemas/constructs/v1beta3/workspace/workspace.yaml",
-			form:      "typescript/forms/v1beta3/workspace/createOrEdit.json",
+			form:      "schemas/constructs/v1beta3/workspace/forms/createOrEdit.json",
 		},
 		{
 			name:      "v1beta1/credential/kubernetes",
 			canonical: "schemas/constructs/v1beta1/credential/api.yml#/components/schemas/Credential",
-			form:      "typescript/forms/v1beta1/credential/kubernetes.json",
+			form:      "schemas/constructs/v1beta1/credential/forms/kubernetes.json",
 		},
 		{
 			name:      "v1beta1/credential/grafana",
 			canonical: "schemas/constructs/v1beta1/credential/api.yml#/components/schemas/Credential",
-			form:      "typescript/forms/v1beta1/credential/grafana.json",
+			form:      "schemas/constructs/v1beta1/credential/forms/grafana.json",
 		},
 		{
 			name:      "v1beta1/credential/prometheus",
 			canonical: "schemas/constructs/v1beta1/credential/api.yml#/components/schemas/Credential",
-			form:      "typescript/forms/v1beta1/credential/prometheus.json",
+			form:      "schemas/constructs/v1beta1/credential/forms/prometheus.json",
 		},
 	}
 
@@ -457,52 +457,67 @@ func sortedKeys[V any](m map[string]V) []string {
 }
 
 // TestFormSchemasIndexExportsExist provides a fast feedback loop for
-// authors adding new form schemas: every JSON form file must have a
-// matching TypeScript export under the same construct's index.ts.
-// Skips if no form schemas exist yet.
+// authors adding new form schemas: every JSON file under any
+// `schemas/constructs/<version>/<construct>/forms/` directory must be
+// referenced by `typescript/forms/index.ts` (which re-exports each
+// under its canonical RjsfSchema/RjsfUiSchema name).
+//
+// This catches the common authoring mistake of adding a new form JSON
+// without wiring it through the public package surface.
 func TestFormSchemasIndexExportsExist(t *testing.T) {
 	repoRoot := repoRootDir(t)
-	formsDir := filepath.Join(repoRoot, "typescript", "forms")
-	if !dirExists(formsDir) {
-		t.Skip("no typescript/forms directory yet")
-	}
+	constructsDir := filepath.Join(repoRoot, "schemas", "constructs")
+	indexTSPath := filepath.Join(repoRoot, "typescript", "forms", "index.ts")
 
-	// Walk all *.json files; each must sit next to (or under, via
-	// index.ts) a TypeScript barrel that re-exports it under the
-	// canonical naming convention.
-	jsonFiles := []string{}
-	err := filepath.Walk(formsDir, func(p string, info os.FileInfo, err error) error {
+	indexRaw, err := os.ReadFile(indexTSPath)
+	if err != nil {
+		t.Fatalf("read %s: %v", indexTSPath, err)
+	}
+	indexSrc := string(indexRaw)
+
+	// Walk every `forms/*.json` under schemas/constructs/.
+	var jsonFiles []string
+	err = filepath.Walk(constructsDir, func(p string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
 		if info.IsDir() {
 			return nil
 		}
-		if strings.HasSuffix(info.Name(), ".json") {
-			jsonFiles = append(jsonFiles, p)
+		if !strings.HasSuffix(info.Name(), ".json") {
+			return nil
 		}
+		// Only count files in a `forms/` directory.
+		if filepath.Base(filepath.Dir(p)) != "forms" {
+			return nil
+		}
+		jsonFiles = append(jsonFiles, p)
 		return nil
 	})
 	if err != nil {
-		t.Fatalf("walk forms dir: %v", err)
+		t.Fatalf("walk %s: %v", constructsDir, err)
+	}
+
+	if len(jsonFiles) == 0 {
+		t.Skip("no schemas/constructs/*/forms/*.json files yet")
 	}
 
 	for _, jsonFile := range jsonFiles {
-		dir := filepath.Dir(jsonFile)
-		indexTS := filepath.Join(dir, "index.ts")
-		if _, err := os.Stat(indexTS); err != nil {
-			t.Errorf("form file %s has no sibling index.ts (each construct dir needs an index.ts that re-exports its JSON files under the canonical RjsfSchema/RjsfUiSchema names)", jsonFile)
-			continue
-		}
-		// Confirm the index.ts at least mentions the JSON file's basename.
-		base := strings.TrimSuffix(filepath.Base(jsonFile), ".json")
-		raw, err := os.ReadFile(indexTS)
+		// Build the relative import path the index.ts would use.
+		// e.g. "schemas/constructs/v1beta2/catalog/forms/publish.json"
+		// → expected substring "../../schemas/constructs/v1beta2/catalog/forms/publish.json"
+		// in typescript/forms/index.ts.
+		rel, err := filepath.Rel(repoRoot, jsonFile)
 		if err != nil {
-			t.Errorf("read %s: %v", indexTS, err)
+			t.Errorf("rel(%s, %s): %v", repoRoot, jsonFile, err)
 			continue
 		}
-		if !strings.Contains(string(raw), base) {
-			t.Errorf("%s does not import %q (basename of %s)", indexTS, base, jsonFile)
+		// Normalize to forward slashes for cross-platform string match.
+		relForward := filepath.ToSlash(rel)
+		needle := "../../" + relForward
+		if !strings.Contains(indexSrc, needle) {
+			t.Errorf("typescript/forms/index.ts does not import %s (expected substring %q); add an `import … from %q` and a corresponding `export const …RjsfSchema… = … as RJSFSchema/UiSchema` line",
+				rel, needle, needle)
 		}
 	}
 }

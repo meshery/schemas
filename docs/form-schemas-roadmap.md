@@ -79,9 +79,14 @@ support form with no canonical construct and stays under
 
 ### Phase 1 — Framework + first form (this repo, this PR)
 
-- [x] Layout: `typescript/forms/<version>/<construct>/{<action>.json, <action>.ui.json, index.ts}`
-- [x] Top-level barrel: `typescript/forms/index.ts` and re-exports from
-      `typescript/index.ts`
+- [x] Layout: form schemas co-located with their construct as
+      `schemas/constructs/<version>/<construct>/forms/{<action>.json, <action>.ui.json}`,
+      sitting alongside the existing `api.yml`, `<construct>.yaml`,
+      and `templates/`
+- [x] Top-level barrel: `typescript/forms/index.ts` imports each
+      JSON via relative path and re-exports under the canonical
+      `<Construct><Action>RjsfSchemaV<Version>` naming;
+      `typescript/index.ts` re-exports from there
 - [x] Local types in `typescript/forms/types.ts` so consumers don't pull
       `@rjsf/utils` transitively
 - [x] Go subset-validator: `validation/forms_test.go` 
