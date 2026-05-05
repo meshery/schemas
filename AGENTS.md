@@ -290,6 +290,104 @@ schemas/constructs/v1beta1/<construct>/
     <construct>_template.yaml
 ```
 
+## Canonical RJSF form schemas
+
+[`@rjsf/core`](https://github.com/rjsf-team/react-jsonschema-form) form
+schemas are co-located with their construct under
+`schemas/constructs/<version>/<construct>/forms/`. They sit alongside
+`api.yml`, `<construct>.yaml`, and `templates/` so every artifact
+about a construct lives in one directory. The migration tracking
+issue is [meshery/schemas#866](https://github.com/meshery/schemas/issues/866);
+the rollout plan is at [`docs/form-schemas-roadmap.md`](docs/form-schemas-roadmap.md).
+
+### Layout
+
+```shell
+schemas/constructs/<version>/<construct>/
+  api.yml                       # OpenAPI spec
+  <construct>.yaml              # entity (response) schema
+  templates/
+    <construct>_template.json   # example instance
+  forms/                        # RJSF form schemas (this section)
+    <action>.json               # RJSF JSON Schema (source of truth)
+    <action>.ui.json            # RJSF UI Schema (presentation hints)
+
+typescript/forms/
+  index.ts                      # imports every forms/*.json and
+                                # re-exports under canonical names
+  types.ts                      # local RJSFSchema / UiSchema types
+```
+
+`typescript/forms/index.ts` imports each JSON file directly via
+relative path (`../../schemas/constructs/<version>/<construct>/forms/<action>.json`)
+and re-exports under `<Construct><Action>RjsfSchemaV<Version>` (and
+`…UiSchema…`), e.g. `CatalogPublishRjsfSchemaV1Beta2`. Top-level
+`typescript/index.ts` re-exports those names so consumers reach them via:
+
+```ts
+import {
+  CatalogPublishRjsfSchemaV1Beta2,
+  CatalogPublishRjsfUiSchemaV1Beta2,
+} from "@meshery/schemas";
+```
+
+### What goes in a form schema
+
+A form schema is a **strict subset** of the corresponding canonical
+OpenAPI construct, capturing only the fields the user fills in.
+Server-generated fields (`publishedVersion`, `class`, `snapshotURL`,
+audit timestamps, ids, …) are intentionally absent. Presentation
+hints — `x-rjsf-grid-area`, `format: textarea`, `x-encode-in-uri`,
+default values — layer on top.
+
+A form schema **must not**:
+- introduce a property not present in the canonical construct;
+- declare a `type` that disagrees with the canonical;
+- list an enum value (top-level or in `items.enum`) that the
+  canonical does not allow;
+- require a field the canonical does not define.
+
+### Enforcement
+
+The form-schema contract is enforced by five Go tests in
+`validation/forms_test.go`. All run as part of `go test ./validation/...`
+(or `make validate-schemas`). Drift in any one of them is a CI
+blocker.
+
+| Test | What it gates |
+|---|---|
+| `TestFormSchemasAreSubsetOfCanonical` | Each form is a strict subset of its canonical OpenAPI construct: every form property exists in canonical with matching `type`; every top-level / `items.enum` value is a subset of the canonical's enum; every `required` name exists in canonical. Recursive into nested objects + array items, gated on canonical having structure to compare against. Walks the package-level `formCases` slice. |
+| `TestEveryFormJsonHasCaseTableEntry` | Every `schemas/constructs/<v>/<c>/forms/*.json` (excluding `.ui.json`) appears in `formCases`. Catches the silent-failure case where a form ships AND gets exported but the subset rule is never asserted for it. |
+| `TestEveryFormHasUiSchemaPair` | Every `<action>.json` is paired with an `<action>.ui.json` and vice versa. Catches half-authored forms. |
+| `TestFormExportsFollowVersionConvention` | Every export in `typescript/forms/index.ts` bound to a form-JSON import ends in `RjsfSchemaV<Version>` (or `RjsfUiSchemaV<Version>`), with `<Version>` matching the version directory of the imported file (e.g. `V1Beta2` from `.../v1beta2/...`). Catches version-suffix drift between the path and the export name. |
+| `TestFormSchemasIndexExportsExist` | Every `schemas/constructs/<v>/<c>/forms/*.json` is imported by `typescript/forms/index.ts`. Catches the "added a JSON but forgot to wire it up" mistake. |
+
+### Authoring checklist
+
+When adding a new form schema:
+
+1. Identify the canonical OpenAPI construct (e.g.
+   `schemas/constructs/v1beta3/workspace/workspace.yaml`).
+2. Create `schemas/constructs/<version>/<construct>/forms/<action>.json`
+   with only the user-input subset of fields, plus presentation
+   hints. Use the same field names, types, and enum values as the
+   canonical.
+3. Create `schemas/constructs/<version>/<construct>/forms/<action>.ui.json`
+   for `ui:order`, `ui:widget`, etc.
+4. Add an `import` and a typed `<Construct><Action>RjsfSchemaV<Version>` /
+   `<Construct><Action>RjsfUiSchemaV<Version>` re-export in
+   `typescript/forms/index.ts`. The version segment in the export
+   name (e.g. `V1Beta2`) must match the version directory of the
+   imported JSON (`.../v1beta2/...`); the
+   `TestFormExportsFollowVersionConvention` guard enforces this.
+5. Append a row to `formCases` in `validation/forms_test.go`. This
+   is mandatory — `TestEveryFormJsonHasCaseTableEntry` will fail
+   the build if you ship a form file without a corresponding
+   subset assertion.
+6. Run `go test ./validation/...` and `npm run build` locally.
+   The full guard set is steps 1–5 above; tests will tell you
+   which one you missed.
+
 ## Go helper files
 
 Auto-generated Go structs (`models/<version>/<construct>/<construct>.go`) are committed by the artifact-generation workflow on `master`. Do not edit them by hand; the manually written helpers below are the files contributors should maintain directly:
