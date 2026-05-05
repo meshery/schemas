@@ -157,7 +157,17 @@ export namespace v1beta1 {
 // enums are subsets, required fields exist in canonical).
 export {
   CatalogPublishRjsfSchemaV1Beta2,
-  CatalogPublishRjsfUiSchemaV1Beta2
+  CatalogPublishRjsfUiSchemaV1Beta2,
+  EnvironmentCreateOrEditRjsfSchemaV1Beta3,
+  EnvironmentCreateOrEditRjsfUiSchemaV1Beta3,
+  WorkspaceCreateOrEditRjsfSchemaV1Beta3,
+  WorkspaceCreateOrEditRjsfUiSchemaV1Beta3,
+  KubernetesCredentialRjsfSchemaV1Beta1,
+  KubernetesCredentialRjsfUiSchemaV1Beta1,
+  GrafanaCredentialRjsfSchemaV1Beta1,
+  GrafanaCredentialRjsfUiSchemaV1Beta1,
+  PrometheusCredentialRjsfSchemaV1Beta1,
+  PrometheusCredentialRjsfUiSchemaV1Beta1
 } from "./forms";
 
 export namespace v1beta2 {

@@ -43,6 +43,31 @@ func TestFormSchemasAreSubsetOfCanonical(t *testing.T) {
 			canonical: "schemas/constructs/v1beta2/catalog/catalog.yaml",
 			form:      "typescript/forms/v1beta2/catalog/publish.json",
 		},
+		{
+			name:      "v1beta3/environment/createOrEdit",
+			canonical: "schemas/constructs/v1beta3/environment/environment.yaml",
+			form:      "typescript/forms/v1beta3/environment/createOrEdit.json",
+		},
+		{
+			name:      "v1beta3/workspace/createOrEdit",
+			canonical: "schemas/constructs/v1beta3/workspace/workspace.yaml",
+			form:      "typescript/forms/v1beta3/workspace/createOrEdit.json",
+		},
+		{
+			name:      "v1beta1/credential/kubernetes",
+			canonical: "schemas/constructs/v1beta1/credential/api.yml#/components/schemas/Credential",
+			form:      "typescript/forms/v1beta1/credential/kubernetes.json",
+		},
+		{
+			name:      "v1beta1/credential/grafana",
+			canonical: "schemas/constructs/v1beta1/credential/api.yml#/components/schemas/Credential",
+			form:      "typescript/forms/v1beta1/credential/grafana.json",
+		},
+		{
+			name:      "v1beta1/credential/prometheus",
+			canonical: "schemas/constructs/v1beta1/credential/api.yml#/components/schemas/Credential",
+			form:      "typescript/forms/v1beta1/credential/prometheus.json",
+		},
 	}
 
 	repoRoot := repoRootDir(t)
@@ -99,15 +124,67 @@ type schemaNode struct {
 	OneOf      []*schemaNode          `yaml:"oneOf"      json:"oneOf"`
 }
 
+// loadYAMLSchema reads a YAML schema file. The path may optionally carry a
+// JSON-pointer-style fragment selecting a nested component, e.g.
+// "schemas/constructs/v1beta1/credential/api.yml#/components/schemas/Credential".
+// When no fragment is present, the entire YAML file is interpreted as a
+// JSON-schema-shaped node (top-level `properties:`). When a fragment is
+// present, the file is parsed as generic YAML and walked according to the
+// fragment path before being marshaled into a schemaNode.
 func loadYAMLSchema(t *testing.T, path string) *schemaNode {
 	t.Helper()
-	raw, err := os.ReadFile(path)
+
+	filePath, fragment := path, ""
+	if idx := strings.Index(path, "#"); idx != -1 {
+		filePath = path[:idx]
+		fragment = path[idx+1:]
+	}
+
+	raw, err := os.ReadFile(filePath)
 	if err != nil {
-		t.Fatalf("read %s: %v", path, err)
+		t.Fatalf("read %s: %v", filePath, err)
+	}
+
+	if fragment == "" {
+		var node schemaNode
+		if err := yaml.Unmarshal(raw, &node); err != nil {
+			t.Fatalf("parse %s: %v", filePath, err)
+		}
+		return &node
+	}
+
+	var doc map[string]any
+	if err := yaml.Unmarshal(raw, &doc); err != nil {
+		t.Fatalf("parse %s: %v", filePath, err)
+	}
+
+	// Walk the fragment as JSON-pointer-style ("/components/schemas/X").
+	var current any = doc
+	for _, segment := range strings.Split(strings.TrimPrefix(fragment, "/"), "/") {
+		if segment == "" {
+			continue
+		}
+		m, ok := current.(map[string]any)
+		if !ok {
+			t.Fatalf("canonical %s: cannot descend into %q (not a map)",
+				path, segment)
+		}
+		next, exists := m[segment]
+		if !exists {
+			t.Fatalf("canonical %s: fragment segment %q not found",
+				path, segment)
+		}
+		current = next
+	}
+
+	// Round-trip through YAML to populate the strongly-typed schemaNode.
+	rebound, err := yaml.Marshal(current)
+	if err != nil {
+		t.Fatalf("re-marshal %s fragment: %v", path, err)
 	}
 	var node schemaNode
-	if err := yaml.Unmarshal(raw, &node); err != nil {
-		t.Fatalf("parse %s: %v", path, err)
+	if err := yaml.Unmarshal(rebound, &node); err != nil {
+		t.Fatalf("parse %s fragment: %v", path, err)
 	}
 	return &node
 }

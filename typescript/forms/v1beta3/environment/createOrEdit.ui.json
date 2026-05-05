@@ -1,0 +1,6 @@
+{
+  "organizationId": {
+    "ui:disabled": false
+  },
+  "ui:order": ["organizationId", "name", "description"]
+}
