@@ -150,6 +150,16 @@ export namespace v1beta1 {
   export type Workspace = WorkspaceComponents["schemas"]["Workspace"];
 }
 
+// Canonical RJSF form schemas. See typescript/forms/ and
+// docs/form-schemas-roadmap.md. Each form is validated against the
+// corresponding canonical OpenAPI construct by validation/forms_test.go
+// (subset-of: every form field is present in canonical, types match,
+// enums are subsets, required fields exist in canonical).
+export {
+  CatalogPublishRjsfSchemaV1Beta2,
+  CatalogPublishRjsfUiSchemaV1Beta2
+} from "./forms";
+
 export namespace v1beta2 {
   export type Academy =
     V1Beta2AcademyComponents["schemas"]["AcademyCurricula"];

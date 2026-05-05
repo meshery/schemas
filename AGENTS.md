@@ -290,6 +290,90 @@ schemas/constructs/v1beta1/<construct>/
     <construct>_template.yaml
 ```
 
+## Canonical RJSF form schemas
+
+[`@rjsf/core`](https://github.com/rjsf-team/react-jsonschema-form) form
+schemas live under `typescript/forms/<version>/<construct>/`. They are
+the authoritative source for every catalog-publish, design-import,
+credential-create, etc. modal rendered across the Meshery UI surface
+(meshery-cloud, meshery, sistent). The migration tracking issue is
+[meshery/schemas#866](https://github.com/meshery/schemas/issues/866);
+the rollout plan is at [`docs/form-schemas-roadmap.md`](docs/form-schemas-roadmap.md).
+
+### Layout
+
+```shell
+typescript/forms/
+  <version>/
+    <construct>/
+      <action>.json           # RJSF JSON Schema for the form  (source of truth)
+      <action>.ui.json        # RJSF UI Schema (presentation hints)
+      index.ts                # typed re-exports under canonical names
+  index.ts                    # top-level barrel
+  types.ts                    # local RJSFSchema / UiSchema types
+```
+
+`index.ts` re-exports each form schema under
+`<Construct><Action>RjsfSchemaV<Version>` (and `…UiSchema…`), e.g.
+`CatalogPublishRjsfSchemaV1Beta2`. Top-level `typescript/index.ts`
+re-exports from `typescript/forms/` so consumers reach them via:
+
+```ts
+import {
+  CatalogPublishRjsfSchemaV1Beta2,
+  CatalogPublishRjsfUiSchemaV1Beta2,
+} from "@meshery/schemas";
+```
+
+### What goes in a form schema
+
+A form schema is a **strict subset** of the corresponding canonical
+OpenAPI construct, capturing only the fields the user fills in.
+Server-generated fields (`publishedVersion`, `class`, `snapshotURL`,
+audit timestamps, ids, …) are intentionally absent. Presentation
+hints — `x-rjsf-grid-area`, `format: textarea`, `x-encode-in-uri`,
+default values — layer on top.
+
+A form schema **must not**:
+- introduce a property not present in the canonical construct;
+- declare a `type` that disagrees with the canonical;
+- list an enum value (top-level or in `items.enum`) that the
+  canonical does not allow;
+- require a field the canonical does not define.
+
+### Enforcement
+
+`validation/forms_test.go` (`TestFormSchemasAreSubsetOfCanonical`)
+walks every entry in its case table and asserts each of the four
+rules above. Add new constructs to the case table in the same PR
+that introduces them. Run via `go test ./validation/...` (or
+`make validate-schemas`).
+
+A second test, `TestFormSchemasIndexExportsExist`, walks the
+`typescript/forms/` tree and fails if a `*.json` file lacks a
+sibling `index.ts` that imports it under the canonical name.
+
+### Authoring checklist
+
+When adding a new form schema:
+
+1. Identify the canonical OpenAPI construct (e.g.
+   `schemas/constructs/v1beta3/workspace/workspace.yaml`).
+2. Create `typescript/forms/<version>/<construct>/<action>.json`
+   with only the user-input subset of fields, plus presentation
+   hints. Use the same field names, types, and enum values as the
+   canonical.
+3. Create `typescript/forms/<version>/<construct>/<action>.ui.json`
+   for `ui:order`, `ui:widget`, etc.
+4. Create or extend `typescript/forms/<version>/<construct>/index.ts`
+   with typed `<Construct><Action>RjsfSchemaV<Version>` /
+   `<Construct><Action>RjsfUiSchemaV<Version>` exports.
+5. Re-export from `typescript/forms/index.ts` and from
+   `typescript/index.ts`.
+6. Add a row to the `cases` table in
+   `validation/forms_test.go::TestFormSchemasAreSubsetOfCanonical`.
+7. Run `go test ./validation/...` and `npm run build` locally.
+
 ## Go helper files
 
 Auto-generated Go structs (`models/<version>/<construct>/<construct>.go`) are committed by the artifact-generation workflow on `master`. Do not edit them by hand; the manually written helpers below are the files contributors should maintain directly:
