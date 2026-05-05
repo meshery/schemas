@@ -349,17 +349,18 @@ A form schema **must not**:
 
 ### Enforcement
 
-`validation/forms_test.go` (`TestFormSchemasAreSubsetOfCanonical`)
-walks every entry in its case table and asserts each of the four
-rules above. Add new constructs to the case table in the same PR
-that introduces them. Run via `go test ./validation/...` (or
-`make validate-schemas`).
+The form-schema contract is enforced by five Go tests in
+`validation/forms_test.go`. All run as part of `go test ./validation/...`
+(or `make validate-schemas`). Drift in any one of them is a CI
+blocker.
 
-A second test, `TestFormSchemasIndexExportsExist`, walks every
-`schemas/constructs/<version>/<construct>/forms/*.json` and fails
-if `typescript/forms/index.ts` does not import that file. This
-catches the common authoring mistake of adding a new form JSON
-without wiring it through the public package surface.
+| Test | What it gates |
+|---|---|
+| `TestFormSchemasAreSubsetOfCanonical` | Each form is a strict subset of its canonical OpenAPI construct: every form property exists in canonical with matching `type`; every top-level / `items.enum` value is a subset of the canonical's enum; every `required` name exists in canonical. Recursive into nested objects + array items, gated on canonical having structure to compare against. Walks the package-level `formCases` slice. |
+| `TestEveryFormJsonHasCaseTableEntry` | Every `schemas/constructs/<v>/<c>/forms/*.json` (excluding `.ui.json`) appears in `formCases`. Catches the silent-failure case where a form ships AND gets exported but the subset rule is never asserted for it. |
+| `TestEveryFormHasUiSchemaPair` | Every `<action>.json` is paired with an `<action>.ui.json` and vice versa. Catches half-authored forms. |
+| `TestFormExportsFollowVersionConvention` | Every export in `typescript/forms/index.ts` bound to a form-JSON import ends in `RjsfSchemaV<Version>` (or `RjsfUiSchemaV<Version>`), with `<Version>` matching the version directory of the imported file (e.g. `V1Beta2` from `.../v1beta2/...`). Catches version-suffix drift between the path and the export name. |
+| `TestFormSchemasIndexExportsExist` | Every `schemas/constructs/<v>/<c>/forms/*.json` is imported by `typescript/forms/index.ts`. Catches the "added a JSON but forgot to wire it up" mistake. |
 
 ### Authoring checklist
 
@@ -375,10 +376,17 @@ When adding a new form schema:
    for `ui:order`, `ui:widget`, etc.
 4. Add an `import` and a typed `<Construct><Action>RjsfSchemaV<Version>` /
    `<Construct><Action>RjsfUiSchemaV<Version>` re-export in
-   `typescript/forms/index.ts`.
-5. Add a row to the `cases` table in
-   `validation/forms_test.go::TestFormSchemasAreSubsetOfCanonical`.
+   `typescript/forms/index.ts`. The version segment in the export
+   name (e.g. `V1Beta2`) must match the version directory of the
+   imported JSON (`.../v1beta2/...`); the
+   `TestFormExportsFollowVersionConvention` guard enforces this.
+5. Append a row to `formCases` in `validation/forms_test.go`. This
+   is mandatory — `TestEveryFormJsonHasCaseTableEntry` will fail
+   the build if you ship a form file without a corresponding
+   subset assertion.
 6. Run `go test ./validation/...` and `npm run build` locally.
+   The full guard set is steps 1–5 above; tests will tell you
+   which one you missed.
 
 ## Go helper files
 

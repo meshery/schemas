@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"runtime"
 	"sort"
 	"strings"
@@ -32,47 +33,59 @@ import (
 // This is the core enforcement for meshery/schemas#866 — it prevents the
 // drift that motivated moving form schemas from layer5io/sistent into
 // this canonical home.
-func TestFormSchemasAreSubsetOfCanonical(t *testing.T) {
-	cases := []struct {
-		name      string
-		canonical string // path relative to repo root
-		form      string // path relative to repo root
-	}{
-		{
-			name:      "v1beta2/catalog/publish",
-			canonical: "schemas/constructs/v1beta2/catalog/catalog.yaml",
-			form:      "schemas/constructs/v1beta2/catalog/forms/publish.json",
-		},
-		{
-			name:      "v1beta3/environment/createOrEdit",
-			canonical: "schemas/constructs/v1beta3/environment/environment.yaml",
-			form:      "schemas/constructs/v1beta3/environment/forms/createOrEdit.json",
-		},
-		{
-			name:      "v1beta3/workspace/createOrEdit",
-			canonical: "schemas/constructs/v1beta3/workspace/workspace.yaml",
-			form:      "schemas/constructs/v1beta3/workspace/forms/createOrEdit.json",
-		},
-		{
-			name:      "v1beta1/credential/kubernetes",
-			canonical: "schemas/constructs/v1beta1/credential/api.yml#/components/schemas/Credential",
-			form:      "schemas/constructs/v1beta1/credential/forms/kubernetes.json",
-		},
-		{
-			name:      "v1beta1/credential/grafana",
-			canonical: "schemas/constructs/v1beta1/credential/api.yml#/components/schemas/Credential",
-			form:      "schemas/constructs/v1beta1/credential/forms/grafana.json",
-		},
-		{
-			name:      "v1beta1/credential/prometheus",
-			canonical: "schemas/constructs/v1beta1/credential/api.yml#/components/schemas/Credential",
-			form:      "schemas/constructs/v1beta1/credential/forms/prometheus.json",
-		},
-	}
+// formCase pairs a form-schema JSON with its canonical OpenAPI source.
+// Every entry under `schemas/constructs/<v>/<c>/forms/*.json` (the
+// forms tree of record) MUST appear here — the
+// TestEveryFormJsonHasCaseTableEntry guard makes that mandatory.
+type formCase struct {
+	name      string
+	canonical string // path relative to repo root; may carry a `#/components/schemas/X` fragment
+	form      string // path relative to repo root
+}
 
+// formCases is package-level so adjacent tests
+// (TestEveryFormJsonHasCaseTableEntry, etc.) can read it. Adding a
+// new form schema means: (1) author the JSON files under
+// schemas/constructs/<v>/<c>/forms/, (2) add an import + named
+// re-export in typescript/forms/index.ts, (3) append a row here.
+// All three are enforced by tests in this file.
+var formCases = []formCase{
+	{
+		name:      "v1beta2/catalog/publish",
+		canonical: "schemas/constructs/v1beta2/catalog/catalog.yaml",
+		form:      "schemas/constructs/v1beta2/catalog/forms/publish.json",
+	},
+	{
+		name:      "v1beta3/environment/createOrEdit",
+		canonical: "schemas/constructs/v1beta3/environment/environment.yaml",
+		form:      "schemas/constructs/v1beta3/environment/forms/createOrEdit.json",
+	},
+	{
+		name:      "v1beta3/workspace/createOrEdit",
+		canonical: "schemas/constructs/v1beta3/workspace/workspace.yaml",
+		form:      "schemas/constructs/v1beta3/workspace/forms/createOrEdit.json",
+	},
+	{
+		name:      "v1beta1/credential/kubernetes",
+		canonical: "schemas/constructs/v1beta1/credential/api.yml#/components/schemas/Credential",
+		form:      "schemas/constructs/v1beta1/credential/forms/kubernetes.json",
+	},
+	{
+		name:      "v1beta1/credential/grafana",
+		canonical: "schemas/constructs/v1beta1/credential/api.yml#/components/schemas/Credential",
+		form:      "schemas/constructs/v1beta1/credential/forms/grafana.json",
+	},
+	{
+		name:      "v1beta1/credential/prometheus",
+		canonical: "schemas/constructs/v1beta1/credential/api.yml#/components/schemas/Credential",
+		form:      "schemas/constructs/v1beta1/credential/forms/prometheus.json",
+	},
+}
+
+func TestFormSchemasAreSubsetOfCanonical(t *testing.T) {
 	repoRoot := repoRootDir(t)
 
-	for _, tc := range cases {
+	for _, tc := range formCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			canonical := loadYAMLSchema(t, filepath.Join(repoRoot, tc.canonical))
@@ -80,6 +93,294 @@ func TestFormSchemasAreSubsetOfCanonical(t *testing.T) {
 
 			assertFormSubsetOfCanonical(t, form, canonical)
 		})
+	}
+}
+
+// formJsonFiles walks `schemas/constructs/<v>/<c>/forms/` and returns
+// every `*.json` file that is NOT a `*.ui.json`. Used by the form-schema
+// guard tests below; ui-schema files are paired separately by
+// TestEveryFormHasUiSchemaPair.
+func formJsonFiles(t *testing.T) []string {
+	t.Helper()
+	repoRoot := repoRootDir(t)
+	constructsDir := filepath.Join(repoRoot, "schemas", "constructs")
+
+	var out []string
+	err := filepath.Walk(constructsDir, func(p string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() {
+			return nil
+		}
+		name := info.Name()
+		if !strings.HasSuffix(name, ".json") || strings.HasSuffix(name, ".ui.json") {
+			return nil
+		}
+		// Only count files inside a `forms/` directory.
+		if filepath.Base(filepath.Dir(p)) != "forms" {
+			return nil
+		}
+		rel, err := filepath.Rel(repoRoot, p)
+		if err != nil {
+			return err
+		}
+		out = append(out, filepath.ToSlash(rel))
+		return nil
+	})
+	if err != nil {
+		t.Fatalf("walk %s: %v", constructsDir, err)
+	}
+	return out
+}
+
+// TestEveryFormJsonHasCaseTableEntry guards against the worst silent
+// failure: a form schema lands under schemas/constructs/<v>/<c>/forms/
+// AND gets an export in typescript/forms/index.ts (so the public
+// surface looks correct), but no row in `formCases` — meaning
+// TestFormSchemasAreSubsetOfCanonical never asserts the subset rule
+// for that form. The form would render fine in the UI yet drift
+// against the canonical OpenAPI would never be checked.
+func TestEveryFormJsonHasCaseTableEntry(t *testing.T) {
+	known := make(map[string]struct{}, len(formCases))
+	for _, c := range formCases {
+		known[c.form] = struct{}{}
+	}
+
+	missing := []string{}
+	for _, jf := range formJsonFiles(t) {
+		if _, ok := known[jf]; !ok {
+			missing = append(missing, jf)
+		}
+	}
+	if len(missing) == 0 {
+		return
+	}
+	sort.Strings(missing)
+	t.Fatalf("the following form JSON files have no row in formCases (TestFormSchemasAreSubsetOfCanonical) — add them so the subset rule is actually enforced for these forms:\n  %s",
+		strings.Join(missing, "\n  "))
+}
+
+// TestEveryFormHasUiSchemaPair enforces the layout rule that every
+// `<action>.json` carries a sibling `<action>.ui.json` and vice
+// versa. Half-authored forms (schema without UI hints, or vice
+// versa) are nearly always a bug — the consumer expects both.
+func TestEveryFormHasUiSchemaPair(t *testing.T) {
+	repoRoot := repoRootDir(t)
+	constructsDir := filepath.Join(repoRoot, "schemas", "constructs")
+
+	// Collect every json under any forms/ directory, separated into
+	// schema and ui-schema sets keyed by the action stem.
+	type stem struct {
+		hasSchema   bool
+		hasUiSchema bool
+	}
+	stems := map[string]*stem{}
+
+	err := filepath.Walk(constructsDir, func(p string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() {
+			return nil
+		}
+		name := info.Name()
+		if filepath.Base(filepath.Dir(p)) != "forms" {
+			return nil
+		}
+		if !strings.HasSuffix(name, ".json") {
+			return nil
+		}
+		dir, err := filepath.Rel(repoRoot, filepath.Dir(p))
+		if err != nil {
+			return err
+		}
+		dir = filepath.ToSlash(dir)
+		var key string
+		if strings.HasSuffix(name, ".ui.json") {
+			key = dir + "/" + strings.TrimSuffix(name, ".ui.json")
+			s := stems[key]
+			if s == nil {
+				s = &stem{}
+				stems[key] = s
+			}
+			s.hasUiSchema = true
+		} else {
+			key = dir + "/" + strings.TrimSuffix(name, ".json")
+			s := stems[key]
+			if s == nil {
+				s = &stem{}
+				stems[key] = s
+			}
+			s.hasSchema = true
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatalf("walk %s: %v", constructsDir, err)
+	}
+
+	missingUi := []string{}
+	missingSchema := []string{}
+	for k, s := range stems {
+		switch {
+		case s.hasSchema && !s.hasUiSchema:
+			missingUi = append(missingUi, k+".ui.json")
+		case !s.hasSchema && s.hasUiSchema:
+			missingSchema = append(missingSchema, k+".json")
+		}
+	}
+	sort.Strings(missingUi)
+	sort.Strings(missingSchema)
+
+	if len(missingUi) > 0 {
+		t.Errorf("the following form schemas are missing a sibling .ui.json (every <action>.json must pair with an <action>.ui.json containing presentation hints — even if it's just `{ \"ui:order\": [...] }`):\n  %s",
+			strings.Join(missingUi, "\n  "))
+	}
+	if len(missingSchema) > 0 {
+		t.Errorf("the following ui-schemas are missing a sibling .json schema (orphaned UI hints — either author the schema or delete the UI file):\n  %s",
+			strings.Join(missingSchema, "\n  "))
+	}
+}
+
+// formIndexImportPattern matches a top-level
+//
+//	import <local> from "../../schemas/constructs/<v>/<c>/forms/<action>.[ui.]json";
+//
+// statement in typescript/forms/index.ts. Submatches:
+//
+//	1: local binding name
+//	2: version segment (e.g. v1beta2)
+//	3: construct segment (e.g. catalog)
+//	4: action segment (e.g. publish or createOrEdit)
+//	5: ".ui" if it's a ui-schema import, "" otherwise
+var formIndexImportPattern = regexp.MustCompile(
+	`(?m)^import\s+(\w+)\s+from\s+"(?:\.\./)+schemas/constructs/(v[^/]+)/([^/]+)/forms/([^/.]+)(\.ui)?\.json"\s*;`,
+)
+
+// formIndexExportPattern matches a top-level
+//
+//	export const <Name> = <local> as <Type>;
+//
+// statement (with optional surrounding whitespace and `RJSFSchema`
+// or `UiSchema` cast types).
+var formIndexExportPattern = regexp.MustCompile(
+	`(?m)^export\s+const\s+(\w+)\s*=\s*(\w+)\s*(?:as\s+(?:RJSFSchema|UiSchema))?\s*;`,
+)
+
+// titleCaseSegment uppercases the first character of `s`. Used to
+// derive `<Construct>`, `<Action>`, and the version-segment-as-suffix
+// from path components.
+func titleCaseSegment(s string) string {
+	if s == "" {
+		return s
+	}
+	return strings.ToUpper(s[:1]) + s[1:]
+}
+
+// expectedExportSuffix derives the canonical export-name suffix that
+// must appear at the end of an export bound to a form-JSON import.
+// e.g. import path .../v1beta2/catalog/forms/publish.json (schema)
+// →  expected suffix RjsfSchemaV1Beta2  (with construct+action prefix
+// up to the caller).
+func expectedVersionSuffix(versionSegment string) string {
+	// versionSegment is `v1beta2`, `v1alpha3`, etc. Convert to
+	// `V1Beta2` / `V1Alpha3` by Title-casing each token boundary.
+	if versionSegment == "" {
+		return ""
+	}
+	// Split on the alpha/beta boundary to title-case each piece.
+	out := strings.Builder{}
+	out.Grow(len(versionSegment))
+	upperNext := true
+	for _, r := range versionSegment {
+		if upperNext {
+			out.WriteRune(toUpperRune(r))
+			upperNext = false
+		} else {
+			out.WriteRune(r)
+		}
+		// After a digit, next alpha char gets uppercased
+		// (so `v1beta2` → `V1Beta2`).
+		if r >= '0' && r <= '9' {
+			upperNext = true
+		}
+	}
+	return out.String()
+}
+
+func toUpperRune(r rune) rune {
+	if r >= 'a' && r <= 'z' {
+		return r - 32
+	}
+	return r
+}
+
+// TestFormExportsFollowVersionConvention parses
+// typescript/forms/index.ts and asserts every export bound to a form
+// JSON import follows the
+// `<Construct><Action>RjsfSchemaV<Version>` (or
+// `<Construct><Action>RjsfUiSchemaV<Version>`) naming convention,
+// with the V-suffix matching the version directory of the imported
+// file.
+//
+// The `<Construct>` and `<Action>` halves are NOT positional-checked
+// (some forms front-load the kind, e.g. KubernetesCredential…), but
+// the suffix and the schema-vs-uiSchema discrimination are.
+func TestFormExportsFollowVersionConvention(t *testing.T) {
+	repoRoot := repoRootDir(t)
+	indexPath := filepath.Join(repoRoot, "typescript", "forms", "index.ts")
+	raw, err := os.ReadFile(indexPath)
+	if err != nil {
+		t.Fatalf("read %s: %v", indexPath, err)
+	}
+	src := string(raw)
+
+	// localName → expected suffix (e.g. publishCatalogSchema → RjsfSchemaV1Beta2).
+	type bindingInfo struct {
+		isUi    bool
+		version string // e.g. V1Beta2
+	}
+	bindings := map[string]bindingInfo{}
+	for _, m := range formIndexImportPattern.FindAllStringSubmatch(src, -1) {
+		local, version, _, _, isUi := m[1], m[2], m[3], m[4], m[5]
+		bindings[local] = bindingInfo{
+			isUi:    isUi == ".ui",
+			version: expectedVersionSuffix(version),
+		}
+	}
+
+	if len(bindings) == 0 {
+		t.Fatalf("no form-JSON imports found in %s — the regex may have drifted from the file shape; check formIndexImportPattern", indexPath)
+	}
+
+	violations := []string{}
+	for _, m := range formIndexExportPattern.FindAllStringSubmatch(src, -1) {
+		exportName, local := m[1], m[2]
+		bi, ok := bindings[local]
+		if !ok {
+			// Export not bound to a form JSON (e.g. a re-export
+			// of a constant from elsewhere). Out of scope for
+			// this rule.
+			continue
+		}
+		var wantSuffix string
+		if bi.isUi {
+			wantSuffix = "RjsfUiSchema" + bi.version
+		} else {
+			wantSuffix = "RjsfSchema" + bi.version
+		}
+		if !strings.HasSuffix(exportName, wantSuffix) {
+			violations = append(violations,
+				fmt.Sprintf("export %q (bound to %q) must end in %q (its source JSON is at version %s; %s convention)",
+					exportName, local, wantSuffix, bi.version,
+					map[bool]string{true: "ui-schema", false: "schema"}[bi.isUi]))
+		}
+	}
+	sort.Strings(violations)
+	if len(violations) > 0 {
+		t.Errorf("form export naming convention violations:\n  %s",
+			strings.Join(violations, "\n  "))
 	}
 }
 
