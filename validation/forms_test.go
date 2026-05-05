@@ -115,6 +115,12 @@ func dirExists(p string) bool {
 
 // schemaNode mirrors the subset of OpenAPI / JSON Schema fields the
 // subset-validator actually inspects. Unknown fields are ignored.
+//
+// `OneOf` / `AllOf` / `AnyOf` are captured so the loader doesn't drop
+// composition keywords; the assertion logic flattens canonical
+// composition into a merged property map before subset-checking
+// (composition members are treated as additive — every property
+// declared by any branch is allowed in the form).
 type schemaNode struct {
 	Type       string                 `yaml:"type"       json:"type"`
 	Properties map[string]*schemaNode `yaml:"properties" json:"properties"`
@@ -122,6 +128,50 @@ type schemaNode struct {
 	Items      *schemaNode            `yaml:"items"      json:"items"`
 	Enum       []any                  `yaml:"enum"       json:"enum"`
 	OneOf      []*schemaNode          `yaml:"oneOf"      json:"oneOf"`
+	AllOf      []*schemaNode          `yaml:"allOf"      json:"allOf"`
+	AnyOf      []*schemaNode          `yaml:"anyOf"      json:"anyOf"`
+}
+
+// flattenedProperties returns the canonical's effective property set,
+// merging contributions from `properties`, `allOf`, `anyOf`, `oneOf`.
+// For subset-checking we treat composition as additive — a form field
+// is acceptable if ANY branch of the canonical declares it.
+func (s *schemaNode) flattenedProperties() map[string]*schemaNode {
+	out := make(map[string]*schemaNode)
+	for k, v := range s.Properties {
+		out[k] = v
+	}
+	for _, branch := range s.AllOf {
+		if branch == nil {
+			continue
+		}
+		for k, v := range branch.flattenedProperties() {
+			if _, exists := out[k]; !exists {
+				out[k] = v
+			}
+		}
+	}
+	for _, branch := range s.AnyOf {
+		if branch == nil {
+			continue
+		}
+		for k, v := range branch.flattenedProperties() {
+			if _, exists := out[k]; !exists {
+				out[k] = v
+			}
+		}
+	}
+	for _, branch := range s.OneOf {
+		if branch == nil {
+			continue
+		}
+		for k, v := range branch.flattenedProperties() {
+			if _, exists := out[k]; !exists {
+				out[k] = v
+			}
+		}
+	}
+	return out
 }
 
 // loadYAMLSchema reads a YAML schema file. The path may optionally carry a
@@ -204,69 +254,150 @@ func loadJSONSchema(t *testing.T, path string) *schemaNode {
 
 func assertFormSubsetOfCanonical(t *testing.T, form, canonical *schemaNode) {
 	t.Helper()
+	assertFormSubsetAtPath(t, form, canonical, "")
+}
 
-	if canonical.Properties == nil {
-		t.Fatalf("canonical has no properties — wrong file or empty schema?")
+// assertFormSubsetAtPath recursively walks the form tree, asserting at
+// each node that the form is a strict subset of the canonical at that
+// position. `path` is dotted human-readable (e.g. "metadata.theme.id"
+// or "compatibility[]") so error messages pin the exact field.
+func assertFormSubsetAtPath(t *testing.T, form, canonical *schemaNode, path string) {
+	t.Helper()
+	canonProps := canonical.flattenedProperties()
+
+	if canonical == nil || (canonProps == nil && canonical.Items == nil) {
+		t.Fatalf("canonical at %q has neither properties nor items — wrong file or empty schema?", pathOrRoot(path))
 	}
-	if form.Properties == nil {
+	if path == "" && form.Properties == nil {
 		t.Fatalf("form schema has no properties — empty form?")
 	}
 
 	// Every form field must exist in canonical, with matching type and a
 	// subset of canonical's enum (if any).
-	formFields := sortedKeys(form.Properties)
-	for _, name := range formFields {
+	for _, name := range sortedKeys(form.Properties) {
 		formField := form.Properties[name]
-		canField, ok := canonical.Properties[name]
+		canField, ok := canonProps[name]
+		fieldPath := joinPath(path, name)
 		if !ok {
-			t.Errorf("form field %q is not defined in canonical OpenAPI; remove the field, or add it to the canonical and regenerate", name)
+			t.Errorf("form field %q is not defined in canonical OpenAPI; remove the field, or add it to the canonical and regenerate", fieldPath)
 			continue
 		}
 
-		if formField.Type != "" && canField.Type != "" && formField.Type != canField.Type {
+		// Type-match (subset semantics):
+		//   - canonical sets type, form sets a DIFFERENT type   → FAIL
+		//   - canonical sets type, form omits type              → FAIL
+		//     (form would silently accept values canonical rejects)
+		//   - canonical omits type, form sets any type          → OK
+		//     (form is narrower than canonical, valid subset.
+		//     This is the common $ref case where the canonical's
+		//     resolved type isn't visible to this shallow parser.)
+		//   - both omit                                         → OK
+		switch {
+		case canField.Type != "" && formField.Type == "":
+			t.Errorf("form field %q has no type but canonical declares type %q (form must explicitly declare the same type, otherwise it would accept values canonical rejects)",
+				fieldPath, canField.Type)
+		case canField.Type != "" && formField.Type != canField.Type:
 			t.Errorf("form field %q type %q != canonical type %q",
-				name, formField.Type, canField.Type)
+				fieldPath, formField.Type, canField.Type)
 		}
 
 		// Top-level enum subset check.
-		if len(formField.Enum) > 0 {
-			if !enumSubset(formField.Enum, canField.Enum) {
-				t.Errorf("form field %q enum %v is not a subset of canonical enum %v",
-					name, formField.Enum, canField.Enum)
+		if len(formField.Enum) > 0 && !enumSubset(formField.Enum, canField.Enum) {
+			t.Errorf("form field %q enum %v is not a subset of canonical enum %v",
+				fieldPath, formField.Enum, canField.Enum)
+		}
+
+		// Array items: type, enum, and (recursively) properties must
+		// all be subsets.
+		if formField.Items != nil {
+			if canField.Items == nil {
+				t.Errorf("form field %q has items but canonical %q has no items definition",
+					fieldPath, fieldPath)
+				continue
+			}
+			if formField.Items.Type != canField.Items.Type {
+				t.Errorf("form field %q items.type %q != canonical items.type %q",
+					fieldPath, formField.Items.Type, canField.Items.Type)
+			}
+			if len(formField.Items.Enum) > 0 && !enumSubset(formField.Items.Enum, canField.Items.Enum) {
+				t.Errorf("form field %q items.enum %v is not a subset of canonical items.enum %v",
+					fieldPath, formField.Items.Enum, canField.Items.Enum)
+			}
+			// Recurse into items.properties only if canonical's items
+			// has structure to compare against. A canonical
+			// `items: { type: object }` with no `properties` is a
+			// free-form map; the form may specify a kind-specific
+			// shape inside.
+			if formField.Items.Properties != nil && hasNestedStructure(canField.Items) {
+				assertFormSubsetAtPath(t, formField.Items, canField.Items, fieldPath+"[]")
 			}
 		}
 
-		// items.enum subset check (arrays).
-		if formField.Items != nil && len(formField.Items.Enum) > 0 {
-			if canField.Items == nil {
-				t.Errorf("form field %q has items.enum but canonical %q has no items definition",
-					name, name)
-				continue
-			}
-			if !enumSubset(formField.Items.Enum, canField.Items.Enum) {
-				t.Errorf("form field %q items.enum %v is not a subset of canonical items.enum %v",
-					name, formField.Items.Enum, canField.Items.Enum)
-			}
+		// Recurse into nested object properties only when canonical
+		// has nested structure to compare against. Canonical fields
+		// declared as bare `type: object` without `properties` /
+		// `allOf` / `anyOf` / `oneOf` are free-form maps (e.g.
+		// kind-specific credential `secret`, connection `metadata`);
+		// forms are free to specify a kind-specific shape inside
+		// them. Add a per-kind canonical submodel + a roadmap entry
+		// if you need stricter nested validation.
+		if formField.Properties != nil && hasNestedStructure(canField) {
+			assertFormSubsetAtPath(t, formField, canField, fieldPath)
 		}
 	}
 
-	// Every name in form.required must exist in canonical.properties.
-	// (form.required need not be a subset of canonical.required — a form
-	// can require a field the canonical merely allows.)
+	// Required: every name in form.required must exist in
+	// canonical.properties (the flattened set, so canonical-side
+	// composition is honored). form.required need not be a subset of
+	// canonical.required — a form can require a field the canonical
+	// merely allows.
 	for _, name := range form.Required {
-		if _, ok := canonical.Properties[name]; !ok {
-			t.Errorf("form requires field %q which is not defined in canonical OpenAPI", name)
+		if _, ok := canonProps[name]; !ok {
+			t.Errorf("form at %q requires field %q which is not defined in canonical OpenAPI",
+				pathOrRoot(path), name)
 		}
 	}
 
 	// Every name in form.required must also be in form.properties (this
 	// catches typos in the required list).
-	formProps := form.Properties
 	for _, name := range form.Required {
-		if _, ok := formProps[name]; !ok {
-			t.Errorf("form.required lists %q which is not in form.properties", name)
+		if _, ok := form.Properties[name]; !ok {
+			t.Errorf("form at %q has required %q which is not in form.properties",
+				pathOrRoot(path), name)
 		}
 	}
+}
+
+// hasNestedStructure reports whether a canonical schema node has any
+// nested-property definition the form should be subset-checked against.
+// A canonical with `type: object` but no `properties` / composition
+// keywords is treated as a free-form map; recursing into it would
+// incorrectly flag any kind-specific shape the form chose to expose.
+func hasNestedStructure(s *schemaNode) bool {
+	if s == nil {
+		return false
+	}
+	if len(s.Properties) > 0 {
+		return true
+	}
+	if len(s.AllOf) > 0 || len(s.AnyOf) > 0 || len(s.OneOf) > 0 {
+		return true
+	}
+	return false
+}
+
+func joinPath(parent, child string) string {
+	if parent == "" {
+		return child
+	}
+	return parent + "." + child
+}
+
+func pathOrRoot(path string) string {
+	if path == "" {
+		return "<root>"
+	}
+	return path
 }
 
 func enumSubset(child, parent []any) bool {

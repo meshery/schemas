@@ -50,9 +50,11 @@ that:
    `meshery-cloud`, etc.) stays unchanged because the export names
    don't move; only their origin does.
 3. `meshery-cloud`'s ESLint guard + Jest architecture test
-   ([CLAUDE.md § Form Schema Source-of-Truth](https://github.com/layer5io/meshery-cloud/blob/master/AGENTS.md))
+   ([AGENTS.md § Form Schema Source-of-Truth](https://github.com/layer5io/meshery-cloud/blob/master/AGENTS.md))
    ratchets shut as each pending file's import flips to
-   `@meshery/schemas` directly.
+   `@meshery/schemas` directly. (`AGENTS.md` is symlinked from
+   `CLAUDE.md` in that repo, so either path resolves to the same
+   document.)
 
 ## Scope — 10 forms
 

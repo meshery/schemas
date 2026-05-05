@@ -5,7 +5,7 @@
  * and are validated against the corresponding canonical OpenAPI
  * construct by `validation/forms_test.go`. See
  * `docs/form-schemas-roadmap.md` for the migration plan and
- * `AGENTS.md` § Form Schemas for authoring conventions.
+ * `AGENTS.md` § Canonical RJSF form schemas for authoring conventions.
  */
 
 export {
