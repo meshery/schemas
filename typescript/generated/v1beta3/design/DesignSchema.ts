@@ -13119,6 +13119,39 @@ const DesignSchema: Record<string, unknown> = {
           }
         }
       },
+      "MesheryPatternImportFormPayload": {
+        "type": "object",
+        "description": "Flat canonical representation of the design import form that combines the discriminator field with the union of properties from MesheryPatternImportFilePayload and MesheryPatternImportURLPayload. This schema is the authoritative source for the canonical RJSF form schema at schemas/constructs/v1beta3/design/forms/import.json. The server receives either a File-import payload or a URL-import payload (as defined by MesheryPatternImportRequestBody); this form schema captures the superset of user-facing fields so the form schema can be validated as a subset of this canonical type.\n",
+        "properties": {
+          "name": {
+            "type": "string",
+            "default": "Untitled Design",
+            "description": "Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "uploadType": {
+            "type": "string",
+            "title": "Upload method",
+            "x-enum-casing-exempt": true,
+            "enum": [
+              "File Upload",
+              "URL Import"
+            ],
+            "description": "UI-level discriminator that controls which import variant the form submits. The client maps \"File Upload\" to MesheryPatternImportFilePayload and \"URL Import\" to MesheryPatternImportURLPayload before calling the API.\n"
+          },
+          "file": {
+            "type": "string",
+            "format": "byte",
+            "description": "Base64-encoded file bytes. Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs."
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "A direct URL to a single file. Ensure the resource is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design."
+          }
+        }
+      },
       "DesignPreferences": {
         "type": "object",
         "description": "Design-level preferences",

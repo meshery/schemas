@@ -80,6 +80,31 @@ var formCases = []formCase{
 		canonical: "schemas/constructs/v1beta1/credential/api.yml#/components/schemas/Credential",
 		form:      "schemas/constructs/v1beta1/credential/forms/prometheus.json",
 	},
+	{
+		name:      "v1beta3/design/import",
+		canonical: "schemas/constructs/v1beta3/design/api.yml#/components/schemas/MesheryPatternImportFormPayload",
+		form:      "schemas/constructs/v1beta3/design/forms/import.json",
+	},
+	{
+		name:      "v1beta2/model/import",
+		canonical: "schemas/constructs/v1beta2/model/api.yml#/components/schemas/MesheryModelImportFormPayload",
+		form:      "schemas/constructs/v1beta2/model/forms/import.json",
+	},
+	{
+		name:      "v1beta3/filter/import",
+		canonical: "schemas/constructs/v1beta3/filter/api.yml#/components/schemas/MesheryFilterImportFormPayload",
+		form:      "schemas/constructs/v1beta3/filter/forms/import.json",
+	},
+	{
+		name:      "v1beta3/connection/helmCreate",
+		canonical: "schemas/constructs/v1beta3/connection/connection.yaml",
+		form:      "schemas/constructs/v1beta3/connection/forms/helmCreate.json",
+	},
+	{
+		name:      "v1beta1/support/helpAndSupport",
+		canonical: "schemas/constructs/v1beta1/support/api.yml#/components/schemas/SupportRequest",
+		form:      "schemas/constructs/v1beta1/support/forms/helpAndSupport.json",
+	},
 }
 
 func TestFormSchemasAreSubsetOfCanonical(t *testing.T) {

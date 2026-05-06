@@ -461,6 +461,25 @@ export interface components {
        */
       config?: string;
     };
+    /** @description Flat canonical representation of the filter import form that combines the UI-level uploadType discriminator with the union of properties from MesheryFilterPayload (filterFile, filterResource). This schema is the authoritative source for the canonical RJSF form schema at schemas/constructs/v1beta3/filter/forms/import.json. The server receives a MesheryFilterPayload; this form schema captures the superset of user-facing fields (including the UI-only uploadType discriminator) so the form schema can be validated as a subset of this canonical type. */
+    MesheryFilterImportFormPayload: {
+      /** @description Human-readable filter name. */
+      name: string;
+      /**
+       * Upload method
+       * @description UI-level discriminator that controls which import variant the form submits. "File Upload" maps to a base64-encoded filterFile body; "URL Upload" maps to a filterResource path/URL.
+       *
+       * @enum {string}
+       */
+      uploadType: "File Upload" | "URL Upload";
+      /**
+       * Format: byte
+       * @description Raw filter source as base64-encoded bytes. Required when uploadType is "File Upload".
+       */
+      filterFile?: string;
+      /** @description Filter resource discriminator describing the body's source format (e.g. WASM module identifier or external resource path). Required when uploadType is "URL Upload". */
+      filterResource?: string;
+    };
   };
   responses: {
     /** Invalid request body or request param */

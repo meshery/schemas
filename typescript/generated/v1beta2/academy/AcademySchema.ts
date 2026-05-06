@@ -8,6 +8,8 @@ const AcademySchema: Record<string, unknown> = {
   "info": {
     "title": "Academy API",
     "description": "OpenAPI schema for Meshery Academy content and curriculum management.",
+    "x-deprecated": true,
+    "x-superseded-by": "v1beta3",
     "version": "v1beta2",
     "contact": {
       "name": "Meshery Maintainers",

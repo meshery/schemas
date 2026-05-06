@@ -39,6 +39,12 @@ const (
 	MesheryPatternVisibilityPublished MesheryPatternVisibility = "published"
 )
 
+// Defines values for MesheryPatternImportFormPayloadUploadType.
+const (
+	FileUpload MesheryPatternImportFormPayloadUploadType = "File Upload"
+	URLImport  MesheryPatternImportFormPayloadUploadType = "URL Import"
+)
+
 // Defines values for MesheryPatternPayloadDesignType.
 const (
 	MesheryPatternPayloadDesignTypeDesign             MesheryPatternPayloadDesignType = "Design"
@@ -211,6 +217,24 @@ type MesheryPatternImportFilePayload struct {
 	// Name Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.
 	Name *string `json:"name,omitempty" yaml:"name,omitempty"`
 }
+
+// MesheryPatternImportFormPayload Flat canonical representation of the design import form that combines the discriminator field with the union of properties from MesheryPatternImportFilePayload and MesheryPatternImportURLPayload. This schema is the authoritative source for the canonical RJSF form schema at schemas/constructs/v1beta3/design/forms/import.json. The server receives either a File-import payload or a URL-import payload (as defined by MesheryPatternImportRequestBody); this form schema captures the superset of user-facing fields so the form schema can be validated as a subset of this canonical type.
+type MesheryPatternImportFormPayload struct {
+	// File Base64-encoded file bytes. Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs.
+	File *[]byte `json:"file,omitempty" yaml:"file,omitempty"`
+
+	// Name Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.
+	Name *string `json:"name,omitempty" yaml:"name,omitempty"`
+
+	// UploadType UI-level discriminator that controls which import variant the form submits. The client maps "File Upload" to MesheryPatternImportFilePayload and "URL Import" to MesheryPatternImportURLPayload before calling the API.
+	UploadType *MesheryPatternImportFormPayloadUploadType `json:"uploadType,omitempty" yaml:"uploadType,omitempty"`
+
+	// Url A direct URL to a single file. Ensure the resource is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design.
+	Url *string `json:"url,omitempty" yaml:"url,omitempty"`
+}
+
+// MesheryPatternImportFormPayloadUploadType UI-level discriminator that controls which import variant the form submits. The client maps "File Upload" to MesheryPatternImportFilePayload and "URL Import" to MesheryPatternImportURLPayload before calling the API.
+type MesheryPatternImportFormPayloadUploadType string
 
 // MesheryPatternImportRequestBody Body for POST /api/pattern/import. Consumed by the server as application/json. Exactly one of two variants must be supplied: a File Import carrying base64-encoded bytes plus a file name, or a URL Import naming a remote location the server will fetch. Sending both variants at once, or neither, is rejected with 400.
 type MesheryPatternImportRequestBody struct {

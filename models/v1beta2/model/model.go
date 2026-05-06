@@ -18,10 +18,17 @@ import (
 
 // Defines values for ImportRequestUploadType.
 const (
-	Csv       ImportRequestUploadType = "csv"
-	File      ImportRequestUploadType = "file"
-	Url       ImportRequestUploadType = "url"
-	UrlImport ImportRequestUploadType = "urlImport"
+	ImportRequestUploadTypeCsv       ImportRequestUploadType = "csv"
+	ImportRequestUploadTypeFile      ImportRequestUploadType = "file"
+	ImportRequestUploadTypeUrl       ImportRequestUploadType = "url"
+	ImportRequestUploadTypeUrlImport ImportRequestUploadType = "urlImport"
+)
+
+// Defines values for MesheryModelImportFormPayloadUploadType.
+const (
+	MesheryModelImportFormPayloadUploadTypeCsv       MesheryModelImportFormPayloadUploadType = "csv"
+	MesheryModelImportFormPayloadUploadTypeFile      MesheryModelImportFormPayloadUploadType = "file"
+	MesheryModelImportFormPayloadUploadTypeUrlImport MesheryModelImportFormPayloadUploadType = "urlImport"
 )
 
 // Defines values for ModelDefinitionStatus.
@@ -97,6 +104,33 @@ type MeshModelModelsPage struct {
 	// TotalCount Total number of items available.
 	TotalCount *int `json:"totalCount,omitempty" yaml:"totalCount,omitempty"`
 }
+
+// MesheryModelImportFormPayload Flat canonical representation of the model import form that combines the UI-level uploadType discriminator with the union of fields from the ImportBody oneOf variants. This schema is the authoritative source for the canonical RJSF form schema at schemas/constructs/v1beta2/model/forms/import.json. The server receives an ImportRequest; this form schema captures the superset of user-facing fields so the form schema can be validated as a subset of this canonical type.
+type MesheryModelImportFormPayload struct {
+	// ComponentCsv CSV file containing component definitions.
+	ComponentCsv *openapi_types.File `json:"componentCsv,omitempty" yaml:"componentCsv,omitempty"`
+
+	// FileName Name of the model file being uploaded.
+	FileName *string `json:"fileName,omitempty" yaml:"fileName,omitempty"`
+
+	// ModelCsv CSV file containing model definitions.
+	ModelCsv *openapi_types.File `json:"modelCsv,omitempty" yaml:"modelCsv,omitempty"`
+
+	// ModelFile Model file content. Supported formats: .tar, .tar.gz, .tgz.
+	ModelFile *string `json:"modelFile,omitempty" yaml:"modelFile,omitempty"`
+
+	// RelationshipCsv CSV file containing relationship definitions.
+	RelationshipCsv *openapi_types.File `json:"relationshipCsv,omitempty" yaml:"relationshipCsv,omitempty"`
+
+	// UploadType Choose the method you prefer. Select 'File Import' or 'CSV Import' if you have the file on your local system, or 'URL Import' if you have the file hosted online.
+	UploadType MesheryModelImportFormPayloadUploadType `json:"uploadType" yaml:"uploadType"`
+
+	// Url A direct URL to a single model file. Supported formats: .tar, .tar.gz, .tgz.
+	Url *string `json:"url,omitempty" yaml:"url,omitempty"`
+}
+
+// MesheryModelImportFormPayloadUploadType Choose the method you prefer. Select 'File Import' or 'CSV Import' if you have the file on your local system, or 'URL Import' if you have the file hosted online.
+type MesheryModelImportFormPayloadUploadType string
 
 // Model Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31).
 type Model struct {

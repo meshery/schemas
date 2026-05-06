@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "Import Filter",
+  "description": "RJSF form schema for the import-filter modal. Captures the user-input fields drawn from the canonical MesheryFilterImportFormPayload schema in meshery/schemas/constructs/v1beta3/filter/api.yml. The uploadType discriminator selects between File Upload and URL Upload import methods. Field shape, types, and required lists MUST stay a subset of the canonical MesheryFilterImportFormPayload; the Go validator at validation/forms_test.go enforces that.",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "title": "Name",
+      "description": "Human-readable filter name.",
+      "x-rjsf-grid-area": "6"
+    },
+    "uploadType": {
+      "type": "string",
+      "title": "Upload method",
+      "enum": ["File Upload", "URL Upload"],
+      "default": "File Upload",
+      "description": "Choose the method you prefer. Select 'File Upload' if you have the filter on your local system, or 'URL Upload' if the filter is hosted online.",
+      "x-rjsf-grid-area": "12"
+    },
+    "filterFile": {
+      "type": "string",
+      "format": "byte",
+      "title": "Filter file",
+      "description": "Raw filter source as base64-encoded bytes. Optional on update — the server preserves the existing body when omitted.",
+      "x-rjsf-grid-area": "12"
+    },
+    "filterResource": {
+      "type": "string",
+      "title": "URL",
+      "description": "Filter resource discriminator describing the body's source format (e.g. WASM module identifier or external resource path).",
+      "x-rjsf-grid-area": "12"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "uploadType": {
+            "const": "File Upload"
+          }
+        }
+      },
+      "then": {
+        "required": ["filterFile"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "uploadType": {
+            "const": "URL Upload"
+          }
+        }
+      },
+      "then": {
+        "required": ["filterResource"]
+      }
+    }
+  ],
+  "required": ["name", "uploadType"]
+}
