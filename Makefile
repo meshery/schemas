@@ -43,6 +43,7 @@ generate-ts:
 ## Bundle Typescript library, json templates, yaml templates
 build-ts: generate-ts
 	npm run build
+	node build/generate-schema-dts.js
 
 ## Publish schemas package to @meshery/schemas on npmjs.com
 publish-ts: build-ts
