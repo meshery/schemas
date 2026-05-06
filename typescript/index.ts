@@ -180,6 +180,13 @@ export {
   WorkspaceCreateOrEditRjsfUiSchemaV1Beta3
 } from "./forms";
 
+// Public types for the canonical RJSF form-schema artifacts. Exported so
+// downstream consumers (sistent, meshery, meshery-cloud) can name the
+// shape when they spread or otherwise derive variants from a canonical
+// schema — without that, tsup's DTS bundler errors on emitted .d.ts
+// references to a type declared but never re-exported. See #871.
+export type { RJSFSchema, UiSchema } from "./forms/types";
+
 export namespace v1beta2 {
   export type Academy =
     V1Beta2AcademyComponents["schemas"]["AcademyCurricula"];
