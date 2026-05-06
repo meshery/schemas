@@ -2,7 +2,6 @@ import { cloudBaseApi as api } from "./api";
 export const addTagTypes = [
   "Feature_Features",
   "Support_Support",
-  "Academy_API_Academy",
   "Badge_Badge",
   "credential_credentials",
   "Key_users",
@@ -15,6 +14,7 @@ export const addTagTypes = [
   "schedule_scheduler",
   "User_users",
   "View_views",
+  "Academy_API_Academy",
   "Connection_API_Connections",
   "Design_designs",
   "Environment_environments",
@@ -49,157 +49,6 @@ const injectedRtkApi = api
       submitSupportRequest: build.mutation<SubmitSupportRequestApiResponse, SubmitSupportRequestApiArg>({
         query: (queryArg) => ({ url: `/api/integrations/support`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Support_Support"],
-      }),
-      getMyAcademyCurricula: build.query<GetMyAcademyCurriculaApiResponse, GetMyAcademyCurriculaApiArg>({
-        query: (queryArg) => ({
-          url: `/api/academy/curricula/registered`,
-          params: {
-            contentType: queryArg?.contentType,
-            orgId: queryArg?.orgId,
-          },
-        }),
-        providesTags: ["Academy_API_Academy"],
-      }),
-      createAcademyCurricula: build.mutation<CreateAcademyCurriculaApiResponse, CreateAcademyCurriculaApiArg>({
-        query: (queryArg) => ({ url: `/api/academy/curricula`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["Academy_API_Academy"],
-      }),
-      getAcademyCurricula: build.query<GetAcademyCurriculaApiResponse, GetAcademyCurriculaApiArg>({
-        query: (queryArg) => ({
-          url: `/api/academy/curricula`,
-          params: {
-            contentType: queryArg?.contentType,
-            visibility: queryArg?.visibility,
-            level: queryArg?.level,
-            orgId: queryArg?.orgId,
-            category: queryArg?.category,
-            status: queryArg?.status,
-            search: queryArg?.search,
-            sort: queryArg?.sort,
-            order: queryArg?.order,
-            pagesize: queryArg?.pagesize,
-            page: queryArg?.page,
-          },
-        }),
-        providesTags: ["Academy_API_Academy"],
-      }),
-      getAcademyContent: build.query<GetAcademyContentApiResponse, GetAcademyContentApiArg>({
-        query: (queryArg) => ({ url: `/api/academy/${queryArg["type"]}/${queryArg.orgId}/${queryArg.slug}` }),
-        providesTags: ["Academy_API_Academy"],
-      }),
-      registerToAcademyContent: build.mutation<RegisterToAcademyContentApiResponse, RegisterToAcademyContentApiArg>({
-        query: (queryArg) => ({ url: `/api/academy/register`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["Academy_API_Academy"],
-      }),
-      withdrawFromAcademyContent: build.mutation<
-        WithdrawFromAcademyContentApiResponse,
-        WithdrawFromAcademyContentApiArg
-      >({
-        query: (queryArg) => ({ url: `/api/academy/curricula/registrations/${queryArg.id}/withdraw`, method: "POST" }),
-        invalidatesTags: ["Academy_API_Academy"],
-      }),
-      updateAcademyCurriculaById: build.mutation<
-        UpdateAcademyCurriculaByIdApiResponse,
-        UpdateAcademyCurriculaByIdApiArg
-      >({
-        query: (queryArg) => ({ url: `/api/academy/curricula/${queryArg.id}`, method: "PUT", body: queryArg.body }),
-        invalidatesTags: ["Academy_API_Academy"],
-      }),
-      deleteAcademyCurriculaById: build.mutation<
-        DeleteAcademyCurriculaByIdApiResponse,
-        DeleteAcademyCurriculaByIdApiArg
-      >({
-        query: (queryArg) => ({ url: `/api/academy/curricula/${queryArg.id}`, method: "DELETE" }),
-        invalidatesTags: ["Academy_API_Academy"],
-      }),
-      getAcademyCurriculaById: build.query<GetAcademyCurriculaByIdApiResponse, GetAcademyCurriculaByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/academy/curricula/${queryArg.id}` }),
-        providesTags: ["Academy_API_Academy"],
-      }),
-      getApiAcademyRegistrationsByContentId: build.query<
-        GetApiAcademyRegistrationsByContentIdApiResponse,
-        GetApiAcademyRegistrationsByContentIdApiArg
-      >({
-        query: (queryArg) => ({
-          url: `/api/academy/registrations/${queryArg.contentId}`,
-          params: {
-            status: queryArg?.status,
-          },
-        }),
-        providesTags: ["Academy_API_Academy"],
-      }),
-      updateCurrentItemInProgressTracker: build.mutation<
-        UpdateCurrentItemInProgressTrackerApiResponse,
-        UpdateCurrentItemInProgressTrackerApiArg
-      >({
-        query: (queryArg) => ({
-          url: `/api/academy/registrations/${queryArg.registrationId}/progress-tracker/update-current-item`,
-          method: "POST",
-          body: queryArg.body,
-        }),
-        invalidatesTags: ["Academy_API_Academy"],
-      }),
-      getTestByAbsPath: build.query<GetTestByAbsPathApiResponse, GetTestByAbsPathApiArg>({
-        query: (queryArg) => ({
-          url: `/api/academy/registrations/tests`,
-          params: {
-            absPath: queryArg?.absPath,
-          },
-        }),
-        providesTags: ["Academy_API_Academy"],
-      }),
-      startTestById: build.mutation<StartTestByIdApiResponse, StartTestByIdApiArg>({
-        query: (queryArg) => ({
-          url: `/api/academy/registrations/test-sessions/start`,
-          method: "POST",
-          body: queryArg.body,
-        }),
-        invalidatesTags: ["Academy_API_Academy"],
-      }),
-      getAllTestSessionsForRegistration: build.query<
-        GetAllTestSessionsForRegistrationApiResponse,
-        GetAllTestSessionsForRegistrationApiArg
-      >({
-        query: (queryArg) => ({
-          url: `/api/academy/registrations/${queryArg.id}/test-sessions`,
-          params: {
-            page: queryArg?.page,
-            pagesize: queryArg?.pagesize,
-            testAbsPath: queryArg?.testAbsPath,
-          },
-        }),
-        providesTags: ["Academy_API_Academy"],
-      }),
-      submitQuiz: build.mutation<SubmitQuizApiResponse, SubmitQuizApiArg>({
-        query: (queryArg) => ({
-          url: `/api/academy/registrations/test-sessions/submit`,
-          method: "POST",
-          body: queryArg.body,
-        }),
-        invalidatesTags: ["Academy_API_Academy"],
-      }),
-      getAcademyAdminSummary: build.query<GetAcademyAdminSummaryApiResponse, GetAcademyAdminSummaryApiArg>({
-        query: () => ({ url: `/api/academy/admin/summary` }),
-        providesTags: ["Academy_API_Academy"],
-      }),
-      getAcademyAdminRegistrations: build.query<
-        GetAcademyAdminRegistrationsApiResponse,
-        GetAcademyAdminRegistrationsApiArg
-      >({
-        query: (queryArg) => ({
-          url: `/api/academy/admin/registrations`,
-          params: {
-            pagesize: queryArg?.pagesize,
-            page: queryArg?.page,
-            contentType: queryArg?.contentType,
-            status: queryArg?.status,
-          },
-        }),
-        providesTags: ["Academy_API_Academy"],
-      }),
-      getCertificateById: build.query<GetCertificateByIdApiResponse, GetCertificateByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/academy/certificates/${queryArg.certificateId}` }),
-        providesTags: ["Academy_API_Academy"],
       }),
       deleteBadgeById: build.mutation<DeleteBadgeByIdApiResponse, DeleteBadgeByIdApiArg>({
         query: (queryArg) => ({ url: `/api/organizations/badges/${queryArg.badgeId}`, method: "DELETE" }),
@@ -670,6 +519,157 @@ const injectedRtkApi = api
       deleteView: build.mutation<DeleteViewApiResponse, DeleteViewApiArg>({
         query: (queryArg) => ({ url: `/api/content/views/${queryArg.viewId}`, method: "DELETE" }),
         invalidatesTags: ["View_views"],
+      }),
+      getMyAcademyCurricula: build.query<GetMyAcademyCurriculaApiResponse, GetMyAcademyCurriculaApiArg>({
+        query: (queryArg) => ({
+          url: `/api/academy/curricula/registered`,
+          params: {
+            contentType: queryArg?.contentType,
+            orgId: queryArg?.orgId,
+          },
+        }),
+        providesTags: ["Academy_API_Academy"],
+      }),
+      createAcademyCurricula: build.mutation<CreateAcademyCurriculaApiResponse, CreateAcademyCurriculaApiArg>({
+        query: (queryArg) => ({ url: `/api/academy/curricula`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Academy_API_Academy"],
+      }),
+      getAcademyCurricula: build.query<GetAcademyCurriculaApiResponse, GetAcademyCurriculaApiArg>({
+        query: (queryArg) => ({
+          url: `/api/academy/curricula`,
+          params: {
+            contentType: queryArg?.contentType,
+            visibility: queryArg?.visibility,
+            level: queryArg?.level,
+            orgId: queryArg?.orgId,
+            category: queryArg?.category,
+            status: queryArg?.status,
+            search: queryArg?.search,
+            sort: queryArg?.sort,
+            order: queryArg?.order,
+            pagesize: queryArg?.pagesize,
+            page: queryArg?.page,
+          },
+        }),
+        providesTags: ["Academy_API_Academy"],
+      }),
+      getAcademyContent: build.query<GetAcademyContentApiResponse, GetAcademyContentApiArg>({
+        query: (queryArg) => ({ url: `/api/academy/${queryArg["type"]}/${queryArg.orgId}/${queryArg.slug}` }),
+        providesTags: ["Academy_API_Academy"],
+      }),
+      registerToAcademyContent: build.mutation<RegisterToAcademyContentApiResponse, RegisterToAcademyContentApiArg>({
+        query: (queryArg) => ({ url: `/api/academy/register`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Academy_API_Academy"],
+      }),
+      withdrawFromAcademyContent: build.mutation<
+        WithdrawFromAcademyContentApiResponse,
+        WithdrawFromAcademyContentApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/academy/curricula/registrations/${queryArg.id}/withdraw`, method: "POST" }),
+        invalidatesTags: ["Academy_API_Academy"],
+      }),
+      updateAcademyCurriculaById: build.mutation<
+        UpdateAcademyCurriculaByIdApiResponse,
+        UpdateAcademyCurriculaByIdApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/academy/curricula/${queryArg.id}`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["Academy_API_Academy"],
+      }),
+      deleteAcademyCurriculaById: build.mutation<
+        DeleteAcademyCurriculaByIdApiResponse,
+        DeleteAcademyCurriculaByIdApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/academy/curricula/${queryArg.id}`, method: "DELETE" }),
+        invalidatesTags: ["Academy_API_Academy"],
+      }),
+      getAcademyCurriculaById: build.query<GetAcademyCurriculaByIdApiResponse, GetAcademyCurriculaByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/academy/curricula/${queryArg.id}` }),
+        providesTags: ["Academy_API_Academy"],
+      }),
+      getApiAcademyRegistrationsByContentId: build.query<
+        GetApiAcademyRegistrationsByContentIdApiResponse,
+        GetApiAcademyRegistrationsByContentIdApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/academy/registrations/${queryArg.contentId}`,
+          params: {
+            status: queryArg?.status,
+          },
+        }),
+        providesTags: ["Academy_API_Academy"],
+      }),
+      updateCurrentItemInProgressTracker: build.mutation<
+        UpdateCurrentItemInProgressTrackerApiResponse,
+        UpdateCurrentItemInProgressTrackerApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/academy/registrations/${queryArg.registrationId}/progress-tracker/update-current-item`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Academy_API_Academy"],
+      }),
+      getTestByAbsPath: build.query<GetTestByAbsPathApiResponse, GetTestByAbsPathApiArg>({
+        query: (queryArg) => ({
+          url: `/api/academy/registrations/tests`,
+          params: {
+            absPath: queryArg?.absPath,
+          },
+        }),
+        providesTags: ["Academy_API_Academy"],
+      }),
+      startTestById: build.mutation<StartTestByIdApiResponse, StartTestByIdApiArg>({
+        query: (queryArg) => ({
+          url: `/api/academy/registrations/test-sessions/start`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Academy_API_Academy"],
+      }),
+      getAllTestSessionsForRegistration: build.query<
+        GetAllTestSessionsForRegistrationApiResponse,
+        GetAllTestSessionsForRegistrationApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/academy/registrations/${queryArg.id}/test-sessions`,
+          params: {
+            page: queryArg?.page,
+            pagesize: queryArg?.pagesize,
+            testAbsPath: queryArg?.testAbsPath,
+          },
+        }),
+        providesTags: ["Academy_API_Academy"],
+      }),
+      submitQuiz: build.mutation<SubmitQuizApiResponse, SubmitQuizApiArg>({
+        query: (queryArg) => ({
+          url: `/api/academy/registrations/test-sessions/submit`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Academy_API_Academy"],
+      }),
+      getAcademyAdminSummary: build.query<GetAcademyAdminSummaryApiResponse, GetAcademyAdminSummaryApiArg>({
+        query: () => ({ url: `/api/academy/admin/summary` }),
+        providesTags: ["Academy_API_Academy"],
+      }),
+      getAcademyAdminRegistrations: build.query<
+        GetAcademyAdminRegistrationsApiResponse,
+        GetAcademyAdminRegistrationsApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/academy/admin/registrations`,
+          params: {
+            pagesize: queryArg?.pagesize,
+            page: queryArg?.page,
+            contentType: queryArg?.contentType,
+            status: queryArg?.status,
+          },
+        }),
+        providesTags: ["Academy_API_Academy"],
+      }),
+      getCertificateById: build.query<GetCertificateByIdApiResponse, GetCertificateByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/academy/certificates/${queryArg.certificateId}` }),
+        providesTags: ["Academy_API_Academy"],
       }),
       getConnections: build.query<GetConnectionsApiResponse, GetConnectionsApiArg>({
         query: (queryArg) => ({
@@ -1522,1760 +1522,6 @@ export type SubmitSupportRequestApiArg = {
     /** Category that best represents the nature of the inquiry. */
     scope?: "Support" | "Community" | "Account" | "Commercial";
   };
-};
-export type GetMyAcademyCurriculaApiResponse = /** status 200 A list of content with total count */ {
-  /** Total number of Curricula */
-  total: number;
-  /** The data of the academycurriculalistresponse. */
-  data: {
-    /** Id of the Curricula */
-    id: string;
-    type: "learning-path" | "challenge" | "certification";
-    /** Organization ID that owns this learning path */
-    org_id: string;
-    /** Visibility of the Curricula */
-    visibility: "public" | "private";
-    /** Status of the Curricula */
-    status: "ready" | "archived" | "not_ready";
-    /** slug of the Curricula */
-    slug: string;
-    /** Level of the Curricula */
-    level: "beginner" | "intermediate" | "advanced";
-    /** ID of the badge to be awarded on completion of this curricula */
-    badge_id?: string;
-    /** ID of the invite associated with this Curricula */
-    invite_id?: string;
-    /** ID of the workspace to which this Curricula belongs */
-    workspace_id?: string;
-    /** When the Curricula item was created */
-    created_at: string;
-    /** When the Curricula was last updated */
-    updated_at: string;
-    deleted_at: string;
-    /** Additional metadata about the Curricula */
-    metadata: {
-      /** Title of the learning path */
-      title: string;
-      /** Short description of the curricula */
-      description: string;
-      /** Detailed description of the curricula */
-      detailedDescription?: string;
-      /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
-      banner?: string | null;
-      /** Canonical URL for the learning path */
-      permalink: string;
-      certificate?: {
-        /** Unique identifier for the certificate */
-        id: string;
-        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-        orgId: string;
-        /** ID of the recipient (user) who received the certificate */
-        recipientId: string;
-        /** Name of the recipient (user) who received the certificate */
-        recipientName: string;
-        /** Title of the certificate */
-        title: string;
-        /** Description of the certificate */
-        description: string;
-        /** List of issuing authorities for the certificate */
-        issuingAuthorities: {
-          /** Name of the issuing authority */
-          name: string;
-          /** Role of the issuing authority */
-          role?: string;
-          /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
-          signatureUrl?: string;
-        }[];
-        /** Date when the certificate was issued */
-        issuedDate: string;
-        /** Date when the certificate expires. Dynamically calculated from issued_date and expires_in; not specified by instructors. */
-        expirationDate?: string;
-        /** Number of months after which the certificate expires */
-        expiresIn?: number;
-      };
-      /** List of children items in the top-level curricula */
-      children?: {
-        /** Unique identifier for the course */
-        id: string;
-        /** Title of the course */
-        title: string;
-        /** URL to the course content */
-        permalink: string;
-        /** Course description */
-        description: string;
-        /** A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title. */
-        weight?: number;
-        /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
-        banner?: string | null;
-        /** Type of the content (e.g., learning-path, challenge, certification) */
-        type?: "learning-path" | "challenge" | "certification";
-        /** List of child nodes (sub-courses or modules) */
-        children?: object[];
-      }[];
-      [key: string]: any;
-    };
-  }[];
-};
-export type GetMyAcademyCurriculaApiArg = {
-  /** Filter content by content types */
-  contentType?: string[];
-  /** Filter content by organization IDs */
-  orgId?: string[];
-};
-export type CreateAcademyCurriculaApiResponse = /** status 201 created the curricula */ {
-  /** Id of the Curricula */
-  id: string;
-  type: "learning-path" | "challenge" | "certification";
-  /** Organization ID that owns this learning path */
-  org_id: string;
-  /** Visibility of the Curricula */
-  visibility: "public" | "private";
-  /** Status of the Curricula */
-  status: "ready" | "archived" | "not_ready";
-  /** slug of the Curricula */
-  slug: string;
-  /** Level of the Curricula */
-  level: "beginner" | "intermediate" | "advanced";
-  /** ID of the badge to be awarded on completion of this curricula */
-  badge_id?: string;
-  /** ID of the invite associated with this Curricula */
-  invite_id?: string;
-  /** ID of the workspace to which this Curricula belongs */
-  workspace_id?: string;
-  /** When the Curricula item was created */
-  created_at: string;
-  /** When the Curricula was last updated */
-  updated_at: string;
-  deleted_at: string;
-  /** Additional metadata about the Curricula */
-  metadata: {
-    /** Title of the learning path */
-    title: string;
-    /** Short description of the curricula */
-    description: string;
-    /** Detailed description of the curricula */
-    detailedDescription?: string;
-    /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
-    banner?: string | null;
-    /** Canonical URL for the learning path */
-    permalink: string;
-    certificate?: {
-      /** Unique identifier for the certificate */
-      id: string;
-      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-      orgId: string;
-      /** ID of the recipient (user) who received the certificate */
-      recipientId: string;
-      /** Name of the recipient (user) who received the certificate */
-      recipientName: string;
-      /** Title of the certificate */
-      title: string;
-      /** Description of the certificate */
-      description: string;
-      /** List of issuing authorities for the certificate */
-      issuingAuthorities: {
-        /** Name of the issuing authority */
-        name: string;
-        /** Role of the issuing authority */
-        role?: string;
-        /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
-        signatureUrl?: string;
-      }[];
-      /** Date when the certificate was issued */
-      issuedDate: string;
-      /** Date when the certificate expires. Dynamically calculated from issued_date and expires_in; not specified by instructors. */
-      expirationDate?: string;
-      /** Number of months after which the certificate expires */
-      expiresIn?: number;
-    };
-    /** List of children items in the top-level curricula */
-    children?: {
-      /** Unique identifier for the course */
-      id: string;
-      /** Title of the course */
-      title: string;
-      /** URL to the course content */
-      permalink: string;
-      /** Course description */
-      description: string;
-      /** A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title. */
-      weight?: number;
-      /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
-      banner?: string | null;
-      /** Type of the content (e.g., learning-path, challenge, certification) */
-      type?: "learning-path" | "challenge" | "certification";
-      /** List of child nodes (sub-courses or modules) */
-      children?: object[];
-    }[];
-    [key: string]: any;
-  };
-};
-export type CreateAcademyCurriculaApiArg = {
-  body: {
-    /** Type of the curricula */
-    type: "learning-path" | "challenge" | "certification";
-    /** Title of the curricula */
-    title: string;
-    /** Organization ID that owns this learning path */
-    org_id: string;
-    /** ID of the workspace to which this Curricula belongs */
-    workspace_id: string;
-    /** ID of the badge to be awarded on completion of this curricula */
-    badge_id?: string;
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    team_id: string;
-    /** Expiry time for curricula access */
-    access_expires_at?: string;
-    /** Current access status of the curricula */
-    access_status: "enabled" | "disabled";
-    /** Additional metadata about the Curricula */
-    metadata: {
-      /** Title of the learning path */
-      title: string;
-      /** Short description of the curricula */
-      description: string;
-      /** Detailed description of the curricula */
-      detailedDescription?: string;
-      /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
-      banner?: string | null;
-      /** Canonical URL for the learning path */
-      permalink: string;
-      certificate?: {
-        /** Unique identifier for the certificate */
-        id: string;
-        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-        orgId: string;
-        /** ID of the recipient (user) who received the certificate */
-        recipientId: string;
-        /** Name of the recipient (user) who received the certificate */
-        recipientName: string;
-        /** Title of the certificate */
-        title: string;
-        /** Description of the certificate */
-        description: string;
-        /** List of issuing authorities for the certificate */
-        issuingAuthorities: {
-          /** Name of the issuing authority */
-          name: string;
-          /** Role of the issuing authority */
-          role?: string;
-          /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
-          signatureUrl?: string;
-        }[];
-        /** Date when the certificate was issued */
-        issuedDate: string;
-        /** Date when the certificate expires. Dynamically calculated from issued_date and expires_in; not specified by instructors. */
-        expirationDate?: string;
-        /** Number of months after which the certificate expires */
-        expiresIn?: number;
-      };
-      /** List of children items in the top-level curricula */
-      children?: {
-        /** Unique identifier for the course */
-        id: string;
-        /** Title of the course */
-        title: string;
-        /** URL to the course content */
-        permalink: string;
-        /** Course description */
-        description: string;
-        /** A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title. */
-        weight?: number;
-        /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
-        banner?: string | null;
-        /** Type of the content (e.g., learning-path, challenge, certification) */
-        type?: "learning-path" | "challenge" | "certification";
-        /** List of child nodes (sub-courses or modules) */
-        children?: object[];
-      }[];
-      [key: string]: any;
-    };
-  };
-};
-export type GetAcademyCurriculaApiResponse = /** status 200 A list of content with total count */ {
-  /** Total number of Curricula */
-  total: number;
-  /** The data of the academycurriculawithmetricslistresponse. */
-  data: ({
-    /** Id of the Curricula */
-    id: string;
-    type: "learning-path" | "challenge" | "certification";
-    /** Organization ID that owns this learning path */
-    org_id: string;
-    /** Visibility of the Curricula */
-    visibility: "public" | "private";
-    /** Status of the Curricula */
-    status: "ready" | "archived" | "not_ready";
-    /** slug of the Curricula */
-    slug: string;
-    /** Level of the Curricula */
-    level: "beginner" | "intermediate" | "advanced";
-    /** ID of the badge to be awarded on completion of this curricula */
-    badge_id?: string;
-    /** ID of the invite associated with this Curricula */
-    invite_id?: string;
-    /** ID of the workspace to which this Curricula belongs */
-    workspace_id?: string;
-    /** When the Curricula item was created */
-    created_at: string;
-    /** When the Curricula was last updated */
-    updated_at: string;
-    deleted_at: string;
-    /** Additional metadata about the Curricula */
-    metadata: {
-      /** Title of the learning path */
-      title: string;
-      /** Short description of the curricula */
-      description: string;
-      /** Detailed description of the curricula */
-      detailedDescription?: string;
-      /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
-      banner?: string | null;
-      /** Canonical URL for the learning path */
-      permalink: string;
-      certificate?: {
-        /** Unique identifier for the certificate */
-        id: string;
-        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-        orgId: string;
-        /** ID of the recipient (user) who received the certificate */
-        recipientId: string;
-        /** Name of the recipient (user) who received the certificate */
-        recipientName: string;
-        /** Title of the certificate */
-        title: string;
-        /** Description of the certificate */
-        description: string;
-        /** List of issuing authorities for the certificate */
-        issuingAuthorities: {
-          /** Name of the issuing authority */
-          name: string;
-          /** Role of the issuing authority */
-          role?: string;
-          /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
-          signatureUrl?: string;
-        }[];
-        /** Date when the certificate was issued */
-        issuedDate: string;
-        /** Date when the certificate expires. Dynamically calculated from issued_date and expires_in; not specified by instructors. */
-        expirationDate?: string;
-        /** Number of months after which the certificate expires */
-        expiresIn?: number;
-      };
-      /** List of children items in the top-level curricula */
-      children?: {
-        /** Unique identifier for the course */
-        id: string;
-        /** Title of the course */
-        title: string;
-        /** URL to the course content */
-        permalink: string;
-        /** Course description */
-        description: string;
-        /** A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title. */
-        weight?: number;
-        /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
-        banner?: string | null;
-        /** Type of the content (e.g., learning-path, challenge, certification) */
-        type?: "learning-path" | "challenge" | "certification";
-        /** List of child nodes (sub-courses or modules) */
-        children?: object[];
-      }[];
-      [key: string]: any;
-    };
-  } & {
-    /** Number of registrations associated with this curriculum. */
-    registration_count: number;
-  })[];
-};
-export type GetAcademyCurriculaApiArg = {
-  /** Filter content by content types */
-  contentType?: string[];
-  /** Filter content by visibility (public/private) */
-  visibility?: string[];
-  /** Filter content by difficulty level */
-  level?: string[];
-  /** Filter content by organization IDs */
-  orgId?: string[];
-  /** Filter content by categories */
-  category?: string[];
-  /** Filter by registration status */
-  status?: string[];
-  /** Search content by title */
-  search?: string;
-  /** Sort results by a specific field (e.g., title, createdAt) */
-  sort?: string;
-  /** Order of sorting (asc or desc) */
-  order?: "asc" | "desc";
-  /** Number of results per page */
-  pagesize?: number;
-  /** Page number */
-  page?: number;
-};
-export type GetAcademyContentApiResponse = /** status 200 A single academy content */ {
-  /** Id of the Curricula */
-  id: string;
-  type: "learning-path" | "challenge" | "certification";
-  /** Organization ID that owns this learning path */
-  org_id: string;
-  /** Visibility of the Curricula */
-  visibility: "public" | "private";
-  /** Status of the Curricula */
-  status: "ready" | "archived" | "not_ready";
-  /** slug of the Curricula */
-  slug: string;
-  /** Level of the Curricula */
-  level: "beginner" | "intermediate" | "advanced";
-  /** ID of the badge to be awarded on completion of this curricula */
-  badge_id?: string;
-  /** ID of the invite associated with this Curricula */
-  invite_id?: string;
-  /** ID of the workspace to which this Curricula belongs */
-  workspace_id?: string;
-  /** When the Curricula item was created */
-  created_at: string;
-  /** When the Curricula was last updated */
-  updated_at: string;
-  deleted_at: string;
-  /** Additional metadata about the Curricula */
-  metadata: {
-    /** Title of the learning path */
-    title: string;
-    /** Short description of the curricula */
-    description: string;
-    /** Detailed description of the curricula */
-    detailedDescription?: string;
-    /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
-    banner?: string | null;
-    /** Canonical URL for the learning path */
-    permalink: string;
-    certificate?: {
-      /** Unique identifier for the certificate */
-      id: string;
-      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-      orgId: string;
-      /** ID of the recipient (user) who received the certificate */
-      recipientId: string;
-      /** Name of the recipient (user) who received the certificate */
-      recipientName: string;
-      /** Title of the certificate */
-      title: string;
-      /** Description of the certificate */
-      description: string;
-      /** List of issuing authorities for the certificate */
-      issuingAuthorities: {
-        /** Name of the issuing authority */
-        name: string;
-        /** Role of the issuing authority */
-        role?: string;
-        /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
-        signatureUrl?: string;
-      }[];
-      /** Date when the certificate was issued */
-      issuedDate: string;
-      /** Date when the certificate expires. Dynamically calculated from issued_date and expires_in; not specified by instructors. */
-      expirationDate?: string;
-      /** Number of months after which the certificate expires */
-      expiresIn?: number;
-    };
-    /** List of children items in the top-level curricula */
-    children?: {
-      /** Unique identifier for the course */
-      id: string;
-      /** Title of the course */
-      title: string;
-      /** URL to the course content */
-      permalink: string;
-      /** Course description */
-      description: string;
-      /** A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title. */
-      weight?: number;
-      /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
-      banner?: string | null;
-      /** Type of the content (e.g., learning-path, challenge, certification) */
-      type?: "learning-path" | "challenge" | "certification";
-      /** List of child nodes (sub-courses or modules) */
-      children?: object[];
-    }[];
-    [key: string]: any;
-  };
-};
-export type GetAcademyContentApiArg = {
-  type: string;
-  orgId: string;
-  slug: string;
-};
-export type RegisterToAcademyContentApiResponse = /** status 201 registered content */ {
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  id: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  org_id: string;
-  /** ID of the course content */
-  content_id: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  user_id: string;
-  /** Status of the user's course registration */
-  status: "registered" | "completed" | "failed" | "withdrawn";
-  /** When the registration was updated */
-  updated_at: string;
-  /** When the registration was created */
-  created_at: string;
-  /** Timestamp when the resource was deleted. */
-  deleted_at?: string;
-  /** Issued certificate for completing the curricula under registration */
-  certificate: {
-    /** Unique identifier for the certificate */
-    id: string;
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    orgId: string;
-    /** ID of the recipient (user) who received the certificate */
-    recipientId: string;
-    /** Name of the recipient (user) who received the certificate */
-    recipientName: string;
-    /** Title of the certificate */
-    title: string;
-    /** Description of the certificate */
-    description: string;
-    /** List of issuing authorities for the certificate */
-    issuingAuthorities: {
-      /** Name of the issuing authority */
-      name: string;
-      /** Role of the issuing authority */
-      role?: string;
-      /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
-      signatureUrl?: string;
-    }[];
-    /** Date when the certificate was issued */
-    issuedDate: string;
-    /** Date when the certificate expires. Dynamically calculated from issued_date and expires_in; not specified by instructors. */
-    expirationDate?: string;
-    /** Number of months after which the certificate expires */
-    expiresIn?: number;
-  };
-  /** Additional metadata about the registration */
-  metadata: {
-    [key: string]: any;
-  };
-};
-export type RegisterToAcademyContentApiArg = {
-  body: {
-    /** ID of the academy content to register for */
-    contentId: string;
-    /** ID of the user registering for the content. */
-    user_id: string;
-    contentType?: "learning-path" | "challenge" | "certification";
-  };
-};
-export type WithdrawFromAcademyContentApiResponse = /** status 200 registered content */ {
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  id: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  org_id: string;
-  /** ID of the course content */
-  content_id: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  user_id: string;
-  /** Status of the user's course registration */
-  status: "registered" | "completed" | "failed" | "withdrawn";
-  /** When the registration was updated */
-  updated_at: string;
-  /** When the registration was created */
-  created_at: string;
-  /** Timestamp when the resource was deleted. */
-  deleted_at?: string;
-  /** Issued certificate for completing the curricula under registration */
-  certificate: {
-    /** Unique identifier for the certificate */
-    id: string;
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    orgId: string;
-    /** ID of the recipient (user) who received the certificate */
-    recipientId: string;
-    /** Name of the recipient (user) who received the certificate */
-    recipientName: string;
-    /** Title of the certificate */
-    title: string;
-    /** Description of the certificate */
-    description: string;
-    /** List of issuing authorities for the certificate */
-    issuingAuthorities: {
-      /** Name of the issuing authority */
-      name: string;
-      /** Role of the issuing authority */
-      role?: string;
-      /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
-      signatureUrl?: string;
-    }[];
-    /** Date when the certificate was issued */
-    issuedDate: string;
-    /** Date when the certificate expires. Dynamically calculated from issued_date and expires_in; not specified by instructors. */
-    expirationDate?: string;
-    /** Number of months after which the certificate expires */
-    expiresIn?: number;
-  };
-  /** Additional metadata about the registration */
-  metadata: {
-    [key: string]: any;
-  };
-};
-export type WithdrawFromAcademyContentApiArg = {
-  /** The ID of the curricula */
-  id: string;
-};
-export type UpdateAcademyCurriculaByIdApiResponse = /** status 200 updated the curricula */ {
-  /** Id of the Curricula */
-  id: string;
-  type: "learning-path" | "challenge" | "certification";
-  /** Organization ID that owns this learning path */
-  org_id: string;
-  /** Visibility of the Curricula */
-  visibility: "public" | "private";
-  /** Status of the Curricula */
-  status: "ready" | "archived" | "not_ready";
-  /** slug of the Curricula */
-  slug: string;
-  /** Level of the Curricula */
-  level: "beginner" | "intermediate" | "advanced";
-  /** ID of the badge to be awarded on completion of this curricula */
-  badge_id?: string;
-  /** ID of the invite associated with this Curricula */
-  invite_id?: string;
-  /** ID of the workspace to which this Curricula belongs */
-  workspace_id?: string;
-  /** When the Curricula item was created */
-  created_at: string;
-  /** When the Curricula was last updated */
-  updated_at: string;
-  deleted_at: string;
-  /** Additional metadata about the Curricula */
-  metadata: {
-    /** Title of the learning path */
-    title: string;
-    /** Short description of the curricula */
-    description: string;
-    /** Detailed description of the curricula */
-    detailedDescription?: string;
-    /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
-    banner?: string | null;
-    /** Canonical URL for the learning path */
-    permalink: string;
-    certificate?: {
-      /** Unique identifier for the certificate */
-      id: string;
-      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-      orgId: string;
-      /** ID of the recipient (user) who received the certificate */
-      recipientId: string;
-      /** Name of the recipient (user) who received the certificate */
-      recipientName: string;
-      /** Title of the certificate */
-      title: string;
-      /** Description of the certificate */
-      description: string;
-      /** List of issuing authorities for the certificate */
-      issuingAuthorities: {
-        /** Name of the issuing authority */
-        name: string;
-        /** Role of the issuing authority */
-        role?: string;
-        /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
-        signatureUrl?: string;
-      }[];
-      /** Date when the certificate was issued */
-      issuedDate: string;
-      /** Date when the certificate expires. Dynamically calculated from issued_date and expires_in; not specified by instructors. */
-      expirationDate?: string;
-      /** Number of months after which the certificate expires */
-      expiresIn?: number;
-    };
-    /** List of children items in the top-level curricula */
-    children?: {
-      /** Unique identifier for the course */
-      id: string;
-      /** Title of the course */
-      title: string;
-      /** URL to the course content */
-      permalink: string;
-      /** Course description */
-      description: string;
-      /** A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title. */
-      weight?: number;
-      /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
-      banner?: string | null;
-      /** Type of the content (e.g., learning-path, challenge, certification) */
-      type?: "learning-path" | "challenge" | "certification";
-      /** List of child nodes (sub-courses or modules) */
-      children?: object[];
-    }[];
-    [key: string]: any;
-  };
-} & {
-  /** Number of registrations associated with this curriculum. */
-  registration_count: number;
-  /** Invitation entity schema. */
-  invitation?: {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    id: string;
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    owner_id: string;
-    /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
-    is_default?: boolean;
-    /** Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
-    name: string;
-    /** Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
-    description: string;
-    /** The emails of the invitation. */
-    emails: string[];
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    org_id: string;
-    /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
-    expires_at?: string;
-    /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
-    quota?: number;
-    /** List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
-    accepted_by: string[];
-    /** The roles of the invitation. */
-    roles: string[];
-    /** The teams of the invitation. */
-    teams: string[];
-    /** Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later. */
-    status: "enabled" | "disabled";
-    /** Timestamp when the invitation was created */
-    created_at: string;
-    /** Timestamp when the invitation was last updated */
-    updated_at: string;
-    /** Timestamp when the invitation was deleted, if applicable */
-    deleted_at: string;
-  };
-};
-export type UpdateAcademyCurriculaByIdApiArg = {
-  /** The ID of the curricula */
-  id: string;
-  body: {
-    /** Type of the curricula */
-    type: "learning-path" | "challenge" | "certification";
-    /** Title of the curricula */
-    title: string;
-    /** Organization ID that owns this learning path */
-    org_id: string;
-    /** ID of the workspace to which this Curricula belongs */
-    workspace_id: string;
-    /** ID of the badge to be awarded on completion of this curricula */
-    badge_id?: string;
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    team_id: string;
-    /** Expiry time for curricula access */
-    access_expires_at?: string;
-    /** Current access status of the curricula */
-    access_status: "enabled" | "disabled";
-    /** Additional metadata about the Curricula */
-    metadata: {
-      /** Title of the learning path */
-      title: string;
-      /** Short description of the curricula */
-      description: string;
-      /** Detailed description of the curricula */
-      detailedDescription?: string;
-      /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
-      banner?: string | null;
-      /** Canonical URL for the learning path */
-      permalink: string;
-      certificate?: {
-        /** Unique identifier for the certificate */
-        id: string;
-        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-        orgId: string;
-        /** ID of the recipient (user) who received the certificate */
-        recipientId: string;
-        /** Name of the recipient (user) who received the certificate */
-        recipientName: string;
-        /** Title of the certificate */
-        title: string;
-        /** Description of the certificate */
-        description: string;
-        /** List of issuing authorities for the certificate */
-        issuingAuthorities: {
-          /** Name of the issuing authority */
-          name: string;
-          /** Role of the issuing authority */
-          role?: string;
-          /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
-          signatureUrl?: string;
-        }[];
-        /** Date when the certificate was issued */
-        issuedDate: string;
-        /** Date when the certificate expires. Dynamically calculated from issued_date and expires_in; not specified by instructors. */
-        expirationDate?: string;
-        /** Number of months after which the certificate expires */
-        expiresIn?: number;
-      };
-      /** List of children items in the top-level curricula */
-      children?: {
-        /** Unique identifier for the course */
-        id: string;
-        /** Title of the course */
-        title: string;
-        /** URL to the course content */
-        permalink: string;
-        /** Course description */
-        description: string;
-        /** A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title. */
-        weight?: number;
-        /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
-        banner?: string | null;
-        /** Type of the content (e.g., learning-path, challenge, certification) */
-        type?: "learning-path" | "challenge" | "certification";
-        /** List of child nodes (sub-courses or modules) */
-        children?: object[];
-      }[];
-      [key: string]: any;
-    };
-  };
-};
-export type DeleteAcademyCurriculaByIdApiResponse = unknown;
-export type DeleteAcademyCurriculaByIdApiArg = {
-  /** The ID of the curricula */
-  id: string;
-};
-export type GetAcademyCurriculaByIdApiResponse = /** status 200 A single curricula */ {
-  /** Id of the Curricula */
-  id: string;
-  type: "learning-path" | "challenge" | "certification";
-  /** Organization ID that owns this learning path */
-  org_id: string;
-  /** Visibility of the Curricula */
-  visibility: "public" | "private";
-  /** Status of the Curricula */
-  status: "ready" | "archived" | "not_ready";
-  /** slug of the Curricula */
-  slug: string;
-  /** Level of the Curricula */
-  level: "beginner" | "intermediate" | "advanced";
-  /** ID of the badge to be awarded on completion of this curricula */
-  badge_id?: string;
-  /** ID of the invite associated with this Curricula */
-  invite_id?: string;
-  /** ID of the workspace to which this Curricula belongs */
-  workspace_id?: string;
-  /** When the Curricula item was created */
-  created_at: string;
-  /** When the Curricula was last updated */
-  updated_at: string;
-  deleted_at: string;
-  /** Additional metadata about the Curricula */
-  metadata: {
-    /** Title of the learning path */
-    title: string;
-    /** Short description of the curricula */
-    description: string;
-    /** Detailed description of the curricula */
-    detailedDescription?: string;
-    /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
-    banner?: string | null;
-    /** Canonical URL for the learning path */
-    permalink: string;
-    certificate?: {
-      /** Unique identifier for the certificate */
-      id: string;
-      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-      orgId: string;
-      /** ID of the recipient (user) who received the certificate */
-      recipientId: string;
-      /** Name of the recipient (user) who received the certificate */
-      recipientName: string;
-      /** Title of the certificate */
-      title: string;
-      /** Description of the certificate */
-      description: string;
-      /** List of issuing authorities for the certificate */
-      issuingAuthorities: {
-        /** Name of the issuing authority */
-        name: string;
-        /** Role of the issuing authority */
-        role?: string;
-        /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
-        signatureUrl?: string;
-      }[];
-      /** Date when the certificate was issued */
-      issuedDate: string;
-      /** Date when the certificate expires. Dynamically calculated from issued_date and expires_in; not specified by instructors. */
-      expirationDate?: string;
-      /** Number of months after which the certificate expires */
-      expiresIn?: number;
-    };
-    /** List of children items in the top-level curricula */
-    children?: {
-      /** Unique identifier for the course */
-      id: string;
-      /** Title of the course */
-      title: string;
-      /** URL to the course content */
-      permalink: string;
-      /** Course description */
-      description: string;
-      /** A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title. */
-      weight?: number;
-      /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
-      banner?: string | null;
-      /** Type of the content (e.g., learning-path, challenge, certification) */
-      type?: "learning-path" | "challenge" | "certification";
-      /** List of child nodes (sub-courses or modules) */
-      children?: object[];
-    }[];
-    [key: string]: any;
-  };
-} & {
-  /** Number of registrations associated with this curriculum. */
-  registration_count: number;
-  /** Invitation entity schema. */
-  invitation?: {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    id: string;
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    owner_id: string;
-    /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
-    is_default?: boolean;
-    /** Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
-    name: string;
-    /** Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
-    description: string;
-    /** The emails of the invitation. */
-    emails: string[];
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    org_id: string;
-    /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
-    expires_at?: string;
-    /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
-    quota?: number;
-    /** List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
-    accepted_by: string[];
-    /** The roles of the invitation. */
-    roles: string[];
-    /** The teams of the invitation. */
-    teams: string[];
-    /** Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later. */
-    status: "enabled" | "disabled";
-    /** Timestamp when the invitation was created */
-    created_at: string;
-    /** Timestamp when the invitation was last updated */
-    updated_at: string;
-    /** Timestamp when the invitation was deleted, if applicable */
-    deleted_at: string;
-  };
-};
-export type GetAcademyCurriculaByIdApiArg = {
-  /** The ID of the curricula */
-  id: string;
-};
-export type GetApiAcademyRegistrationsByContentIdApiResponse =
-  /** status 200 Registration data for the specified content */ {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    id: string;
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    org_id: string;
-    /** ID of the course content */
-    content_id: string;
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    user_id: string;
-    /** Status of the user's course registration */
-    status: "registered" | "completed" | "failed" | "withdrawn";
-    /** When the registration was updated */
-    updated_at: string;
-    /** When the registration was created */
-    created_at: string;
-    /** Timestamp when the resource was deleted. */
-    deleted_at?: string;
-    /** Issued certificate for completing the curricula under registration */
-    certificate: {
-      /** Unique identifier for the certificate */
-      id: string;
-      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-      orgId: string;
-      /** ID of the recipient (user) who received the certificate */
-      recipientId: string;
-      /** Name of the recipient (user) who received the certificate */
-      recipientName: string;
-      /** Title of the certificate */
-      title: string;
-      /** Description of the certificate */
-      description: string;
-      /** List of issuing authorities for the certificate */
-      issuingAuthorities: {
-        /** Name of the issuing authority */
-        name: string;
-        /** Role of the issuing authority */
-        role?: string;
-        /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
-        signatureUrl?: string;
-      }[];
-      /** Date when the certificate was issued */
-      issuedDate: string;
-      /** Date when the certificate expires. Dynamically calculated from issued_date and expires_in; not specified by instructors. */
-      expirationDate?: string;
-      /** Number of months after which the certificate expires */
-      expiresIn?: number;
-    };
-    /** Additional metadata about the registration */
-    metadata: {
-      [key: string]: any;
-    };
-  };
-export type GetApiAcademyRegistrationsByContentIdApiArg = {
-  /** The ID of the content to retrieve registration data for */
-  contentId: string;
-  /** Filter registrations by status (e.g., registered, completed) */
-  status?: string;
-};
-export type UpdateCurrentItemInProgressTrackerApiResponse = /** status 200 Progress tracker updated */ {
-  /** The message of the updatecurrentitemprogressresponse. */
-  message?: string;
-  progressTracker?: {
-    /** The current item of the curriculaprogresstracker. */
-    currentItem: {
-      [key: string]: {
-        /** CurriculaCurrentItemData ID. */
-        id: string;
-        /** The last opened of the curriculacurrentitemdata. */
-        lastOpened: string;
-        contentType: "learning-path" | "challenge" | "certification";
-      };
-    };
-    /** The grades of the curriculaprogresstracker. */
-    grades: {
-      [key: string]: {
-        /** The score of the quizevaluationresult. */
-        score: number;
-        /** The passed of the quizevaluationresult. */
-        passed: boolean;
-        /** The percentage scored of the quizevaluationresult. */
-        percentageScored: number;
-        /** The total marks of the quizevaluationresult. */
-        totalMarks: number;
-        /** The pass percentage of the quizevaluationresult. */
-        passPercentage: number;
-        /** The correct submissions of the quizevaluationresult. */
-        correctSubmissions: {
-          [key: string]: boolean;
-        };
-        quiz: {
-          /** Quiz ID. */
-          id: string;
-          /** Organization ID that owns this quiz */
-          org_id: string;
-          /** Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path */
-          final: boolean;
-          /** The title of the quiz. */
-          title: string;
-          /** Description of the quiz. */
-          description: string;
-          /** The slug of the quiz. */
-          slug: string;
-          /** The rel permalink of the quiz. */
-          relPermalink: string;
-          /** The permalink of the quiz. */
-          permalink: string;
-          /** Type of the resource. */
-          type: string;
-          /** The section of the quiz. */
-          section: string;
-          /** The layout of the quiz. */
-          layout: string;
-          /** The date of the quiz. */
-          date: string;
-          /** The lastmod of the quiz. */
-          lastmod: string;
-          /** The draft of the quiz. */
-          draft: boolean;
-          /** The file path of the quiz. */
-          filePath: string;
-          /** The pass percentage of the quiz. */
-          passPercentage: number;
-          /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-          timeLimit: number;
-          /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
-          maxAttempts: number;
-          /** The questions of the quiz. */
-          questions: {
-            /** Question ID. */
-            id: string;
-            /** The text of the question. */
-            text: string;
-            type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
-            /** The marks of the question. */
-            marks: number;
-            /** The multiple answers of the question. */
-            multipleAnswers?: boolean;
-            /** The options of the question. */
-            options: {
-              /** QuestionOption ID. */
-              id: string;
-              /** The text of the questionoption. */
-              text: string;
-              /** The is correct of the questionoption. */
-              isCorrect: boolean;
-            }[];
-            /** The correct answer of the question. */
-            correctAnswer: string;
-          }[];
-          /** The total questions of the quiz. */
-          totalQuestions: number;
-          /** The total questions in bank of the quiz. */
-          totalQuestionsInBank: number;
-          /** The total question sets of the quiz. */
-          totalQuestionSets: number;
-          /** The total marks of the quiz. */
-          totalMarks: number;
-          /** The prerequisites of the quiz. */
-          prerequisites: {
-            /** Parent ID. */
-            id: string;
-            /** The title of the parent. */
-            title: string;
-            /** The rel permalink of the parent. */
-            relPermalink: string;
-            /** Type of the resource. */
-            type: string;
-          }[];
-          parent?: {
-            /** Parent ID. */
-            id: string;
-            /** The title of the parent. */
-            title: string;
-            /** The rel permalink of the parent. */
-            relPermalink: string;
-            /** Type of the resource. */
-            type: string;
-          };
-          nextPage: {
-            /** Parent ID. */
-            id: string;
-            /** The title of the parent. */
-            title: string;
-            /** The rel permalink of the parent. */
-            relPermalink: string;
-            /** Type of the resource. */
-            type: string;
-          };
-        };
-        /** The attempted at of the quizevaluationresult. */
-        attemptedAt: string;
-        /** The attempts of the quizevaluationresult. */
-        attempts: number;
-      };
-    };
-    /** Total time spent in seconds */
-    timeSpent: number;
-    /** Items that have been completed (map of item IDs to item data) */
-    completedItems: {
-      [key: string]: {
-        /** Timestamp when the item was completed */
-        completedAt: string;
-        itemData: {
-          /** Parent ID. */
-          id: string;
-          /** The title of the parent. */
-          title: string;
-          /** The rel permalink of the parent. */
-          relPermalink: string;
-          /** Type of the resource. */
-          type: string;
-        };
-      };
-    };
-    /** The completed of the curriculaprogresstracker. */
-    completed: string;
-  };
-  /** ID of the associated registration. */
-  registrationId?: string;
-  contentType?: "learning-path" | "challenge" | "certification";
-  itemData?: {
-    /** CurriculaCurrentItemData ID. */
-    id: string;
-    /** The last opened of the curriculacurrentitemdata. */
-    lastOpened: string;
-    contentType: "learning-path" | "challenge" | "certification";
-  };
-};
-export type UpdateCurrentItemInProgressTrackerApiArg = {
-  /** The ID of the registration */
-  registrationId: string;
-  body: {
-    contentType: "learning-path" | "challenge" | "certification";
-    itemData: {
-      /** CurriculaCurrentItemData ID. */
-      id: string;
-      /** The last opened of the curriculacurrentitemdata. */
-      lastOpened: string;
-      contentType: "learning-path" | "challenge" | "certification";
-    };
-  };
-};
-export type GetTestByAbsPathApiResponse = /** status 200 A single test */ {
-  /** Quiz ID. */
-  id: string;
-  /** Organization ID that owns this quiz */
-  org_id: string;
-  /** Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path */
-  final: boolean;
-  /** The title of the quiz. */
-  title: string;
-  /** Description of the quiz. */
-  description: string;
-  /** The slug of the quiz. */
-  slug: string;
-  /** The rel permalink of the quiz. */
-  relPermalink: string;
-  /** The permalink of the quiz. */
-  permalink: string;
-  /** Type of the resource. */
-  type: string;
-  /** The section of the quiz. */
-  section: string;
-  /** The layout of the quiz. */
-  layout: string;
-  /** The date of the quiz. */
-  date: string;
-  /** The lastmod of the quiz. */
-  lastmod: string;
-  /** The draft of the quiz. */
-  draft: boolean;
-  /** The file path of the quiz. */
-  filePath: string;
-  /** The pass percentage of the quiz. */
-  passPercentage: number;
-  /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-  timeLimit: number;
-  /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
-  maxAttempts: number;
-  /** The questions of the quiz. */
-  questions: {
-    /** Question ID. */
-    id: string;
-    /** The text of the question. */
-    text: string;
-    type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
-    /** The marks of the question. */
-    marks: number;
-    /** The multiple answers of the question. */
-    multipleAnswers?: boolean;
-    /** The options of the question. */
-    options: {
-      /** QuestionOption ID. */
-      id: string;
-      /** The text of the questionoption. */
-      text: string;
-      /** The is correct of the questionoption. */
-      isCorrect: boolean;
-    }[];
-    /** The correct answer of the question. */
-    correctAnswer: string;
-  }[];
-  /** The total questions of the quiz. */
-  totalQuestions: number;
-  /** The total questions in bank of the quiz. */
-  totalQuestionsInBank: number;
-  /** The total question sets of the quiz. */
-  totalQuestionSets: number;
-  /** The total marks of the quiz. */
-  totalMarks: number;
-  /** The prerequisites of the quiz. */
-  prerequisites: {
-    /** Parent ID. */
-    id: string;
-    /** The title of the parent. */
-    title: string;
-    /** The rel permalink of the parent. */
-    relPermalink: string;
-    /** Type of the resource. */
-    type: string;
-  }[];
-  parent?: {
-    /** Parent ID. */
-    id: string;
-    /** The title of the parent. */
-    title: string;
-    /** The rel permalink of the parent. */
-    relPermalink: string;
-    /** Type of the resource. */
-    type: string;
-  };
-  nextPage: {
-    /** Parent ID. */
-    id: string;
-    /** The title of the parent. */
-    title: string;
-    /** The rel permalink of the parent. */
-    relPermalink: string;
-    /** Type of the resource. */
-    type: string;
-  };
-};
-export type GetTestByAbsPathApiArg = {
-  /** The absolute path of the test to retrieve */
-  absPath: string;
-};
-export type StartTestByIdApiResponse = /** status 200 A single test */ {
-  /** Quiz ID. */
-  id: string;
-  /** Organization ID that owns this quiz */
-  org_id: string;
-  /** Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path */
-  final: boolean;
-  /** The title of the quiz. */
-  title: string;
-  /** Description of the quiz. */
-  description: string;
-  /** The slug of the quiz. */
-  slug: string;
-  /** The rel permalink of the quiz. */
-  relPermalink: string;
-  /** The permalink of the quiz. */
-  permalink: string;
-  /** Type of the resource. */
-  type: string;
-  /** The section of the quiz. */
-  section: string;
-  /** The layout of the quiz. */
-  layout: string;
-  /** The date of the quiz. */
-  date: string;
-  /** The lastmod of the quiz. */
-  lastmod: string;
-  /** The draft of the quiz. */
-  draft: boolean;
-  /** The file path of the quiz. */
-  filePath: string;
-  /** The pass percentage of the quiz. */
-  passPercentage: number;
-  /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-  timeLimit: number;
-  /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
-  maxAttempts: number;
-  /** The questions of the quiz. */
-  questions: {
-    /** Question ID. */
-    id: string;
-    /** The text of the question. */
-    text: string;
-    type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
-    /** The marks of the question. */
-    marks: number;
-    /** The multiple answers of the question. */
-    multipleAnswers?: boolean;
-    /** The options of the question. */
-    options: {
-      /** QuestionOption ID. */
-      id: string;
-      /** The text of the questionoption. */
-      text: string;
-      /** The is correct of the questionoption. */
-      isCorrect: boolean;
-    }[];
-    /** The correct answer of the question. */
-    correctAnswer: string;
-  }[];
-  /** The total questions of the quiz. */
-  totalQuestions: number;
-  /** The total questions in bank of the quiz. */
-  totalQuestionsInBank: number;
-  /** The total question sets of the quiz. */
-  totalQuestionSets: number;
-  /** The total marks of the quiz. */
-  totalMarks: number;
-  /** The prerequisites of the quiz. */
-  prerequisites: {
-    /** Parent ID. */
-    id: string;
-    /** The title of the parent. */
-    title: string;
-    /** The rel permalink of the parent. */
-    relPermalink: string;
-    /** Type of the resource. */
-    type: string;
-  }[];
-  parent?: {
-    /** Parent ID. */
-    id: string;
-    /** The title of the parent. */
-    title: string;
-    /** The rel permalink of the parent. */
-    relPermalink: string;
-    /** Type of the resource. */
-    type: string;
-  };
-  nextPage: {
-    /** Parent ID. */
-    id: string;
-    /** The title of the parent. */
-    title: string;
-    /** The rel permalink of the parent. */
-    relPermalink: string;
-    /** Type of the resource. */
-    type: string;
-  };
-};
-export type StartTestByIdApiArg = {
-  body: {
-    /** The test abs path of the starttestrequest. */
-    testAbsPath: string;
-    /** ID of the associated registration. */
-    registrationId: string;
-  };
-};
-export type GetAllTestSessionsForRegistrationApiResponse =
-  /** status 200 A list of tests for the specified registration */ {
-    /** The score of the quizevaluationresult. */
-    score: number;
-    /** The passed of the quizevaluationresult. */
-    passed: boolean;
-    /** The percentage scored of the quizevaluationresult. */
-    percentageScored: number;
-    /** The total marks of the quizevaluationresult. */
-    totalMarks: number;
-    /** The pass percentage of the quizevaluationresult. */
-    passPercentage: number;
-    /** The correct submissions of the quizevaluationresult. */
-    correctSubmissions: {
-      [key: string]: boolean;
-    };
-    quiz: {
-      /** Quiz ID. */
-      id: string;
-      /** Organization ID that owns this quiz */
-      org_id: string;
-      /** Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path */
-      final: boolean;
-      /** The title of the quiz. */
-      title: string;
-      /** Description of the quiz. */
-      description: string;
-      /** The slug of the quiz. */
-      slug: string;
-      /** The rel permalink of the quiz. */
-      relPermalink: string;
-      /** The permalink of the quiz. */
-      permalink: string;
-      /** Type of the resource. */
-      type: string;
-      /** The section of the quiz. */
-      section: string;
-      /** The layout of the quiz. */
-      layout: string;
-      /** The date of the quiz. */
-      date: string;
-      /** The lastmod of the quiz. */
-      lastmod: string;
-      /** The draft of the quiz. */
-      draft: boolean;
-      /** The file path of the quiz. */
-      filePath: string;
-      /** The pass percentage of the quiz. */
-      passPercentage: number;
-      /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-      timeLimit: number;
-      /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
-      maxAttempts: number;
-      /** The questions of the quiz. */
-      questions: {
-        /** Question ID. */
-        id: string;
-        /** The text of the question. */
-        text: string;
-        type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
-        /** The marks of the question. */
-        marks: number;
-        /** The multiple answers of the question. */
-        multipleAnswers?: boolean;
-        /** The options of the question. */
-        options: {
-          /** QuestionOption ID. */
-          id: string;
-          /** The text of the questionoption. */
-          text: string;
-          /** The is correct of the questionoption. */
-          isCorrect: boolean;
-        }[];
-        /** The correct answer of the question. */
-        correctAnswer: string;
-      }[];
-      /** The total questions of the quiz. */
-      totalQuestions: number;
-      /** The total questions in bank of the quiz. */
-      totalQuestionsInBank: number;
-      /** The total question sets of the quiz. */
-      totalQuestionSets: number;
-      /** The total marks of the quiz. */
-      totalMarks: number;
-      /** The prerequisites of the quiz. */
-      prerequisites: {
-        /** Parent ID. */
-        id: string;
-        /** The title of the parent. */
-        title: string;
-        /** The rel permalink of the parent. */
-        relPermalink: string;
-        /** Type of the resource. */
-        type: string;
-      }[];
-      parent?: {
-        /** Parent ID. */
-        id: string;
-        /** The title of the parent. */
-        title: string;
-        /** The rel permalink of the parent. */
-        relPermalink: string;
-        /** Type of the resource. */
-        type: string;
-      };
-      nextPage: {
-        /** Parent ID. */
-        id: string;
-        /** The title of the parent. */
-        title: string;
-        /** The rel permalink of the parent. */
-        relPermalink: string;
-        /** Type of the resource. */
-        type: string;
-      };
-    };
-    /** The attempted at of the quizevaluationresult. */
-    attemptedAt: string;
-    /** The attempts of the quizevaluationresult. */
-    attempts: number;
-  }[][];
-export type GetAllTestSessionsForRegistrationApiArg = {
-  /** The ID of the registration to retrieve tests for */
-  id: string;
-  /** Get responses by page */
-  page?: string;
-  /** Get responses by pagesize */
-  pagesize?: string;
-  /** Filter tests by absolute path */
-  testAbsPath?: string;
-};
-export type SubmitQuizApiResponse = /** status 200 Progress tracker updated */ {
-  /** The score of the quizevaluationresult. */
-  score: number;
-  /** The passed of the quizevaluationresult. */
-  passed: boolean;
-  /** The percentage scored of the quizevaluationresult. */
-  percentageScored: number;
-  /** The total marks of the quizevaluationresult. */
-  totalMarks: number;
-  /** The pass percentage of the quizevaluationresult. */
-  passPercentage: number;
-  /** The correct submissions of the quizevaluationresult. */
-  correctSubmissions: {
-    [key: string]: boolean;
-  };
-  quiz: {
-    /** Quiz ID. */
-    id: string;
-    /** Organization ID that owns this quiz */
-    org_id: string;
-    /** Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path */
-    final: boolean;
-    /** The title of the quiz. */
-    title: string;
-    /** Description of the quiz. */
-    description: string;
-    /** The slug of the quiz. */
-    slug: string;
-    /** The rel permalink of the quiz. */
-    relPermalink: string;
-    /** The permalink of the quiz. */
-    permalink: string;
-    /** Type of the resource. */
-    type: string;
-    /** The section of the quiz. */
-    section: string;
-    /** The layout of the quiz. */
-    layout: string;
-    /** The date of the quiz. */
-    date: string;
-    /** The lastmod of the quiz. */
-    lastmod: string;
-    /** The draft of the quiz. */
-    draft: boolean;
-    /** The file path of the quiz. */
-    filePath: string;
-    /** The pass percentage of the quiz. */
-    passPercentage: number;
-    /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-    timeLimit: number;
-    /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
-    maxAttempts: number;
-    /** The questions of the quiz. */
-    questions: {
-      /** Question ID. */
-      id: string;
-      /** The text of the question. */
-      text: string;
-      type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
-      /** The marks of the question. */
-      marks: number;
-      /** The multiple answers of the question. */
-      multipleAnswers?: boolean;
-      /** The options of the question. */
-      options: {
-        /** QuestionOption ID. */
-        id: string;
-        /** The text of the questionoption. */
-        text: string;
-        /** The is correct of the questionoption. */
-        isCorrect: boolean;
-      }[];
-      /** The correct answer of the question. */
-      correctAnswer: string;
-    }[];
-    /** The total questions of the quiz. */
-    totalQuestions: number;
-    /** The total questions in bank of the quiz. */
-    totalQuestionsInBank: number;
-    /** The total question sets of the quiz. */
-    totalQuestionSets: number;
-    /** The total marks of the quiz. */
-    totalMarks: number;
-    /** The prerequisites of the quiz. */
-    prerequisites: {
-      /** Parent ID. */
-      id: string;
-      /** The title of the parent. */
-      title: string;
-      /** The rel permalink of the parent. */
-      relPermalink: string;
-      /** Type of the resource. */
-      type: string;
-    }[];
-    parent?: {
-      /** Parent ID. */
-      id: string;
-      /** The title of the parent. */
-      title: string;
-      /** The rel permalink of the parent. */
-      relPermalink: string;
-      /** Type of the resource. */
-      type: string;
-    };
-    nextPage: {
-      /** Parent ID. */
-      id: string;
-      /** The title of the parent. */
-      title: string;
-      /** The rel permalink of the parent. */
-      relPermalink: string;
-      /** Type of the resource. */
-      type: string;
-    };
-  };
-  /** The attempted at of the quizevaluationresult. */
-  attemptedAt: string;
-  /** The attempts of the quizevaluationresult. */
-  attempts: number;
-};
-export type SubmitQuizApiArg = {
-  body: {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    testSessionId: string;
-    /** The quiz abs path of the quizsubmission. */
-    quizAbsPath: string;
-    /** ID of the associated registration. */
-    registrationId: string;
-    /** ID of the user who owns or created this resource. */
-    user_id: string;
-    /** The answers of the quizsubmission. */
-    answers: {
-      /** ID of the associated question. */
-      questionId: string;
-      /** Map of selected option IDs to a boolean value indicating if it was selected. */
-      selectedOptionId: {
-        [key: string]: boolean;
-      };
-      /** The answer text of the submittedanswer. */
-      answerText: string;
-    }[];
-  };
-};
-export type GetAcademyAdminSummaryApiResponse =
-  /** status 200 A list of content with total count and registration metrics */ object;
-export type GetAcademyAdminSummaryApiArg = void;
-export type GetAcademyAdminRegistrationsApiResponse = /** status 200 List of registrations with pagination info */ {
-  /** The data of the curricularegistrationsresponse. */
-  data: {
-    /** Title of the curricula */
-    curricula_title: string;
-    /** Type of the curricula */
-    curricula_type: "learning-path" | "challenge" | "certification";
-    /** Permalink of the curricula */
-    curricula_permalink: string;
-    /** Unique ID of the registration */
-    registration_id: string;
-    /** Registration status */
-    status: "registered" | "completed" | "failed" | "withdrawn";
-    /** When the registration was created */
-    created_at?: string;
-    /** ID of the user */
-    user_id: string;
-    /** First name of the user */
-    user_first_name: string;
-    /** Last name of the user */
-    user_last_name: string;
-    /** Email of the user */
-    user_email: string;
-    /** Avatar URL of the user */
-    user_avatar_url: string;
-    /** Total count for pagination */
-    total_count: number;
-  }[];
-  /** Total number of items available. */
-  total_count: number;
-  /** Number of items per page. */
-  page_size: number;
-  /** Current page number of the result set. */
-  page: number;
-};
-export type GetAcademyAdminRegistrationsApiArg = {
-  /** Number of results per page */
-  pagesize?: number;
-  /** Page number */
-  page?: number;
-  /** Filter by content types */
-  contentType?: string[];
-  /** Filter by registration status */
-  status?: string[];
-};
-export type GetCertificateByIdApiResponse = /** status 200 A single certificate */ {
-  /** Unique identifier for the certificate */
-  id: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  orgId: string;
-  /** ID of the recipient (user) who received the certificate */
-  recipientId: string;
-  /** Name of the recipient (user) who received the certificate */
-  recipientName: string;
-  /** Title of the certificate */
-  title: string;
-  /** Description of the certificate */
-  description: string;
-  /** List of issuing authorities for the certificate */
-  issuingAuthorities: {
-    /** Name of the issuing authority */
-    name: string;
-    /** Role of the issuing authority */
-    role?: string;
-    /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
-    signatureUrl?: string;
-  }[];
-  /** Date when the certificate was issued */
-  issuedDate: string;
-  /** Date when the certificate expires. Dynamically calculated from issued_date and expires_in; not specified by instructors. */
-  expirationDate?: string;
-  /** Number of months after which the certificate expires */
-  expiresIn?: number;
-};
-export type GetCertificateByIdApiArg = {
-  /** The ID of the certificate to retrieve */
-  certificateId: string;
 };
 export type DeleteBadgeByIdApiResponse = unknown;
 export type DeleteBadgeByIdApiArg = {
@@ -5788,6 +4034,1760 @@ export type DeleteViewApiResponse = unknown;
 export type DeleteViewApiArg = {
   /** View ID */
   viewId: string;
+};
+export type GetMyAcademyCurriculaApiResponse = /** status 200 A list of content with total count */ {
+  /** Total number of Curricula */
+  total: number;
+  /** The data of the academycurriculalistresponse. */
+  data: {
+    /** Id of the Curricula */
+    id: string;
+    type: "learning-path" | "challenge" | "certification";
+    /** Organization ID that owns this learning path */
+    orgId: string;
+    /** Visibility of the Curricula */
+    visibility: "public" | "private";
+    /** Status of the Curricula */
+    status: "ready" | "archived" | "not_ready";
+    /** slug of the Curricula */
+    slug: string;
+    /** Level of the Curricula */
+    level: "beginner" | "intermediate" | "advanced";
+    /** ID of the badge to be awarded on completion of this curricula */
+    badgeId?: string;
+    /** ID of the invite associated with this Curricula */
+    inviteId?: string;
+    /** ID of the workspace to which this Curricula belongs */
+    workspaceId?: string;
+    /** When the Curricula item was created */
+    createdAt: string;
+    /** When the Curricula was last updated */
+    updatedAt: string;
+    deletedAt: string;
+    /** Additional metadata about the Curricula */
+    metadata: {
+      /** Title of the learning path */
+      title: string;
+      /** Short description of the curricula */
+      description: string;
+      /** Detailed description of the curricula */
+      detailedDescription?: string;
+      /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
+      banner?: string | null;
+      /** Canonical URL for the learning path */
+      permalink: string;
+      certificate?: {
+        /** Unique identifier for the certificate */
+        id: string;
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        orgId: string;
+        /** ID of the recipient (user) who received the certificate */
+        recipientId: string;
+        /** Name of the recipient (user) who received the certificate */
+        recipientName: string;
+        /** Title of the certificate */
+        title: string;
+        /** Description of the certificate */
+        description: string;
+        /** List of issuing authorities for the certificate */
+        issuingAuthorities: {
+          /** Name of the issuing authority */
+          name: string;
+          /** Role of the issuing authority */
+          role?: string;
+          /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
+          signatureUrl?: string;
+        }[];
+        /** Date when the certificate was issued */
+        issuedDate: string;
+        /** Date when the certificate expires. Dynamically calculated from issued_date and expires_in; not specified by instructors. */
+        expirationDate?: string;
+        /** Number of months after which the certificate expires */
+        expiresIn?: number;
+      };
+      /** List of children items in the top-level curricula */
+      children?: {
+        /** Unique identifier for the course */
+        id: string;
+        /** Title of the course */
+        title: string;
+        /** URL to the course content */
+        permalink: string;
+        /** Course description */
+        description: string;
+        /** A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title. */
+        weight?: number;
+        /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
+        banner?: string | null;
+        /** Type of the content (e.g., learning-path, challenge, certification) */
+        type?: "learning-path" | "challenge" | "certification";
+        /** List of child nodes (sub-courses or modules) */
+        children?: object[];
+      }[];
+      [key: string]: any;
+    };
+  }[];
+};
+export type GetMyAcademyCurriculaApiArg = {
+  /** Filter content by content types */
+  contentType?: string[];
+  /** Filter content by organization IDs */
+  orgId?: string[];
+};
+export type CreateAcademyCurriculaApiResponse = /** status 201 created the curricula */ {
+  /** Id of the Curricula */
+  id: string;
+  type: "learning-path" | "challenge" | "certification";
+  /** Organization ID that owns this learning path */
+  orgId: string;
+  /** Visibility of the Curricula */
+  visibility: "public" | "private";
+  /** Status of the Curricula */
+  status: "ready" | "archived" | "not_ready";
+  /** slug of the Curricula */
+  slug: string;
+  /** Level of the Curricula */
+  level: "beginner" | "intermediate" | "advanced";
+  /** ID of the badge to be awarded on completion of this curricula */
+  badgeId?: string;
+  /** ID of the invite associated with this Curricula */
+  inviteId?: string;
+  /** ID of the workspace to which this Curricula belongs */
+  workspaceId?: string;
+  /** When the Curricula item was created */
+  createdAt: string;
+  /** When the Curricula was last updated */
+  updatedAt: string;
+  deletedAt: string;
+  /** Additional metadata about the Curricula */
+  metadata: {
+    /** Title of the learning path */
+    title: string;
+    /** Short description of the curricula */
+    description: string;
+    /** Detailed description of the curricula */
+    detailedDescription?: string;
+    /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
+    banner?: string | null;
+    /** Canonical URL for the learning path */
+    permalink: string;
+    certificate?: {
+      /** Unique identifier for the certificate */
+      id: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      orgId: string;
+      /** ID of the recipient (user) who received the certificate */
+      recipientId: string;
+      /** Name of the recipient (user) who received the certificate */
+      recipientName: string;
+      /** Title of the certificate */
+      title: string;
+      /** Description of the certificate */
+      description: string;
+      /** List of issuing authorities for the certificate */
+      issuingAuthorities: {
+        /** Name of the issuing authority */
+        name: string;
+        /** Role of the issuing authority */
+        role?: string;
+        /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
+        signatureUrl?: string;
+      }[];
+      /** Date when the certificate was issued */
+      issuedDate: string;
+      /** Date when the certificate expires. Dynamically calculated from issued_date and expires_in; not specified by instructors. */
+      expirationDate?: string;
+      /** Number of months after which the certificate expires */
+      expiresIn?: number;
+    };
+    /** List of children items in the top-level curricula */
+    children?: {
+      /** Unique identifier for the course */
+      id: string;
+      /** Title of the course */
+      title: string;
+      /** URL to the course content */
+      permalink: string;
+      /** Course description */
+      description: string;
+      /** A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title. */
+      weight?: number;
+      /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
+      banner?: string | null;
+      /** Type of the content (e.g., learning-path, challenge, certification) */
+      type?: "learning-path" | "challenge" | "certification";
+      /** List of child nodes (sub-courses or modules) */
+      children?: object[];
+    }[];
+    [key: string]: any;
+  };
+};
+export type CreateAcademyCurriculaApiArg = {
+  body: {
+    /** Type of the curricula */
+    type: "learning-path" | "challenge" | "certification";
+    /** Title of the curricula */
+    title: string;
+    /** Organization ID that owns this learning path */
+    orgId: string;
+    /** ID of the workspace to which this Curricula belongs */
+    workspaceId: string;
+    /** ID of the badge to be awarded on completion of this curricula */
+    badgeId?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    teamId: string;
+    /** Expiry time for curricula access */
+    accessExpiresAt?: string;
+    /** Current access status of the curricula */
+    accessStatus: "enabled" | "disabled";
+    /** Additional metadata about the Curricula */
+    metadata: {
+      /** Title of the learning path */
+      title: string;
+      /** Short description of the curricula */
+      description: string;
+      /** Detailed description of the curricula */
+      detailedDescription?: string;
+      /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
+      banner?: string | null;
+      /** Canonical URL for the learning path */
+      permalink: string;
+      certificate?: {
+        /** Unique identifier for the certificate */
+        id: string;
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        orgId: string;
+        /** ID of the recipient (user) who received the certificate */
+        recipientId: string;
+        /** Name of the recipient (user) who received the certificate */
+        recipientName: string;
+        /** Title of the certificate */
+        title: string;
+        /** Description of the certificate */
+        description: string;
+        /** List of issuing authorities for the certificate */
+        issuingAuthorities: {
+          /** Name of the issuing authority */
+          name: string;
+          /** Role of the issuing authority */
+          role?: string;
+          /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
+          signatureUrl?: string;
+        }[];
+        /** Date when the certificate was issued */
+        issuedDate: string;
+        /** Date when the certificate expires. Dynamically calculated from issued_date and expires_in; not specified by instructors. */
+        expirationDate?: string;
+        /** Number of months after which the certificate expires */
+        expiresIn?: number;
+      };
+      /** List of children items in the top-level curricula */
+      children?: {
+        /** Unique identifier for the course */
+        id: string;
+        /** Title of the course */
+        title: string;
+        /** URL to the course content */
+        permalink: string;
+        /** Course description */
+        description: string;
+        /** A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title. */
+        weight?: number;
+        /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
+        banner?: string | null;
+        /** Type of the content (e.g., learning-path, challenge, certification) */
+        type?: "learning-path" | "challenge" | "certification";
+        /** List of child nodes (sub-courses or modules) */
+        children?: object[];
+      }[];
+      [key: string]: any;
+    };
+  };
+};
+export type GetAcademyCurriculaApiResponse = /** status 200 A list of content with total count */ {
+  /** Total number of Curricula */
+  total: number;
+  /** The data of the academycurriculawithmetricslistresponse. */
+  data: ({
+    /** Id of the Curricula */
+    id: string;
+    type: "learning-path" | "challenge" | "certification";
+    /** Organization ID that owns this learning path */
+    orgId: string;
+    /** Visibility of the Curricula */
+    visibility: "public" | "private";
+    /** Status of the Curricula */
+    status: "ready" | "archived" | "not_ready";
+    /** slug of the Curricula */
+    slug: string;
+    /** Level of the Curricula */
+    level: "beginner" | "intermediate" | "advanced";
+    /** ID of the badge to be awarded on completion of this curricula */
+    badgeId?: string;
+    /** ID of the invite associated with this Curricula */
+    inviteId?: string;
+    /** ID of the workspace to which this Curricula belongs */
+    workspaceId?: string;
+    /** When the Curricula item was created */
+    createdAt: string;
+    /** When the Curricula was last updated */
+    updatedAt: string;
+    deletedAt: string;
+    /** Additional metadata about the Curricula */
+    metadata: {
+      /** Title of the learning path */
+      title: string;
+      /** Short description of the curricula */
+      description: string;
+      /** Detailed description of the curricula */
+      detailedDescription?: string;
+      /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
+      banner?: string | null;
+      /** Canonical URL for the learning path */
+      permalink: string;
+      certificate?: {
+        /** Unique identifier for the certificate */
+        id: string;
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        orgId: string;
+        /** ID of the recipient (user) who received the certificate */
+        recipientId: string;
+        /** Name of the recipient (user) who received the certificate */
+        recipientName: string;
+        /** Title of the certificate */
+        title: string;
+        /** Description of the certificate */
+        description: string;
+        /** List of issuing authorities for the certificate */
+        issuingAuthorities: {
+          /** Name of the issuing authority */
+          name: string;
+          /** Role of the issuing authority */
+          role?: string;
+          /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
+          signatureUrl?: string;
+        }[];
+        /** Date when the certificate was issued */
+        issuedDate: string;
+        /** Date when the certificate expires. Dynamically calculated from issued_date and expires_in; not specified by instructors. */
+        expirationDate?: string;
+        /** Number of months after which the certificate expires */
+        expiresIn?: number;
+      };
+      /** List of children items in the top-level curricula */
+      children?: {
+        /** Unique identifier for the course */
+        id: string;
+        /** Title of the course */
+        title: string;
+        /** URL to the course content */
+        permalink: string;
+        /** Course description */
+        description: string;
+        /** A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title. */
+        weight?: number;
+        /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
+        banner?: string | null;
+        /** Type of the content (e.g., learning-path, challenge, certification) */
+        type?: "learning-path" | "challenge" | "certification";
+        /** List of child nodes (sub-courses or modules) */
+        children?: object[];
+      }[];
+      [key: string]: any;
+    };
+  } & {
+    /** Number of registrations associated with this curriculum. */
+    registrationCount: number;
+  })[];
+};
+export type GetAcademyCurriculaApiArg = {
+  /** Filter content by content types */
+  contentType?: string[];
+  /** Filter content by visibility (public/private) */
+  visibility?: string[];
+  /** Filter content by difficulty level */
+  level?: string[];
+  /** Filter content by organization IDs */
+  orgId?: string[];
+  /** Filter content by categories */
+  category?: string[];
+  /** Filter by registration status */
+  status?: string[];
+  /** Search content by title */
+  search?: string;
+  /** Sort results by a specific field (e.g., title, createdAt) */
+  sort?: string;
+  /** Order of sorting (asc or desc) */
+  order?: "asc" | "desc";
+  /** Number of results per page */
+  pagesize?: number;
+  /** Page number */
+  page?: number;
+};
+export type GetAcademyContentApiResponse = /** status 200 A single academy content */ {
+  /** Id of the Curricula */
+  id: string;
+  type: "learning-path" | "challenge" | "certification";
+  /** Organization ID that owns this learning path */
+  orgId: string;
+  /** Visibility of the Curricula */
+  visibility: "public" | "private";
+  /** Status of the Curricula */
+  status: "ready" | "archived" | "not_ready";
+  /** slug of the Curricula */
+  slug: string;
+  /** Level of the Curricula */
+  level: "beginner" | "intermediate" | "advanced";
+  /** ID of the badge to be awarded on completion of this curricula */
+  badgeId?: string;
+  /** ID of the invite associated with this Curricula */
+  inviteId?: string;
+  /** ID of the workspace to which this Curricula belongs */
+  workspaceId?: string;
+  /** When the Curricula item was created */
+  createdAt: string;
+  /** When the Curricula was last updated */
+  updatedAt: string;
+  deletedAt: string;
+  /** Additional metadata about the Curricula */
+  metadata: {
+    /** Title of the learning path */
+    title: string;
+    /** Short description of the curricula */
+    description: string;
+    /** Detailed description of the curricula */
+    detailedDescription?: string;
+    /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
+    banner?: string | null;
+    /** Canonical URL for the learning path */
+    permalink: string;
+    certificate?: {
+      /** Unique identifier for the certificate */
+      id: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      orgId: string;
+      /** ID of the recipient (user) who received the certificate */
+      recipientId: string;
+      /** Name of the recipient (user) who received the certificate */
+      recipientName: string;
+      /** Title of the certificate */
+      title: string;
+      /** Description of the certificate */
+      description: string;
+      /** List of issuing authorities for the certificate */
+      issuingAuthorities: {
+        /** Name of the issuing authority */
+        name: string;
+        /** Role of the issuing authority */
+        role?: string;
+        /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
+        signatureUrl?: string;
+      }[];
+      /** Date when the certificate was issued */
+      issuedDate: string;
+      /** Date when the certificate expires. Dynamically calculated from issued_date and expires_in; not specified by instructors. */
+      expirationDate?: string;
+      /** Number of months after which the certificate expires */
+      expiresIn?: number;
+    };
+    /** List of children items in the top-level curricula */
+    children?: {
+      /** Unique identifier for the course */
+      id: string;
+      /** Title of the course */
+      title: string;
+      /** URL to the course content */
+      permalink: string;
+      /** Course description */
+      description: string;
+      /** A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title. */
+      weight?: number;
+      /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
+      banner?: string | null;
+      /** Type of the content (e.g., learning-path, challenge, certification) */
+      type?: "learning-path" | "challenge" | "certification";
+      /** List of child nodes (sub-courses or modules) */
+      children?: object[];
+    }[];
+    [key: string]: any;
+  };
+};
+export type GetAcademyContentApiArg = {
+  type: string;
+  orgId: string;
+  slug: string;
+};
+export type RegisterToAcademyContentApiResponse = /** status 201 registered content */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  orgId: string;
+  /** ID of the course content */
+  contentId: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  userId: string;
+  /** Status of the user's course registration */
+  status: "registered" | "completed" | "failed" | "withdrawn";
+  /** When the registration was updated */
+  updatedAt: string;
+  /** When the registration was created */
+  createdAt: string;
+  /** Timestamp when the resource was deleted. */
+  deletedAt?: string;
+  /** Issued certificate for completing the curricula under registration */
+  certificate: {
+    /** Unique identifier for the certificate */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    orgId: string;
+    /** ID of the recipient (user) who received the certificate */
+    recipientId: string;
+    /** Name of the recipient (user) who received the certificate */
+    recipientName: string;
+    /** Title of the certificate */
+    title: string;
+    /** Description of the certificate */
+    description: string;
+    /** List of issuing authorities for the certificate */
+    issuingAuthorities: {
+      /** Name of the issuing authority */
+      name: string;
+      /** Role of the issuing authority */
+      role?: string;
+      /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
+      signatureUrl?: string;
+    }[];
+    /** Date when the certificate was issued */
+    issuedDate: string;
+    /** Date when the certificate expires. Dynamically calculated from issued_date and expires_in; not specified by instructors. */
+    expirationDate?: string;
+    /** Number of months after which the certificate expires */
+    expiresIn?: number;
+  };
+  /** Additional metadata about the registration */
+  metadata: {
+    [key: string]: any;
+  };
+};
+export type RegisterToAcademyContentApiArg = {
+  body: {
+    /** ID of the academy content to register for */
+    contentId: string;
+    /** ID of the user registering for the content. */
+    userId: string;
+    contentType?: "learning-path" | "challenge" | "certification";
+  };
+};
+export type WithdrawFromAcademyContentApiResponse = /** status 200 registered content */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  orgId: string;
+  /** ID of the course content */
+  contentId: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  userId: string;
+  /** Status of the user's course registration */
+  status: "registered" | "completed" | "failed" | "withdrawn";
+  /** When the registration was updated */
+  updatedAt: string;
+  /** When the registration was created */
+  createdAt: string;
+  /** Timestamp when the resource was deleted. */
+  deletedAt?: string;
+  /** Issued certificate for completing the curricula under registration */
+  certificate: {
+    /** Unique identifier for the certificate */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    orgId: string;
+    /** ID of the recipient (user) who received the certificate */
+    recipientId: string;
+    /** Name of the recipient (user) who received the certificate */
+    recipientName: string;
+    /** Title of the certificate */
+    title: string;
+    /** Description of the certificate */
+    description: string;
+    /** List of issuing authorities for the certificate */
+    issuingAuthorities: {
+      /** Name of the issuing authority */
+      name: string;
+      /** Role of the issuing authority */
+      role?: string;
+      /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
+      signatureUrl?: string;
+    }[];
+    /** Date when the certificate was issued */
+    issuedDate: string;
+    /** Date when the certificate expires. Dynamically calculated from issued_date and expires_in; not specified by instructors. */
+    expirationDate?: string;
+    /** Number of months after which the certificate expires */
+    expiresIn?: number;
+  };
+  /** Additional metadata about the registration */
+  metadata: {
+    [key: string]: any;
+  };
+};
+export type WithdrawFromAcademyContentApiArg = {
+  /** The ID of the curricula */
+  id: string;
+};
+export type UpdateAcademyCurriculaByIdApiResponse = /** status 200 updated the curricula */ {
+  /** Id of the Curricula */
+  id: string;
+  type: "learning-path" | "challenge" | "certification";
+  /** Organization ID that owns this learning path */
+  orgId: string;
+  /** Visibility of the Curricula */
+  visibility: "public" | "private";
+  /** Status of the Curricula */
+  status: "ready" | "archived" | "not_ready";
+  /** slug of the Curricula */
+  slug: string;
+  /** Level of the Curricula */
+  level: "beginner" | "intermediate" | "advanced";
+  /** ID of the badge to be awarded on completion of this curricula */
+  badgeId?: string;
+  /** ID of the invite associated with this Curricula */
+  inviteId?: string;
+  /** ID of the workspace to which this Curricula belongs */
+  workspaceId?: string;
+  /** When the Curricula item was created */
+  createdAt: string;
+  /** When the Curricula was last updated */
+  updatedAt: string;
+  deletedAt: string;
+  /** Additional metadata about the Curricula */
+  metadata: {
+    /** Title of the learning path */
+    title: string;
+    /** Short description of the curricula */
+    description: string;
+    /** Detailed description of the curricula */
+    detailedDescription?: string;
+    /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
+    banner?: string | null;
+    /** Canonical URL for the learning path */
+    permalink: string;
+    certificate?: {
+      /** Unique identifier for the certificate */
+      id: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      orgId: string;
+      /** ID of the recipient (user) who received the certificate */
+      recipientId: string;
+      /** Name of the recipient (user) who received the certificate */
+      recipientName: string;
+      /** Title of the certificate */
+      title: string;
+      /** Description of the certificate */
+      description: string;
+      /** List of issuing authorities for the certificate */
+      issuingAuthorities: {
+        /** Name of the issuing authority */
+        name: string;
+        /** Role of the issuing authority */
+        role?: string;
+        /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
+        signatureUrl?: string;
+      }[];
+      /** Date when the certificate was issued */
+      issuedDate: string;
+      /** Date when the certificate expires. Dynamically calculated from issued_date and expires_in; not specified by instructors. */
+      expirationDate?: string;
+      /** Number of months after which the certificate expires */
+      expiresIn?: number;
+    };
+    /** List of children items in the top-level curricula */
+    children?: {
+      /** Unique identifier for the course */
+      id: string;
+      /** Title of the course */
+      title: string;
+      /** URL to the course content */
+      permalink: string;
+      /** Course description */
+      description: string;
+      /** A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title. */
+      weight?: number;
+      /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
+      banner?: string | null;
+      /** Type of the content (e.g., learning-path, challenge, certification) */
+      type?: "learning-path" | "challenge" | "certification";
+      /** List of child nodes (sub-courses or modules) */
+      children?: object[];
+    }[];
+    [key: string]: any;
+  };
+} & {
+  /** Number of registrations associated with this curriculum. */
+  registrationCount: number;
+  /** Invitation entity schema. */
+  invitation?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    ownerId: string;
+    /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
+    isDefault?: boolean;
+    /** Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
+    name: string;
+    /** Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
+    description: string;
+    /** Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
+    emails: string[];
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    orgId: string;
+    /** Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire. */
+    expiresAt?: string;
+    /** Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
+    quota?: number;
+    /** List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
+    acceptedBy: string[];
+    /** Roles that the user will have when accepting the invitation. Empty means the invitation does not specify any roles. */
+    roles: string[];
+    /** Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
+    teams: string[];
+    /** Activation status of the invitation. */
+    status: "enabled" | "disabled";
+    /** Timestamp when the invitation was created. */
+    createdAt: string;
+    /** Timestamp when the invitation was last updated. */
+    updatedAt: string;
+    /** Timestamp when the invitation was deleted, if applicable. */
+    deletedAt: string;
+  };
+};
+export type UpdateAcademyCurriculaByIdApiArg = {
+  /** The ID of the curricula */
+  id: string;
+  body: {
+    /** Type of the curricula */
+    type: "learning-path" | "challenge" | "certification";
+    /** Title of the curricula */
+    title: string;
+    /** Organization ID that owns this learning path */
+    orgId: string;
+    /** ID of the workspace to which this Curricula belongs */
+    workspaceId: string;
+    /** ID of the badge to be awarded on completion of this curricula */
+    badgeId?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    teamId: string;
+    /** Expiry time for curricula access */
+    accessExpiresAt?: string;
+    /** Current access status of the curricula */
+    accessStatus: "enabled" | "disabled";
+    /** Additional metadata about the Curricula */
+    metadata: {
+      /** Title of the learning path */
+      title: string;
+      /** Short description of the curricula */
+      description: string;
+      /** Detailed description of the curricula */
+      detailedDescription?: string;
+      /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
+      banner?: string | null;
+      /** Canonical URL for the learning path */
+      permalink: string;
+      certificate?: {
+        /** Unique identifier for the certificate */
+        id: string;
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        orgId: string;
+        /** ID of the recipient (user) who received the certificate */
+        recipientId: string;
+        /** Name of the recipient (user) who received the certificate */
+        recipientName: string;
+        /** Title of the certificate */
+        title: string;
+        /** Description of the certificate */
+        description: string;
+        /** List of issuing authorities for the certificate */
+        issuingAuthorities: {
+          /** Name of the issuing authority */
+          name: string;
+          /** Role of the issuing authority */
+          role?: string;
+          /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
+          signatureUrl?: string;
+        }[];
+        /** Date when the certificate was issued */
+        issuedDate: string;
+        /** Date when the certificate expires. Dynamically calculated from issued_date and expires_in; not specified by instructors. */
+        expirationDate?: string;
+        /** Number of months after which the certificate expires */
+        expiresIn?: number;
+      };
+      /** List of children items in the top-level curricula */
+      children?: {
+        /** Unique identifier for the course */
+        id: string;
+        /** Title of the course */
+        title: string;
+        /** URL to the course content */
+        permalink: string;
+        /** Course description */
+        description: string;
+        /** A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title. */
+        weight?: number;
+        /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
+        banner?: string | null;
+        /** Type of the content (e.g., learning-path, challenge, certification) */
+        type?: "learning-path" | "challenge" | "certification";
+        /** List of child nodes (sub-courses or modules) */
+        children?: object[];
+      }[];
+      [key: string]: any;
+    };
+  };
+};
+export type DeleteAcademyCurriculaByIdApiResponse = unknown;
+export type DeleteAcademyCurriculaByIdApiArg = {
+  /** The ID of the curricula */
+  id: string;
+};
+export type GetAcademyCurriculaByIdApiResponse = /** status 200 A single curricula */ {
+  /** Id of the Curricula */
+  id: string;
+  type: "learning-path" | "challenge" | "certification";
+  /** Organization ID that owns this learning path */
+  orgId: string;
+  /** Visibility of the Curricula */
+  visibility: "public" | "private";
+  /** Status of the Curricula */
+  status: "ready" | "archived" | "not_ready";
+  /** slug of the Curricula */
+  slug: string;
+  /** Level of the Curricula */
+  level: "beginner" | "intermediate" | "advanced";
+  /** ID of the badge to be awarded on completion of this curricula */
+  badgeId?: string;
+  /** ID of the invite associated with this Curricula */
+  inviteId?: string;
+  /** ID of the workspace to which this Curricula belongs */
+  workspaceId?: string;
+  /** When the Curricula item was created */
+  createdAt: string;
+  /** When the Curricula was last updated */
+  updatedAt: string;
+  deletedAt: string;
+  /** Additional metadata about the Curricula */
+  metadata: {
+    /** Title of the learning path */
+    title: string;
+    /** Short description of the curricula */
+    description: string;
+    /** Detailed description of the curricula */
+    detailedDescription?: string;
+    /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
+    banner?: string | null;
+    /** Canonical URL for the learning path */
+    permalink: string;
+    certificate?: {
+      /** Unique identifier for the certificate */
+      id: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      orgId: string;
+      /** ID of the recipient (user) who received the certificate */
+      recipientId: string;
+      /** Name of the recipient (user) who received the certificate */
+      recipientName: string;
+      /** Title of the certificate */
+      title: string;
+      /** Description of the certificate */
+      description: string;
+      /** List of issuing authorities for the certificate */
+      issuingAuthorities: {
+        /** Name of the issuing authority */
+        name: string;
+        /** Role of the issuing authority */
+        role?: string;
+        /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
+        signatureUrl?: string;
+      }[];
+      /** Date when the certificate was issued */
+      issuedDate: string;
+      /** Date when the certificate expires. Dynamically calculated from issued_date and expires_in; not specified by instructors. */
+      expirationDate?: string;
+      /** Number of months after which the certificate expires */
+      expiresIn?: number;
+    };
+    /** List of children items in the top-level curricula */
+    children?: {
+      /** Unique identifier for the course */
+      id: string;
+      /** Title of the course */
+      title: string;
+      /** URL to the course content */
+      permalink: string;
+      /** Course description */
+      description: string;
+      /** A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title. */
+      weight?: number;
+      /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
+      banner?: string | null;
+      /** Type of the content (e.g., learning-path, challenge, certification) */
+      type?: "learning-path" | "challenge" | "certification";
+      /** List of child nodes (sub-courses or modules) */
+      children?: object[];
+    }[];
+    [key: string]: any;
+  };
+} & {
+  /** Number of registrations associated with this curriculum. */
+  registrationCount: number;
+  /** Invitation entity schema. */
+  invitation?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    ownerId: string;
+    /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
+    isDefault?: boolean;
+    /** Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
+    name: string;
+    /** Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
+    description: string;
+    /** Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
+    emails: string[];
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    orgId: string;
+    /** Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire. */
+    expiresAt?: string;
+    /** Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
+    quota?: number;
+    /** List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
+    acceptedBy: string[];
+    /** Roles that the user will have when accepting the invitation. Empty means the invitation does not specify any roles. */
+    roles: string[];
+    /** Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
+    teams: string[];
+    /** Activation status of the invitation. */
+    status: "enabled" | "disabled";
+    /** Timestamp when the invitation was created. */
+    createdAt: string;
+    /** Timestamp when the invitation was last updated. */
+    updatedAt: string;
+    /** Timestamp when the invitation was deleted, if applicable. */
+    deletedAt: string;
+  };
+};
+export type GetAcademyCurriculaByIdApiArg = {
+  /** The ID of the curricula */
+  id: string;
+};
+export type GetApiAcademyRegistrationsByContentIdApiResponse =
+  /** status 200 Registration data for the specified content */ {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    orgId: string;
+    /** ID of the course content */
+    contentId: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    userId: string;
+    /** Status of the user's course registration */
+    status: "registered" | "completed" | "failed" | "withdrawn";
+    /** When the registration was updated */
+    updatedAt: string;
+    /** When the registration was created */
+    createdAt: string;
+    /** Timestamp when the resource was deleted. */
+    deletedAt?: string;
+    /** Issued certificate for completing the curricula under registration */
+    certificate: {
+      /** Unique identifier for the certificate */
+      id: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      orgId: string;
+      /** ID of the recipient (user) who received the certificate */
+      recipientId: string;
+      /** Name of the recipient (user) who received the certificate */
+      recipientName: string;
+      /** Title of the certificate */
+      title: string;
+      /** Description of the certificate */
+      description: string;
+      /** List of issuing authorities for the certificate */
+      issuingAuthorities: {
+        /** Name of the issuing authority */
+        name: string;
+        /** Role of the issuing authority */
+        role?: string;
+        /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
+        signatureUrl?: string;
+      }[];
+      /** Date when the certificate was issued */
+      issuedDate: string;
+      /** Date when the certificate expires. Dynamically calculated from issued_date and expires_in; not specified by instructors. */
+      expirationDate?: string;
+      /** Number of months after which the certificate expires */
+      expiresIn?: number;
+    };
+    /** Additional metadata about the registration */
+    metadata: {
+      [key: string]: any;
+    };
+  };
+export type GetApiAcademyRegistrationsByContentIdApiArg = {
+  /** The ID of the content to retrieve registration data for */
+  contentId: string;
+  /** Filter registrations by status (e.g., registered, completed) */
+  status?: string;
+};
+export type UpdateCurrentItemInProgressTrackerApiResponse = /** status 200 Progress tracker updated */ {
+  /** The message of the updatecurrentitemprogressresponse. */
+  message?: string;
+  progressTracker?: {
+    /** The current item of the curriculaprogresstracker. */
+    currentItem: {
+      [key: string]: {
+        /** CurriculaCurrentItemData ID. */
+        id: string;
+        /** The last opened of the curriculacurrentitemdata. */
+        lastOpened: string;
+        contentType: "learning-path" | "challenge" | "certification";
+      };
+    };
+    /** The grades of the curriculaprogresstracker. */
+    grades: {
+      [key: string]: {
+        /** The score of the quizevaluationresult. */
+        score: number;
+        /** The passed of the quizevaluationresult. */
+        passed: boolean;
+        /** The percentage scored of the quizevaluationresult. */
+        percentageScored: number;
+        /** The total marks of the quizevaluationresult. */
+        totalMarks: number;
+        /** The pass percentage of the quizevaluationresult. */
+        passPercentage: number;
+        /** The correct submissions of the quizevaluationresult. */
+        correctSubmissions: {
+          [key: string]: boolean;
+        };
+        quiz: {
+          /** Quiz ID. */
+          id: string;
+          /** Organization ID that owns this quiz */
+          orgId: string;
+          /** Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path */
+          final: boolean;
+          /** The title of the quiz. */
+          title: string;
+          /** Description of the quiz. */
+          description: string;
+          /** The slug of the quiz. */
+          slug: string;
+          /** The rel permalink of the quiz. */
+          relPermalink: string;
+          /** The permalink of the quiz. */
+          permalink: string;
+          /** Type of the resource. */
+          type: string;
+          /** The section of the quiz. */
+          section: string;
+          /** The layout of the quiz. */
+          layout: string;
+          /** The date of the quiz. */
+          date: string;
+          /** The lastmod of the quiz. */
+          lastmod: string;
+          /** The draft of the quiz. */
+          draft: boolean;
+          /** The file path of the quiz. */
+          filePath: string;
+          /** The pass percentage of the quiz. */
+          passPercentage: number;
+          /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
+          timeLimit: number;
+          /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
+          maxAttempts: number;
+          /** The questions of the quiz. */
+          questions: {
+            /** Question ID. */
+            id: string;
+            /** The text of the question. */
+            text: string;
+            type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
+            /** The marks of the question. */
+            marks: number;
+            /** The multiple answers of the question. */
+            multipleAnswers?: boolean;
+            /** The options of the question. */
+            options: {
+              /** QuestionOption ID. */
+              id: string;
+              /** The text of the questionoption. */
+              text: string;
+              /** The is correct of the questionoption. */
+              isCorrect: boolean;
+            }[];
+            /** The correct answer of the question. */
+            correctAnswer: string;
+          }[];
+          /** The total questions of the quiz. */
+          totalQuestions: number;
+          /** The total questions in bank of the quiz. */
+          totalQuestionsInBank: number;
+          /** The total question sets of the quiz. */
+          totalQuestionSets: number;
+          /** The total marks of the quiz. */
+          totalMarks: number;
+          /** The prerequisites of the quiz. */
+          prerequisites: {
+            /** Parent ID. */
+            id: string;
+            /** The title of the parent. */
+            title: string;
+            /** The rel permalink of the parent. */
+            relPermalink: string;
+            /** Type of the resource. */
+            type: string;
+          }[];
+          parent?: {
+            /** Parent ID. */
+            id: string;
+            /** The title of the parent. */
+            title: string;
+            /** The rel permalink of the parent. */
+            relPermalink: string;
+            /** Type of the resource. */
+            type: string;
+          };
+          nextPage: {
+            /** Parent ID. */
+            id: string;
+            /** The title of the parent. */
+            title: string;
+            /** The rel permalink of the parent. */
+            relPermalink: string;
+            /** Type of the resource. */
+            type: string;
+          };
+        };
+        /** The attempted at of the quizevaluationresult. */
+        attemptedAt: string;
+        /** The attempts of the quizevaluationresult. */
+        attempts: number;
+      };
+    };
+    /** Total time spent in seconds */
+    timeSpent: number;
+    /** Items that have been completed (map of item IDs to item data) */
+    completedItems: {
+      [key: string]: {
+        /** Timestamp when the item was completed */
+        completedAt: string;
+        itemData: {
+          /** Parent ID. */
+          id: string;
+          /** The title of the parent. */
+          title: string;
+          /** The rel permalink of the parent. */
+          relPermalink: string;
+          /** Type of the resource. */
+          type: string;
+        };
+      };
+    };
+    /** The completed of the curriculaprogresstracker. */
+    completed: string;
+  };
+  /** ID of the associated registration. */
+  registrationId?: string;
+  contentType?: "learning-path" | "challenge" | "certification";
+  itemData?: {
+    /** CurriculaCurrentItemData ID. */
+    id: string;
+    /** The last opened of the curriculacurrentitemdata. */
+    lastOpened: string;
+    contentType: "learning-path" | "challenge" | "certification";
+  };
+};
+export type UpdateCurrentItemInProgressTrackerApiArg = {
+  /** The ID of the registration */
+  registrationId: string;
+  body: {
+    contentType: "learning-path" | "challenge" | "certification";
+    itemData: {
+      /** CurriculaCurrentItemData ID. */
+      id: string;
+      /** The last opened of the curriculacurrentitemdata. */
+      lastOpened: string;
+      contentType: "learning-path" | "challenge" | "certification";
+    };
+  };
+};
+export type GetTestByAbsPathApiResponse = /** status 200 A single test */ {
+  /** Quiz ID. */
+  id: string;
+  /** Organization ID that owns this quiz */
+  orgId: string;
+  /** Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path */
+  final: boolean;
+  /** The title of the quiz. */
+  title: string;
+  /** Description of the quiz. */
+  description: string;
+  /** The slug of the quiz. */
+  slug: string;
+  /** The rel permalink of the quiz. */
+  relPermalink: string;
+  /** The permalink of the quiz. */
+  permalink: string;
+  /** Type of the resource. */
+  type: string;
+  /** The section of the quiz. */
+  section: string;
+  /** The layout of the quiz. */
+  layout: string;
+  /** The date of the quiz. */
+  date: string;
+  /** The lastmod of the quiz. */
+  lastmod: string;
+  /** The draft of the quiz. */
+  draft: boolean;
+  /** The file path of the quiz. */
+  filePath: string;
+  /** The pass percentage of the quiz. */
+  passPercentage: number;
+  /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
+  timeLimit: number;
+  /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
+  maxAttempts: number;
+  /** The questions of the quiz. */
+  questions: {
+    /** Question ID. */
+    id: string;
+    /** The text of the question. */
+    text: string;
+    type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
+    /** The marks of the question. */
+    marks: number;
+    /** The multiple answers of the question. */
+    multipleAnswers?: boolean;
+    /** The options of the question. */
+    options: {
+      /** QuestionOption ID. */
+      id: string;
+      /** The text of the questionoption. */
+      text: string;
+      /** The is correct of the questionoption. */
+      isCorrect: boolean;
+    }[];
+    /** The correct answer of the question. */
+    correctAnswer: string;
+  }[];
+  /** The total questions of the quiz. */
+  totalQuestions: number;
+  /** The total questions in bank of the quiz. */
+  totalQuestionsInBank: number;
+  /** The total question sets of the quiz. */
+  totalQuestionSets: number;
+  /** The total marks of the quiz. */
+  totalMarks: number;
+  /** The prerequisites of the quiz. */
+  prerequisites: {
+    /** Parent ID. */
+    id: string;
+    /** The title of the parent. */
+    title: string;
+    /** The rel permalink of the parent. */
+    relPermalink: string;
+    /** Type of the resource. */
+    type: string;
+  }[];
+  parent?: {
+    /** Parent ID. */
+    id: string;
+    /** The title of the parent. */
+    title: string;
+    /** The rel permalink of the parent. */
+    relPermalink: string;
+    /** Type of the resource. */
+    type: string;
+  };
+  nextPage: {
+    /** Parent ID. */
+    id: string;
+    /** The title of the parent. */
+    title: string;
+    /** The rel permalink of the parent. */
+    relPermalink: string;
+    /** Type of the resource. */
+    type: string;
+  };
+};
+export type GetTestByAbsPathApiArg = {
+  /** The absolute path of the test to retrieve */
+  absPath: string;
+};
+export type StartTestByIdApiResponse = /** status 200 A single test */ {
+  /** Quiz ID. */
+  id: string;
+  /** Organization ID that owns this quiz */
+  orgId: string;
+  /** Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path */
+  final: boolean;
+  /** The title of the quiz. */
+  title: string;
+  /** Description of the quiz. */
+  description: string;
+  /** The slug of the quiz. */
+  slug: string;
+  /** The rel permalink of the quiz. */
+  relPermalink: string;
+  /** The permalink of the quiz. */
+  permalink: string;
+  /** Type of the resource. */
+  type: string;
+  /** The section of the quiz. */
+  section: string;
+  /** The layout of the quiz. */
+  layout: string;
+  /** The date of the quiz. */
+  date: string;
+  /** The lastmod of the quiz. */
+  lastmod: string;
+  /** The draft of the quiz. */
+  draft: boolean;
+  /** The file path of the quiz. */
+  filePath: string;
+  /** The pass percentage of the quiz. */
+  passPercentage: number;
+  /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
+  timeLimit: number;
+  /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
+  maxAttempts: number;
+  /** The questions of the quiz. */
+  questions: {
+    /** Question ID. */
+    id: string;
+    /** The text of the question. */
+    text: string;
+    type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
+    /** The marks of the question. */
+    marks: number;
+    /** The multiple answers of the question. */
+    multipleAnswers?: boolean;
+    /** The options of the question. */
+    options: {
+      /** QuestionOption ID. */
+      id: string;
+      /** The text of the questionoption. */
+      text: string;
+      /** The is correct of the questionoption. */
+      isCorrect: boolean;
+    }[];
+    /** The correct answer of the question. */
+    correctAnswer: string;
+  }[];
+  /** The total questions of the quiz. */
+  totalQuestions: number;
+  /** The total questions in bank of the quiz. */
+  totalQuestionsInBank: number;
+  /** The total question sets of the quiz. */
+  totalQuestionSets: number;
+  /** The total marks of the quiz. */
+  totalMarks: number;
+  /** The prerequisites of the quiz. */
+  prerequisites: {
+    /** Parent ID. */
+    id: string;
+    /** The title of the parent. */
+    title: string;
+    /** The rel permalink of the parent. */
+    relPermalink: string;
+    /** Type of the resource. */
+    type: string;
+  }[];
+  parent?: {
+    /** Parent ID. */
+    id: string;
+    /** The title of the parent. */
+    title: string;
+    /** The rel permalink of the parent. */
+    relPermalink: string;
+    /** Type of the resource. */
+    type: string;
+  };
+  nextPage: {
+    /** Parent ID. */
+    id: string;
+    /** The title of the parent. */
+    title: string;
+    /** The rel permalink of the parent. */
+    relPermalink: string;
+    /** Type of the resource. */
+    type: string;
+  };
+};
+export type StartTestByIdApiArg = {
+  body: {
+    /** The test abs path of the starttestrequest. */
+    testAbsPath: string;
+    /** ID of the associated registration. */
+    registrationId: string;
+  };
+};
+export type GetAllTestSessionsForRegistrationApiResponse =
+  /** status 200 A list of tests for the specified registration */ {
+    /** The score of the quizevaluationresult. */
+    score: number;
+    /** The passed of the quizevaluationresult. */
+    passed: boolean;
+    /** The percentage scored of the quizevaluationresult. */
+    percentageScored: number;
+    /** The total marks of the quizevaluationresult. */
+    totalMarks: number;
+    /** The pass percentage of the quizevaluationresult. */
+    passPercentage: number;
+    /** The correct submissions of the quizevaluationresult. */
+    correctSubmissions: {
+      [key: string]: boolean;
+    };
+    quiz: {
+      /** Quiz ID. */
+      id: string;
+      /** Organization ID that owns this quiz */
+      orgId: string;
+      /** Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path */
+      final: boolean;
+      /** The title of the quiz. */
+      title: string;
+      /** Description of the quiz. */
+      description: string;
+      /** The slug of the quiz. */
+      slug: string;
+      /** The rel permalink of the quiz. */
+      relPermalink: string;
+      /** The permalink of the quiz. */
+      permalink: string;
+      /** Type of the resource. */
+      type: string;
+      /** The section of the quiz. */
+      section: string;
+      /** The layout of the quiz. */
+      layout: string;
+      /** The date of the quiz. */
+      date: string;
+      /** The lastmod of the quiz. */
+      lastmod: string;
+      /** The draft of the quiz. */
+      draft: boolean;
+      /** The file path of the quiz. */
+      filePath: string;
+      /** The pass percentage of the quiz. */
+      passPercentage: number;
+      /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
+      timeLimit: number;
+      /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
+      maxAttempts: number;
+      /** The questions of the quiz. */
+      questions: {
+        /** Question ID. */
+        id: string;
+        /** The text of the question. */
+        text: string;
+        type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
+        /** The marks of the question. */
+        marks: number;
+        /** The multiple answers of the question. */
+        multipleAnswers?: boolean;
+        /** The options of the question. */
+        options: {
+          /** QuestionOption ID. */
+          id: string;
+          /** The text of the questionoption. */
+          text: string;
+          /** The is correct of the questionoption. */
+          isCorrect: boolean;
+        }[];
+        /** The correct answer of the question. */
+        correctAnswer: string;
+      }[];
+      /** The total questions of the quiz. */
+      totalQuestions: number;
+      /** The total questions in bank of the quiz. */
+      totalQuestionsInBank: number;
+      /** The total question sets of the quiz. */
+      totalQuestionSets: number;
+      /** The total marks of the quiz. */
+      totalMarks: number;
+      /** The prerequisites of the quiz. */
+      prerequisites: {
+        /** Parent ID. */
+        id: string;
+        /** The title of the parent. */
+        title: string;
+        /** The rel permalink of the parent. */
+        relPermalink: string;
+        /** Type of the resource. */
+        type: string;
+      }[];
+      parent?: {
+        /** Parent ID. */
+        id: string;
+        /** The title of the parent. */
+        title: string;
+        /** The rel permalink of the parent. */
+        relPermalink: string;
+        /** Type of the resource. */
+        type: string;
+      };
+      nextPage: {
+        /** Parent ID. */
+        id: string;
+        /** The title of the parent. */
+        title: string;
+        /** The rel permalink of the parent. */
+        relPermalink: string;
+        /** Type of the resource. */
+        type: string;
+      };
+    };
+    /** The attempted at of the quizevaluationresult. */
+    attemptedAt: string;
+    /** The attempts of the quizevaluationresult. */
+    attempts: number;
+  }[][];
+export type GetAllTestSessionsForRegistrationApiArg = {
+  /** The ID of the registration to retrieve tests for */
+  id: string;
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  /** Filter tests by absolute path */
+  testAbsPath?: string;
+};
+export type SubmitQuizApiResponse = /** status 200 Progress tracker updated */ {
+  /** The score of the quizevaluationresult. */
+  score: number;
+  /** The passed of the quizevaluationresult. */
+  passed: boolean;
+  /** The percentage scored of the quizevaluationresult. */
+  percentageScored: number;
+  /** The total marks of the quizevaluationresult. */
+  totalMarks: number;
+  /** The pass percentage of the quizevaluationresult. */
+  passPercentage: number;
+  /** The correct submissions of the quizevaluationresult. */
+  correctSubmissions: {
+    [key: string]: boolean;
+  };
+  quiz: {
+    /** Quiz ID. */
+    id: string;
+    /** Organization ID that owns this quiz */
+    orgId: string;
+    /** Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path */
+    final: boolean;
+    /** The title of the quiz. */
+    title: string;
+    /** Description of the quiz. */
+    description: string;
+    /** The slug of the quiz. */
+    slug: string;
+    /** The rel permalink of the quiz. */
+    relPermalink: string;
+    /** The permalink of the quiz. */
+    permalink: string;
+    /** Type of the resource. */
+    type: string;
+    /** The section of the quiz. */
+    section: string;
+    /** The layout of the quiz. */
+    layout: string;
+    /** The date of the quiz. */
+    date: string;
+    /** The lastmod of the quiz. */
+    lastmod: string;
+    /** The draft of the quiz. */
+    draft: boolean;
+    /** The file path of the quiz. */
+    filePath: string;
+    /** The pass percentage of the quiz. */
+    passPercentage: number;
+    /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
+    timeLimit: number;
+    /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
+    maxAttempts: number;
+    /** The questions of the quiz. */
+    questions: {
+      /** Question ID. */
+      id: string;
+      /** The text of the question. */
+      text: string;
+      type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
+      /** The marks of the question. */
+      marks: number;
+      /** The multiple answers of the question. */
+      multipleAnswers?: boolean;
+      /** The options of the question. */
+      options: {
+        /** QuestionOption ID. */
+        id: string;
+        /** The text of the questionoption. */
+        text: string;
+        /** The is correct of the questionoption. */
+        isCorrect: boolean;
+      }[];
+      /** The correct answer of the question. */
+      correctAnswer: string;
+    }[];
+    /** The total questions of the quiz. */
+    totalQuestions: number;
+    /** The total questions in bank of the quiz. */
+    totalQuestionsInBank: number;
+    /** The total question sets of the quiz. */
+    totalQuestionSets: number;
+    /** The total marks of the quiz. */
+    totalMarks: number;
+    /** The prerequisites of the quiz. */
+    prerequisites: {
+      /** Parent ID. */
+      id: string;
+      /** The title of the parent. */
+      title: string;
+      /** The rel permalink of the parent. */
+      relPermalink: string;
+      /** Type of the resource. */
+      type: string;
+    }[];
+    parent?: {
+      /** Parent ID. */
+      id: string;
+      /** The title of the parent. */
+      title: string;
+      /** The rel permalink of the parent. */
+      relPermalink: string;
+      /** Type of the resource. */
+      type: string;
+    };
+    nextPage: {
+      /** Parent ID. */
+      id: string;
+      /** The title of the parent. */
+      title: string;
+      /** The rel permalink of the parent. */
+      relPermalink: string;
+      /** Type of the resource. */
+      type: string;
+    };
+  };
+  /** The attempted at of the quizevaluationresult. */
+  attemptedAt: string;
+  /** The attempts of the quizevaluationresult. */
+  attempts: number;
+};
+export type SubmitQuizApiArg = {
+  body: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    testSessionId: string;
+    /** The quiz abs path of the quizsubmission. */
+    quizAbsPath: string;
+    /** ID of the associated registration. */
+    registrationId: string;
+    /** ID of the user who owns or created this resource. */
+    userId: string;
+    /** The answers of the quizsubmission. */
+    answers: {
+      /** ID of the associated question. */
+      questionId: string;
+      /** Map of selected option IDs to a boolean value indicating if it was selected. */
+      selectedOptionId: {
+        [key: string]: boolean;
+      };
+      /** The answer text of the submittedanswer. */
+      answerText: string;
+    }[];
+  };
+};
+export type GetAcademyAdminSummaryApiResponse =
+  /** status 200 A list of content with total count and registration metrics */ object;
+export type GetAcademyAdminSummaryApiArg = void;
+export type GetAcademyAdminRegistrationsApiResponse = /** status 200 List of registrations with pagination info */ {
+  /** The data of the curricularegistrationsresponse. */
+  data: {
+    /** Title of the curricula */
+    curriculaTitle: string;
+    /** Type of the curricula */
+    curriculaType: "learning-path" | "challenge" | "certification";
+    /** Permalink of the curricula */
+    curriculaPermalink: string;
+    /** Unique ID of the registration */
+    registrationId: string;
+    /** Registration status */
+    status: "registered" | "completed" | "failed" | "withdrawn";
+    /** When the registration was created */
+    createdAt?: string;
+    /** ID of the user */
+    userId: string;
+    /** First name of the user */
+    userFirstName: string;
+    /** Last name of the user */
+    userLastName: string;
+    /** Email of the user */
+    userEmail: string;
+    /** Avatar URL of the user */
+    userAvatarUrl: string;
+    /** Total count for pagination */
+    totalCount: number;
+  }[];
+  /** Total number of items available. */
+  totalCount: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Current page number of the result set. */
+  page: number;
+};
+export type GetAcademyAdminRegistrationsApiArg = {
+  /** Number of results per page */
+  pagesize?: number;
+  /** Page number */
+  page?: number;
+  /** Filter by content types */
+  contentType?: string[];
+  /** Filter by registration status */
+  status?: string[];
+};
+export type GetCertificateByIdApiResponse = /** status 200 A single certificate */ {
+  /** Unique identifier for the certificate */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  orgId: string;
+  /** ID of the recipient (user) who received the certificate */
+  recipientId: string;
+  /** Name of the recipient (user) who received the certificate */
+  recipientName: string;
+  /** Title of the certificate */
+  title: string;
+  /** Description of the certificate */
+  description: string;
+  /** List of issuing authorities for the certificate */
+  issuingAuthorities: {
+    /** Name of the issuing authority */
+    name: string;
+    /** Role of the issuing authority */
+    role?: string;
+    /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
+    signatureUrl?: string;
+  }[];
+  /** Date when the certificate was issued */
+  issuedDate: string;
+  /** Date when the certificate expires. Dynamically calculated from issued_date and expires_in; not specified by instructors. */
+  expirationDate?: string;
+  /** Number of months after which the certificate expires */
+  expiresIn?: number;
+};
+export type GetCertificateByIdApiArg = {
+  /** The ID of the certificate to retrieve */
+  certificateId: string;
 };
 export type GetConnectionsApiResponse = /** status 200 Paginated list of connections with summary information */ {
   /** List of connections on this page */
@@ -10840,24 +10840,6 @@ export const {
   useGetFeaturesQuery,
   useGetFeaturesByOrganizationQuery,
   useSubmitSupportRequestMutation,
-  useGetMyAcademyCurriculaQuery,
-  useCreateAcademyCurriculaMutation,
-  useGetAcademyCurriculaQuery,
-  useGetAcademyContentQuery,
-  useRegisterToAcademyContentMutation,
-  useWithdrawFromAcademyContentMutation,
-  useUpdateAcademyCurriculaByIdMutation,
-  useDeleteAcademyCurriculaByIdMutation,
-  useGetAcademyCurriculaByIdQuery,
-  useGetApiAcademyRegistrationsByContentIdQuery,
-  useUpdateCurrentItemInProgressTrackerMutation,
-  useGetTestByAbsPathQuery,
-  useStartTestByIdMutation,
-  useGetAllTestSessionsForRegistrationQuery,
-  useSubmitQuizMutation,
-  useGetAcademyAdminSummaryQuery,
-  useGetAcademyAdminRegistrationsQuery,
-  useGetCertificateByIdQuery,
   useDeleteBadgeByIdMutation,
   useGetBadgeByIdQuery,
   useCreateOrUpdateBadgeMutation,
@@ -10925,6 +10907,24 @@ export const {
   useGetViewByIdQuery,
   useUpdateViewMutation,
   useDeleteViewMutation,
+  useGetMyAcademyCurriculaQuery,
+  useCreateAcademyCurriculaMutation,
+  useGetAcademyCurriculaQuery,
+  useGetAcademyContentQuery,
+  useRegisterToAcademyContentMutation,
+  useWithdrawFromAcademyContentMutation,
+  useUpdateAcademyCurriculaByIdMutation,
+  useDeleteAcademyCurriculaByIdMutation,
+  useGetAcademyCurriculaByIdQuery,
+  useGetApiAcademyRegistrationsByContentIdQuery,
+  useUpdateCurrentItemInProgressTrackerMutation,
+  useGetTestByAbsPathQuery,
+  useStartTestByIdMutation,
+  useGetAllTestSessionsForRegistrationQuery,
+  useSubmitQuizMutation,
+  useGetAcademyAdminSummaryQuery,
+  useGetAcademyAdminRegistrationsQuery,
+  useGetCertificateByIdQuery,
   useGetConnectionsQuery,
   useRegisterConnectionMutation,
   useGetConnectionByIdQuery,
