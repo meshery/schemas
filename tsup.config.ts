@@ -19,21 +19,39 @@ const generatedEntries = generatedFiles.reduce(
   {} as Record<string, string>,
 );
 
-export default defineConfig({
-  entry: {
-    index: "typescript/index.ts",
-    cloudApi: "typescript/rtk/cloud.ts",
-    mesheryApi: "typescript/rtk/meshery.ts",
-    api: "typescript/rtk/api.ts",
-    permissions: "typescript/permissions.ts",
-    ...generatedEntries,
-  },
-  format: ["cjs", "esm"],
+const sharedOptions = {
+  format: ["cjs", "esm"] as const,
   external: ["react", "react-dom", "react-redux", "@reduxjs/toolkit"],
-  dts: true,
   splitting: false,
   sourcemap: false,
   treeshake: true,
   minify: true,
-  clean: true,
-});
+};
+
+export default defineConfig([
+  {
+    // Main API surface — small files, full DTS via tsup's rollup worker.
+    // Keep this set small: the worker processes all entry files in one
+    // in-memory TypeScript program; adding large generated constructs here
+    // causes ERR_WORKER_OUT_OF_MEMORY on the 7 GB ubuntu-24.04 CI runner.
+    ...sharedOptions,
+    entry: {
+      index: "typescript/index.ts",
+      cloudApi: "typescript/rtk/cloud.ts",
+      mesheryApi: "typescript/rtk/meshery.ts",
+      api: "typescript/rtk/api.ts",
+      permissions: "typescript/permissions.ts",
+    },
+    dts: true,
+    clean: true,
+  },
+  {
+    // Generated construct schemas — large files (497 K lines total), JS only.
+    // DTS for these is emitted by build/generate-schema-dts.js which writes
+    // minimal declarations without running the full TypeScript type-checker.
+    ...sharedOptions,
+    entry: generatedEntries,
+    dts: false,
+    clean: false,
+  },
+]);
