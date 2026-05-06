@@ -1,6 +1,7 @@
 import { cloudBaseApi as api } from "./api";
 export const addTagTypes = [
   "Feature_Features",
+  "Support_Support",
   "Academy_API_Academy",
   "Badge_Badge",
   "credential_credentials",
@@ -44,6 +45,10 @@ const injectedRtkApi = api
           url: `/api/entitlement/subscriptions/organizations/${queryArg.organizationId}/features`,
         }),
         providesTags: ["Feature_Features"],
+      }),
+      submitSupportRequest: build.mutation<SubmitSupportRequestApiResponse, SubmitSupportRequestApiArg>({
+        query: (queryArg) => ({ url: `/api/integrations/support`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Support_Support"],
       }),
       getMyAcademyCurricula: build.query<GetMyAcademyCurriculaApiResponse, GetMyAcademyCurriculaApiArg>({
         query: (queryArg) => ({
@@ -1504,6 +1509,19 @@ export type GetFeaturesByOrganizationApiResponse = /** status 200 Features respo
 export type GetFeaturesByOrganizationApiArg = {
   /** The ID of the organization */
   organizationId: string;
+};
+export type SubmitSupportRequestApiResponse = /** status 201 Support request submitted */ {
+  message?: string;
+};
+export type SubmitSupportRequestApiArg = {
+  body: {
+    /** Concise and descriptive title for the support request. */
+    subject: string;
+    /** Detailed description of the issue or question. */
+    message: string;
+    /** Category that best represents the nature of the inquiry. */
+    scope?: "Support" | "Community" | "Account" | "Commercial";
+  };
 };
 export type GetMyAcademyCurriculaApiResponse = /** status 200 A list of content with total count */ {
   /** Total number of Curricula */
@@ -10821,6 +10839,7 @@ export type UnassignViewFromWorkspaceApiArg = {
 export const {
   useGetFeaturesQuery,
   useGetFeaturesByOrganizationQuery,
+  useSubmitSupportRequestMutation,
   useGetMyAcademyCurriculaQuery,
   useCreateAcademyCurriculaMutation,
   useGetAcademyCurriculaQuery,
