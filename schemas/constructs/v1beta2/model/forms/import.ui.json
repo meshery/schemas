@@ -1,0 +1,9 @@
+{
+  "uploadType": {
+    "ui:widget": "radio"
+  },
+  "file": {
+    "ui:widget": "file"
+  },
+  "ui:order": ["uploadType", "file", "url", "csv"]
+}

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "Import Model",
+  "description": "RJSF form schema for the import-model modal. Captures the user-input fields drawn from the canonical ImportRequest schema in meshery/schemas/constructs/v1beta2/model/api.yml. The uploadType discriminator determines which import method is active. Field shape, types, enum values, and required lists MUST stay a subset of the canonical ImportRequest; the Go validator at validation/forms_test.go enforces that.",
+  "type": "object",
+  "properties": {
+    "uploadType": {
+      "type": "string",
+      "title": "Upload method",
+      "enum": ["file", "urlImport", "csv"],
+      "description": "Choose the method you prefer to upload your model file. Select 'File Import' or 'CSV Import' if you have the file on your local system or 'URL Import' if you have the file hosted online.",
+      "x-rjsf-grid-area": "12"
+    }
+  },
+  "required": ["uploadType"]
+}
