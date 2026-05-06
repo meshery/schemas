@@ -788,6 +788,9 @@ components:
       - $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
       description: Expiry time for curricula access
       x-go-type: '*time.Time'
+      x-go-type-import:
+        path: time
+      x-go-type-skip-optional-pointer: true
       x-oapi-codegen-extra-tags:
         json: accessExpiresAt
         db: access_expires_at
@@ -850,10 +853,10 @@ components:
               json: registrationCount,omitempty
           invitation:
             $ref: ../invitation/api.yml#/components/schemas/Invitation
-            x-go-type: invitationv1beta2.Invitation
+            x-go-type: invitationv1beta3.Invitation
             x-go-type-import:
-              path: github.com/meshery/schemas/models/v1beta2/invitation
-              name: invitationv1beta2
+              path: github.com/meshery/schemas/models/v1beta3/invitation
+              name: invitationv1beta3
     CreateAcademyCurriculaRequest:
       type: object
       properties:
@@ -900,10 +903,10 @@ components:
           $ref: ../invitation/api.yml#/components/schemas/InvitationStatus
           description: Current access status of the curricula
           x-go-name: AccessStatus
-          x-go-type: invitationv1beta2.InvitationStatus
+          x-go-type: invitationv1beta3.InvitationStatus
           x-go-type-import:
-            path: github.com/meshery/schemas/models/v1beta2/invitation
-            name: invitationv1beta2
+            path: github.com/meshery/schemas/models/v1beta3/invitation
+            name: invitationv1beta3
           x-oapi-codegen-extra-tags:
             json: accessStatus
             db: access_status
@@ -1895,14 +1898,14 @@ components:
     CurriculaRegistrationsFilter:
       type: object
       required:
-      - pagesize
+      - pageSize
       - page
       - contentType
       - status
       properties:
-        pagesize:
+        pageSize:
           type: integer
-          description: The pagesize of the curricularegistrationsfilter.
+          description: The pageSize of the curricularegistrationsfilter.
           minimum: 1
         page:
           type: integer
