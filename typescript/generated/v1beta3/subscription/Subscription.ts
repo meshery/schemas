@@ -36,7 +36,7 @@ export interface components {
     CreateSubscriptionRequest: {
       /**
        * Format: uuid
-       * @description ID of the organization subscribing.
+       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
        */
       orgId?: string;
       /** @description Price ID from the payment processor. */
@@ -60,12 +60,12 @@ export interface components {
     UpgradeSubscriptionRequest: {
       /**
        * Format: uuid
-       * @description Plan ID that is being replaced.
+       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
        */
       oldPlanId?: string;
       /**
        * Format: uuid
-       * @description Plan ID that replaces the old plan.
+       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
        */
       newPlanId?: string;
     };
@@ -108,24 +108,24 @@ export interface components {
       subscriptions: {
         /**
          * Format: uuid
-         * @description Unique identifier for the subscription.
+         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
          */
         id: string;
         /**
          * Format: uuid
-         * @description ID of the organization that owns this subscription.
+         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
          */
         orgId: string;
         /**
          * Format: uuid
-         * @description ID of the plan this subscription is for.
+         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
          */
         planId: string;
         /** @description Eager-loaded plan associated with this subscription. */
         plan?: {
           /**
            * Format: uuid
-           * @description Unique identifier for the plan.
+           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
            */
           id: string;
           /**
@@ -200,24 +200,24 @@ export interface components {
     Subscription: {
       /**
        * Format: uuid
-       * @description Unique identifier for the subscription.
+       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
        */
       id: string;
       /**
        * Format: uuid
-       * @description ID of the organization that owns this subscription.
+       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
        */
       orgId: string;
       /**
        * Format: uuid
-       * @description ID of the plan this subscription is for.
+       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
        */
       planId: string;
       /** @description Eager-loaded plan associated with this subscription. */
       plan?: {
         /**
          * Format: uuid
-         * @description Unique identifier for the plan.
+         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
          */
         id: string;
         /**
@@ -353,6 +353,8 @@ export interface operations {
         order?: string;
         /** Filter subscriptions by status */
         status?: string[];
+        /** Filter subscriptions by plan UUID. Repeat for multiple values. */
+        planId?: string[];
       };
     };
     responses: {
@@ -370,24 +372,24 @@ export interface operations {
             subscriptions: {
               /**
                * Format: uuid
-               * @description Unique identifier for the subscription.
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                */
               id: string;
               /**
                * Format: uuid
-               * @description ID of the organization that owns this subscription.
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                */
               orgId: string;
               /**
                * Format: uuid
-               * @description ID of the plan this subscription is for.
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                */
               planId: string;
               /** @description Eager-loaded plan associated with this subscription. */
               plan?: {
                 /**
                  * Format: uuid
-                 * @description Unique identifier for the plan.
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
                 id: string;
                 /**
@@ -502,24 +504,24 @@ export interface operations {
             subscriptions: {
               /**
                * Format: uuid
-               * @description Unique identifier for the subscription.
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                */
               id: string;
               /**
                * Format: uuid
-               * @description ID of the organization that owns this subscription.
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                */
               orgId: string;
               /**
                * Format: uuid
-               * @description ID of the plan this subscription is for.
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                */
               planId: string;
               /** @description Eager-loaded plan associated with this subscription. */
               plan?: {
                 /**
                  * Format: uuid
-                 * @description Unique identifier for the plan.
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
                 id: string;
                 /**
@@ -655,7 +657,7 @@ export interface operations {
         "application/json": {
           /**
            * Format: uuid
-           * @description ID of the organization subscribing.
+           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
            */
           orgId?: string;
           /** @description Price ID from the payment processor. */
@@ -692,24 +694,24 @@ export interface operations {
           "application/json": {
             /**
              * Format: uuid
-             * @description Unique identifier for the subscription.
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             id: string;
             /**
              * Format: uuid
-             * @description ID of the organization that owns this subscription.
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             orgId: string;
             /**
              * Format: uuid
-             * @description ID of the plan this subscription is for.
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             planId: string;
             /** @description Eager-loaded plan associated with this subscription. */
             plan?: {
               /**
                * Format: uuid
-               * @description Unique identifier for the plan.
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                */
               id: string;
               /**
@@ -811,12 +813,12 @@ export interface operations {
         "application/json": {
           /**
            * Format: uuid
-           * @description Plan ID that is being replaced.
+           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
            */
           oldPlanId?: string;
           /**
            * Format: uuid
-           * @description Plan ID that replaces the old plan.
+           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
            */
           newPlanId?: string;
         };
@@ -867,12 +869,12 @@ export interface operations {
         "application/json": {
           /**
            * Format: uuid
-           * @description Plan ID that is being replaced.
+           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
            */
           oldPlanId?: string;
           /**
            * Format: uuid
-           * @description Plan ID that replaces the old plan.
+           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
            */
           newPlanId?: string;
         };

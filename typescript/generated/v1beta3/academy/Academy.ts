@@ -3906,8 +3906,8 @@ export interface components {
       totalCount: number;
     };
     CurriculaRegistrationsFilter: {
-      /** @description The pagesize of the curricularegistrationsfilter. */
-      pagesize: number;
+      /** @description The pageSize of the curricularegistrationsfilter. */
+      pageSize: number;
       /** @description Current page number of the result set. */
       page: number;
       /** @description The content type of the curricularegistrationsfilter. */

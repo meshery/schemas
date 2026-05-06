@@ -1203,6 +1203,7 @@ const injectedRtkApi = api
             pagesize: queryArg?.pagesize,
             order: queryArg?.order,
             status: queryArg?.status,
+            planId: queryArg?.planId,
           },
         }),
         providesTags: ["Subscription_Subscriptions"],
@@ -9019,15 +9020,15 @@ export type GetSubscriptionsApiResponse = /** status 200 Subscriptions response 
   totalCount: number;
   /** Subscriptions returned on the current page. */
   subscriptions: {
-    /** Unique identifier for the subscription. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     id: string;
-    /** ID of the organization that owns this subscription. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     orgId: string;
-    /** ID of the plan this subscription is for. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     planId: string;
     /** Eager-loaded plan associated with this subscription. */
     plan?: {
-      /** Unique identifier for the plan. */
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
       id: string;
       /** Display name of the plan. */
       name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
@@ -9069,6 +9070,8 @@ export type GetSubscriptionsApiArg = {
   order?: string;
   /** Filter subscriptions by status */
   status?: string[];
+  /** Filter subscriptions by plan UUID. Repeat for multiple values. */
+  planId?: string[];
 };
 export type CancelSubscriptionApiResponse = /** status 200 Subscription cancellation scheduled */ {
   /** Current page number of the result set. */
@@ -9079,15 +9082,15 @@ export type CancelSubscriptionApiResponse = /** status 200 Subscription cancella
   totalCount: number;
   /** Subscriptions returned on the current page. */
   subscriptions: {
-    /** Unique identifier for the subscription. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     id: string;
-    /** ID of the organization that owns this subscription. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     orgId: string;
-    /** ID of the plan this subscription is for. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     planId: string;
     /** Eager-loaded plan associated with this subscription. */
     plan?: {
-      /** Unique identifier for the plan. */
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
       id: string;
       /** Display name of the plan. */
       name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
@@ -9132,7 +9135,7 @@ export type CreateSubscriptionApiResponse = /** status 201 A new subscription ha
 };
 export type CreateSubscriptionApiArg = {
   body: {
-    /** ID of the organization subscribing. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     orgId?: string;
     /** Price ID from the payment processor. */
     planId?: string;
@@ -9147,15 +9150,15 @@ export type CreateSubscriptionApiArg = {
   };
 };
 export type UpgradeSubscriptionApiResponse = /** status 200 Subscription upgraded */ {
-  /** Unique identifier for the subscription. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   id: string;
-  /** ID of the organization that owns this subscription. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   orgId: string;
-  /** ID of the plan this subscription is for. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   planId: string;
   /** Eager-loaded plan associated with this subscription. */
   plan?: {
-    /** Unique identifier for the plan. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     id: string;
     /** Display name of the plan. */
     name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
@@ -9191,9 +9194,9 @@ export type UpgradeSubscriptionApiArg = {
   /** Subscription ID */
   subscriptionId: string;
   body: {
-    /** Plan ID that is being replaced. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     oldPlanId?: string;
-    /** Plan ID that replaces the old plan. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     newPlanId?: string;
   };
 };
@@ -9203,9 +9206,9 @@ export type PreviewSubscriptionUpgradeApiArg = {
   /** Subscription ID */
   subscriptionId: string;
   body: {
-    /** Plan ID that is being replaced. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     oldPlanId?: string;
-    /** Plan ID that replaces the old plan. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     newPlanId?: string;
   };
 };

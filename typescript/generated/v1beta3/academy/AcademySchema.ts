@@ -668,6 +668,10 @@ const AcademySchema: Record<string, unknown> = {
                     ],
                     "description": "Expiry time for curricula access",
                     "x-go-type": "*time.Time",
+                    "x-go-type-import": {
+                      "path": "time"
+                    },
+                    "x-go-type-skip-optional-pointer": true,
                     "x-oapi-codegen-extra-tags": {
                       "json": "accessExpiresAt",
                       "db": "access_expires_at"
@@ -676,10 +680,10 @@ const AcademySchema: Record<string, unknown> = {
                   "accessStatus": {
                     "description": "Current access status of the curricula",
                     "x-go-name": "AccessStatus",
-                    "x-go-type": "invitationv1beta2.InvitationStatus",
+                    "x-go-type": "invitationv1beta3.InvitationStatus",
                     "x-go-type-import": {
-                      "path": "github.com/meshery/schemas/models/v1beta2/invitation",
-                      "name": "invitationv1beta2"
+                      "path": "github.com/meshery/schemas/models/v1beta3/invitation",
+                      "name": "invitationv1beta3"
                     },
                     "x-oapi-codegen-extra-tags": {
                       "json": "accessStatus",
@@ -3296,6 +3300,10 @@ const AcademySchema: Record<string, unknown> = {
                     ],
                     "description": "Expiry time for curricula access",
                     "x-go-type": "*time.Time",
+                    "x-go-type-import": {
+                      "path": "time"
+                    },
+                    "x-go-type-skip-optional-pointer": true,
                     "x-oapi-codegen-extra-tags": {
                       "json": "accessExpiresAt",
                       "db": "access_expires_at"
@@ -3304,10 +3312,10 @@ const AcademySchema: Record<string, unknown> = {
                   "accessStatus": {
                     "description": "Current access status of the curricula",
                     "x-go-name": "AccessStatus",
-                    "x-go-type": "invitationv1beta2.InvitationStatus",
+                    "x-go-type": "invitationv1beta3.InvitationStatus",
                     "x-go-type-import": {
-                      "path": "github.com/meshery/schemas/models/v1beta2/invitation",
-                      "name": "invitationv1beta2"
+                      "path": "github.com/meshery/schemas/models/v1beta3/invitation",
+                      "name": "invitationv1beta3"
                     },
                     "x-oapi-codegen-extra-tags": {
                       "json": "accessStatus",
@@ -4040,10 +4048,10 @@ const AcademySchema: Record<string, unknown> = {
                           }
                         },
                         "invitation": {
-                          "x-go-type": "invitationv1beta2.Invitation",
+                          "x-go-type": "invitationv1beta3.Invitation",
                           "x-go-type-import": {
-                            "path": "github.com/meshery/schemas/models/v1beta2/invitation",
-                            "name": "invitationv1beta2"
+                            "path": "github.com/meshery/schemas/models/v1beta3/invitation",
+                            "name": "invitationv1beta3"
                           },
                           "type": "object",
                           "additionalProperties": false,
@@ -4795,10 +4803,10 @@ const AcademySchema: Record<string, unknown> = {
                           }
                         },
                         "invitation": {
-                          "x-go-type": "invitationv1beta2.Invitation",
+                          "x-go-type": "invitationv1beta3.Invitation",
                           "x-go-type-import": {
-                            "path": "github.com/meshery/schemas/models/v1beta2/invitation",
-                            "name": "invitationv1beta2"
+                            "path": "github.com/meshery/schemas/models/v1beta3/invitation",
+                            "name": "invitationv1beta3"
                           },
                           "type": "object",
                           "additionalProperties": false,
@@ -8769,6 +8777,10 @@ const AcademySchema: Record<string, unknown> = {
         ],
         "description": "Expiry time for curricula access",
         "x-go-type": "*time.Time",
+        "x-go-type-import": {
+          "path": "time"
+        },
+        "x-go-type-skip-optional-pointer": true,
         "x-oapi-codegen-extra-tags": {
           "json": "accessExpiresAt",
           "db": "access_expires_at"
@@ -9736,10 +9748,10 @@ const AcademySchema: Record<string, unknown> = {
                 }
               },
               "invitation": {
-                "x-go-type": "invitationv1beta2.Invitation",
+                "x-go-type": "invitationv1beta3.Invitation",
                 "x-go-type-import": {
-                  "path": "github.com/meshery/schemas/models/v1beta2/invitation",
-                  "name": "invitationv1beta2"
+                  "path": "github.com/meshery/schemas/models/v1beta3/invitation",
+                  "name": "invitationv1beta3"
                 },
                 "type": "object",
                 "additionalProperties": false,
@@ -10026,6 +10038,10 @@ const AcademySchema: Record<string, unknown> = {
             ],
             "description": "Expiry time for curricula access",
             "x-go-type": "*time.Time",
+            "x-go-type-import": {
+              "path": "time"
+            },
+            "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "json": "accessExpiresAt",
               "db": "access_expires_at"
@@ -10034,10 +10050,10 @@ const AcademySchema: Record<string, unknown> = {
           "accessStatus": {
             "description": "Current access status of the curricula",
             "x-go-name": "AccessStatus",
-            "x-go-type": "invitationv1beta2.InvitationStatus",
+            "x-go-type": "invitationv1beta3.InvitationStatus",
             "x-go-type-import": {
-              "path": "github.com/meshery/schemas/models/v1beta2/invitation",
-              "name": "invitationv1beta2"
+              "path": "github.com/meshery/schemas/models/v1beta3/invitation",
+              "name": "invitationv1beta3"
             },
             "x-oapi-codegen-extra-tags": {
               "json": "accessStatus",
@@ -16703,15 +16719,15 @@ const AcademySchema: Record<string, unknown> = {
       "CurriculaRegistrationsFilter": {
         "type": "object",
         "required": [
-          "pagesize",
+          "pageSize",
           "page",
           "contentType",
           "status"
         ],
         "properties": {
-          "pagesize": {
+          "pageSize": {
             "type": "integer",
-            "description": "The pagesize of the curricularegistrationsfilter.",
+            "description": "The pageSize of the curricularegistrationsfilter.",
             "minimum": 1
           },
           "page": {
