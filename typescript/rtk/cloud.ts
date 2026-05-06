@@ -1,6 +1,7 @@
 import { cloudBaseApi as api } from "./api";
 export const addTagTypes = [
   "Feature_Features",
+  "Support_Support",
   "Badge_Badge",
   "credential_credentials",
   "Key_users",
@@ -44,6 +45,10 @@ const injectedRtkApi = api
           url: `/api/entitlement/subscriptions/organizations/${queryArg.organizationId}/features`,
         }),
         providesTags: ["Feature_Features"],
+      }),
+      submitSupportRequest: build.mutation<SubmitSupportRequestApiResponse, SubmitSupportRequestApiArg>({
+        query: (queryArg) => ({ url: `/api/integrations/support`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Support_Support"],
       }),
       deleteBadgeById: build.mutation<DeleteBadgeByIdApiResponse, DeleteBadgeByIdApiArg>({
         query: (queryArg) => ({ url: `/api/organizations/badges/${queryArg.badgeId}`, method: "DELETE" }),
@@ -1504,6 +1509,19 @@ export type GetFeaturesByOrganizationApiResponse = /** status 200 Features respo
 export type GetFeaturesByOrganizationApiArg = {
   /** The ID of the organization */
   organizationId: string;
+};
+export type SubmitSupportRequestApiResponse = /** status 201 Support request submitted */ {
+  message?: string;
+};
+export type SubmitSupportRequestApiArg = {
+  body: {
+    /** Concise and descriptive title for the support request. */
+    subject: string;
+    /** Detailed description of the issue or question. */
+    message: string;
+    /** Category that best represents the nature of the inquiry. */
+    scope?: "Support" | "Community" | "Account" | "Commercial";
+  };
 };
 export type DeleteBadgeByIdApiResponse = unknown;
 export type DeleteBadgeByIdApiArg = {
@@ -5778,6 +5796,10 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
     id: string;
     /** Connection Name */
     name: string;
+    /** Human-readable description of the connection and its purpose. */
+    description?: string;
+    /** URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL). */
+    url?: string;
     /** Associated Credential ID */
     credentialId?: string;
     /** Connection Type (platform, telemetry, collaboration) */
@@ -5879,6 +5901,10 @@ export type RegisterConnectionApiResponse = /** status 201 Connection registered
   id: string;
   /** Connection Name */
   name: string;
+  /** Human-readable description of the connection and its purpose. */
+  description?: string;
+  /** URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL). */
+  url?: string;
   /** Associated Credential ID */
   credentialId?: string;
   /** Connection Type (platform, telemetry, collaboration) */
@@ -5960,6 +5986,10 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
   id: string;
   /** Connection Name */
   name: string;
+  /** Human-readable description of the connection and its purpose. */
+  description?: string;
+  /** URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL). */
+  url?: string;
   /** Associated Credential ID */
   credentialId?: string;
   /** Connection Type (platform, telemetry, collaboration) */
@@ -6023,6 +6053,10 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated */ {
   id: string;
   /** Connection Name */
   name: string;
+  /** Human-readable description of the connection and its purpose. */
+  description?: string;
+  /** URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL). */
+  url?: string;
   /** Associated Credential ID */
   credentialId?: string;
   /** Connection Type (platform, telemetry, collaboration) */
@@ -10805,6 +10839,7 @@ export type UnassignViewFromWorkspaceApiArg = {
 export const {
   useGetFeaturesQuery,
   useGetFeaturesByOrganizationQuery,
+  useSubmitSupportRequestMutation,
   useDeleteBadgeByIdMutation,
   useGetBadgeByIdQuery,
   useCreateOrUpdateBadgeMutation,

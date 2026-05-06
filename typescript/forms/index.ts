@@ -33,6 +33,26 @@ import createOrEditEnvironmentUiSchema from "../../schemas/constructs/v1beta3/en
 import createOrEditWorkspaceSchema from "../../schemas/constructs/v1beta3/workspace/forms/createOrEdit.json";
 import createOrEditWorkspaceUiSchema from "../../schemas/constructs/v1beta3/workspace/forms/createOrEdit.ui.json";
 
+// v1beta3/design
+import importDesignSchema from "../../schemas/constructs/v1beta3/design/forms/import.json";
+import importDesignUiSchema from "../../schemas/constructs/v1beta3/design/forms/import.ui.json";
+
+// v1beta2/model
+import importModelSchema from "../../schemas/constructs/v1beta2/model/forms/import.json";
+import importModelUiSchema from "../../schemas/constructs/v1beta2/model/forms/import.ui.json";
+
+// v1beta3/filter
+import importFilterSchema from "../../schemas/constructs/v1beta3/filter/forms/import.json";
+import importFilterUiSchema from "../../schemas/constructs/v1beta3/filter/forms/import.ui.json";
+
+// v1beta3/connection
+import helmCreateConnectionSchema from "../../schemas/constructs/v1beta3/connection/forms/helmCreate.json";
+import helmCreateConnectionUiSchema from "../../schemas/constructs/v1beta3/connection/forms/helmCreate.ui.json";
+
+// v1beta1/support
+import helpAndSupportSchema from "../../schemas/constructs/v1beta1/support/forms/helpAndSupport.json";
+import helpAndSupportUiSchema from "../../schemas/constructs/v1beta1/support/forms/helpAndSupport.ui.json";
+
 // v1beta1/credential
 import kubernetesCredentialSchema from "../../schemas/constructs/v1beta1/credential/forms/kubernetes.json";
 import kubernetesCredentialUiSchema from "../../schemas/constructs/v1beta1/credential/forms/kubernetes.ui.json";
@@ -40,6 +60,18 @@ import grafanaCredentialSchema from "../../schemas/constructs/v1beta1/credential
 import grafanaCredentialUiSchema from "../../schemas/constructs/v1beta1/credential/forms/grafana.ui.json";
 import prometheusCredentialSchema from "../../schemas/constructs/v1beta1/credential/forms/prometheus.json";
 import prometheusCredentialUiSchema from "../../schemas/constructs/v1beta1/credential/forms/prometheus.ui.json";
+
+export const DesignImportRjsfSchemaV1Beta3 = importDesignSchema as RJSFSchema;
+export const DesignImportRjsfUiSchemaV1Beta3 = importDesignUiSchema as UiSchema;
+
+export const ModelImportRjsfSchemaV1Beta2 = importModelSchema as RJSFSchema;
+export const ModelImportRjsfUiSchemaV1Beta2 = importModelUiSchema as UiSchema;
+
+export const FilterImportRjsfSchemaV1Beta3 = importFilterSchema as RJSFSchema;
+export const FilterImportRjsfUiSchemaV1Beta3 = importFilterUiSchema as UiSchema;
+
+export const ConnectionHelmCreateRjsfSchemaV1Beta3 = helmCreateConnectionSchema as RJSFSchema;
+export const ConnectionHelmCreateRjsfUiSchemaV1Beta3 = helmCreateConnectionUiSchema as UiSchema;
 
 export const CatalogPublishRjsfSchemaV1Beta2 = publishCatalogSchema as RJSFSchema;
 export const CatalogPublishRjsfUiSchemaV1Beta2 = publishCatalogUiSchema as UiSchema;
@@ -67,3 +99,6 @@ export const PrometheusCredentialRjsfSchemaV1Beta1 =
   prometheusCredentialSchema as RJSFSchema;
 export const PrometheusCredentialRjsfUiSchemaV1Beta1 =
   prometheusCredentialUiSchema as UiSchema;
+
+export const SupportRequestRjsfSchemaV1Beta1 = helpAndSupportSchema as RJSFSchema;
+export const SupportRequestRjsfUiSchemaV1Beta1 = helpAndSupportUiSchema as UiSchema;

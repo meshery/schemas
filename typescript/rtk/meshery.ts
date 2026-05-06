@@ -4225,6 +4225,10 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
     id: string;
     /** Connection Name */
     name: string;
+    /** Human-readable description of the connection and its purpose. */
+    description?: string;
+    /** URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL). */
+    url?: string;
     /** Associated Credential ID */
     credentialId?: string;
     /** Connection Type (platform, telemetry, collaboration) */
@@ -4326,6 +4330,10 @@ export type RegisterConnectionApiResponse = /** status 201 Connection registered
   id: string;
   /** Connection Name */
   name: string;
+  /** Human-readable description of the connection and its purpose. */
+  description?: string;
+  /** URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL). */
+  url?: string;
   /** Associated Credential ID */
   credentialId?: string;
   /** Connection Type (platform, telemetry, collaboration) */
@@ -4407,6 +4415,10 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
   id: string;
   /** Connection Name */
   name: string;
+  /** Human-readable description of the connection and its purpose. */
+  description?: string;
+  /** URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL). */
+  url?: string;
   /** Associated Credential ID */
   credentialId?: string;
   /** Connection Type (platform, telemetry, collaboration) */
@@ -4470,6 +4482,10 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated */ {
   id: string;
   /** Connection Name */
   name: string;
+  /** Human-readable description of the connection and its purpose. */
+  description?: string;
+  /** URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL). */
+  url?: string;
   /** Associated Credential ID */
   credentialId?: string;
   /** Connection Type (platform, telemetry, collaboration) */
