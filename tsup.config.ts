@@ -1,14 +1,16 @@
 import { defineConfig } from "tsup";
 import { globSync } from "glob";
 
-// Get all TypeScript Schema files under generated folder (exclude .d.ts files)
-const generatedFiles = globSync("typescript/generated/**/*.ts");
+// Exclude any pre-existing .d.ts files; only process .ts source files.
+const generatedFiles = globSync("typescript/generated/**/*.ts", {
+  ignore: ["**/*.d.ts"],
+});
 
 // Create entry points for each generated file
 const generatedEntries = generatedFiles.reduce(
   (acc, file) => {
     // Convert path like "typescript/generated/v1beta1/model/ModelSchema.ts"
-    // to entry name like "generated/v1beta1/model/ModelSchema"
+    // to entry name like "constructs/v1beta1/model/ModelSchema"
     const entryName = file
       .replace("typescript/", "")
       .replace("generated", "constructs")
@@ -26,6 +28,10 @@ const sharedOptions = {
   sourcemap: false,
   treeshake: true,
   minify: true,
+  // clean is handled by the Makefile (rm -rf dist/) before invoking tsup so
+  // that both configs can write to dist/ without a parallel-clean race.
+  // See build-ts target in Makefile.
+  clean: false,
 };
 
 export default defineConfig([
@@ -43,7 +49,6 @@ export default defineConfig([
       permissions: "typescript/permissions.ts",
     },
     dts: true,
-    clean: true,
   },
   {
     // Generated construct schemas — large files (497 K lines total), JS only.
@@ -52,6 +57,5 @@ export default defineConfig([
     ...sharedOptions,
     entry: generatedEntries,
     dts: false,
-    clean: false,
   },
 ]);

@@ -42,6 +42,7 @@ generate-ts:
 
 ## Bundle Typescript library, json templates, yaml templates
 build-ts: generate-ts
+	rm -rf dist/
 	npm run build
 	node build/generate-schema-dts.js
 
