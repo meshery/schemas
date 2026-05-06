@@ -174,6 +174,8 @@ export {
   ModelImportRjsfUiSchemaV1Beta2,
   PrometheusCredentialRjsfSchemaV1Beta1,
   PrometheusCredentialRjsfUiSchemaV1Beta1,
+  SupportRequestRjsfSchemaV1Beta1,
+  SupportRequestRjsfUiSchemaV1Beta1,
   WorkspaceCreateOrEditRjsfSchemaV1Beta3,
   WorkspaceCreateOrEditRjsfUiSchemaV1Beta3
 } from "./forms";
