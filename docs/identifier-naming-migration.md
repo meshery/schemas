@@ -1146,7 +1146,7 @@ The deferred slice on `layer5labs/meshery-extensions` (see §21 row above) re-en
 
 | PR | Repo | Coverage |
 |---|---|---|
-| [`#4228`](https://github.com/layer5labs/meshery-extensions/pull/4228) | `layer5labs/meshery-extensions` | All four §21 deferred items in a single branch: Kanvas RTK catalog/designs case-flip removal; `SaveDesign` wrapper alignment (already canonical at audit time); `mesherySdk` event-type casing; `collab/config` user-ID duality. **25 files, two commits**, surfaced **12 silently-broken paths** in production extensions UX (HTTP 400 from validation events, sort dropdown was a no-op, `viewIsOwnedByUser` always false, visibility update silently dropped catalog metadata, `anonymousUserID` URL param always empty, `providerUrl` undefined at 4 call sites, catalog cards always defaulted, K8s context lookups silently empty, etc.). |
+| [`#4228`](https://github.com/layer5labs/meshery-extensions/pull/4228) | `layer5labs/meshery-extensions` | All four §21 deferred items in a single branch: Kanvas RTK catalog/designs case-flip removal; `SaveDesign` wrapper alignment (already canonical at audit time); `mesherySdk` event-type casing; `collab/config` user-ID duality. **25 files, two commits**, surfaced **12 silently-broken paths** in production extensions UX (HTTP 400 from validation events, sort dropdown was a no-op, `viewIsOwnedByUser` always false, visibility update silently dropped catalog metadata, `anonymousUserId` URL param always empty, `providerUrl` undefined at 4 call sites, catalog cards always defaulted, K8s context lookups silently empty, etc.). |
 | [`#5206`](https://github.com/layer5io/meshery-cloud/pull/5206) | `layer5io/meshery-cloud` | Parallel cloud-side audit that re-engaged the slice. ~130 wire-format reads across 60 UI files plus the `paymentprocessor.Invoice` Go struct + `VerifyRepositoryResponse.FileURL` flips. Test fixtures, RTK args, and one-line drift fixes (the catalog-widget bug that triggered the audit). |
 | [`#5207`](https://github.com/layer5io/meshery-cloud/pull/5207) | `layer5io/meshery-cloud` | Cloud follow-up surfaced by Copilot+Gemini review on the audit: orphan `keychainId` column on the security/keys table; `forecastedAmount` typo + colViews drift on the subscriptions table; NaN-guard on the forecasted-bill arithmetic. |
 | [`#5209`](https://github.com/layer5io/meshery-cloud/pull/5209) | `layer5io/meshery-cloud` | Cloud follow-up: `getSubscriptions` server handler dual-accepts canonical `planId` (was `plan_id` only); UI drops three silently-dropped query args (`organization_id`, `search`, `planId` waiting on the schemas-side OpenAPI exposure tracked below). |
@@ -1159,7 +1159,7 @@ These are non-blocking but tracked here so they don't slip again:
 |---|---|---|
 | `getSubscriptions` OpenAPI exposes `planId` (array, query) so the generated RTK client forwards it. | `meshery/schemas` (this PR) | This PR. Once shipped, `meshery-cloud` bumps `@meshery/schemas` and the UI `planId` arg in #5209 starts filtering server-side. |
 | `useRoomActivity` hook parameter `provider_url` → `providerUrl`. | `layer5io/sistent` | Open. The cluster-wide canonical contract (row 7) requires this. The current snake parameter forced `meshery-extensions` to keep an outer `provider_url:` key in the call site at `ExpandedDesignerDrawer/index.tsx`, even after the inner read was canonicalized in #4228. When sistent flips, that outer key flips with it. |
-| v1beta1 TypeScript namespace cleanup so `meshery-extensions` `colabActor.ts` can annotate `AwarenessModel.user` against a canonical-cased `User` instead of a stale stub. | `meshery/schemas` | Tracked separately at [`#866`](https://github.com/meshery/schemas/issues/866). Not blocking #4228 — the runtime accesses already work because the type is loose (the package emits `firstName`/`lastName` on `User` per `v1beta2`, but the namespace export only surfaces `v1beta1`). |
+| v1beta1 TypeScript namespace cleanup so `meshery-extensions` `collabActor.ts` can annotate `AwarenessModel.user` against a canonical-cased `User` instead of a stale stub. | `meshery/schemas` | Tracked separately at [`#866`](https://github.com/meshery/schemas/issues/866). Not blocking #4228 — the runtime accesses already work because the type is loose (the package emits `firstName`/`lastName` on `User` per `v1beta2`, but the namespace export only surfaces `v1beta1`). |
 
 ### Out-of-scope debt surfaced during the audit
 
@@ -1174,7 +1174,7 @@ Not part of identifier-naming, but called out so future migrations have a starti
 
 | Repo | Tag | Date | Contents |
 |---|---|---|---|
-| `layer5labs/meshery-extensions` | `v1.0.18-2` (or whichever bump the maintainer chooses) | TBD after #4228 merges | Bundles #4228 fixes for the extensions-packages downstream pipeline. |
+| `layer5labs/meshery-extensions` | `v1.0.18-2` (or whichever bump the maintainer chooses) | TBD | Bundles #4228 fixes for the extensions-packages downstream pipeline. (`#4228` merged 2026-05-06; the tagged release is still pending — captures the bundle of #4228 + sistent v0.21.3 bump in #4221 once that lands.) |
 
 End of §21.A.
 
