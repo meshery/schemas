@@ -45,6 +45,13 @@ export interface components {
       id: string;
       /** @description Connection Name */
       name: string;
+      /** @description Human-readable description of the connection and its purpose. */
+      description?: string;
+      /**
+       * Format: uri
+       * @description URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL).
+       */
+      url?: string;
       /**
        * Format: uuid
        * @description Associated Credential ID
@@ -168,6 +175,13 @@ export interface components {
         id: string;
         /** @description Connection Name */
         name: string;
+        /** @description Human-readable description of the connection and its purpose. */
+        description?: string;
+        /**
+         * Format: uri
+         * @description URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL).
+         */
+        url?: string;
         /**
          * Format: uuid
          * @description Associated Credential ID
@@ -539,6 +553,13 @@ export interface operations {
               id: string;
               /** @description Connection Name */
               name: string;
+              /** @description Human-readable description of the connection and its purpose. */
+              description?: string;
+              /**
+               * Format: uri
+               * @description URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL).
+               */
+              url?: string;
               /**
                * Format: uuid
                * @description Associated Credential ID
@@ -690,6 +711,13 @@ export interface operations {
             id: string;
             /** @description Connection Name */
             name: string;
+            /** @description Human-readable description of the connection and its purpose. */
+            description?: string;
+            /**
+             * Format: uri
+             * @description URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL).
+             */
+            url?: string;
             /**
              * Format: uuid
              * @description Associated Credential ID
@@ -874,6 +902,13 @@ export interface operations {
             id: string;
             /** @description Connection Name */
             name: string;
+            /** @description Human-readable description of the connection and its purpose. */
+            description?: string;
+            /**
+             * Format: uri
+             * @description URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL).
+             */
+            url?: string;
             /**
              * Format: uuid
              * @description Associated Credential ID
@@ -1028,6 +1063,13 @@ export interface operations {
             id: string;
             /** @description Connection Name */
             name: string;
+            /** @description Human-readable description of the connection and its purpose. */
+            description?: string;
+            /**
+             * Format: uri
+             * @description URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL).
+             */
+            url?: string;
             /**
              * Format: uuid
              * @description Associated Credential ID

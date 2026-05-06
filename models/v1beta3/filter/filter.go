@@ -9,6 +9,12 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
+// Defines values for MesheryFilterImportFormPayloadUploadType.
+const (
+	FileUpload MesheryFilterImportFormPayloadUploadType = "File Upload"
+	URLUpload  MesheryFilterImportFormPayloadUploadType = "URL Upload"
+)
+
 // DeleteFilterModel Reference to a filter for bulk deletion by ID.
 type DeleteFilterModel struct {
 	ID   core.Id   `json:"id,omitempty" yaml:"id,omitempty"`
@@ -66,6 +72,24 @@ type MesheryFilterDeleteRequestBody struct {
 	// Filters Filters targeted for deletion.
 	Filters []DeleteFilterModel `json:"filters" yaml:"filters"`
 }
+
+// MesheryFilterImportFormPayload Flat canonical representation of the filter import form that combines the UI-level uploadType discriminator with the union of properties from MesheryFilterPayload (filterFile, filterResource). This schema is the authoritative source for the canonical RJSF form schema at schemas/constructs/v1beta3/filter/forms/import.json. The server receives a MesheryFilterPayload; this form schema captures the superset of user-facing fields (including the UI-only uploadType discriminator) so the form schema can be validated as a subset of this canonical type.
+type MesheryFilterImportFormPayload struct {
+	// FilterFile Raw filter source as base64-encoded bytes. Required when uploadType is "File Upload".
+	FilterFile *[]byte `json:"filterFile,omitempty" yaml:"filterFile,omitempty"`
+
+	// FilterResource Filter resource discriminator describing the body's source format (e.g. WASM module identifier or external resource path). Required when uploadType is "URL Upload".
+	FilterResource *string `json:"filterResource,omitempty" yaml:"filterResource,omitempty"`
+
+	// Name Human-readable filter name.
+	Name string `json:"name" yaml:"name"`
+
+	// UploadType UI-level discriminator that controls which import variant the form submits. "File Upload" maps to a base64-encoded filterFile body; "URL Upload" maps to a filterResource path/URL.
+	UploadType MesheryFilterImportFormPayloadUploadType `json:"uploadType" yaml:"uploadType"`
+}
+
+// MesheryFilterImportFormPayloadUploadType UI-level discriminator that controls which import variant the form submits. "File Upload" maps to a base64-encoded filterFile body; "URL Upload" maps to a filterResource path/URL.
+type MesheryFilterImportFormPayloadUploadType string
 
 // MesheryFilterPage Paginated collection of filters.
 type MesheryFilterPage struct {
