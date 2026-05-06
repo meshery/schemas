@@ -1,16 +1,94 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
   "title": "Import Model",
-  "description": "RJSF form schema for the import-model modal. Captures the user-input fields drawn from the canonical ImportRequest schema in meshery/schemas/constructs/v1beta2/model/api.yml. The uploadType discriminator determines which import method is active. Field shape, types, enum values, and required lists MUST stay a subset of the canonical ImportRequest; the Go validator at validation/forms_test.go enforces that.",
+  "description": "RJSF form schema for the import-model modal. Captures the user-input fields drawn from the canonical MesheryModelImportFormPayload schema in meshery/schemas/constructs/v1beta2/model/api.yml. The uploadType discriminator determines which branch's conditional required fields apply. Field shape, types, and required lists MUST stay a subset of the canonical MesheryModelImportFormPayload; the Go validator at validation/forms_test.go enforces that.",
   "type": "object",
   "properties": {
     "uploadType": {
       "type": "string",
       "title": "Upload method",
       "enum": ["file", "urlImport", "csv"],
-      "description": "Choose the method you prefer to upload your model file. Select 'File Import' or 'CSV Import' if you have the file on your local system or 'URL Import' if you have the file hosted online.",
+      "description": "Choose the method you prefer to upload your model file. Select 'File Import' or 'CSV Import' if you have the file on your local system, or 'URL Import' if you have the file hosted online.",
+      "x-rjsf-grid-area": "12"
+    },
+    "fileName": {
+      "type": "string",
+      "title": "File name",
+      "description": "Name of the model file being uploaded.",
+      "x-rjsf-grid-area": "12"
+    },
+    "modelFile": {
+      "type": "string",
+      "title": "Model file",
+      "description": "Model file content. Supported formats: .tar, .tar.gz, .tgz.",
+      "x-rjsf-grid-area": "12"
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "title": "URL",
+      "description": "A direct URL to a single model file. Supported formats: .tar, .tar.gz, .tgz.",
+      "x-rjsf-grid-area": "12"
+    },
+    "modelCsv": {
+      "type": "string",
+      "format": "binary",
+      "title": "Model CSV",
+      "description": "CSV file containing model definitions.",
+      "x-rjsf-grid-area": "12"
+    },
+    "componentCsv": {
+      "type": "string",
+      "format": "binary",
+      "title": "Component CSV",
+      "description": "CSV file containing component definitions.",
+      "x-rjsf-grid-area": "12"
+    },
+    "relationshipCsv": {
+      "type": "string",
+      "format": "binary",
+      "title": "Relationship CSV",
+      "description": "CSV file containing relationship definitions.",
       "x-rjsf-grid-area": "12"
     }
   },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "uploadType": {
+            "const": "file"
+          }
+        }
+      },
+      "then": {
+        "required": ["fileName", "modelFile"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "uploadType": {
+            "const": "urlImport"
+          }
+        }
+      },
+      "then": {
+        "required": ["url"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "uploadType": {
+            "const": "csv"
+          }
+        }
+      },
+      "then": {
+        "required": ["modelCsv", "componentCsv", "relationshipCsv"]
+      }
+    }
+  ],
   "required": ["uploadType"]
 }

@@ -87,7 +87,7 @@ var formCases = []formCase{
 	},
 	{
 		name:      "v1beta2/model/import",
-		canonical: "schemas/constructs/v1beta2/model/api.yml#/components/schemas/ImportRequest",
+		canonical: "schemas/constructs/v1beta2/model/api.yml#/components/schemas/MesheryModelImportFormPayload",
 		form:      "schemas/constructs/v1beta2/model/forms/import.json",
 	},
 	{

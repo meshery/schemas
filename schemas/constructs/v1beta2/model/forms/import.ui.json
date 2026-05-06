@@ -2,8 +2,17 @@
   "uploadType": {
     "ui:widget": "radio"
   },
-  "file": {
+  "modelFile": {
     "ui:widget": "file"
   },
-  "ui:order": ["uploadType", "file", "url", "csv"]
+  "modelCsv": {
+    "ui:widget": "file"
+  },
+  "componentCsv": {
+    "ui:widget": "file"
+  },
+  "relationshipCsv": {
+    "ui:widget": "file"
+  },
+  "ui:order": ["uploadType", "fileName", "modelFile", "url", "modelCsv", "componentCsv", "relationshipCsv"]
 }
