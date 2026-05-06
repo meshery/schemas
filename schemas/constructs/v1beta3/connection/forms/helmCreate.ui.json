@@ -1,3 +1,6 @@
 {
+  "description": {
+    "ui:widget": "textarea"
+  },
   "ui:order": ["name", "description", "url"]
 }

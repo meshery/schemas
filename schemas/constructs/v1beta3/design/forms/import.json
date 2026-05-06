@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
   "title": "Import Design",
-  "description": "RJSF form schema for the import-design modal. Captures the user-input fields drawn from the canonical MesheryPatternImportFilePayload and MesheryPatternImportURLPayload schemas in meshery/schemas/constructs/v1beta3/design/api.yml. The uploadType discriminator determines which branch's conditional required fields apply. Field shape, types, and required lists MUST stay a subset of the canonical schema components; the Go validator at validation/forms_test.go enforces that.",
+  "description": "RJSF form schema for the import-design modal. Captures the user-input fields drawn from the canonical MesheryPatternImportFormPayload schema in meshery/schemas/constructs/v1beta3/design/api.yml. The uploadType discriminator determines which branch's conditional required fields apply. Field shape, types, and required lists MUST stay a subset of the canonical schema components; the Go validator at validation/forms_test.go enforces that.",
   "type": "object",
   "properties": {
     "name": {
@@ -16,7 +16,21 @@
       "title": "Upload method",
       "enum": ["File Upload", "URL Import"],
       "default": "URL Import",
-      "description": "Body for POST /api/pattern/import. Consumed by the server as application/json. Exactly one of two variants must be supplied: a File Import carrying base64-encoded bytes plus a file name, or a URL Import naming a remote location the server will fetch.",
+      "description": "Choose the method you prefer. Select 'File Upload' if you have the file on your local system, or 'URL Import' if you have the file hosted online.",
+      "x-rjsf-grid-area": "12"
+    },
+    "file": {
+      "type": "string",
+      "format": "byte",
+      "title": "File",
+      "description": "Base64-encoded file bytes. Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See Import Designs Documentation for details.",
+      "x-rjsf-grid-area": "12"
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "title": "URL",
+      "description": "A direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Ensure the resource is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design.",
       "x-rjsf-grid-area": "12"
     }
   },
@@ -30,14 +44,6 @@
         }
       },
       "then": {
-        "properties": {
-          "file": {
-            "type": "string",
-            "format": "byte",
-            "description": "Base64-encoded file bytes. Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See Import Designs Documentation for details.",
-            "x-rjsf-grid-area": "12"
-          }
-        },
         "required": ["file"]
       }
     },
@@ -50,15 +56,6 @@
         }
       },
       "then": {
-        "properties": {
-          "url": {
-            "type": "string",
-            "format": "uri",
-            "title": "URL",
-            "description": "A direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Ensure the resource is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design.",
-            "x-rjsf-grid-area": "12"
-          }
-        },
         "required": ["url"]
       }
     }

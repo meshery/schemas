@@ -92,7 +92,7 @@ var formCases = []formCase{
 	},
 	{
 		name:      "v1beta3/filter/import",
-		canonical: "schemas/constructs/v1beta3/filter/api.yml#/components/schemas/MesheryFilterPayload",
+		canonical: "schemas/constructs/v1beta3/filter/api.yml#/components/schemas/MesheryFilterImportFormPayload",
 		form:      "schemas/constructs/v1beta3/filter/forms/import.json",
 	},
 	{

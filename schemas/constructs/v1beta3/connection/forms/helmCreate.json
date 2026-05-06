@@ -14,7 +14,6 @@
     "description": {
       "type": "string",
       "title": "Description",
-      "format": "textarea",
       "description": "Human-readable description of the connection and its purpose.",
       "x-rjsf-grid-area": "12"
     },
