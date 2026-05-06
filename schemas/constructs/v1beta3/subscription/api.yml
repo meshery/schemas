@@ -46,6 +46,16 @@ paths:
             type: string
         style: form
         explode: true
+      - name: planId
+        in: query
+        description: Filter subscriptions by plan UUID. Repeat for multiple values.
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: true
       responses:
         '200':
           description: Subscriptions response
