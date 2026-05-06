@@ -158,16 +158,24 @@ export namespace v1beta1 {
 export {
   CatalogPublishRjsfSchemaV1Beta2,
   CatalogPublishRjsfUiSchemaV1Beta2,
+  ConnectionHelmCreateRjsfSchemaV1Beta3,
+  ConnectionHelmCreateRjsfUiSchemaV1Beta3,
+  DesignImportRjsfSchemaV1Beta3,
+  DesignImportRjsfUiSchemaV1Beta3,
   EnvironmentCreateOrEditRjsfSchemaV1Beta3,
   EnvironmentCreateOrEditRjsfUiSchemaV1Beta3,
-  WorkspaceCreateOrEditRjsfSchemaV1Beta3,
-  WorkspaceCreateOrEditRjsfUiSchemaV1Beta3,
-  KubernetesCredentialRjsfSchemaV1Beta1,
-  KubernetesCredentialRjsfUiSchemaV1Beta1,
+  FilterImportRjsfSchemaV1Beta3,
+  FilterImportRjsfUiSchemaV1Beta3,
   GrafanaCredentialRjsfSchemaV1Beta1,
   GrafanaCredentialRjsfUiSchemaV1Beta1,
+  KubernetesCredentialRjsfSchemaV1Beta1,
+  KubernetesCredentialRjsfUiSchemaV1Beta1,
+  ModelImportRjsfSchemaV1Beta2,
+  ModelImportRjsfUiSchemaV1Beta2,
   PrometheusCredentialRjsfSchemaV1Beta1,
-  PrometheusCredentialRjsfUiSchemaV1Beta1
+  PrometheusCredentialRjsfUiSchemaV1Beta1,
+  WorkspaceCreateOrEditRjsfSchemaV1Beta3,
+  WorkspaceCreateOrEditRjsfUiSchemaV1Beta3
 } from "./forms";
 
 export namespace v1beta2 {
