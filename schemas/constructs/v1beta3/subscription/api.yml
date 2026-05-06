@@ -53,7 +53,7 @@ paths:
         schema:
           type: array
           items:
-            type: string
+            $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
         style: form
         explode: true
       responses:

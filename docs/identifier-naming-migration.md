@@ -1124,8 +1124,7 @@ The canonical-naming overhaul has **landed in production** across every in-scope
 
 ### What this means in practice
 
-- **For new code in any in-scope repo:** the canonical contract at §1 applies in full. Validator Rule 6 / 45 / 46 in `meshery/schemas` block re-introduction of snake_case wire on canonical-version constructs.
-- **For new code in `meshery-extensions`:** until the billing block lifts, the repo continues to ship pre-canonical wire forms for any field the deferred Phase-3 work would have flipped. Coordinated changes that cross `meshery-extensions` and another in-scope repo must align on the **canonical** form on the meshery-side and accept the temporary case-flip on the extensions-side; do **not** re-introduce snake_case in the in-scope repo to "match" extensions.
+- **For new code in any in-scope repo (including `meshery-extensions`):** the canonical contract at §1 applies in full. The `meshery-extensions` deferred slice closed on 2026-05-05 (see §21.A); new code in that repo follows the same canonical-camelCase rules as the rest of the cluster. Validator Rule 6 / 45 / 46 in `meshery/schemas` block re-introduction of snake_case wire on canonical-version constructs.
 - **For external consumers pinning a v1beta1 / v1beta2 version:** §10 Agent 4.A guarantees those directories remain on `master` indefinitely under `info.x-deprecated: true` + `info.x-superseded-by:` markers. No physical deletion is scheduled.
 
 ### Documentation refreshed in this status pass
