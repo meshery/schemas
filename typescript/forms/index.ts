@@ -49,6 +49,10 @@ import importFilterUiSchema from "../../schemas/constructs/v1beta3/filter/forms/
 import helmCreateConnectionSchema from "../../schemas/constructs/v1beta3/connection/forms/helmCreate.json";
 import helmCreateConnectionUiSchema from "../../schemas/constructs/v1beta3/connection/forms/helmCreate.ui.json";
 
+// v1beta1/support
+import helpAndSupportSchema from "../../schemas/constructs/v1beta1/support/forms/helpAndSupport.json";
+import helpAndSupportUiSchema from "../../schemas/constructs/v1beta1/support/forms/helpAndSupport.ui.json";
+
 // v1beta1/credential
 import kubernetesCredentialSchema from "../../schemas/constructs/v1beta1/credential/forms/kubernetes.json";
 import kubernetesCredentialUiSchema from "../../schemas/constructs/v1beta1/credential/forms/kubernetes.ui.json";
@@ -95,3 +99,6 @@ export const PrometheusCredentialRjsfSchemaV1Beta1 =
   prometheusCredentialSchema as RJSFSchema;
 export const PrometheusCredentialRjsfUiSchemaV1Beta1 =
   prometheusCredentialUiSchema as UiSchema;
+
+export const SupportRequestRjsfSchemaV1Beta1 = helpAndSupportSchema as RJSFSchema;
+export const SupportRequestRjsfUiSchemaV1Beta1 = helpAndSupportUiSchema as UiSchema;

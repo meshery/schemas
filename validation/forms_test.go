@@ -100,6 +100,11 @@ var formCases = []formCase{
 		canonical: "schemas/constructs/v1beta3/connection/connection.yaml",
 		form:      "schemas/constructs/v1beta3/connection/forms/helmCreate.json",
 	},
+	{
+		name:      "v1beta1/support/helpAndSupport",
+		canonical: "schemas/constructs/v1beta1/support/api.yml#/components/schemas/SupportRequest",
+		form:      "schemas/constructs/v1beta1/support/forms/helpAndSupport.json",
+	},
 }
 
 func TestFormSchemasAreSubsetOfCanonical(t *testing.T) {
