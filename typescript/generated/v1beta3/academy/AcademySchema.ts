@@ -8,9 +8,7 @@ const AcademySchema: Record<string, unknown> = {
   "info": {
     "title": "Academy API",
     "description": "OpenAPI schema for Meshery Academy content and curriculum management.",
-    "x-deprecated": true,
-    "x-superseded-by": "v1beta3",
-    "version": "v1beta2",
+    "version": "v1beta3",
     "contact": {
       "name": "Meshery Maintainers",
       "email": "maintainers@meshery.io",
@@ -98,13 +96,13 @@ const AcademySchema: Record<string, unknown> = {
                         "required": [
                           "id",
                           "type",
-                          "org_id",
+                          "orgId",
                           "visibility",
                           "status",
                           "slug",
-                          "created_at",
-                          "updated_at",
-                          "deleted_at",
+                          "createdAt",
+                          "updatedAt",
+                          "deletedAt",
                           "metadata",
                           "level"
                         ],
@@ -133,13 +131,13 @@ const AcademySchema: Record<string, unknown> = {
                               "certification"
                             ]
                           },
-                          "org_id": {
+                          "orgId": {
                             "type": "string",
                             "description": "Organization ID that owns this learning path",
                             "example": "layer5",
                             "x-oapi-codegen-extra-tags": {
                               "db": "org_id",
-                              "json": "org_id"
+                              "json": "orgId"
                             }
                           },
                           "visibility": {
@@ -190,7 +188,7 @@ const AcademySchema: Record<string, unknown> = {
                               "advanced"
                             ]
                           },
-                          "badge_id": {
+                          "badgeId": {
                             "type": "string",
                             "format": "uuid",
                             "description": "ID of the badge to be awarded on completion of this curricula",
@@ -201,10 +199,10 @@ const AcademySchema: Record<string, unknown> = {
                             },
                             "x-oapi-codegen-extra-tags": {
                               "db": "badge_id",
-                              "json": "badge_id"
+                              "json": "badgeId"
                             }
                           },
-                          "invite_id": {
+                          "inviteId": {
                             "allOf": [
                               {
                                 "type": "string",
@@ -219,10 +217,10 @@ const AcademySchema: Record<string, unknown> = {
                             "description": "ID of the invite associated with this Curricula",
                             "x-oapi-codegen-extra-tags": {
                               "db": "invite_id",
-                              "json": "invite_id"
+                              "json": "inviteId"
                             }
                           },
-                          "workspace_id": {
+                          "workspaceId": {
                             "allOf": [
                               {
                                 "type": "string",
@@ -237,10 +235,10 @@ const AcademySchema: Record<string, unknown> = {
                             "description": "ID of the workspace to which this Curricula belongs",
                             "x-oapi-codegen-extra-tags": {
                               "db": "workspace_id",
-                              "json": "workspace_id"
+                              "json": "workspaceId"
                             }
                           },
-                          "created_at": {
+                          "createdAt": {
                             "allOf": [
                               {
                                 "type": "string",
@@ -251,10 +249,10 @@ const AcademySchema: Record<string, unknown> = {
                             "description": "When the Curricula item was created",
                             "x-oapi-codegen-extra-tags": {
                               "db": "created_at",
-                              "json": "created_at"
+                              "json": "createdAt"
                             }
                           },
-                          "updated_at": {
+                          "updatedAt": {
                             "allOf": [
                               {
                                 "type": "string",
@@ -266,10 +264,10 @@ const AcademySchema: Record<string, unknown> = {
                             "x-go-type": "core.Time",
                             "x-oapi-codegen-extra-tags": {
                               "db": "updated_at",
-                              "json": "updated_at"
+                              "json": "updatedAt"
                             }
                           },
-                          "deleted_at": {
+                          "deletedAt": {
                             "allOf": [
                               {
                                 "description": "Timestamp when the resource was deleted.",
@@ -287,7 +285,7 @@ const AcademySchema: Record<string, unknown> = {
                             "x-go-type": "core.NullTime",
                             "x-oapi-codegen-extra-tags": {
                               "db": "deleted_at",
-                              "json": "deleted_at"
+                              "json": "deletedAt"
                             }
                           },
                           "metadata": {
@@ -605,16 +603,16 @@ const AcademySchema: Record<string, unknown> = {
                     },
                     "maxLength": 500
                   },
-                  "org_id": {
+                  "orgId": {
                     "type": "string",
                     "description": "Organization ID that owns this learning path",
                     "example": "layer5",
                     "x-oapi-codegen-extra-tags": {
                       "db": "org_id",
-                      "json": "org_id"
+                      "json": "orgId"
                     }
                   },
-                  "workspace_id": {
+                  "workspaceId": {
                     "allOf": [
                       {
                         "type": "string",
@@ -629,10 +627,10 @@ const AcademySchema: Record<string, unknown> = {
                     "description": "ID of the workspace to which this Curricula belongs",
                     "x-oapi-codegen-extra-tags": {
                       "db": "workspace_id",
-                      "json": "workspace_id"
+                      "json": "workspaceId"
                     }
                   },
-                  "badge_id": {
+                  "badgeId": {
                     "type": "string",
                     "format": "uuid",
                     "description": "ID of the badge to be awarded on completion of this curricula",
@@ -643,10 +641,10 @@ const AcademySchema: Record<string, unknown> = {
                     },
                     "x-oapi-codegen-extra-tags": {
                       "db": "badge_id",
-                      "json": "badge_id"
+                      "json": "badgeId"
                     }
                   },
-                  "team_id": {
+                  "teamId": {
                     "type": "string",
                     "format": "uuid",
                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -656,11 +654,11 @@ const AcademySchema: Record<string, unknown> = {
                     },
                     "x-go-name": "TeamId",
                     "x-oapi-codegen-extra-tags": {
-                      "json": "team_id",
+                      "json": "teamId",
                       "db": "team_id"
                     }
                   },
-                  "access_expires_at": {
+                  "accessExpiresAt": {
                     "allOf": [
                       {
                         "type": "string",
@@ -671,11 +669,11 @@ const AcademySchema: Record<string, unknown> = {
                     "description": "Expiry time for curricula access",
                     "x-go-type": "*time.Time",
                     "x-oapi-codegen-extra-tags": {
-                      "json": "access_expires_at",
+                      "json": "accessExpiresAt",
                       "db": "access_expires_at"
                     }
                   },
-                  "access_status": {
+                  "accessStatus": {
                     "description": "Current access status of the curricula",
                     "x-go-name": "AccessStatus",
                     "x-go-type": "invitationv1beta2.InvitationStatus",
@@ -684,7 +682,7 @@ const AcademySchema: Record<string, unknown> = {
                       "name": "invitationv1beta2"
                     },
                     "x-oapi-codegen-extra-tags": {
-                      "json": "access_status",
+                      "json": "accessStatus",
                       "db": "access_status"
                     },
                     "type": "string",
@@ -938,10 +936,10 @@ const AcademySchema: Record<string, unknown> = {
                 "required": [
                   "type",
                   "title",
-                  "org_id",
-                  "workspace_id",
-                  "team_id",
-                  "access_status",
+                  "orgId",
+                  "workspaceId",
+                  "teamId",
+                  "accessStatus",
                   "metadata"
                 ]
               }
@@ -960,13 +958,13 @@ const AcademySchema: Record<string, unknown> = {
                   "required": [
                     "id",
                     "type",
-                    "org_id",
+                    "orgId",
                     "visibility",
                     "status",
                     "slug",
-                    "created_at",
-                    "updated_at",
-                    "deleted_at",
+                    "createdAt",
+                    "updatedAt",
+                    "deletedAt",
                     "metadata",
                     "level"
                   ],
@@ -995,13 +993,13 @@ const AcademySchema: Record<string, unknown> = {
                         "certification"
                       ]
                     },
-                    "org_id": {
+                    "orgId": {
                       "type": "string",
                       "description": "Organization ID that owns this learning path",
                       "example": "layer5",
                       "x-oapi-codegen-extra-tags": {
                         "db": "org_id",
-                        "json": "org_id"
+                        "json": "orgId"
                       }
                     },
                     "visibility": {
@@ -1052,7 +1050,7 @@ const AcademySchema: Record<string, unknown> = {
                         "advanced"
                       ]
                     },
-                    "badge_id": {
+                    "badgeId": {
                       "type": "string",
                       "format": "uuid",
                       "description": "ID of the badge to be awarded on completion of this curricula",
@@ -1063,10 +1061,10 @@ const AcademySchema: Record<string, unknown> = {
                       },
                       "x-oapi-codegen-extra-tags": {
                         "db": "badge_id",
-                        "json": "badge_id"
+                        "json": "badgeId"
                       }
                     },
-                    "invite_id": {
+                    "inviteId": {
                       "allOf": [
                         {
                           "type": "string",
@@ -1081,10 +1079,10 @@ const AcademySchema: Record<string, unknown> = {
                       "description": "ID of the invite associated with this Curricula",
                       "x-oapi-codegen-extra-tags": {
                         "db": "invite_id",
-                        "json": "invite_id"
+                        "json": "inviteId"
                       }
                     },
-                    "workspace_id": {
+                    "workspaceId": {
                       "allOf": [
                         {
                           "type": "string",
@@ -1099,10 +1097,10 @@ const AcademySchema: Record<string, unknown> = {
                       "description": "ID of the workspace to which this Curricula belongs",
                       "x-oapi-codegen-extra-tags": {
                         "db": "workspace_id",
-                        "json": "workspace_id"
+                        "json": "workspaceId"
                       }
                     },
-                    "created_at": {
+                    "createdAt": {
                       "allOf": [
                         {
                           "type": "string",
@@ -1113,10 +1111,10 @@ const AcademySchema: Record<string, unknown> = {
                       "description": "When the Curricula item was created",
                       "x-oapi-codegen-extra-tags": {
                         "db": "created_at",
-                        "json": "created_at"
+                        "json": "createdAt"
                       }
                     },
-                    "updated_at": {
+                    "updatedAt": {
                       "allOf": [
                         {
                           "type": "string",
@@ -1128,10 +1126,10 @@ const AcademySchema: Record<string, unknown> = {
                       "x-go-type": "core.Time",
                       "x-oapi-codegen-extra-tags": {
                         "db": "updated_at",
-                        "json": "updated_at"
+                        "json": "updatedAt"
                       }
                     },
-                    "deleted_at": {
+                    "deletedAt": {
                       "allOf": [
                         {
                           "description": "Timestamp when the resource was deleted.",
@@ -1149,7 +1147,7 @@ const AcademySchema: Record<string, unknown> = {
                       "x-go-type": "core.NullTime",
                       "x-oapi-codegen-extra-tags": {
                         "db": "deleted_at",
-                        "json": "deleted_at"
+                        "json": "deletedAt"
                       }
                     },
                     "metadata": {
@@ -1588,13 +1586,13 @@ const AcademySchema: Record<string, unknown> = {
                             "required": [
                               "id",
                               "type",
-                              "org_id",
+                              "orgId",
                               "visibility",
                               "status",
                               "slug",
-                              "created_at",
-                              "updated_at",
-                              "deleted_at",
+                              "createdAt",
+                              "updatedAt",
+                              "deletedAt",
                               "metadata",
                               "level"
                             ],
@@ -1623,13 +1621,13 @@ const AcademySchema: Record<string, unknown> = {
                                   "certification"
                                 ]
                               },
-                              "org_id": {
+                              "orgId": {
                                 "type": "string",
                                 "description": "Organization ID that owns this learning path",
                                 "example": "layer5",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "org_id",
-                                  "json": "org_id"
+                                  "json": "orgId"
                                 }
                               },
                               "visibility": {
@@ -1680,7 +1678,7 @@ const AcademySchema: Record<string, unknown> = {
                                   "advanced"
                                 ]
                               },
-                              "badge_id": {
+                              "badgeId": {
                                 "type": "string",
                                 "format": "uuid",
                                 "description": "ID of the badge to be awarded on completion of this curricula",
@@ -1691,10 +1689,10 @@ const AcademySchema: Record<string, unknown> = {
                                 },
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "badge_id",
-                                  "json": "badge_id"
+                                  "json": "badgeId"
                                 }
                               },
-                              "invite_id": {
+                              "inviteId": {
                                 "allOf": [
                                   {
                                     "type": "string",
@@ -1709,10 +1707,10 @@ const AcademySchema: Record<string, unknown> = {
                                 "description": "ID of the invite associated with this Curricula",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "invite_id",
-                                  "json": "invite_id"
+                                  "json": "inviteId"
                                 }
                               },
-                              "workspace_id": {
+                              "workspaceId": {
                                 "allOf": [
                                   {
                                     "type": "string",
@@ -1727,10 +1725,10 @@ const AcademySchema: Record<string, unknown> = {
                                 "description": "ID of the workspace to which this Curricula belongs",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "workspace_id",
-                                  "json": "workspace_id"
+                                  "json": "workspaceId"
                                 }
                               },
-                              "created_at": {
+                              "createdAt": {
                                 "allOf": [
                                   {
                                     "type": "string",
@@ -1741,10 +1739,10 @@ const AcademySchema: Record<string, unknown> = {
                                 "description": "When the Curricula item was created",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "created_at",
-                                  "json": "created_at"
+                                  "json": "createdAt"
                                 }
                               },
-                              "updated_at": {
+                              "updatedAt": {
                                 "allOf": [
                                   {
                                     "type": "string",
@@ -1756,10 +1754,10 @@ const AcademySchema: Record<string, unknown> = {
                                 "x-go-type": "core.Time",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "updated_at",
-                                  "json": "updated_at"
+                                  "json": "updatedAt"
                                 }
                               },
-                              "deleted_at": {
+                              "deletedAt": {
                                 "allOf": [
                                   {
                                     "description": "Timestamp when the resource was deleted.",
@@ -1777,7 +1775,7 @@ const AcademySchema: Record<string, unknown> = {
                                 "x-go-type": "core.NullTime",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "deleted_at",
-                                  "json": "deleted_at"
+                                  "json": "deletedAt"
                                 }
                               },
                               "metadata": {
@@ -2026,16 +2024,16 @@ const AcademySchema: Record<string, unknown> = {
                           {
                             "type": "object",
                             "required": [
-                              "registration_count"
+                              "registrationCount"
                             ],
                             "properties": {
-                              "registration_count": {
+                              "registrationCount": {
                                 "type": "number",
                                 "description": "Number of registrations associated with this curriculum.",
                                 "minimum": 0,
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "registration_count,omitempty",
-                                  "json": "registration_count,omitempty"
+                                  "json": "registrationCount,omitempty"
                                 }
                               }
                             }
@@ -2121,13 +2119,13 @@ const AcademySchema: Record<string, unknown> = {
                   "required": [
                     "id",
                     "type",
-                    "org_id",
+                    "orgId",
                     "visibility",
                     "status",
                     "slug",
-                    "created_at",
-                    "updated_at",
-                    "deleted_at",
+                    "createdAt",
+                    "updatedAt",
+                    "deletedAt",
                     "metadata",
                     "level"
                   ],
@@ -2156,13 +2154,13 @@ const AcademySchema: Record<string, unknown> = {
                         "certification"
                       ]
                     },
-                    "org_id": {
+                    "orgId": {
                       "type": "string",
                       "description": "Organization ID that owns this learning path",
                       "example": "layer5",
                       "x-oapi-codegen-extra-tags": {
                         "db": "org_id",
-                        "json": "org_id"
+                        "json": "orgId"
                       }
                     },
                     "visibility": {
@@ -2213,7 +2211,7 @@ const AcademySchema: Record<string, unknown> = {
                         "advanced"
                       ]
                     },
-                    "badge_id": {
+                    "badgeId": {
                       "type": "string",
                       "format": "uuid",
                       "description": "ID of the badge to be awarded on completion of this curricula",
@@ -2224,10 +2222,10 @@ const AcademySchema: Record<string, unknown> = {
                       },
                       "x-oapi-codegen-extra-tags": {
                         "db": "badge_id",
-                        "json": "badge_id"
+                        "json": "badgeId"
                       }
                     },
-                    "invite_id": {
+                    "inviteId": {
                       "allOf": [
                         {
                           "type": "string",
@@ -2242,10 +2240,10 @@ const AcademySchema: Record<string, unknown> = {
                       "description": "ID of the invite associated with this Curricula",
                       "x-oapi-codegen-extra-tags": {
                         "db": "invite_id",
-                        "json": "invite_id"
+                        "json": "inviteId"
                       }
                     },
-                    "workspace_id": {
+                    "workspaceId": {
                       "allOf": [
                         {
                           "type": "string",
@@ -2260,10 +2258,10 @@ const AcademySchema: Record<string, unknown> = {
                       "description": "ID of the workspace to which this Curricula belongs",
                       "x-oapi-codegen-extra-tags": {
                         "db": "workspace_id",
-                        "json": "workspace_id"
+                        "json": "workspaceId"
                       }
                     },
-                    "created_at": {
+                    "createdAt": {
                       "allOf": [
                         {
                           "type": "string",
@@ -2274,10 +2272,10 @@ const AcademySchema: Record<string, unknown> = {
                       "description": "When the Curricula item was created",
                       "x-oapi-codegen-extra-tags": {
                         "db": "created_at",
-                        "json": "created_at"
+                        "json": "createdAt"
                       }
                     },
-                    "updated_at": {
+                    "updatedAt": {
                       "allOf": [
                         {
                           "type": "string",
@@ -2289,10 +2287,10 @@ const AcademySchema: Record<string, unknown> = {
                       "x-go-type": "core.Time",
                       "x-oapi-codegen-extra-tags": {
                         "db": "updated_at",
-                        "json": "updated_at"
+                        "json": "updatedAt"
                       }
                     },
-                    "deleted_at": {
+                    "deletedAt": {
                       "allOf": [
                         {
                           "description": "Timestamp when the resource was deleted.",
@@ -2310,7 +2308,7 @@ const AcademySchema: Record<string, unknown> = {
                       "x-go-type": "core.NullTime",
                       "x-oapi-codegen-extra-tags": {
                         "db": "deleted_at",
-                        "json": "deleted_at"
+                        "json": "deletedAt"
                       }
                     },
                     "metadata": {
@@ -2606,7 +2604,7 @@ const AcademySchema: Record<string, unknown> = {
                 "type": "object",
                 "required": [
                   "contentId",
-                  "user_id"
+                  "userId"
                 ],
                 "properties": {
                   "contentId": {
@@ -2615,7 +2613,7 @@ const AcademySchema: Record<string, unknown> = {
                     "maxLength": 500,
                     "format": "uuid"
                   },
-                  "user_id": {
+                  "userId": {
                     "type": "string",
                     "format": "uuid",
                     "description": "ID of the user registering for the content."
@@ -2642,12 +2640,12 @@ const AcademySchema: Record<string, unknown> = {
                   "type": "object",
                   "required": [
                     "id",
-                    "org_id",
-                    "user_id",
+                    "orgId",
+                    "userId",
                     "status",
-                    "created_at",
-                    "updated_at",
-                    "content_id",
+                    "createdAt",
+                    "updatedAt",
+                    "contentId",
                     "certificate",
                     "metadata"
                   ],
@@ -2666,7 +2664,7 @@ const AcademySchema: Record<string, unknown> = {
                         "json": "id"
                       }
                     },
-                    "org_id": {
+                    "orgId": {
                       "type": "string",
                       "format": "uuid",
                       "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -2678,7 +2676,7 @@ const AcademySchema: Record<string, unknown> = {
                         "db": "org_id"
                       }
                     },
-                    "content_id": {
+                    "contentId": {
                       "type": "string",
                       "description": "ID of the course content",
                       "x-oapi-codegen-extra-tags": {
@@ -2687,7 +2685,7 @@ const AcademySchema: Record<string, unknown> = {
                       "maxLength": 500,
                       "format": "uuid"
                     },
-                    "user_id": {
+                    "userId": {
                       "type": "string",
                       "format": "uuid",
                       "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -2713,7 +2711,7 @@ const AcademySchema: Record<string, unknown> = {
                         "withdrawn"
                       ]
                     },
-                    "updated_at": {
+                    "updatedAt": {
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true,
@@ -2722,7 +2720,7 @@ const AcademySchema: Record<string, unknown> = {
                         "db": "updated_at"
                       }
                     },
-                    "created_at": {
+                    "createdAt": {
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true,
@@ -2731,7 +2729,7 @@ const AcademySchema: Record<string, unknown> = {
                         "db": "created_at"
                       }
                     },
-                    "deleted_at": {
+                    "deletedAt": {
                       "description": "Timestamp when the resource was deleted.",
                       "x-go-type": "NullTime",
                       "type": "string",
@@ -2921,12 +2919,12 @@ const AcademySchema: Record<string, unknown> = {
                   "type": "object",
                   "required": [
                     "id",
-                    "org_id",
-                    "user_id",
+                    "orgId",
+                    "userId",
                     "status",
-                    "created_at",
-                    "updated_at",
-                    "content_id",
+                    "createdAt",
+                    "updatedAt",
+                    "contentId",
                     "certificate",
                     "metadata"
                   ],
@@ -2945,7 +2943,7 @@ const AcademySchema: Record<string, unknown> = {
                         "json": "id"
                       }
                     },
-                    "org_id": {
+                    "orgId": {
                       "type": "string",
                       "format": "uuid",
                       "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -2957,7 +2955,7 @@ const AcademySchema: Record<string, unknown> = {
                         "db": "org_id"
                       }
                     },
-                    "content_id": {
+                    "contentId": {
                       "type": "string",
                       "description": "ID of the course content",
                       "x-oapi-codegen-extra-tags": {
@@ -2966,7 +2964,7 @@ const AcademySchema: Record<string, unknown> = {
                       "maxLength": 500,
                       "format": "uuid"
                     },
-                    "user_id": {
+                    "userId": {
                       "type": "string",
                       "format": "uuid",
                       "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -2992,7 +2990,7 @@ const AcademySchema: Record<string, unknown> = {
                         "withdrawn"
                       ]
                     },
-                    "updated_at": {
+                    "updatedAt": {
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true,
@@ -3001,7 +2999,7 @@ const AcademySchema: Record<string, unknown> = {
                         "db": "updated_at"
                       }
                     },
-                    "created_at": {
+                    "createdAt": {
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true,
@@ -3010,7 +3008,7 @@ const AcademySchema: Record<string, unknown> = {
                         "db": "created_at"
                       }
                     },
-                    "deleted_at": {
+                    "deletedAt": {
                       "description": "Timestamp when the resource was deleted.",
                       "x-go-type": "NullTime",
                       "type": "string",
@@ -3233,16 +3231,16 @@ const AcademySchema: Record<string, unknown> = {
                     },
                     "maxLength": 500
                   },
-                  "org_id": {
+                  "orgId": {
                     "type": "string",
                     "description": "Organization ID that owns this learning path",
                     "example": "layer5",
                     "x-oapi-codegen-extra-tags": {
                       "db": "org_id",
-                      "json": "org_id"
+                      "json": "orgId"
                     }
                   },
-                  "workspace_id": {
+                  "workspaceId": {
                     "allOf": [
                       {
                         "type": "string",
@@ -3257,10 +3255,10 @@ const AcademySchema: Record<string, unknown> = {
                     "description": "ID of the workspace to which this Curricula belongs",
                     "x-oapi-codegen-extra-tags": {
                       "db": "workspace_id",
-                      "json": "workspace_id"
+                      "json": "workspaceId"
                     }
                   },
-                  "badge_id": {
+                  "badgeId": {
                     "type": "string",
                     "format": "uuid",
                     "description": "ID of the badge to be awarded on completion of this curricula",
@@ -3271,10 +3269,10 @@ const AcademySchema: Record<string, unknown> = {
                     },
                     "x-oapi-codegen-extra-tags": {
                       "db": "badge_id",
-                      "json": "badge_id"
+                      "json": "badgeId"
                     }
                   },
-                  "team_id": {
+                  "teamId": {
                     "type": "string",
                     "format": "uuid",
                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -3284,11 +3282,11 @@ const AcademySchema: Record<string, unknown> = {
                     },
                     "x-go-name": "TeamId",
                     "x-oapi-codegen-extra-tags": {
-                      "json": "team_id",
+                      "json": "teamId",
                       "db": "team_id"
                     }
                   },
-                  "access_expires_at": {
+                  "accessExpiresAt": {
                     "allOf": [
                       {
                         "type": "string",
@@ -3299,11 +3297,11 @@ const AcademySchema: Record<string, unknown> = {
                     "description": "Expiry time for curricula access",
                     "x-go-type": "*time.Time",
                     "x-oapi-codegen-extra-tags": {
-                      "json": "access_expires_at",
+                      "json": "accessExpiresAt",
                       "db": "access_expires_at"
                     }
                   },
-                  "access_status": {
+                  "accessStatus": {
                     "description": "Current access status of the curricula",
                     "x-go-name": "AccessStatus",
                     "x-go-type": "invitationv1beta2.InvitationStatus",
@@ -3312,7 +3310,7 @@ const AcademySchema: Record<string, unknown> = {
                       "name": "invitationv1beta2"
                     },
                     "x-oapi-codegen-extra-tags": {
-                      "json": "access_status",
+                      "json": "accessStatus",
                       "db": "access_status"
                     },
                     "type": "string",
@@ -3566,10 +3564,10 @@ const AcademySchema: Record<string, unknown> = {
                 "required": [
                   "type",
                   "title",
-                  "org_id",
-                  "workspace_id",
-                  "team_id",
-                  "access_status",
+                  "orgId",
+                  "workspaceId",
+                  "teamId",
+                  "accessStatus",
                   "metadata"
                 ]
               }
@@ -3591,13 +3589,13 @@ const AcademySchema: Record<string, unknown> = {
                       "required": [
                         "id",
                         "type",
-                        "org_id",
+                        "orgId",
                         "visibility",
                         "status",
                         "slug",
-                        "created_at",
-                        "updated_at",
-                        "deleted_at",
+                        "createdAt",
+                        "updatedAt",
+                        "deletedAt",
                         "metadata",
                         "level"
                       ],
@@ -3626,13 +3624,13 @@ const AcademySchema: Record<string, unknown> = {
                             "certification"
                           ]
                         },
-                        "org_id": {
+                        "orgId": {
                           "type": "string",
                           "description": "Organization ID that owns this learning path",
                           "example": "layer5",
                           "x-oapi-codegen-extra-tags": {
                             "db": "org_id",
-                            "json": "org_id"
+                            "json": "orgId"
                           }
                         },
                         "visibility": {
@@ -3683,7 +3681,7 @@ const AcademySchema: Record<string, unknown> = {
                             "advanced"
                           ]
                         },
-                        "badge_id": {
+                        "badgeId": {
                           "type": "string",
                           "format": "uuid",
                           "description": "ID of the badge to be awarded on completion of this curricula",
@@ -3694,10 +3692,10 @@ const AcademySchema: Record<string, unknown> = {
                           },
                           "x-oapi-codegen-extra-tags": {
                             "db": "badge_id",
-                            "json": "badge_id"
+                            "json": "badgeId"
                           }
                         },
-                        "invite_id": {
+                        "inviteId": {
                           "allOf": [
                             {
                               "type": "string",
@@ -3712,10 +3710,10 @@ const AcademySchema: Record<string, unknown> = {
                           "description": "ID of the invite associated with this Curricula",
                           "x-oapi-codegen-extra-tags": {
                             "db": "invite_id",
-                            "json": "invite_id"
+                            "json": "inviteId"
                           }
                         },
-                        "workspace_id": {
+                        "workspaceId": {
                           "allOf": [
                             {
                               "type": "string",
@@ -3730,10 +3728,10 @@ const AcademySchema: Record<string, unknown> = {
                           "description": "ID of the workspace to which this Curricula belongs",
                           "x-oapi-codegen-extra-tags": {
                             "db": "workspace_id",
-                            "json": "workspace_id"
+                            "json": "workspaceId"
                           }
                         },
-                        "created_at": {
+                        "createdAt": {
                           "allOf": [
                             {
                               "type": "string",
@@ -3744,10 +3742,10 @@ const AcademySchema: Record<string, unknown> = {
                           "description": "When the Curricula item was created",
                           "x-oapi-codegen-extra-tags": {
                             "db": "created_at",
-                            "json": "created_at"
+                            "json": "createdAt"
                           }
                         },
-                        "updated_at": {
+                        "updatedAt": {
                           "allOf": [
                             {
                               "type": "string",
@@ -3759,10 +3757,10 @@ const AcademySchema: Record<string, unknown> = {
                           "x-go-type": "core.Time",
                           "x-oapi-codegen-extra-tags": {
                             "db": "updated_at",
-                            "json": "updated_at"
+                            "json": "updatedAt"
                           }
                         },
-                        "deleted_at": {
+                        "deletedAt": {
                           "allOf": [
                             {
                               "description": "Timestamp when the resource was deleted.",
@@ -3780,7 +3778,7 @@ const AcademySchema: Record<string, unknown> = {
                           "x-go-type": "core.NullTime",
                           "x-oapi-codegen-extra-tags": {
                             "db": "deleted_at",
-                            "json": "deleted_at"
+                            "json": "deletedAt"
                           }
                         },
                         "metadata": {
@@ -4029,16 +4027,16 @@ const AcademySchema: Record<string, unknown> = {
                     {
                       "type": "object",
                       "required": [
-                        "registration_count"
+                        "registrationCount"
                       ],
                       "properties": {
-                        "registration_count": {
+                        "registrationCount": {
                           "type": "number",
                           "description": "Number of registrations associated with this curriculum.",
                           "minimum": 0,
                           "x-oapi-codegen-extra-tags": {
                             "db": "registration_count,omitempty",
-                            "json": "registration_count,omitempty"
+                            "json": "registrationCount,omitempty"
                           }
                         },
                         "invitation": {
@@ -4052,18 +4050,18 @@ const AcademySchema: Record<string, unknown> = {
                           "description": "Invitation entity schema.",
                           "required": [
                             "id",
-                            "owner_id",
+                            "ownerId",
                             "name",
                             "description",
-                            "org_id",
-                            "accepted_by",
+                            "orgId",
+                            "acceptedBy",
                             "emails",
                             "roles",
                             "teams",
                             "status",
-                            "created_at",
-                            "updated_at",
-                            "deleted_at"
+                            "createdAt",
+                            "updatedAt",
+                            "deletedAt"
                           ],
                           "properties": {
                             "id": {
@@ -4074,9 +4072,13 @@ const AcademySchema: Record<string, unknown> = {
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
                               },
-                              "x-go-name": "ID"
+                              "x-go-name": "ID",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "id",
+                                "json": "id"
+                              }
                             },
-                            "owner_id": {
+                            "ownerId": {
                               "type": "string",
                               "format": "uuid",
                               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -4084,32 +4086,34 @@ const AcademySchema: Record<string, unknown> = {
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
                               },
+                              "x-go-name": "OwnerID",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "owner_id",
-                                "json": "owner_id"
+                                "json": "ownerId"
                               }
                             },
-                            "is_default": {
+                            "isDefault": {
                               "type": "boolean",
-                              "description": "Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation",
+                              "description": "Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation.",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "is_default",
-                                "json": "is_default"
+                                "json": "isDefault"
                               }
                             },
                             "name": {
                               "type": "string",
-                              "description": "Name of the invitation, which can be used to identify the invitation, required and cant be empty string,",
+                              "description": "Name of the invitation, which can be used to identify it. Required; cannot be an empty string.",
                               "minLength": 1,
                               "maxLength": 255
                             },
                             "description": {
                               "type": "string",
-                              "description": "Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description",
+                              "description": "Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description.",
                               "maxLength": 5000
                             },
                             "emails": {
                               "type": "array",
+                              "description": "Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address.",
                               "x-go-type": "pq.StringArray",
                               "x-go-type-import": {
                                 "path": "github.com/lib/pq"
@@ -4117,12 +4121,11 @@ const AcademySchema: Record<string, unknown> = {
                               "items": {
                                 "type": "string",
                                 "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
-                                "x-go-type": "string",
-                                "description": "Exact email address or the email address pattern for which the invitation is valid , null means the invitation is valid for all email addresses"
-                              },
-                              "description": "The emails of the invitation."
+                                "description": "Exact email address or the email address pattern for which the invitation is valid.",
+                                "x-go-type": "string"
+                              }
                             },
-                            "org_id": {
+                            "orgId": {
                               "type": "string",
                               "format": "uuid",
                               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -4130,27 +4133,29 @@ const AcademySchema: Record<string, unknown> = {
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
                               },
+                              "x-go-name": "OrgID",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "org_id",
-                                "json": "org_id"
+                                "json": "orgId"
                               }
                             },
-                            "expires_at": {
+                            "expiresAt": {
                               "type": "string",
                               "format": "date-time",
-                              "description": "Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire",
+                              "description": "Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "expires_at",
-                                "json": "expires_at"
+                                "json": "expiresAt"
                               }
                             },
                             "quota": {
                               "type": "integer",
-                              "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota",
+                              "description": "Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited.",
                               "minimum": 0
                             },
-                            "accepted_by": {
+                            "acceptedBy": {
                               "type": "array",
+                              "description": "List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet.",
                               "x-go-type": "pq.StringArray",
                               "x-go-type-import": {
                                 "path": "github.com/lib/pq"
@@ -4158,74 +4163,73 @@ const AcademySchema: Record<string, unknown> = {
                               "items": {
                                 "type": "string"
                               },
-                              "description": "List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "accepted_by",
-                                "json": "accepted_by"
+                                "json": "acceptedBy"
                               }
                             },
                             "roles": {
                               "type": "array",
+                              "description": "Roles that the user will have when accepting the invitation. Empty means the invitation does not specify any roles.",
                               "x-go-type": "pq.StringArray",
                               "x-go-type-import": {
                                 "path": "github.com/lib/pq"
                               },
                               "items": {
                                 "type": "string",
-                                "description": "Roles that the user will have when accepting the invitation, null or empty string means the invitation does not specify any roles"
-                              },
-                              "description": "The roles of the invitation."
+                                "description": "Role identifier granted by this invitation on acceptance."
+                              }
                             },
                             "teams": {
                               "type": "array",
+                              "description": "Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams.",
                               "x-go-type": "pq.StringArray",
                               "x-go-type-import": {
                                 "path": "github.com/lib/pq"
                               },
                               "items": {
                                 "type": "string",
-                                "description": "Teams that the user will be added to when accepting the invitation, null or empty string means the invitation does not specify any teams"
-                              },
-                              "description": "The teams of the invitation."
+                                "description": "Team identifier the invited user is added to on acceptance."
+                              }
                             },
                             "status": {
+                              "description": "Activation status of the invitation.",
                               "x-go-type": "InvitationStatus",
                               "type": "string",
                               "enum": [
                                 "enabled",
                                 "disabled"
-                              ],
-                              "description": "Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later."
+                              ]
                             },
-                            "created_at": {
+                            "createdAt": {
                               "type": "string",
                               "format": "date-time",
-                              "description": "Timestamp when the invitation was created",
+                              "description": "Timestamp when the invitation was created.",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "created_at",
-                                "json": "created_at"
+                                "json": "createdAt"
                               }
                             },
-                            "updated_at": {
+                            "updatedAt": {
                               "type": "string",
                               "format": "date-time",
-                              "description": "Timestamp when the invitation was last updated",
+                              "description": "Timestamp when the invitation was last updated.",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "updated_at",
-                                "json": "updated_at"
+                                "json": "updatedAt"
                               }
                             },
-                            "deleted_at": {
+                            "deletedAt": {
                               "type": "string",
                               "format": "date-time",
+                              "description": "Timestamp when the invitation was deleted, if applicable.",
                               "x-go-type": "core.NullTime",
                               "x-go-type-import": {
                                 "path": "github.com/meshery/schemas/models/core"
                               },
-                              "description": "Timestamp when the invitation was deleted, if applicable",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "deleted_at",
-                                "json": "deleted_at"
+                                "json": "deletedAt"
                               }
                             }
                           }
@@ -4340,13 +4344,13 @@ const AcademySchema: Record<string, unknown> = {
                       "required": [
                         "id",
                         "type",
-                        "org_id",
+                        "orgId",
                         "visibility",
                         "status",
                         "slug",
-                        "created_at",
-                        "updated_at",
-                        "deleted_at",
+                        "createdAt",
+                        "updatedAt",
+                        "deletedAt",
                         "metadata",
                         "level"
                       ],
@@ -4375,13 +4379,13 @@ const AcademySchema: Record<string, unknown> = {
                             "certification"
                           ]
                         },
-                        "org_id": {
+                        "orgId": {
                           "type": "string",
                           "description": "Organization ID that owns this learning path",
                           "example": "layer5",
                           "x-oapi-codegen-extra-tags": {
                             "db": "org_id",
-                            "json": "org_id"
+                            "json": "orgId"
                           }
                         },
                         "visibility": {
@@ -4432,7 +4436,7 @@ const AcademySchema: Record<string, unknown> = {
                             "advanced"
                           ]
                         },
-                        "badge_id": {
+                        "badgeId": {
                           "type": "string",
                           "format": "uuid",
                           "description": "ID of the badge to be awarded on completion of this curricula",
@@ -4443,10 +4447,10 @@ const AcademySchema: Record<string, unknown> = {
                           },
                           "x-oapi-codegen-extra-tags": {
                             "db": "badge_id",
-                            "json": "badge_id"
+                            "json": "badgeId"
                           }
                         },
-                        "invite_id": {
+                        "inviteId": {
                           "allOf": [
                             {
                               "type": "string",
@@ -4461,10 +4465,10 @@ const AcademySchema: Record<string, unknown> = {
                           "description": "ID of the invite associated with this Curricula",
                           "x-oapi-codegen-extra-tags": {
                             "db": "invite_id",
-                            "json": "invite_id"
+                            "json": "inviteId"
                           }
                         },
-                        "workspace_id": {
+                        "workspaceId": {
                           "allOf": [
                             {
                               "type": "string",
@@ -4479,10 +4483,10 @@ const AcademySchema: Record<string, unknown> = {
                           "description": "ID of the workspace to which this Curricula belongs",
                           "x-oapi-codegen-extra-tags": {
                             "db": "workspace_id",
-                            "json": "workspace_id"
+                            "json": "workspaceId"
                           }
                         },
-                        "created_at": {
+                        "createdAt": {
                           "allOf": [
                             {
                               "type": "string",
@@ -4493,10 +4497,10 @@ const AcademySchema: Record<string, unknown> = {
                           "description": "When the Curricula item was created",
                           "x-oapi-codegen-extra-tags": {
                             "db": "created_at",
-                            "json": "created_at"
+                            "json": "createdAt"
                           }
                         },
-                        "updated_at": {
+                        "updatedAt": {
                           "allOf": [
                             {
                               "type": "string",
@@ -4508,10 +4512,10 @@ const AcademySchema: Record<string, unknown> = {
                           "x-go-type": "core.Time",
                           "x-oapi-codegen-extra-tags": {
                             "db": "updated_at",
-                            "json": "updated_at"
+                            "json": "updatedAt"
                           }
                         },
-                        "deleted_at": {
+                        "deletedAt": {
                           "allOf": [
                             {
                               "description": "Timestamp when the resource was deleted.",
@@ -4529,7 +4533,7 @@ const AcademySchema: Record<string, unknown> = {
                           "x-go-type": "core.NullTime",
                           "x-oapi-codegen-extra-tags": {
                             "db": "deleted_at",
-                            "json": "deleted_at"
+                            "json": "deletedAt"
                           }
                         },
                         "metadata": {
@@ -4778,16 +4782,16 @@ const AcademySchema: Record<string, unknown> = {
                     {
                       "type": "object",
                       "required": [
-                        "registration_count"
+                        "registrationCount"
                       ],
                       "properties": {
-                        "registration_count": {
+                        "registrationCount": {
                           "type": "number",
                           "description": "Number of registrations associated with this curriculum.",
                           "minimum": 0,
                           "x-oapi-codegen-extra-tags": {
                             "db": "registration_count,omitempty",
-                            "json": "registration_count,omitempty"
+                            "json": "registrationCount,omitempty"
                           }
                         },
                         "invitation": {
@@ -4801,18 +4805,18 @@ const AcademySchema: Record<string, unknown> = {
                           "description": "Invitation entity schema.",
                           "required": [
                             "id",
-                            "owner_id",
+                            "ownerId",
                             "name",
                             "description",
-                            "org_id",
-                            "accepted_by",
+                            "orgId",
+                            "acceptedBy",
                             "emails",
                             "roles",
                             "teams",
                             "status",
-                            "created_at",
-                            "updated_at",
-                            "deleted_at"
+                            "createdAt",
+                            "updatedAt",
+                            "deletedAt"
                           ],
                           "properties": {
                             "id": {
@@ -4823,9 +4827,13 @@ const AcademySchema: Record<string, unknown> = {
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
                               },
-                              "x-go-name": "ID"
+                              "x-go-name": "ID",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "id",
+                                "json": "id"
+                              }
                             },
-                            "owner_id": {
+                            "ownerId": {
                               "type": "string",
                               "format": "uuid",
                               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -4833,32 +4841,34 @@ const AcademySchema: Record<string, unknown> = {
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
                               },
+                              "x-go-name": "OwnerID",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "owner_id",
-                                "json": "owner_id"
+                                "json": "ownerId"
                               }
                             },
-                            "is_default": {
+                            "isDefault": {
                               "type": "boolean",
-                              "description": "Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation",
+                              "description": "Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation.",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "is_default",
-                                "json": "is_default"
+                                "json": "isDefault"
                               }
                             },
                             "name": {
                               "type": "string",
-                              "description": "Name of the invitation, which can be used to identify the invitation, required and cant be empty string,",
+                              "description": "Name of the invitation, which can be used to identify it. Required; cannot be an empty string.",
                               "minLength": 1,
                               "maxLength": 255
                             },
                             "description": {
                               "type": "string",
-                              "description": "Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description",
+                              "description": "Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description.",
                               "maxLength": 5000
                             },
                             "emails": {
                               "type": "array",
+                              "description": "Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address.",
                               "x-go-type": "pq.StringArray",
                               "x-go-type-import": {
                                 "path": "github.com/lib/pq"
@@ -4866,12 +4876,11 @@ const AcademySchema: Record<string, unknown> = {
                               "items": {
                                 "type": "string",
                                 "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
-                                "x-go-type": "string",
-                                "description": "Exact email address or the email address pattern for which the invitation is valid , null means the invitation is valid for all email addresses"
-                              },
-                              "description": "The emails of the invitation."
+                                "description": "Exact email address or the email address pattern for which the invitation is valid.",
+                                "x-go-type": "string"
+                              }
                             },
-                            "org_id": {
+                            "orgId": {
                               "type": "string",
                               "format": "uuid",
                               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -4879,27 +4888,29 @@ const AcademySchema: Record<string, unknown> = {
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
                               },
+                              "x-go-name": "OrgID",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "org_id",
-                                "json": "org_id"
+                                "json": "orgId"
                               }
                             },
-                            "expires_at": {
+                            "expiresAt": {
                               "type": "string",
                               "format": "date-time",
-                              "description": "Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire",
+                              "description": "Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "expires_at",
-                                "json": "expires_at"
+                                "json": "expiresAt"
                               }
                             },
                             "quota": {
                               "type": "integer",
-                              "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota",
+                              "description": "Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited.",
                               "minimum": 0
                             },
-                            "accepted_by": {
+                            "acceptedBy": {
                               "type": "array",
+                              "description": "List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet.",
                               "x-go-type": "pq.StringArray",
                               "x-go-type-import": {
                                 "path": "github.com/lib/pq"
@@ -4907,74 +4918,73 @@ const AcademySchema: Record<string, unknown> = {
                               "items": {
                                 "type": "string"
                               },
-                              "description": "List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "accepted_by",
-                                "json": "accepted_by"
+                                "json": "acceptedBy"
                               }
                             },
                             "roles": {
                               "type": "array",
+                              "description": "Roles that the user will have when accepting the invitation. Empty means the invitation does not specify any roles.",
                               "x-go-type": "pq.StringArray",
                               "x-go-type-import": {
                                 "path": "github.com/lib/pq"
                               },
                               "items": {
                                 "type": "string",
-                                "description": "Roles that the user will have when accepting the invitation, null or empty string means the invitation does not specify any roles"
-                              },
-                              "description": "The roles of the invitation."
+                                "description": "Role identifier granted by this invitation on acceptance."
+                              }
                             },
                             "teams": {
                               "type": "array",
+                              "description": "Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams.",
                               "x-go-type": "pq.StringArray",
                               "x-go-type-import": {
                                 "path": "github.com/lib/pq"
                               },
                               "items": {
                                 "type": "string",
-                                "description": "Teams that the user will be added to when accepting the invitation, null or empty string means the invitation does not specify any teams"
-                              },
-                              "description": "The teams of the invitation."
+                                "description": "Team identifier the invited user is added to on acceptance."
+                              }
                             },
                             "status": {
+                              "description": "Activation status of the invitation.",
                               "x-go-type": "InvitationStatus",
                               "type": "string",
                               "enum": [
                                 "enabled",
                                 "disabled"
-                              ],
-                              "description": "Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later."
+                              ]
                             },
-                            "created_at": {
+                            "createdAt": {
                               "type": "string",
                               "format": "date-time",
-                              "description": "Timestamp when the invitation was created",
+                              "description": "Timestamp when the invitation was created.",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "created_at",
-                                "json": "created_at"
+                                "json": "createdAt"
                               }
                             },
-                            "updated_at": {
+                            "updatedAt": {
                               "type": "string",
                               "format": "date-time",
-                              "description": "Timestamp when the invitation was last updated",
+                              "description": "Timestamp when the invitation was last updated.",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "updated_at",
-                                "json": "updated_at"
+                                "json": "updatedAt"
                               }
                             },
-                            "deleted_at": {
+                            "deletedAt": {
                               "type": "string",
                               "format": "date-time",
+                              "description": "Timestamp when the invitation was deleted, if applicable.",
                               "x-go-type": "core.NullTime",
                               "x-go-type-import": {
                                 "path": "github.com/meshery/schemas/models/core"
                               },
-                              "description": "Timestamp when the invitation was deleted, if applicable",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "deleted_at",
-                                "json": "deleted_at"
+                                "json": "deletedAt"
                               }
                             }
                           }
@@ -5047,12 +5057,12 @@ const AcademySchema: Record<string, unknown> = {
                   "type": "object",
                   "required": [
                     "id",
-                    "org_id",
-                    "user_id",
+                    "orgId",
+                    "userId",
                     "status",
-                    "created_at",
-                    "updated_at",
-                    "content_id",
+                    "createdAt",
+                    "updatedAt",
+                    "contentId",
                     "certificate",
                     "metadata"
                   ],
@@ -5071,7 +5081,7 @@ const AcademySchema: Record<string, unknown> = {
                         "json": "id"
                       }
                     },
-                    "org_id": {
+                    "orgId": {
                       "type": "string",
                       "format": "uuid",
                       "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -5083,7 +5093,7 @@ const AcademySchema: Record<string, unknown> = {
                         "db": "org_id"
                       }
                     },
-                    "content_id": {
+                    "contentId": {
                       "type": "string",
                       "description": "ID of the course content",
                       "x-oapi-codegen-extra-tags": {
@@ -5092,7 +5102,7 @@ const AcademySchema: Record<string, unknown> = {
                       "maxLength": 500,
                       "format": "uuid"
                     },
-                    "user_id": {
+                    "userId": {
                       "type": "string",
                       "format": "uuid",
                       "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -5118,7 +5128,7 @@ const AcademySchema: Record<string, unknown> = {
                         "withdrawn"
                       ]
                     },
-                    "updated_at": {
+                    "updatedAt": {
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true,
@@ -5127,7 +5137,7 @@ const AcademySchema: Record<string, unknown> = {
                         "db": "updated_at"
                       }
                     },
-                    "created_at": {
+                    "createdAt": {
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true,
@@ -5136,7 +5146,7 @@ const AcademySchema: Record<string, unknown> = {
                         "db": "created_at"
                       }
                     },
-                    "deleted_at": {
+                    "deletedAt": {
                       "description": "Timestamp when the resource was deleted.",
                       "x-go-type": "NullTime",
                       "type": "string",
@@ -5491,7 +5501,7 @@ const AcademySchema: Record<string, unknown> = {
                                 "required": [
                                   "id",
                                   "title",
-                                  "org_id",
+                                  "orgId",
                                   "description",
                                   "slug",
                                   "relPermalink",
@@ -5526,13 +5536,13 @@ const AcademySchema: Record<string, unknown> = {
                                     "maxLength": 500,
                                     "format": "uuid"
                                   },
-                                  "org_id": {
+                                  "orgId": {
                                     "type": "string",
                                     "description": "Organization ID that owns this quiz",
                                     "example": "layer5",
                                     "x-oapi-codegen-extra-tags": {
                                       "db": "org_id",
-                                      "json": "org_id"
+                                      "json": "orgId"
                                     },
                                     "maxLength": 500,
                                     "format": "uuid"
@@ -6059,7 +6069,7 @@ const AcademySchema: Record<string, unknown> = {
                   "required": [
                     "id",
                     "title",
-                    "org_id",
+                    "orgId",
                     "description",
                     "slug",
                     "relPermalink",
@@ -6094,13 +6104,13 @@ const AcademySchema: Record<string, unknown> = {
                       "maxLength": 500,
                       "format": "uuid"
                     },
-                    "org_id": {
+                    "orgId": {
                       "type": "string",
                       "description": "Organization ID that owns this quiz",
                       "example": "layer5",
                       "x-oapi-codegen-extra-tags": {
                         "db": "org_id",
-                        "json": "org_id"
+                        "json": "orgId"
                       },
                       "maxLength": 500,
                       "format": "uuid"
@@ -6473,7 +6483,7 @@ const AcademySchema: Record<string, unknown> = {
                   "required": [
                     "id",
                     "title",
-                    "org_id",
+                    "orgId",
                     "description",
                     "slug",
                     "relPermalink",
@@ -6508,13 +6518,13 @@ const AcademySchema: Record<string, unknown> = {
                       "maxLength": 500,
                       "format": "uuid"
                     },
-                    "org_id": {
+                    "orgId": {
                       "type": "string",
                       "description": "Organization ID that owns this quiz",
                       "example": "layer5",
                       "x-oapi-codegen-extra-tags": {
                         "db": "org_id",
-                        "json": "org_id"
+                        "json": "orgId"
                       },
                       "maxLength": 500,
                       "format": "uuid"
@@ -6949,7 +6959,7 @@ const AcademySchema: Record<string, unknown> = {
                           "required": [
                             "id",
                             "title",
-                            "org_id",
+                            "orgId",
                             "description",
                             "slug",
                             "relPermalink",
@@ -6984,13 +6994,13 @@ const AcademySchema: Record<string, unknown> = {
                               "maxLength": 500,
                               "format": "uuid"
                             },
-                            "org_id": {
+                            "orgId": {
                               "type": "string",
                               "description": "Organization ID that owns this quiz",
                               "example": "layer5",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "org_id",
-                                "json": "org_id"
+                                "json": "orgId"
                               },
                               "maxLength": 500,
                               "format": "uuid"
@@ -7348,7 +7358,7 @@ const AcademySchema: Record<string, unknown> = {
                   "quizAbsPath",
                   "registrationId",
                   "testSessionId",
-                  "user_id",
+                  "userId",
                   "answers"
                 ],
                 "properties": {
@@ -7372,7 +7382,7 @@ const AcademySchema: Record<string, unknown> = {
                     "maxLength": 500,
                     "format": "uuid"
                   },
-                  "user_id": {
+                  "userId": {
                     "type": "string",
                     "description": "ID of the user who owns or created this resource.",
                     "maxLength": 500,
@@ -7475,7 +7485,7 @@ const AcademySchema: Record<string, unknown> = {
                       "required": [
                         "id",
                         "title",
-                        "org_id",
+                        "orgId",
                         "description",
                         "slug",
                         "relPermalink",
@@ -7510,13 +7520,13 @@ const AcademySchema: Record<string, unknown> = {
                           "maxLength": 500,
                           "format": "uuid"
                         },
-                        "org_id": {
+                        "orgId": {
                           "type": "string",
                           "description": "Organization ID that owns this quiz",
                           "example": "layer5",
                           "x-oapi-codegen-extra-tags": {
                             "db": "org_id",
-                            "json": "org_id"
+                            "json": "orgId"
                           },
                           "maxLength": 500,
                           "format": "uuid"
@@ -7996,8 +8006,8 @@ const AcademySchema: Record<string, unknown> = {
                   "type": "object",
                   "required": [
                     "data",
-                    "total_count",
-                    "page_size",
+                    "totalCount",
+                    "pageSize",
                     "page"
                   ],
                   "properties": {
@@ -8007,20 +8017,20 @@ const AcademySchema: Record<string, unknown> = {
                         "x-go-type": "UserRegistration",
                         "type": "object",
                         "required": [
-                          "curricula_title",
-                          "curricula_type",
-                          "curricula_permalink",
-                          "registration_id",
+                          "curriculaTitle",
+                          "curriculaType",
+                          "curriculaPermalink",
+                          "registrationId",
                           "status",
-                          "user_id",
-                          "user_email",
-                          "user_last_name",
-                          "user_first_name",
-                          "user_avatar_url",
-                          "total_count"
+                          "userId",
+                          "userEmail",
+                          "userLastName",
+                          "userFirstName",
+                          "userAvatarUrl",
+                          "totalCount"
                         ],
                         "properties": {
-                          "curricula_title": {
+                          "curriculaTitle": {
                             "type": "string",
                             "description": "Title of the curricula",
                             "x-oapi-codegen-extra-tags": {
@@ -8028,7 +8038,7 @@ const AcademySchema: Record<string, unknown> = {
                             },
                             "maxLength": 500
                           },
-                          "curricula_type": {
+                          "curriculaType": {
                             "type": "string",
                             "enum": [
                               "learning-path",
@@ -8041,7 +8051,7 @@ const AcademySchema: Record<string, unknown> = {
                               "db": "curricula_type"
                             }
                           },
-                          "curricula_permalink": {
+                          "curriculaPermalink": {
                             "type": "string",
                             "description": "Permalink of the curricula",
                             "x-oapi-codegen-extra-tags": {
@@ -8049,7 +8059,7 @@ const AcademySchema: Record<string, unknown> = {
                             },
                             "maxLength": 500
                           },
-                          "registration_id": {
+                          "registrationId": {
                             "type": "string",
                             "format": "uuid",
                             "description": "Unique ID of the registration",
@@ -8071,7 +8081,7 @@ const AcademySchema: Record<string, unknown> = {
                               "withdrawn"
                             ]
                           },
-                          "created_at": {
+                          "createdAt": {
                             "type": "string",
                             "format": "date-time",
                             "description": "When the registration was created",
@@ -8079,7 +8089,7 @@ const AcademySchema: Record<string, unknown> = {
                               "db": "created_at"
                             }
                           },
-                          "user_id": {
+                          "userId": {
                             "type": "string",
                             "format": "uuid",
                             "description": "ID of the user",
@@ -8087,7 +8097,7 @@ const AcademySchema: Record<string, unknown> = {
                               "db": "user_id"
                             }
                           },
-                          "user_first_name": {
+                          "userFirstName": {
                             "type": "string",
                             "description": "First name of the user",
                             "x-oapi-codegen-extra-tags": {
@@ -8095,7 +8105,7 @@ const AcademySchema: Record<string, unknown> = {
                             },
                             "maxLength": 500
                           },
-                          "user_last_name": {
+                          "userLastName": {
                             "type": "string",
                             "description": "Last name of the user",
                             "x-oapi-codegen-extra-tags": {
@@ -8103,7 +8113,7 @@ const AcademySchema: Record<string, unknown> = {
                             },
                             "maxLength": 500
                           },
-                          "user_email": {
+                          "userEmail": {
                             "type": "string",
                             "format": "email",
                             "description": "Email of the user",
@@ -8111,7 +8121,7 @@ const AcademySchema: Record<string, unknown> = {
                               "db": "user_email"
                             }
                           },
-                          "user_avatar_url": {
+                          "userAvatarUrl": {
                             "type": "string",
                             "format": "uri",
                             "description": "Avatar URL of the user",
@@ -8119,7 +8129,7 @@ const AcademySchema: Record<string, unknown> = {
                               "db": "user_avatar_url"
                             }
                           },
-                          "total_count": {
+                          "totalCount": {
                             "type": "integer",
                             "format": "int64",
                             "description": "Total count for pagination",
@@ -8132,13 +8142,13 @@ const AcademySchema: Record<string, unknown> = {
                       },
                       "description": "The data of the curricularegistrationsresponse."
                     },
-                    "total_count": {
+                    "totalCount": {
                       "type": "integer",
                       "format": "int64",
                       "description": "Total number of items available.",
                       "minimum": 0
                     },
-                    "page_size": {
+                    "pageSize": {
                       "type": "integer",
                       "description": "Number of items per page.",
                       "minimum": 1
@@ -8401,7 +8411,7 @@ const AcademySchema: Record<string, unknown> = {
         "example": "layer5",
         "x-oapi-codegen-extra-tags": {
           "db": "org_id",
-          "json": "org_id"
+          "json": "orgId"
         }
       },
       "AcademyCurriculaBadgeId": {
@@ -8419,7 +8429,7 @@ const AcademySchema: Record<string, unknown> = {
         "description": "ID of the badge to be awarded on completion of this curricula",
         "x-oapi-codegen-extra-tags": {
           "db": "badge_id",
-          "json": "badge_id"
+          "json": "badgeId"
         }
       },
       "AcademyCurriculaInviteId": {
@@ -8437,7 +8447,7 @@ const AcademySchema: Record<string, unknown> = {
         "description": "ID of the invite associated with this Curricula",
         "x-oapi-codegen-extra-tags": {
           "db": "invite_id",
-          "json": "invite_id"
+          "json": "inviteId"
         }
       },
       "AcademyCurriculaWorkspaceId": {
@@ -8455,7 +8465,7 @@ const AcademySchema: Record<string, unknown> = {
         "description": "ID of the workspace to which this Curricula belongs",
         "x-oapi-codegen-extra-tags": {
           "db": "workspace_id",
-          "json": "workspace_id"
+          "json": "workspaceId"
         }
       },
       "AcademyCurriculaCreatedAt": {
@@ -8469,7 +8479,7 @@ const AcademySchema: Record<string, unknown> = {
         "description": "When the Curricula item was created",
         "x-oapi-codegen-extra-tags": {
           "db": "created_at",
-          "json": "created_at"
+          "json": "createdAt"
         }
       },
       "AcademyCurriculaUpdatedAt": {
@@ -8484,7 +8494,7 @@ const AcademySchema: Record<string, unknown> = {
         "x-go-type": "core.Time",
         "x-oapi-codegen-extra-tags": {
           "db": "updated_at",
-          "json": "updated_at"
+          "json": "updatedAt"
         }
       },
       "AcademyCurriculaDeletedAt": {
@@ -8505,7 +8515,7 @@ const AcademySchema: Record<string, unknown> = {
         "x-go-type": "core.NullTime",
         "x-oapi-codegen-extra-tags": {
           "db": "deleted_at",
-          "json": "deleted_at"
+          "json": "deletedAt"
         }
       },
       "AcademyCurriculaMetadata": {
@@ -8760,7 +8770,7 @@ const AcademySchema: Record<string, unknown> = {
         "description": "Expiry time for curricula access",
         "x-go-type": "*time.Time",
         "x-oapi-codegen-extra-tags": {
-          "json": "access_expires_at",
+          "json": "accessExpiresAt",
           "db": "access_expires_at"
         }
       },
@@ -8768,7 +8778,7 @@ const AcademySchema: Record<string, unknown> = {
         "type": "object",
         "required": [
           "contentId",
-          "user_id"
+          "userId"
         ],
         "properties": {
           "contentId": {
@@ -8777,7 +8787,7 @@ const AcademySchema: Record<string, unknown> = {
             "maxLength": 500,
             "format": "uuid"
           },
-          "user_id": {
+          "userId": {
             "type": "string",
             "format": "uuid",
             "description": "ID of the user registering for the content."
@@ -8830,13 +8840,13 @@ const AcademySchema: Record<string, unknown> = {
         "required": [
           "id",
           "type",
-          "org_id",
+          "orgId",
           "visibility",
           "status",
           "slug",
-          "created_at",
-          "updated_at",
-          "deleted_at",
+          "createdAt",
+          "updatedAt",
+          "deletedAt",
           "metadata",
           "level"
         ],
@@ -8865,13 +8875,13 @@ const AcademySchema: Record<string, unknown> = {
               "certification"
             ]
           },
-          "org_id": {
+          "orgId": {
             "type": "string",
             "description": "Organization ID that owns this learning path",
             "example": "layer5",
             "x-oapi-codegen-extra-tags": {
               "db": "org_id",
-              "json": "org_id"
+              "json": "orgId"
             }
           },
           "visibility": {
@@ -8922,7 +8932,7 @@ const AcademySchema: Record<string, unknown> = {
               "advanced"
             ]
           },
-          "badge_id": {
+          "badgeId": {
             "type": "string",
             "format": "uuid",
             "description": "ID of the badge to be awarded on completion of this curricula",
@@ -8933,10 +8943,10 @@ const AcademySchema: Record<string, unknown> = {
             },
             "x-oapi-codegen-extra-tags": {
               "db": "badge_id",
-              "json": "badge_id"
+              "json": "badgeId"
             }
           },
-          "invite_id": {
+          "inviteId": {
             "allOf": [
               {
                 "type": "string",
@@ -8951,10 +8961,10 @@ const AcademySchema: Record<string, unknown> = {
             "description": "ID of the invite associated with this Curricula",
             "x-oapi-codegen-extra-tags": {
               "db": "invite_id",
-              "json": "invite_id"
+              "json": "inviteId"
             }
           },
-          "workspace_id": {
+          "workspaceId": {
             "allOf": [
               {
                 "type": "string",
@@ -8969,10 +8979,10 @@ const AcademySchema: Record<string, unknown> = {
             "description": "ID of the workspace to which this Curricula belongs",
             "x-oapi-codegen-extra-tags": {
               "db": "workspace_id",
-              "json": "workspace_id"
+              "json": "workspaceId"
             }
           },
-          "created_at": {
+          "createdAt": {
             "allOf": [
               {
                 "type": "string",
@@ -8983,10 +8993,10 @@ const AcademySchema: Record<string, unknown> = {
             "description": "When the Curricula item was created",
             "x-oapi-codegen-extra-tags": {
               "db": "created_at",
-              "json": "created_at"
+              "json": "createdAt"
             }
           },
-          "updated_at": {
+          "updatedAt": {
             "allOf": [
               {
                 "type": "string",
@@ -8998,10 +9008,10 @@ const AcademySchema: Record<string, unknown> = {
             "x-go-type": "core.Time",
             "x-oapi-codegen-extra-tags": {
               "db": "updated_at",
-              "json": "updated_at"
+              "json": "updatedAt"
             }
           },
-          "deleted_at": {
+          "deletedAt": {
             "allOf": [
               {
                 "description": "Timestamp when the resource was deleted.",
@@ -9019,7 +9029,7 @@ const AcademySchema: Record<string, unknown> = {
             "x-go-type": "core.NullTime",
             "x-oapi-codegen-extra-tags": {
               "db": "deleted_at",
-              "json": "deleted_at"
+              "json": "deletedAt"
             }
           },
           "metadata": {
@@ -9275,13 +9285,13 @@ const AcademySchema: Record<string, unknown> = {
             "required": [
               "id",
               "type",
-              "org_id",
+              "orgId",
               "visibility",
               "status",
               "slug",
-              "created_at",
-              "updated_at",
-              "deleted_at",
+              "createdAt",
+              "updatedAt",
+              "deletedAt",
               "metadata",
               "level"
             ],
@@ -9310,13 +9320,13 @@ const AcademySchema: Record<string, unknown> = {
                   "certification"
                 ]
               },
-              "org_id": {
+              "orgId": {
                 "type": "string",
                 "description": "Organization ID that owns this learning path",
                 "example": "layer5",
                 "x-oapi-codegen-extra-tags": {
                   "db": "org_id",
-                  "json": "org_id"
+                  "json": "orgId"
                 }
               },
               "visibility": {
@@ -9367,7 +9377,7 @@ const AcademySchema: Record<string, unknown> = {
                   "advanced"
                 ]
               },
-              "badge_id": {
+              "badgeId": {
                 "type": "string",
                 "format": "uuid",
                 "description": "ID of the badge to be awarded on completion of this curricula",
@@ -9378,10 +9388,10 @@ const AcademySchema: Record<string, unknown> = {
                 },
                 "x-oapi-codegen-extra-tags": {
                   "db": "badge_id",
-                  "json": "badge_id"
+                  "json": "badgeId"
                 }
               },
-              "invite_id": {
+              "inviteId": {
                 "allOf": [
                   {
                     "type": "string",
@@ -9396,10 +9406,10 @@ const AcademySchema: Record<string, unknown> = {
                 "description": "ID of the invite associated with this Curricula",
                 "x-oapi-codegen-extra-tags": {
                   "db": "invite_id",
-                  "json": "invite_id"
+                  "json": "inviteId"
                 }
               },
-              "workspace_id": {
+              "workspaceId": {
                 "allOf": [
                   {
                     "type": "string",
@@ -9414,10 +9424,10 @@ const AcademySchema: Record<string, unknown> = {
                 "description": "ID of the workspace to which this Curricula belongs",
                 "x-oapi-codegen-extra-tags": {
                   "db": "workspace_id",
-                  "json": "workspace_id"
+                  "json": "workspaceId"
                 }
               },
-              "created_at": {
+              "createdAt": {
                 "allOf": [
                   {
                     "type": "string",
@@ -9428,10 +9438,10 @@ const AcademySchema: Record<string, unknown> = {
                 "description": "When the Curricula item was created",
                 "x-oapi-codegen-extra-tags": {
                   "db": "created_at",
-                  "json": "created_at"
+                  "json": "createdAt"
                 }
               },
-              "updated_at": {
+              "updatedAt": {
                 "allOf": [
                   {
                     "type": "string",
@@ -9443,10 +9453,10 @@ const AcademySchema: Record<string, unknown> = {
                 "x-go-type": "core.Time",
                 "x-oapi-codegen-extra-tags": {
                   "db": "updated_at",
-                  "json": "updated_at"
+                  "json": "updatedAt"
                 }
               },
-              "deleted_at": {
+              "deletedAt": {
                 "allOf": [
                   {
                     "description": "Timestamp when the resource was deleted.",
@@ -9464,7 +9474,7 @@ const AcademySchema: Record<string, unknown> = {
                 "x-go-type": "core.NullTime",
                 "x-oapi-codegen-extra-tags": {
                   "db": "deleted_at",
-                  "json": "deleted_at"
+                  "json": "deletedAt"
                 }
               },
               "metadata": {
@@ -9713,16 +9723,16 @@ const AcademySchema: Record<string, unknown> = {
           {
             "type": "object",
             "required": [
-              "registration_count"
+              "registrationCount"
             ],
             "properties": {
-              "registration_count": {
+              "registrationCount": {
                 "type": "number",
                 "description": "Number of registrations associated with this curriculum.",
                 "minimum": 0,
                 "x-oapi-codegen-extra-tags": {
                   "db": "registration_count,omitempty",
-                  "json": "registration_count,omitempty"
+                  "json": "registrationCount,omitempty"
                 }
               },
               "invitation": {
@@ -9736,18 +9746,18 @@ const AcademySchema: Record<string, unknown> = {
                 "description": "Invitation entity schema.",
                 "required": [
                   "id",
-                  "owner_id",
+                  "ownerId",
                   "name",
                   "description",
-                  "org_id",
-                  "accepted_by",
+                  "orgId",
+                  "acceptedBy",
                   "emails",
                   "roles",
                   "teams",
                   "status",
-                  "created_at",
-                  "updated_at",
-                  "deleted_at"
+                  "createdAt",
+                  "updatedAt",
+                  "deletedAt"
                 ],
                 "properties": {
                   "id": {
@@ -9758,9 +9768,13 @@ const AcademySchema: Record<string, unknown> = {
                     "x-go-type-import": {
                       "path": "github.com/gofrs/uuid"
                     },
-                    "x-go-name": "ID"
+                    "x-go-name": "ID",
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "id",
+                      "json": "id"
+                    }
                   },
-                  "owner_id": {
+                  "ownerId": {
                     "type": "string",
                     "format": "uuid",
                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -9768,32 +9782,34 @@ const AcademySchema: Record<string, unknown> = {
                     "x-go-type-import": {
                       "path": "github.com/gofrs/uuid"
                     },
+                    "x-go-name": "OwnerID",
                     "x-oapi-codegen-extra-tags": {
                       "db": "owner_id",
-                      "json": "owner_id"
+                      "json": "ownerId"
                     }
                   },
-                  "is_default": {
+                  "isDefault": {
                     "type": "boolean",
-                    "description": "Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation",
+                    "description": "Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation.",
                     "x-oapi-codegen-extra-tags": {
                       "db": "is_default",
-                      "json": "is_default"
+                      "json": "isDefault"
                     }
                   },
                   "name": {
                     "type": "string",
-                    "description": "Name of the invitation, which can be used to identify the invitation, required and cant be empty string,",
+                    "description": "Name of the invitation, which can be used to identify it. Required; cannot be an empty string.",
                     "minLength": 1,
                     "maxLength": 255
                   },
                   "description": {
                     "type": "string",
-                    "description": "Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description",
+                    "description": "Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description.",
                     "maxLength": 5000
                   },
                   "emails": {
                     "type": "array",
+                    "description": "Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address.",
                     "x-go-type": "pq.StringArray",
                     "x-go-type-import": {
                       "path": "github.com/lib/pq"
@@ -9801,12 +9817,11 @@ const AcademySchema: Record<string, unknown> = {
                     "items": {
                       "type": "string",
                       "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
-                      "x-go-type": "string",
-                      "description": "Exact email address or the email address pattern for which the invitation is valid , null means the invitation is valid for all email addresses"
-                    },
-                    "description": "The emails of the invitation."
+                      "description": "Exact email address or the email address pattern for which the invitation is valid.",
+                      "x-go-type": "string"
+                    }
                   },
-                  "org_id": {
+                  "orgId": {
                     "type": "string",
                     "format": "uuid",
                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -9814,27 +9829,29 @@ const AcademySchema: Record<string, unknown> = {
                     "x-go-type-import": {
                       "path": "github.com/gofrs/uuid"
                     },
+                    "x-go-name": "OrgID",
                     "x-oapi-codegen-extra-tags": {
                       "db": "org_id",
-                      "json": "org_id"
+                      "json": "orgId"
                     }
                   },
-                  "expires_at": {
+                  "expiresAt": {
                     "type": "string",
                     "format": "date-time",
-                    "description": "Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire",
+                    "description": "Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.",
                     "x-oapi-codegen-extra-tags": {
                       "db": "expires_at",
-                      "json": "expires_at"
+                      "json": "expiresAt"
                     }
                   },
                   "quota": {
                     "type": "integer",
-                    "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota",
+                    "description": "Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited.",
                     "minimum": 0
                   },
-                  "accepted_by": {
+                  "acceptedBy": {
                     "type": "array",
+                    "description": "List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet.",
                     "x-go-type": "pq.StringArray",
                     "x-go-type-import": {
                       "path": "github.com/lib/pq"
@@ -9842,74 +9859,73 @@ const AcademySchema: Record<string, unknown> = {
                     "items": {
                       "type": "string"
                     },
-                    "description": "List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet",
                     "x-oapi-codegen-extra-tags": {
                       "db": "accepted_by",
-                      "json": "accepted_by"
+                      "json": "acceptedBy"
                     }
                   },
                   "roles": {
                     "type": "array",
+                    "description": "Roles that the user will have when accepting the invitation. Empty means the invitation does not specify any roles.",
                     "x-go-type": "pq.StringArray",
                     "x-go-type-import": {
                       "path": "github.com/lib/pq"
                     },
                     "items": {
                       "type": "string",
-                      "description": "Roles that the user will have when accepting the invitation, null or empty string means the invitation does not specify any roles"
-                    },
-                    "description": "The roles of the invitation."
+                      "description": "Role identifier granted by this invitation on acceptance."
+                    }
                   },
                   "teams": {
                     "type": "array",
+                    "description": "Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams.",
                     "x-go-type": "pq.StringArray",
                     "x-go-type-import": {
                       "path": "github.com/lib/pq"
                     },
                     "items": {
                       "type": "string",
-                      "description": "Teams that the user will be added to when accepting the invitation, null or empty string means the invitation does not specify any teams"
-                    },
-                    "description": "The teams of the invitation."
+                      "description": "Team identifier the invited user is added to on acceptance."
+                    }
                   },
                   "status": {
+                    "description": "Activation status of the invitation.",
                     "x-go-type": "InvitationStatus",
                     "type": "string",
                     "enum": [
                       "enabled",
                       "disabled"
-                    ],
-                    "description": "Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later."
+                    ]
                   },
-                  "created_at": {
+                  "createdAt": {
                     "type": "string",
                     "format": "date-time",
-                    "description": "Timestamp when the invitation was created",
+                    "description": "Timestamp when the invitation was created.",
                     "x-oapi-codegen-extra-tags": {
                       "db": "created_at",
-                      "json": "created_at"
+                      "json": "createdAt"
                     }
                   },
-                  "updated_at": {
+                  "updatedAt": {
                     "type": "string",
                     "format": "date-time",
-                    "description": "Timestamp when the invitation was last updated",
+                    "description": "Timestamp when the invitation was last updated.",
                     "x-oapi-codegen-extra-tags": {
                       "db": "updated_at",
-                      "json": "updated_at"
+                      "json": "updatedAt"
                     }
                   },
-                  "deleted_at": {
+                  "deletedAt": {
                     "type": "string",
                     "format": "date-time",
+                    "description": "Timestamp when the invitation was deleted, if applicable.",
                     "x-go-type": "core.NullTime",
                     "x-go-type-import": {
                       "path": "github.com/meshery/schemas/models/core"
                     },
-                    "description": "Timestamp when the invitation was deleted, if applicable",
                     "x-oapi-codegen-extra-tags": {
                       "db": "deleted_at",
-                      "json": "deleted_at"
+                      "json": "deletedAt"
                     }
                   }
                 }
@@ -9945,16 +9961,16 @@ const AcademySchema: Record<string, unknown> = {
             },
             "maxLength": 500
           },
-          "org_id": {
+          "orgId": {
             "type": "string",
             "description": "Organization ID that owns this learning path",
             "example": "layer5",
             "x-oapi-codegen-extra-tags": {
               "db": "org_id",
-              "json": "org_id"
+              "json": "orgId"
             }
           },
-          "workspace_id": {
+          "workspaceId": {
             "allOf": [
               {
                 "type": "string",
@@ -9969,10 +9985,10 @@ const AcademySchema: Record<string, unknown> = {
             "description": "ID of the workspace to which this Curricula belongs",
             "x-oapi-codegen-extra-tags": {
               "db": "workspace_id",
-              "json": "workspace_id"
+              "json": "workspaceId"
             }
           },
-          "badge_id": {
+          "badgeId": {
             "type": "string",
             "format": "uuid",
             "description": "ID of the badge to be awarded on completion of this curricula",
@@ -9983,10 +9999,10 @@ const AcademySchema: Record<string, unknown> = {
             },
             "x-oapi-codegen-extra-tags": {
               "db": "badge_id",
-              "json": "badge_id"
+              "json": "badgeId"
             }
           },
-          "team_id": {
+          "teamId": {
             "type": "string",
             "format": "uuid",
             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -9996,11 +10012,11 @@ const AcademySchema: Record<string, unknown> = {
             },
             "x-go-name": "TeamId",
             "x-oapi-codegen-extra-tags": {
-              "json": "team_id",
+              "json": "teamId",
               "db": "team_id"
             }
           },
-          "access_expires_at": {
+          "accessExpiresAt": {
             "allOf": [
               {
                 "type": "string",
@@ -10011,11 +10027,11 @@ const AcademySchema: Record<string, unknown> = {
             "description": "Expiry time for curricula access",
             "x-go-type": "*time.Time",
             "x-oapi-codegen-extra-tags": {
-              "json": "access_expires_at",
+              "json": "accessExpiresAt",
               "db": "access_expires_at"
             }
           },
-          "access_status": {
+          "accessStatus": {
             "description": "Current access status of the curricula",
             "x-go-name": "AccessStatus",
             "x-go-type": "invitationv1beta2.InvitationStatus",
@@ -10024,7 +10040,7 @@ const AcademySchema: Record<string, unknown> = {
               "name": "invitationv1beta2"
             },
             "x-oapi-codegen-extra-tags": {
-              "json": "access_status",
+              "json": "accessStatus",
               "db": "access_status"
             },
             "type": "string",
@@ -10278,10 +10294,10 @@ const AcademySchema: Record<string, unknown> = {
         "required": [
           "type",
           "title",
-          "org_id",
-          "workspace_id",
-          "team_id",
-          "access_status",
+          "orgId",
+          "workspaceId",
+          "teamId",
+          "accessStatus",
           "metadata"
         ]
       },
@@ -10294,13 +10310,13 @@ const AcademySchema: Record<string, unknown> = {
             "required": [
               "id",
               "type",
-              "org_id",
+              "orgId",
               "visibility",
               "status",
               "slug",
-              "created_at",
-              "updated_at",
-              "deleted_at",
+              "createdAt",
+              "updatedAt",
+              "deletedAt",
               "metadata",
               "level"
             ],
@@ -10329,13 +10345,13 @@ const AcademySchema: Record<string, unknown> = {
                   "certification"
                 ]
               },
-              "org_id": {
+              "orgId": {
                 "type": "string",
                 "description": "Organization ID that owns this learning path",
                 "example": "layer5",
                 "x-oapi-codegen-extra-tags": {
                   "db": "org_id",
-                  "json": "org_id"
+                  "json": "orgId"
                 }
               },
               "visibility": {
@@ -10386,7 +10402,7 @@ const AcademySchema: Record<string, unknown> = {
                   "advanced"
                 ]
               },
-              "badge_id": {
+              "badgeId": {
                 "type": "string",
                 "format": "uuid",
                 "description": "ID of the badge to be awarded on completion of this curricula",
@@ -10397,10 +10413,10 @@ const AcademySchema: Record<string, unknown> = {
                 },
                 "x-oapi-codegen-extra-tags": {
                   "db": "badge_id",
-                  "json": "badge_id"
+                  "json": "badgeId"
                 }
               },
-              "invite_id": {
+              "inviteId": {
                 "allOf": [
                   {
                     "type": "string",
@@ -10415,10 +10431,10 @@ const AcademySchema: Record<string, unknown> = {
                 "description": "ID of the invite associated with this Curricula",
                 "x-oapi-codegen-extra-tags": {
                   "db": "invite_id",
-                  "json": "invite_id"
+                  "json": "inviteId"
                 }
               },
-              "workspace_id": {
+              "workspaceId": {
                 "allOf": [
                   {
                     "type": "string",
@@ -10433,10 +10449,10 @@ const AcademySchema: Record<string, unknown> = {
                 "description": "ID of the workspace to which this Curricula belongs",
                 "x-oapi-codegen-extra-tags": {
                   "db": "workspace_id",
-                  "json": "workspace_id"
+                  "json": "workspaceId"
                 }
               },
-              "created_at": {
+              "createdAt": {
                 "allOf": [
                   {
                     "type": "string",
@@ -10447,10 +10463,10 @@ const AcademySchema: Record<string, unknown> = {
                 "description": "When the Curricula item was created",
                 "x-oapi-codegen-extra-tags": {
                   "db": "created_at",
-                  "json": "created_at"
+                  "json": "createdAt"
                 }
               },
-              "updated_at": {
+              "updatedAt": {
                 "allOf": [
                   {
                     "type": "string",
@@ -10462,10 +10478,10 @@ const AcademySchema: Record<string, unknown> = {
                 "x-go-type": "core.Time",
                 "x-oapi-codegen-extra-tags": {
                   "db": "updated_at",
-                  "json": "updated_at"
+                  "json": "updatedAt"
                 }
               },
-              "deleted_at": {
+              "deletedAt": {
                 "allOf": [
                   {
                     "description": "Timestamp when the resource was deleted.",
@@ -10483,7 +10499,7 @@ const AcademySchema: Record<string, unknown> = {
                 "x-go-type": "core.NullTime",
                 "x-oapi-codegen-extra-tags": {
                   "db": "deleted_at",
-                  "json": "deleted_at"
+                  "json": "deletedAt"
                 }
               },
               "metadata": {
@@ -10732,16 +10748,16 @@ const AcademySchema: Record<string, unknown> = {
           {
             "type": "object",
             "required": [
-              "registration_count"
+              "registrationCount"
             ],
             "properties": {
-              "registration_count": {
+              "registrationCount": {
                 "type": "number",
                 "description": "Number of registrations associated with this curriculum.",
                 "minimum": 0,
                 "x-oapi-codegen-extra-tags": {
                   "db": "registration_count,omitempty",
-                  "json": "registration_count,omitempty"
+                  "json": "registrationCount,omitempty"
                 }
               }
             }
@@ -10767,13 +10783,13 @@ const AcademySchema: Record<string, unknown> = {
               "required": [
                 "id",
                 "type",
-                "org_id",
+                "orgId",
                 "visibility",
                 "status",
                 "slug",
-                "created_at",
-                "updated_at",
-                "deleted_at",
+                "createdAt",
+                "updatedAt",
+                "deletedAt",
                 "metadata",
                 "level"
               ],
@@ -10802,13 +10818,13 @@ const AcademySchema: Record<string, unknown> = {
                     "certification"
                   ]
                 },
-                "org_id": {
+                "orgId": {
                   "type": "string",
                   "description": "Organization ID that owns this learning path",
                   "example": "layer5",
                   "x-oapi-codegen-extra-tags": {
                     "db": "org_id",
-                    "json": "org_id"
+                    "json": "orgId"
                   }
                 },
                 "visibility": {
@@ -10859,7 +10875,7 @@ const AcademySchema: Record<string, unknown> = {
                     "advanced"
                   ]
                 },
-                "badge_id": {
+                "badgeId": {
                   "type": "string",
                   "format": "uuid",
                   "description": "ID of the badge to be awarded on completion of this curricula",
@@ -10870,10 +10886,10 @@ const AcademySchema: Record<string, unknown> = {
                   },
                   "x-oapi-codegen-extra-tags": {
                     "db": "badge_id",
-                    "json": "badge_id"
+                    "json": "badgeId"
                   }
                 },
-                "invite_id": {
+                "inviteId": {
                   "allOf": [
                     {
                       "type": "string",
@@ -10888,10 +10904,10 @@ const AcademySchema: Record<string, unknown> = {
                   "description": "ID of the invite associated with this Curricula",
                   "x-oapi-codegen-extra-tags": {
                     "db": "invite_id",
-                    "json": "invite_id"
+                    "json": "inviteId"
                   }
                 },
-                "workspace_id": {
+                "workspaceId": {
                   "allOf": [
                     {
                       "type": "string",
@@ -10906,10 +10922,10 @@ const AcademySchema: Record<string, unknown> = {
                   "description": "ID of the workspace to which this Curricula belongs",
                   "x-oapi-codegen-extra-tags": {
                     "db": "workspace_id",
-                    "json": "workspace_id"
+                    "json": "workspaceId"
                   }
                 },
-                "created_at": {
+                "createdAt": {
                   "allOf": [
                     {
                       "type": "string",
@@ -10920,10 +10936,10 @@ const AcademySchema: Record<string, unknown> = {
                   "description": "When the Curricula item was created",
                   "x-oapi-codegen-extra-tags": {
                     "db": "created_at",
-                    "json": "created_at"
+                    "json": "createdAt"
                   }
                 },
-                "updated_at": {
+                "updatedAt": {
                   "allOf": [
                     {
                       "type": "string",
@@ -10935,10 +10951,10 @@ const AcademySchema: Record<string, unknown> = {
                   "x-go-type": "core.Time",
                   "x-oapi-codegen-extra-tags": {
                     "db": "updated_at",
-                    "json": "updated_at"
+                    "json": "updatedAt"
                   }
                 },
-                "deleted_at": {
+                "deletedAt": {
                   "allOf": [
                     {
                       "description": "Timestamp when the resource was deleted.",
@@ -10956,7 +10972,7 @@ const AcademySchema: Record<string, unknown> = {
                   "x-go-type": "core.NullTime",
                   "x-oapi-codegen-extra-tags": {
                     "db": "deleted_at",
-                    "json": "deleted_at"
+                    "json": "deletedAt"
                   }
                 },
                 "metadata": {
@@ -11232,13 +11248,13 @@ const AcademySchema: Record<string, unknown> = {
                   "required": [
                     "id",
                     "type",
-                    "org_id",
+                    "orgId",
                     "visibility",
                     "status",
                     "slug",
-                    "created_at",
-                    "updated_at",
-                    "deleted_at",
+                    "createdAt",
+                    "updatedAt",
+                    "deletedAt",
                     "metadata",
                     "level"
                   ],
@@ -11267,13 +11283,13 @@ const AcademySchema: Record<string, unknown> = {
                         "certification"
                       ]
                     },
-                    "org_id": {
+                    "orgId": {
                       "type": "string",
                       "description": "Organization ID that owns this learning path",
                       "example": "layer5",
                       "x-oapi-codegen-extra-tags": {
                         "db": "org_id",
-                        "json": "org_id"
+                        "json": "orgId"
                       }
                     },
                     "visibility": {
@@ -11324,7 +11340,7 @@ const AcademySchema: Record<string, unknown> = {
                         "advanced"
                       ]
                     },
-                    "badge_id": {
+                    "badgeId": {
                       "type": "string",
                       "format": "uuid",
                       "description": "ID of the badge to be awarded on completion of this curricula",
@@ -11335,10 +11351,10 @@ const AcademySchema: Record<string, unknown> = {
                       },
                       "x-oapi-codegen-extra-tags": {
                         "db": "badge_id",
-                        "json": "badge_id"
+                        "json": "badgeId"
                       }
                     },
-                    "invite_id": {
+                    "inviteId": {
                       "allOf": [
                         {
                           "type": "string",
@@ -11353,10 +11369,10 @@ const AcademySchema: Record<string, unknown> = {
                       "description": "ID of the invite associated with this Curricula",
                       "x-oapi-codegen-extra-tags": {
                         "db": "invite_id",
-                        "json": "invite_id"
+                        "json": "inviteId"
                       }
                     },
-                    "workspace_id": {
+                    "workspaceId": {
                       "allOf": [
                         {
                           "type": "string",
@@ -11371,10 +11387,10 @@ const AcademySchema: Record<string, unknown> = {
                       "description": "ID of the workspace to which this Curricula belongs",
                       "x-oapi-codegen-extra-tags": {
                         "db": "workspace_id",
-                        "json": "workspace_id"
+                        "json": "workspaceId"
                       }
                     },
-                    "created_at": {
+                    "createdAt": {
                       "allOf": [
                         {
                           "type": "string",
@@ -11385,10 +11401,10 @@ const AcademySchema: Record<string, unknown> = {
                       "description": "When the Curricula item was created",
                       "x-oapi-codegen-extra-tags": {
                         "db": "created_at",
-                        "json": "created_at"
+                        "json": "createdAt"
                       }
                     },
-                    "updated_at": {
+                    "updatedAt": {
                       "allOf": [
                         {
                           "type": "string",
@@ -11400,10 +11416,10 @@ const AcademySchema: Record<string, unknown> = {
                       "x-go-type": "core.Time",
                       "x-oapi-codegen-extra-tags": {
                         "db": "updated_at",
-                        "json": "updated_at"
+                        "json": "updatedAt"
                       }
                     },
-                    "deleted_at": {
+                    "deletedAt": {
                       "allOf": [
                         {
                           "description": "Timestamp when the resource was deleted.",
@@ -11421,7 +11437,7 @@ const AcademySchema: Record<string, unknown> = {
                       "x-go-type": "core.NullTime",
                       "x-oapi-codegen-extra-tags": {
                         "db": "deleted_at",
-                        "json": "deleted_at"
+                        "json": "deletedAt"
                       }
                     },
                     "metadata": {
@@ -11670,16 +11686,16 @@ const AcademySchema: Record<string, unknown> = {
                 {
                   "type": "object",
                   "required": [
-                    "registration_count"
+                    "registrationCount"
                   ],
                   "properties": {
-                    "registration_count": {
+                    "registrationCount": {
                       "type": "number",
                       "description": "Number of registrations associated with this curriculum.",
                       "minimum": 0,
                       "x-oapi-codegen-extra-tags": {
                         "db": "registration_count,omitempty",
-                        "json": "registration_count,omitempty"
+                        "json": "registrationCount,omitempty"
                       }
                     }
                   }
@@ -12530,12 +12546,12 @@ const AcademySchema: Record<string, unknown> = {
         "type": "object",
         "required": [
           "id",
-          "org_id",
-          "user_id",
+          "orgId",
+          "userId",
           "status",
-          "created_at",
-          "updated_at",
-          "content_id",
+          "createdAt",
+          "updatedAt",
+          "contentId",
           "certificate",
           "metadata"
         ],
@@ -12554,7 +12570,7 @@ const AcademySchema: Record<string, unknown> = {
               "json": "id"
             }
           },
-          "org_id": {
+          "orgId": {
             "type": "string",
             "format": "uuid",
             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -12566,7 +12582,7 @@ const AcademySchema: Record<string, unknown> = {
               "db": "org_id"
             }
           },
-          "content_id": {
+          "contentId": {
             "type": "string",
             "description": "ID of the course content",
             "x-oapi-codegen-extra-tags": {
@@ -12575,7 +12591,7 @@ const AcademySchema: Record<string, unknown> = {
             "maxLength": 500,
             "format": "uuid"
           },
-          "user_id": {
+          "userId": {
             "type": "string",
             "format": "uuid",
             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -12601,7 +12617,7 @@ const AcademySchema: Record<string, unknown> = {
               "withdrawn"
             ]
           },
-          "updated_at": {
+          "updatedAt": {
             "type": "string",
             "format": "date-time",
             "x-go-type-skip-optional-pointer": true,
@@ -12610,7 +12626,7 @@ const AcademySchema: Record<string, unknown> = {
               "db": "updated_at"
             }
           },
-          "created_at": {
+          "createdAt": {
             "type": "string",
             "format": "date-time",
             "x-go-type-skip-optional-pointer": true,
@@ -12619,7 +12635,7 @@ const AcademySchema: Record<string, unknown> = {
               "db": "created_at"
             }
           },
-          "deleted_at": {
+          "deletedAt": {
             "description": "Timestamp when the resource was deleted.",
             "x-go-type": "NullTime",
             "type": "string",
@@ -12817,7 +12833,7 @@ const AcademySchema: Record<string, unknown> = {
                 "required": [
                   "id",
                   "title",
-                  "org_id",
+                  "orgId",
                   "description",
                   "slug",
                   "relPermalink",
@@ -12852,13 +12868,13 @@ const AcademySchema: Record<string, unknown> = {
                     "maxLength": 500,
                     "format": "uuid"
                   },
-                  "org_id": {
+                  "orgId": {
                     "type": "string",
                     "description": "Organization ID that owns this quiz",
                     "example": "layer5",
                     "x-oapi-codegen-extra-tags": {
                       "db": "org_id",
-                      "json": "org_id"
+                      "json": "orgId"
                     },
                     "maxLength": 500,
                     "format": "uuid"
@@ -13229,7 +13245,7 @@ const AcademySchema: Record<string, unknown> = {
               "required": [
                 "id",
                 "title",
-                "org_id",
+                "orgId",
                 "description",
                 "slug",
                 "relPermalink",
@@ -13264,13 +13280,13 @@ const AcademySchema: Record<string, unknown> = {
                   "maxLength": 500,
                   "format": "uuid"
                 },
-                "org_id": {
+                "orgId": {
                   "type": "string",
                   "description": "Organization ID that owns this quiz",
                   "example": "layer5",
                   "x-oapi-codegen-extra-tags": {
                     "db": "org_id",
-                    "json": "org_id"
+                    "json": "orgId"
                   },
                   "maxLength": 500,
                   "format": "uuid"
@@ -13669,12 +13685,12 @@ const AcademySchema: Record<string, unknown> = {
               "type": "object",
               "required": [
                 "id",
-                "org_id",
-                "user_id",
+                "orgId",
+                "userId",
                 "status",
-                "created_at",
-                "updated_at",
-                "content_id",
+                "createdAt",
+                "updatedAt",
+                "contentId",
                 "certificate",
                 "metadata"
               ],
@@ -13693,7 +13709,7 @@ const AcademySchema: Record<string, unknown> = {
                     "json": "id"
                   }
                 },
-                "org_id": {
+                "orgId": {
                   "type": "string",
                   "format": "uuid",
                   "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -13705,7 +13721,7 @@ const AcademySchema: Record<string, unknown> = {
                     "db": "org_id"
                   }
                 },
-                "content_id": {
+                "contentId": {
                   "type": "string",
                   "description": "ID of the course content",
                   "x-oapi-codegen-extra-tags": {
@@ -13714,7 +13730,7 @@ const AcademySchema: Record<string, unknown> = {
                   "maxLength": 500,
                   "format": "uuid"
                 },
-                "user_id": {
+                "userId": {
                   "type": "string",
                   "format": "uuid",
                   "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -13740,7 +13756,7 @@ const AcademySchema: Record<string, unknown> = {
                     "withdrawn"
                   ]
                 },
-                "updated_at": {
+                "updatedAt": {
                   "type": "string",
                   "format": "date-time",
                   "x-go-type-skip-optional-pointer": true,
@@ -13749,7 +13765,7 @@ const AcademySchema: Record<string, unknown> = {
                     "db": "updated_at"
                   }
                 },
-                "created_at": {
+                "createdAt": {
                   "type": "string",
                   "format": "date-time",
                   "x-go-type-skip-optional-pointer": true,
@@ -13758,7 +13774,7 @@ const AcademySchema: Record<string, unknown> = {
                     "db": "created_at"
                   }
                 },
-                "deleted_at": {
+                "deletedAt": {
                   "description": "Timestamp when the resource was deleted.",
                   "x-go-type": "NullTime",
                   "type": "string",
@@ -14037,7 +14053,7 @@ const AcademySchema: Record<string, unknown> = {
                   "required": [
                     "id",
                     "title",
-                    "org_id",
+                    "orgId",
                     "description",
                     "slug",
                     "relPermalink",
@@ -14072,13 +14088,13 @@ const AcademySchema: Record<string, unknown> = {
                       "maxLength": 500,
                       "format": "uuid"
                     },
-                    "org_id": {
+                    "orgId": {
                       "type": "string",
                       "description": "Organization ID that owns this quiz",
                       "example": "layer5",
                       "x-oapi-codegen-extra-tags": {
                         "db": "org_id",
-                        "json": "org_id"
+                        "json": "orgId"
                       },
                       "maxLength": 500,
                       "format": "uuid"
@@ -14573,7 +14589,7 @@ const AcademySchema: Record<string, unknown> = {
         "required": [
           "id",
           "title",
-          "org_id",
+          "orgId",
           "description",
           "slug",
           "relPermalink",
@@ -14608,13 +14624,13 @@ const AcademySchema: Record<string, unknown> = {
             "maxLength": 500,
             "format": "uuid"
           },
-          "org_id": {
+          "orgId": {
             "type": "string",
             "description": "Organization ID that owns this quiz",
             "example": "layer5",
             "x-oapi-codegen-extra-tags": {
               "db": "org_id",
-              "json": "org_id"
+              "json": "orgId"
             },
             "maxLength": 500,
             "format": "uuid"
@@ -15095,7 +15111,7 @@ const AcademySchema: Record<string, unknown> = {
           "quizAbsPath",
           "registrationId",
           "testSessionId",
-          "user_id",
+          "userId",
           "answers"
         ],
         "properties": {
@@ -15119,7 +15135,7 @@ const AcademySchema: Record<string, unknown> = {
             "maxLength": 500,
             "format": "uuid"
           },
-          "user_id": {
+          "userId": {
             "type": "string",
             "description": "ID of the user who owns or created this resource.",
             "maxLength": 500,
@@ -15205,10 +15221,10 @@ const AcademySchema: Record<string, unknown> = {
         "type": "object",
         "required": [
           "id",
-          "registration_id",
-          "test_abs_path",
-          "user_id",
-          "created_at",
+          "registrationId",
+          "testAbsPath",
+          "userId",
+          "createdAt",
           "status",
           "test"
         ],
@@ -15227,7 +15243,7 @@ const AcademySchema: Record<string, unknown> = {
               "json": "id"
             }
           },
-          "registration_id": {
+          "registrationId": {
             "type": "string",
             "format": "uuid",
             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -15237,10 +15253,10 @@ const AcademySchema: Record<string, unknown> = {
             },
             "x-oapi-codegen-extra-tags": {
               "db": "registration_id",
-              "json": "registration_id"
+              "json": "registrationId"
             }
           },
-          "test_abs_path": {
+          "testAbsPath": {
             "type": "string",
             "x-oapi-codegen-extra-tags": {
               "db": "test_abs_path"
@@ -15248,7 +15264,7 @@ const AcademySchema: Record<string, unknown> = {
             "description": "The test abs path of the testsubmission.",
             "maxLength": 500
           },
-          "user_id": {
+          "userId": {
             "type": "string",
             "format": "uuid",
             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -15260,7 +15276,7 @@ const AcademySchema: Record<string, unknown> = {
               "db": "user_id"
             }
           },
-          "created_at": {
+          "createdAt": {
             "description": "When the submission was created or started",
             "type": "string",
             "format": "date-time",
@@ -15268,7 +15284,7 @@ const AcademySchema: Record<string, unknown> = {
               "db": "created_at"
             }
           },
-          "updated_at": {
+          "updatedAt": {
             "description": "When the submission was last updated",
             "type": "string",
             "format": "date-time",
@@ -15276,7 +15292,7 @@ const AcademySchema: Record<string, unknown> = {
               "db": "updated_at"
             }
           },
-          "deleted_at": {
+          "deletedAt": {
             "description": "Timestamp when the resource was deleted.",
             "x-go-type": "NullTime",
             "type": "string",
@@ -15288,7 +15304,7 @@ const AcademySchema: Record<string, unknown> = {
             },
             "x-go-type-skip-optional-pointer": true
           },
-          "submitted_at": {
+          "submittedAt": {
             "type": "string",
             "format": "date-time",
             "x-oapi-codegen-extra-tags": {
@@ -15296,13 +15312,13 @@ const AcademySchema: Record<string, unknown> = {
             },
             "description": "The submitted at of the testsubmission."
           },
-          "submission_data": {
+          "submissionData": {
             "type": "object",
             "required": [
               "quizAbsPath",
               "registrationId",
               "testSessionId",
-              "user_id",
+              "userId",
               "answers"
             ],
             "properties": {
@@ -15326,7 +15342,7 @@ const AcademySchema: Record<string, unknown> = {
                 "maxLength": 500,
                 "format": "uuid"
               },
-              "user_id": {
+              "userId": {
                 "type": "string",
                 "description": "ID of the user who owns or created this resource.",
                 "maxLength": 500,
@@ -15371,7 +15387,7 @@ const AcademySchema: Record<string, unknown> = {
               "db": "submission_data"
             }
           },
-          "expires_at": {
+          "expiresAt": {
             "type": "string",
             "description": "Expiry time for the test submission ( based on the time limit of the test )",
             "format": "date-time",
@@ -15447,7 +15463,7 @@ const AcademySchema: Record<string, unknown> = {
                 "required": [
                   "id",
                   "title",
-                  "org_id",
+                  "orgId",
                   "description",
                   "slug",
                   "relPermalink",
@@ -15482,13 +15498,13 @@ const AcademySchema: Record<string, unknown> = {
                     "maxLength": 500,
                     "format": "uuid"
                   },
-                  "org_id": {
+                  "orgId": {
                     "type": "string",
                     "description": "Organization ID that owns this quiz",
                     "example": "layer5",
                     "x-oapi-codegen-extra-tags": {
                       "db": "org_id",
-                      "json": "org_id"
+                      "json": "orgId"
                     },
                     "maxLength": 500,
                     "format": "uuid"
@@ -15809,7 +15825,7 @@ const AcademySchema: Record<string, unknown> = {
             "required": [
               "id",
               "title",
-              "org_id",
+              "orgId",
               "description",
               "slug",
               "relPermalink",
@@ -15844,13 +15860,13 @@ const AcademySchema: Record<string, unknown> = {
                 "maxLength": 500,
                 "format": "uuid"
               },
-              "org_id": {
+              "orgId": {
                 "type": "string",
                 "description": "Organization ID that owns this quiz",
                 "example": "layer5",
                 "x-oapi-codegen-extra-tags": {
                   "db": "org_id",
-                  "json": "org_id"
+                  "json": "orgId"
                 },
                 "maxLength": 500,
                 "format": "uuid"
@@ -16206,7 +16222,7 @@ const AcademySchema: Record<string, unknown> = {
             "required": [
               "id",
               "title",
-              "org_id",
+              "orgId",
               "description",
               "slug",
               "relPermalink",
@@ -16241,13 +16257,13 @@ const AcademySchema: Record<string, unknown> = {
                 "maxLength": 500,
                 "format": "uuid"
               },
-              "org_id": {
+              "orgId": {
                 "type": "string",
                 "description": "Organization ID that owns this quiz",
                 "example": "layer5",
                 "x-oapi-codegen-extra-tags": {
                   "db": "org_id",
-                  "json": "org_id"
+                  "json": "orgId"
                 },
                 "maxLength": 500,
                 "format": "uuid"
@@ -16561,20 +16577,20 @@ const AcademySchema: Record<string, unknown> = {
       "UserRegistration": {
         "type": "object",
         "required": [
-          "curricula_title",
-          "curricula_type",
-          "curricula_permalink",
-          "registration_id",
+          "curriculaTitle",
+          "curriculaType",
+          "curriculaPermalink",
+          "registrationId",
           "status",
-          "user_id",
-          "user_email",
-          "user_last_name",
-          "user_first_name",
-          "user_avatar_url",
-          "total_count"
+          "userId",
+          "userEmail",
+          "userLastName",
+          "userFirstName",
+          "userAvatarUrl",
+          "totalCount"
         ],
         "properties": {
-          "curricula_title": {
+          "curriculaTitle": {
             "type": "string",
             "description": "Title of the curricula",
             "x-oapi-codegen-extra-tags": {
@@ -16582,7 +16598,7 @@ const AcademySchema: Record<string, unknown> = {
             },
             "maxLength": 500
           },
-          "curricula_type": {
+          "curriculaType": {
             "type": "string",
             "enum": [
               "learning-path",
@@ -16595,7 +16611,7 @@ const AcademySchema: Record<string, unknown> = {
               "db": "curricula_type"
             }
           },
-          "curricula_permalink": {
+          "curriculaPermalink": {
             "type": "string",
             "description": "Permalink of the curricula",
             "x-oapi-codegen-extra-tags": {
@@ -16603,7 +16619,7 @@ const AcademySchema: Record<string, unknown> = {
             },
             "maxLength": 500
           },
-          "registration_id": {
+          "registrationId": {
             "type": "string",
             "format": "uuid",
             "description": "Unique ID of the registration",
@@ -16625,7 +16641,7 @@ const AcademySchema: Record<string, unknown> = {
               "withdrawn"
             ]
           },
-          "created_at": {
+          "createdAt": {
             "type": "string",
             "format": "date-time",
             "description": "When the registration was created",
@@ -16633,7 +16649,7 @@ const AcademySchema: Record<string, unknown> = {
               "db": "created_at"
             }
           },
-          "user_id": {
+          "userId": {
             "type": "string",
             "format": "uuid",
             "description": "ID of the user",
@@ -16641,7 +16657,7 @@ const AcademySchema: Record<string, unknown> = {
               "db": "user_id"
             }
           },
-          "user_first_name": {
+          "userFirstName": {
             "type": "string",
             "description": "First name of the user",
             "x-oapi-codegen-extra-tags": {
@@ -16649,7 +16665,7 @@ const AcademySchema: Record<string, unknown> = {
             },
             "maxLength": 500
           },
-          "user_last_name": {
+          "userLastName": {
             "type": "string",
             "description": "Last name of the user",
             "x-oapi-codegen-extra-tags": {
@@ -16657,7 +16673,7 @@ const AcademySchema: Record<string, unknown> = {
             },
             "maxLength": 500
           },
-          "user_email": {
+          "userEmail": {
             "type": "string",
             "format": "email",
             "description": "Email of the user",
@@ -16665,7 +16681,7 @@ const AcademySchema: Record<string, unknown> = {
               "db": "user_email"
             }
           },
-          "user_avatar_url": {
+          "userAvatarUrl": {
             "type": "string",
             "format": "uri",
             "description": "Avatar URL of the user",
@@ -16673,7 +16689,7 @@ const AcademySchema: Record<string, unknown> = {
               "db": "user_avatar_url"
             }
           },
-          "total_count": {
+          "totalCount": {
             "type": "integer",
             "format": "int64",
             "description": "Total count for pagination",
@@ -16723,8 +16739,8 @@ const AcademySchema: Record<string, unknown> = {
         "type": "object",
         "required": [
           "data",
-          "total_count",
-          "page_size",
+          "totalCount",
+          "pageSize",
           "page"
         ],
         "properties": {
@@ -16734,20 +16750,20 @@ const AcademySchema: Record<string, unknown> = {
               "x-go-type": "UserRegistration",
               "type": "object",
               "required": [
-                "curricula_title",
-                "curricula_type",
-                "curricula_permalink",
-                "registration_id",
+                "curriculaTitle",
+                "curriculaType",
+                "curriculaPermalink",
+                "registrationId",
                 "status",
-                "user_id",
-                "user_email",
-                "user_last_name",
-                "user_first_name",
-                "user_avatar_url",
-                "total_count"
+                "userId",
+                "userEmail",
+                "userLastName",
+                "userFirstName",
+                "userAvatarUrl",
+                "totalCount"
               ],
               "properties": {
-                "curricula_title": {
+                "curriculaTitle": {
                   "type": "string",
                   "description": "Title of the curricula",
                   "x-oapi-codegen-extra-tags": {
@@ -16755,7 +16771,7 @@ const AcademySchema: Record<string, unknown> = {
                   },
                   "maxLength": 500
                 },
-                "curricula_type": {
+                "curriculaType": {
                   "type": "string",
                   "enum": [
                     "learning-path",
@@ -16768,7 +16784,7 @@ const AcademySchema: Record<string, unknown> = {
                     "db": "curricula_type"
                   }
                 },
-                "curricula_permalink": {
+                "curriculaPermalink": {
                   "type": "string",
                   "description": "Permalink of the curricula",
                   "x-oapi-codegen-extra-tags": {
@@ -16776,7 +16792,7 @@ const AcademySchema: Record<string, unknown> = {
                   },
                   "maxLength": 500
                 },
-                "registration_id": {
+                "registrationId": {
                   "type": "string",
                   "format": "uuid",
                   "description": "Unique ID of the registration",
@@ -16798,7 +16814,7 @@ const AcademySchema: Record<string, unknown> = {
                     "withdrawn"
                   ]
                 },
-                "created_at": {
+                "createdAt": {
                   "type": "string",
                   "format": "date-time",
                   "description": "When the registration was created",
@@ -16806,7 +16822,7 @@ const AcademySchema: Record<string, unknown> = {
                     "db": "created_at"
                   }
                 },
-                "user_id": {
+                "userId": {
                   "type": "string",
                   "format": "uuid",
                   "description": "ID of the user",
@@ -16814,7 +16830,7 @@ const AcademySchema: Record<string, unknown> = {
                     "db": "user_id"
                   }
                 },
-                "user_first_name": {
+                "userFirstName": {
                   "type": "string",
                   "description": "First name of the user",
                   "x-oapi-codegen-extra-tags": {
@@ -16822,7 +16838,7 @@ const AcademySchema: Record<string, unknown> = {
                   },
                   "maxLength": 500
                 },
-                "user_last_name": {
+                "userLastName": {
                   "type": "string",
                   "description": "Last name of the user",
                   "x-oapi-codegen-extra-tags": {
@@ -16830,7 +16846,7 @@ const AcademySchema: Record<string, unknown> = {
                   },
                   "maxLength": 500
                 },
-                "user_email": {
+                "userEmail": {
                   "type": "string",
                   "format": "email",
                   "description": "Email of the user",
@@ -16838,7 +16854,7 @@ const AcademySchema: Record<string, unknown> = {
                     "db": "user_email"
                   }
                 },
-                "user_avatar_url": {
+                "userAvatarUrl": {
                   "type": "string",
                   "format": "uri",
                   "description": "Avatar URL of the user",
@@ -16846,7 +16862,7 @@ const AcademySchema: Record<string, unknown> = {
                     "db": "user_avatar_url"
                   }
                 },
-                "total_count": {
+                "totalCount": {
                   "type": "integer",
                   "format": "int64",
                   "description": "Total count for pagination",
@@ -16859,13 +16875,13 @@ const AcademySchema: Record<string, unknown> = {
             },
             "description": "The data of the curricularegistrationsresponse."
           },
-          "total_count": {
+          "totalCount": {
             "type": "integer",
             "format": "int64",
             "description": "Total number of items available.",
             "minimum": 0
           },
-          "page_size": {
+          "pageSize": {
             "type": "integer",
             "description": "Number of items per page.",
             "minimum": 1
@@ -16987,7 +17003,7 @@ const AcademySchema: Record<string, unknown> = {
                       "required": [
                         "id",
                         "title",
-                        "org_id",
+                        "orgId",
                         "description",
                         "slug",
                         "relPermalink",
@@ -17022,13 +17038,13 @@ const AcademySchema: Record<string, unknown> = {
                           "maxLength": 500,
                           "format": "uuid"
                         },
-                        "org_id": {
+                        "orgId": {
                           "type": "string",
                           "description": "Organization ID that owns this quiz",
                           "example": "layer5",
                           "x-oapi-codegen-extra-tags": {
                             "db": "org_id",
-                            "json": "org_id"
+                            "json": "orgId"
                           },
                           "maxLength": 500,
                           "format": "uuid"

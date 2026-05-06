@@ -2,9 +2,7 @@ openapi: 3.0.0
 info:
   title: Academy API
   description: OpenAPI schema for Meshery Academy content and curriculum management.
-  x-deprecated: true
-  x-superseded-by: v1beta3
-  version: v1beta2
+  version: v1beta3
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
@@ -531,8 +529,8 @@ paths:
         description: The ID of the registration to retrieve tests for
         schema:
           type: string
-      - $ref: ../core/api.yml#/components/parameters/page
-      - $ref: ../core/api.yml#/components/parameters/pagesize
+      - $ref: ../../v1beta2/core/api.yml#/components/parameters/page
+      - $ref: ../../v1beta2/core/api.yml#/components/parameters/pagesize
       - name: testAbsPath
         in: query
         required: false
@@ -702,13 +700,13 @@ paths:
 components:
   responses:
     400:
-      $ref: ../core/api.yml#/components/responses/400
+      $ref: ../../v1beta2/core/api.yml#/components/responses/400
     401:
-      $ref: ../core/api.yml#/components/responses/401
+      $ref: ../../v1beta2/core/api.yml#/components/responses/401
     404:
-      $ref: ../core/api.yml#/components/responses/404
+      $ref: ../../v1beta2/core/api.yml#/components/responses/404
     500:
-      $ref: ../core/api.yml#/components/responses/500
+      $ref: ../../v1beta2/core/api.yml#/components/responses/500
   securitySchemes:
     jwt:
       type: http
@@ -729,50 +727,50 @@ components:
       example: layer5
       x-oapi-codegen-extra-tags:
         db: org_id
-        json: org_id
+        json: orgId
     AcademyCurriculaBadgeId:
       allOf:
-      - $ref: ../core/api.yml#/components/schemas/Uuid
+      - $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
       description: ID of the badge to be awarded on completion of this curricula
       x-oapi-codegen-extra-tags:
         db: badge_id
-        json: badge_id
+        json: badgeId
     AcademyCurriculaInviteId:
       allOf:
-      - $ref: ../core/api.yml#/components/schemas/Uuid
+      - $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
       description: ID of the invite associated with this Curricula
       x-oapi-codegen-extra-tags:
         db: invite_id
-        json: invite_id
+        json: inviteId
     AcademyCurriculaWorkspaceId:
       allOf:
-      - $ref: ../core/api.yml#/components/schemas/Uuid
+      - $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
       description: ID of the workspace to which this Curricula belongs
       x-oapi-codegen-extra-tags:
         db: workspace_id
-        json: workspace_id
+        json: workspaceId
     AcademyCurriculaCreatedAt:
       allOf:
-      - $ref: ../core/api.yml#/components/schemas/Time
+      - $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
       description: When the Curricula item was created
       x-oapi-codegen-extra-tags:
         db: created_at
-        json: created_at
+        json: createdAt
     AcademyCurriculaUpdatedAt:
       allOf:
-      - $ref: ../core/api.yml#/components/schemas/Time
+      - $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
       description: When the Curricula was last updated
       x-go-type: core.Time
       x-oapi-codegen-extra-tags:
         db: updated_at
-        json: updated_at
+        json: updatedAt
     AcademyCurriculaDeletedAt:
       allOf:
-      - $ref: ../core/api.yml#/components/schemas/DeletedAt
+      - $ref: ../../v1beta2/core/api.yml#/components/schemas/DeletedAt
       x-go-type: core.NullTime
       x-oapi-codegen-extra-tags:
         db: deleted_at
-        json: deleted_at
+        json: deletedAt
     AcademyCurriculaMetadata:
       type: object
       description: Additional metadata about the Curricula
@@ -787,24 +785,24 @@ components:
         x-go-type: CurriculaMetadata
     AcademyCurriculaAccessExpiresAt:
       allOf:
-      - $ref: ../core/api.yml#/components/schemas/Time
+      - $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
       description: Expiry time for curricula access
       x-go-type: '*time.Time'
       x-oapi-codegen-extra-tags:
-        json: access_expires_at
+        json: accessExpiresAt
         db: access_expires_at
     RegisterToAcademyContentRequest:
       type: object
       required:
       - contentId
-      - user_id
+      - userId
       properties:
         contentId:
           type: string
           description: ID of the academy content to register for
           maxLength: 500
           format: uuid
-        user_id:
+        userId:
           type: string
           format: uuid
           description: ID of the user registering for the content.
@@ -841,15 +839,15 @@ components:
       - $ref: '#/components/schemas/AcademyCurricula'
       - type: object
         required:
-        - registration_count
+        - registrationCount
         properties:
-          registration_count:
+          registrationCount:
             type: number
             description: Number of registrations associated with this curriculum.
             minimum: 0
             x-oapi-codegen-extra-tags:
               db: registration_count,omitempty
-              json: registration_count,omitempty
+              json: registrationCount,omitempty
           invitation:
             $ref: ../invitation/api.yml#/components/schemas/Invitation
             x-go-type: invitationv1beta2.Invitation
@@ -874,11 +872,11 @@ components:
           x-oapi-codegen-extra-tags:
             json: title
           maxLength: 500
-        org_id:
+        orgId:
           $ref: '#/components/schemas/AcademyCurriculaOrgId'
-        workspace_id:
+        workspaceId:
           $ref: '#/components/schemas/AcademyCurriculaWorkspaceId'
-        badge_id:
+        badgeId:
           type: string
           format: uuid
           description: ID of the badge to be awarded on completion of this curricula
@@ -888,17 +886,17 @@ components:
             name: core
           x-oapi-codegen-extra-tags:
             db: badge_id
-            json: badge_id
-        team_id:
-          $ref: ../core/api.yml#/components/schemas/Uuid
+            json: badgeId
+        teamId:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
           description: ID of the team associated with this curricula
           x-go-name: TeamId
           x-oapi-codegen-extra-tags:
-            json: team_id
+            json: teamId
             db: team_id
-        access_expires_at:
+        accessExpiresAt:
           $ref: '#/components/schemas/AcademyCurriculaAccessExpiresAt'
-        access_status:
+        accessStatus:
           $ref: ../invitation/api.yml#/components/schemas/InvitationStatus
           description: Current access status of the curricula
           x-go-name: AccessStatus
@@ -907,32 +905,32 @@ components:
             path: github.com/meshery/schemas/models/v1beta2/invitation
             name: invitationv1beta2
           x-oapi-codegen-extra-tags:
-            json: access_status
+            json: accessStatus
             db: access_status
         metadata:
           $ref: '#/components/schemas/AcademyCurriculaMetadata'
       required:
       - type
       - title
-      - org_id
-      - workspace_id
-      - team_id
-      - access_status
+      - orgId
+      - workspaceId
+      - teamId
+      - accessStatus
       - metadata
     AcademyCurriculaWithMetrics:
       allOf:
       - $ref: '#/components/schemas/AcademyCurricula'
       - type: object
         required:
-        - registration_count
+        - registrationCount
         properties:
-          registration_count:
+          registrationCount:
             type: number
             description: Number of registrations associated with this curriculum.
             minimum: 0
             x-oapi-codegen-extra-tags:
               db: registration_count,omitempty
-              json: registration_count,omitempty
+              json: registrationCount,omitempty
     AcademyCurriculaListResponse:
       type: object
       properties:
@@ -1017,7 +1015,7 @@ components:
           maxLength: 500
           format: uuid
         orgId:
-          $ref: ../core/api.yml#/components/schemas/Uuid
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
           description: UUID of the organization that issued the certificate
         recipientId:
           type: string
@@ -1119,35 +1117,35 @@ components:
       type: object
       required:
       - id
-      - org_id
-      - user_id
+      - orgId
+      - userId
       - status
-      - created_at
-      - updated_at
-      - content_id
+      - createdAt
+      - updatedAt
+      - contentId
       - certificate
       - metadata
       properties:
         id:
-          $ref: ../core/api.yml#/components/schemas/Uuid
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
           x-go-name: ID
           x-oapi-codegen-extra-tags:
             db: id
             json: id
-        org_id:
-          $ref: ../core/api.yml#/components/schemas/Uuid
+        orgId:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
           description: ID of the organization
           x-oapi-codegen-extra-tags:
             db: org_id
-        content_id:
+        contentId:
           type: string
           description: ID of the course content
           x-oapi-codegen-extra-tags:
             db: content_id
           maxLength: 500
           format: uuid
-        user_id:
-          $ref: ../core/api.yml#/components/schemas/Uuid
+        userId:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
           description: ID of the user (foreign key to User)
           x-oapi-codegen-extra-tags:
             db: user_id
@@ -1157,19 +1155,19 @@ components:
           description: Status of the user's course registration
           x-oapi-codegen-extra-tags:
             db: status
-        updated_at:
+        updatedAt:
           description: When the registration was updated
-          $ref: ../core/api.yml#/components/schemas/Time
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
           x-oapi-codegen-extra-tags:
             db: updated_at
-        created_at:
+        createdAt:
           description: When the registration was created
-          $ref: ../core/api.yml#/components/schemas/Time
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
           x-oapi-codegen-extra-tags:
             db: created_at
-        deleted_at:
+        deletedAt:
           x-go-type: core.NullTime
-          $ref: ../core/api.yml#/components/schemas/DeletedAt
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/DeletedAt
           x-oapi-codegen-extra-tags:
             db: deleted_at
         certificate:
@@ -1367,7 +1365,7 @@ components:
       required:
       - id
       - title
-      - org_id
+      - orgId
       - description
       - slug
       - relPermalink
@@ -1399,13 +1397,13 @@ components:
           description: Quiz ID.
           maxLength: 500
           format: uuid
-        org_id:
+        orgId:
           type: string
           description: Organization ID that owns this quiz
           example: layer5
           x-oapi-codegen-extra-tags:
             db: org_id
-            json: org_id
+            json: orgId
           maxLength: 500
           format: uuid
         final:
@@ -1623,11 +1621,11 @@ components:
       - quizAbsPath
       - registrationId
       - testSessionId
-      - user_id
+      - userId
       - answers
       properties:
         testSessionId:
-          $ref: ../core/api.yml#/components/schemas/Uuid
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
         quizAbsPath:
           type: string
           description: The quiz abs path of the quizsubmission.
@@ -1637,7 +1635,7 @@ components:
           description: ID of the associated registration.
           maxLength: 500
           format: uuid
-        user_id:
+        userId:
           type: string
           description: ID of the user who owns or created this resource.
           maxLength: 500
@@ -1683,63 +1681,63 @@ components:
       type: object
       required:
       - id
-      - registration_id
-      - test_abs_path
-      - user_id
-      - created_at
+      - registrationId
+      - testAbsPath
+      - userId
+      - createdAt
       - status
       - test
       properties:
         id:
-          $ref: ../core/api.yml#/components/schemas/Uuid
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
           x-go-name: ID
           x-oapi-codegen-extra-tags:
             db: id
             json: id
-        registration_id:
-          $ref: ../core/api.yml#/components/schemas/Uuid
+        registrationId:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
           x-oapi-codegen-extra-tags:
             db: registration_id
-            json: registration_id
-        test_abs_path:
+            json: registrationId
+        testAbsPath:
           type: string
           x-oapi-codegen-extra-tags:
             db: test_abs_path
           description: The test abs path of the testsubmission.
           maxLength: 500
-        user_id:
-          $ref: ../core/api.yml#/components/schemas/Uuid
+        userId:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
           x-oapi-codegen-extra-tags:
             db: user_id
-        created_at:
+        createdAt:
           description: When the submission was created or started
           type: string
           format: date-time
           x-oapi-codegen-extra-tags:
             db: created_at
-        updated_at:
+        updatedAt:
           description: When the submission was last updated
           type: string
           format: date-time
           x-oapi-codegen-extra-tags:
             db: updated_at
-        deleted_at:
+        deletedAt:
           x-go-type: core.NullTime
-          $ref: ../core/api.yml#/components/schemas/DeletedAt
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/DeletedAt
           x-oapi-codegen-extra-tags:
             db: deleted_at
-        submitted_at:
+        submittedAt:
           type: string
           format: date-time
           x-oapi-codegen-extra-tags:
             db: submitted_at
           description: The submitted at of the testsubmission.
-        submission_data:
+        submissionData:
           $ref: '#/components/schemas/QuizSubmission'
           x-go-type: QuizSubmission
           x-oapi-codegen-extra-tags:
             db: submission_data
-        expires_at:
+        expiresAt:
           type: string
           description: Expiry time for the test submission ( based on the time limit of the test )
           format: date-time
@@ -1809,37 +1807,37 @@ components:
     UserRegistration:
       type: object
       required:
-      - curricula_title
-      - curricula_type
-      - curricula_permalink
-      - registration_id
+      - curriculaTitle
+      - curriculaType
+      - curriculaPermalink
+      - registrationId
       - status
-      - user_id
-      - user_email
-      - user_last_name
-      - user_first_name
-      - user_avatar_url
-      - total_count
+      - userId
+      - userEmail
+      - userLastName
+      - userFirstName
+      - userAvatarUrl
+      - totalCount
       properties:
-        curricula_title:
+        curriculaTitle:
           type: string
           description: Title of the curricula
           x-oapi-codegen-extra-tags:
             db: curricula_title
           maxLength: 500
-        curricula_type:
+        curriculaType:
           $ref: '#/components/schemas/ContentType'
           description: Type of the curricula
           x-go-type: ContentType
           x-oapi-codegen-extra-tags:
             db: curricula_type
-        curricula_permalink:
+        curriculaPermalink:
           type: string
           description: Permalink of the curricula
           x-oapi-codegen-extra-tags:
             db: curricula_permalink
           maxLength: 500
-        registration_id:
+        registrationId:
           type: string
           format: uuid
           description: Unique ID of the registration
@@ -1851,43 +1849,43 @@ components:
           x-go-type: AcademyRegistrationStatus
           x-oapi-codegen-extra-tags:
             db: status
-        created_at:
+        createdAt:
           type: string
           format: date-time
           description: When the registration was created
           x-oapi-codegen-extra-tags:
             db: created_at
-        user_id:
+        userId:
           type: string
           format: uuid
           description: ID of the user
           x-oapi-codegen-extra-tags:
             db: user_id
-        user_first_name:
+        userFirstName:
           type: string
           description: First name of the user
           x-oapi-codegen-extra-tags:
             db: user_first_name
           maxLength: 500
-        user_last_name:
+        userLastName:
           type: string
           description: Last name of the user
           x-oapi-codegen-extra-tags:
             db: user_last_name
           maxLength: 500
-        user_email:
+        userEmail:
           type: string
           format: email
           description: Email of the user
           x-oapi-codegen-extra-tags:
             db: user_email
-        user_avatar_url:
+        userAvatarUrl:
           type: string
           format: uri
           description: Avatar URL of the user
           x-oapi-codegen-extra-tags:
             db: user_avatar_url
-        total_count:
+        totalCount:
           type: integer
           format: int64
           description: Total count for pagination
@@ -1924,8 +1922,8 @@ components:
       type: object
       required:
       - data
-      - total_count
-      - page_size
+      - totalCount
+      - pageSize
       - page
       properties:
         data:
@@ -1934,12 +1932,12 @@ components:
             $ref: '#/components/schemas/UserRegistration'
             x-go-type: UserRegistration
           description: The data of the curricularegistrationsresponse.
-        total_count:
+        totalCount:
           type: integer
           format: int64
           description: Total number of items available.
           minimum: 0
-        page_size:
+        pageSize:
           type: integer
           description: Number of items per page.
           minimum: 1
