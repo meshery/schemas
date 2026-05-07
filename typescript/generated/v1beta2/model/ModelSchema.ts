@@ -1836,6 +1836,11 @@ const ModelSchema: Record<string, unknown> = {
               "urlImport",
               "csv"
             ],
+            "enumNames": [
+              "File Import",
+              "URL Import",
+              "CSV Import"
+            ],
             "description": "Choose the method you prefer. Select 'File Import' or 'CSV Import' if you have the file on your local system, or 'URL Import' if you have the file hosted online."
           },
           "fileName": {
