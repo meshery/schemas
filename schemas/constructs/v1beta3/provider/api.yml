@@ -109,15 +109,15 @@ components:
             - get-events
             - events-summary
             - persist-smp-test-profile
-            - persist-meshery-patterns
-            - persist-meshery-pattern-resources
+            - persist-meshery-designs
+            - persist-meshery-design-resources
             - persist-meshery-filters
             - persist-meshery-applications
             - persist-performance-profiles
             - persist-schedules
-            - meshery-patterns-catalog
+            - meshery-designs-catalog
             - meshery-filters-catalog
-            - clone-meshery-patterns
+            - clone-meshery-designs
             - clone-meshery-filters
             - share-designs
             - share-filters
