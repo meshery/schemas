@@ -3,7 +3,6 @@ providerType: local
 providerDescription:
   - Default local provider. Use this provider if you do not want to connect to a Remote Provider.
 packageVersion: v0.3.14
-packageUrl: ""
 providerUrl: https://docs.meshery.io/concepts/architecture/provider
 extensions:
   navigator: []
