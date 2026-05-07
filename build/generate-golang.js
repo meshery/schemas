@@ -1121,6 +1121,10 @@ const GO_IMPORT_OVERRIDES = {
   // Core types are unversioned — all versions resolve to models/core.
   "v1alpha1/core": "github.com/meshery/schemas/models/core",
   "v1beta1/core": "github.com/meshery/schemas/models/core",
+  // v1beta2/core $ref resolution still maps to models/core for all packages
+  // EXCEPT designs, which use explicit x-go-type-import with corev1beta2 alias.
+  // models/v1beta2/core is generated separately (not excluded) for ResolvedAlias
+  // with camelCase wire tags.
   "v1beta2/core": "github.com/meshery/schemas/models/core",
   "v1beta2/catalog": "github.com/meshery/schemas/models/v1alpha2/catalog",
 };
