@@ -15,32 +15,41 @@ import (
 // HugoQuiz captures the legacy academy-theme quiz JSON shape so callers can
 // decode published content and normalize it into the canonical Quiz model.
 type HugoQuiz struct {
-	ID                   string             `json:"id"`
-	Title                string             `json:"title"`
-	OrgID                string             `json:"org_id"`
-	Description          string             `json:"description"`
-	Slug                 string             `json:"slug"`
-	RelPermalink         string             `json:"relPermalink"`
-	Permalink            string             `json:"permalink"`
-	Type                 string             `json:"type"`
-	Section              string             `json:"section"`
-	Layout               string             `json:"layout"`
-	Date                 openapi_types.Date `json:"date"`
-	Final                bool               `json:"final"`
-	Lastmod              openapi_types.Date `json:"lastmod"`
-	Draft                bool               `json:"draft"`
-	FilePath             string             `json:"file_path"`
-	PassPercentage       float32            `json:"pass_percentage"`
-	TimeLimit            hugoQuizInt        `json:"time_limit"`
-	MaxAttempts          int                `json:"max_attempts"`
-	Questions            []HugoQuestion     `json:"questions"`
-	TotalQuestions       int                `json:"total_questions"`
-	TotalQuestionsInBank int                `json:"total_questions_in_bank"`
-	TotalQuestionSets    int                `json:"total_question_sets"`
-	TotalMarks           int                `json:"total_marks"`
-	Prerequisites        []HugoParent       `json:"prerequisites"`
-	Parent               *HugoParent        `json:"parent,omitempty"`
-	NextPage             HugoParent         `json:"next_page"`
+	ID                         string             `json:"id"`
+	Title                      string             `json:"title"`
+	OrgID                      string             `json:"org_id"`
+	Description                string             `json:"description"`
+	Slug                       string             `json:"slug"`
+	RelPermalink               string             `json:"relPermalink"`
+	Permalink                  string             `json:"permalink"`
+	Type                       string             `json:"type"`
+	Section                    string             `json:"section"`
+	Layout                     string             `json:"layout"`
+	Date                       openapi_types.Date `json:"date"`
+	Final                      bool               `json:"final"`
+	Lastmod                    openapi_types.Date `json:"lastmod"`
+	Draft                      bool               `json:"draft"`
+	FilePathLegacy             string             `json:"file_path"`
+	FilePathCamel              string             `json:"filePath,omitempty"`
+	PassPercentageLegacy       float32            `json:"pass_percentage"`
+	PassPercentageCamel        *float32           `json:"passPercentage,omitempty"`
+	TimeLimitLegacy            hugoQuizInt        `json:"time_limit"`
+	TimeLimitCamel             *int               `json:"timeLimit,omitempty"`
+	MaxAttemptsLegacy          int                `json:"max_attempts"`
+	MaxAttemptsCamel           *int               `json:"maxAttempts,omitempty"`
+	Questions                  []HugoQuestion     `json:"questions"`
+	TotalQuestionsLegacy       int                `json:"total_questions"`
+	TotalQuestionsCamel        *int               `json:"totalQuestions,omitempty"`
+	TotalQuestionsInBankLegacy int                `json:"total_questions_in_bank"`
+	TotalQuestionsInBankCamel  *int               `json:"totalQuestionsInBank,omitempty"`
+	TotalQuestionSetsLegacy    int                `json:"total_question_sets"`
+	TotalQuestionSetsCamel     *int               `json:"totalQuestionSets,omitempty"`
+	TotalMarksLegacy           int                `json:"total_marks"`
+	TotalMarksCamel            *int               `json:"totalMarks,omitempty"`
+	Prerequisites              []HugoParent       `json:"prerequisites"`
+	Parent                     *HugoParent        `json:"parent,omitempty"`
+	NextPageLegacy             HugoParent         `json:"next_page"`
+	NextPageCamel              *HugoParent        `json:"nextPage,omitempty"`
 }
 
 type HugoParent struct {
@@ -100,45 +109,41 @@ func (value *hugoQuizInt) UnmarshalJSON(data []byte) error {
 }
 
 func (quiz *Quiz) UnmarshalJSON(data []byte) error {
-	if looksLikeHugoQuiz(data) {
-		var legacy HugoQuiz
-		if err := json.Unmarshal(data, &legacy); err != nil {
-			return err
-		}
-
-		canonical, err := legacy.ToCanonical()
-		if err != nil {
-			return err
-		}
-
-		*quiz = canonical
-		return nil
-	}
-
 	type canonicalQuiz Quiz
 	var alias canonicalQuiz
-	if err := json.Unmarshal(data, &alias); err != nil {
-		return err
+	if err := json.Unmarshal(data, &alias); err == nil {
+		*quiz = Quiz(alias)
+		return nil
+	}
+	canonicalErr := json.Unmarshal(data, &alias)
+
+	var legacy HugoQuiz
+	if err := json.Unmarshal(data, &legacy); err != nil {
+		return canonicalErr
 	}
 
-	*quiz = Quiz(alias)
+	canonical, err := legacy.ToCanonical()
+	if err != nil {
+		if looksLikeHugoQuiz(data) {
+			return err
+		}
+		return fmt.Errorf("unmarshal canonical academy quiz: %w; legacy fallback: %v", canonicalErr, err)
+	}
+
+	*quiz = canonical
 	return nil
 }
 
 func (quiz HugoQuiz) ToCanonical() (Quiz, error) {
-	quizID, err := parseRequiredUUID("id", quiz.ID)
-	if err != nil {
-		return Quiz{}, err
-	}
-
 	orgID, err := parseRequiredUUID("org_id", quiz.OrgID)
 	if err != nil {
 		return Quiz{}, err
 	}
 
+	quizID := quiz.deriveQuizUUID()
 	questions := make([]Question, len(quiz.Questions))
 	for index, question := range quiz.Questions {
-		canonicalQuestion, err := quiz.toCanonicalQuestion(index, question)
+		canonicalQuestion, err := quiz.toCanonicalQuestion(quizID, index, question)
 		if err != nil {
 			return Quiz{}, err
 		}
@@ -165,7 +170,7 @@ func (quiz HugoQuiz) ToCanonical() (Quiz, error) {
 		}
 	}
 
-	nextPage, err := quiz.toCanonicalParent(quiz.NextPage)
+	nextPage, err := quiz.toCanonicalParent(quiz.nextPage())
 	if err != nil {
 		return Quiz{}, err
 	}
@@ -174,28 +179,28 @@ func (quiz HugoQuiz) ToCanonical() (Quiz, error) {
 		Date:                 quiz.Date,
 		Description:          quiz.Description,
 		Draft:                quiz.Draft,
-		FilePath:             quiz.FilePath,
+		FilePath:             quiz.filePath(),
 		Final:                quiz.Final,
 		ID:                   quizID,
 		Lastmod:              quiz.Lastmod,
 		Layout:               quiz.Layout,
-		MaxAttempts:          quiz.MaxAttempts,
+		MaxAttempts:          quiz.maxAttempts(),
 		NextPage:             nextPage,
 		OrgId:                orgID,
 		Parent:               parent,
-		PassPercentage:       quiz.PassPercentage,
+		PassPercentage:       quiz.passPercentage(),
 		Permalink:            quiz.Permalink,
 		Prerequisites:        prerequisites,
 		Questions:            questions,
 		RelPermalink:         quiz.RelPermalink,
 		Section:              quiz.Section,
 		Slug:                 quiz.Slug,
-		TimeLimit:            int(quiz.TimeLimit),
+		TimeLimit:            quiz.timeLimit(),
 		Title:                quiz.Title,
-		TotalMarks:           quiz.TotalMarks,
-		TotalQuestionSets:    quiz.TotalQuestionSets,
-		TotalQuestions:       quiz.TotalQuestions,
-		TotalQuestionsInBank: quiz.TotalQuestionsInBank,
+		TotalMarks:           quiz.totalMarks(),
+		TotalQuestionSets:    quiz.totalQuestionSets(),
+		TotalQuestions:       quiz.totalQuestions(),
+		TotalQuestionsInBank: quiz.totalQuestionsInBank(),
 		Type:                 quiz.Type,
 	}, nil
 }
@@ -262,8 +267,8 @@ func looksLikeHugoQuiz(data []byte) bool {
 	return false
 }
 
-func (quiz HugoQuiz) toCanonicalQuestion(index int, question HugoQuestion) (Question, error) {
-	questionID := quiz.deriveQuestionUUID(question.ID, index, question.Text)
+func (quiz HugoQuiz) toCanonicalQuestion(quizID openapi_types.UUID, index int, question HugoQuestion) (Question, error) {
+	questionID := quiz.deriveQuestionUUID(quizID, question.ID, index, question.Text)
 	options := make([]QuestionOption, len(question.Options))
 	for optionIndex, option := range question.Options {
 		options[optionIndex] = QuestionOption{
@@ -341,7 +346,8 @@ func normalizeLegacyQuestionType(raw string) QuestionType {
 }
 
 func parseRequiredUUID(field, raw string) (openapi_types.UUID, error) {
-	value, err := uuid.Parse(strings.TrimSpace(raw))
+	normalized := normalizeSeedValue(raw)
+	value, err := uuid.Parse(normalized)
 	if err != nil {
 		return uuid.Nil, fmt.Errorf("parse academy quiz %s UUID %q: %w", field, raw, err)
 	}
@@ -349,8 +355,13 @@ func parseRequiredUUID(field, raw string) (openapi_types.UUID, error) {
 	return value, nil
 }
 
+func (quiz HugoQuiz) deriveQuizUUID() openapi_types.UUID {
+	return quiz.deriveContentUUID(quiz.ID, quiz.RelPermalink, quiz.Title, quiz.Type)
+}
+
 func (quiz HugoQuiz) deriveContentUUID(rawID, relPermalink, title, contentType string) openapi_types.UUID {
-	if parsed, err := uuid.Parse(strings.TrimSpace(rawID)); err == nil {
+	rawID = normalizeSeedValue(rawID)
+	if parsed, err := uuid.Parse(rawID); err == nil {
 		return parsed
 	}
 
@@ -358,16 +369,17 @@ func (quiz HugoQuiz) deriveContentUUID(rawID, relPermalink, title, contentType s
 		"academy-theme",
 		"v1beta2",
 		"content",
-		quiz.OrgID,
-		relPermalink,
-		title,
-		contentType,
+		normalizeSeedValue(quiz.OrgID),
+		strings.TrimSpace(relPermalink),
+		strings.TrimSpace(title),
+		strings.TrimSpace(contentType),
 		rawID,
 	}, "\x1f")))
 }
 
-func (quiz HugoQuiz) deriveQuestionUUID(rawID string, index int, text string) openapi_types.UUID {
-	if parsed, err := uuid.Parse(strings.TrimSpace(rawID)); err == nil {
+func (quiz HugoQuiz) deriveQuestionUUID(quizID openapi_types.UUID, rawID string, index int, text string) openapi_types.UUID {
+	rawID = normalizeSeedValue(rawID)
+	if parsed, err := uuid.Parse(rawID); err == nil {
 		return parsed
 	}
 
@@ -375,16 +387,17 @@ func (quiz HugoQuiz) deriveQuestionUUID(rawID string, index int, text string) op
 		"academy-theme",
 		"v1beta2",
 		"question",
-		quiz.ID,
-		quiz.FilePath,
+		quizID.String(),
+		strings.TrimSpace(quiz.filePath()),
 		strconv.Itoa(index),
 		rawID,
-		text,
+		strings.TrimSpace(text),
 	}, "\x1f")))
 }
 
 func (quiz HugoQuiz) deriveOptionUUID(questionID openapi_types.UUID, rawID string, index int, text string) openapi_types.UUID {
-	if parsed, err := uuid.Parse(strings.TrimSpace(rawID)); err == nil {
+	rawID = normalizeSeedValue(rawID)
+	if parsed, err := uuid.Parse(rawID); err == nil {
 		return parsed
 	}
 
@@ -395,6 +408,77 @@ func (quiz HugoQuiz) deriveOptionUUID(questionID openapi_types.UUID, rawID strin
 		questionID.String(),
 		strconv.Itoa(index),
 		rawID,
-		text,
+		strings.TrimSpace(text),
 	}, "\x1f")))
+}
+
+func normalizeSeedValue(raw string) string {
+	trimmed := strings.TrimSpace(raw)
+	if parsed, err := uuid.Parse(trimmed); err == nil {
+		return parsed.String()
+	}
+	return trimmed
+}
+
+func (quiz HugoQuiz) filePath() string {
+	if strings.TrimSpace(quiz.FilePathLegacy) != "" {
+		return strings.TrimSpace(quiz.FilePathLegacy)
+	}
+	return strings.TrimSpace(quiz.FilePathCamel)
+}
+
+func (quiz HugoQuiz) passPercentage() float32 {
+	if quiz.PassPercentageCamel != nil {
+		return *quiz.PassPercentageCamel
+	}
+	return quiz.PassPercentageLegacy
+}
+
+func (quiz HugoQuiz) timeLimit() int {
+	if quiz.TimeLimitCamel != nil {
+		return *quiz.TimeLimitCamel
+	}
+	return int(quiz.TimeLimitLegacy)
+}
+
+func (quiz HugoQuiz) maxAttempts() int {
+	if quiz.MaxAttemptsCamel != nil {
+		return *quiz.MaxAttemptsCamel
+	}
+	return quiz.MaxAttemptsLegacy
+}
+
+func (quiz HugoQuiz) totalQuestions() int {
+	if quiz.TotalQuestionsCamel != nil {
+		return *quiz.TotalQuestionsCamel
+	}
+	return quiz.TotalQuestionsLegacy
+}
+
+func (quiz HugoQuiz) totalQuestionsInBank() int {
+	if quiz.TotalQuestionsInBankCamel != nil {
+		return *quiz.TotalQuestionsInBankCamel
+	}
+	return quiz.TotalQuestionsInBankLegacy
+}
+
+func (quiz HugoQuiz) totalQuestionSets() int {
+	if quiz.TotalQuestionSetsCamel != nil {
+		return *quiz.TotalQuestionSetsCamel
+	}
+	return quiz.TotalQuestionSetsLegacy
+}
+
+func (quiz HugoQuiz) totalMarks() int {
+	if quiz.TotalMarksCamel != nil {
+		return *quiz.TotalMarksCamel
+	}
+	return quiz.TotalMarksLegacy
+}
+
+func (quiz HugoQuiz) nextPage() HugoParent {
+	if quiz.NextPageCamel != nil {
+		return *quiz.NextPageCamel
+	}
+	return quiz.NextPageLegacy
 }

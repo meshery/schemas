@@ -126,17 +126,17 @@ func TestHugoQuizToCanonical_PreservesValidNestedUUIDs(t *testing.T) {
 	const canonicalOptionID = "44444444-4444-4444-4444-444444444444"
 
 	hugo := HugoQuiz{
-		ID:           "11111111-1111-1111-1111-111111111111",
-		OrgID:        "22222222-2222-2222-2222-222222222222",
-		Title:        "Quiz",
-		Description:  "Legacy quiz",
-		Slug:         "quiz",
-		RelPermalink: "/academy/tests/quiz/",
-		Permalink:    "https://academy.meshery.io/academy/tests/quiz/",
-		Type:         "test",
-		Section:      "test",
-		Layout:       "single",
-		FilePath:     "academy/quiz/index.json",
+		ID:             "11111111-1111-1111-1111-111111111111",
+		OrgID:          "22222222-2222-2222-2222-222222222222",
+		Title:          "Quiz",
+		Description:    "Legacy quiz",
+		Slug:           "quiz",
+		RelPermalink:   "/academy/tests/quiz/",
+		Permalink:      "https://academy.meshery.io/academy/tests/quiz/",
+		Type:           "test",
+		Section:        "test",
+		Layout:         "single",
+		FilePathLegacy: "academy/quiz/index.json",
 		Questions: []HugoQuestion{
 			{
 				ID:            canonicalNestedID,
@@ -159,6 +159,38 @@ func TestHugoQuizToCanonical_PreservesValidNestedUUIDs(t *testing.T) {
 	}
 	if quiz.Questions[0].Options[0].ID.String() != canonicalOptionID {
 		t.Fatalf("expected valid option UUID to be preserved, got %s", quiz.Questions[0].Options[0].ID)
+	}
+}
+
+func TestHugoQuizToCanonical_DerivesSlugTopLevelQuizID(t *testing.T) {
+	hugo := HugoQuiz{
+		ID:             "intro-quiz",
+		OrgID:          "22222222-2222-2222-2222-222222222222",
+		Title:          "Intro Quiz",
+		Description:    "Legacy quiz",
+		Slug:           "intro-quiz",
+		RelPermalink:   "/academy/tests/intro-quiz/",
+		Permalink:      "https://academy.meshery.io/academy/tests/intro-quiz/",
+		Type:           "test",
+		Section:        "test",
+		Layout:         "single",
+		FilePathLegacy: " academy/intro-quiz/index.json ",
+	}
+
+	first, err := hugo.ToCanonical()
+	if err != nil {
+		t.Fatalf("expected slug-based top-level quiz id to convert, got: %v", err)
+	}
+	second, err := hugo.ToCanonical()
+	if err != nil {
+		t.Fatalf("expected slug-based top-level quiz id to convert repeatedly, got: %v", err)
+	}
+
+	if first.ID == uuid.Nil {
+		t.Fatalf("expected derived top-level quiz UUID")
+	}
+	if first.ID != second.ID {
+		t.Fatalf("expected deterministic derived top-level quiz UUID, got %s and %s", first.ID, second.ID)
 	}
 }
 
@@ -216,5 +248,65 @@ func TestQuizUnmarshalJSON_CanonicalQuizPassthrough(t *testing.T) {
 	}
 	if quiz.NextPage.ID.String() != "55555555-5555-5555-5555-555555555555" {
 		t.Fatalf("expected canonical nextPage UUID to be preserved, got %s", quiz.NextPage.ID)
+	}
+}
+
+func TestQuizUnmarshalJSON_CanonicalFieldsWithSlugNestedIDsFallsBackToLegacyCompatibility(t *testing.T) {
+	const canonicalMixedQuizJSON = `{
+		"id": "11111111-1111-1111-1111-111111111111",
+		"title": "Canonical Mixed Quiz",
+		"org_id": " 22222222-2222-2222-2222-222222222222 ",
+		"description": "Canonical quiz fields with legacy nested IDs",
+		"slug": "canonical-mixed-quiz",
+		"relPermalink": "/academy/tests/canonical-mixed-quiz/",
+		"permalink": "https://academy.meshery.io/academy/tests/canonical-mixed-quiz/",
+		"type": "test",
+		"section": "test",
+		"layout": "single",
+		"date": "2026-05-07",
+		"final": false,
+		"lastmod": "2026-05-07",
+		"draft": false,
+		"filePath": " academy/canonical-mixed-quiz/index.json ",
+		"passPercentage": 80,
+		"timeLimit": 30,
+		"maxAttempts": 2,
+		"questions": [
+			{
+				"id": " q1 ",
+				"text": "Question",
+				"type": "multiple_answers",
+				"marks": 1,
+				"options": [{"id": " a ", "text": "Option", "isCorrect": true}],
+				"correctAnswer": "Option"
+			}
+		],
+		"totalQuestions": 1,
+		"totalQuestionsInBank": 1,
+		"totalQuestionSets": 1,
+		"totalMarks": 1,
+		"prerequisites": [],
+		"nextPage": {"id": "next-page", "title": "Next", "relPermalink": "/academy/tests/next/", "type": "test"}
+	}`
+
+	var quiz Quiz
+	if err := json.Unmarshal([]byte(canonicalMixedQuizJSON), &quiz); err != nil {
+		t.Fatalf("canonical-field payload with slug nested IDs should fall back to legacy compatibility, got: %v", err)
+	}
+
+	if quiz.FilePath != "academy/canonical-mixed-quiz/index.json" {
+		t.Fatalf("expected canonical filePath to be normalized, got %q", quiz.FilePath)
+	}
+	if quiz.Questions[0].ID == uuid.Nil {
+		t.Fatalf("expected slug-based question id to derive a UUID")
+	}
+	if quiz.Questions[0].Options[0].ID == uuid.Nil {
+		t.Fatalf("expected slug-based option id to derive a UUID")
+	}
+	if quiz.NextPage.ID == uuid.Nil {
+		t.Fatalf("expected slug-based nextPage id to derive a UUID")
+	}
+	if quiz.Questions[0].Type != QuestionTypeMultipleAnswers {
+		t.Fatalf("expected underscore question type to normalize during compatibility fallback, got %q", quiz.Questions[0].Type)
 	}
 }
