@@ -1,0 +1,546 @@
+openapi: 3.0.0
+info:
+  title: Provider
+  description: OpenAPI schema for Meshery provider registration and capabilities.
+  version: v1beta3
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+security:
+  - jwt: []
+tags:
+  - name: Providers
+    description: APIs for Meshery provider registration and capability discovery.
+paths:
+  /api/providers:
+    get:
+      x-internal:
+        - meshery
+      tags:
+        - Providers
+      operationId: getProviders
+      summary: Get all registered providers
+      description: >
+        Returns a map of all Meshery providers registered at server startup,
+        keyed by provider name. This endpoint is public and requires no authentication.
+      security: []
+      responses:
+        '200':
+          description: Map of provider name to provider properties.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderMap'
+        '500':
+          $ref: '#/components/responses/500'
+
+  /api/provider/capabilities:
+    get:
+      x-internal:
+        - meshery
+      tags:
+        - Providers
+      operationId: getProviderCapabilities
+      summary: Get capabilities of the active provider
+      description: >
+        Returns the provider properties, including feature capabilities and
+        extension configuration, for the provider currently active for the
+        authenticated user.
+      responses:
+        '200':
+          description: Active provider properties.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Provider'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
+
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    401:
+      $ref: ../../v1beta2/core/api.yml#/components/responses/401
+    500:
+      $ref: ../../v1beta2/core/api.yml#/components/responses/500
+
+  schemas:
+    Provider:
+      $ref: './provider.yaml'
+
+    ProviderMap:
+      type: object
+      description: Map of provider name to provider properties, as returned by GET /api/providers.
+      additionalProperties:
+        $ref: '#/components/schemas/Provider'
+
+    ProviderCapabilities:
+      type: array
+      description: List of feature capabilities supported by a provider.
+      items:
+        $ref: '#/components/schemas/ProviderCapability'
+
+    ProviderCapability:
+      type: object
+      description: A single feature capability and its optional remote endpoint URL.
+      additionalProperties: false
+      properties:
+        feature:
+          type: string
+          description: Feature identifier supported by this provider.
+          enum:
+            - sync-prefs
+            - persist-results
+            - persist-result
+            - persist-smi-results
+            - persist-metrics
+            - persist-events
+            - get-events
+            - events-summary
+            - persist-smp-test-profile
+            - persist-meshery-patterns
+            - persist-meshery-pattern-resources
+            - persist-meshery-filters
+            - persist-meshery-applications
+            - persist-performance-profiles
+            - persist-schedules
+            - meshery-patterns-catalog
+            - meshery-filters-catalog
+            - clone-meshery-patterns
+            - clone-meshery-filters
+            - share-designs
+            - share-filters
+            - persist-connection
+            - persist-credentials
+            - users-profile
+            - users-identity
+            - users-keys
+            - organizations
+            - environments
+            - workspaces
+            - persist-anonymous-user
+        endpoint:
+          type: string
+          description: Remote endpoint path for this feature, if applicable. Empty for local-only features.
+          maxLength: 2048
+
+    ProviderExtensions:
+      type: object
+      description: UI extension points contributed by a provider, injected into the Meshery UI shell.
+      additionalProperties: false
+      properties:
+        navigator:
+          type: array
+          description: Navigation sidebar entries contributed by this provider.
+          items:
+            $ref: '#/components/schemas/NavigatorExtension'
+        userPrefs:
+          type: array
+          description: User preferences panel extensions contributed by this provider.
+          items:
+            $ref: '#/components/schemas/UserPrefsExtension'
+        graphql:
+          type: array
+          description: GraphQL endpoint extensions contributed by this provider.
+          items:
+            $ref: '#/components/schemas/GraphQLExtension'
+        account:
+          type: array
+          description: Account panel extensions contributed by this provider.
+          items:
+            $ref: '#/components/schemas/AccountExtension'
+        collaborator:
+          type: array
+          description: Collaborator panel extensions contributed by this provider.
+          items:
+            $ref: '#/components/schemas/CollaboratorExtension'
+
+    NavigatorExtension:
+      type: object
+      description: A navigation sidebar entry contributed by a provider, with optional nested children.
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          description: Display label for this navigation entry.
+          maxLength: 255
+        onClickCallback:
+          type: integer
+          description: Numeric identifier for the callback to invoke when this entry is clicked.
+          minimum: 0
+        href:
+          $ref: '#/components/schemas/ProviderHref'
+          description: Link target for this navigation entry.
+        component:
+          type: string
+          description: React component path to render for this navigation entry.
+          maxLength: 2048
+        icon:
+          type: string
+          description: Icon path or identifier to display alongside this navigation entry.
+          maxLength: 2048
+        link:
+          type: boolean
+          description: Whether this entry renders as a hyperlink rather than a button.
+        show:
+          type: boolean
+          description: Whether this entry is visible in the navigation sidebar.
+        type:
+          type: string
+          description: Rendering type hint for this navigation entry.
+          maxLength: 255
+        isBeta:
+          type: boolean
+          description: Whether this entry is marked as a beta feature.
+        allowedTo:
+          $ref: '#/components/schemas/MeshMapComponentSet'
+          description: MeshMap component access controls for this navigation entry.
+        children:
+          type: array
+          description: Nested child navigation entries. Each element follows the same structure as NavigatorExtension.
+          items:
+            $ref: '#/components/schemas/NavigatorExtensionChild'
+
+    NavigatorExtensionChild:
+      type: object
+      description: A nested child navigation sidebar entry. Shares the same properties as NavigatorExtension but does not carry further children to avoid unbounded nesting in the schema representation.
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          description: Display label for this navigation entry.
+          maxLength: 255
+        onClickCallback:
+          type: integer
+          description: Numeric identifier for the callback to invoke when this entry is clicked.
+          minimum: 0
+        href:
+          $ref: '#/components/schemas/ProviderHref'
+          description: Link target for this navigation entry.
+        component:
+          type: string
+          description: React component path to render for this navigation entry.
+          maxLength: 2048
+        icon:
+          type: string
+          description: Icon path or identifier to display alongside this navigation entry.
+          maxLength: 2048
+        link:
+          type: boolean
+          description: Whether this entry renders as a hyperlink rather than a button.
+        show:
+          type: boolean
+          description: Whether this entry is visible in the navigation sidebar.
+        type:
+          type: string
+          description: Rendering type hint for this navigation entry.
+          maxLength: 255
+        isBeta:
+          type: boolean
+          description: Whether this entry is marked as a beta feature.
+        allowedTo:
+          $ref: '#/components/schemas/MeshMapComponentSet'
+          description: MeshMap component access controls for this navigation entry.
+
+    AccountExtension:
+      type: object
+      description: An account panel entry contributed by a provider.
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          description: Display label for this account entry.
+          maxLength: 255
+        onClickCallback:
+          type: integer
+          description: Numeric identifier for the click callback.
+          minimum: 0
+        href:
+          $ref: '#/components/schemas/ProviderHref'
+          description: Link target for this account entry.
+        component:
+          type: string
+          description: React component path to render for this account entry.
+          maxLength: 2048
+        link:
+          type: boolean
+          description: Whether this entry renders as a hyperlink.
+        show:
+          type: boolean
+          description: Whether this entry is visible.
+        type:
+          type: string
+          description: Rendering type hint for this account entry.
+          maxLength: 255
+        children:
+          type: array
+          description: Nested child account entries. Each element follows the same structure as AccountExtension.
+          items:
+            $ref: '#/components/schemas/AccountExtensionChild'
+
+    AccountExtensionChild:
+      type: object
+      description: A nested child account panel entry. Shares the same properties as AccountExtension but does not carry further children to avoid unbounded nesting in the schema representation.
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          description: Display label for this account entry.
+          maxLength: 255
+        onClickCallback:
+          type: integer
+          description: Numeric identifier for the click callback.
+          minimum: 0
+        href:
+          $ref: '#/components/schemas/ProviderHref'
+          description: Link target for this account entry.
+        component:
+          type: string
+          description: React component path to render for this account entry.
+          maxLength: 2048
+        link:
+          type: boolean
+          description: Whether this entry renders as a hyperlink.
+        show:
+          type: boolean
+          description: Whether this entry is visible.
+        type:
+          type: string
+          description: Rendering type hint for this account entry.
+          maxLength: 255
+
+    UserPrefsExtension:
+      type: object
+      description: A user preferences panel section contributed by a provider.
+      additionalProperties: false
+      properties:
+        component:
+          type: string
+          description: React component path to render in the user preferences panel.
+          maxLength: 2048
+        type:
+          type: string
+          description: Rendering type hint for this user preferences extension.
+          maxLength: 255
+
+    GraphQLExtension:
+      type: object
+      description: A GraphQL endpoint or UI extension contributed by a provider.
+      additionalProperties: false
+      properties:
+        component:
+          type: string
+          description: React component path for the GraphQL extension UI.
+          maxLength: 2048
+        path:
+          type: string
+          description: URL path for the GraphQL endpoint contributed by this extension.
+          maxLength: 2048
+        type:
+          type: string
+          description: Rendering type hint for this GraphQL extension.
+          maxLength: 255
+
+    CollaboratorExtension:
+      type: object
+      description: A collaborator panel extension contributed by a provider.
+      additionalProperties: false
+      properties:
+        component:
+          type: string
+          description: React component path to render in the collaborator panel.
+          maxLength: 2048
+        type:
+          type: string
+          description: Rendering type hint for this collaborator extension.
+          maxLength: 255
+
+    ProviderHref:
+      type: object
+      description: A hyperlink reference with an optional external-navigation flag.
+      additionalProperties: false
+      properties:
+        uri:
+          type: string
+          description: The URI target of this link.
+          format: uri
+          maxLength: 2048
+        external:
+          type: boolean
+          description: Whether this link navigates to an external (non-Meshery) URL.
+
+    ProviderRestrictedAccess:
+      type: object
+      description: Controls which Meshery UI components are available in restricted-access provider deployments.
+      additionalProperties: false
+      properties:
+        isMesheryUiRestricted:
+          type: boolean
+          description: When true, only the components listed in allowedComponents are rendered.
+        allowedComponents:
+          $ref: '#/components/schemas/MesheryUICapabilities'
+          description: The set of UI components permitted in restricted mode.
+
+    MesheryUICapabilities:
+      type: object
+      description: Top-level grouping of Meshery UI component visibility flags.
+      additionalProperties: false
+      properties:
+        navigator:
+          $ref: '#/components/schemas/NavigatorComponents'
+          description: Visibility flags for navigator sidebar components.
+        header:
+          $ref: '#/components/schemas/HeaderComponents'
+          description: Visibility flags for header bar components.
+
+    NavigatorComponents:
+      type: object
+      description: Visibility flags for navigation sidebar components.
+      additionalProperties: false
+      properties:
+        dashboard:
+          type: boolean
+          description: Whether the Dashboard navigation item is visible.
+        performance:
+          type: boolean
+          description: Whether the Performance navigation item is visible.
+        conformance:
+          type: boolean
+          description: Whether the Conformance navigation item is visible.
+        extensions:
+          type: boolean
+          description: Whether the Extensions navigation item is visible.
+        toggler:
+          type: boolean
+          description: Whether the navigation sidebar toggler is visible.
+        help:
+          type: boolean
+          description: Whether the Help navigation item is visible.
+        lifecycle:
+          $ref: '#/components/schemas/AdapterComponents'
+          description: Visibility flags for service mesh adapter lifecycle entries.
+        configuration:
+          $ref: '#/components/schemas/ConfigurationComponents'
+          description: Visibility flags for configuration section entries.
+
+    HeaderComponents:
+      type: object
+      description: Visibility flags for header bar components.
+      additionalProperties: false
+      properties:
+        contextSwitcher:
+          type: boolean
+          description: Whether the Kubernetes context switcher is visible in the header.
+        settings:
+          type: boolean
+          description: Whether the Settings button is visible in the header.
+        notifications:
+          type: boolean
+          description: Whether the Notifications bell is visible in the header.
+        profile:
+          type: boolean
+          description: Whether the user Profile menu is visible in the header.
+
+    AdapterComponents:
+      type: object
+      description: Visibility flags for service mesh adapter entries in the lifecycle section.
+      additionalProperties: false
+      properties:
+        istio:
+          type: boolean
+          description: Whether the Istio adapter entry is visible.
+        citrix:
+          type: boolean
+          description: Whether the Citrix adapter entry is visible.
+        consul:
+          type: boolean
+          description: Whether the Consul adapter entry is visible.
+        cilium:
+          type: boolean
+          description: Whether the Cilium adapter entry is visible.
+        appMesh:
+          type: boolean
+          description: Whether the AWS App Mesh adapter entry is visible.
+        kuma:
+          type: boolean
+          description: Whether the Kuma adapter entry is visible.
+        linkerd:
+          type: boolean
+          description: Whether the Linkerd adapter entry is visible.
+        nginx:
+          type: boolean
+          description: Whether the NGINX Service Mesh adapter entry is visible.
+        nsm:
+          type: boolean
+          description: Whether the Network Service Mesh adapter entry is visible.
+
+    ConfigurationComponents:
+      type: object
+      description: Visibility flags for configuration section entries.
+      additionalProperties: false
+      properties:
+        designs:
+          type: boolean
+          description: Whether the Designs configuration entry is visible.
+        applications:
+          type: boolean
+          description: Whether the Applications configuration entry is visible.
+        filters:
+          type: boolean
+          description: Whether the Filters configuration entry is visible.
+
+    MeshMapComponentSet:
+      type: object
+      description: Access controls for MeshMap UI components in a navigation entry.
+      additionalProperties: false
+      properties:
+        designer:
+          $ref: '#/components/schemas/DesignerComponents'
+          description: Access flags for MeshMap Designer toolbar actions.
+        visualizer:
+          type: boolean
+          description: Whether the MeshMap Visualizer component is accessible.
+
+    DesignerComponents:
+      type: object
+      description: Access flags for individual MeshMap Designer toolbar actions.
+      additionalProperties: false
+      properties:
+        design:
+          type: boolean
+          description: Whether the design canvas action is accessible.
+        application:
+          type: boolean
+          description: Whether the application action is accessible.
+        filter:
+          type: boolean
+          description: Whether the filter action is accessible.
+        save:
+          type: boolean
+          description: Whether the Save action is accessible.
+        new:
+          type: boolean
+          description: Whether the New design action is accessible.
+        saveAs:
+          type: boolean
+          description: Whether the Save As action is accessible.
+        validate:
+          type: boolean
+          description: Whether the Validate action is accessible.
+        deploy:
+          type: boolean
+          description: Whether the Deploy action is accessible.
+        unDeploy:
+          type: boolean
+          description: Whether the Undeploy action is accessible.

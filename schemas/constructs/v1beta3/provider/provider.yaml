@@ -1,0 +1,69 @@
+$id: https://schemas.meshery.io/provider.yaml
+$schema: http://json-schema.org/draft-07/schema#
+description: >
+  A Meshery provider and its capabilities, UI extension points, and
+  access-control configuration. Providers are registered at server startup
+  and are not persisted in the database.
+type: object
+additionalProperties: false
+required:
+  - providerName
+  - providerType
+properties:
+  providerName:
+    type: string
+    description: Unique display name of this provider.
+    minLength: 1
+    maxLength: 255
+
+  providerType:
+    type: string
+    description: Classification of the provider — local (bundled) or remote (cloud-connected).
+    enum:
+      - local
+      - remote
+
+  providerDescription:
+    type: array
+    description: Human-readable lines describing this provider's purpose and features.
+    items:
+      type: string
+      maxLength: 1000
+
+  packageVersion:
+    type: string
+    description: Semantic version of the provider package currently loaded.
+    pattern: '^v?[0-9]+\.[0-9]+(\.[0-9]+.*)?$'
+    maxLength: 100
+
+  packageUrl:
+    type: string
+    description: URL from which the provider package was fetched.
+    format: uri
+    maxLength: 2048
+
+  providerUrl:
+    type: string
+    description: Homepage or documentation URL for the provider.
+    format: uri
+    maxLength: 2048
+
+  extensions:
+    $ref: './api.yml#/components/schemas/ProviderExtensions'
+    description: UI extension points contributed by this provider.
+
+  capabilities:
+    $ref: './api.yml#/components/schemas/ProviderCapabilities'
+    description: Features and their corresponding remote endpoints supported by this provider.
+
+  restrictedAccess:
+    $ref: './api.yml#/components/schemas/ProviderRestrictedAccess'
+    description: UI component visibility configuration for restricted-access deployments.
+
+  redirects:
+    type: object
+    description: Map of redirect keys to their target URLs, used for provider-specific OAuth flows.
+    additionalProperties:
+      type: string
+      format: uri
+      maxLength: 2048
