@@ -317,6 +317,10 @@ components:
           title: "Upload method"
           x-enum-casing-exempt: true
           enum: ["file", "urlImport", "csv"]
+          # Human-readable labels for the upload-type discriminator. RJSF
+          # consumers (e.g. the meshery UI radio group) surface these instead
+          # of the raw lowercase tokens.
+          enumNames: ["File Import", "URL Import", "CSV Import"]
           description: "Choose the method you prefer. Select 'File Import' or 'CSV Import' if you have the file on your local system, or 'URL Import' if you have the file hosted online."
         fileName:
           type: string
