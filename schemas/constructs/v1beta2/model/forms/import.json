@@ -20,6 +20,7 @@
     },
     "modelFile": {
       "type": "string",
+      "format": "data-url",
       "title": "Model file",
       "description": "Model file content. Supported formats: .tar, .tar.gz, .tgz.",
       "x-rjsf-grid-area": "12"
