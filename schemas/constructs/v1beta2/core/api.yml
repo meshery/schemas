@@ -163,7 +163,7 @@ components:
           x-go-type-skip-optional-pointer: true
           description: Current page number of the result set.
           minimum: 0
-        page_size:
+        pageSize:
           type: integer
           x-go-type-skip-optional-pointer: true
           description: Number of items per page.
@@ -193,12 +193,12 @@ components:
           x-go-type-skip-optional-pointer: true
           description: Current page number of the result set.
           minimum: 0
-        page_size:
+        pageSize:
           type: integer
           x-go-type-skip-optional-pointer: true
           description: Number of items per page.
           minimum: 1
-        total_count:
+        totalCount:
           type: integer
           x-go-type-skip-optional-pointer: true
           description: Total number of items available.
@@ -239,7 +239,7 @@ components:
         path: github.com/gofrs/uuid
       x-oapi-codegen-extra-tags:
         db: user_id
-        json: user_id
+        json: userId
       x-go-name: UserID
       x-go-type-skip-optional-pointer: true
 
@@ -251,7 +251,7 @@ components:
         path: github.com/gofrs/uuid
       x-oapi-codegen-extra-tags:
         db: org_id
-        json: org_id
+        json: orgId
       x-go-type-name: OrganizationId
       x-go-type-skip-optional-pointer: true
 
@@ -275,7 +275,7 @@ components:
         path: github.com/gofrs/uuid
       x-oapi-codegen-extra-tags:
         db: environment_id
-        json: environment_id
+        json: environmentId
       x-go-type-name: EnvironmentId
       x-go-type-skip-optional-pointer: true
 
@@ -287,7 +287,7 @@ components:
         path: github.com/gofrs/uuid
       x-oapi-codegen-extra-tags:
         db: workspace_id
-        json: workspace_id
+        json: workspaceId
       x-go-type-name: WorkspaceId
       x-go-type-skip-optional-pointer: true
 
@@ -299,7 +299,7 @@ components:
         path: github.com/gofrs/uuid
       x-oapi-codegen-extra-tags:
         db: view_id
-        json: view_id
+        json: viewId
       x-go-type-name: ViewId
       x-go-type-skip-optional-pointer: true
 
@@ -311,7 +311,7 @@ components:
         path: github.com/gofrs/uuid
       x-oapi-codegen-extra-tags:
         db: team_id
-        json: team_id
+        json: teamId
       x-go-type-name: TeamId
       x-go-type-skip-optional-pointer: true
 
@@ -323,7 +323,7 @@ components:
         path: github.com/gofrs/uuid
       x-oapi-codegen-extra-tags:
         db: design_id
-        json: design_id
+        json: designId
       x-go-type-name: DesignId
       x-go-type-skip-optional-pointer: true
 
@@ -347,7 +347,7 @@ components:
         path: github.com/gofrs/uuid
       x-oapi-codegen-extra-tags:
         db: meshery_instance_id
-        json: meshery_instance_id
+        json: mesheryInstanceId
       x-go-name: MesheryInstanceID
       x-go-type-skip-optional-pointer: true
 
@@ -359,7 +359,7 @@ components:
         path: github.com/gofrs/uuid
       x-oapi-codegen-extra-tags:
         db: kubernetes_server_id
-        json: kubernetes_server_id
+        json: kubernetesServerId
       x-go-name: KubernetesServerID
       x-go-type-skip-optional-pointer: true
 

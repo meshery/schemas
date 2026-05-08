@@ -673,7 +673,7 @@ type RecordsPage struct {
 	Page int `json:"page,omitempty" yaml:"page,omitempty"`
 
 	// PageSize Number of items per page.
-	PageSize int `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	PageSize int `json:"pageSize,omitempty" yaml:"pageSize,omitempty"`
 
 	// RecordType The record type of the recordspage.
 	RecordType string `json:"recordType,omitempty" yaml:"recordType,omitempty"`
@@ -769,13 +769,13 @@ type ResultsPage struct {
 	Page int `json:"page,omitempty" yaml:"page,omitempty"`
 
 	// PageSize Number of items per page.
-	PageSize int `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	PageSize int `json:"pageSize,omitempty" yaml:"pageSize,omitempty"`
 
 	// ResultType The result type of the resultspage.
 	ResultType string `json:"resultType,omitempty" yaml:"resultType,omitempty"`
 
 	// TotalCount Total number of items available.
-	TotalCount int `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+	TotalCount int `json:"totalCount,omitempty" yaml:"totalCount,omitempty"`
 }
 
 // RoleNames defines model for RoleNames.

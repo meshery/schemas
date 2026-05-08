@@ -5,13 +5,16 @@ import "github.com/gofrs/uuid"
 
 // ResolvedAliasFromNonResolved constructs a ResolvedAlias from a NonResolvedAlias
 // by supplying the resolved parent UUID and the fully resolved field path.
-func ResolvedAliasFromNonResolved(nonResolved NonResolvedAlias, resolvedParentId uuid.UUID, resolvedField []string) ResolvedAlias {
+func ResolvedAliasFromNonResolved(nonResolved NonResolvedAlias, resolvedParentId uuid.UUID, resolvedRefFieldPath []string) ResolvedAlias {
+	immediatePath := append([]string(nil), nonResolved.ImmediateRefFieldPath...)
+	resolvedPath := append([]string(nil), resolvedRefFieldPath...)
+
 	return ResolvedAlias{
 		AliasComponentId:      nonResolved.AliasComponentId,
 		ImmediateParentId:     nonResolved.ImmediateParentId,
-		ImmediateRefFieldPath: nonResolved.ImmediateRefFieldPath,
+		ImmediateRefFieldPath: immediatePath,
 		RelationshipId:        nonResolved.RelationshipId,
 		ResolvedParentId:      resolvedParentId,
-		ResolvedRefFieldPath:  resolvedField,
+		ResolvedRefFieldPath:  resolvedPath,
 	}
 }
