@@ -49,7 +49,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "NODE_OPTIONS=--max-old-space-size=8192 tsup",
+    "build": "NODE_OPTIONS=--max-old-space-size=8192 tsup && node ./build/generate-schema-dts.js",
     "build:bundle": "node ./build/bundle-openapi.js",
     "build:golang": "node ./build/generate-golang.js",
     "build:rtk": "node ./build/generate-rtk.js",

@@ -44,7 +44,6 @@ generate-ts:
 build-ts: generate-ts
 	rm -rf dist/
 	npm run build
-	node build/generate-schema-dts.js
 
 ## Publish schemas package to @meshery/schemas on npmjs.com
 publish-ts: build-ts
