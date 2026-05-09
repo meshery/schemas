@@ -21,9 +21,9 @@
     },
     "file": {
       "type": "string",
-      "format": "byte",
+      "format": "data-url",
       "title": "File",
-      "description": "Base64-encoded file bytes. Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See Import Designs Documentation for details.",
+      "description": "RFC 2397 data URL emitted by the RJSF FileWidget — shape `data:<mime>;base64,<payload>`. `<payload>` is the base64-encoded file bytes accepted by the import API (canonical `format: byte`); consumers strip the `data:<mime>;base64,` prefix before posting. Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See Import Designs Documentation for details.",
       "x-rjsf-grid-area": "12"
     },
     "url": {
