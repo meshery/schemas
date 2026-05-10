@@ -73,7 +73,7 @@ export interface components {
       /** @description Current page number of the result set. */
       page?: number;
       /** @description Number of items per page. */
-      page_size?: number;
+      pageSize?: number;
       /** @description The records total of the recordspage. */
       recordsTotal?: number;
       /** @description The record type of the recordspage. */
@@ -83,9 +83,9 @@ export interface components {
       /** @description Current page number of the result set. */
       page?: number;
       /** @description Number of items per page. */
-      page_size?: number;
+      pageSize?: number;
       /** @description Total number of items available. */
-      total_count?: number;
+      totalCount?: number;
       /** @description The result type of the resultspage. */
       resultType?: string;
     };

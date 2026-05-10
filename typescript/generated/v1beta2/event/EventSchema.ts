@@ -481,7 +481,7 @@ const EventSchema: Record<string, unknown> = {
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "workspace_id",
-                "json": "workspace_id"
+                "json": "workspaceId"
               },
               "x-go-type-name": "WorkspaceId",
               "x-go-type-skip-optional-pointer": true
@@ -557,7 +557,7 @@ const EventSchema: Record<string, unknown> = {
                             },
                             "x-oapi-codegen-extra-tags": {
                               "db": "user_id",
-                              "json": "user_id"
+                              "json": "userId"
                             },
                             "x-go-name": "UserID",
                             "x-go-type-skip-optional-pointer": true
@@ -805,7 +805,7 @@ const EventSchema: Record<string, unknown> = {
                             },
                             "x-oapi-codegen-extra-tags": {
                               "db": "user_id",
-                              "json": "user_id"
+                              "json": "userId"
                             },
                             "x-go-name": "UserID",
                             "x-go-type-skip-optional-pointer": true
@@ -1121,7 +1121,7 @@ const EventSchema: Record<string, unknown> = {
           },
           "x-oapi-codegen-extra-tags": {
             "db": "workspace_id",
-            "json": "workspace_id"
+            "json": "workspaceId"
           },
           "x-go-type-name": "WorkspaceId",
           "x-go-type-skip-optional-pointer": true
@@ -1270,7 +1270,7 @@ const EventSchema: Record<string, unknown> = {
             },
             "x-oapi-codegen-extra-tags": {
               "db": "user_id",
-              "json": "user_id"
+              "json": "userId"
             },
             "x-go-name": "UserID",
             "x-go-type-skip-optional-pointer": true
@@ -1374,7 +1374,7 @@ const EventSchema: Record<string, unknown> = {
                   },
                   "x-oapi-codegen-extra-tags": {
                     "db": "user_id",
-                    "json": "user_id"
+                    "json": "userId"
                   },
                   "x-go-name": "UserID",
                   "x-go-type-skip-optional-pointer": true
