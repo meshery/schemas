@@ -17,19 +17,6 @@
       "default": "File Upload",
       "description": "Choose the method you prefer. Select 'File Upload' if you have the filter on your local system, or 'URL Upload' if the filter is hosted online.",
       "x-rjsf-grid-area": "12"
-    },
-    "filterFile": {
-      "type": "string",
-      "format": "data-url",
-      "title": "Filter file",
-      "description": "RFC 2397 data URL emitted by the RJSF FileWidget — shape `data:<mime>;base64,<payload>`. `<payload>` is the base64-encoded filter source accepted by the import API (canonical `format: byte`); consumers strip the `data:<mime>;base64,` prefix before posting. Optional on update — the server preserves the existing body when omitted.",
-      "x-rjsf-grid-area": "12"
-    },
-    "filterResource": {
-      "type": "string",
-      "title": "URL",
-      "description": "Filter resource discriminator describing the body's source format (e.g. WASM module identifier or external resource path).",
-      "x-rjsf-grid-area": "12"
     }
   },
   "allOf": [
@@ -37,23 +24,32 @@
       "if": {
         "properties": {
           "uploadType": {
+            "type": "string",
             "const": "File Upload"
           }
         }
       },
       "then": {
-        "required": ["filterFile"]
-      }
-    },
-    {
-      "if": {
         "properties": {
-          "uploadType": {
-            "const": "URL Upload"
+          "filterFile": {
+            "type": "string",
+            "format": "data-url",
+            "title": "Filter file",
+            "description": "RFC 2397 data URL emitted by the RJSF FileWidget — shape `data:<mime>;base64,<payload>`. `<payload>` is the base64-encoded filter source accepted by the import API (canonical `format: byte`); consumers strip the `data:<mime>;base64,` prefix before posting. Optional on update — the server preserves the existing body when omitted.",
+            "x-rjsf-grid-area": "12"
           }
-        }
+        },
+        "required": ["filterFile"]
       },
-      "then": {
+      "else": {
+        "properties": {
+          "filterResource": {
+            "type": "string",
+            "title": "URL",
+            "description": "Filter resource discriminator describing the body's source format (e.g. WASM module identifier or external resource path).",
+            "x-rjsf-grid-area": "12"
+          }
+        },
         "required": ["filterResource"]
       }
     }

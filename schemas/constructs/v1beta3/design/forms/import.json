@@ -18,20 +18,6 @@
       "default": "URL Import",
       "description": "Choose the method you prefer. Select 'File Upload' if you have the file on your local system, or 'URL Import' if you have the file hosted online.",
       "x-rjsf-grid-area": "12"
-    },
-    "file": {
-      "type": "string",
-      "format": "data-url",
-      "title": "File",
-      "description": "RFC 2397 data URL emitted by the RJSF FileWidget — shape `data:<mime>;base64,<payload>`. `<payload>` is the base64-encoded file bytes accepted by the import API (canonical `format: byte`); consumers strip the `data:<mime>;base64,` prefix before posting. Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See Import Designs Documentation for details.",
-      "x-rjsf-grid-area": "12"
-    },
-    "url": {
-      "type": "string",
-      "format": "uri",
-      "title": "URL",
-      "description": "A direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Ensure the resource is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design.",
-      "x-rjsf-grid-area": "12"
     }
   },
   "allOf": [
@@ -39,23 +25,33 @@
       "if": {
         "properties": {
           "uploadType": {
+            "type": "string",
             "const": "File Upload"
           }
         }
       },
       "then": {
-        "required": ["file"]
-      }
-    },
-    {
-      "if": {
         "properties": {
-          "uploadType": {
-            "const": "URL Import"
+          "file": {
+            "type": "string",
+            "format": "data-url",
+            "title": "File",
+            "description": "RFC 2397 data URL emitted by the RJSF FileWidget — shape `data:<mime>;base64,<payload>`. `<payload>` is the base64-encoded file bytes accepted by the import API (canonical `format: byte`); consumers strip the `data:<mime>;base64,` prefix before posting. Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See Import Designs Documentation for details.",
+            "x-rjsf-grid-area": "12"
           }
-        }
+        },
+        "required": ["file"]
       },
-      "then": {
+      "else": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "title": "URL",
+            "description": "A direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Ensure the resource is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design.",
+            "x-rjsf-grid-area": "12"
+          }
+        },
         "required": ["url"]
       }
     }
