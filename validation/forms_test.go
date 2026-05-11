@@ -461,6 +461,9 @@ type schemaNode struct {
 	// We record just enough structure to walk those branches for the
 	// subset assertion.
 	Dependencies map[string]*schemaNode `yaml:"dependencies" json:"dependencies"`
+	If           *schemaNode            `yaml:"if"           json:"if"`
+	Then         *schemaNode            `yaml:"then"         json:"then"`
+	Else         *schemaNode            `yaml:"else"         json:"else"`
 }
 
 // flattenedProperties returns the canonical's effective property set,
@@ -507,6 +510,16 @@ func (s *schemaNode) flattenedProperties() map[string]*schemaNode {
 			continue
 		}
 		for k, v := range dep.flattenedProperties() {
+			if _, exists := out[k]; !exists {
+				out[k] = v
+			}
+		}
+	}
+	for _, b := range []*schemaNode{s.Then, s.Else} {
+		if b == nil {
+			continue
+		}
+		for k, v := range b.flattenedProperties() {
 			if _, exists := out[k]; !exists {
 				out[k] = v
 			}
@@ -609,7 +622,7 @@ func assertFormSubsetAtPath(t *testing.T, form, canonical *schemaNode, path stri
 	if canonical == nil || (canonProps == nil && canonical.Items == nil) {
 		t.Fatalf("canonical at %q has neither properties nor items — wrong file or empty schema?", pathOrRoot(path))
 	}
-	if path == "" && form.Properties == nil && len(form.OneOf) == 0 && len(form.AnyOf) == 0 && len(form.AllOf) == 0 && len(form.Dependencies) == 0 {
+	if path == "" && form.Properties == nil && len(form.OneOf) == 0 && len(form.AnyOf) == 0 && len(form.AllOf) == 0 && len(form.Dependencies) == 0 && form.If == nil && form.Then == nil && form.Else == nil {
 		t.Fatalf("form schema has no properties — empty form?")
 	}
 
@@ -733,6 +746,9 @@ func hasNestedStructure(s *schemaNode) bool {
 	if len(s.Dependencies) > 0 {
 		return true
 	}
+	if s.If != nil || s.Then != nil || s.Else != nil {
+		return true
+	}
 	return false
 }
 
@@ -757,6 +773,12 @@ func conditionalBranches(s *schemaNode) []*schemaNode {
 	out = append(out, s.OneOf...)
 	out = append(out, s.AnyOf...)
 	out = append(out, s.AllOf...)
+	if s.Then != nil {
+		out = append(out, s.Then)
+	}
+	if s.Else != nil {
+		out = append(out, s.Else)
+	}
 	for _, dep := range s.Dependencies {
 		if dep == nil {
 			continue
@@ -764,6 +786,12 @@ func conditionalBranches(s *schemaNode) []*schemaNode {
 		out = append(out, dep.OneOf...)
 		out = append(out, dep.AnyOf...)
 		out = append(out, dep.AllOf...)
+		if dep.Then != nil {
+			out = append(out, dep.Then)
+		}
+		if dep.Else != nil {
+			out = append(out, dep.Else)
+		}
 	}
 	return out
 }

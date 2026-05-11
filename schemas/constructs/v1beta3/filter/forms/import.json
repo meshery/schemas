@@ -19,42 +19,40 @@
       "x-rjsf-grid-area": "12"
     }
   },
-  "dependencies": {
-    "uploadType": {
-      "oneOf": [
-        {
-          "properties": {
-            "uploadType": {
-              "type": "string",
-              "const": "File Upload"
-            },
-            "filterFile": {
-              "type": "string",
-              "format": "data-url",
-              "title": "Filter file",
-              "description": "RFC 2397 data URL emitted by the RJSF FileWidget — shape `data:<mime>;base64,<payload>`. `<payload>` is the base64-encoded filter source accepted by the import API (canonical `format: byte`); consumers strip the `data:<mime>;base64,` prefix before posting. Optional on update — the server preserves the existing body when omitted.",
-              "x-rjsf-grid-area": "12"
-            }
-          },
-          "required": ["filterFile"]
-        },
-        {
-          "properties": {
-            "uploadType": {
-              "type": "string",
-              "const": "URL Upload"
-            },
-            "filterResource": {
-              "type": "string",
-              "title": "URL",
-              "description": "Filter resource discriminator describing the body's source format (e.g. WASM module identifier or external resource path).",
-              "x-rjsf-grid-area": "12"
-            }
-          },
-          "required": ["filterResource"]
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "uploadType": {
+            "type": "string",
+            "const": "File Upload"
+          }
         }
-      ]
+      },
+      "then": {
+        "properties": {
+          "filterFile": {
+            "type": "string",
+            "format": "data-url",
+            "title": "Filter file",
+            "description": "RFC 2397 data URL emitted by the RJSF FileWidget — shape `data:<mime>;base64,<payload>`. `<payload>` is the base64-encoded filter source accepted by the import API (canonical `format: byte`); consumers strip the `data:<mime>;base64,` prefix before posting. Optional on update — the server preserves the existing body when omitted.",
+            "x-rjsf-grid-area": "12"
+          }
+        },
+        "required": ["filterFile"]
+      },
+      "else": {
+        "properties": {
+          "filterResource": {
+            "type": "string",
+            "title": "URL",
+            "description": "Filter resource discriminator describing the body's source format (e.g. WASM module identifier or external resource path).",
+            "x-rjsf-grid-area": "12"
+          }
+        },
+        "required": ["filterResource"]
+      }
     }
-  },
+  ],
   "required": ["name", "uploadType"]
 }

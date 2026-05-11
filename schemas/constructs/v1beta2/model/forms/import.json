@@ -13,79 +13,93 @@
       "x-rjsf-grid-area": "12"
     }
   },
-  "dependencies": {
-    "uploadType": {
-      "oneOf": [
-        {
-          "properties": {
-            "uploadType": {
-              "type": "string",
-              "const": "file"
-            },
-            "fileName": {
-              "type": "string",
-              "title": "File name",
-              "description": "Name of the model file being uploaded.",
-              "x-rjsf-grid-area": "12"
-            },
-            "modelFile": {
-              "type": "string",
-              "format": "data-url",
-              "title": "Model file",
-              "description": "RFC 2397 data URL emitted by the RJSF FileWidget — shape `data:<mime>;base64,<payload>`. `<payload>` is the base64-encoded model archive accepted by the import API; consumers strip the `data:<mime>;base64,` prefix before posting. Supported formats: .tar, .tar.gz, .tgz.",
-              "x-rjsf-grid-area": "12"
-            }
-          },
-          "required": ["fileName", "modelFile"]
-        },
-        {
-          "properties": {
-            "uploadType": {
-              "type": "string",
-              "const": "urlImport"
-            },
-            "url": {
-              "type": "string",
-              "format": "uri",
-              "title": "URL",
-              "description": "A direct URL to a single model file. Supported formats: .tar, .tar.gz, .tgz.",
-              "x-rjsf-grid-area": "12"
-            }
-          },
-          "required": ["url"]
-        },
-        {
-          "properties": {
-            "uploadType": {
-              "type": "string",
-              "const": "csv"
-            },
-            "modelCsv": {
-              "type": "string",
-              "format": "binary",
-              "title": "Model CSV",
-              "description": "CSV file containing model definitions.",
-              "x-rjsf-grid-area": "12"
-            },
-            "componentCsv": {
-              "type": "string",
-              "format": "binary",
-              "title": "Component CSV",
-              "description": "CSV file containing component definitions.",
-              "x-rjsf-grid-area": "12"
-            },
-            "relationshipCsv": {
-              "type": "string",
-              "format": "binary",
-              "title": "Relationship CSV",
-              "description": "CSV file containing relationship definitions.",
-              "x-rjsf-grid-area": "12"
-            }
-          },
-          "required": ["modelCsv", "componentCsv", "relationshipCsv"]
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "uploadType": {
+            "type": "string",
+            "const": "file"
+          }
         }
-      ]
+      },
+      "then": {
+        "properties": {
+          "fileName": {
+            "type": "string",
+            "title": "File name",
+            "description": "Name of the model file being uploaded.",
+            "x-rjsf-grid-area": "12"
+          },
+          "modelFile": {
+            "type": "string",
+            "format": "data-url",
+            "title": "Model file",
+            "description": "RFC 2397 data URL emitted by the RJSF FileWidget — shape `data:<mime>;base64,<payload>`. `<payload>` is the base64-encoded model archive accepted by the import API; consumers strip the `data:<mime>;base64,` prefix before posting. Supported formats: .tar, .tar.gz, .tgz.",
+            "x-rjsf-grid-area": "12"
+          }
+        },
+        "required": ["fileName", "modelFile"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "uploadType": {
+            "type": "string",
+            "const": "urlImport"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "title": "URL",
+            "description": "A direct URL to a single model file. Supported formats: .tar, .tar.gz, .tgz.",
+            "x-rjsf-grid-area": "12"
+          }
+        },
+        "required": ["url"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "uploadType": {
+            "type": "string",
+            "const": "csv"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "modelCsv": {
+            "type": "string",
+            "format": "binary",
+            "title": "Model CSV",
+            "description": "CSV file containing model definitions.",
+            "x-rjsf-grid-area": "12"
+          },
+          "componentCsv": {
+            "type": "string",
+            "format": "binary",
+            "title": "Component CSV",
+            "description": "CSV file containing component definitions.",
+            "x-rjsf-grid-area": "12"
+          },
+          "relationshipCsv": {
+            "type": "string",
+            "format": "binary",
+            "title": "Relationship CSV",
+            "description": "CSV file containing relationship definitions.",
+            "x-rjsf-grid-area": "12"
+          }
+        },
+        "required": ["modelCsv", "componentCsv", "relationshipCsv"]
+      }
     }
-  },
+  ],
   "required": ["uploadType"]
 }
