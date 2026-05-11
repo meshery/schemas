@@ -1,5 +1,4 @@
 {
-  "$schema": "https://json-schema.org/draft-07/schema#",
   "title": "Support Form",
   "description": "RJSF form schema for the help-and-support modal. Captures the user-input fields of the canonical SupportRequest construct (meshery/schemas/constructs/v1beta1/support/api.yml). Field shape, types, enums, and required list MUST stay a subset of SupportRequest; the Go validator at validation/forms_test.go enforces that.",
   "type": "object",
