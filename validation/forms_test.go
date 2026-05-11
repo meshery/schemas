@@ -502,16 +502,17 @@ func (s *schemaNode) flattenedProperties() map[string]*schemaNode {
 			}
 		}
 	}
-	for _, dep := range s.Dependencies {
-		if dep == nil {
-			continue
-		}
-		for k, v := range dep.flattenedProperties() {
-			if _, exists := out[k]; !exists {
-				out[k] = v
-			}
+for _, name := range sortedKeys(s.Dependencies) {
+	dep := s.Dependencies[name]
+	if dep == nil {
+		continue
+	}
+	for k, v := range dep.flattenedProperties() {
+		if _, exists := out[k]; !exists {
+			out[k] = v
 		}
 	}
+}
 	return out
 }
 
