@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Meshery Cloud
   description: Documentation for Meshery Cloud REST APIs.
-  version: v1.2.17
+  version: v1.2.18
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
