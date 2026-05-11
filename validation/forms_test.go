@@ -456,6 +456,11 @@ type schemaNode struct {
 	OneOf      []*schemaNode          `yaml:"oneOf"      json:"oneOf"`
 	AllOf      []*schemaNode          `yaml:"allOf"      json:"allOf"`
 	AnyOf      []*schemaNode          `yaml:"anyOf"      json:"anyOf"`
+	// JSON Schema draft-07 conditional composition is common in RJSF
+	// forms (e.g. show fields only when a discriminator is set).
+	// We record just enough structure to walk those branches for the
+	// subset assertion.
+	Dependencies map[string]*schemaNode `yaml:"dependencies" json:"dependencies"`
 }
 
 // flattenedProperties returns the canonical's effective property set,
@@ -492,6 +497,16 @@ func (s *schemaNode) flattenedProperties() map[string]*schemaNode {
 			continue
 		}
 		for k, v := range branch.flattenedProperties() {
+			if _, exists := out[k]; !exists {
+				out[k] = v
+			}
+		}
+	}
+	for _, dep := range s.Dependencies {
+		if dep == nil {
+			continue
+		}
+		for k, v := range dep.flattenedProperties() {
 			if _, exists := out[k]; !exists {
 				out[k] = v
 			}
@@ -594,7 +609,7 @@ func assertFormSubsetAtPath(t *testing.T, form, canonical *schemaNode, path stri
 	if canonical == nil || (canonProps == nil && canonical.Items == nil) {
 		t.Fatalf("canonical at %q has neither properties nor items — wrong file or empty schema?", pathOrRoot(path))
 	}
-	if path == "" && form.Properties == nil {
+	if path == "" && form.Properties == nil && len(form.OneOf) == 0 && len(form.AnyOf) == 0 && len(form.AllOf) == 0 && len(form.Dependencies) == 0 {
 		t.Fatalf("form schema has no properties — empty form?")
 	}
 
@@ -670,6 +685,9 @@ func assertFormSubsetAtPath(t *testing.T, form, canonical *schemaNode, path stri
 		if formField.Properties != nil && hasNestedStructure(canField) {
 			assertFormSubsetAtPath(t, formField, canField, fieldPath)
 		}
+		// If the form uses conditional branches under this field, validate
+		// those branch-contained properties against canonical as well.
+		assertFormSubsetConditionalBranches(t, formField, canField, fieldPath)
 	}
 
 	// Required: every name in form.required must exist in
@@ -692,6 +710,9 @@ func assertFormSubsetAtPath(t *testing.T, form, canonical *schemaNode, path stri
 				pathOrRoot(path), name)
 		}
 	}
+
+	// Also validate any conditional branches at this node.
+	assertFormSubsetConditionalBranches(t, form, canonical, path)
 }
 
 // hasNestedStructure reports whether a canonical schema node has any
@@ -709,7 +730,42 @@ func hasNestedStructure(s *schemaNode) bool {
 	if len(s.AllOf) > 0 || len(s.AnyOf) > 0 || len(s.OneOf) > 0 {
 		return true
 	}
+	if len(s.Dependencies) > 0 {
+		return true
+	}
 	return false
+}
+
+func assertFormSubsetConditionalBranches(t *testing.T, form, canonical *schemaNode, path string) {
+	t.Helper()
+
+	// Walk draft-07 dependencies/oneOf branches for both form and canonical.
+	// This is required because form schemas may define fields only inside
+	// conditional branches (so they render only when the discriminator is
+	// selected). Without traversing these branches, we would miss those
+	// fields and allow drift.
+	for _, branch := range conditionalBranches(form) {
+		assertFormSubsetAtPath(t, branch, canonical, path)
+	}
+}
+
+func conditionalBranches(s *schemaNode) []*schemaNode {
+	if s == nil {
+		return nil
+	}
+	var out []*schemaNode
+	out = append(out, s.OneOf...)
+	out = append(out, s.AnyOf...)
+	out = append(out, s.AllOf...)
+	for _, dep := range s.Dependencies {
+		if dep == nil {
+			continue
+		}
+		out = append(out, dep.OneOf...)
+		out = append(out, dep.AnyOf...)
+		out = append(out, dep.AllOf...)
+	}
+	return out
 }
 
 func joinPath(parent, child string) string {
