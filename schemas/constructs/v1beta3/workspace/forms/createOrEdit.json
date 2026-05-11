@@ -1,5 +1,4 @@
 {
-  "$schema": "https://json-schema.org/draft-07/schema#",
   "title": "Workspace",
   "description": "RJSF form schema for the create-or-edit workspace modal. Captures the user-input fields of the canonical Workspace construct (id / owner / metadata / createdAt / updatedAt / deletedAt are server-generated and intentionally absent). Field shape, types, enums, and required list MUST stay a subset of meshery/schemas/constructs/v1beta3/workspace/workspace.yaml; the Go validator at validation/forms_test.go enforces that.",
   "type": "object",

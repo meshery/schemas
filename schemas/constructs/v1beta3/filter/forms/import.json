@@ -1,5 +1,4 @@
 {
-  "$schema": "https://json-schema.org/draft-07/schema#",
   "title": "Import Filter",
   "description": "RJSF form schema for the import-filter modal. Captures the user-input fields drawn from the canonical MesheryFilterImportFormPayload schema in meshery/schemas/constructs/v1beta3/filter/api.yml. The uploadType discriminator selects between File Upload and URL Upload import methods. Field shape, types, and required lists MUST stay a subset of the canonical MesheryFilterImportFormPayload; the Go validator at validation/forms_test.go enforces that.",
   "type": "object",

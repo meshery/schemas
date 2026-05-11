@@ -1,5 +1,4 @@
 {
-  "$schema": "https://json-schema.org/draft-07/schema#",
   "title": "Publish Catalog Item",
   "description": "RJSF form schema for the catalog publishing modal. Captures the user-input fields of the canonical Catalog construct (publishedVersion / class / snapshotURL are server-generated and intentionally absent). Field shape, types, enums, and required list MUST stay a subset of meshery/schemas/constructs/v1beta2/catalog/catalog.yaml; the Go validator at validation/forms_test.go enforces that.",
   "type": "object",

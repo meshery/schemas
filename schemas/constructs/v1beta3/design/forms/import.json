@@ -1,5 +1,4 @@
 {
-  "$schema": "https://json-schema.org/draft-07/schema#",
   "title": "Import Design",
   "description": "RJSF form schema for the import-design modal. Captures the user-input fields drawn from the canonical MesheryPatternImportFormPayload schema in meshery/schemas/constructs/v1beta3/design/api.yml. The uploadType discriminator determines which branch's conditional required fields apply. Field shape, types, and required lists MUST stay a subset of the canonical schema components; the Go validator at validation/forms_test.go enforces that.",
   "type": "object",
