@@ -47,7 +47,7 @@
             "type": "string",
             "format": "uri",
             "title": "URL",
-            "description": "A direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Ensure the resource is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design.",
+            "description": "A direct URL to a single file, for example: https://raw.githubusercontent.com/your-design-file.yaml. Ensure the resource is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design.",
             "x-rjsf-grid-area": "12"
           }
         },
