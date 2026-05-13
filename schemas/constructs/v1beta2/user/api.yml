@@ -123,6 +123,31 @@ paths:
           $ref: "#/components/responses/401"
         "500":
           $ref: "#/components/responses/500"
+    put:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - users
+      operationId: updateUser
+      summary: Update current user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserUpdate"
+      responses:
+        "200":
+          description: User profile updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
 components:
   responses:
     400:
@@ -192,8 +217,8 @@ components:
         - userId
         - provider
         - email
-        - firstName
-        - lastName
+        - first_name
+        - last_name
         - status
         - createdAt
         - updatedAt
@@ -235,20 +260,20 @@ components:
           x-oapi-codegen-extra-tags:
             db: "email"
             json: "email"
-        firstName:
+        first_name:
           type: string
           maxLength: 200
           description: User's first name
           x-oapi-codegen-extra-tags:
             db: "first_name"
-            json: "firstName"
-        lastName:
+            json: "first_name"
+        last_name:
           type: string
           maxLength: 300
           description: User's last name
           x-oapi-codegen-extra-tags:
             db: "last_name"
-            json: "lastName"
+            json: "last_name"
         avatarUrl:
           type: string
           format: uri
@@ -614,3 +639,21 @@ components:
           format: uri
           description: The link of the social.
       required: ["site", "link"]
+
+    UserUpdate:
+      type: object
+      description: Payload for updating user profile
+      properties:
+        first_name:
+          type: string
+          maxLength: 200
+        last_name:
+          type: string
+          maxLength: 300
+        bio:
+          type: string
+          maxLength: 1000
+        avatarUrl:
+          type: string
+          format: uri
+      additionalProperties: false

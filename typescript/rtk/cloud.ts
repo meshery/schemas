@@ -483,6 +483,10 @@ const injectedRtkApi = api
         query: () => ({ url: `/api/identity/users/profile` }),
         providesTags: ["User_users"],
       }),
+      updateUser: build.mutation<UpdateUserApiResponse, UpdateUserApiArg>({
+        query: (queryArg) => ({ url: `/api/identity/users/profile`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["User_users"],
+      }),
       createView: build.mutation<CreateViewApiResponse, CreateViewApiArg>({
         query: (queryArg) => ({ url: `/api/content/views`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["View_views"],
@@ -3276,9 +3280,9 @@ export type GetUsersForOrgApiResponse = /** status 200 Paginated list of organiz
     /** User's email address */
     email: string;
     /** User's first name */
-    firstName: string;
+    first_name: string;
     /** User's last name */
-    lastName: string;
+    last_name: string;
     /** URL to user's avatar image */
     avatarUrl?: string;
     /** User account status */
@@ -3440,9 +3444,9 @@ export type GetUsersApiResponse = /** status 200 Paginated list of public users 
     /** User's email address */
     email: string;
     /** User's first name */
-    firstName: string;
+    first_name: string;
     /** User's last name */
-    lastName: string;
+    last_name: string;
     /** URL to user's avatar image */
     avatarUrl?: string;
     /** User account status */
@@ -3592,9 +3596,9 @@ export type GetUserProfileByIdApiResponse = /** status 200 User profile for the 
   /** User's email address */
   email: string;
   /** User's first name */
-  firstName: string;
+  first_name: string;
   /** User's last name */
-  lastName: string;
+  last_name: string;
   /** URL to user's avatar image */
   avatarUrl?: string;
   /** User account status */
@@ -3735,9 +3739,9 @@ export type GetUserApiResponse = /** status 200 Current user profile and role co
   /** User's email address */
   email: string;
   /** User's first name */
-  firstName: string;
+  first_name: string;
   /** User's last name */
-  lastName: string;
+  last_name: string;
   /** URL to user's avatar image */
   avatarUrl?: string;
   /** User account status */
@@ -3865,6 +3869,153 @@ export type GetUserApiResponse = /** status 200 Current user profile and role co
   };
 };
 export type GetUserApiArg = void;
+export type UpdateUserApiResponse = /** status 200 User profile updated */ {
+  /** Unique identifier for the user */
+  id: string;
+  /** User identifier (username or external ID) */
+  userId: string;
+  /** Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github) */
+  provider: string;
+  /** User's email address */
+  email: string;
+  /** User's first name */
+  first_name: string;
+  /** User's last name */
+  last_name: string;
+  /** URL to user's avatar image */
+  avatarUrl?: string;
+  /** User account status */
+  status: "active" | "inactive" | "pending" | "anonymous";
+  /** User's biography or description */
+  bio?: string;
+  /** User's country information stored as JSONB */
+  country?: {
+    [key: string]: any;
+  };
+  /** User's region information stored as JSONB */
+  region?: {
+    [key: string]: any;
+  };
+  /** User preferences stored as JSONB */
+  preferences?: {
+    /** The mesh adapters of the preference. */
+    meshAdapters?: object[];
+    grafana?: {
+      /** Grafana URL for the user configuration. */
+      grafanaUrl?: string;
+      /** Grafana API key for the user configuration. */
+      grafanaApiKey?: string;
+      /** Selected Grafana board configurations for the user. */
+      selectedBoardsConfigs?: {
+        /** Placeholder for GrafanaBoard definition (define fields as needed) */
+        board?: object;
+        /** Panels selected for the Grafana board configuration. */
+        panels?: object[];
+        /** Template variables applied to the selected Grafana board configuration. */
+        templateVars?: string[];
+      }[];
+    };
+    prometheus?: {
+      /** The prometheus URL of the prometheus. */
+      prometheusUrl?: string;
+      /** The selected prometheus boards configs of the prometheus. */
+      selectedPrometheusBoardsConfigs?: {
+        /** Placeholder for GrafanaBoard definition (define fields as needed) */
+        board?: object;
+        /** Panels selected for the Grafana board configuration. */
+        panels?: object[];
+        /** Template variables applied to the selected Grafana board configuration. */
+        templateVars?: string[];
+      }[];
+    };
+    loadTestPrefs?: {
+      /** Concurrent requests */
+      c?: number;
+      /** Queries per second */
+      qps?: number;
+      /** Duration */
+      t?: string;
+      /** Load generator */
+      gen?: string;
+    };
+    /** The anonymous usage stats of the preference. */
+    anonymousUsageStats: boolean;
+    /** The anonymous perf results of the preference. */
+    anonymousPerfResults: boolean;
+    /** Timestamp of when the resource was last updated. */
+    updatedAt: string;
+    /** The dashboard preferences of the preference. */
+    dashboardPreferences: {
+      [key: string]: any;
+    };
+    /** ID of the associated selectedOrganization. */
+    selectedOrganizationId: string;
+    /** The selected workspace for organizations of the preference. */
+    selectedWorkspaceForOrganizations: {
+      [key: string]: string;
+    };
+    /** The users extension preferences of the preference. */
+    usersExtensionPreferences: {
+      [key: string]: any;
+    };
+    /** The remote provider preferences of the preference. */
+    remoteProviderPreferences: {
+      [key: string]: any;
+    };
+  };
+  /** Timestamp when user accepted terms and conditions */
+  acceptedTermsAt?: string;
+  /** Timestamp of user's first login */
+  firstLoginTime?: string;
+  /** Timestamp of user's most recent login */
+  lastLoginTime: string;
+  /** Timestamp when the user record was created */
+  createdAt: string;
+  /** Timestamp when the user record was last updated */
+  updatedAt: string;
+  /** Various online profiles associated with the user account */
+  socials?: {
+    /** The site of the social. */
+    site: string;
+    /** The link of the social. */
+    link: string;
+  }[];
+  /** Timestamp when the user record was soft-deleted (null if not deleted) */
+  deletedAt: string | null;
+  /** List of global roles assigned to the user */
+  roleNames?: (
+    | "admin"
+    | "meshmap"
+    | "curator"
+    | "team admin"
+    | "workspace admin"
+    | "workspace manager"
+    | "organization admin"
+    | "user"
+  )[];
+  /** Teams the user belongs to with role information */
+  teams?: {
+    /** Team memberships for the user with their assigned roles. */
+    teamsWithRoles?: object[];
+    /** Total number of team memberships returned for the user. */
+    totalCount?: number;
+  };
+  /** Organizations the user belongs to with role information */
+  organizations?: {
+    /** Organization memberships for the user with their assigned roles. */
+    organizationsWithRoles?: object[];
+    /** Total number of organization memberships returned for the user. */
+    totalCount?: number;
+  };
+};
+export type UpdateUserApiArg = {
+  body: {
+    first_name?: string;
+    last_name?: string;
+    bio?: string;
+    avatarUrl?: string;
+  };
+};
 export type CreateViewApiResponse = /** status 201 Created view */ {
   /** Unique identifier for the view. */
   id: string;
@@ -6217,9 +6368,9 @@ export type GetPatternsApiResponse = /** status 200 Designs response */ {
       /** User's email address */
       email: string;
       /** User's first name */
-      firstName: string;
+      first_name: string;
       /** User's last name */
-      lastName: string;
+      last_name: string;
       /** URL to user's avatar image */
       avatarUrl?: string;
       /** User account status */
@@ -6453,9 +6604,9 @@ export type UpsertPatternApiResponse = /** status 200 Design saved */ {
     /** User's email address */
     email: string;
     /** User's first name */
-    firstName: string;
+    first_name: string;
     /** User's last name */
-    lastName: string;
+    last_name: string;
     /** URL to user's avatar image */
     avatarUrl?: string;
     /** User account status */
@@ -6755,9 +6906,9 @@ export type GetPatternApiResponse = /** status 200 Design response */ {
     /** User's email address */
     email: string;
     /** User's first name */
-    firstName: string;
+    first_name: string;
     /** User's last name */
-    lastName: string;
+    last_name: string;
     /** URL to user's avatar image */
     avatarUrl?: string;
     /** User account status */
@@ -6973,9 +7124,9 @@ export type ClonePatternApiResponse = /** status 200 Design cloned */ {
     /** User's email address */
     email: string;
     /** User's first name */
-    firstName: string;
+    first_name: string;
     /** User's last name */
-    lastName: string;
+    last_name: string;
     /** URL to user's avatar image */
     avatarUrl?: string;
     /** User account status */
@@ -7225,9 +7376,9 @@ export type GetCatalogContentApiResponse = /** status 200 Catalog content page *
       /** User's email address */
       email: string;
       /** User's first name */
-      firstName: string;
+      first_name: string;
       /** User's last name */
-      lastName: string;
+      last_name: string;
       /** URL to user's avatar image */
       avatarUrl?: string;
       /** User account status */
@@ -10904,6 +11055,7 @@ export const {
   useGetUsersQuery,
   useGetUserProfileByIdQuery,
   useGetUserQuery,
+  useUpdateUserMutation,
   useCreateViewMutation,
   useGetViewsQuery,
   useShareViewMutation,
