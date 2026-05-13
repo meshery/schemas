@@ -28,7 +28,6 @@
 
 const fs = require("fs");
 const path = require("path");
-const $RefParser = require("@apidevtools/json-schema-ref-parser");
 const yaml = require("js-yaml");
 const { execSync } = require("child_process");
 const logger = require("./lib/logger");
@@ -178,6 +177,7 @@ function mergeOpenapiSpec(baseSpec, specToMerge) {
 }
 
 async function dereferenceOpenapiSpec(inputPath) {
+  const { default: $RefParser } = await import("@apidevtools/json-schema-ref-parser");
   return $RefParser.dereference(inputPath);
 }
 

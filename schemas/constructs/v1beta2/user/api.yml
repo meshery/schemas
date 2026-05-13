@@ -274,14 +274,14 @@ components:
           x-oapi-codegen-extra-tags:
             db: "last_name"
             json: "last_name"
-        avatarUrl:
+        avatar_url:
           type: string
           format: uri
           maxLength: 500
           description: URL to user's avatar image
           x-oapi-codegen-extra-tags:
             db: "avatar_url"
-            json: "avatarUrl"
+            json: "avatar_url"
         status:
           type: string
           maxLength: 100
@@ -653,7 +653,7 @@ components:
         bio:
           type: string
           maxLength: 1000
-        avatarUrl:
+        avatar_url:
           type: string
           format: uri
       additionalProperties: false

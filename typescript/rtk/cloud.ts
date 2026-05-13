@@ -3284,7 +3284,7 @@ export type GetUsersForOrgApiResponse = /** status 200 Paginated list of organiz
     /** User's last name */
     last_name: string;
     /** URL to user's avatar image */
-    avatarUrl?: string;
+    avatar_url?: string;
     /** User account status */
     status: "active" | "inactive" | "pending" | "anonymous";
     /** User's biography or description */
@@ -3448,7 +3448,7 @@ export type GetUsersApiResponse = /** status 200 Paginated list of public users 
     /** User's last name */
     last_name: string;
     /** URL to user's avatar image */
-    avatarUrl?: string;
+    avatar_url?: string;
     /** User account status */
     status: "active" | "inactive" | "pending" | "anonymous";
     /** User's biography or description */
@@ -3600,7 +3600,7 @@ export type GetUserProfileByIdApiResponse = /** status 200 User profile for the 
   /** User's last name */
   last_name: string;
   /** URL to user's avatar image */
-  avatarUrl?: string;
+  avatar_url?: string;
   /** User account status */
   status: "active" | "inactive" | "pending" | "anonymous";
   /** User's biography or description */
@@ -3743,7 +3743,7 @@ export type GetUserApiResponse = /** status 200 Current user profile and role co
   /** User's last name */
   last_name: string;
   /** URL to user's avatar image */
-  avatarUrl?: string;
+  avatar_url?: string;
   /** User account status */
   status: "active" | "inactive" | "pending" | "anonymous";
   /** User's biography or description */
@@ -3883,7 +3883,7 @@ export type UpdateUserApiResponse = /** status 200 User profile updated */ {
   /** User's last name */
   last_name: string;
   /** URL to user's avatar image */
-  avatarUrl?: string;
+  avatar_url?: string;
   /** User account status */
   status: "active" | "inactive" | "pending" | "anonymous";
   /** User's biography or description */
@@ -4013,7 +4013,7 @@ export type UpdateUserApiArg = {
     first_name?: string;
     last_name?: string;
     bio?: string;
-    avatarUrl?: string;
+    avatar_url?: string;
   };
 };
 export type CreateViewApiResponse = /** status 201 Created view */ {
@@ -6372,7 +6372,7 @@ export type GetPatternsApiResponse = /** status 200 Designs response */ {
       /** User's last name */
       last_name: string;
       /** URL to user's avatar image */
-      avatarUrl?: string;
+      avatar_url?: string;
       /** User account status */
       status: "active" | "inactive" | "pending" | "anonymous";
       /** User's biography or description */
@@ -6608,7 +6608,7 @@ export type UpsertPatternApiResponse = /** status 200 Design saved */ {
     /** User's last name */
     last_name: string;
     /** URL to user's avatar image */
-    avatarUrl?: string;
+    avatar_url?: string;
     /** User account status */
     status: "active" | "inactive" | "pending" | "anonymous";
     /** User's biography or description */
@@ -6910,7 +6910,7 @@ export type GetPatternApiResponse = /** status 200 Design response */ {
     /** User's last name */
     last_name: string;
     /** URL to user's avatar image */
-    avatarUrl?: string;
+    avatar_url?: string;
     /** User account status */
     status: "active" | "inactive" | "pending" | "anonymous";
     /** User's biography or description */
@@ -7128,7 +7128,7 @@ export type ClonePatternApiResponse = /** status 200 Design cloned */ {
     /** User's last name */
     last_name: string;
     /** URL to user's avatar image */
-    avatarUrl?: string;
+    avatar_url?: string;
     /** User account status */
     status: "active" | "inactive" | "pending" | "anonymous";
     /** User's biography or description */
@@ -7380,7 +7380,7 @@ export type GetCatalogContentApiResponse = /** status 200 Catalog content page *
       /** User's last name */
       last_name: string;
       /** URL to user's avatar image */
-      avatarUrl?: string;
+      avatar_url?: string;
       /** User account status */
       status: "active" | "inactive" | "pending" | "anonymous";
       /** User's biography or description */
