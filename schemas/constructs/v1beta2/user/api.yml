@@ -260,28 +260,28 @@ components:
           x-oapi-codegen-extra-tags:
             db: "email"
             json: "email"
-        first_name:
+        firstName:
           type: string
-          maxLength: 200
+          maxLength: 300
           description: User's first name
           x-oapi-codegen-extra-tags:
             db: "first_name"
-            json: "first_name"
-        last_name:
+            json: "firstName"
+        lastName:
           type: string
           maxLength: 300
           description: User's last name
           x-oapi-codegen-extra-tags:
             db: "last_name"
-            json: "last_name"
-        avatar_url:
+            json: "lastName"
+        avatarUrl:
           type: string
           format: uri
           maxLength: 500
           description: URL to user's avatar image
           x-oapi-codegen-extra-tags:
             db: "avatar_url"
-            json: "avatar_url"
+            json: "avatarUrl"
         status:
           type: string
           maxLength: 100
@@ -644,16 +644,16 @@ components:
       type: object
       description: Payload for updating user profile
       properties:
-        first_name:
+        firstName:
           type: string
-          maxLength: 200
-        last_name:
+          maxLength: 300
+        lastName:
           type: string
           maxLength: 300
         bio:
           type: string
           maxLength: 1000
-        avatar_url:
+        avatarUrl:
           type: string
           format: uri
       additionalProperties: false

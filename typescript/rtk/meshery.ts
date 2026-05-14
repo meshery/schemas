@@ -3633,11 +3633,11 @@ export type GetUsersForOrgApiResponse = /** status 200 Paginated list of organiz
     /** User's email address */
     email: string;
     /** User's first name */
-    first_name: string;
+    firstName?: string;
     /** User's last name */
-    last_name: string;
+    lastName?: string;
     /** URL to user's avatar image */
-    avatar_url?: string;
+    avatarUrl?: string;
     /** User account status */
     status: "active" | "inactive" | "pending" | "anonymous";
     /** User's biography or description */
@@ -3797,11 +3797,11 @@ export type GetUsersApiResponse = /** status 200 Paginated list of public users 
     /** User's email address */
     email: string;
     /** User's first name */
-    first_name: string;
+    firstName?: string;
     /** User's last name */
-    last_name: string;
+    lastName?: string;
     /** URL to user's avatar image */
-    avatar_url?: string;
+    avatarUrl?: string;
     /** User account status */
     status: "active" | "inactive" | "pending" | "anonymous";
     /** User's biography or description */
@@ -3949,11 +3949,11 @@ export type GetUserProfileByIdApiResponse = /** status 200 User profile for the 
   /** User's email address */
   email: string;
   /** User's first name */
-  first_name: string;
+  firstName?: string;
   /** User's last name */
-  last_name: string;
+  lastName?: string;
   /** URL to user's avatar image */
-  avatar_url?: string;
+  avatarUrl?: string;
   /** User account status */
   status: "active" | "inactive" | "pending" | "anonymous";
   /** User's biography or description */
@@ -4092,11 +4092,11 @@ export type GetUserApiResponse = /** status 200 Current user profile and role co
   /** User's email address */
   email: string;
   /** User's first name */
-  first_name: string;
+  firstName?: string;
   /** User's last name */
-  last_name: string;
+  lastName?: string;
   /** URL to user's avatar image */
-  avatar_url?: string;
+  avatarUrl?: string;
   /** User account status */
   status: "active" | "inactive" | "pending" | "anonymous";
   /** User's biography or description */
@@ -4232,11 +4232,11 @@ export type UpdateUserApiResponse = /** status 200 User profile updated */ {
   /** User's email address */
   email: string;
   /** User's first name */
-  first_name: string;
+  firstName?: string;
   /** User's last name */
-  last_name: string;
+  lastName?: string;
   /** URL to user's avatar image */
-  avatar_url?: string;
+  avatarUrl?: string;
   /** User account status */
   status: "active" | "inactive" | "pending" | "anonymous";
   /** User's biography or description */
@@ -4363,10 +4363,10 @@ export type UpdateUserApiResponse = /** status 200 User profile updated */ {
 };
 export type UpdateUserApiArg = {
   body: {
-    first_name?: string;
-    last_name?: string;
+    firstName?: string;
+    lastName?: string;
     bio?: string;
-    avatar_url?: string;
+    avatarUrl?: string;
   };
 };
 export type GetConnectionsApiResponse = /** status 200 Paginated list of connections with summary information */ {
