@@ -21,22 +21,22 @@
       "subType": "",
       "kind": "artifacthub",
       "status": "",
-      "userId": "00000000-0000-0000-0000-000000000000",
-      "createdAt": "0001-01-01T00:00:00Z",
-      "updatedAt": "0001-01-01T00:00:00Z",
-      "deletedAt": null,
-      "schemaVersion": "connections.meshery.io/v1beta3",
+      "user_id": "00000000-0000-0000-0000-000000000000",
+      "created_at": "0001-01-01T00:00:00Z",
+      "updated_at": "0001-01-01T00:00:00Z",
+      "deleted_at": null,
+      "schemaVersion": "connections.meshery.io/v1beta2",
       "environments": [
         {
           "id": "00000000-0000-0000-0000-000000000000",
           "name": "",
           "description": "",
-          "organizationId": "00000000-0000-0000-0000-000000000000",
+          "organization_id": "00000000-0000-0000-0000-000000000000",
           "owner": "00000000-0000-0000-0000-000000000000",
-          "createdAt": "0001-01-01T00:00:00Z",
-          "updatedAt": "0001-01-01T00:00:00Z",
-          "deletedAt": null,
-          "schemaVersion": "environments.meshery.io/v1beta3"
+          "created_at": "0001-01-01T00:00:00Z",
+          "updated_at": "0001-01-01T00:00:00Z",
+          "deleted_at": null,
+          "schemaVersion": "environments.meshery.io/v1beta2"
         }
       ]
     },
@@ -253,6 +253,6 @@
     "kind": "",
     "schema": ""
   },
-  "createdAt": "0001-01-01T00:00:00Z",
-  "updatedAt": "0001-01-01T00:00:00Z"
+  "created_at": "0001-01-01T00:00:00Z",
+  "updated_at": "0001-01-01T00:00:00Z"
 }

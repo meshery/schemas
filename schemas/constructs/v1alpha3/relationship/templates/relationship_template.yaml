@@ -3,7 +3,7 @@ schemaVersion: relationships.meshery.io/v1alpha3
 version: v0.0.1
 model:
   id: 00000000-0000-0000-0000-000000000000
-  schemaVersion: models.meshery.io/v1beta2
+  schemaVersion: models.meshery.io/v1beta1
   version: v0.0.1
   name: untitled-model
   displayName: Untitled Model
@@ -12,26 +12,26 @@ model:
   registrant:
     id: 00000000-0000-0000-0000-000000000000
     name: ''
-    credentialId: 00000000-0000-0000-0000-000000000000
+    credential_id: 00000000-0000-0000-0000-000000000000
     type: ''
-    subType: ''
+    sub_type: ''
     kind: artifacthub
     status: ''
-    userId: 00000000-0000-0000-0000-000000000000
-    createdAt: '0001-01-01T00:00:00Z'
-    updatedAt: '0001-01-01T00:00:00Z'
-    deletedAt: 
-    schemaVersion: connections.meshery.io/v1beta3
+    user_id: 00000000-0000-0000-0000-000000000000
+    created_at: '0001-01-01T00:00:00Z'
+    updated_at: '0001-01-01T00:00:00Z'
+    deleted_at: 
+    schemaVersion: connections.meshery.io/v1beta1
     environments:
     - id: 00000000-0000-0000-0000-000000000000
       name: ''
       description: ''
-      organizationId: 00000000-0000-0000-0000-000000000000
+      organization_id: 00000000-0000-0000-0000-000000000000
       owner: 00000000-0000-0000-0000-000000000000
-      createdAt: '0001-01-01T00:00:00Z'
-      updatedAt: '0001-01-01T00:00:00Z'
-      deletedAt: 
-      schemaVersion: environments.meshery.io/v1beta3
+      created_at: '0001-01-01T00:00:00Z'
+      updated_at: '0001-01-01T00:00:00Z'
+      deleted_at: 
+      schemaVersion: environments.meshery.io/v1beta1
   metadata:
     capabilities: []
     primaryColor: "#00b39f"
