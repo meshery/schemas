@@ -65,7 +65,14 @@ paths:
             minimum: 1
         - name: pagesize
           in: query
-          description: Number of tables to include per page.
+          description: |
+            Number of tables to include per page. The parameter name is
+            `pagesize` (all-lowercase) to match the Meshery server's
+            shared `getPaginationParams` reader; migration to the
+            canonical camelCase `pageSize` form is tracked at the repo
+            level as part of the Phase 3 pagination-envelope migration
+            and applies to every paginated endpoint at once, not to
+            this one construct.
           required: false
           schema:
             type: integer
@@ -281,7 +288,15 @@ components:
           description: True when the running build is older than the latest available release.
         commitsha:
           type: string
-          description: Git commit SHA the running binary was built from.
+          description: |
+            Git commit SHA the running binary was built from. The wire
+            property name is `commitsha` (all-lowercase) to match the
+            current Meshery server response shape (`json:"commitsha"`
+            on `Version.CommitSHA` in `server_spec_handler.go`) and the
+            UI consumers that read it (`Navigator.tsx`). Migration to the
+            canonical camelCase `commitSha` form is a coordinated
+            schema + server + UI change tracked separately and is not
+            in scope for this construct's initial documentation.
           maxLength: 64
         releaseChannel:
           type: string
@@ -295,8 +310,17 @@ components:
       properties:
         id:
           type: string
-          description: Meshery's internal identifier for this Kubernetes context.
-          maxLength: 255
+          description: |
+            Meshery's internal identifier for this Kubernetes context.
+            This is a 32-character lowercase-hex MD5 digest produced by
+            `K8sContextGenerateID` in `server/models/k8s_context.go`, not
+            a UUID — the digest is computed deterministically from the
+            cluster, auth, Meshery instance ID, and context name so the
+            same logical context always yields the same identifier.
+          x-id-format: external
+          minLength: 32
+          maxLength: 32
+          pattern: "^[0-9a-f]{32}$"
         name:
           type: string
           description: Human-readable name of the Kubernetes context.
@@ -309,17 +333,14 @@ components:
           description: API server URL for the Kubernetes context.
           maxLength: 2048
         clusterId:
-          type: string
-          description: Identifier of the underlying Kubernetes cluster, when known.
-          maxLength: 255
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+          description: Identifier of the underlying Kubernetes cluster, when known. Derived from `K8sContext.KubernetesServerID` (`core.Uuid`).
         createdAt:
-          type: string
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/created_at"
           description: When the context was first registered with Meshery.
-          format: date-time
         updatedAt:
-          type: string
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/updated_at"
           description: When the context was last updated.
-          format: date-time
 
     SystemSessionSync:
       type: object
