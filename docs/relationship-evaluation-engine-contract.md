@@ -12,7 +12,7 @@ and updates applied. The wire contract is defined by the OpenAPI construct
 `schemas/constructs/v1beta1/evaluation/api.yml`:
 
 - `EvaluationRequest` — `{ design: PatternFile, options?: { returnDiffOnly?, enableTrace? } }`
-- `EvaluationResponse` — `{ schemaVersion, design: PatternFile, evaluationHash?, timestamp?, trace?, actions[] }`
+- `EvaluationResponse` — `{ schemaVersion, design: PatternFile, evaluationHash?, timestamp?, actions[] }`
 
 This contract is **engine-agnostic**. The same `EvaluationResponse` is
 produced by either of two interchangeable engines:
@@ -40,8 +40,8 @@ global scope:
 globalThis.__mesheryRelationshipEngine = {
   contract: number,   // integer; a consumer MUST refuse a mismatched contract
   version: string,    // meshery build version / SHA — diagnostics only
-  init(relationshipsJSON: string): string,                    // "{}" | {"error":"..."}
-  evaluate(designJSON: string, optionsJSON: string): string,  // EvaluationResponse JSON | {"error":"..."}
+  init(relationshipsJson: string): string,                    // "{}" | {"error":"..."}
+  evaluate(designJson: string, optionsJson: string): string,  // EvaluationResponse JSON | {"error":"..."}
   selfTest(): string                                          // {"ok":true,...} | {"error":"..."}
 }
 ```
