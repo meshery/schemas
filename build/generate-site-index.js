@@ -122,7 +122,7 @@ function findApiPaths(version, construct) {
   const apiPath = path.join(repoRoot, "schemas", "constructs", version, construct, "api.yml");
   const content = fs.readFileSync(apiPath, "utf8");
   const parsed = yaml.load(content);
-  return Object.keys(parsed.paths || {}).filter((entry) => entry.startsWith("/api/"));
+  return Object.keys((parsed && parsed.paths) || {}).filter((entry) => entry.startsWith("/api/"));
 }
 
 function constructKeywords(construct) {
@@ -203,9 +203,7 @@ function renderRows(constructs) {
       const operationPath = primaryApiPath(version, construct);
       const apiPath = `schemas/constructs/${version}/${construct}/api.yml`;
       const apiHref = githubBlobUrl(apiPath);
-      const schemaHref = schemaFile
-        ? githubBlobUrl(`schemas/constructs/${version}/${construct}/${schemaFile}`)
-        : null;
+      const schemaHref = schemaFile ? githubBlobUrl(`schemas/constructs/${version}/${construct}/${schemaFile}`) : null;
       const guide = GUIDE_BY_CONSTRUCT[construct] || GUIDE_LINKS.schemas;
       const operationsHref = operationPath ? endpointDocsUrl(operationPath) : null;
 
