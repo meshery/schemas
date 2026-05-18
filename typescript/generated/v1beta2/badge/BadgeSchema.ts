@@ -204,7 +204,7 @@ const BadgeSchema: Record<string, unknown> = {
                       "type": "string",
                       "format": "uri",
                       "description": "URL to the badge image.",
-                      "example": "https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp",
+                      "example": "https://raw.githubusercontent.com/meshery-extensions/meshery-academy/refs/heads/master/.github/assets/images/mershery-icon.png",
                       "maxLength": 2048,
                       "x-oapi-codegen-extra-tags": {
                         "db": "image_url",
@@ -372,7 +372,7 @@ const BadgeSchema: Record<string, unknown> = {
                     "type": "string",
                     "format": "uri",
                     "description": "URL to the badge image.",
-                    "example": "https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp",
+                    "example": "https://raw.githubusercontent.com/meshery-extensions/meshery-academy/refs/heads/master/.github/assets/images/mershery-icon.png",
                     "maxLength": 2048,
                     "x-oapi-codegen-extra-tags": {
                       "db": "image_url",
@@ -469,7 +469,7 @@ const BadgeSchema: Record<string, unknown> = {
                       "type": "string",
                       "format": "uri",
                       "description": "URL to the badge image.",
-                      "example": "https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp",
+                      "example": "https://raw.githubusercontent.com/meshery-extensions/meshery-academy/refs/heads/master/.github/assets/images/mershery-icon.png",
                       "maxLength": 2048,
                       "x-oapi-codegen-extra-tags": {
                         "db": "image_url",
@@ -662,7 +662,7 @@ const BadgeSchema: Record<string, unknown> = {
                             "type": "string",
                             "format": "uri",
                             "description": "URL to the badge image.",
-                            "example": "https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp",
+                            "example": "https://raw.githubusercontent.com/meshery-extensions/meshery-academy/refs/heads/master/.github/assets/images/mershery-icon.png",
                             "maxLength": 2048,
                             "x-oapi-codegen-extra-tags": {
                               "db": "image_url",
@@ -994,7 +994,7 @@ const BadgeSchema: Record<string, unknown> = {
             "type": "string",
             "format": "uri",
             "description": "URL to the badge image.",
-            "example": "https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp",
+            "example": "https://raw.githubusercontent.com/meshery-extensions/meshery-academy/refs/heads/master/.github/assets/images/mershery-icon.png",
             "maxLength": 2048,
             "x-oapi-codegen-extra-tags": {
               "db": "image_url",
@@ -1082,7 +1082,7 @@ const BadgeSchema: Record<string, unknown> = {
             "type": "string",
             "format": "uri",
             "description": "URL to the badge image.",
-            "example": "https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp",
+            "example": "https://raw.githubusercontent.com/meshery-extensions/meshery-academy/refs/heads/master/.github/assets/images/mershery-icon.png",
             "maxLength": 2048,
             "x-oapi-codegen-extra-tags": {
               "db": "image_url",
@@ -1212,7 +1212,7 @@ const BadgeSchema: Record<string, unknown> = {
                   "type": "string",
                   "format": "uri",
                   "description": "URL to the badge image.",
-                  "example": "https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp",
+                  "example": "https://raw.githubusercontent.com/meshery-extensions/meshery-academy/refs/heads/master/.github/assets/images/mershery-icon.png",
                   "maxLength": 2048,
                   "x-oapi-codegen-extra-tags": {
                     "db": "image_url",
