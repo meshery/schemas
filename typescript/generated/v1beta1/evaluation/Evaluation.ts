@@ -5,7 +5,7 @@
 
 export interface paths {
   "/evaluate": {
-    /** Performs relationship evaluation on a given design, applying policies and updating components and relationships as needed. */
+    /** Performs relationship evaluation on a given design, applying policies and updating components and relationships as needed. This `EvaluationResponse` contract is engine-agnostic: it is produced either by this server operation or by an equivalent in-browser WebAssembly engine implementing the same contract. See `docs/relationship-evaluation-engine-contract.md` for the authoritative engine contract, the in-browser engine surface, and the registry-independent hydration boundary. */
     post: {
       responses: {
         /** Successful evaluation */
