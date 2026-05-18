@@ -10,6 +10,7 @@ info:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   version: v1beta2
+  x-annotation: ["cloud"]
 servers:
   - url: https://cloud.meshery.io
     description: Meshery Cloud production server URL
@@ -29,6 +30,7 @@ paths:
   /api/identity/roles:
     post:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - roles
       summary: Add role holder
@@ -53,6 +55,7 @@ paths:
   /api/identity/roles/{roleId}:
     delete:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - roles
       summary: Delete role
@@ -75,6 +78,7 @@ paths:
   /api/identity/orgs/{orgId}/roles:
     get:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - roles
       summary: Get organization roles
@@ -104,6 +108,7 @@ paths:
           $ref: "#/components/responses/500"
     post:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - roles
       summary: Upsert organization role
@@ -134,6 +139,7 @@ paths:
           $ref: "#/components/responses/500"
     put:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - roles
       summary: Bulk edit role holders
@@ -164,6 +170,7 @@ paths:
   /api/identity/orgs/{orgId}/roles/{roleId}/keychains:
     get:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - roles
       summary: Get keychains for role
@@ -199,6 +206,7 @@ paths:
   /api/identity/orgs/{orgId}/roles/{roleId}/keychains/{keychainId}:
     post:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - roles
       summary: Assign keychain to role
@@ -221,6 +229,7 @@ paths:
           $ref: "#/components/responses/500"
     delete:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - roles
       summary: Unassign keychain from role

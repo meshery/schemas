@@ -3,6 +3,7 @@ info:
   title: Badge
   description: OpenAPI schema for managing badges.
   version: v1beta2
+  x-annotation: ["cloud"]
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
@@ -22,6 +23,7 @@ paths:
   /api/organizations/badges/{badgeId}:
     delete:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       operationId: deleteBadgeById
       tags:
         - Badge
@@ -40,6 +42,7 @@ paths:
 
     get:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       operationId: getBadgeById
       tags:
         - Badge
@@ -63,6 +66,7 @@ paths:
   /api/organizations/badges:
     post:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       operationId: createOrUpdateBadge
       tags:
         - Badge
@@ -90,6 +94,7 @@ paths:
   /api/identity/badges:
     get:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       operationId: getAvailableBadges
       tags:
         - Badge
@@ -113,6 +118,7 @@ paths:
   /api/identity/users/badges:
     put:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       operationId: assignBadges
       tags:
         - Badge

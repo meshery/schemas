@@ -3,6 +3,7 @@ info:
   title: Subscription
   description: API for managing subscriptions using various payment processors in a SaaS application.
   version: v1beta3
+  x-annotation: ["cloud"]
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
@@ -24,6 +25,8 @@ paths:
   /api/entitlement/subscriptions:
     get:
       x-internal:
+      - cloud
+      x-annotation:
       - cloud
       tags:
       - Subscriptions
@@ -73,6 +76,8 @@ paths:
     post:
       x-internal:
       - cloud
+      x-annotation:
+      - cloud
       tags:
       - Subscriptions
       operationId: cancelSubscription
@@ -100,6 +105,8 @@ paths:
   /api/entitlement/subscriptions/create:
     post:
       x-internal:
+      - cloud
+      x-annotation:
       - cloud
       tags:
       - Subscriptions
@@ -129,6 +136,8 @@ paths:
   /api/entitlement/subscriptions/{subscriptionId}/upgrade:
     post:
       x-internal:
+      - cloud
+      x-annotation:
       - cloud
       tags:
       - Subscriptions
@@ -164,6 +173,8 @@ paths:
     post:
       x-internal:
       - cloud
+      x-annotation:
+      - cloud
       tags:
       - Subscriptions
       operationId: previewSubscriptionUpgrade
@@ -197,6 +208,8 @@ paths:
   /api/entitlement/subscriptions/webhooks:
     post:
       x-internal:
+      - cloud
+      x-annotation:
       - cloud
       tags:
       - Payment Processors

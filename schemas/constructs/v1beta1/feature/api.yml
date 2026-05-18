@@ -3,6 +3,7 @@ info:
   title: Feature
   description: OpenAPI schema for the Features construct with entitlement-related properties.
   version: v1beta1
+  x-annotation: ["cloud"]
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
@@ -22,6 +23,7 @@ paths:
   /api/entitlement/features:
     get:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       operationId: getFeatures
       tags:
         - Features
@@ -43,6 +45,7 @@ paths:
   /api/entitlement/subscriptions/organizations/{organizationId}/features:
     get:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       operationId: getFeaturesByOrganization
       tags:
         - Features

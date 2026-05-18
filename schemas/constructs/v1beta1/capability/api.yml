@@ -3,6 +3,7 @@ info:
   title: Capability
   description: OpenAPI schema for Meshery capability definitions.
   version: v1beta1
+  x-annotation: ["cloud", "meshery"]
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io

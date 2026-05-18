@@ -3,6 +3,7 @@ info:
   title: Evaluation
   description: API for evaluating relationships in Meshery designs.
   version: v1beta1
+  x-annotation: ["meshery"]
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
@@ -22,6 +23,7 @@ paths:
   /evaluate:
     post:
       x-internal: ["meshery"]
+      x-annotation: ["meshery"]
       tags:
         - Evaluation
       summary: Evaluate relationships in a design

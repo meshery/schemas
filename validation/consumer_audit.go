@@ -459,12 +459,12 @@ func newSchemaRow(
 		SubCategory:     ep.Construct,
 		Endpoint:        ep.Path,
 		Method:          ep.Method,
-		XAnnotated:      classifyXAnnotated(ep.XInternal),
+		XAnnotated:      classifyXAnnotated(ep.XAnnotation),
 		AnonymousAccess: boolAuditStatus(ep.Public),
 	}
 
-	mesheryAllowed := xInternalAllows(ep.XInternal, "meshery")
-	cloudAllowed := xInternalAllows(ep.XInternal, "cloud")
+	mesheryAllowed := xAnnotationAllows(ep.XAnnotation, "meshery")
+	cloudAllowed := xAnnotationAllows(ep.XAnnotation, "cloud")
 
 	schemaComplete := completeness.completeFor(ep.Version, ep.Construct)
 
@@ -536,14 +536,14 @@ func consumerAnonymousAccessValue(consumers []consumerEndpoint) string {
 }
 
 // classifyXAnnotated returns the x-annotated column value derived from an
-// endpoint's x-internal list.
+// endpoint's x-annotation list.
 //
-// "Both"         — x-internal includes both "cloud" and "meshery".
-// "Cloud only"   — x-internal: ["cloud"] only.
-// "Meshery only" — x-internal: ["meshery"] only.
-func classifyXAnnotated(xInternal []string) string {
+// "Both"         — x-annotation includes both "cloud" and "meshery".
+// "Cloud only"   — x-annotation: ["cloud"] only.
+// "Meshery only" — x-annotation: ["meshery"] only.
+func classifyXAnnotated(xAnnotation []string) string {
 	has := func(s string) bool {
-		for _, x := range xInternal {
+		for _, x := range xAnnotation {
 			if x == s {
 				return true
 			}

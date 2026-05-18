@@ -3,6 +3,7 @@ info:
   title: Design
   description: OpenAPI schema for managing Meshery designs and infrastructure patterns.
   version: v1beta3
+  x-annotation: ["cloud", "meshery"]
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
@@ -20,6 +21,7 @@ paths:
   /api/content/patterns:
     get:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - designs
       summary: Get designs
@@ -81,6 +83,7 @@ paths:
           $ref: "#/components/responses/500"
     post:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - designs
       summary: Save design
@@ -109,6 +112,7 @@ paths:
   /api/content/patterns/delete:
     post:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - designs
       summary: Bulk delete designs
@@ -133,6 +137,7 @@ paths:
   /api/content/patterns/resource:
     get:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - designs
       summary: Get pattern resources
@@ -152,6 +157,7 @@ paths:
           $ref: "#/components/responses/500"
     post:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - designs
       summary: Save pattern resource
@@ -170,6 +176,7 @@ paths:
   /api/content/patterns/resource/{designId}:
     get:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - designs
       summary: Get pattern resource by ID
@@ -187,6 +194,7 @@ paths:
           $ref: "#/components/responses/500"
     delete:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - designs
       summary: Delete pattern resource
@@ -206,6 +214,7 @@ paths:
   /api/content/patterns/{designId}:
     get:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - designs
       summary: Get design by ID
@@ -227,6 +236,7 @@ paths:
           $ref: "#/components/responses/500"
     delete:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - designs
       summary: Delete design by ID
@@ -246,6 +256,7 @@ paths:
   /api/content/patterns/clone/{designId}:
     post:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - designs
       summary: Clone design
@@ -272,6 +283,7 @@ paths:
   /api/content/patterns/download/{designId}:
     get:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - designs
       summary: Download design file
@@ -296,6 +308,7 @@ paths:
   /api/content/patterns/upload/{designId}:
     post:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - designs
       summary: Upload design source content
@@ -336,6 +349,7 @@ paths:
   /api/pattern/import:
     post:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - designs
       summary: Import Design
@@ -366,6 +380,7 @@ paths:
   /api/catalog/content/{type}:
     get:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - designs
       summary: Get catalog content
@@ -439,6 +454,7 @@ paths:
           $ref: "#/components/responses/500"
     post:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - designs
       summary: Publish catalog content
@@ -471,6 +487,7 @@ paths:
   /api/catalog/content/{type}/unpublish:
     post:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - designs
       summary: Unpublish catalog content
@@ -504,6 +521,7 @@ paths:
   /api/catalog/content/classes:
     get:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - designs
       summary: Get catalog content classes
@@ -528,6 +546,7 @@ paths:
   /api/catalog/requests/approve:
     post:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - designs
       summary: Approve a catalog request
@@ -554,6 +573,7 @@ paths:
   /api/catalog/requests/deny:
     post:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - designs
       summary: Deny a catalog request
@@ -580,6 +600,7 @@ paths:
   /api/resource/{resourceType}/share/{resourceId}:
     post:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - designs
       summary: Share a resource
@@ -616,6 +637,7 @@ paths:
   /api/resource/{resourceType}/share/{resourceId}/{actorType}:
     get:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - designs
       summary: Get resource access actors by type
@@ -653,6 +675,7 @@ paths:
   /api/content/design/share:
     post:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - designs
       summary: Share a design, view, or filter by email
@@ -682,6 +705,7 @@ paths:
   /api/catalog/requests:
     get:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - designs
       summary: Get catalog requests

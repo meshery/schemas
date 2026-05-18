@@ -3,6 +3,7 @@ info:
   title: Support
   description: OpenAPI schema for Meshery help-and-support request submission.
   version: v1beta1
+  x-annotation: ["cloud"]
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
@@ -22,6 +23,7 @@ paths:
   /api/integrations/support:
     post:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - Support
       summary: Submit a support request

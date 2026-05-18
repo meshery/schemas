@@ -16,7 +16,8 @@ type schemaEndpoint struct {
 	Path              string             // "/api/integrations/connections/{connectionId}"
 	OperationID       string             // "getConnection"
 	Tags              []string           // operation tags -> derive Category / Sub-Category
-	XInternal         []string           // ["meshery"], ["cloud"], or nil (= both repos)
+	XInternal         []string           // bundle targets from x-internal
+	XAnnotation       []string           // consumer support targets from x-annotation
 	RequestShape      *schemaShape       // nil for GET/DELETE without body
 	ResponseShape     *schemaShape       // from primary 2xx response
 	SuccessStatusCode int                // primary 2xx response code (200/201/202/204)
@@ -96,6 +97,10 @@ func buildEndpointIndex(rootDir string) (*schemaIndex, error) {
 				if err != nil {
 					return err
 				}
+				xAnnotation, err := parseXAnnotation(op.Extensions)
+				if err != nil {
+					return err
+				}
 
 				ep := schemaEndpoint{
 					Method:      strings.ToUpper(method),
@@ -103,6 +108,7 @@ func buildEndpointIndex(rootDir string) (*schemaIndex, error) {
 					OperationID: op.OperationID,
 					Tags:        append([]string(nil), op.Tags...),
 					XInternal:   xInternal,
+					XAnnotation: xAnnotation,
 					Deprecated:  op.Deprecated,
 					Public:      isExplicitlyPublic(op, doc),
 					Construct:   spec.Construct,
@@ -175,17 +181,27 @@ func mergeQueryParams(pathLevel, opLevel openapi3.Parameters) []schemaQueryParam
 // parseXInternal extracts the explicit x-internal target list from operation
 // extensions.
 func parseXInternal(extensions map[string]any) ([]string, error) {
+	return parseTargetExtension(extensions, "x-internal")
+}
+
+// parseXAnnotation extracts the explicit x-annotation target list from
+// operation extensions.
+func parseXAnnotation(extensions map[string]any) ([]string, error) {
+	return parseTargetExtension(extensions, "x-annotation")
+}
+
+func parseTargetExtension(extensions map[string]any, key string) ([]string, error) {
 	if extensions == nil {
 		return nil, nil
 	}
-	raw, ok := extensions["x-internal"]
+	raw, ok := extensions[key]
 	if !ok {
 		return nil, nil
 	}
-	return parseXInternalTargets(raw)
+	return parseTargetTargets(raw, key)
 }
 
-func parseXInternalTargets(raw any) ([]string, error) {
+func parseTargetTargets(raw any, key string) ([]string, error) {
 	switch v := raw.(type) {
 	case nil:
 		return nil, nil
@@ -195,10 +211,10 @@ func parseXInternalTargets(raw any) ([]string, error) {
 		for _, item := range v {
 			s, ok := item.(string)
 			if !ok {
-				return nil, fmt.Errorf("x-internal array values must be strings")
+				return nil, fmt.Errorf("%s array values must be strings", key)
 			}
 			if !validInternalTags[s] {
-				return nil, fmt.Errorf(`x-internal value %q is invalid`, s)
+				return nil, fmt.Errorf(`%s value %q is invalid`, key, s)
 			}
 			if seen[s] {
 				continue
@@ -215,7 +231,7 @@ func parseXInternalTargets(raw any) ([]string, error) {
 		seen := make(map[string]bool, len(v))
 		for _, item := range v {
 			if !validInternalTags[item] {
-				return nil, fmt.Errorf(`x-internal value %q is invalid`, item)
+				return nil, fmt.Errorf(`%s value %q is invalid`, key, item)
 			}
 			if seen[item] {
 				continue
@@ -228,7 +244,7 @@ func parseXInternalTargets(raw any) ([]string, error) {
 		}
 		return out, nil
 	default:
-		return nil, fmt.Errorf("x-internal must be an array")
+		return nil, fmt.Errorf("%s must be an array", key)
 	}
 }
 

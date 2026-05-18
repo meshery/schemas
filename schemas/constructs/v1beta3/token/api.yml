@@ -10,6 +10,7 @@ info:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   version: v1beta3
+  x-annotation: ["cloud"]
 servers:
 - url: https://cloud.meshery.io
   description: Meshery Cloud production server URL
@@ -26,6 +27,8 @@ paths:
   /api/identity/tokens:
     get:
       x-internal:
+      - cloud
+      x-annotation:
       - cloud
       tags:
       - tokens
@@ -52,6 +55,8 @@ paths:
     post:
       x-internal:
       - cloud
+      x-annotation:
+      - cloud
       tags:
       - tokens
       summary: Generate token
@@ -75,6 +80,8 @@ paths:
           $ref: '#/components/responses/500'
     delete:
       x-internal:
+      - cloud
+      x-annotation:
       - cloud
       tags:
       - tokens
@@ -100,6 +107,8 @@ paths:
     get:
       x-internal:
       - cloud
+      x-annotation:
+      - cloud
       tags:
       - tokens
       summary: Get token by ID
@@ -123,6 +132,8 @@ paths:
   /api/identity/tokens/infinite:
     get:
       x-internal:
+      - cloud
+      x-annotation:
       - cloud
       tags:
       - tokens

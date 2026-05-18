@@ -15,6 +15,7 @@ info:
     sub-resource and the cross-construct content-share endpoint owned by
     the design package.
   version: v1beta3
+  x-annotation: ["cloud"]
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
@@ -33,6 +34,7 @@ paths:
   /api/content/filters:
     get:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - filters
       summary: Get filters
@@ -74,6 +76,7 @@ paths:
           $ref: "#/components/responses/500"
     post:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - filters
       summary: Save filter
@@ -102,6 +105,7 @@ paths:
   /api/content/filters/delete:
     post:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - filters
       summary: Bulk delete filters
@@ -129,6 +133,7 @@ paths:
   /api/content/filters/{filterId}:
     get:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - filters
       summary: Get filter by ID
@@ -152,6 +157,7 @@ paths:
           $ref: "#/components/responses/500"
     put:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - filters
       summary: Update filter by ID
@@ -186,6 +192,7 @@ paths:
           $ref: "#/components/responses/500"
     delete:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - filters
       summary: Delete filter by ID
@@ -205,6 +212,7 @@ paths:
   /api/content/filters/clone/{filterId}:
     post:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - filters
       summary: Clone filter
@@ -237,6 +245,7 @@ paths:
   /api/content/filters/download/{filterId}:
     get:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - filters
       summary: Download filter file

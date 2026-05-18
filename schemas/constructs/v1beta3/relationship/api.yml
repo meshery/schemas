@@ -3,6 +3,7 @@ info:
   title: Relationship
   description: OpenAPI schema for relationship definitions between Meshery components.
   version: v1beta3
+  x-annotation: ["cloud", "meshery"]
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io

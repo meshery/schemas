@@ -3,6 +3,7 @@ info:
   title: Environment
   description: OpenAPI schema for environment management in Meshery Cloud.
   version: v1beta3
+  x-annotation: ["cloud", "meshery"]
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
@@ -199,6 +200,7 @@ paths:
   /api/environments:
     post:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - environments
       operationId: createEnvironment
@@ -221,6 +223,7 @@ paths:
           $ref: "#/components/responses/500"
     get:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - environments
       operationId: getEnvironments
@@ -247,6 +250,7 @@ paths:
   /api/environments/{environmentId}:
     get:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - environments
       operationId: getEnvironmentById
@@ -271,6 +275,7 @@ paths:
           $ref: "#/components/responses/500"
     put:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - environments
       operationId: updateEnvironment
@@ -296,6 +301,7 @@ paths:
           $ref: "#/components/responses/500"
     delete:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - environments
       operationId: deleteEnvironment
@@ -317,6 +323,7 @@ paths:
   /api/environments/{environmentId}/connections:
     get:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - environments
       operationId: getEnvironmentConnections

@@ -3,6 +3,7 @@ info:
   title: Workspace
   description: OpenAPI schema for workspace management in Meshery Cloud.
   version: v1beta3
+  x-annotation: ["cloud", "meshery"]
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
@@ -31,6 +32,7 @@ paths:
   /api/workspaces:
     get:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - workspaces
       operationId: getWorkspaces
@@ -58,6 +60,7 @@ paths:
           $ref: "#/components/responses/500"
     post:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - workspaces
       operationId: createWorkspace
@@ -82,6 +85,7 @@ paths:
   /api/workspaces/{workspaceId}:
     get:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - workspaces
       operationId: getWorkspaceById
@@ -106,6 +110,7 @@ paths:
           $ref: "#/components/responses/500"
     put:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - workspaces
       operationId: updateWorkspace
@@ -132,6 +137,7 @@ paths:
           $ref: "#/components/responses/500"
     delete:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - workspaces
       operationId: deleteWorkspace
@@ -154,6 +160,7 @@ paths:
   /api/workspaces/{workspaceId}/teams:
     get:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - workspaces
       operationId: getTeamsOfWorkspace
@@ -185,6 +192,7 @@ paths:
   /api/workspaces/{workspaceId}/teams/{teamId}:
     post:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - workspaces
       operationId: assignTeamToWorkspace
@@ -210,6 +218,7 @@ paths:
           $ref: "#/components/responses/500"
     delete:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - workspaces
       operationId: unassignTeamFromWorkspace
@@ -233,6 +242,7 @@ paths:
   /api/workspaces/{workspaceId}/environments:
     get:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - workspaces
       operationId: getEnvironmentsOfWorkspace
@@ -264,6 +274,7 @@ paths:
   /api/workspaces/{workspaceId}/environments/{environmentId}:
     post:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - workspaces
       operationId: assignEnvironmentToWorkspace
@@ -289,6 +300,7 @@ paths:
           $ref: "#/components/responses/500"
     delete:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - workspaces
       operationId: unassignEnvironmentFromWorkspace
@@ -312,6 +324,7 @@ paths:
   /api/workspaces/{workspaceId}/designs:
     get:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - workspaces
         - designs
@@ -344,6 +357,7 @@ paths:
   /api/workspaces/{workspaceId}/designs/{designId}:
     post:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - workspaces
         - designs
@@ -370,6 +384,7 @@ paths:
           $ref: "#/components/responses/500"
     delete:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - workspaces
         - designs
@@ -394,6 +409,7 @@ paths:
   /api/workspaces/{workspaceId}/views:
     get:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - workspaces
         - views
@@ -426,6 +442,7 @@ paths:
   /api/workspaces/{workspaceId}/views/{viewId}:
     post:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - workspaces
         - views
@@ -452,6 +469,7 @@ paths:
           $ref: "#/components/responses/500"
     delete:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - workspaces
         - views

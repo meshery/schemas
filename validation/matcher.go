@@ -181,9 +181,9 @@ func matchEndpoints(schema *schemaIndex, mesheryConsumers, cloudConsumers []cons
 	for _, ep := range schema.Endpoints {
 		key := normalizeMatchKey(ep.Method, ep.Path)
 		looseKey := looseMatchKey(ep.Method, ep.Path)
-		// Apply x-internal filter for join.
-		mesheryAllowed := xInternalAllows(ep.XInternal, "meshery")
-		cloudAllowed := xInternalAllows(ep.XInternal, "cloud")
+		// Apply x-annotation filter for join.
+		mesheryAllowed := xAnnotationAllows(ep.XAnnotation, "meshery")
+		cloudAllowed := xAnnotationAllows(ep.XAnnotation, "cloud")
 
 		var consumers []consumerEndpoint
 		mesheryHit, cloudHit := false, false
@@ -282,10 +282,10 @@ func consumerWithParamMismatchNote(c consumerEndpoint, specPath string) consumer
 	return c
 }
 
-// xInternalAllows returns true when the endpoint's x-internal list explicitly
-// targets the named repo.
-func xInternalAllows(xInternal []string, repo string) bool {
-	for _, target := range xInternal {
+// xAnnotationAllows returns true when the endpoint's x-annotation list
+// explicitly targets the named repo.
+func xAnnotationAllows(xAnnotation []string, repo string) bool {
+	for _, target := range xAnnotation {
 		if target == repo {
 			return true
 		}

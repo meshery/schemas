@@ -155,6 +155,84 @@ func TestCheckRule11_MultipleProperties(t *testing.T) {
 }
 
 // ---------------------------------------------------------------------------
+// Rule 47: x-annotation is required on every construct and operation
+// ---------------------------------------------------------------------------
+
+func makeDocWithAnnotations(xInternal, xAnnotation []any, constructAnnotation []any) *openapi3.T {
+	op := &openapi3.Operation{
+		Extensions: map[string]any{
+			"x-internal":   xInternal,
+			"x-annotation": xAnnotation,
+		},
+		Responses: openapi3.NewResponses(),
+	}
+	pathItem := &openapi3.PathItem{Get: op}
+	doc := &openapi3.T{
+		OpenAPI: "3.0.0",
+		Info: &openapi3.Info{
+			Title:   "Test",
+			Version: "v1",
+			Extensions: map[string]any{
+				"x-annotation": constructAnnotation,
+			},
+		},
+		Paths: openapi3.NewPaths(),
+	}
+	doc.Paths.Set("/api/items", pathItem)
+	return doc
+}
+
+func TestCheckRule47_MissingConstructAnnotation(t *testing.T) {
+	doc := makeDocWithAnnotations([]any{"cloud"}, []any{"cloud"}, []any{"cloud"})
+	delete(doc.Info.Extensions, "x-annotation")
+
+	vs := checkRule47("api.yml", doc, AuditOptions{})
+	if len(vs) != 1 {
+		t.Fatalf("expected 1 violation for missing construct x-annotation, got %d", len(vs))
+	}
+	if vs[0].RuleNumber != 47 {
+		t.Fatalf("expected rule 47, got %d", vs[0].RuleNumber)
+	}
+	if !strings.Contains(vs[0].Message, "construct") {
+		t.Fatalf("expected construct-level message, got %q", vs[0].Message)
+	}
+}
+
+func TestCheckRule47_MissingOperationAnnotation(t *testing.T) {
+	doc := makeDocWithAnnotations([]any{"cloud"}, []any{"cloud"}, []any{"cloud"})
+	delete(doc.Paths.Value("/api/items").Get.Extensions, "x-annotation")
+
+	vs := checkRule47("api.yml", doc, AuditOptions{})
+	if len(vs) != 1 {
+		t.Fatalf("expected 1 violation for missing operation x-annotation, got %d", len(vs))
+	}
+	if !strings.Contains(vs[0].Message, "GET /api/items") {
+		t.Fatalf("expected operation label in message, got %q", vs[0].Message)
+	}
+}
+
+func TestCheckRule47_MismatchWithXInternal(t *testing.T) {
+	doc := makeDocWithAnnotations([]any{"cloud"}, []any{"meshery"}, []any{"cloud"})
+
+	vs := checkRule47("api.yml", doc, AuditOptions{})
+	if len(vs) != 1 {
+		t.Fatalf("expected 1 violation for mismatched x-annotation/x-internal, got %d", len(vs))
+	}
+	if !strings.Contains(vs[0].Message, "must match x-internal") {
+		t.Fatalf("expected mismatch message, got %q", vs[0].Message)
+	}
+}
+
+func TestCheckRule47_ValidAnnotations(t *testing.T) {
+	doc := makeDocWithAnnotations([]any{"cloud", "meshery"}, []any{"cloud", "meshery"}, []any{"cloud", "meshery"})
+
+	vs := checkRule47("api.yml", doc, AuditOptions{})
+	if len(vs) != 0 {
+		t.Fatalf("expected 0 violations for valid x-annotation coverage, got %d", len(vs))
+	}
+}
+
+// ---------------------------------------------------------------------------
 // Rule 15: cross-construct $ref must have x-go-type
 // ---------------------------------------------------------------------------
 

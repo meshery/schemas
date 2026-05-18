@@ -3,6 +3,7 @@ info:
   title: Plan
   description: OpenAPI schema for subscription plan management in Meshery Cloud.
   version: v1beta3
+  x-annotation: ["cloud"]
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
@@ -19,6 +20,8 @@ paths:
   /api/entitlement/plans:
     get:
       x-internal:
+      - cloud
+      x-annotation:
       - cloud
       operationId: getPlans
       tags:

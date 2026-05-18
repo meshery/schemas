@@ -3,6 +3,7 @@ info:
   title: View
   description: OpenAPI schema for managing Meshery views — saved perspectives with filters and metadata.
   version: v1beta2
+  x-annotation: ["cloud"]
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
@@ -327,6 +328,7 @@ paths:
   /api/content/views:
     post:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - views
       operationId: createView
@@ -349,6 +351,7 @@ paths:
           $ref: "#/components/responses/500"
     get:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - views
       operationId: getViews
@@ -394,6 +397,7 @@ paths:
   /api/content/view/share:
     post:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - views
       operationId: shareView
@@ -423,6 +427,7 @@ paths:
   /api/content/views/{viewId}:
     get:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - views
       operationId: getViewById
@@ -447,6 +452,7 @@ paths:
           $ref: "#/components/responses/500"
     put:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - views
       operationId: updateView
@@ -473,6 +479,7 @@ paths:
           $ref: "#/components/responses/500"
     delete:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - views
       operationId: deleteView

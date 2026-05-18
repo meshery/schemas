@@ -3,6 +3,7 @@ info:
   title: Events
   description: OpenAPI schema for Meshery events and system notifications.
   version: v1beta3
+  x-annotation: ["cloud", "meshery"]
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
@@ -17,6 +18,7 @@ paths:
   /events/{eventId}:
     delete:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
       - events
       operationId: deleteEvent
@@ -37,6 +39,7 @@ paths:
   /events:
     post:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
       - events
       operationId: createEvent
@@ -59,6 +62,7 @@ paths:
   /events/delete:
     post:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
       - events
       operationId: bulkDeleteEvents
@@ -85,6 +89,7 @@ paths:
   /events/status:
     put:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
       - events
       operationId: bulkUpdateEventStatus
@@ -111,6 +116,7 @@ paths:
   /events/{eventId}/status:
     put:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
       - events
       operationId: updateEventStatus
@@ -141,6 +147,8 @@ paths:
   /api/workspaces/{workspaceId}/events:
     get:
       x-internal:
+      - cloud
+      x-annotation:
       - cloud
       tags:
       - events
@@ -178,6 +186,8 @@ paths:
     get:
       x-internal:
       - cloud
+      x-annotation:
+      - cloud
       tags:
       - events
       operationId: getEventsAggregate
@@ -200,6 +210,8 @@ paths:
   /api/events/list:
     get:
       x-internal:
+      - cloud
+      x-annotation:
       - cloud
       tags:
       - events
@@ -228,6 +240,8 @@ paths:
     get:
       x-internal:
       - cloud
+      x-annotation:
+      - cloud
       tags:
       - events
       operationId: getEventSummaryByUser
@@ -254,6 +268,8 @@ paths:
   /api/events/types:
     get:
       x-internal:
+      - cloud
+      x-annotation:
       - cloud
       tags:
       - events

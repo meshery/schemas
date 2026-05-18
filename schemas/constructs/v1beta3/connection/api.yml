@@ -3,6 +3,7 @@ info:
   title: Connection API
   description: API for managing Meshery connections - managed and unmanaged resources tracked by Meshery.
   version: v1beta3
+  x-annotation: ["cloud", "meshery"]
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
@@ -17,6 +18,7 @@ paths:
   /api/integrations/connections:
     get:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - Connections
       operationId: getConnections
@@ -82,6 +84,7 @@ paths:
 
     post:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - Connections
       operationId: registerConnection
@@ -110,6 +113,7 @@ paths:
   /api/integrations/connections/{connectionId}:
     get:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - Connections
       operationId: getConnectionById
@@ -133,6 +137,7 @@ paths:
 
     put:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - Connections
       operationId: updateConnection
@@ -164,6 +169,7 @@ paths:
 
     delete:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - Connections
       operationId: deleteConnection
@@ -184,6 +190,7 @@ paths:
   /api/integrations/connections/meshery/{mesheryServerId}:
     delete:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - Connections
       operationId: deleteMesheryConnection
@@ -204,6 +211,7 @@ paths:
   /api/integrations/connections/kubernetes/{connectionId}/context:
     get:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - Connections
       operationId: getKubernetesContext
@@ -228,6 +236,7 @@ paths:
   /api/environments/{environmentId}/connections/{connectionId}:
     post:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - Connections
       operationId: addConnectionToEnvironment
@@ -250,6 +259,7 @@ paths:
 
     delete:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - Connections
       operationId: removeConnectionFromEnvironment

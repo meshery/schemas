@@ -363,7 +363,7 @@ func auditAPISpec(apiYmlPath, constructDir string, opts AuditOptions,
 		checkRule17, checkRule19, checkRule21, checkRule23,
 		checkRule24, checkRule25, checkRule26, checkRule27,
 		checkRule28, checkRule30, checkRule31, checkRule35,
-		checkRule36,
+		checkRule36, checkRule47,
 		checkRule42, checkRule43, checkRule44,
 		checkRule45ForAPI,
 	}

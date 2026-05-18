@@ -10,6 +10,7 @@ info:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   version: v1beta2
+  x-annotation: ["cloud"]
 servers:
   - url: https://cloud.meshery.io
     description: Meshery Cloud production server URL
@@ -29,6 +30,7 @@ paths:
   /user/schedules:
     get:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - scheduler
       summary: Get schedules
@@ -52,6 +54,7 @@ paths:
           $ref: "#/components/responses/500"
     post:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - scheduler
       summary: Create or update schedule
@@ -80,6 +83,7 @@ paths:
   /user/schedules/{scheduleId}:
     get:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - scheduler
       summary: Get schedule by ID
@@ -102,6 +106,7 @@ paths:
           $ref: "#/components/responses/500"
     delete:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - scheduler
       summary: Delete schedule

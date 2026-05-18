@@ -3,6 +3,7 @@ info:
   title: Organization
   description: OpenAPI schema for organization management in Meshery Cloud.
   version: v1beta2
+  x-annotation: ["cloud", "meshery"]
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
@@ -19,6 +20,7 @@ paths:
   /api/identity/orgs:
     get:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - Organizations
       security:
@@ -47,6 +49,7 @@ paths:
           $ref: "#/components/responses/500"
     post:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - Organizations
       security:
@@ -73,6 +76,7 @@ paths:
   /api/identity/orgs/by-domain:
     get:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - Organizations
       summary: Get organization by domain
@@ -101,6 +105,7 @@ paths:
   /api/identity/orgs/{orgId}:
     get:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - Organizations
       security:
@@ -125,6 +130,7 @@ paths:
           $ref: "#/components/responses/500"
     delete:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - Organizations
       security:
@@ -147,6 +153,7 @@ paths:
           $ref: "#/components/responses/500"
     put:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - Organizations
       security:
@@ -176,6 +183,7 @@ paths:
   /api/identity/orgs/{orgId}/preferences:
     get:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - Organizations
       security:
@@ -202,6 +210,7 @@ paths:
   /api/identity/orgs/{orgId}/teams/{teamId}:
     post:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - Organizations
       security:
@@ -239,6 +248,7 @@ paths:
   /api/identity/orgs/{orgId}/teams/{teamId}/remove:
     post:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - Organizations
       security:
@@ -268,6 +278,7 @@ paths:
   /api/identity/orgs/{orgId}/users/{userId}:
     post:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - Organizations
       security:
@@ -295,6 +306,7 @@ paths:
           description: Internal server error
     delete:
       x-internal: ["cloud", "meshery"]
+      x-annotation: ["cloud", "meshery"]
       tags:
         - Organizations
       security:

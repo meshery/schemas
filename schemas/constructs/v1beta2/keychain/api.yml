@@ -3,6 +3,7 @@ info:
   title: Keychain
   description: OpenAPI schema for keychain management in Meshery.
   version: v1beta2
+  x-annotation: ["cloud"]
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
@@ -22,6 +23,7 @@ paths:
   /api/auth/keychains:
     get:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - Keychain
       summary: List keychains
@@ -46,6 +48,7 @@ paths:
           $ref: "#/components/responses/500"
     post:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - Keychain
       summary: Create a keychain
@@ -73,6 +76,7 @@ paths:
   /api/auth/keychains/{keychainId}:
     get:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - Keychain
       summary: Get keychain by ID
@@ -96,6 +100,7 @@ paths:
           $ref: "#/components/responses/500"
     put:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - Keychain
       summary: Update keychain
@@ -125,6 +130,7 @@ paths:
           $ref: "#/components/responses/500"
     delete:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - Keychain
       summary: Delete keychain
@@ -146,6 +152,7 @@ paths:
   /api/auth/keychains/{keychainId}/{keyId}:
     post:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - Keychain
       summary: Add key to keychain
@@ -166,6 +173,7 @@ paths:
           $ref: "#/components/responses/500"
     delete:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - Keychain
       summary: Remove key from keychain
@@ -188,6 +196,7 @@ paths:
   /api/auth/keychains/{keychainId}/keys:
     get:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - Keychain
       summary: List keys in a keychain

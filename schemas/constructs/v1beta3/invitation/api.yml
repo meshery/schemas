@@ -3,6 +3,7 @@ info:
   title: Invitation
   description: OpenAPI schema for managing invitations.
   version: v1beta3
+  x-annotation: ["cloud"]
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
@@ -19,6 +20,8 @@ paths:
   /api/organizations/invitations/{invitationId}:
     get:
       x-internal:
+      - cloud
+      x-annotation:
       - cloud
       operationId: getInvitation
       tags:
@@ -44,6 +47,8 @@ paths:
     delete:
       x-internal:
       - cloud
+      x-annotation:
+      - cloud
       operationId: deleteInvitation
       tags:
       - Invitation
@@ -63,6 +68,8 @@ paths:
           $ref: '#/components/responses/500'
     put:
       x-internal:
+      - cloud
+      x-annotation:
       - cloud
       operationId: updateInvitation
       tags:
@@ -95,6 +102,8 @@ paths:
     get:
       x-internal:
       - cloud
+      x-annotation:
+      - cloud
       operationId: getInvitations
       tags:
       - Invitation
@@ -114,6 +123,8 @@ paths:
           $ref: '#/components/responses/500'
     post:
       x-internal:
+      - cloud
+      x-annotation:
       - cloud
       operationId: createInvitation
       tags:
@@ -142,6 +153,8 @@ paths:
     post:
       x-internal:
       - cloud
+      x-annotation:
+      - cloud
       operationId: acceptInvitation
       tags:
       - Invitation
@@ -166,6 +179,8 @@ paths:
   /api/identity/orgs/{orgId}/users/invite:
     post:
       x-internal:
+      - cloud
+      x-annotation:
       - cloud
       operationId: handleUserInvite
       tags:
@@ -200,6 +215,8 @@ paths:
     post:
       x-internal:
       - cloud
+      x-annotation:
+      - cloud
       operationId: signupRequest
       tags:
       - Invitation
@@ -229,6 +246,8 @@ paths:
     get:
       x-internal:
       - cloud
+      x-annotation:
+      - cloud
       operationId: getSignupRequests
       tags:
       - Invitation
@@ -254,6 +273,8 @@ paths:
     post:
       x-internal:
       - cloud
+      x-annotation:
+      - cloud
       operationId: approveSignupRequest
       tags:
       - Invitation
@@ -276,6 +297,8 @@ paths:
     post:
       x-internal:
       - cloud
+      x-annotation:
+      - cloud
       operationId: denySignupRequest
       tags:
       - Invitation
@@ -297,6 +320,8 @@ paths:
   /api/identity/users/request/notification:
     get:
       x-internal:
+      - cloud
+      x-annotation:
       - cloud
       operationId: getSignupRequestNotification
       tags:

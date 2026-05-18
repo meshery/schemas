@@ -3,6 +3,7 @@ info:
   title: Catalog
   description: OpenAPI schema for Meshery catalog data and content management.
   version: v1beta2
+  x-annotation: ["cloud", "meshery"]
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io

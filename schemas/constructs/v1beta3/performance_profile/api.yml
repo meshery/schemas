@@ -3,6 +3,7 @@ info:
   title: Performance Profile
   description: OpenAPI schema for performance-profile management in Meshery and Meshery Cloud.
   version: v1beta3
+  x-annotation: ["cloud"]
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
@@ -29,6 +30,7 @@ paths:
   /api/performance-profiles:
     get:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - performance
       operationId: getPerformanceProfiles
@@ -54,6 +56,7 @@ paths:
           $ref: "#/components/responses/500"
     post:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - performance
       operationId: upsertPerformanceProfile
@@ -78,6 +81,7 @@ paths:
   /api/performance-profiles/{performanceProfileId}:
     get:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - performance
       operationId: getPerformanceProfile
@@ -102,6 +106,7 @@ paths:
           $ref: "#/components/responses/500"
     put:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - performance
       operationId: updatePerformanceProfile
@@ -128,6 +133,7 @@ paths:
           $ref: "#/components/responses/500"
     delete:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       tags:
         - performance
       operationId: deletePerformanceProfile

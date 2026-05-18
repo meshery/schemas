@@ -569,9 +569,14 @@ After running `make build`, three bundled schema files are created:
 
 ---
 
-## ✍️ Annotating OpenAPI Paths
+## ✍️ Annotating OpenAPI Constructs and Paths
 
-To control which schema paths are included in each bundled output, use the `x-internal` annotation inside the OpenAPI operations (`get`, `post`, etc.). The annotation is **required on every operation** — `validate-schemas` (Rule 14) and the bundler both reject operations that omit it.
+Use both annotations below:
+
+* `x-internal` controls which bundled OpenAPI output includes an operation.
+* `x-annotation` tracks which downstream project supports a construct or operation.
+
+`x-annotation` is **required on every construct** (`info.x-annotation`) and **every operation**. `x-internal` remains **required on every operation** for bundle filtering. `validate-schemas` enforces both requirements.
 
 ### Example:
 
@@ -580,6 +585,7 @@ paths:
   /api/entitlement/plans:
     get:
       x-internal: ["cloud"]
+      x-annotation: ["cloud"]
       operationId: getPlans
       tags:
         - Plans
@@ -595,9 +601,19 @@ paths:
                   $ref: "#/components/schemas/Plan"
 ```
 
+```yaml
+info:
+  title: Plan
+  version: v1beta3
+  x-annotation: ["cloud"]
+```
+
 * `x-internal: ["cloud"]` — included in the cloud bundle only.
 * `x-internal: ["meshery"]` — included in the meshery bundle only.
 * `x-internal: ["cloud", "meshery"]` — included in **both** bundles.
+* `x-annotation: ["cloud"]` — supported in Meshery Cloud.
+* `x-annotation: ["meshery"]` — supported in Meshery Server.
+* `x-annotation: ["cloud", "meshery"]` — supported in both downstream projects.
 
 ---
 
@@ -692,7 +708,7 @@ models/v1alpha1/capability/capability.go
 
 ### 🧩 RTK Query Client Generation
 
-The OpenAPI bundle is passed to a codegen tool to generate RTK Query clients. Include relevant paths using `x-internal` annotations and define request/response schemas appropriately.
+The OpenAPI bundle is passed to a codegen tool to generate RTK Query clients. Include relevant paths using `x-internal` annotations, keep construct/operation support metadata in `x-annotation`, and define request/response schemas appropriately.
 
 You can build the OpenAPI bundles with:
 

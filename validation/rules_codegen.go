@@ -63,20 +63,20 @@ func checkRule14(filePath string, doc *openapi3.T, _ AuditOptions) []Violation {
 			raw, ok := op.Extensions["x-internal"]
 			if !ok {
 				out = append(out, Violation{File: filePath,
-					Message: fmt.Sprintf(`%s — x-internal is required on every operation. Use ["cloud"], ["meshery"], or ["cloud", "meshery"].`, label),
+					Message:  fmt.Sprintf(`%s — x-internal is required on every operation. Use ["cloud"], ["meshery"], or ["cloud", "meshery"].`, label),
 					Severity: SeverityBlocking, RuleNumber: 14})
 				continue
 			}
 			arr, ok := raw.([]any)
 			if !ok {
 				out = append(out, Violation{File: filePath,
-					Message: fmt.Sprintf(`%s — x-internal must be an array (e.g. ["cloud"]).`, label),
+					Message:  fmt.Sprintf(`%s — x-internal must be an array (e.g. ["cloud"]).`, label),
 					Severity: SeverityBlocking, RuleNumber: 14})
 				continue
 			}
 			if len(arr) == 0 {
 				out = append(out, Violation{File: filePath,
-					Message: fmt.Sprintf(`%s — x-internal must contain at least one tag. Use ["cloud"], ["meshery"], or ["cloud", "meshery"].`, label),
+					Message:  fmt.Sprintf(`%s — x-internal must contain at least one tag. Use ["cloud"], ["meshery"], or ["cloud", "meshery"].`, label),
 					Severity: SeverityBlocking, RuleNumber: 14})
 				continue
 			}
@@ -84,17 +84,141 @@ func checkRule14(filePath string, doc *openapi3.T, _ AuditOptions) []Violation {
 				s, ok := tag.(string)
 				if !ok {
 					out = append(out, Violation{File: filePath,
-						Message: fmt.Sprintf(`%s — x-internal array values must be strings.`, label),
+						Message:  fmt.Sprintf(`%s — x-internal array values must be strings.`, label),
 						Severity: SeverityBlocking, RuleNumber: 14})
 				} else if !validInternalTags[s] {
 					out = append(out, Violation{File: filePath,
-						Message: fmt.Sprintf(`%s — x-internal value %q is invalid. Must be "cloud" or "meshery".`, label, s),
+						Message:  fmt.Sprintf(`%s — x-internal value %q is invalid. Must be "cloud" or "meshery".`, label, s),
 						Severity: SeverityBlocking, RuleNumber: 14})
 				}
 			}
 		}
 	}
 	return out
+}
+
+// --- Rule 47: x-annotation is required on every construct and operation; operation values must match x-internal ---
+
+func checkRule47(filePath string, doc *openapi3.T, _ AuditOptions) []Violation {
+	if doc == nil {
+		return nil
+	}
+	var out []Violation
+
+	if doc.Info == nil {
+		out = append(out, Violation{
+			File:       filePath,
+			Message:    "Missing `info` section. Every api.yml must declare construct-level x-annotation.",
+			Severity:   SeverityBlocking,
+			RuleNumber: 47,
+		})
+	} else {
+		out = append(out, validateAnnotationExtension(filePath, "construct", doc.Info.Extensions["x-annotation"])...)
+	}
+
+	if doc.Paths == nil {
+		return out
+	}
+	for path, item := range doc.Paths.Map() {
+		for _, method := range httpMethods {
+			op := getOperation(item, method)
+			if op == nil {
+				continue
+			}
+			label := fmt.Sprintf("%s %s", strings.ToUpper(method), path)
+			raw, ok := op.Extensions["x-annotation"]
+			if !ok {
+				out = append(out, Violation{
+					File:       filePath,
+					Message:    fmt.Sprintf(`%s — x-annotation is required on every operation. Use ["cloud"], ["meshery"], or ["cloud", "meshery"].`, label),
+					Severity:   SeverityBlocking,
+					RuleNumber: 47,
+				})
+				continue
+			}
+			annotation, err := parseTargetTargets(raw, "x-annotation")
+			if err != nil {
+				out = append(out, Violation{
+					File:       filePath,
+					Message:    fmt.Sprintf("%s — %s.", label, err.Error()),
+					Severity:   SeverityBlocking,
+					RuleNumber: 47,
+				})
+				continue
+			}
+			if len(annotation) == 0 {
+				out = append(out, Violation{
+					File:       filePath,
+					Message:    fmt.Sprintf(`%s — x-annotation must contain at least one tag. Use ["cloud"], ["meshery"], or ["cloud", "meshery"].`, label),
+					Severity:   SeverityBlocking,
+					RuleNumber: 47,
+				})
+				continue
+			}
+
+			xInternal, err := parseXInternal(op.Extensions)
+			if err != nil {
+				continue
+			}
+			if !sameTargets(annotation, xInternal) {
+				out = append(out, Violation{
+					File:       filePath,
+					Message:    fmt.Sprintf(`%s — x-annotation must match x-internal so support tracking aligns with bundle routing.`, label),
+					Severity:   SeverityBlocking,
+					RuleNumber: 47,
+				})
+			}
+		}
+	}
+	return out
+}
+
+func validateAnnotationExtension(filePath, label string, raw any) []Violation {
+	if raw == nil {
+		return []Violation{{
+			File:       filePath,
+			Message:    fmt.Sprintf(`%s — x-annotation is required. Use ["cloud"], ["meshery"], or ["cloud", "meshery"].`, label),
+			Severity:   SeverityBlocking,
+			RuleNumber: 47,
+		}}
+	}
+	targets, err := parseTargetTargets(raw, "x-annotation")
+	if err != nil {
+		return []Violation{{
+			File:       filePath,
+			Message:    fmt.Sprintf("%s — %s.", label, err.Error()),
+			Severity:   SeverityBlocking,
+			RuleNumber: 47,
+		}}
+	}
+	if len(targets) == 0 {
+		return []Violation{{
+			File:       filePath,
+			Message:    fmt.Sprintf(`%s — x-annotation must contain at least one tag. Use ["cloud"], ["meshery"], or ["cloud", "meshery"].`, label),
+			Severity:   SeverityBlocking,
+			RuleNumber: 47,
+		}}
+	}
+	return nil
+}
+
+func sameTargets(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	counts := make(map[string]int, len(a))
+	for _, item := range a {
+		counts[item]++
+	}
+	for _, item := range b {
+		counts[item]--
+	}
+	for _, n := range counts {
+		if n != 0 {
+			return false
+		}
+	}
+	return true
 }
 
 // --- Rule 15/16: cross-construct $ref must have x-go-type + matching alias ---

@@ -3,6 +3,7 @@ info:
   title: Academy API
   description: OpenAPI schema for Meshery Academy content and curriculum management.
   version: v1beta3
+  x-annotation: ["cloud"]
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
@@ -19,6 +20,8 @@ paths:
   /api/academy/curricula/registered:
     get:
       x-internal:
+      - cloud
+      x-annotation:
       - cloud
       tags:
       - Academy
@@ -63,6 +66,8 @@ paths:
     post:
       x-internal:
       - cloud
+      x-annotation:
+      - cloud
       tags:
       - Academy
       operationId: createAcademyCurricula
@@ -89,6 +94,8 @@ paths:
           description: Server error
     get:
       x-internal:
+      - cloud
+      x-annotation:
       - cloud
       tags:
       - Academy
@@ -206,6 +213,8 @@ paths:
     get:
       x-internal:
       - cloud
+      x-annotation:
+      - cloud
       tags:
       - Academy
       operationId: getAcademyContent
@@ -246,6 +255,8 @@ paths:
     post:
       x-internal:
       - cloud
+      x-annotation:
+      - cloud
       tags:
       - Academy
       summary: Register a user to academy content
@@ -273,6 +284,8 @@ paths:
     post:
       x-internal:
       - cloud
+      x-annotation:
+      - cloud
       tags:
       - Academy
       summary: Withdraw a user from academy content
@@ -297,6 +310,8 @@ paths:
   /api/academy/curricula/{id}:
     put:
       x-internal:
+      - cloud
+      x-annotation:
       - cloud
       tags:
       - Academy
@@ -329,6 +344,8 @@ paths:
     delete:
       x-internal:
       - cloud
+      x-annotation:
+      - cloud
       tags:
       - Academy
       operationId: deleteAcademyCurriculaById
@@ -349,6 +366,8 @@ paths:
           description: Server error
     get:
       x-internal:
+      - cloud
+      x-annotation:
       - cloud
       tags:
       - Academy
@@ -377,6 +396,8 @@ paths:
       tags:
       - Academy
       x-internal:
+      - cloud
+      x-annotation:
       - cloud
       summary: Get registration information for academy content
       description: Returns registration data for a specific content item, optionally filtered by status.
@@ -413,6 +434,8 @@ paths:
       tags:
       - Academy
       x-internal:
+      - cloud
+      x-annotation:
       - cloud
       operationId: updateCurrentItemInProgressTracker
       summary: Update the current item in the progress tracker
@@ -458,6 +481,8 @@ paths:
       - Academy
       x-internal:
       - cloud
+      x-annotation:
+      - cloud
       operationId: getTestByAbsPath
       summary: Get test metadata
       description: Returns metadata for test identified by its absolute path.
@@ -489,6 +514,8 @@ paths:
       - Academy
       x-internal:
       - cloud
+      x-annotation:
+      - cloud
       operationId: startTestById
       summary: Start a Test by ID
       description: Starts a new test session for the quiz identified by its ID.
@@ -518,6 +545,8 @@ paths:
       tags:
       - Academy
       x-internal:
+      - cloud
+      x-annotation:
       - cloud
       operationId: getAllTestSessionsForRegistration
       summary: Get all tests for a registration
@@ -560,6 +589,8 @@ paths:
       - Academy
       x-internal:
       - cloud
+      x-annotation:
+      - cloud
       operationId: submitQuiz
       summary: Submit a quiz for evaluation
       requestBody:
@@ -595,6 +626,8 @@ paths:
       - Academy
       x-internal:
       - cloud
+      x-annotation:
+      - cloud
       operationId: getAcademyAdminSummary
       summary: Get academy content summary
       description: Returns a summary of all academy content with  metrics.
@@ -614,6 +647,8 @@ paths:
   /api/academy/admin/registrations:
     get:
       x-internal:
+      - cloud
+      x-annotation:
       - cloud
       tags:
       - Academy
@@ -669,6 +704,8 @@ paths:
   /api/academy/certificates/{certificateId}:
     get:
       x-internal:
+      - cloud
+      x-annotation:
       - cloud
       tags:
       - Academy
