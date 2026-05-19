@@ -79,6 +79,58 @@ function applyBaseMetadata(doc, baseDoc) {
   return doc;
 }
 
+function collectRefs(node, out) {
+  if (!node || typeof node !== "object") return;
+  if (Array.isArray(node)) {
+    for (const v of node) collectRefs(v, out);
+    return;
+  }
+  for (const [k, v] of Object.entries(node)) {
+    if (k === "$ref" && typeof v === "string" && v.startsWith("#/components/")) {
+      out.add(v.split("/").slice(0, 4).join("/"));
+    } else if (k === "security" && Array.isArray(v)) {
+      for (const requirement of v) {
+        if (requirement && typeof requirement === "object") {
+          for (const name of Object.keys(requirement)) {
+            out.add(`#/components/securitySchemes/${name}`);
+          }
+        }
+      }
+    } else {
+      collectRefs(v, out);
+    }
+  }
+}
+
+function pruneComponents(components, rootRefs) {
+  if (!components || typeof components !== "object") return components;
+
+  const reached = new Set();
+  const queue = [...rootRefs];
+  while (queue.length) {
+    const ref = queue.pop();
+    if (reached.has(ref)) continue;
+    reached.add(ref);
+    const [, , section, name] = ref.split("/");
+    const node = components[section]?.[name];
+    if (node === undefined) continue;
+    const nested = new Set();
+    collectRefs(node, nested);
+    for (const r of nested) if (!reached.has(r)) queue.push(r);
+  }
+
+  const pruned = {};
+  for (const [section, defs] of Object.entries(components)) {
+    if (!defs || typeof defs !== "object") continue;
+    const kept = {};
+    for (const [name, def] of Object.entries(defs)) {
+      if (reached.has(`#/components/${section}/${name}`)) kept[name] = def;
+    }
+    if (Object.keys(kept).length > 0) pruned[section] = kept;
+  }
+  return pruned;
+}
+
 function filterOpenapiByTag(doc, tagToInclude = "meshery", baseDoc) {
   const missingXInternal = [];
 
@@ -120,7 +172,17 @@ function filterOpenapiByTag(doc, tagToInclude = "meshery", baseDoc) {
     throw err;
   }
 
-  return applyBaseMetadata({ ...doc, paths: filteredPaths }, baseDoc);
+  const rootRefs = new Set();
+  collectRefs(filteredPaths, rootRefs);
+  collectRefs({ security: doc.security }, rootRefs);
+  const filteredComponents = pruneComponents(doc.components, rootRefs);
+
+  const filteredDoc = { ...doc, paths: filteredPaths };
+  if (filteredComponents !== undefined) {
+    filteredDoc.components = filteredComponents;
+  }
+
+  return applyBaseMetadata(filteredDoc, baseDoc);
 }
 
 function main() {
@@ -156,7 +218,9 @@ if (require.main === module) {
 
 module.exports = {
   applyBaseMetadata,
+  collectRefs,
   filterOpenapiByTag,
   httpMethods,
   loadYaml,
+  pruneComponents,
 };
