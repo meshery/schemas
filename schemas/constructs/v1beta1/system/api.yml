@@ -8,22 +8,22 @@ info:
     metadata, and per-session bootstrap state — rather than on user-facing
     logical constructs (designs, environments, connections, etc.).
 
-    These endpoints are Meshery-only; they have no Cloud counterpart.
+    Most endpoints in this construct are Meshery-only. `GET /api/system/version`
+    is a shared legacy endpoint exposed by both Meshery and Meshery Cloud.
 
     Path notes:
       - `/api/system/database`, `/api/system/database/reset`,
-        `/api/system/version`, and `/api/system/sync` are singleton paths
-        on the singleton Meshery server. They are intentionally singular
-        rather than plural — there is exactly one database, one running
-        binary, and one session per request — and predate the canonical
-        kebab-case-plural convention. They are documented as-implemented;
-        any future migration to plural/canonical paths is a coordinated
-        breaking change tracked separately.
+        `/api/system/version`, and `/api/system/sync` are singleton paths.
+        The Meshery server endpoints are intentionally singular rather than
+        plural — there is exactly one database, one running binary, and one
+        session per request — and predate the canonical kebab-case-plural
+        convention. They are documented as-implemented; any future migration
+        to plural/canonical paths is a coordinated breaking change tracked
+        separately.
       - `DELETE /api/system/database/reset` is a side-effect action with
         no request body. The canonical guidance is to express non-CRUD
         actions as `POST`. The existing implementation uses `DELETE` and
-        is consumed by `useResetDatabaseMutation` in the Meshery UI; the
-        operation is documented as `DELETE` to match. A future API-version
+        the operation is documented as `DELETE` to match. A future API-version
         bump may migrate it to `POST /api/system/database:reset` (or
         `POST /api/system/databases/{databaseId}/reset` once the resource
         is pluralised) and retire the `DELETE` form.
@@ -58,21 +58,14 @@ paths:
       parameters:
         - name: page
           in: query
-          description: 1-based page index for the table list.
+          description: Zero-based page index for the table list.
           required: false
           schema:
             type: integer
-            minimum: 1
-        - name: pagesize
+            minimum: 0
+        - name: pageSize
           in: query
-          description: |
-            Number of tables to include per page. The parameter name is
-            `pagesize` (all-lowercase) to match the Meshery server's
-            shared `getPaginationParams` reader; migration to the
-            canonical camelCase `pageSize` form is tracked at the repo
-            level as part of the Phase 3 pagination-envelope migration
-            and applies to every paginated endpoint at once, not to
-            this one construct.
+          description: Number of tables to include per page.
           required: false
           schema:
             type: integer
@@ -84,19 +77,17 @@ paths:
           schema:
             type: string
             maxLength: 255
-        - name: order
+        - name: sort
           in: query
           description: Column to order the table list by.
           required: false
           schema:
             type: string
             enum:
-              - created_at
-              - updated_at
               - name
-        - name: sort
+        - name: order
           in: query
-          description: Sort direction for the `order` column.
+          description: Sort direction for the `sort` column.
           required: false
           schema:
             type: string
@@ -146,16 +137,17 @@ paths:
 
   /api/system/version:
     get:
-      x-internal: ["meshery"]
+      x-internal: ["cloud", "meshery"]
       tags:
         - System
       summary: Get the running Meshery server's version metadata
       description: |
-        Returns the build, commit SHA, and release channel of the running
-        Meshery server binary, plus the latest available release fetched
-        from the Meshery GitHub repository and whether the running build
-        is outdated relative to that latest release.
+        Returns public version metadata for the running Meshery or Meshery
+        Cloud service. Meshery returns build, latest-release comparison,
+        commit SHA, and release channel fields; Meshery Cloud returns its
+        deployment version and commit SHA.
       operationId: getSystemVersion
+      security: []
       responses:
         "200":
           description: Server version metadata
@@ -250,8 +242,8 @@ components:
       properties:
         page:
           type: integer
-          description: 1-based page index of the returned table slice.
-          minimum: 1
+          description: Zero-based page index of the returned table slice.
+          minimum: 0
         pageSize:
           type: integer
           description: Number of tables included in this page.
@@ -272,9 +264,13 @@ components:
 
     SystemVersion:
       type: object
-      description: Build, commit, and release-channel metadata for the running Meshery server, plus latest-release comparison.
+      description: Public version metadata for a running Meshery or Meshery Cloud service.
       additionalProperties: false
       properties:
+        version:
+          type: string
+          description: Meshery Cloud deployment version.
+          maxLength: 128
         build:
           type: string
           description: Build identifier (typically the git tag of the running binary).
