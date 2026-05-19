@@ -17,7 +17,10 @@ const BadgeSchema: Record<string, unknown> = {
     "license": {
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
-    }
+    },
+    "x-internal": [
+      "cloud"
+    ]
   },
   "security": [
     {
