@@ -34,7 +34,7 @@ export interface paths {
 
 export interface components {
   schemas: {
-    /** @description Role definition for Layer5 Cloud (Meshery). */
+    /** @description Role definition */
     Role: {
       /**
        * Format: uuid

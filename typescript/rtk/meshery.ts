@@ -3624,7 +3624,7 @@ export type GetUsersForOrgApiResponse = /** status 200 Paginated list of organiz
     id: string;
     /** User identifier (username or external ID) */
     userId: string;
-    /** Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github) */
+    /** Authentication provider (e.g., Google, Github) */
     provider: string;
     /** User's email address */
     email: string;
@@ -3788,7 +3788,7 @@ export type GetUsersApiResponse = /** status 200 Paginated list of public users 
     id: string;
     /** User identifier (username or external ID) */
     userId: string;
-    /** Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github) */
+    /** Authentication provider (e.g., Google, Github) */
     provider: string;
     /** User's email address */
     email: string;
@@ -3940,7 +3940,7 @@ export type GetUserProfileByIdApiResponse = /** status 200 User profile for the 
   id: string;
   /** User identifier (username or external ID) */
   userId: string;
-  /** Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github) */
+  /** Authentication provider (e.g., Google, Github) */
   provider: string;
   /** User's email address */
   email: string;
@@ -4083,7 +4083,7 @@ export type GetUserApiResponse = /** status 200 Current user profile and role co
   id: string;
   /** User identifier (username or external ID) */
   userId: string;
-  /** Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github) */
+  /** Authentication provider (e.g., Google, Github) */
   provider: string;
   /** User's email address */
   email: string;
