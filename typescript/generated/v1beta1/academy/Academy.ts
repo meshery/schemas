@@ -40,7 +40,7 @@ export interface paths {
               type: "learning-path" | "challenge" | "certification";
               /**
                * @description Organization ID that owns this learning path
-               * @example layer5
+               * @example meshery
                */
               orgId: string;
               /**
@@ -440,7 +440,7 @@ export interface components {
   schemas: {
     /**
      * @description Organization ID that owns this learning path
-     * @example layer5
+     * @example meshery
      */
     AcademyCurriculaOrgId: string;
     /** @description ID of the badge to be awarded on completion of this curricula */
@@ -624,7 +624,7 @@ export interface components {
       type: "learning-path" | "challenge" | "certification";
       /**
        * @description Organization ID that owns this learning path
-       * @example layer5
+       * @example meshery
        */
       orgId: string;
       /**
@@ -815,7 +815,7 @@ export interface components {
       type: "learning-path" | "challenge" | "certification";
       /**
        * @description Organization ID that owns this learning path
-       * @example layer5
+       * @example meshery
        */
       orgId: string;
       /**
@@ -1063,7 +1063,7 @@ export interface components {
       title: string;
       /**
        * @description Organization ID that owns this learning path
-       * @example layer5
+       * @example meshery
        */
       orgId: string;
       /** @description ID of the workspace to which this Curricula belongs */
@@ -1238,7 +1238,7 @@ export interface components {
       type: "learning-path" | "challenge" | "certification";
       /**
        * @description Organization ID that owns this learning path
-       * @example layer5
+       * @example meshery
        */
       orgId: string;
       /**
@@ -1437,7 +1437,7 @@ export interface components {
         type: "learning-path" | "challenge" | "certification";
         /**
          * @description Organization ID that owns this learning path
-         * @example layer5
+         * @example meshery
          */
         orgId: string;
         /**
@@ -1635,7 +1635,7 @@ export interface components {
         type: "learning-path" | "challenge" | "certification";
         /**
          * @description Organization ID that owns this learning path
-         * @example layer5
+         * @example meshery
          */
         orgId: string;
         /**
@@ -2470,7 +2470,7 @@ export interface components {
           id: string;
           /**
            * @description Organization ID that owns this quiz
-           * @example layer5
+           * @example meshery
            */
           org_id: string;
           /**
@@ -2558,7 +2558,7 @@ export interface components {
         id: string;
         /**
          * @description Organization ID that owns this quiz
-         * @example layer5
+         * @example meshery
          */
         org_id: string;
         /**
@@ -2820,7 +2820,7 @@ export interface components {
             id: string;
             /**
              * @description Organization ID that owns this quiz
-             * @example layer5
+             * @example meshery
              */
             org_id: string;
             /**
@@ -2947,7 +2947,7 @@ export interface components {
       id: string;
       /**
        * @description Organization ID that owns this quiz
-       * @example layer5
+       * @example meshery
        */
       org_id: string;
       /**
@@ -3138,7 +3138,7 @@ export interface components {
           id: string;
           /**
            * @description Organization ID that owns this quiz
-           * @example layer5
+           * @example meshery
            */
           org_id: string;
           /**
@@ -3215,7 +3215,7 @@ export interface components {
         id: string;
         /**
          * @description Organization ID that owns this quiz
-         * @example layer5
+         * @example meshery
          */
         org_id: string;
         /**
@@ -3294,7 +3294,7 @@ export interface components {
         id: string;
         /**
          * @description Organization ID that owns this quiz
-         * @example layer5
+         * @example meshery
          */
         org_id: string;
         /**
@@ -3501,7 +3501,7 @@ export interface components {
               id: string;
               /**
                * @description Organization ID that owns this quiz
-               * @example layer5
+               * @example meshery
                */
               org_id: string;
               /**
@@ -3671,7 +3671,7 @@ export interface operations {
               type: "learning-path" | "challenge" | "certification";
               /**
                * @description Organization ID that owns this learning path
-               * @example layer5
+               * @example meshery
                */
               orgId: string;
               /**
@@ -3883,7 +3883,7 @@ export interface operations {
             type: "learning-path" | "challenge" | "certification";
             /**
              * @description Organization ID that owns this learning path
-             * @example layer5
+             * @example meshery
              */
             orgId: string;
             /**
@@ -4092,7 +4092,7 @@ export interface operations {
           title: string;
           /**
            * @description Organization ID that owns this learning path
-           * @example layer5
+           * @example meshery
            */
           orgId: string;
           /** @description ID of the workspace to which this Curricula belongs */
@@ -4308,7 +4308,7 @@ export interface operations {
               type: "learning-path" | "challenge" | "certification";
               /**
                * @description Organization ID that owns this learning path
-               * @example layer5
+               * @example meshery
                */
               orgId: string;
               /**
@@ -4818,7 +4818,7 @@ export interface operations {
             type: "learning-path" | "challenge" | "certification";
             /**
              * @description Organization ID that owns this learning path
-             * @example layer5
+             * @example meshery
              */
             orgId: string;
             /**
@@ -5091,7 +5091,7 @@ export interface operations {
             type: "learning-path" | "challenge" | "certification";
             /**
              * @description Organization ID that owns this learning path
-             * @example layer5
+             * @example meshery
              */
             orgId: string;
             /**
@@ -5356,7 +5356,7 @@ export interface operations {
           title: string;
           /**
            * @description Organization ID that owns this learning path
-           * @example layer5
+           * @example meshery
            */
           orgId: string;
           /** @description ID of the workspace to which this Curricula belongs */
@@ -5586,7 +5586,7 @@ export interface operations {
                     id: string;
                     /**
                      * @description Organization ID that owns this quiz
-                     * @example layer5
+                     * @example meshery
                      */
                     org_id: string;
                     /**
@@ -5757,7 +5757,7 @@ export interface operations {
             id: string;
             /**
              * @description Organization ID that owns this quiz
-             * @example layer5
+             * @example meshery
              */
             org_id: string;
             /**
@@ -5852,7 +5852,7 @@ export interface operations {
             id: string;
             /**
              * @description Organization ID that owns this quiz
-             * @example layer5
+             * @example meshery
              */
             org_id: string;
             /**
@@ -5978,7 +5978,7 @@ export interface operations {
               id: string;
               /**
                * @description Organization ID that owns this quiz
-               * @example layer5
+               * @example meshery
                */
               org_id: string;
               /**
@@ -6085,7 +6085,7 @@ export interface operations {
               id: string;
               /**
                * @description Organization ID that owns this quiz
-               * @example layer5
+               * @example meshery
                */
               org_id: string;
               /**
