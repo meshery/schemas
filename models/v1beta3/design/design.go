@@ -159,7 +159,7 @@ type MesheryPattern struct {
 	CatalogData *catalogv1alpha2.CatalogData `json:"catalogData,omitempty" yaml:"catalogData,omitempty"`
 
 	// CloneCount Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
-	CloneCount *int              `db:"clone_count" json:"cloneCount,omitempty" yaml:"cloneCount,omitempty"`
+	CloneCount *int      `db:"clone_count" json:"cloneCount,omitempty" yaml:"cloneCount,omitempty"`
 	CreatedAt  core.Time `db:"created_at" json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
 
 	// DeploymentCount Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
@@ -169,7 +169,7 @@ type MesheryPattern struct {
 	DesignType *MesheryPatternDesignType `db:"source_type" json:"designType" yaml:"designType"`
 
 	// DownloadCount Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
-	DownloadCount *int                   `db:"download_count" json:"downloadCount,omitempty" yaml:"downloadCount,omitempty"`
+	DownloadCount *int           `db:"download_count" json:"downloadCount,omitempty" yaml:"downloadCount,omitempty"`
 	ID            core.Id        `json:"id,omitempty" yaml:"id,omitempty"`
 	Location      core.MapObject `json:"location,omitempty" yaml:"location,omitempty"`
 	Name          core.Text      `json:"name,omitempty" yaml:"name,omitempty"`
@@ -181,12 +181,12 @@ type MesheryPattern struct {
 	ShareCount *int `db:"share_count" json:"shareCount,omitempty" yaml:"shareCount,omitempty"`
 
 	// SourceContent Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.
-	SourceContent *[]byte           `db:"source_content" json:"sourceContent,omitempty" yaml:"sourceContent,omitempty"`
+	SourceContent *[]byte   `db:"source_content" json:"sourceContent,omitempty" yaml:"sourceContent,omitempty"`
 	UpdatedAt     core.Time `db:"updated_at" json:"updatedAt,omitempty" yaml:"updatedAt,omitempty"`
 
-	// User Represents a user in Layer5 Cloud (Meshery)
+	// User Represents a user
 	User   *userV1beta.User `db:"-" json:"user,omitempty" yaml:"user,omitempty"`
-	UserId core.Id    `db:"user_id" json:"userId,omitempty" yaml:"userId,omitempty"`
+	UserId core.Id          `db:"user_id" json:"userId,omitempty" yaml:"userId,omitempty"`
 
 	// ViewCount Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
 	ViewCount *int `db:"view_count" json:"viewCount,omitempty" yaml:"viewCount,omitempty"`
@@ -275,14 +275,14 @@ type MesheryPatternPayload struct {
 
 	// DesignType Discriminator identifying the source format of the design body, stored in the `source_type` column. Optional on create (the server defaults missing values to `Design`).
 	DesignType *MesheryPatternPayloadDesignType `json:"designType" yaml:"designType"`
-	ID         core.Id                  `json:"id,omitempty" yaml:"id,omitempty"`
-	Location   core.MapObject           `json:"location,omitempty" yaml:"location,omitempty"`
+	ID         core.Id                          `json:"id,omitempty" yaml:"id,omitempty"`
+	Location   core.MapObject                   `json:"location,omitempty" yaml:"location,omitempty"`
 
 	// Name Human-readable design name.
 	Name *string `json:"name,omitempty" yaml:"name,omitempty"`
 
 	// PatternFile Raw design body to persist into the `pattern_file` column. See MesheryPattern.patternFile for the transcode boundary note that applies on both writes and reads.
-	PatternFile *string         `json:"patternFile,omitempty" yaml:"patternFile,omitempty"`
+	PatternFile *string `json:"patternFile,omitempty" yaml:"patternFile,omitempty"`
 	UserId      core.Id `json:"userId,omitempty" yaml:"userId,omitempty"`
 
 	// Visibility Visibility scope of the design.
@@ -298,14 +298,14 @@ type MesheryPatternPayloadVisibility string
 // MesheryPatternRequestBody Payload for upserting a design via POST /api/content/patterns.
 type MesheryPatternRequestBody struct {
 	// Name Human-readable design name.
-	Name *string           `json:"name,omitempty" yaml:"name,omitempty"`
+	Name *string   `json:"name,omitempty" yaml:"name,omitempty"`
 	Path core.Text `json:"path,omitempty" yaml:"path,omitempty"`
 
 	// PatternData Client-settable subset of the design (pattern) entity used as the body of the inner `patternData` envelope on POST /api/content/patterns. Server-generated fields (createdAt, updatedAt, viewCount, downloadCount, cloneCount, deploymentCount, shareCount, the joined `user` object, and the imported-source `sourceContent` blob) are deliberately excluded — the server ignores them on writes and re-projects them on the response.
 	PatternData *MesheryPatternPayload `json:"patternData,omitempty" yaml:"patternData,omitempty"`
 
 	// Save When true, persist the design in addition to parsing it.
-	Save *bool                 `json:"save,omitempty" yaml:"save,omitempty"`
+	Save *bool         `json:"save,omitempty" yaml:"save,omitempty"`
 	Url  core.Endpoint `json:"url,omitempty" yaml:"url,omitempty"`
 }
 

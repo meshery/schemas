@@ -6,9 +6,9 @@ package user
 import (
 	"time"
 
+	"github.com/gofrs/uuid"
 	"github.com/meshery/schemas/models/core"
 	openapi_types "github.com/oapi-codegen/runtime/types"
-	"github.com/gofrs/uuid"
 )
 
 // Defines values for UserRoleNames.
@@ -130,7 +130,7 @@ type Social struct {
 	Site string `json:"site" yaml:"site"`
 }
 
-// User Represents a user in Layer5 Cloud (Meshery)
+// User Represents a user
 type User struct {
 	AcceptedTermsAt core.Time `db:"accepted_terms_at" json:"accepted_terms_at" yaml:"accepted_terms_at,omitempty"`
 
@@ -141,7 +141,7 @@ type User struct {
 	Bio *string `db:"bio" json:"bio" yaml:"bio"`
 
 	// Country User's country information stored as JSONB
-	Country   core.Map          `db:"country" json:"country" yaml:"country"`
+	Country   core.Map  `db:"country" json:"country" yaml:"country"`
 	CreatedAt core.Time `db:"created_at" json:"created_at" yaml:"created_at"`
 
 	// DeletedAt Timestamp when the user record was soft-deleted (null if not deleted)
@@ -149,7 +149,7 @@ type User struct {
 
 	// Email User's email address
 	Email          openapi_types.Email `db:"email" json:"email" yaml:"email"`
-	FirstLoginTime core.Time   `db:"first_login_time" json:"first_login_time" yaml:"first_login_time,omitempty"`
+	FirstLoginTime core.Time           `db:"first_login_time" json:"first_login_time" yaml:"first_login_time,omitempty"`
 
 	// FirstName User's first name
 	FirstName string `db:"first_name" json:"first_name" yaml:"first_name"`
