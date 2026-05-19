@@ -87,7 +87,7 @@ function collectRefs(node, out) {
   }
   for (const [k, v] of Object.entries(node)) {
     if (k === "$ref" && typeof v === "string" && v.startsWith("#/components/")) {
-      out.add(v);
+      out.add(v.split("/").slice(0, 4).join("/"));
     } else if (k === "security" && Array.isArray(v)) {
       for (const requirement of v) {
         if (requirement && typeof requirement === "object") {
@@ -136,9 +136,6 @@ function filterOpenapiByTag(doc, tagToInclude = "meshery", baseDoc) {
 
   const filteredPaths = Object.entries(doc.paths || {}).reduce(
     (acc, [path, pathItem]) => {
-      const pathLevelEntries = Object.entries(pathItem).filter(
-        ([key]) => !httpMethods.includes(key),
-      );
       const filteredMethods = Object.entries(pathItem).reduce(
         (methodsAcc, [method, operation]) => {
           if (!httpMethods.includes(method)) return methodsAcc;
@@ -159,7 +156,7 @@ function filterOpenapiByTag(doc, tagToInclude = "meshery", baseDoc) {
       );
 
       if (Object.keys(filteredMethods).length > 0) {
-        acc[path] = { ...Object.fromEntries(pathLevelEntries), ...filteredMethods };
+        acc[path] = filteredMethods;
       }
 
       return acc;
@@ -177,7 +174,7 @@ function filterOpenapiByTag(doc, tagToInclude = "meshery", baseDoc) {
 
   const rootRefs = new Set();
   collectRefs(filteredPaths, rootRefs);
-  collectRefs(doc.security, rootRefs);
+  collectRefs({ security: doc.security }, rootRefs);
   const filteredComponents = pruneComponents(doc.components, rootRefs);
 
   const filteredDoc = { ...doc, paths: filteredPaths };
