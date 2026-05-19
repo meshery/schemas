@@ -630,7 +630,7 @@ export const PermissionKeys = {
   IdentityAccessManagementViewOrganizations: "172fa7d3-0d8a-4646-a789-bf64f52ba40b" as PermissionKey,
 
   /**
-   * See all organizations within a Layer5 Cloud deployment. See all organizations, teams, and users.
+   * See all organizations within a Cloud deployment. See all organizations, teams, and users.
    */
   IdentityAccessManagementViewAllOrganizations: "e996c998-a50f-4cb8-ae7b-f2f1b523c971" as PermissionKey,
 

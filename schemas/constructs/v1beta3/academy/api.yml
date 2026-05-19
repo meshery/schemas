@@ -1092,7 +1092,7 @@ components:
           type: string
           format: uri
           description: Canonical URL for the learning path
-          example: http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
+          example: http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
         certificate:
           $ref: '#/components/schemas/Certificate'
           x-go-type: Certificate
@@ -1221,7 +1221,7 @@ components:
           type: string
           format: uri
           description: URL to the course content
-          example: http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/
+          example: http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
         description:
           type: string
           description: Course description

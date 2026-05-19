@@ -40,7 +40,7 @@ export interface paths {
               type: "learning-path" | "challenge" | "certification";
               /**
                * @description Organization ID that owns this learning path
-               * @example layer5
+               * @example meshery
                */
               orgId: string;
               /**
@@ -104,7 +104,7 @@ export interface paths {
                 /**
                  * Format: uri
                  * @description Canonical URL for the learning path
-                 * @example http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
+                 * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
                  */
                 permalink: string;
                 certificate?: {
@@ -192,7 +192,7 @@ export interface paths {
                   /**
                    * Format: uri
                    * @description URL to the course content
-                   * @example http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/
+                   * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
                    */
                   permalink: string;
                   /**
@@ -440,7 +440,7 @@ export interface components {
   schemas: {
     /**
      * @description Organization ID that owns this learning path
-     * @example layer5
+     * @example meshery
      */
     AcademyCurriculaOrgId: string;
     /** @description ID of the badge to be awarded on completion of this curricula */
@@ -480,7 +480,7 @@ export interface components {
       /**
        * Format: uri
        * @description Canonical URL for the learning path
-       * @example http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
+       * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
        */
       permalink: string;
       certificate?: {
@@ -568,7 +568,7 @@ export interface components {
         /**
          * Format: uri
          * @description URL to the course content
-         * @example http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/
+         * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
          */
         permalink: string;
         /**
@@ -624,7 +624,7 @@ export interface components {
       type: "learning-path" | "challenge" | "certification";
       /**
        * @description Organization ID that owns this learning path
-       * @example layer5
+       * @example meshery
        */
       orgId: string;
       /**
@@ -688,7 +688,7 @@ export interface components {
         /**
          * Format: uri
          * @description Canonical URL for the learning path
-         * @example http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
+         * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
          */
         permalink: string;
         certificate?: {
@@ -776,7 +776,7 @@ export interface components {
           /**
            * Format: uri
            * @description URL to the course content
-           * @example http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/
+           * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
            */
           permalink: string;
           /**
@@ -815,7 +815,7 @@ export interface components {
       type: "learning-path" | "challenge" | "certification";
       /**
        * @description Organization ID that owns this learning path
-       * @example layer5
+       * @example meshery
        */
       orgId: string;
       /**
@@ -879,7 +879,7 @@ export interface components {
         /**
          * Format: uri
          * @description Canonical URL for the learning path
-         * @example http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
+         * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
          */
         permalink: string;
         certificate?: {
@@ -967,7 +967,7 @@ export interface components {
           /**
            * Format: uri
            * @description URL to the course content
-           * @example http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/
+           * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
            */
           permalink: string;
           /**
@@ -1063,7 +1063,7 @@ export interface components {
       title: string;
       /**
        * @description Organization ID that owns this learning path
-       * @example layer5
+       * @example meshery
        */
       orgId: string;
       /** @description ID of the workspace to which this Curricula belongs */
@@ -1111,7 +1111,7 @@ export interface components {
         /**
          * Format: uri
          * @description Canonical URL for the learning path
-         * @example http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
+         * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
          */
         permalink: string;
         certificate?: {
@@ -1199,7 +1199,7 @@ export interface components {
           /**
            * Format: uri
            * @description URL to the course content
-           * @example http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/
+           * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
            */
           permalink: string;
           /**
@@ -1238,7 +1238,7 @@ export interface components {
       type: "learning-path" | "challenge" | "certification";
       /**
        * @description Organization ID that owns this learning path
-       * @example layer5
+       * @example meshery
        */
       orgId: string;
       /**
@@ -1302,7 +1302,7 @@ export interface components {
         /**
          * Format: uri
          * @description Canonical URL for the learning path
-         * @example http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
+         * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
          */
         permalink: string;
         certificate?: {
@@ -1390,7 +1390,7 @@ export interface components {
           /**
            * Format: uri
            * @description URL to the course content
-           * @example http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/
+           * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
            */
           permalink: string;
           /**
@@ -1437,7 +1437,7 @@ export interface components {
         type: "learning-path" | "challenge" | "certification";
         /**
          * @description Organization ID that owns this learning path
-         * @example layer5
+         * @example meshery
          */
         orgId: string;
         /**
@@ -1501,7 +1501,7 @@ export interface components {
           /**
            * Format: uri
            * @description Canonical URL for the learning path
-           * @example http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
+           * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
            */
           permalink: string;
           certificate?: {
@@ -1589,7 +1589,7 @@ export interface components {
             /**
              * Format: uri
              * @description URL to the course content
-             * @example http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/
+             * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
              */
             permalink: string;
             /**
@@ -1635,7 +1635,7 @@ export interface components {
         type: "learning-path" | "challenge" | "certification";
         /**
          * @description Organization ID that owns this learning path
-         * @example layer5
+         * @example meshery
          */
         orgId: string;
         /**
@@ -1699,7 +1699,7 @@ export interface components {
           /**
            * Format: uri
            * @description Canonical URL for the learning path
-           * @example http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
+           * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
            */
           permalink: string;
           certificate?: {
@@ -1787,7 +1787,7 @@ export interface components {
             /**
              * Format: uri
              * @description URL to the course content
-             * @example http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/
+             * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
              */
             permalink: string;
             /**
@@ -1844,7 +1844,7 @@ export interface components {
       /**
        * Format: uri
        * @description Canonical URL for the learning path
-       * @example http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
+       * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
        */
       permalink: string;
       certificate?: {
@@ -1932,7 +1932,7 @@ export interface components {
         /**
          * Format: uri
          * @description URL to the course content
-         * @example http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/
+         * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
          */
         permalink: string;
         /**
@@ -1985,7 +1985,7 @@ export interface components {
       /**
        * Format: uri
        * @description Canonical URL for the learning path
-       * @example http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
+       * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
        */
       permalink: string;
       certificate?: {
@@ -2073,7 +2073,7 @@ export interface components {
         /**
          * Format: uri
          * @description URL to the course content
-         * @example http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/
+         * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
          */
         permalink: string;
         /**
@@ -2216,7 +2216,7 @@ export interface components {
       /**
        * Format: uri
        * @description Canonical URL for the learning path
-       * @example http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
+       * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
        */
       permalink: string;
       certificate?: {
@@ -2304,7 +2304,7 @@ export interface components {
         /**
          * Format: uri
          * @description URL to the course content
-         * @example http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/
+         * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
          */
         permalink: string;
         /**
@@ -2470,7 +2470,7 @@ export interface components {
           id: string;
           /**
            * @description Organization ID that owns this quiz
-           * @example layer5
+           * @example meshery
            */
           org_id: string;
           /**
@@ -2558,7 +2558,7 @@ export interface components {
         id: string;
         /**
          * @description Organization ID that owns this quiz
-         * @example layer5
+         * @example meshery
          */
         org_id: string;
         /**
@@ -2641,7 +2641,7 @@ export interface components {
       /**
        * Format: uri
        * @description URL to the course content
-       * @example http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/
+       * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
        */
       permalink: string;
       /**
@@ -2820,7 +2820,7 @@ export interface components {
             id: string;
             /**
              * @description Organization ID that owns this quiz
-             * @example layer5
+             * @example meshery
              */
             org_id: string;
             /**
@@ -2947,7 +2947,7 @@ export interface components {
       id: string;
       /**
        * @description Organization ID that owns this quiz
-       * @example layer5
+       * @example meshery
        */
       org_id: string;
       /**
@@ -3138,7 +3138,7 @@ export interface components {
           id: string;
           /**
            * @description Organization ID that owns this quiz
-           * @example layer5
+           * @example meshery
            */
           org_id: string;
           /**
@@ -3215,7 +3215,7 @@ export interface components {
         id: string;
         /**
          * @description Organization ID that owns this quiz
-         * @example layer5
+         * @example meshery
          */
         org_id: string;
         /**
@@ -3294,7 +3294,7 @@ export interface components {
         id: string;
         /**
          * @description Organization ID that owns this quiz
-         * @example layer5
+         * @example meshery
          */
         org_id: string;
         /**
@@ -3501,7 +3501,7 @@ export interface components {
               id: string;
               /**
                * @description Organization ID that owns this quiz
-               * @example layer5
+               * @example meshery
                */
               org_id: string;
               /**
@@ -3671,7 +3671,7 @@ export interface operations {
               type: "learning-path" | "challenge" | "certification";
               /**
                * @description Organization ID that owns this learning path
-               * @example layer5
+               * @example meshery
                */
               orgId: string;
               /**
@@ -3735,7 +3735,7 @@ export interface operations {
                 /**
                  * Format: uri
                  * @description Canonical URL for the learning path
-                 * @example http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
+                 * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
                  */
                 permalink: string;
                 certificate?: {
@@ -3823,7 +3823,7 @@ export interface operations {
                   /**
                    * Format: uri
                    * @description URL to the course content
-                   * @example http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/
+                   * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
                    */
                   permalink: string;
                   /**
@@ -3883,7 +3883,7 @@ export interface operations {
             type: "learning-path" | "challenge" | "certification";
             /**
              * @description Organization ID that owns this learning path
-             * @example layer5
+             * @example meshery
              */
             orgId: string;
             /**
@@ -3947,7 +3947,7 @@ export interface operations {
               /**
                * Format: uri
                * @description Canonical URL for the learning path
-               * @example http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
+               * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
                */
               permalink: string;
               certificate?: {
@@ -4035,7 +4035,7 @@ export interface operations {
                 /**
                  * Format: uri
                  * @description URL to the course content
-                 * @example http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/
+                 * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
                  */
                 permalink: string;
                 /**
@@ -4092,7 +4092,7 @@ export interface operations {
           title: string;
           /**
            * @description Organization ID that owns this learning path
-           * @example layer5
+           * @example meshery
            */
           orgId: string;
           /** @description ID of the workspace to which this Curricula belongs */
@@ -4140,7 +4140,7 @@ export interface operations {
             /**
              * Format: uri
              * @description Canonical URL for the learning path
-             * @example http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
+             * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
              */
             permalink: string;
             certificate?: {
@@ -4228,7 +4228,7 @@ export interface operations {
               /**
                * Format: uri
                * @description URL to the course content
-               * @example http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/
+               * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
                */
               permalink: string;
               /**
@@ -4308,7 +4308,7 @@ export interface operations {
               type: "learning-path" | "challenge" | "certification";
               /**
                * @description Organization ID that owns this learning path
-               * @example layer5
+               * @example meshery
                */
               orgId: string;
               /**
@@ -4372,7 +4372,7 @@ export interface operations {
                 /**
                  * Format: uri
                  * @description Canonical URL for the learning path
-                 * @example http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
+                 * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
                  */
                 permalink: string;
                 certificate?: {
@@ -4460,7 +4460,7 @@ export interface operations {
                   /**
                    * Format: uri
                    * @description URL to the course content
-                   * @example http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/
+                   * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
                    */
                   permalink: string;
                   /**
@@ -4818,7 +4818,7 @@ export interface operations {
             type: "learning-path" | "challenge" | "certification";
             /**
              * @description Organization ID that owns this learning path
-             * @example layer5
+             * @example meshery
              */
             orgId: string;
             /**
@@ -4882,7 +4882,7 @@ export interface operations {
               /**
                * Format: uri
                * @description Canonical URL for the learning path
-               * @example http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
+               * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
                */
               permalink: string;
               certificate?: {
@@ -4970,7 +4970,7 @@ export interface operations {
                 /**
                  * Format: uri
                  * @description URL to the course content
-                 * @example http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/
+                 * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
                  */
                 permalink: string;
                 /**
@@ -5091,7 +5091,7 @@ export interface operations {
             type: "learning-path" | "challenge" | "certification";
             /**
              * @description Organization ID that owns this learning path
-             * @example layer5
+             * @example meshery
              */
             orgId: string;
             /**
@@ -5155,7 +5155,7 @@ export interface operations {
               /**
                * Format: uri
                * @description Canonical URL for the learning path
-               * @example http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
+               * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
                */
               permalink: string;
               certificate?: {
@@ -5243,7 +5243,7 @@ export interface operations {
                 /**
                  * Format: uri
                  * @description URL to the course content
-                 * @example http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/
+                 * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
                  */
                 permalink: string;
                 /**
@@ -5356,7 +5356,7 @@ export interface operations {
           title: string;
           /**
            * @description Organization ID that owns this learning path
-           * @example layer5
+           * @example meshery
            */
           orgId: string;
           /** @description ID of the workspace to which this Curricula belongs */
@@ -5404,7 +5404,7 @@ export interface operations {
             /**
              * Format: uri
              * @description Canonical URL for the learning path
-             * @example http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
+             * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
              */
             permalink: string;
             certificate?: {
@@ -5492,7 +5492,7 @@ export interface operations {
               /**
                * Format: uri
                * @description URL to the course content
-               * @example http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/
+               * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
                */
               permalink: string;
               /**
@@ -5586,7 +5586,7 @@ export interface operations {
                     id: string;
                     /**
                      * @description Organization ID that owns this quiz
-                     * @example layer5
+                     * @example meshery
                      */
                     org_id: string;
                     /**
@@ -5757,7 +5757,7 @@ export interface operations {
             id: string;
             /**
              * @description Organization ID that owns this quiz
-             * @example layer5
+             * @example meshery
              */
             org_id: string;
             /**
@@ -5852,7 +5852,7 @@ export interface operations {
             id: string;
             /**
              * @description Organization ID that owns this quiz
-             * @example layer5
+             * @example meshery
              */
             org_id: string;
             /**
@@ -5978,7 +5978,7 @@ export interface operations {
               id: string;
               /**
                * @description Organization ID that owns this quiz
-               * @example layer5
+               * @example meshery
                */
               org_id: string;
               /**
@@ -6085,7 +6085,7 @@ export interface operations {
               id: string;
               /**
                * @description Organization ID that owns this quiz
-               * @example layer5
+               * @example meshery
                */
               org_id: string;
               /**
