@@ -133,7 +133,7 @@ const UserSchema: Record<string, unknown> = {
                       "type": "array",
                       "items": {
                         "type": "object",
-                        "description": "Represents a user in Layer5 Cloud (Meshery)",
+                        "description": "Represents a user",
                         "required": [
                           "id",
                           "userId",
@@ -765,7 +765,7 @@ const UserSchema: Record<string, unknown> = {
                       "type": "array",
                       "items": {
                         "type": "object",
-                        "description": "Represents a user in Layer5 Cloud (Meshery)",
+                        "description": "Represents a user",
                         "required": [
                           "id",
                           "userId",
@@ -1339,7 +1339,7 @@ const UserSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "Represents a user in Layer5 Cloud (Meshery)",
+                  "description": "Represents a user",
                   "required": [
                     "id",
                     "userId",
@@ -1902,7 +1902,7 @@ const UserSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "Represents a user in Layer5 Cloud (Meshery)",
+                  "description": "Represents a user",
                   "required": [
                     "id",
                     "userId",
@@ -2558,7 +2558,7 @@ const UserSchema: Record<string, unknown> = {
     "schemas": {
       "User": {
         "type": "object",
-        "description": "Represents a user in Layer5 Cloud (Meshery)",
+        "description": "Represents a user",
         "required": [
           "id",
           "userId",
@@ -3080,7 +3080,7 @@ const UserSchema: Record<string, unknown> = {
             "type": "array",
             "items": {
               "type": "object",
-              "description": "Represents a user in Layer5 Cloud (Meshery)",
+              "description": "Represents a user",
               "required": [
                 "id",
                 "userId",
@@ -3606,7 +3606,7 @@ const UserSchema: Record<string, unknown> = {
             "type": "array",
             "items": {
               "type": "object",
-              "description": "Represents a user in Layer5 Cloud (Meshery)",
+              "description": "Represents a user",
               "required": [
                 "id",
                 "userId",

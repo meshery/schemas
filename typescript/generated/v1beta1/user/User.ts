@@ -22,7 +22,7 @@ export interface paths {
 
 export interface components {
   schemas: {
-    /** @description Represents a user in Layer5 Cloud (Meshery) */
+    /** @description Represents a user */
     User: {
       /**
        * Format: uuid

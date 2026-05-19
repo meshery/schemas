@@ -174,7 +174,7 @@ components:
   schemas:
     User:
       type: object
-      description: Represents a user in Layer5 Cloud (Meshery)
+      description: Represents a user
       required:
         - id
         - user_id

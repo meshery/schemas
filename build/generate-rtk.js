@@ -161,7 +161,6 @@ function findUnguardedQueryParamAccesses(content) {
  * Cross-reference:
  *   - Upstream issue: https://github.com/reduxjs/redux-toolkit/issues/5018
  *   - Downstream hotfix (to be reverted after this lands):
- *     https://github.com/layer5io/meshery-cloud/pull/5102
  *
  * @param {string} filePath - Absolute path to the generated TS file
  * @returns {number} count of `queryArg.X` / `queryArg["X"]` rewrites applied

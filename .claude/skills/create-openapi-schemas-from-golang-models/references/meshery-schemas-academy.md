@@ -143,4 +143,4 @@ Academy APIs use `x-internal` to indicate cloud-only endpoints:
 x-internal: ["cloud"]
 ```
 
-This marker signals that the endpoint is not part of the public Meshery API but is specific to Layer5 Cloud.
+This marker signals that the endpoint is not part of the public Meshery API but is specific to the remote provider, Meshery Cloud.
