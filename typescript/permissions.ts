@@ -1875,7 +1875,7 @@ export const PermissionKeys = {
   AcademyCreateCertifications: "efd922b6-daff-4857-aaee-840637a5f696" as PermissionKey,
 
   /**
-   * Cloud uses webhooks to automate approval flows and email notifications. This guide will help you customize and add your own custom webhooks.
+   * Layer5 Cloud uses webhooks to automate approval flows and email notifications. This guide will help you customize and add your own custom webhooks.
    */
   SupportAndDeploymentWebhooks: "df2c9b99-fad3-405b-9733-6cf10e1909ed" as PermissionKey,
 
@@ -1890,7 +1890,7 @@ export const PermissionKeys = {
   SupportAndDeploymentRestApiReference: "776ec711-26aa-47b1-a822-b1b14192b1e7" as PermissionKey,
 
   /**
-   * Customize the appearance and branding of your engineering platform.
+   * Customize the appearance and branding of your engineering platform powered by Layer5 Cloud.
    */
   SupportAndDeploymentWhiteLabel: "a27a55af-b71b-400f-a8b1-3f3b1afff4f6" as PermissionKey,
 
@@ -1900,7 +1900,7 @@ export const PermissionKeys = {
   SupportAndDeploymentCommunitySupport: "1ae12fbe-32d9-46ef-9ae6-897f9a0017d6" as PermissionKey,
 
   /**
-   * Support can help you troubleshoot issues you run into while using Meshery. Get support via the web.
+   * Layer5 Support can help you troubleshoot issues you run into while using Meshery. Get support via the web.
    */
   SupportAndDeploymentStandardSupport: "e2131b18-fe30-47c2-84e7-0207bdc89f0e" as PermissionKey,
 
@@ -1910,12 +1910,12 @@ export const PermissionKeys = {
   SupportAndDeploymentPremiumAndPremiumPlusSupport: "e49c8c16-58e5-465e-be6d-a81b115c31ee" as PermissionKey,
 
   /**
-   * Self-hosted Cloud for on-prem appliances or self-managed cloud tenants. Keep your designs internal to your workplace. Get remote support when you need it.
+   * Self-hosted Layer5 Cloud for on-prem appliances or self-managed cloud tenants. Keep your Kanvas designs internal to your workplace. Get remote support from Layer5 when you need it.
    */
   SupportAndDeploymentSelfHostedDeployment: "3e0aa2da-ca58-4109-a0cc-0dece0ec47c3" as PermissionKey,
 
   /**
-   * Support can help you troubleshoot issues you run into while using Meshery. Get support via phone.
+   * Layer5 Support can help you troubleshoot issues you run into while using Meshery. Get support via phone.
    */
   SupportAndDeploymentPhoneSupport: "4e7cf974-7f6e-461c-989b-1176f2d46448" as PermissionKey,
 
