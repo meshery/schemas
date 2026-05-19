@@ -2,11 +2,11 @@
 // This file is generated from permissions.csv - DO NOT EDIT MANUALLY.
 // To regenerate, run: node build/generate-permission-golang.js
 package permissions
+
 import "github.com/gofrs/uuid"
 
 // Index ID used to generate this file
 const IndexID = "5f793c7ea40d5f3b0aa28a0ba30b509e64c8fbe44241c2bd46fb67c38b2663be"
-
 
 // PermissionKey represents a permission key identifier.
 type PermissionKey uuid.UUID
@@ -300,10 +300,10 @@ var (
 	// IdentityAccessManagementMesheryAsAnIdp - Own and control the user accounts of your enterprise members through your identity provider (IdP).
 	IdentityAccessManagementMesheryAsAnIdp = PermissionKey(uuid.Must(uuid.FromString("0b3313eb-5c77-4dba-9074-122cfb01bf55")))
 
-	// IdentityAccessManagementViewUserPublicProfile - See public user profile details, public activities and public resources. 
+	// IdentityAccessManagementViewUserPublicProfile - See public user profile details, public activities and public resources.
 	IdentityAccessManagementViewUserPublicProfile = PermissionKey(uuid.Must(uuid.FromString("daded1e9-ff0f-4259-86ac-e168fd5565d4")))
 
-	// IdentityAccessManagementViewUserSettings - See private user profile details, private activities and private resources. 
+	// IdentityAccessManagementViewUserSettings - See private user profile details, private activities and private resources.
 	IdentityAccessManagementViewUserSettings = PermissionKey(uuid.Must(uuid.FromString("e00cae57-6dc6-41ac-b174-f3b01b4adce0")))
 
 	// IdentityAccessManagementViewAllUsers - See all teams within an organization. See all members of all teams.
@@ -387,7 +387,7 @@ var (
 	// IdentityAccessManagementViewOrganizations - See all organizations of which you are an administrator. See all members of those organizations.
 	IdentityAccessManagementViewOrganizations = PermissionKey(uuid.Must(uuid.FromString("172fa7d3-0d8a-4646-a789-bf64f52ba40b")))
 
-	// IdentityAccessManagementViewAllOrganizations - See all organizations within a Layer5 Cloud deployment. See all organizations, teams, and users.
+	// IdentityAccessManagementViewAllOrganizations - See all organizations within a Cloud deployment. See all organizations, teams, and users.
 	IdentityAccessManagementViewAllOrganizations = PermissionKey(uuid.Must(uuid.FromString("e996c998-a50f-4cb8-ae7b-f2f1b523c971")))
 
 	// IdentityAccessManagementRemoveRolesFromOrganizationMembers - Remove roles from users in an organization
@@ -1095,7 +1095,7 @@ var (
 	// WorkspaceManagementAssignConnectionsToEnvironment - Add new connections to environments
 	WorkspaceManagementAssignConnectionsToEnvironment = PermissionKey(uuid.Must(uuid.FromString("52cbe0b8-9aa7-4605-8eed-aa37e595adbb")))
 
-	// WorkspaceManagementRemoveConnectionsFromEnvironments - Remove connections from environment, 
+	// WorkspaceManagementRemoveConnectionsFromEnvironments - Remove connections from environment,
 	WorkspaceManagementRemoveConnectionsFromEnvironments = PermissionKey(uuid.Must(uuid.FromString("65648682-e47f-43d7-a5ad-dc042803f951")))
 
 	// CatalogManagementViewCatalog - View all items in catalog
@@ -1134,7 +1134,7 @@ var (
 	// AcademyCreateCertifications - No description available
 	AcademyCreateCertifications = PermissionKey(uuid.Must(uuid.FromString("efd922b6-daff-4857-aaee-840637a5f696")))
 
-	// SupportAndDeploymentWebhooks - Layer5 Cloud uses webhooks to automate approval flows and email notifications. This guide will help you customize and add your own custom webhooks.
+	// SupportAndDeploymentWebhooks - Cloud uses webhooks to automate approval flows and email notifications. This guide will help you customize and add your own custom webhooks.
 	SupportAndDeploymentWebhooks = PermissionKey(uuid.Must(uuid.FromString("df2c9b99-fad3-405b-9733-6cf10e1909ed")))
 
 	// SupportAndDeploymentRestApiUserDocumentation - Provides a powerful and flexible way to interact with the platform, enabling automation, integration, and customization to optimize your cloud native development and management processes.
@@ -1143,22 +1143,22 @@ var (
 	// SupportAndDeploymentRestApiReference - Provides a powerful and flexible way to interact with the platform, enabling automation, integration, and customization to optimize your cloud native development and management processes.
 	SupportAndDeploymentRestApiReference = PermissionKey(uuid.Must(uuid.FromString("776ec711-26aa-47b1-a822-b1b14192b1e7")))
 
-	// SupportAndDeploymentWhiteLabel - Customize the appearance and branding of your engineering platform powered by Layer5 Cloud.
+	// SupportAndDeploymentWhiteLabel - Customize the appearance and branding of your engineering platform powered by Cloud.
 	SupportAndDeploymentWhiteLabel = PermissionKey(uuid.Must(uuid.FromString("a27a55af-b71b-400f-a8b1-3f3b1afff4f6")))
 
 	// SupportAndDeploymentCommunitySupport - Get help with most of your Meshery questions and issues in our Community Forum.
 	SupportAndDeploymentCommunitySupport = PermissionKey(uuid.Must(uuid.FromString("1ae12fbe-32d9-46ef-9ae6-897f9a0017d6")))
 
-	// SupportAndDeploymentStandardSupport - Layer5 Support can help you troubleshoot issues you run into while using Meshery. Get support via the web.
+	// SupportAndDeploymentStandardSupport - Support can help you troubleshoot issues you run into while using Meshery. Get support via the web.
 	SupportAndDeploymentStandardSupport = PermissionKey(uuid.Must(uuid.FromString("e2131b18-fe30-47c2-84e7-0207bdc89f0e")))
 
 	// SupportAndDeploymentPremiumAndPremiumPlusSupport - With Premium, get a 30-minute SLA and 24/7 web and phone support. With Premium Plus, get everything in Premium plus your own Support Account Manager and more.
 	SupportAndDeploymentPremiumAndPremiumPlusSupport = PermissionKey(uuid.Must(uuid.FromString("e49c8c16-58e5-465e-be6d-a81b115c31ee")))
 
-	// SupportAndDeploymentSelfHostedDeployment - Self-hosted Layer5 Cloud for on-prem appliances or self-managed cloud tenants. Keep your Kanvas designs internal to your workplace. Get remote support from Layer5 when you need it.
+	// SupportAndDeploymentSelfHostedDeployment - Self-hosted Cloud for on-prem appliances or self-managed cloud tenants. Keep your Kanvas designs internal to your workplace. Get remote support from when you need it.
 	SupportAndDeploymentSelfHostedDeployment = PermissionKey(uuid.Must(uuid.FromString("3e0aa2da-ca58-4109-a0cc-0dece0ec47c3")))
 
-	// SupportAndDeploymentPhoneSupport - Layer5 Support can help you troubleshoot issues you run into while using Meshery. Get support via phone.
+	// SupportAndDeploymentPhoneSupport - Support can help you troubleshoot issues you run into while using Meshery. Get support via phone.
 	SupportAndDeploymentPhoneSupport = PermissionKey(uuid.Must(uuid.FromString("4e7cf974-7f6e-461c-989b-1176f2d46448")))
 
 	// SupportAndDeploymentPayBillsViaInvoiceRatherThanUsingYourCreditCard - No description available
@@ -1334,5 +1334,4 @@ var (
 
 	// ChaosManagementAsDaemonsets - No description available
 	ChaosManagementAsDaemonsets = PermissionKey(uuid.Must(uuid.FromString("b73d71ec-f5b2-4d0b-83de-6e2dccff5041")))
-
 )

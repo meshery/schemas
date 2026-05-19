@@ -17,7 +17,7 @@ type Preference struct {
 	NotifyRoleChange bool `json:"notifyRoleChange" yaml:"notifyRoleChange"`
 }
 
-// Role Role definition for Layer5 Cloud (Meshery).
+// Role Role definition
 type Role struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	ID *meshcore.Uuid `db:"id" json:"id,omitempty" yaml:"id,omitempty"`
@@ -107,7 +107,7 @@ type UserRoleUpdateRequest struct {
 	Status *string `json:"status,omitempty" yaml:"status,omitempty"`
 
 	// RoleNames The role names of the userroleupdaterequest.
-	RoleNames *[]string         `json:"roleNames,omitempty" yaml:"roleNames,omitempty"`
+	RoleNames *[]string     `json:"roleNames,omitempty" yaml:"roleNames,omitempty"`
 	CreatedAt meshcore.Time `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	UpdatedAt meshcore.Time `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 

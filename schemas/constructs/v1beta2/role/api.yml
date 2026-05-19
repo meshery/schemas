@@ -312,7 +312,7 @@ components:
   schemas:
     Role:
       type: object
-      description: Role definition for Layer5 Cloud (Meshery).
+      description: Role definition
       required:
         - roleName
         - description

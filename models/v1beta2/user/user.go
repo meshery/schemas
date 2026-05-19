@@ -140,7 +140,7 @@ type User struct {
 	Bio *string `db:"bio" json:"bio" yaml:"bio"`
 
 	// Country User's country information stored as JSONB
-	Country   core.Map          `db:"country" json:"country" yaml:"country"`
+	Country   core.Map  `db:"country" json:"country" yaml:"country"`
 	CreatedAt core.Time `db:"created_at" json:"createdAt" yaml:"createdAt"`
 
 	// DeletedAt Timestamp when the user record was soft-deleted (null if not deleted)
@@ -148,7 +148,7 @@ type User struct {
 
 	// Email User's email address
 	Email          openapi_types.Email `db:"email" json:"email" yaml:"email"`
-	FirstLoginTime core.Time   `db:"first_login_time" json:"firstLoginTime" yaml:"firstLoginTime,omitempty"`
+	FirstLoginTime core.Time           `db:"first_login_time" json:"firstLoginTime" yaml:"firstLoginTime,omitempty"`
 
 	// FirstName User's first name
 	FirstName string `db:"first_name" json:"firstName" yaml:"firstName"`
@@ -170,7 +170,7 @@ type User struct {
 	} `db:"organizations" json:"organizations" yaml:"organizations"`
 	Preferences *Preference `db:"preferences" json:"preferences" yaml:"preferences,omitempty"`
 
-	// Provider Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)
+	// Provider Authentication provider (e.g., Google, Github)
 	Provider string `db:"provider" json:"provider" yaml:"provider"`
 
 	// Region User's region information stored as JSONB
