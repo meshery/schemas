@@ -14,19 +14,16 @@ info:
     Path notes:
       - `/api/system/database`, `/api/system/database/reset`,
         `/api/system/version`, and `/api/system/sync` are singleton paths.
-        The Meshery server endpoints are intentionally singular rather than
-        plural — there is exactly one database, one running binary, and one
-        session per request — and predate the canonical kebab-case-plural
-        convention. They are documented as-implemented; any future migration
-        to plural/canonical paths is a coordinated breaking change tracked
-        separately.
+        The v1beta1 system contract intentionally keeps these singular
+        paths: there is exactly one database, one running binary, and one
+        session per request. Any future migration to plural/canonical paths
+        requires a coordinated API-version bump.
       - `DELETE /api/system/database/reset` is a side-effect action with
         no request body. The canonical guidance is to express non-CRUD
-        actions as `POST`. The existing implementation uses `DELETE` and
-        the operation is documented as `DELETE` to match. A future API-version
-        bump may migrate it to `POST /api/system/database:reset` (or
-        `POST /api/system/databases/{databaseId}/reset` once the resource
-        is pluralised) and retire the `DELETE` form.
+        actions as `POST`; this v1beta1 compatibility contract preserves the
+        existing `DELETE` route so generated clients, handlers, and consumers
+        share one stable contract. A future API-version bump may introduce a
+        canonical replacement and retire the `DELETE` form.
   version: v1beta1
   contact:
     name: Meshery Maintainers
@@ -213,6 +210,8 @@ components:
       description: A single row from the Meshery server's SQLite schema catalogue, with the live row count for that table.
       additionalProperties: false
       required:
+        - name
+        - type
         - count
       properties:
         name:
@@ -286,13 +285,10 @@ components:
           type: string
           description: |
             Git commit SHA the running binary was built from. The wire
-            property name is `commitsha` (all-lowercase) to match the
-            current Meshery server response shape (`json:"commitsha"`
-            on `Version.CommitSHA` in `server_spec_handler.go`) and the
-            UI consumers that read it (`Navigator.tsx`). Migration to the
-            canonical camelCase `commitSha` form is a coordinated
-            schema + server + UI change tracked separately and is not
-            in scope for this construct's initial documentation.
+            property name is intentionally `commitsha` (all-lowercase) in
+            the v1beta1 compatibility contract. Migration to canonical
+            camelCase `commitSha` requires a coordinated schema, server, and
+            UI change in a future API version.
           maxLength: 64
         releaseChannel:
           type: string
