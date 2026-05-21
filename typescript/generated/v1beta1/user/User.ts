@@ -22,7 +22,7 @@ export interface paths {
 
 export interface components {
   schemas: {
-    /** @description Represents a user in Layer5 Cloud (Meshery) */
+    /** @description Represents a user */
     User: {
       /**
        * Format: uuid
@@ -32,7 +32,7 @@ export interface components {
       /** @description User identifier (username or external ID) */
       user_id: string;
       /**
-       * @description Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)
+       * @description Authentication provider (e.g., Google, Github)
        * @example [
        *   "local",
        *   "github",
@@ -224,7 +224,7 @@ export interface components {
         /** @description User identifier (username or external ID) */
         user_id: string;
         /**
-         * @description Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)
+         * @description Authentication provider (e.g., Google, Github)
          * @example [
          *   "local",
          *   "github",
@@ -417,7 +417,7 @@ export interface components {
         /** @description User identifier (username or external ID) */
         user_id: string;
         /**
-         * @description Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)
+         * @description Authentication provider (e.g., Google, Github)
          * @example [
          *   "local",
          *   "github",
@@ -809,7 +809,7 @@ export interface operations {
               /** @description User identifier (username or external ID) */
               user_id: string;
               /**
-               * @description Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)
+               * @description Authentication provider (e.g., Google, Github)
                * @example [
                *   "local",
                *   "github",
@@ -1049,7 +1049,7 @@ export interface operations {
               /** @description User identifier (username or external ID) */
               user_id: string;
               /**
-               * @description Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)
+               * @description Authentication provider (e.g., Google, Github)
                * @example [
                *   "local",
                *   "github",
@@ -1266,7 +1266,7 @@ export interface operations {
             /** @description User identifier (username or external ID) */
             user_id: string;
             /**
-             * @description Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)
+             * @description Authentication provider (e.g., Google, Github)
              * @example [
              *   "local",
              *   "github",
@@ -1482,7 +1482,7 @@ export interface operations {
             /** @description User identifier (username or external ID) */
             user_id: string;
             /**
-             * @description Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)
+             * @description Authentication provider (e.g., Google, Github)
              * @example [
              *   "local",
              *   "github",

@@ -136,7 +136,7 @@ const AcademySchema: Record<string, unknown> = {
                           "org_id": {
                             "type": "string",
                             "description": "Organization ID that owns this learning path",
-                            "example": "layer5",
+                            "example": "meshery",
                             "x-oapi-codegen-extra-tags": {
                               "db": "org_id",
                               "json": "org_id"
@@ -334,7 +334,7 @@ const AcademySchema: Record<string, unknown> = {
                                     "type": "string",
                                     "format": "uri",
                                     "description": "Canonical URL for the learning path",
-                                    "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+                                    "example": "http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/"
                                   },
                                   "certificate": {
                                     "x-go-type": "Certificate",
@@ -474,7 +474,7 @@ const AcademySchema: Record<string, unknown> = {
                                           "type": "string",
                                           "format": "uri",
                                           "description": "URL to the course content",
-                                          "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                                          "example": "http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/"
                                         },
                                         "description": {
                                           "type": "string",
@@ -608,7 +608,7 @@ const AcademySchema: Record<string, unknown> = {
                   "org_id": {
                     "type": "string",
                     "description": "Organization ID that owns this learning path",
-                    "example": "layer5",
+                    "example": "meshery",
                     "x-oapi-codegen-extra-tags": {
                       "db": "org_id",
                       "json": "org_id"
@@ -737,7 +737,7 @@ const AcademySchema: Record<string, unknown> = {
                             "type": "string",
                             "format": "uri",
                             "description": "Canonical URL for the learning path",
-                            "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+                            "example": "http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/"
                           },
                           "certificate": {
                             "x-go-type": "Certificate",
@@ -877,7 +877,7 @@ const AcademySchema: Record<string, unknown> = {
                                   "type": "string",
                                   "format": "uri",
                                   "description": "URL to the course content",
-                                  "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                                  "example": "http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/"
                                 },
                                 "description": {
                                   "type": "string",
@@ -998,7 +998,7 @@ const AcademySchema: Record<string, unknown> = {
                     "org_id": {
                       "type": "string",
                       "description": "Organization ID that owns this learning path",
-                      "example": "layer5",
+                      "example": "meshery",
                       "x-oapi-codegen-extra-tags": {
                         "db": "org_id",
                         "json": "org_id"
@@ -1196,7 +1196,7 @@ const AcademySchema: Record<string, unknown> = {
                               "type": "string",
                               "format": "uri",
                               "description": "Canonical URL for the learning path",
-                              "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+                              "example": "http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/"
                             },
                             "certificate": {
                               "x-go-type": "Certificate",
@@ -1336,7 +1336,7 @@ const AcademySchema: Record<string, unknown> = {
                                     "type": "string",
                                     "format": "uri",
                                     "description": "URL to the course content",
-                                    "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                                    "example": "http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/"
                                   },
                                   "description": {
                                     "type": "string",
@@ -1626,7 +1626,7 @@ const AcademySchema: Record<string, unknown> = {
                               "org_id": {
                                 "type": "string",
                                 "description": "Organization ID that owns this learning path",
-                                "example": "layer5",
+                                "example": "meshery",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "org_id",
                                   "json": "org_id"
@@ -1824,7 +1824,7 @@ const AcademySchema: Record<string, unknown> = {
                                         "type": "string",
                                         "format": "uri",
                                         "description": "Canonical URL for the learning path",
-                                        "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+                                        "example": "http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/"
                                       },
                                       "certificate": {
                                         "x-go-type": "Certificate",
@@ -1964,7 +1964,7 @@ const AcademySchema: Record<string, unknown> = {
                                               "type": "string",
                                               "format": "uri",
                                               "description": "URL to the course content",
-                                              "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                                              "example": "http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/"
                                             },
                                             "description": {
                                               "type": "string",
@@ -2159,7 +2159,7 @@ const AcademySchema: Record<string, unknown> = {
                     "org_id": {
                       "type": "string",
                       "description": "Organization ID that owns this learning path",
-                      "example": "layer5",
+                      "example": "meshery",
                       "x-oapi-codegen-extra-tags": {
                         "db": "org_id",
                         "json": "org_id"
@@ -2357,7 +2357,7 @@ const AcademySchema: Record<string, unknown> = {
                               "type": "string",
                               "format": "uri",
                               "description": "Canonical URL for the learning path",
-                              "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+                              "example": "http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/"
                             },
                             "certificate": {
                               "x-go-type": "Certificate",
@@ -2497,7 +2497,7 @@ const AcademySchema: Record<string, unknown> = {
                                     "type": "string",
                                     "format": "uri",
                                     "description": "URL to the course content",
-                                    "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                                    "example": "http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/"
                                   },
                                   "description": {
                                     "type": "string",
@@ -3236,7 +3236,7 @@ const AcademySchema: Record<string, unknown> = {
                   "org_id": {
                     "type": "string",
                     "description": "Organization ID that owns this learning path",
-                    "example": "layer5",
+                    "example": "meshery",
                     "x-oapi-codegen-extra-tags": {
                       "db": "org_id",
                       "json": "org_id"
@@ -3365,7 +3365,7 @@ const AcademySchema: Record<string, unknown> = {
                             "type": "string",
                             "format": "uri",
                             "description": "Canonical URL for the learning path",
-                            "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+                            "example": "http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/"
                           },
                           "certificate": {
                             "x-go-type": "Certificate",
@@ -3505,7 +3505,7 @@ const AcademySchema: Record<string, unknown> = {
                                   "type": "string",
                                   "format": "uri",
                                   "description": "URL to the course content",
-                                  "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                                  "example": "http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/"
                                 },
                                 "description": {
                                   "type": "string",
@@ -3629,7 +3629,7 @@ const AcademySchema: Record<string, unknown> = {
                         "org_id": {
                           "type": "string",
                           "description": "Organization ID that owns this learning path",
-                          "example": "layer5",
+                          "example": "meshery",
                           "x-oapi-codegen-extra-tags": {
                             "db": "org_id",
                             "json": "org_id"
@@ -3827,7 +3827,7 @@ const AcademySchema: Record<string, unknown> = {
                                   "type": "string",
                                   "format": "uri",
                                   "description": "Canonical URL for the learning path",
-                                  "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+                                  "example": "http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/"
                                 },
                                 "certificate": {
                                   "x-go-type": "Certificate",
@@ -3967,7 +3967,7 @@ const AcademySchema: Record<string, unknown> = {
                                         "type": "string",
                                         "format": "uri",
                                         "description": "URL to the course content",
-                                        "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                                        "example": "http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/"
                                       },
                                       "description": {
                                         "type": "string",
@@ -4378,7 +4378,7 @@ const AcademySchema: Record<string, unknown> = {
                         "org_id": {
                           "type": "string",
                           "description": "Organization ID that owns this learning path",
-                          "example": "layer5",
+                          "example": "meshery",
                           "x-oapi-codegen-extra-tags": {
                             "db": "org_id",
                             "json": "org_id"
@@ -4576,7 +4576,7 @@ const AcademySchema: Record<string, unknown> = {
                                   "type": "string",
                                   "format": "uri",
                                   "description": "Canonical URL for the learning path",
-                                  "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+                                  "example": "http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/"
                                 },
                                 "certificate": {
                                   "x-go-type": "Certificate",
@@ -4716,7 +4716,7 @@ const AcademySchema: Record<string, unknown> = {
                                         "type": "string",
                                         "format": "uri",
                                         "description": "URL to the course content",
-                                        "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                                        "example": "http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/"
                                       },
                                       "description": {
                                         "type": "string",
@@ -5529,7 +5529,7 @@ const AcademySchema: Record<string, unknown> = {
                                   "org_id": {
                                     "type": "string",
                                     "description": "Organization ID that owns this quiz",
-                                    "example": "layer5",
+                                    "example": "meshery",
                                     "x-oapi-codegen-extra-tags": {
                                       "db": "org_id",
                                       "json": "org_id"
@@ -6097,7 +6097,7 @@ const AcademySchema: Record<string, unknown> = {
                     "org_id": {
                       "type": "string",
                       "description": "Organization ID that owns this quiz",
-                      "example": "layer5",
+                      "example": "meshery",
                       "x-oapi-codegen-extra-tags": {
                         "db": "org_id",
                         "json": "org_id"
@@ -6511,7 +6511,7 @@ const AcademySchema: Record<string, unknown> = {
                     "org_id": {
                       "type": "string",
                       "description": "Organization ID that owns this quiz",
-                      "example": "layer5",
+                      "example": "meshery",
                       "x-oapi-codegen-extra-tags": {
                         "db": "org_id",
                         "json": "org_id"
@@ -6987,7 +6987,7 @@ const AcademySchema: Record<string, unknown> = {
                             "org_id": {
                               "type": "string",
                               "description": "Organization ID that owns this quiz",
-                              "example": "layer5",
+                              "example": "meshery",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "org_id",
                                 "json": "org_id"
@@ -7513,7 +7513,7 @@ const AcademySchema: Record<string, unknown> = {
                         "org_id": {
                           "type": "string",
                           "description": "Organization ID that owns this quiz",
-                          "example": "layer5",
+                          "example": "meshery",
                           "x-oapi-codegen-extra-tags": {
                             "db": "org_id",
                             "json": "org_id"
@@ -8398,7 +8398,7 @@ const AcademySchema: Record<string, unknown> = {
       "AcademyCurriculaOrgId": {
         "type": "string",
         "description": "Organization ID that owns this learning path",
-        "example": "layer5",
+        "example": "meshery",
         "x-oapi-codegen-extra-tags": {
           "db": "org_id",
           "json": "org_id"
@@ -8552,7 +8552,7 @@ const AcademySchema: Record<string, unknown> = {
                 "type": "string",
                 "format": "uri",
                 "description": "Canonical URL for the learning path",
-                "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+                "example": "http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/"
               },
               "certificate": {
                 "x-go-type": "Certificate",
@@ -8692,7 +8692,7 @@ const AcademySchema: Record<string, unknown> = {
                       "type": "string",
                       "format": "uri",
                       "description": "URL to the course content",
-                      "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                      "example": "http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/"
                     },
                     "description": {
                       "type": "string",
@@ -8868,7 +8868,7 @@ const AcademySchema: Record<string, unknown> = {
           "org_id": {
             "type": "string",
             "description": "Organization ID that owns this learning path",
-            "example": "layer5",
+            "example": "meshery",
             "x-oapi-codegen-extra-tags": {
               "db": "org_id",
               "json": "org_id"
@@ -9066,7 +9066,7 @@ const AcademySchema: Record<string, unknown> = {
                     "type": "string",
                     "format": "uri",
                     "description": "Canonical URL for the learning path",
-                    "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+                    "example": "http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/"
                   },
                   "certificate": {
                     "x-go-type": "Certificate",
@@ -9206,7 +9206,7 @@ const AcademySchema: Record<string, unknown> = {
                           "type": "string",
                           "format": "uri",
                           "description": "URL to the course content",
-                          "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                          "example": "http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/"
                         },
                         "description": {
                           "type": "string",
@@ -9313,7 +9313,7 @@ const AcademySchema: Record<string, unknown> = {
               "org_id": {
                 "type": "string",
                 "description": "Organization ID that owns this learning path",
-                "example": "layer5",
+                "example": "meshery",
                 "x-oapi-codegen-extra-tags": {
                   "db": "org_id",
                   "json": "org_id"
@@ -9511,7 +9511,7 @@ const AcademySchema: Record<string, unknown> = {
                         "type": "string",
                         "format": "uri",
                         "description": "Canonical URL for the learning path",
-                        "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+                        "example": "http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/"
                       },
                       "certificate": {
                         "x-go-type": "Certificate",
@@ -9651,7 +9651,7 @@ const AcademySchema: Record<string, unknown> = {
                               "type": "string",
                               "format": "uri",
                               "description": "URL to the course content",
-                              "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                              "example": "http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/"
                             },
                             "description": {
                               "type": "string",
@@ -9948,7 +9948,7 @@ const AcademySchema: Record<string, unknown> = {
           "org_id": {
             "type": "string",
             "description": "Organization ID that owns this learning path",
-            "example": "layer5",
+            "example": "meshery",
             "x-oapi-codegen-extra-tags": {
               "db": "org_id",
               "json": "org_id"
@@ -10077,7 +10077,7 @@ const AcademySchema: Record<string, unknown> = {
                     "type": "string",
                     "format": "uri",
                     "description": "Canonical URL for the learning path",
-                    "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+                    "example": "http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/"
                   },
                   "certificate": {
                     "x-go-type": "Certificate",
@@ -10217,7 +10217,7 @@ const AcademySchema: Record<string, unknown> = {
                           "type": "string",
                           "format": "uri",
                           "description": "URL to the course content",
-                          "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                          "example": "http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/"
                         },
                         "description": {
                           "type": "string",
@@ -10332,7 +10332,7 @@ const AcademySchema: Record<string, unknown> = {
               "org_id": {
                 "type": "string",
                 "description": "Organization ID that owns this learning path",
-                "example": "layer5",
+                "example": "meshery",
                 "x-oapi-codegen-extra-tags": {
                   "db": "org_id",
                   "json": "org_id"
@@ -10530,7 +10530,7 @@ const AcademySchema: Record<string, unknown> = {
                         "type": "string",
                         "format": "uri",
                         "description": "Canonical URL for the learning path",
-                        "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+                        "example": "http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/"
                       },
                       "certificate": {
                         "x-go-type": "Certificate",
@@ -10670,7 +10670,7 @@ const AcademySchema: Record<string, unknown> = {
                               "type": "string",
                               "format": "uri",
                               "description": "URL to the course content",
-                              "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                              "example": "http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/"
                             },
                             "description": {
                               "type": "string",
@@ -10805,7 +10805,7 @@ const AcademySchema: Record<string, unknown> = {
                 "org_id": {
                   "type": "string",
                   "description": "Organization ID that owns this learning path",
-                  "example": "layer5",
+                  "example": "meshery",
                   "x-oapi-codegen-extra-tags": {
                     "db": "org_id",
                     "json": "org_id"
@@ -11003,7 +11003,7 @@ const AcademySchema: Record<string, unknown> = {
                           "type": "string",
                           "format": "uri",
                           "description": "Canonical URL for the learning path",
-                          "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+                          "example": "http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/"
                         },
                         "certificate": {
                           "x-go-type": "Certificate",
@@ -11143,7 +11143,7 @@ const AcademySchema: Record<string, unknown> = {
                                 "type": "string",
                                 "format": "uri",
                                 "description": "URL to the course content",
-                                "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                                "example": "http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/"
                               },
                               "description": {
                                 "type": "string",
@@ -11270,7 +11270,7 @@ const AcademySchema: Record<string, unknown> = {
                     "org_id": {
                       "type": "string",
                       "description": "Organization ID that owns this learning path",
-                      "example": "layer5",
+                      "example": "meshery",
                       "x-oapi-codegen-extra-tags": {
                         "db": "org_id",
                         "json": "org_id"
@@ -11468,7 +11468,7 @@ const AcademySchema: Record<string, unknown> = {
                               "type": "string",
                               "format": "uri",
                               "description": "Canonical URL for the learning path",
-                              "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+                              "example": "http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/"
                             },
                             "certificate": {
                               "x-go-type": "Certificate",
@@ -11608,7 +11608,7 @@ const AcademySchema: Record<string, unknown> = {
                                     "type": "string",
                                     "format": "uri",
                                     "description": "URL to the course content",
-                                    "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                                    "example": "http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/"
                                   },
                                   "description": {
                                     "type": "string",
@@ -11727,7 +11727,7 @@ const AcademySchema: Record<string, unknown> = {
             "type": "string",
             "format": "uri",
             "description": "Canonical URL for the learning path",
-            "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+            "example": "http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/"
           },
           "certificate": {
             "x-go-type": "Certificate",
@@ -11867,7 +11867,7 @@ const AcademySchema: Record<string, unknown> = {
                   "type": "string",
                   "format": "uri",
                   "description": "URL to the course content",
-                  "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                  "example": "http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/"
                 },
                 "description": {
                   "type": "string",
@@ -11955,7 +11955,7 @@ const AcademySchema: Record<string, unknown> = {
             "type": "string",
             "format": "uri",
             "description": "Canonical URL for the learning path",
-            "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+            "example": "http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/"
           },
           "certificate": {
             "x-go-type": "Certificate",
@@ -12095,7 +12095,7 @@ const AcademySchema: Record<string, unknown> = {
                   "type": "string",
                   "format": "uri",
                   "description": "URL to the course content",
-                  "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                  "example": "http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/"
                 },
                 "description": {
                   "type": "string",
@@ -12318,7 +12318,7 @@ const AcademySchema: Record<string, unknown> = {
             "type": "string",
             "format": "uri",
             "description": "Canonical URL for the learning path",
-            "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+            "example": "http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/"
           },
           "certificate": {
             "x-go-type": "Certificate",
@@ -12458,7 +12458,7 @@ const AcademySchema: Record<string, unknown> = {
                   "type": "string",
                   "format": "uri",
                   "description": "URL to the course content",
-                  "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                  "example": "http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/"
                 },
                 "description": {
                   "type": "string",
@@ -12855,7 +12855,7 @@ const AcademySchema: Record<string, unknown> = {
                   "org_id": {
                     "type": "string",
                     "description": "Organization ID that owns this quiz",
-                    "example": "layer5",
+                    "example": "meshery",
                     "x-oapi-codegen-extra-tags": {
                       "db": "org_id",
                       "json": "org_id"
@@ -13267,7 +13267,7 @@ const AcademySchema: Record<string, unknown> = {
                 "org_id": {
                   "type": "string",
                   "description": "Organization ID that owns this quiz",
-                  "example": "layer5",
+                  "example": "meshery",
                   "x-oapi-codegen-extra-tags": {
                     "db": "org_id",
                     "json": "org_id"
@@ -13607,7 +13607,7 @@ const AcademySchema: Record<string, unknown> = {
             "type": "string",
             "format": "uri",
             "description": "URL to the course content",
-            "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+            "example": "http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/"
           },
           "description": {
             "type": "string",
@@ -14075,7 +14075,7 @@ const AcademySchema: Record<string, unknown> = {
                     "org_id": {
                       "type": "string",
                       "description": "Organization ID that owns this quiz",
-                      "example": "layer5",
+                      "example": "meshery",
                       "x-oapi-codegen-extra-tags": {
                         "db": "org_id",
                         "json": "org_id"
@@ -14611,7 +14611,7 @@ const AcademySchema: Record<string, unknown> = {
           "org_id": {
             "type": "string",
             "description": "Organization ID that owns this quiz",
-            "example": "layer5",
+            "example": "meshery",
             "x-oapi-codegen-extra-tags": {
               "db": "org_id",
               "json": "org_id"
@@ -15485,7 +15485,7 @@ const AcademySchema: Record<string, unknown> = {
                   "org_id": {
                     "type": "string",
                     "description": "Organization ID that owns this quiz",
-                    "example": "layer5",
+                    "example": "meshery",
                     "x-oapi-codegen-extra-tags": {
                       "db": "org_id",
                       "json": "org_id"
@@ -15847,7 +15847,7 @@ const AcademySchema: Record<string, unknown> = {
               "org_id": {
                 "type": "string",
                 "description": "Organization ID that owns this quiz",
-                "example": "layer5",
+                "example": "meshery",
                 "x-oapi-codegen-extra-tags": {
                   "db": "org_id",
                   "json": "org_id"
@@ -16244,7 +16244,7 @@ const AcademySchema: Record<string, unknown> = {
               "org_id": {
                 "type": "string",
                 "description": "Organization ID that owns this quiz",
-                "example": "layer5",
+                "example": "meshery",
                 "x-oapi-codegen-extra-tags": {
                   "db": "org_id",
                   "json": "org_id"
@@ -17025,7 +17025,7 @@ const AcademySchema: Record<string, unknown> = {
                         "org_id": {
                           "type": "string",
                           "description": "Organization ID that owns this quiz",
-                          "example": "layer5",
+                          "example": "meshery",
                           "x-oapi-codegen-extra-tags": {
                             "db": "org_id",
                             "json": "org_id"
