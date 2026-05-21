@@ -1,29 +1,7 @@
 openapi: 3.0.0
 info:
   title: System API
-  description: |
-    OpenAPI schema for operational endpoints exposed by the Meshery server.
-    The "system" surface covers actions and inspection points that act on the
-    running Meshery server instance itself — its embedded database, build
-    metadata, and per-session bootstrap state — rather than on user-facing
-    logical constructs (designs, environments, connections, etc.).
-
-    Most endpoints in this construct are Meshery-only. `GET /api/system/version`
-    is a shared legacy endpoint exposed by both Meshery and Meshery Cloud.
-
-    Path notes:
-      - `/api/system/database`, `/api/system/database/reset`,
-        `/api/system/version`, and `/api/system/sync` are singleton paths.
-        The v1beta1 system contract intentionally keeps these singular
-        paths: there is exactly one database, one running binary, and one
-        session per request. Any future migration to plural/canonical paths
-        requires a coordinated API-version bump.
-      - `DELETE /api/system/database/reset` is a side-effect action with
-        no request body. The canonical guidance is to express non-CRUD
-        actions as `POST`; this v1beta1 compatibility contract preserves the
-        existing `DELETE` route so generated clients, handlers, and consumers
-        share one stable contract. A future API-version bump may introduce a
-        canonical replacement and retire the `DELETE` form.
+  description: OpenAPI schema for Meshery server operational endpoints.
   version: v1beta1
   contact:
     name: Meshery Maintainers
@@ -38,7 +16,7 @@ security:
 
 tags:
   - name: System
-    description: Operational endpoints for the Meshery server itself.
+    description: Operational endpoints for Meshery Server.
 
 paths:
   /api/system/database:
@@ -47,10 +25,7 @@ paths:
       tags:
         - System
       summary: Get a summary of the Meshery server's database
-      description: |
-        Returns a paginated summary of the tables in the Meshery server's
-        embedded database, including per-table row counts and an aggregate
-        record count across the listed page.
+      description: Returns a paginated summary of Meshery database tables and row counts.
       operationId: getSystemDatabase
       parameters:
         - name: page
@@ -109,16 +84,7 @@ paths:
       tags:
         - System
       summary: Reset the Meshery server's database
-      description: |
-        Archives the current Meshery database file under `.archive/` with a
-        timestamped name, drops all tables, runs the schema migrations to
-        recreate the canonical table set, and reseeds the component
-        registry. The response carries a confirmation message; on failure
-        a meshkit-formatted error is returned with the appropriate 5xx
-        status.
-
-        This is a destructive operation and requires an authenticated
-        session.
+      description: Resets the Meshery server database. This is a destructive operation.
       operationId: resetSystemDatabase
       responses:
         "200":
@@ -138,11 +104,7 @@ paths:
       tags:
         - System
       summary: Get the running Meshery server's version metadata
-      description: |
-        Returns public version metadata for the running Meshery or Meshery
-        Cloud service. Meshery returns build, latest-release comparison,
-        commit SHA, and release channel fields; Meshery Cloud returns its
-        deployment version and commit SHA.
+      description: Returns version metadata for the running Meshery service.
       operationId: getSystemVersion
       security: []
       responses:
@@ -153,7 +115,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/SystemVersion"
         "500":
-          description: Encoding error while serialising the version payload.
+          description: Encoding error while serializing the version payload.
 
   /api/system/sync:
     get:
@@ -161,12 +123,7 @@ paths:
       tags:
         - System
       summary: Get initial session bootstrap data
-      description: |
-        Returns the bootstrap payload used by the Meshery UI on initial
-        load: the authenticated user's stored preferences (refreshed
-        against the provider) plus the list of Kubernetes contexts the
-        server is currently tracking. The preferences blob is provider-
-        and feature-specific; it is exposed here as an open object.
+      description: Returns session bootstrap data for the authenticated user.
       operationId: getSystemSync
       responses:
         "200":
@@ -178,7 +135,7 @@ paths:
         "401":
           $ref: "#/components/responses/401"
         "500":
-          description: Marshal error while serialising the session sync payload.
+          description: Marshal error while serializing the session sync payload.
 
 components:
   responses:
@@ -194,20 +151,20 @@ components:
   schemas:
     SystemMessageResponse:
       type: object
-      description: Generic single-field response carrying a human-readable status message for system actions.
+      description: Status message response.
       additionalProperties: false
       required:
         - message
       properties:
         message:
           type: string
-          description: Human-readable confirmation message for the completed action.
+          description: Human-readable status message.
           minLength: 1
           maxLength: 1024
 
     SystemDatabaseTable:
       type: object
-      description: A single row from the Meshery server's SQLite schema catalogue, with the live row count for that table.
+      description: Database table summary.
       additionalProperties: false
       required:
         - name
@@ -263,7 +220,7 @@ components:
 
     SystemVersion:
       type: object
-      description: Public version metadata for a running Meshery or Meshery Cloud service.
+      description: Version metadata for a running Meshery service.
       additionalProperties: false
       properties:
         version:
@@ -283,12 +240,7 @@ components:
           description: True when the running build is older than the latest available release.
         commitsha:
           type: string
-          description: |
-            Git commit SHA the running binary was built from. The wire
-            property name is intentionally `commitsha` (all-lowercase) in
-            the v1beta1 compatibility contract. Migration to canonical
-            camelCase `commitSha` requires a coordinated schema, server, and
-            UI change in a future API version.
+          description: Git commit SHA of the running service. The wire field is `commitsha`.
           maxLength: 64
         releaseChannel:
           type: string
@@ -297,18 +249,12 @@ components:
 
     SystemSessionSyncK8sContext:
       type: object
-      description: A Kubernetes context currently tracked by the Meshery server, projected for the session-sync payload.
+      description: Kubernetes context tracked by Meshery.
       additionalProperties: false
       properties:
         id:
           type: string
-          description: |
-            Meshery's internal identifier for this Kubernetes context.
-            This is a 32-character lowercase-hex MD5 digest produced by
-            `K8sContextGenerateID` in `server/models/k8s_context.go`, not
-            a UUID — the digest is computed deterministically from the
-            cluster, auth, Meshery instance ID, and context name so the
-            same logical context always yields the same identifier.
+          description: Stable identifier for the Kubernetes context.
           x-id-format: external
           minLength: 32
           maxLength: 32
@@ -326,7 +272,7 @@ components:
           maxLength: 2048
         clusterId:
           $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
-          description: Identifier of the underlying Kubernetes cluster, when known. Derived from `K8sContext.KubernetesServerID` (`core.Uuid`).
+          description: Kubernetes server ID associated with this context.
         createdAt:
           $ref: "../../v1alpha1/core/api.yml#/components/schemas/created_at"
           description: When the context was first registered with Meshery.
@@ -336,11 +282,7 @@ components:
 
     SystemSessionSync:
       type: object
-      description: |
-        Bootstrap payload for the Meshery UI's initial session sync. Inlines
-        the authenticated user's `Preference` object (an open shape that
-        varies by provider and enabled features) and adds the list of
-        currently tracked Kubernetes contexts.
+      description: Session bootstrap payload for the authenticated user.
       additionalProperties: true
       properties:
         k8sConfig:
