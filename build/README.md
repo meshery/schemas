@@ -349,7 +349,6 @@ Primary oapi-codegen configuration for Go code generation.
 
 Install via `npm install`:
 - `@apidevtools/json-schema-ref-parser` - $ref resolution
-- `@openapi-contrib/openapi-schema-to-json-schema` - OpenAPI to JSON Schema
 - `js-yaml` - YAML parsing
 - `lodash.merge` - Deep object merging
 
