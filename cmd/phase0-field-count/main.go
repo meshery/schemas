@@ -110,7 +110,7 @@ type baselineReport struct {
 }
 
 // paginationTagNames are fixed API-contract fields that stay snake_case by
-// intentional design (CLAUDE.md §Intentional Design Decisions #4). They are
+// intentional design (docs/schema-review-checklist.md §Intentional Design Decisions #4). They are
 // counted but excluded from snake_tags_to_migrate.
 var paginationTagNames = map[string]bool{
 	"page":        true,

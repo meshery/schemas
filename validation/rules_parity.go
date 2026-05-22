@@ -259,7 +259,7 @@ func reportParityViolations(acc *parityAccumulator, opts AuditOptions) []Violati
 						`Partial parity across sibling list endpoints is the drift `+
 						`class that dropped the workspaces-orgId query in production. `+
 						`Either add the ref here, or remove it from the sibling for `+
-						`consistency. See AGENTS.md § "Casing rules at a glance" and `+
+						`consistency. See docs/casing-rules.md and `+
 						`docs/identifier-naming-migration.md §9.4.`,
 					e.path, opID, version),
 				Severity:   *sev,

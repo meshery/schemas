@@ -70,8 +70,8 @@ var knownLowercaseSuffixViolations = map[string]bool{}
 // dbMirroredFields enumerates known snake_case property names that originated
 // as DB column mirrors in pre-canonical-contract schemas.
 //
-// Under the canonical identifier-naming contract (see AGENTS.md § Casing
-// rules at a glance and docs/identifier-naming-migration.md), wire tags are
+// Under the canonical identifier-naming contract (see docs/casing-rules.md
+// and docs/identifier-naming-migration.md), wire tags are
 // camelCase regardless of DB backing — so these names are no longer treated
 // as an exception to Rule 6. They surface as Rule 6 violations and are
 // routed through the same `--style-debt` severity path as every other
@@ -187,8 +187,8 @@ type CasingIssue struct {
 // OpenAPI query/header parameter name, or any similar camelCase-expected
 // token) for casing violations.
 //
-// Under the canonical identifier-naming contract (AGENTS.md § Casing rules
-// at a glance, docs/identifier-naming-migration.md §1), wire names are
+// Under the canonical identifier-naming contract (docs/casing-rules.md,
+// docs/identifier-naming-migration.md §1), wire names are
 // camelCase regardless of DB backing — the snake_case DB column name lives
 // only in `x-oapi-codegen-extra-tags.db`, not on the wire. Accordingly this
 // checker is unconditional: there is no DB-mirroring exception. The

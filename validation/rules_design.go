@@ -95,7 +95,7 @@ func checkRule5(filePath string, doc *openapi3.T, _ AuditOptions) []Violation {
 			out = append(out, Violation{
 				File: filePath,
 				Message: fmt.Sprintf(
-					`DELETE %s — DELETE operations must not have a requestBody. Use a POST sub-resource for bulk deletes. See AGENTS.md § "HTTP API Design Principles".`,
+					`DELETE %s — DELETE operations must not have a requestBody. Use a POST sub-resource for bulk deletes. See docs/http-api-design.md.`,
 					path),
 				Severity:   SeverityBlocking,
 				RuleNumber: 5,
@@ -312,7 +312,7 @@ func checkRule25(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 		// variants are retained for legacy compatibility inside existing API
 		// versions, while newly authored / canonical-casing API versions use
 		// "pageSize". See docs/identifier-naming-migration.md §9 and
-		// AGENTS.md § Casing rules at a glance.
+		// docs/casing-rules.md.
 		if !paramNames["pagesize"] && !paramNames["page_size"] && !paramNames["pageSize"] {
 			missing = append(missing, "pageSize")
 		}
