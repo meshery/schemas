@@ -2863,7 +2863,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
             "x-order": 3,
             "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
-              "json": "name,omitempty"
+              "json": "name"
             }
           },
           "labels": {
@@ -2881,6 +2881,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
           "clients": {
             "type": "array",
             "description": "Load-generation clients that issue requests during the test. A single client is typical; multiple clients describe a distributed load test.",
+            "minItems": 1,
             "items": {
               "type": "object",
               "description": "A single load-generation client within a PerformanceTestConfig. It is the Meshery-native replacement for the deprecated service-mesh-performance (SMP) PerformanceTestConfig_Client.",
@@ -2997,7 +2998,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                   "x-order": 10,
                   "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
-                    "json": "endpointUrls,omitempty"
+                    "json": "endpointUrls"
                   }
                 },
                 "sslCertificate": {
@@ -3025,7 +3026,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
             "x-order": 5,
             "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
-              "json": "clients,omitempty"
+              "json": "clients"
             }
           },
           "duration": {
@@ -3037,7 +3038,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
             "x-order": 6,
             "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
-              "json": "duration,omitempty"
+              "json": "duration"
             }
           }
         }
@@ -3158,7 +3159,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
             "x-order": 10,
             "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
-              "json": "endpointUrls,omitempty"
+              "json": "endpointUrls"
             }
           },
           "sslCertificate": {

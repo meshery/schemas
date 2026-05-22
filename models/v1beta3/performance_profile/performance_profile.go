@@ -161,7 +161,7 @@ type PerformanceTestClient struct {
 	ContentType string `json:"contentType,omitempty" yaml:"contentType,omitempty"`
 
 	// EndpointUrls Target endpoint URLs the client issues requests against.
-	EndpointUrls []string `json:"endpointUrls,omitempty" yaml:"endpointUrls,omitempty"`
+	EndpointUrls []string `json:"endpointUrls" yaml:"endpointUrls"`
 
 	// SslCertificate PEM-encoded SSL certificate presented by the client, when required.
 	SslCertificate string `json:"sslCertificate,omitempty" yaml:"sslCertificate,omitempty"`
@@ -179,16 +179,16 @@ type PerformanceTestConfig struct {
 	ID string `json:"id,omitempty" yaml:"id,omitempty"`
 
 	// Name Human-readable name of the performance test.
-	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+	Name string `json:"name" yaml:"name"`
 
 	// Labels Arbitrary key/value labels attached to the test configuration.
 	Labels map[string]string `json:"labels,omitempty" yaml:"labels,omitempty"`
 
 	// Clients Load-generation clients that issue requests during the test. A single client is typical; multiple clients describe a distributed load test.
-	Clients []PerformanceTestClient `json:"clients,omitempty" yaml:"clients,omitempty"`
+	Clients []PerformanceTestClient `json:"clients" yaml:"clients"`
 
 	// Duration Length of time the endpoint is held under load, expressed as a Go duration string (e.g. "30s", "5m", "1h").
-	Duration string `json:"duration,omitempty" yaml:"duration,omitempty"`
+	Duration string `json:"duration" yaml:"duration"`
 }
 
 // Order defines model for order.

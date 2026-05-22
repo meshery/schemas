@@ -400,7 +400,7 @@ components:
           x-order: 3
           x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
-            json: "name,omitempty"
+            json: "name"
         labels:
           type: object
           description: Arbitrary key/value labels attached to the test configuration.
@@ -416,12 +416,13 @@ components:
             Load-generation clients that issue requests during the test. A
             single client is typical; multiple clients describe a distributed
             load test.
+          minItems: 1
           items:
             $ref: "#/components/schemas/PerformanceTestClient"
           x-order: 5
           x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
-            json: "clients,omitempty"
+            json: "clients"
         duration:
           type: string
           description: Length of time the endpoint is held under load, expressed as a Go duration string (e.g. "30s", "5m", "1h").
@@ -431,7 +432,7 @@ components:
           x-order: 6
           x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
-            json: "duration,omitempty"
+            json: "duration"
 
     PerformanceTestClient:
       type: object
@@ -530,7 +531,7 @@ components:
           x-order: 10
           x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
-            json: "endpointUrls,omitempty"
+            json: "endpointUrls"
         sslCertificate:
           type: string
           description: PEM-encoded SSL certificate presented by the client, when required.
