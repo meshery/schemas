@@ -276,8 +276,11 @@ Endpoints are grouped into logical categories under `/api`:
 | `/api/content/` | Designs, views, components, models |
 | `/api/entitlement/` | Plans, subscriptions, features |
 | `/api/auth/` | Tokens, keychains, keys |
+| `/api/system/` | Operational endpoints (database, version, session sync, adapters, meshsync, telemetry config, file IO, GraphQL transport) |
 
 New endpoints must be placed in the appropriate category. Path segments must be kebab-case plural nouns matching the resource name.
+
+Most `/api/system/` operations are Meshery-only (`x-internal: ["meshery"]`); they act on the running Meshery server instance itself rather than on a user-facing logical construct. Existing shared exceptions must be annotated truthfully, such as public version metadata exposed by both Meshery and Meshery Cloud. Some pre-existing `/api/system/*` paths use singular nouns (e.g. `/api/system/database`) and embed verbs (e.g. `/api/system/database/reset`); these predate the canonical kebab-case-plural convention and are documented as-implemented. New `/api/system/*` paths should still follow the canonical conventions.
 
 ## File structure for a construct
 
