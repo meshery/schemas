@@ -131,6 +131,66 @@ type PerformanceProfilePayload struct {
 	UserID *core.Uuid `json:"userId,omitempty" yaml:"userId,omitempty"`
 }
 
+// PerformanceTestClient A single load-generation client within a PerformanceTestConfig. It is the Meshery-native replacement for the deprecated service-mesh-performance (SMP) PerformanceTestConfig_Client.
+type PerformanceTestClient struct {
+	// Internal Whether the client runs inside the cluster (internal) rather than against an external endpoint.
+	Internal bool `json:"internal,omitempty" yaml:"internal,omitempty"`
+
+	// LoadGenerator Load generator used to drive the test (e.g. "fortio"). Empty defaults to the server's supported generator.
+	LoadGenerator string `json:"loadGenerator,omitempty" yaml:"loadGenerator,omitempty"`
+
+	// Protocol Application protocol exercised by the client (e.g. "http", "tcp", "udp", "grpc").
+	Protocol string `json:"protocol,omitempty" yaml:"protocol,omitempty"`
+
+	// Connections Number of concurrent connections the client opens to the endpoint.
+	Connections int `json:"connections,omitempty" yaml:"connections,omitempty"`
+
+	// Rps Target requests-per-second issued by the client. Zero means unthrottled.
+	Rps int `json:"rps,omitempty" yaml:"rps,omitempty"`
+
+	// Headers HTTP request headers sent on each request.
+	Headers map[string]string `json:"headers,omitempty" yaml:"headers,omitempty"`
+
+	// Cookies HTTP request cookies sent on each request.
+	Cookies map[string]string `json:"cookies,omitempty" yaml:"cookies,omitempty"`
+
+	// Body Request body sent on each request.
+	Body string `json:"body,omitempty" yaml:"body,omitempty"`
+
+	// ContentType Content-Type header applied to the request body (e.g. "application/json").
+	ContentType string `json:"contentType,omitempty" yaml:"contentType,omitempty"`
+
+	// EndpointUrls Target endpoint URLs the client issues requests against.
+	EndpointUrls []string `json:"endpointUrls,omitempty" yaml:"endpointUrls,omitempty"`
+
+	// SslCertificate PEM-encoded SSL certificate presented by the client, when required.
+	SslCertificate string `json:"sslCertificate,omitempty" yaml:"sslCertificate,omitempty"`
+
+	// AdditionalOptions Additional load-generator-specific options passed through to the generator.
+	AdditionalOptions string `json:"additionalOptions,omitempty" yaml:"additionalOptions,omitempty"`
+}
+
+// PerformanceTestConfig Runtime configuration for a single performance (load) test run. This is the executable test definition that drives load generation, distinct from a saved PerformanceProfile. It is the Meshery-native replacement for the deprecated service-mesh-performance (SMP) PerformanceTestConfig.
+type PerformanceTestConfig struct {
+	// SmpVersion Version of the performance test configuration format.
+	SmpVersion string `json:"smpVersion,omitempty" yaml:"smpVersion,omitempty"`
+
+	// ID Opaque identifier assigned to the persisted test configuration. Server-assigned (a UUID string); accepted as a free-form string for backward compatibility with externally authored test files.
+	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+
+	// Name Human-readable name of the performance test.
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+
+	// Labels Arbitrary key/value labels attached to the test configuration.
+	Labels map[string]string `json:"labels,omitempty" yaml:"labels,omitempty"`
+
+	// Clients Load-generation clients that issue requests during the test. A single client is typical; multiple clients describe a distributed load test.
+	Clients []PerformanceTestClient `json:"clients,omitempty" yaml:"clients,omitempty"`
+
+	// Duration Length of time the endpoint is held under load, expressed as a Go duration string (e.g. "30s", "5m", "1h").
+	Duration string `json:"duration,omitempty" yaml:"duration,omitempty"`
+}
+
 // Order defines model for order.
 type Order = string
 

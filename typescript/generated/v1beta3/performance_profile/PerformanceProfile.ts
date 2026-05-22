@@ -238,6 +238,83 @@ export interface components {
                 updatedAt: string;
             }[];
         };
+        /** @description Runtime configuration for a single performance (load) test run. This is the executable test definition that drives load generation, distinct from a saved PerformanceProfile. It is the Meshery-native replacement for the deprecated service-mesh-performance (SMP) PerformanceTestConfig. */
+        PerformanceTestConfig: {
+            /** @description Version of the performance test configuration format. */
+            smpVersion?: string;
+            /** @description Opaque identifier assigned to the persisted test configuration. Server-assigned (a UUID string); accepted as a free-form string for backward compatibility with externally authored test files. */
+            id?: string;
+            /** @description Human-readable name of the performance test. */
+            name: string;
+            /** @description Arbitrary key/value labels attached to the test configuration. */
+            labels?: {
+                [key: string]: string;
+            };
+            /** @description Load-generation clients that issue requests during the test. A single client is typical; multiple clients describe a distributed load test. */
+            clients: {
+                /** @description Whether the client runs inside the cluster (internal) rather than against an external endpoint. */
+                internal?: boolean;
+                /** @description Load generator used to drive the test (e.g. "fortio"). Empty defaults to the server's supported generator. */
+                loadGenerator?: string;
+                /** @description Application protocol exercised by the client (e.g. "http", "tcp", "udp", "grpc"). */
+                protocol?: string;
+                /** @description Number of concurrent connections the client opens to the endpoint. */
+                connections?: number;
+                /** @description Target requests-per-second issued by the client. Zero means unthrottled. */
+                rps?: number;
+                /** @description HTTP request headers sent on each request. */
+                headers?: {
+                    [key: string]: string;
+                };
+                /** @description HTTP request cookies sent on each request. */
+                cookies?: {
+                    [key: string]: string;
+                };
+                /** @description Request body sent on each request. */
+                body?: string;
+                /** @description Content-Type header applied to the request body (e.g. "application/json"). */
+                contentType?: string;
+                /** @description Target endpoint URLs the client issues requests against. */
+                endpointUrls: string[];
+                /** @description PEM-encoded SSL certificate presented by the client, when required. */
+                sslCertificate?: string;
+                /** @description Additional load-generator-specific options passed through to the generator. */
+                additionalOptions?: string;
+            }[];
+            /** @description Length of time the endpoint is held under load, expressed as a Go duration string (e.g. "30s", "5m", "1h"). */
+            duration: string;
+        };
+        /** @description A single load-generation client within a PerformanceTestConfig. It is the Meshery-native replacement for the deprecated service-mesh-performance (SMP) PerformanceTestConfig_Client. */
+        PerformanceTestClient: {
+            /** @description Whether the client runs inside the cluster (internal) rather than against an external endpoint. */
+            internal?: boolean;
+            /** @description Load generator used to drive the test (e.g. "fortio"). Empty defaults to the server's supported generator. */
+            loadGenerator?: string;
+            /** @description Application protocol exercised by the client (e.g. "http", "tcp", "udp", "grpc"). */
+            protocol?: string;
+            /** @description Number of concurrent connections the client opens to the endpoint. */
+            connections?: number;
+            /** @description Target requests-per-second issued by the client. Zero means unthrottled. */
+            rps?: number;
+            /** @description HTTP request headers sent on each request. */
+            headers?: {
+                [key: string]: string;
+            };
+            /** @description HTTP request cookies sent on each request. */
+            cookies?: {
+                [key: string]: string;
+            };
+            /** @description Request body sent on each request. */
+            body?: string;
+            /** @description Content-Type header applied to the request body (e.g. "application/json"). */
+            contentType?: string;
+            /** @description Target endpoint URLs the client issues requests against. */
+            endpointUrls: string[];
+            /** @description PEM-encoded SSL certificate presented by the client, when required. */
+            sslCertificate?: string;
+            /** @description Additional load-generator-specific options passed through to the generator. */
+            additionalOptions?: string;
+        };
     };
     responses: {
         /** @description ok */

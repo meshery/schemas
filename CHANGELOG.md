@@ -6,6 +6,15 @@ See https://docs.meshery.io/project/releases
 
 - **RTK Query**: error responses from Meshery Server (and any backend emitting MeshKit JSON errors) now surface structured fields on `error.meshkit` — `code`, `severity`, `message`, `probableCause`, `suggestedRemediation`, `longDescription`. Both `cloudBaseApi` and `mesheryBaseApi` wrap their `fetchBaseQuery` with a transform that maps the snake_case wire envelope (`error`, `code`, `severity`, `probable_cause`, `suggested_remediation`, `long_description`) to camelCase JS-side fields, leaving `error.data` (the raw body) untouched for backward compatibility. New exported types: `MeshkitError`, `MeshkitFetchBaseQueryError`. Pairs with the `meshery/meshery` server migration that promotes every non-2xx response from `text/plain` to `application/json`. See `docs/superpowers/plans/2026-04-24-plaintext-response-migration.md` in the meshery/meshery repo for full context.
 
+## v1.3.0 — Performance Profile runtime test-config schemas
+
+Adds Meshery-native replacements for the deprecated `github.com/layer5io/service-mesh-performance/spec` types, so downstream consumers (notably `meshery/meshery`) can drop the SMP dependency entirely.
+
+- **`PerformanceTestConfig`** — runtime configuration for a single performance (load) test run (`smpVersion`, `id`, `name`, `labels`, `clients`, `duration`). Direct replacement for SMP `PerformanceTestConfig`.
+- **`PerformanceTestClient`** — a single load-generation client within a `PerformanceTestConfig` (`internal`, `loadGenerator`, `protocol`, `connections`, `rps`, `headers`, `cookies`, `body`, `contentType`, `endpointUrls`, `sslCertificate`, `additionalOptions`). Direct replacement for SMP `PerformanceTestConfig_Client`.
+
+Both are defined under the existing `v1beta3/performance_profile` construct and generated into the `performance_profile` Go package and `@meshery/schemas` TypeScript distribution. Property names follow the canonical camelCase wire contract. The `protocol` field is a free-form string (e.g. `http`, `tcp`, `udp`, `grpc`) rather than the constraining SMP enum, and the service-mesh identity carried alongside a test is now a Meshery Registry model name string rather than the fixed SMP `ServiceMesh_Type` enum.
+
 ## v1.1.0 — Phase 1 of the identifier-naming migration
 
 Marks the completion of Phase 1 of the [identifier-naming migration](docs/identifier-naming-migration.md).
