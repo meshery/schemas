@@ -2,6 +2,7 @@ import { cloudBaseApi as api } from "./api";
 export const addTagTypes = [
   "Feature_Features",
   "Support_Support",
+  "System_API_System",
   "Badge_Badge",
   "credential_credentials",
   "Key_users",
@@ -49,6 +50,10 @@ const injectedRtkApi = api
       submitSupportRequest: build.mutation<SubmitSupportRequestApiResponse, SubmitSupportRequestApiArg>({
         query: (queryArg) => ({ url: `/api/integrations/support`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Support_Support"],
+      }),
+      getSystemVersion: build.query<GetSystemVersionApiResponse, GetSystemVersionApiArg>({
+        query: () => ({ url: `/api/system/version` }),
+        providesTags: ["System_API_System"],
       }),
       deleteBadgeById: build.mutation<DeleteBadgeByIdApiResponse, DeleteBadgeByIdApiArg>({
         query: (queryArg) => ({ url: `/api/organizations/badges/${queryArg.badgeId}`, method: "DELETE" }),
@@ -1524,6 +1529,21 @@ export type SubmitSupportRequestApiArg = {
     scope?: "Support" | "Community" | "Account" | "Commercial";
   };
 };
+export type GetSystemVersionApiResponse = /** status 200 Server version metadata */ {
+  /** Meshery Cloud deployment version. */
+  version?: string;
+  /** Build identifier (typically the git tag of the running binary). */
+  build?: string;
+  /** Latest available Meshery release tag fetched from GitHub. */
+  latest?: string;
+  /** True when the running build is older than the latest available release. */
+  outdated?: boolean;
+  /** Git commit SHA of the running service. The wire field is `commitsha`. */
+  commitsha?: string;
+  /** Release channel of the running binary (e.g. `stable`, `edge`). */
+  releaseChannel?: string;
+};
+export type GetSystemVersionApiArg = void;
 export type DeleteBadgeByIdApiResponse = unknown;
 export type DeleteBadgeByIdApiArg = {
   /** Badge ID */
@@ -10843,6 +10863,7 @@ export const {
   useGetFeaturesQuery,
   useGetFeaturesByOrganizationQuery,
   useSubmitSupportRequestMutation,
+  useGetSystemVersionQuery,
   useDeleteBadgeByIdMutation,
   useGetBadgeByIdQuery,
   useCreateOrUpdateBadgeMutation,
