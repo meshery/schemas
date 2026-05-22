@@ -83,21 +83,25 @@ components:
           type: object
           properties:
             returnDiffOnly:
-              type: object
-              description: If specified, controls which parts of the diff are returned instead of the complete updated design.
-              properties:
-                addition:
-                  type: boolean
-                  description: If true, include added components and relationships in the diff response.
-                  default: true
-                deletion:
-                  type: boolean
-                  description: If true, include deleted components and relationships in the diff response.
-                  default: true
-                update:
-                  type: boolean
-                  description: If true, include updated components and relationships in the diff response.
-                  default: true
+              description: Controls which parts of the diff are returned. Accepts a boolean (true returns all changes) or an object for granular control.
+              oneOf:
+                - type: boolean
+                  description: If true, return all diff changes (additions, deletions, and updates).
+                - type: object
+                  description: If specified, controls which parts of the diff are returned instead of the complete updated design.
+                  properties:
+                    addition:
+                      type: boolean
+                      description: If true, include added components and relationships in the diff response.
+                      default: true
+                    deletion:
+                      type: boolean
+                      description: If true, include deleted components and relationships in the diff response.
+                      default: true
+                    update:
+                      type: boolean
+                      description: If true, include updated components and relationships in the diff response.
+                      default: true
             enableTrace:
               type: boolean
               description: If true, include detailed trace information in the response
