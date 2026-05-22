@@ -1,0 +1,56 @@
+name: Agent Instructions Sync
+
+# AGENTS.md and CLAUDE.md are intentionally kept as two byte-identical
+# copies (the symlink was removed in #885). This guard fails the build if
+# they ever drift, and if either file exceeds Claude Code's 40k-character
+# memory-file warning threshold.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'AGENTS.md'
+      - 'CLAUDE.md'
+      - '.github/workflows/agent-instructions-sync.yml'
+  push:
+    branches:
+      - master
+    paths:
+      - 'AGENTS.md'
+      - 'CLAUDE.md'
+      - '.github/workflows/agent-instructions-sync.yml'
+
+jobs:
+  sync-check:
+    name: AGENTS.md == CLAUDE.md and under 40k
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: AGENTS.md and CLAUDE.md must be identical
+        run: |
+          if ! diff -q AGENTS.md CLAUDE.md; then
+            echo "::error::AGENTS.md and CLAUDE.md have drifted. They must be kept byte-identical."
+            echo "Re-sync with: cp AGENTS.md CLAUDE.md   (or the reverse)"
+            diff AGENTS.md CLAUDE.md || true
+            exit 1
+          fi
+          echo "AGENTS.md and CLAUDE.md are identical."
+
+      - name: Files must stay under the 40k-character warning threshold
+        run: |
+          limit=40000
+          status=0
+          for f in AGENTS.md CLAUDE.md; do
+            chars=$(wc -m < "$f")
+            if [ "$chars" -gt "$limit" ]; then
+              echo "::error::$f is ${chars} characters (> ${limit}). Move detail into docs/ and link it."
+              status=1
+            else
+              echo "$f: ${chars} characters (limit ${limit}) — OK"
+            fi
+          done
+          exit $status
