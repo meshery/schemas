@@ -4,143 +4,45 @@
  */
 
 export interface paths {
-  "/api/entitlement/features": {
-    get: operations["getFeatures"];
-  };
-  "/api/entitlement/subscriptions/organizations/{organizationId}/features": {
-    get: operations["getFeaturesByOrganization"];
-  };
+    "/api/entitlement/features": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all features associated with plans */
+        get: operations["getFeatures"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/entitlement/subscriptions/organizations/{organizationId}/features": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all features associated with plans */
+        get: operations["getFeaturesByOrganization"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
-
+export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    FeaturesPage: {
-      /**
-       * Format: uuid
-       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-       */
-      id: string;
-      /**
-       * Format: uuid
-       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-       */
-      plan_id: string;
-      plan?: {
-        /**
-         * Format: uuid
-         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-         */
-        id: string;
-        /**
-         * @description Name of the plan
-         * @enum {string}
-         */
-        name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-        /** @enum {string} */
-        cadence: "monthly" | "yearly";
-        /** @enum {string} */
-        unit: "user" | "free";
-        /** @description Minimum number of units required for the plan */
-        minimum_units: number;
-        /** @description Price per unit of the plan */
-        price_per_unit: number;
-        /** @enum {string} */
-        currency: "usd";
-      };
-      /**
-       * @description Enumeration of possible feature types
-       * @enum {string}
-       */
-      name:
-        | "ComponentsInDesign"
-        | "RelationshipsInDesign"
-        | "DesignsInWorkspace"
-        | "WorkspacesInOrganization"
-        | "ImageSizeInDesign"
-        | "SizePerDesign";
-      /** @description Quantity of the feature allowed, use 9999999999 for unlimited */
-      quantity: number;
-      /** Format: date-time */
-      created_at?: string;
-      /** Format: date-time */
-      updated_at?: string;
-    }[];
-    /**
-     * @description Enumeration of possible feature types
-     * @enum {string}
-     */
-    FeatureName:
-      | "ComponentsInDesign"
-      | "RelationshipsInDesign"
-      | "DesignsInWorkspace"
-      | "WorkspacesInOrganization"
-      | "ImageSizeInDesign"
-      | "SizePerDesign";
-    Feature: {
-      /**
-       * Format: uuid
-       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-       */
-      id: string;
-      /**
-       * Format: uuid
-       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-       */
-      plan_id: string;
-      plan?: {
-        /**
-         * Format: uuid
-         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-         */
-        id: string;
-        /**
-         * @description Name of the plan
-         * @enum {string}
-         */
-        name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-        /** @enum {string} */
-        cadence: "monthly" | "yearly";
-        /** @enum {string} */
-        unit: "user" | "free";
-        /** @description Minimum number of units required for the plan */
-        minimum_units: number;
-        /** @description Price per unit of the plan */
-        price_per_unit: number;
-        /** @enum {string} */
-        currency: "usd";
-      };
-      /**
-       * @description Enumeration of possible feature types
-       * @enum {string}
-       */
-      name:
-        | "ComponentsInDesign"
-        | "RelationshipsInDesign"
-        | "DesignsInWorkspace"
-        | "WorkspacesInOrganization"
-        | "ImageSizeInDesign"
-        | "SizePerDesign";
-      /** @description Quantity of the feature allowed, use 9999999999 for unlimited */
-      quantity: number;
-      /** Format: date-time */
-      created_at?: string;
-      /** Format: date-time */
-      updated_at?: string;
-    };
-  };
-  parameters: {
-    /** @description The ID of the organization */
-    organization_id: string;
-  };
-}
-
-export interface operations {
-  getFeatures: {
-    responses: {
-      /** Features response */
-      200: {
-        content: {
-          "application/json": {
+    schemas: {
+        FeaturesPage: {
             /**
              * Format: uuid
              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -152,157 +54,293 @@ export interface operations {
              */
             plan_id: string;
             plan?: {
-              /**
-               * Format: uuid
-               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-               */
-              id: string;
-              /**
-               * @description Name of the plan
-               * @enum {string}
-               */
-              name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-              /** @enum {string} */
-              cadence: "monthly" | "yearly";
-              /** @enum {string} */
-              unit: "user" | "free";
-              /** @description Minimum number of units required for the plan */
-              minimum_units: number;
-              /** @description Price per unit of the plan */
-              price_per_unit: number;
-              /** @enum {string} */
-              currency: "usd";
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                id: string;
+                /**
+                 * @description Name of the plan
+                 * @enum {string}
+                 */
+                name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+                /** @enum {string} */
+                cadence: "monthly" | "yearly";
+                /** @enum {string} */
+                unit: "user" | "free";
+                /** @description Minimum number of units required for the plan */
+                minimum_units: number;
+                /** @description Price per unit of the plan */
+                price_per_unit: number;
+                /** @enum {string} */
+                currency: "usd";
             };
             /**
              * @description Enumeration of possible feature types
              * @enum {string}
              */
-            name:
-              | "ComponentsInDesign"
-              | "RelationshipsInDesign"
-              | "DesignsInWorkspace"
-              | "WorkspacesInOrganization"
-              | "ImageSizeInDesign"
-              | "SizePerDesign";
+            name: "ComponentsInDesign" | "RelationshipsInDesign" | "DesignsInWorkspace" | "WorkspacesInOrganization" | "ImageSizeInDesign" | "SizePerDesign";
             /** @description Quantity of the feature allowed, use 9999999999 for unlimited */
             quantity: number;
             /** Format: date-time */
             created_at?: string;
             /** Format: date-time */
             updated_at?: string;
-          }[];
+        }[];
+        /**
+         * @description Enumeration of possible feature types
+         * @enum {string}
+         */
+        FeatureName: "ComponentsInDesign" | "RelationshipsInDesign" | "DesignsInWorkspace" | "WorkspacesInOrganization" | "ImageSizeInDesign" | "SizePerDesign";
+        Feature: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            plan_id: string;
+            plan?: {
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                id: string;
+                /**
+                 * @description Name of the plan
+                 * @enum {string}
+                 */
+                name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+                /** @enum {string} */
+                cadence: "monthly" | "yearly";
+                /** @enum {string} */
+                unit: "user" | "free";
+                /** @description Minimum number of units required for the plan */
+                minimum_units: number;
+                /** @description Price per unit of the plan */
+                price_per_unit: number;
+                /** @enum {string} */
+                currency: "usd";
+            };
+            /**
+             * @description Enumeration of possible feature types
+             * @enum {string}
+             */
+            name: "ComponentsInDesign" | "RelationshipsInDesign" | "DesignsInWorkspace" | "WorkspacesInOrganization" | "ImageSizeInDesign" | "SizePerDesign";
+            /** @description Quantity of the feature allowed, use 9999999999 for unlimited */
+            quantity: number;
+            /** Format: date-time */
+            created_at?: string;
+            /** Format: date-time */
+            updated_at?: string;
         };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
     };
-  };
-  getFeaturesByOrganization: {
+    responses: never;
     parameters: {
-      path: {
-        /** The ID of the organization */
-        organizationId: string;
-      };
+        /** @description The ID of the organization */
+        organization_id: string;
     };
-    responses: {
-      /** Features response */
-      200: {
-        content: {
-          "application/json": {
-            /**
-             * Format: uuid
-             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-             */
-            id: string;
-            /**
-             * Format: uuid
-             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-             */
-            plan_id: string;
-            plan?: {
-              /**
-               * Format: uuid
-               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-               */
-              id: string;
-              /**
-               * @description Name of the plan
-               * @enum {string}
-               */
-              name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-              /** @enum {string} */
-              cadence: "monthly" | "yearly";
-              /** @enum {string} */
-              unit: "user" | "free";
-              /** @description Minimum number of units required for the plan */
-              minimum_units: number;
-              /** @description Price per unit of the plan */
-              price_per_unit: number;
-              /** @enum {string} */
-              currency: "usd";
-            };
-            /**
-             * @description Enumeration of possible feature types
-             * @enum {string}
-             */
-            name:
-              | "ComponentsInDesign"
-              | "RelationshipsInDesign"
-              | "DesignsInWorkspace"
-              | "WorkspacesInOrganization"
-              | "ImageSizeInDesign"
-              | "SizePerDesign";
-            /** @description Quantity of the feature allowed, use 9999999999 for unlimited */
-            quantity: number;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-          }[];
-        };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
-
-export interface external {}
+export type $defs = Record<string, never>;
+export interface operations {
+    getFeatures: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Features response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        id: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        plan_id: string;
+                        plan?: {
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            id: string;
+                            /**
+                             * @description Name of the plan
+                             * @enum {string}
+                             */
+                            name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+                            /** @enum {string} */
+                            cadence: "monthly" | "yearly";
+                            /** @enum {string} */
+                            unit: "user" | "free";
+                            /** @description Minimum number of units required for the plan */
+                            minimum_units: number;
+                            /** @description Price per unit of the plan */
+                            price_per_unit: number;
+                            /** @enum {string} */
+                            currency: "usd";
+                        };
+                        /**
+                         * @description Enumeration of possible feature types
+                         * @enum {string}
+                         */
+                        name: "ComponentsInDesign" | "RelationshipsInDesign" | "DesignsInWorkspace" | "WorkspacesInOrganization" | "ImageSizeInDesign" | "SizePerDesign";
+                        /** @description Quantity of the feature allowed, use 9999999999 for unlimited */
+                        quantity: number;
+                        /** Format: date-time */
+                        created_at?: string;
+                        /** Format: date-time */
+                        updated_at?: string;
+                    }[];
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getFeaturesByOrganization: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the organization */
+                organizationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Features response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        id: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        plan_id: string;
+                        plan?: {
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            id: string;
+                            /**
+                             * @description Name of the plan
+                             * @enum {string}
+                             */
+                            name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+                            /** @enum {string} */
+                            cadence: "monthly" | "yearly";
+                            /** @enum {string} */
+                            unit: "user" | "free";
+                            /** @description Minimum number of units required for the plan */
+                            minimum_units: number;
+                            /** @description Price per unit of the plan */
+                            price_per_unit: number;
+                            /** @enum {string} */
+                            currency: "usd";
+                        };
+                        /**
+                         * @description Enumeration of possible feature types
+                         * @enum {string}
+                         */
+                        name: "ComponentsInDesign" | "RelationshipsInDesign" | "DesignsInWorkspace" | "WorkspacesInOrganization" | "ImageSizeInDesign" | "SizePerDesign";
+                        /** @description Quantity of the feature allowed, use 9999999999 for unlimited */
+                        quantity: number;
+                        /** Format: date-time */
+                        created_at?: string;
+                        /** Format: date-time */
+                        updated_at?: string;
+                    }[];
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+}

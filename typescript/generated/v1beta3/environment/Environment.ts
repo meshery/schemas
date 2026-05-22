@@ -4,379 +4,87 @@
  */
 
 export interface paths {
-  "/api/environments": {
-    /** Gets all environments */
-    get: operations["getEnvironments"];
-    /** Creates a new environment */
-    post: operations["createEnvironment"];
-  };
-  "/api/environments/{environmentId}": {
-    get: operations["getEnvironmentById"];
-    put: operations["updateEnvironment"];
-    delete: operations["deleteEnvironment"];
-  };
-  "/api/environments/{environmentId}/connections": {
-    get: operations["getEnvironmentConnections"];
-  };
+    "/api/environments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get all environments
+         * @description Gets all environments
+         */
+        get: operations["getEnvironments"];
+        put?: never;
+        /**
+         * Create an environment
+         * @description Creates a new environment
+         */
+        post: operations["createEnvironment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/environments/{environmentId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get environment by ID */
+        get: operations["getEnvironmentById"];
+        /** Update an environment */
+        put: operations["updateEnvironment"];
+        post?: never;
+        /** Delete an environment */
+        delete: operations["deleteEnvironment"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/environments/{environmentId}/connections": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get environment connections */
+        get: operations["getEnvironmentConnections"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
-
+export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    /**
-     * Environment
-     * @description Environments allow you to logically group related Connections and their associated Credentials. Learn more at https://docs.meshery.io/concepts/logical/environments
-     * @example {
-     *   "id": "00000000-0000-0000-0000-000000000000",
-     *   "schemaVersion": "environments.meshery.io/v1beta3",
-     *   "name": "Production Environment",
-     *   "description": "Connections and credentials for the production cluster.",
-     *   "organizationId": "00000000-0000-0000-0000-000000000000",
-     *   "owner": "00000000-0000-0000-0000-000000000000",
-     *   "createdAt": "0001-01-01T00:00:00Z",
-     *   "metadata": {},
-     *   "updatedAt": "0001-01-01T00:00:00Z",
-     *   "deletedAt": null
-     * }
-     */
-    Environment: {
-      /**
-       * Format: uuid
-       * @description ID
-       */
-      id: string;
-      /**
-       * @description Specifies the version of the schema to which the environment conforms.
-       * @default environments.meshery.io/v1beta3
-       * @example [
-       *   "v1",
-       *   "v1alpha1",
-       *   "v2beta3",
-       *   "v1.custom-suffix",
-       *   "models.meshery.io/v1beta1",
-       *   "capability.meshery.io/v1alpha1"
-       * ]
-       */
-      schemaVersion: string;
-      /** @description Environment name */
-      name: string;
-      /** @description Environment description */
-      description: string;
-      /**
-       * Format: uuid
-       * @description Environment organization ID
-       */
-      organizationId: string;
-      /**
-       * Format: uuid
-       * @description Environment owner
-       */
-      owner?: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the environment was created.
-       */
-      createdAt?: string;
-      /** @description Additional metadata associated with the environment. */
-      metadata?: { [key: string]: unknown };
-      /**
-       * Format: date-time
-       * @description Timestamp when the environment was last updated.
-       */
-      updatedAt?: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
-       */
-      deletedAt?: string | null;
-    };
-    /** @description Junction record linking an environment to a connection. */
-    EnvironmentConnectionMapping: {
-      /**
-       * Format: uuid
-       * @description Mapping record ID.
-       */
-      id?: string;
-      /**
-       * Format: uuid
-       * @description ID of the associated environment.
-       */
-      environmentId?: string;
-      /**
-       * Format: uuid
-       * @description ID of the associated connection.
-       */
-      connectionId?: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the mapping was created.
-       */
-      createdAt?: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the mapping was last updated.
-       */
-      updatedAt?: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the mapping was soft-deleted. Null while the mapping remains active.
-       */
-      deletedAt?: string;
-    };
-    /** @description Payload for creating or updating an environment. */
-    EnvironmentPayload: {
-      /** @description An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation. */
-      name: string;
-      /** @description An environment is a collection of resources, such as connections & credentials. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments). */
-      description?: string;
-      /**
-       * Format: uuid
-       * @description Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
-       */
-      organizationId: string;
-    };
-    /** @description Paginated list of environments. */
-    EnvironmentPage: {
-      /** @description Zero-based page index returned in this response. */
-      page?: number;
-      /** @description Maximum number of items returned on each page. */
-      pageSize?: number;
-      /** @description Total number of items across all pages. */
-      totalCount?: number;
-      /** @description Environments associated with this resource. */
-      environments?: {
+    schemas: {
         /**
-         * Format: uuid
-         * @description ID
+         * Environment
+         * @description Environments allow you to logically group related Connections and their associated Credentials. Learn more at https://docs.meshery.io/concepts/logical/environments
+         * @example {
+         *       "id": "00000000-0000-0000-0000-000000000000",
+         *       "schemaVersion": "environments.meshery.io/v1beta3",
+         *       "name": "Production Environment",
+         *       "description": "Connections and credentials for the production cluster.",
+         *       "organizationId": "00000000-0000-0000-0000-000000000000",
+         *       "owner": "00000000-0000-0000-0000-000000000000",
+         *       "createdAt": "0001-01-01T00:00:00Z",
+         *       "metadata": {},
+         *       "updatedAt": "0001-01-01T00:00:00Z",
+         *       "deletedAt": null
+         *     }
          */
-        id: string;
-        /**
-         * @description Specifies the version of the schema to which the environment conforms.
-         * @default environments.meshery.io/v1beta3
-         * @example [
-         *   "v1",
-         *   "v1alpha1",
-         *   "v2beta3",
-         *   "v1.custom-suffix",
-         *   "models.meshery.io/v1beta1",
-         *   "capability.meshery.io/v1alpha1"
-         * ]
-         */
-        schemaVersion: string;
-        /** @description Environment name */
-        name: string;
-        /** @description Environment description */
-        description: string;
-        /**
-         * Format: uuid
-         * @description Environment organization ID
-         */
-        organizationId: string;
-        /**
-         * Format: uuid
-         * @description Environment owner
-         */
-        owner?: string;
-        /**
-         * Format: date-time
-         * @description Timestamp when the environment was created.
-         */
-        createdAt?: string;
-        /** @description Additional metadata associated with the environment. */
-        metadata?: { [key: string]: unknown };
-        /**
-         * Format: date-time
-         * @description Timestamp when the environment was last updated.
-         */
-        updatedAt?: string;
-        /**
-         * Format: date-time
-         * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
-         */
-        deletedAt?: string | null;
-      }[];
-    };
-    /** @description Paginated list of connections associated with an environment. */
-    EnvironmentConnectionsPage: {
-      /** @description Current page number of the result set. */
-      page?: number;
-      /** @description Number of items per page. */
-      pageSize?: number;
-      /** @description Total number of items available. */
-      totalCount?: number;
-      /** @description The connections of the environmentconnectionspage. */
-      connections?: { [key: string]: unknown }[];
-    };
-  };
-  responses: {
-    /** ok */
-    200: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Invalid request body or request param */
-    400: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Expired JWT token used or insufficient privilege */
-    401: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Result not found */
-    404: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Internal server error */
-    500: {
-      content: {
-        "text/plain": string;
-      };
-    };
-  };
-  parameters: {
-    /** @description Environment ID */
-    environmentId: string;
-    /** @description Get responses that match search param value */
-    search: string;
-    /** @description Get ordered responses */
-    order: string;
-    /** @description Get responses by page */
-    page: string;
-    /** @description Get responses by pagesize */
-    pagesize: string;
-    /** @description User's organization ID */
-    orgIdQuery: string;
-  };
-  requestBodies: {
-    /** Body for creating environment */
-    environmentPayload: {
-      content: {
-        "application/json": {
-          /** @description An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation. */
-          name: string;
-          /** @description An environment is a collection of resources, such as connections & credentials. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments). */
-          description?: string;
-          /**
-           * Format: uuid
-           * @description Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
-           */
-          organizationId: string;
-        };
-      };
-    };
-  };
-}
-
-export interface operations {
-  /** Gets all environments */
-  getEnvironments: {
-    parameters: {
-      query: {
-        /** Get responses that match search param value */
-        search?: string;
-        /** Get ordered responses */
-        order?: string;
-        /** Get responses by page */
-        page?: string;
-        /** Get responses by pagesize */
-        pagesize?: string;
-        /** User's organization ID */
-        orgId: string;
-      };
-    };
-    responses: {
-      /** Environments */
-      200: {
-        content: {
-          "application/json": {
-            /** @description Zero-based page index returned in this response. */
-            page?: number;
-            /** @description Maximum number of items returned on each page. */
-            pageSize?: number;
-            /** @description Total number of items across all pages. */
-            totalCount?: number;
-            /** @description Environments associated with this resource. */
-            environments?: {
-              /**
-               * Format: uuid
-               * @description ID
-               */
-              id: string;
-              /**
-               * @description Specifies the version of the schema to which the environment conforms.
-               * @default environments.meshery.io/v1beta3
-               * @example [
-               *   "v1",
-               *   "v1alpha1",
-               *   "v2beta3",
-               *   "v1.custom-suffix",
-               *   "models.meshery.io/v1beta1",
-               *   "capability.meshery.io/v1alpha1"
-               * ]
-               */
-              schemaVersion: string;
-              /** @description Environment name */
-              name: string;
-              /** @description Environment description */
-              description: string;
-              /**
-               * Format: uuid
-               * @description Environment organization ID
-               */
-              organizationId: string;
-              /**
-               * Format: uuid
-               * @description Environment owner
-               */
-              owner?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the environment was created.
-               */
-              createdAt?: string;
-              /** @description Additional metadata associated with the environment. */
-              metadata?: { [key: string]: unknown };
-              /**
-               * Format: date-time
-               * @description Timestamp when the environment was last updated.
-               */
-              updatedAt?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
-               */
-              deletedAt?: string | null;
-            }[];
-          };
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  /** Creates a new environment */
-  createEnvironment: {
-    responses: {
-      /** Created environment */
-      201: {
-        content: {
-          "application/json": {
+        Environment: {
             /**
              * Format: uuid
              * @description ID
@@ -386,13 +94,13 @@ export interface operations {
              * @description Specifies the version of the schema to which the environment conforms.
              * @default environments.meshery.io/v1beta3
              * @example [
-             *   "v1",
-             *   "v1alpha1",
-             *   "v2beta3",
-             *   "v1.custom-suffix",
-             *   "models.meshery.io/v1beta1",
-             *   "capability.meshery.io/v1alpha1"
-             * ]
+             *       "v1",
+             *       "v1alpha1",
+             *       "v2beta3",
+             *       "v1.custom-suffix",
+             *       "models.meshery.io/v1beta1",
+             *       "capability.meshery.io/v1alpha1"
+             *     ]
              */
             schemaVersion: string;
             /** @description Environment name */
@@ -415,7 +123,7 @@ export interface operations {
              */
             createdAt?: string;
             /** @description Additional metadata associated with the environment. */
-            metadata?: { [key: string]: unknown };
+            metadata?: Record<string, never>;
             /**
              * Format: date-time
              * @description Timestamp when the environment was last updated.
@@ -426,61 +134,54 @@ export interface operations {
              * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
              */
             deletedAt?: string | null;
-          };
         };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
+        /** @description Junction record linking an environment to a connection. */
+        EnvironmentConnectionMapping: {
+            /**
+             * Format: uuid
+             * @description Mapping record ID.
+             */
+            id?: string;
+            /**
+             * Format: uuid
+             * @description ID of the associated environment.
+             */
+            environmentId?: string;
+            /**
+             * Format: uuid
+             * @description ID of the associated connection.
+             */
+            connectionId?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the mapping was created.
+             */
+            createdAt?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the mapping was last updated.
+             */
+            updatedAt?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the mapping was soft-deleted. Null while the mapping remains active.
+             */
+            deletedAt?: string;
         };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
+        /** @description Payload for creating or updating an environment. */
+        EnvironmentPayload: {
+            /** @description An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation. */
+            name: string;
+            /** @description An environment is a collection of resources, such as connections & credentials. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments). */
+            description?: string;
+            /**
+             * Format: uuid
+             * @description Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
+             */
+            organizationId: string;
         };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-    /** Body for creating environment */
-    requestBody: {
-      content: {
-        "application/json": {
-          /** @description An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation. */
-          name: string;
-          /** @description An environment is a collection of resources, such as connections & credentials. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments). */
-          description?: string;
-          /**
-           * Format: uuid
-           * @description Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
-           */
-          organizationId: string;
-        };
-      };
-    };
-  };
-  getEnvironmentById: {
-    parameters: {
-      path: {
-        /** Environment ID */
-        environmentId: string;
-      };
-      query: {
-        /** User's organization ID */
-        orgId: string;
-      };
-    };
-    responses: {
-      /** Environment page */
-      200: {
-        content: {
-          "application/json": {
+        /** @description Paginated list of environments. */
+        EnvironmentPage: {
             /** @description Zero-based page index returned in this response. */
             page?: number;
             /** @description Maximum number of items returned on each page. */
@@ -489,260 +190,59 @@ export interface operations {
             totalCount?: number;
             /** @description Environments associated with this resource. */
             environments?: {
-              /**
-               * Format: uuid
-               * @description ID
-               */
-              id: string;
-              /**
-               * @description Specifies the version of the schema to which the environment conforms.
-               * @default environments.meshery.io/v1beta3
-               * @example [
-               *   "v1",
-               *   "v1alpha1",
-               *   "v2beta3",
-               *   "v1.custom-suffix",
-               *   "models.meshery.io/v1beta1",
-               *   "capability.meshery.io/v1alpha1"
-               * ]
-               */
-              schemaVersion: string;
-              /** @description Environment name */
-              name: string;
-              /** @description Environment description */
-              description: string;
-              /**
-               * Format: uuid
-               * @description Environment organization ID
-               */
-              organizationId: string;
-              /**
-               * Format: uuid
-               * @description Environment owner
-               */
-              owner?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the environment was created.
-               */
-              createdAt?: string;
-              /** @description Additional metadata associated with the environment. */
-              metadata?: { [key: string]: unknown };
-              /**
-               * Format: date-time
-               * @description Timestamp when the environment was last updated.
-               */
-              updatedAt?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
-               */
-              deletedAt?: string | null;
+                /**
+                 * Format: uuid
+                 * @description ID
+                 */
+                id: string;
+                /**
+                 * @description Specifies the version of the schema to which the environment conforms.
+                 * @default environments.meshery.io/v1beta3
+                 * @example [
+                 *       "v1",
+                 *       "v1alpha1",
+                 *       "v2beta3",
+                 *       "v1.custom-suffix",
+                 *       "models.meshery.io/v1beta1",
+                 *       "capability.meshery.io/v1alpha1"
+                 *     ]
+                 */
+                schemaVersion: string;
+                /** @description Environment name */
+                name: string;
+                /** @description Environment description */
+                description: string;
+                /**
+                 * Format: uuid
+                 * @description Environment organization ID
+                 */
+                organizationId: string;
+                /**
+                 * Format: uuid
+                 * @description Environment owner
+                 */
+                owner?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the environment was created.
+                 */
+                createdAt?: string;
+                /** @description Additional metadata associated with the environment. */
+                metadata?: Record<string, never>;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the environment was last updated.
+                 */
+                updatedAt?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
+                 */
+                deletedAt?: string | null;
             }[];
-          };
         };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  updateEnvironment: {
-    parameters: {
-      path: {
-        /** Environment ID */
-        environmentId: string;
-      };
-    };
-    responses: {
-      /** Environment page */
-      200: {
-        content: {
-          "application/json": {
-            /** @description Zero-based page index returned in this response. */
-            page?: number;
-            /** @description Maximum number of items returned on each page. */
-            pageSize?: number;
-            /** @description Total number of items across all pages. */
-            totalCount?: number;
-            /** @description Environments associated with this resource. */
-            environments?: {
-              /**
-               * Format: uuid
-               * @description ID
-               */
-              id: string;
-              /**
-               * @description Specifies the version of the schema to which the environment conforms.
-               * @default environments.meshery.io/v1beta3
-               * @example [
-               *   "v1",
-               *   "v1alpha1",
-               *   "v2beta3",
-               *   "v1.custom-suffix",
-               *   "models.meshery.io/v1beta1",
-               *   "capability.meshery.io/v1alpha1"
-               * ]
-               */
-              schemaVersion: string;
-              /** @description Environment name */
-              name: string;
-              /** @description Environment description */
-              description: string;
-              /**
-               * Format: uuid
-               * @description Environment organization ID
-               */
-              organizationId: string;
-              /**
-               * Format: uuid
-               * @description Environment owner
-               */
-              owner?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the environment was created.
-               */
-              createdAt?: string;
-              /** @description Additional metadata associated with the environment. */
-              metadata?: { [key: string]: unknown };
-              /**
-               * Format: date-time
-               * @description Timestamp when the environment was last updated.
-               */
-              updatedAt?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
-               */
-              deletedAt?: string | null;
-            }[];
-          };
-        };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-    /** Body for creating environment */
-    requestBody: {
-      content: {
-        "application/json": {
-          /** @description An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation. */
-          name: string;
-          /** @description An environment is a collection of resources, such as connections & credentials. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments). */
-          description?: string;
-          /**
-           * Format: uuid
-           * @description Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
-           */
-          organizationId: string;
-        };
-      };
-    };
-  };
-  deleteEnvironment: {
-    parameters: {
-      path: {
-        /** Environment ID */
-        environmentId: string;
-      };
-    };
-    responses: {
-      /** Environment deleted */
-      204: never;
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  getEnvironmentConnections: {
-    parameters: {
-      path: {
-        /** Environment ID */
-        environmentId: string;
-      };
-      query: {
-        /** Get responses that match search param value */
-        search?: string;
-        /** Get ordered responses */
-        order?: string;
-        /** Get responses by page */
-        page?: string;
-        /** Get responses by pagesize */
-        pagesize?: string;
-        /** JSON-encoded filter string used to scope the connection listing. */
-        filter?: string;
-      };
-    };
-    responses: {
-      /** Environment connections */
-      200: {
-        content: {
-          "application/json": {
+        /** @description Paginated list of connections associated with an environment. */
+        EnvironmentConnectionsPage: {
             /** @description Current page number of the result set. */
             page?: number;
             /** @description Number of items per page. */
@@ -750,36 +250,705 @@ export interface operations {
             /** @description Total number of items available. */
             totalCount?: number;
             /** @description The connections of the environmentconnectionspage. */
-            connections?: { [key: string]: unknown }[];
-          };
+            connections?: {
+                [key: string]: unknown;
+            }[];
         };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
     };
-  };
+    responses: {
+        /** @description ok */
+        200: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Invalid request body or request param */
+        400: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Expired JWT token used or insufficient privilege */
+        401: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Result not found */
+        404: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Internal server error */
+        500: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+    };
+    parameters: {
+        /** @description Environment ID */
+        environmentId: string;
+        /** @description Get responses that match search param value */
+        search: string;
+        /** @description Get ordered responses */
+        order: string;
+        /** @description Get responses by page */
+        page: string;
+        /** @description Get responses by pagesize */
+        pagesize: string;
+        /** @description User's organization ID */
+        orgIdQuery: string;
+    };
+    requestBodies: {
+        /** @description Body for creating environment */
+        environmentPayload: {
+            content: {
+                "application/json": {
+                    /** @description An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation. */
+                    name: string;
+                    /** @description An environment is a collection of resources, such as connections & credentials. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments). */
+                    description?: string;
+                    /**
+                     * Format: uuid
+                     * @description Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
+                     */
+                    organizationId: string;
+                };
+            };
+        };
+    };
+    headers: never;
+    pathItems: never;
 }
-
-export interface external {}
+export type $defs = Record<string, never>;
+export interface operations {
+    getEnvironments: {
+        parameters: {
+            query: {
+                /** @description Get responses that match search param value */
+                search?: string;
+                /** @description Get ordered responses */
+                order?: string;
+                /** @description Get responses by page */
+                page?: string;
+                /** @description Get responses by pagesize */
+                pagesize?: string;
+                /** @description User's organization ID */
+                orgId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Environments */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Zero-based page index returned in this response. */
+                        page?: number;
+                        /** @description Maximum number of items returned on each page. */
+                        pageSize?: number;
+                        /** @description Total number of items across all pages. */
+                        totalCount?: number;
+                        /** @description Environments associated with this resource. */
+                        environments?: {
+                            /**
+                             * Format: uuid
+                             * @description ID
+                             */
+                            id: string;
+                            /**
+                             * @description Specifies the version of the schema to which the environment conforms.
+                             * @default environments.meshery.io/v1beta3
+                             * @example [
+                             *       "v1",
+                             *       "v1alpha1",
+                             *       "v2beta3",
+                             *       "v1.custom-suffix",
+                             *       "models.meshery.io/v1beta1",
+                             *       "capability.meshery.io/v1alpha1"
+                             *     ]
+                             */
+                            schemaVersion: string;
+                            /** @description Environment name */
+                            name: string;
+                            /** @description Environment description */
+                            description: string;
+                            /**
+                             * Format: uuid
+                             * @description Environment organization ID
+                             */
+                            organizationId: string;
+                            /**
+                             * Format: uuid
+                             * @description Environment owner
+                             */
+                            owner?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the environment was created.
+                             */
+                            createdAt?: string;
+                            /** @description Additional metadata associated with the environment. */
+                            metadata?: Record<string, never>;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the environment was last updated.
+                             */
+                            updatedAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
+                             */
+                            deletedAt?: string | null;
+                        }[];
+                    };
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    createEnvironment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Body for creating environment */
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation. */
+                    name: string;
+                    /** @description An environment is a collection of resources, such as connections & credentials. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments). */
+                    description?: string;
+                    /**
+                     * Format: uuid
+                     * @description Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
+                     */
+                    organizationId: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Created environment */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description ID
+                         */
+                        id: string;
+                        /**
+                         * @description Specifies the version of the schema to which the environment conforms.
+                         * @default environments.meshery.io/v1beta3
+                         * @example [
+                         *       "v1",
+                         *       "v1alpha1",
+                         *       "v2beta3",
+                         *       "v1.custom-suffix",
+                         *       "models.meshery.io/v1beta1",
+                         *       "capability.meshery.io/v1alpha1"
+                         *     ]
+                         */
+                        schemaVersion: string;
+                        /** @description Environment name */
+                        name: string;
+                        /** @description Environment description */
+                        description: string;
+                        /**
+                         * Format: uuid
+                         * @description Environment organization ID
+                         */
+                        organizationId: string;
+                        /**
+                         * Format: uuid
+                         * @description Environment owner
+                         */
+                        owner?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the environment was created.
+                         */
+                        createdAt?: string;
+                        /** @description Additional metadata associated with the environment. */
+                        metadata?: Record<string, never>;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the environment was last updated.
+                         */
+                        updatedAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
+                         */
+                        deletedAt?: string | null;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getEnvironmentById: {
+        parameters: {
+            query: {
+                /** @description User's organization ID */
+                orgId: string;
+            };
+            header?: never;
+            path: {
+                /** @description Environment ID */
+                environmentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Environment page */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Zero-based page index returned in this response. */
+                        page?: number;
+                        /** @description Maximum number of items returned on each page. */
+                        pageSize?: number;
+                        /** @description Total number of items across all pages. */
+                        totalCount?: number;
+                        /** @description Environments associated with this resource. */
+                        environments?: {
+                            /**
+                             * Format: uuid
+                             * @description ID
+                             */
+                            id: string;
+                            /**
+                             * @description Specifies the version of the schema to which the environment conforms.
+                             * @default environments.meshery.io/v1beta3
+                             * @example [
+                             *       "v1",
+                             *       "v1alpha1",
+                             *       "v2beta3",
+                             *       "v1.custom-suffix",
+                             *       "models.meshery.io/v1beta1",
+                             *       "capability.meshery.io/v1alpha1"
+                             *     ]
+                             */
+                            schemaVersion: string;
+                            /** @description Environment name */
+                            name: string;
+                            /** @description Environment description */
+                            description: string;
+                            /**
+                             * Format: uuid
+                             * @description Environment organization ID
+                             */
+                            organizationId: string;
+                            /**
+                             * Format: uuid
+                             * @description Environment owner
+                             */
+                            owner?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the environment was created.
+                             */
+                            createdAt?: string;
+                            /** @description Additional metadata associated with the environment. */
+                            metadata?: Record<string, never>;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the environment was last updated.
+                             */
+                            updatedAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
+                             */
+                            deletedAt?: string | null;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    updateEnvironment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Environment ID */
+                environmentId: string;
+            };
+            cookie?: never;
+        };
+        /** @description Body for creating environment */
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation. */
+                    name: string;
+                    /** @description An environment is a collection of resources, such as connections & credentials. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments). */
+                    description?: string;
+                    /**
+                     * Format: uuid
+                     * @description Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
+                     */
+                    organizationId: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Environment page */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Zero-based page index returned in this response. */
+                        page?: number;
+                        /** @description Maximum number of items returned on each page. */
+                        pageSize?: number;
+                        /** @description Total number of items across all pages. */
+                        totalCount?: number;
+                        /** @description Environments associated with this resource. */
+                        environments?: {
+                            /**
+                             * Format: uuid
+                             * @description ID
+                             */
+                            id: string;
+                            /**
+                             * @description Specifies the version of the schema to which the environment conforms.
+                             * @default environments.meshery.io/v1beta3
+                             * @example [
+                             *       "v1",
+                             *       "v1alpha1",
+                             *       "v2beta3",
+                             *       "v1.custom-suffix",
+                             *       "models.meshery.io/v1beta1",
+                             *       "capability.meshery.io/v1alpha1"
+                             *     ]
+                             */
+                            schemaVersion: string;
+                            /** @description Environment name */
+                            name: string;
+                            /** @description Environment description */
+                            description: string;
+                            /**
+                             * Format: uuid
+                             * @description Environment organization ID
+                             */
+                            organizationId: string;
+                            /**
+                             * Format: uuid
+                             * @description Environment owner
+                             */
+                            owner?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the environment was created.
+                             */
+                            createdAt?: string;
+                            /** @description Additional metadata associated with the environment. */
+                            metadata?: Record<string, never>;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the environment was last updated.
+                             */
+                            updatedAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
+                             */
+                            deletedAt?: string | null;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    deleteEnvironment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Environment ID */
+                environmentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Environment deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getEnvironmentConnections: {
+        parameters: {
+            query?: {
+                /** @description Get responses that match search param value */
+                search?: string;
+                /** @description Get ordered responses */
+                order?: string;
+                /** @description Get responses by page */
+                page?: string;
+                /** @description Get responses by pagesize */
+                pagesize?: string;
+                /** @description JSON-encoded filter string used to scope the connection listing. */
+                filter?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Environment ID */
+                environmentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Environment connections */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Current page number of the result set. */
+                        page?: number;
+                        /** @description Number of items per page. */
+                        pageSize?: number;
+                        /** @description Total number of items available. */
+                        totalCount?: number;
+                        /** @description The connections of the environmentconnectionspage. */
+                        connections?: {
+                            [key: string]: unknown;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+}

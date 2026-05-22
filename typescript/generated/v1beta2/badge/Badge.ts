@@ -4,220 +4,115 @@
  */
 
 export interface paths {
-  "/api/organizations/badges/{badgeId}": {
-    get: operations["getBadgeById"];
-    delete: operations["deleteBadgeById"];
-  };
-  "/api/organizations/badges": {
-    post: operations["createOrUpdateBadge"];
-  };
-  "/api/identity/badges": {
-    get: operations["getAvailableBadges"];
-  };
-  "/api/identity/users/badges": {
-    put: operations["assignBadges"];
-  };
+    "/api/organizations/badges/{badgeId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get a badge by its ID */
+        get: operations["getBadgeById"];
+        put?: never;
+        post?: never;
+        /** Delete a badge by its ID */
+        delete: operations["deleteBadgeById"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organizations/badges": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a new badge or update an existing badge */
+        post: operations["createOrUpdateBadge"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/badges": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get available badges */
+        get: operations["getAvailableBadges"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/users/badges": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Assign badges to a user */
+        put: operations["assignBadges"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
-
+export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    /** @description Payload for creating or updating a badge. */
-    BadgePayload: {
-      /**
-       * Format: uuid
-       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-       */
-      id?: string;
-      /**
-       * Format: uuid
-       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-       */
-      orgId: string;
-      /**
-       * @description Unique identifier for the badge, typically slug-style (auto generated).
-       * @example Kubernetes-Expert
-       */
-      label: string;
-      /**
-       * @description Concise descriptor for the badge or certificate.
-       * @example Kubernetes Expert
-       */
-      name: string;
-      /**
-       * @description A description of the milestone achieved, often including criteria for receiving this recognition.
-       * @example Awarded for mastering Kubernetes concepts and practices.
-       */
-      description: string;
-      /**
-       * Format: uri
-       * @description URL to the badge image.
-       * @example https://raw.githubusercontent.com/meshery-extensions/meshery-academy/refs/heads/master/.github/assets/images/mershery-icon.png
-       */
-      imageUrl: string;
-    };
-    /** @description Badge entity — a named recognition issued within an organization. */
-    Badge: {
-      /**
-       * Format: uuid
-       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-       */
-      id: string;
-      /**
-       * Format: uuid
-       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-       */
-      orgId: string;
-      /**
-       * @description Unique identifier for the badge, typically slug-style (auto generated).
-       * @example Kubernetes-Expert
-       */
-      label: string;
-      /**
-       * @description Concise descriptor for the badge or certificate.
-       * @example Kubernetes Expert
-       */
-      name: string;
-      /**
-       * @description A description of the milestone achieved, often including criteria for receiving this recognition.
-       * @example Awarded for mastering Kubernetes concepts and practices.
-       */
-      description: string;
-      /**
-       * Format: uri
-       * @description URL to the badge image.
-       * @example https://raw.githubusercontent.com/meshery-extensions/meshery-academy/refs/heads/master/.github/assets/images/mershery-icon.png
-       */
-      imageUrl: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the badge was created.
-       */
-      createdAt: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the badge was last updated.
-       */
-      updatedAt: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the badge was soft-deleted, if applicable.
-       */
-      deletedAt: string;
-    };
-    /** @description Map of badges available in an organization, keyed by badge label. */
-    BadgesPage: {
-      /** @description Available badges, keyed by badge label. */
-      badges?: {
-        [key: string]: {
-          /**
-           * Format: uuid
-           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-           */
-          id: string;
-          /**
-           * Format: uuid
-           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-           */
-          orgId: string;
-          /**
-           * @description Unique identifier for the badge, typically slug-style (auto generated).
-           * @example Kubernetes-Expert
-           */
-          label: string;
-          /**
-           * @description Concise descriptor for the badge or certificate.
-           * @example Kubernetes Expert
-           */
-          name: string;
-          /**
-           * @description A description of the milestone achieved, often including criteria for receiving this recognition.
-           * @example Awarded for mastering Kubernetes concepts and practices.
-           */
-          description: string;
-          /**
-           * Format: uri
-           * @description URL to the badge image.
-           * @example https://raw.githubusercontent.com/meshery-extensions/meshery-academy/refs/heads/master/.github/assets/images/mershery-icon.png
-           */
-          imageUrl: string;
-          /**
-           * Format: date-time
-           * @description Timestamp when the badge was created.
-           */
-          createdAt: string;
-          /**
-           * Format: date-time
-           * @description Timestamp when the badge was last updated.
-           */
-          updatedAt: string;
-          /**
-           * Format: date-time
-           * @description Timestamp when the badge was soft-deleted, if applicable.
-           */
-          deletedAt: string;
+    schemas: {
+        /** @description Payload for creating or updating a badge. */
+        BadgePayload: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            id?: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            orgId: string;
+            /**
+             * @description Unique identifier for the badge, typically slug-style (auto generated).
+             * @example Kubernetes-Expert
+             */
+            label: string;
+            /**
+             * @description Concise descriptor for the badge or certificate.
+             * @example Kubernetes Expert
+             */
+            name: string;
+            /**
+             * @description A description of the milestone achieved, often including criteria for receiving this recognition.
+             * @example Awarded for mastering Kubernetes concepts and practices.
+             */
+            description: string;
+            /**
+             * Format: uri
+             * @description URL to the badge image.
+             * @example https://raw.githubusercontent.com/meshery-extensions/meshery-academy/refs/heads/master/.github/assets/images/mershery-icon.png
+             */
+            imageUrl: string;
         };
-      };
-    };
-    /** @description Payload for assigning a set of badges to a user. */
-    BadgeAssignmentPayload: {
-      /** @description Labels of the badges being assigned to the user. */
-      badges: string[];
-      /**
-       * Format: uuid
-       * @description ID of the user to receive the badges.
-       */
-      userId: string;
-      /** @description When true, send a notification to the user about the new badge assignment. */
-      notify?: boolean;
-    };
-  };
-  responses: {
-    /** Invalid request body or request param */
-    400: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Expired JWT token used or insufficient privilege */
-    401: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Result not found */
-    404: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Internal server error */
-    500: {
-      content: {
-        "text/plain": string;
-      };
-    };
-  };
-  parameters: {
-    /** @description Badge ID */
-    badgeId: string;
-    /** @description Organization ID to scope the badge listing to. */
-    orgIdQuery: string;
-  };
-}
-
-export interface operations {
-  getBadgeById: {
-    parameters: {
-      path: {
-        /** Badge ID */
-        badgeId: string;
-      };
-    };
-    responses: {
-      /** Badge response */
-      200: {
-        content: {
-          "application/json": {
+        /** @description Badge entity — a named recognition issued within an organization. */
+        Badge: {
             /**
              * Format: uuid
              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -264,300 +159,562 @@ export interface operations {
              * @description Timestamp when the badge was soft-deleted, if applicable.
              */
             deletedAt: string;
-          };
         };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  deleteBadgeById: {
-    parameters: {
-      path: {
-        /** Badge ID */
-        badgeId: string;
-      };
-    };
-    responses: {
-      /** Badge deleted */
-      204: never;
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  createOrUpdateBadge: {
-    responses: {
-      /** Badge upserted */
-      200: {
-        content: {
-          "application/json": {
-            /**
-             * Format: uuid
-             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-             */
-            id: string;
-            /**
-             * Format: uuid
-             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-             */
-            orgId: string;
-            /**
-             * @description Unique identifier for the badge, typically slug-style (auto generated).
-             * @example Kubernetes-Expert
-             */
-            label: string;
-            /**
-             * @description Concise descriptor for the badge or certificate.
-             * @example Kubernetes Expert
-             */
-            name: string;
-            /**
-             * @description A description of the milestone achieved, often including criteria for receiving this recognition.
-             * @example Awarded for mastering Kubernetes concepts and practices.
-             */
-            description: string;
-            /**
-             * Format: uri
-             * @description URL to the badge image.
-             * @example https://raw.githubusercontent.com/meshery-extensions/meshery-academy/refs/heads/master/.github/assets/images/mershery-icon.png
-             */
-            imageUrl: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the badge was created.
-             */
-            createdAt: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the badge was last updated.
-             */
-            updatedAt: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the badge was soft-deleted, if applicable.
-             */
-            deletedAt: string;
-          };
-        };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": {
-          /**
-           * Format: uuid
-           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-           */
-          id?: string;
-          /**
-           * Format: uuid
-           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-           */
-          orgId: string;
-          /**
-           * @description Unique identifier for the badge, typically slug-style (auto generated).
-           * @example Kubernetes-Expert
-           */
-          label: string;
-          /**
-           * @description Concise descriptor for the badge or certificate.
-           * @example Kubernetes Expert
-           */
-          name: string;
-          /**
-           * @description A description of the milestone achieved, often including criteria for receiving this recognition.
-           * @example Awarded for mastering Kubernetes concepts and practices.
-           */
-          description: string;
-          /**
-           * Format: uri
-           * @description URL to the badge image.
-           * @example https://raw.githubusercontent.com/meshery-extensions/meshery-academy/refs/heads/master/.github/assets/images/mershery-icon.png
-           */
-          imageUrl: string;
-        };
-      };
-    };
-  };
-  getAvailableBadges: {
-    parameters: {
-      query: {
-        /** Organization ID to scope the badge listing to. */
-        orgId?: string;
-      };
-    };
-    responses: {
-      /** Available badges */
-      200: {
-        content: {
-          "application/json": {
+        /** @description Map of badges available in an organization, keyed by badge label. */
+        BadgesPage: {
             /** @description Available badges, keyed by badge label. */
             badges?: {
-              [key: string]: {
-                /**
-                 * Format: uuid
-                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                 */
-                id: string;
-                /**
-                 * Format: uuid
-                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                 */
-                orgId: string;
-                /**
-                 * @description Unique identifier for the badge, typically slug-style (auto generated).
-                 * @example Kubernetes-Expert
-                 */
-                label: string;
-                /**
-                 * @description Concise descriptor for the badge or certificate.
-                 * @example Kubernetes Expert
-                 */
-                name: string;
-                /**
-                 * @description A description of the milestone achieved, often including criteria for receiving this recognition.
-                 * @example Awarded for mastering Kubernetes concepts and practices.
-                 */
-                description: string;
-                /**
-                 * Format: uri
-                 * @description URL to the badge image.
-                 * @example https://raw.githubusercontent.com/meshery-extensions/meshery-academy/refs/heads/master/.github/assets/images/mershery-icon.png
-                 */
-                imageUrl: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the badge was created.
-                 */
-                createdAt: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the badge was last updated.
-                 */
-                updatedAt: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the badge was soft-deleted, if applicable.
-                 */
-                deletedAt: string;
-              };
+                [key: string]: {
+                    /**
+                     * Format: uuid
+                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                     */
+                    id: string;
+                    /**
+                     * Format: uuid
+                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                     */
+                    orgId: string;
+                    /**
+                     * @description Unique identifier for the badge, typically slug-style (auto generated).
+                     * @example Kubernetes-Expert
+                     */
+                    label: string;
+                    /**
+                     * @description Concise descriptor for the badge or certificate.
+                     * @example Kubernetes Expert
+                     */
+                    name: string;
+                    /**
+                     * @description A description of the milestone achieved, often including criteria for receiving this recognition.
+                     * @example Awarded for mastering Kubernetes concepts and practices.
+                     */
+                    description: string;
+                    /**
+                     * Format: uri
+                     * @description URL to the badge image.
+                     * @example https://raw.githubusercontent.com/meshery-extensions/meshery-academy/refs/heads/master/.github/assets/images/mershery-icon.png
+                     */
+                    imageUrl: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the badge was created.
+                     */
+                    createdAt: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the badge was last updated.
+                     */
+                    updatedAt: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the badge was soft-deleted, if applicable.
+                     */
+                    deletedAt: string;
+                };
             };
-          };
         };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
+        /** @description Payload for assigning a set of badges to a user. */
+        BadgeAssignmentPayload: {
+            /** @description Labels of the badges being assigned to the user. */
+            badges: string[];
+            /**
+             * Format: uuid
+             * @description ID of the user to receive the badges.
+             */
+            userId: string;
+            /** @description When true, send a notification to the user about the new badge assignment. */
+            notify?: boolean;
         };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
     };
-  };
-  assignBadges: {
     responses: {
-      /** Badge assignment result */
-      200: {
-        content: {
-          "application/json": { [key: string]: unknown };
+        /** @description Invalid request body or request param */
+        400: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
         };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
+        /** @description Expired JWT token used or insufficient privilege */
+        401: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
         };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
+        /** @description Result not found */
+        404: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
         };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
+        /** @description Internal server error */
+        500: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
         };
-      };
     };
-    requestBody: {
-      content: {
-        "application/json": {
-          /** @description Labels of the badges being assigned to the user. */
-          badges: string[];
-          /**
-           * Format: uuid
-           * @description ID of the user to receive the badges.
-           */
-          userId: string;
-          /** @description When true, send a notification to the user about the new badge assignment. */
-          notify?: boolean;
-        };
-      };
+    parameters: {
+        /** @description Badge ID */
+        badgeId: string;
+        /** @description Organization ID to scope the badge listing to. */
+        orgIdQuery: string;
     };
-  };
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
-
-export interface external {}
+export type $defs = Record<string, never>;
+export interface operations {
+    getBadgeById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Badge ID */
+                badgeId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Badge response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        id: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        orgId: string;
+                        /**
+                         * @description Unique identifier for the badge, typically slug-style (auto generated).
+                         * @example Kubernetes-Expert
+                         */
+                        label: string;
+                        /**
+                         * @description Concise descriptor for the badge or certificate.
+                         * @example Kubernetes Expert
+                         */
+                        name: string;
+                        /**
+                         * @description A description of the milestone achieved, often including criteria for receiving this recognition.
+                         * @example Awarded for mastering Kubernetes concepts and practices.
+                         */
+                        description: string;
+                        /**
+                         * Format: uri
+                         * @description URL to the badge image.
+                         * @example https://raw.githubusercontent.com/meshery-extensions/meshery-academy/refs/heads/master/.github/assets/images/mershery-icon.png
+                         */
+                        imageUrl: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the badge was created.
+                         */
+                        createdAt: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the badge was last updated.
+                         */
+                        updatedAt: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the badge was soft-deleted, if applicable.
+                         */
+                        deletedAt: string;
+                    };
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    deleteBadgeById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Badge ID */
+                badgeId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Badge deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    createOrUpdateBadge: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * Format: uuid
+                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                     */
+                    id?: string;
+                    /**
+                     * Format: uuid
+                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                     */
+                    orgId: string;
+                    /**
+                     * @description Unique identifier for the badge, typically slug-style (auto generated).
+                     * @example Kubernetes-Expert
+                     */
+                    label: string;
+                    /**
+                     * @description Concise descriptor for the badge or certificate.
+                     * @example Kubernetes Expert
+                     */
+                    name: string;
+                    /**
+                     * @description A description of the milestone achieved, often including criteria for receiving this recognition.
+                     * @example Awarded for mastering Kubernetes concepts and practices.
+                     */
+                    description: string;
+                    /**
+                     * Format: uri
+                     * @description URL to the badge image.
+                     * @example https://raw.githubusercontent.com/meshery-extensions/meshery-academy/refs/heads/master/.github/assets/images/mershery-icon.png
+                     */
+                    imageUrl: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Badge upserted */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        id: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        orgId: string;
+                        /**
+                         * @description Unique identifier for the badge, typically slug-style (auto generated).
+                         * @example Kubernetes-Expert
+                         */
+                        label: string;
+                        /**
+                         * @description Concise descriptor for the badge or certificate.
+                         * @example Kubernetes Expert
+                         */
+                        name: string;
+                        /**
+                         * @description A description of the milestone achieved, often including criteria for receiving this recognition.
+                         * @example Awarded for mastering Kubernetes concepts and practices.
+                         */
+                        description: string;
+                        /**
+                         * Format: uri
+                         * @description URL to the badge image.
+                         * @example https://raw.githubusercontent.com/meshery-extensions/meshery-academy/refs/heads/master/.github/assets/images/mershery-icon.png
+                         */
+                        imageUrl: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the badge was created.
+                         */
+                        createdAt: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the badge was last updated.
+                         */
+                        updatedAt: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the badge was soft-deleted, if applicable.
+                         */
+                        deletedAt: string;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getAvailableBadges: {
+        parameters: {
+            query?: {
+                /** @description Organization ID to scope the badge listing to. */
+                orgId?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Available badges */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Available badges, keyed by badge label. */
+                        badges?: {
+                            [key: string]: {
+                                /**
+                                 * Format: uuid
+                                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                                 */
+                                id: string;
+                                /**
+                                 * Format: uuid
+                                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                                 */
+                                orgId: string;
+                                /**
+                                 * @description Unique identifier for the badge, typically slug-style (auto generated).
+                                 * @example Kubernetes-Expert
+                                 */
+                                label: string;
+                                /**
+                                 * @description Concise descriptor for the badge or certificate.
+                                 * @example Kubernetes Expert
+                                 */
+                                name: string;
+                                /**
+                                 * @description A description of the milestone achieved, often including criteria for receiving this recognition.
+                                 * @example Awarded for mastering Kubernetes concepts and practices.
+                                 */
+                                description: string;
+                                /**
+                                 * Format: uri
+                                 * @description URL to the badge image.
+                                 * @example https://raw.githubusercontent.com/meshery-extensions/meshery-academy/refs/heads/master/.github/assets/images/mershery-icon.png
+                                 */
+                                imageUrl: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the badge was created.
+                                 */
+                                createdAt: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the badge was last updated.
+                                 */
+                                updatedAt: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the badge was soft-deleted, if applicable.
+                                 */
+                                deletedAt: string;
+                            };
+                        };
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    assignBadges: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description Labels of the badges being assigned to the user. */
+                    badges: string[];
+                    /**
+                     * Format: uuid
+                     * @description ID of the user to receive the badges.
+                     */
+                    userId: string;
+                    /** @description When true, send a notification to the user about the new badge assignment. */
+                    notify?: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description Badge assignment result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+}
