@@ -1,0 +1,7 @@
+{
+  "organizationId": {
+    "ui:disabled": false,
+    "ui:widget": "select"
+  },
+  "ui:order": ["organizationId", "name", "description"]
+}

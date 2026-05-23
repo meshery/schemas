@@ -79,6 +79,9 @@ type ConsumerAuditRow struct {
 	// (new / changed) for this row, in format "YYYY-MM-DD HH:MM:SS".
 	// Empty on rows that have never been touched by reconciliation.
 	ChangeLog string
+	// AnonymousAccess tracks whether the schema contract or implementation
+	// evidence allows unauthenticated requests.
+	AnonymousAccess string
 }
 
 // AuditRow remains a short alias used throughout the validation package.
@@ -165,6 +168,12 @@ var generatedColumns = []columnDef{
 		Name: "Change Log",
 		get:  func(r ConsumerAuditRow) string { return r.ChangeLog },
 		set:  func(r *ConsumerAuditRow, v string) { r.ChangeLog = v },
+	},
+	{
+		Name:      "Anonymous Access",
+		Reconcile: true,
+		get:       func(r ConsumerAuditRow) string { return r.AnonymousAccess },
+		set:       func(r *ConsumerAuditRow, v string) { r.AnonymousAccess = v },
 	},
 }
 
@@ -446,11 +455,12 @@ func newSchemaRow(
 	completeness schemaCompletenessIndex,
 ) ConsumerAuditRow {
 	row := ConsumerAuditRow{
-		Category:    categoryFromTags(ep.Tags),
-		SubCategory: ep.Construct,
-		Endpoint:    ep.Path,
-		Method:      ep.Method,
-		XAnnotated:  classifyXAnnotated(ep.XInternal),
+		Category:        categoryFromTags(ep.Tags),
+		SubCategory:     ep.Construct,
+		Endpoint:        ep.Path,
+		Method:          ep.Method,
+		XAnnotated:      classifyXAnnotated(ep.XInternal),
+		AnonymousAccess: boolAuditStatus(ep.Public),
 	}
 
 	mesheryAllowed := xInternalAllows(ep.XInternal, "meshery")
@@ -491,19 +501,38 @@ func newConsumerOnlyRow(consumers []consumerEndpoint, mesheryProvided, cloudProv
 
 	category, subCategory := deriveConsumerLocation(consumers[0].Path)
 	row := ConsumerAuditRow{
-		Category:    category,
-		SubCategory: subCategory,
-		Endpoint:    consumers[0].Path,
-		Method:      consumers[0].Method,
-		XAnnotated:  XAnnotatedNoSchema,
+		Category:        category,
+		SubCategory:     subCategory,
+		Endpoint:        consumers[0].Path,
+		Method:          consumers[0].Method,
+		XAnnotated:      XAnnotatedNoSchema,
+		AnonymousAccess: XAnnotatedNoSchema,
 	}
 	mesheryConsumers := filterConsumersByRepo(consumers, "meshery")
 	cloudConsumers := filterConsumersByRepo(consumers, "meshery-cloud")
 
 	row.EndpointStatus = computeEndpointStatus(false, false, false, len(mesheryConsumers) > 0, len(cloudConsumers) > 0)
+	row.AnonymousAccess = consumerAnonymousAccessValue(consumers)
 	// No schema: Schema-Driven and Schema Completeness are not applicable.
 	row.Notes = ""
 	return row
+}
+
+func consumerAnonymousAccessValue(consumers []consumerEndpoint) string {
+	sawKnown := false
+	for _, c := range consumers {
+		if c.AnonymousAccess == nil {
+			continue
+		}
+		sawKnown = true
+		if *c.AnonymousAccess {
+			return auditStatusTrue
+		}
+	}
+	if sawKnown {
+		return auditStatusFalse
+	}
+	return auditStatusNotAudited
 }
 
 // classifyXAnnotated returns the x-annotated column value derived from an

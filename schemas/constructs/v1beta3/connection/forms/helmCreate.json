@@ -1,0 +1,28 @@
+{
+  "title": "Helm Repository Connection",
+  "description": "RJSF form schema for configuring a Helm repository connection. Captures the user-input fields drawn from the canonical Connection construct in meshery/schemas/constructs/v1beta3/connection/connection.yaml. Field shape, types, and required lists MUST stay a subset of the canonical Connection; the Go validator at validation/forms_test.go enforces that.",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "title": "Name",
+      "minLength": 1,
+      "description": "Connection Name",
+      "x-rjsf-grid-area": "12"
+    },
+    "description": {
+      "type": "string",
+      "title": "Description",
+      "description": "Human-readable description of the connection and its purpose.",
+      "x-rjsf-grid-area": "12"
+    },
+    "url": {
+      "type": "string",
+      "title": "URL",
+      "format": "uri",
+      "description": "URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL).",
+      "x-rjsf-grid-area": "12"
+    }
+  },
+  "required": ["name", "url"]
+}

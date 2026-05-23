@@ -4,3093 +4,1806 @@
  */
 
 export interface paths {
-  "/api/content/patterns": {
-    /** Returns a paginated list of infrastructure designs accessible to the user. */
-    get: operations["getPatterns"];
-    /** Creates or updates an infrastructure design. */
-    post: operations["upsertPattern"];
-  };
-  "/api/content/patterns/delete": {
-    /** Deletes multiple designs by ID. */
-    post: operations["deletePatterns"];
-  };
-  "/api/content/patterns/resource": {
-    /** Returns pattern resource definitions. */
-    get: operations["getPatternResources"];
-    /** Creates or updates a pattern resource definition. */
-    post: operations["upsertPatternResource"];
-  };
-  "/api/content/patterns/resource/{designId}": {
-    get: operations["getPatternResource"];
-    delete: operations["deletePatternResource"];
-  };
-  "/api/content/patterns/{designId}": {
-    get: operations["getPattern"];
-    delete: operations["deletePattern"];
-  };
-  "/api/content/patterns/clone/{designId}": {
-    /** Creates a copy of an existing design. */
-    post: operations["clonePattern"];
-  };
-  "/api/content/patterns/download/{designId}": {
-    /** Downloads the raw design file for the specified design. */
-    get: operations["getDesignPatternFile"];
-  };
-  "/api/content/patterns/upload/{designId}": {
-    /**
-     * Replaces the raw source content blob stored alongside a design.
-     * The server (meshery-cloud's UpsertPatternSourceContent handler)
-     * reads the entire request body as opaque bytes via io.ReadAll and
-     * persists them without interpretation, so the content-type is
-     * whatever the uploader sent — `application/octet-stream` is the
-     * canonical choice. The previous declaration reused
-     * MesheryPatternImportRequestBody under multipart/form-data, which
-     * the handler never parses; it remained wired up solely to share
-     * a schema ref with /api/pattern/import. See meshery/schemas#771
-     * for the drift analysis.
-     */
-    post: operations["upsertPatternSourceContent"];
-  };
-  "/api/pattern/import": {
-    post: operations["importDesign"];
-  };
-  "/api/catalog/content/{type}": {
-    get: operations["getCatalogContent"];
-    post: operations["publishCatalogContent"];
-  };
-  "/api/catalog/content/{type}/unpublish": {
-    post: operations["unPublishCatalogContent"];
-  };
-  "/api/catalog/content/classes": {
-    get: operations["getCatalogContentClasses"];
-  };
-  "/api/catalog/requests/approve": {
-    post: operations["approveCatalogRequest"];
-  };
-  "/api/catalog/requests/deny": {
-    post: operations["denyCatalogRequest"];
-  };
-  "/api/resource/{resourceType}/share/{resourceId}": {
-    post: operations["handleResourceShare"];
-  };
-  "/api/resource/{resourceType}/share/{resourceId}/{actorType}": {
-    get: operations["getResourceAccessActorsByType"];
-  };
-  "/api/content/design/share": {
-    /**
-     * Shares a design (pattern), view, or filter with a list of email
-     * addresses. When `share` is true, the content's visibility is flipped to
-     * public and an invitation email is sent to each recipient. When `share`
-     * is false, visibility is reverted to private. Only the owner of the
-     * content may change its sharing mode.
-     */
-    post: operations["shareDesign"];
-  };
-  "/api/catalog/requests": {
-    get: operations["getCatalogRequest"];
-  };
-}
-
-export interface components {
-  schemas: {
-    /** @description Reference to a design for bulk deletion by ID. */
-    DeletePatternModel: {
-      /**
-       * Format: uuid
-       * @description Design ID targeted for deletion.
-       */
-      id?: string;
-      /** @description Human-readable design name (informational only; server matches on id). */
-      name?: string;
-    };
-    /**
-     * Design Schema
-     * @description Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.
-     */
-    PatternFile: {
-      /**
-       * Format: uuid
-       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-       */
-      id: string;
-      /** @description Name of the design; a descriptive, but concise title for the design document. */
-      name: string;
-      /**
-       * @description Specifies the version of the schema to which the design conforms.
-       * @example [
-       *   "v1",
-       *   "v1alpha1",
-       *   "v2beta3",
-       *   "v1.custom-suffix",
-       *   "models.meshery.io/v1beta1",
-       *   "capability.meshery.io/v1alpha1"
-       * ]
-       */
-      schemaVersion: string;
-      /**
-       * @description Revision of the design as expressed by an auto-incremented, SemVer-compliant version number. May be manually set by a user or third-party system, but will always be required to be of version number higher than the previously defined version number.
-       * @default v0.0.1
-       */
-      version: string;
-      /** @description Additional metadata associated with this resource. */
-      metadata?: {
-        /** @description Map of resolved aliases present in the design */
-        resolvedAliases?: {
-          [key: string]: {
-            /**
-             * Format: uuid
-             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-             */
-            relationshipId: string;
-            /**
-             * Format: uuid
-             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-             */
-            aliasComponentId: string;
-            /**
-             * Format: uuid
-             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-             */
-            immediateParentId: string;
-            /** @description The immediate ref field path of the nonresolvedalias. */
-            immediateRefFieldPath: string[];
-          } & {
-            /**
-             * Format: uuid
-             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-             */
-            resolvedParentId: string;
-            /** @description Fully resolved field path targeted by the alias. */
-            resolvedRefFieldPath: string[];
-          };
+    "/api/content/patterns": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      } & { [key: string]: unknown };
-      /** @description A list of one or more component declarations. */
-      components: {
         /**
-         * Format: uuid
-         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+         * Get designs
+         * @description Returns a paginated list of infrastructure designs accessible to the user.
          */
-        id: string;
+        get: operations["getPatterns"];
+        put?: never;
         /**
-         * @description Specifies the version of the schema to which the component definition conforms.
-         * @default components.meshery.io/v1beta2
-         * @example [
-         *   "v1",
-         *   "v1alpha1",
-         *   "v2beta3",
-         *   "v1.custom-suffix",
-         *   "models.meshery.io/v1beta1",
-         *   "capability.meshery.io/v1alpha1"
-         * ]
+         * Save design
+         * @description Creates or updates an infrastructure design.
          */
-        schemaVersion: string;
-        /** @description Version of the component definition. */
-        version: string;
-        /** @description Name of the component in human-readable format. */
-        displayName: string;
-        /** @description A written representation of the purpose and characteristics of the component. */
-        description: string;
+        post: operations["upsertPattern"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/content/patterns/delete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
         /**
-         * @description Format specifies the format used in the `component.schema` field. JSON is the default.
-         * @default JSON
-         * @enum {string}
+         * Bulk delete designs
+         * @description Deletes multiple designs by ID.
          */
-        format: "JSON" | "CUE";
-        /** @description Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
-        model: {
-          /**
-           * Format: uuid
-           * @description Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).
-           */
-          id: string;
-          /**
-           * @description Specifies the version of the schema used for the definition.
-           * @default models.meshery.io/v1beta1
-           * @example [
-           *   "v1",
-           *   "v1alpha1",
-           *   "v2beta3",
-           *   "v1.custom-suffix",
-           *   "models.meshery.io/v1beta1",
-           *   "capability.meshery.io/v1alpha1"
-           * ]
-           */
-          schemaVersion: string;
-          /** @description Version of the model definition. */
-          version: string;
-          /**
-           * @description The unique name for the model within the scope of a registrant.
-           * @default untitled-model
-           */
-          name: string;
-          /**
-           * @description Human-readable name for the model.
-           * @default Untitled Model
-           */
-          displayName: string;
-          /**
-           * @description Description of the model.
-           * @default A new Meshery model.
-           */
-          description: string;
-          /**
-           * @description Status of model, including:
-           * - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
-           * - maintenance: model is unavailable for a period of time.
-           * - enabled: model is available for use for all users of this Meshery Server.
-           * - ignored: model is unavailable for use for all users of this Meshery Server.
-           * @default enabled
-           * @enum {string}
-           */
-          status: "ignored" | "enabled" | "duplicate";
-          /** @description Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections */
-          registrant: {
+        post: operations["deletePatterns"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/content/patterns/resource": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get pattern resources
+         * @description Returns pattern resource definitions.
+         */
+        get: operations["getPatternResources"];
+        put?: never;
+        /**
+         * Save pattern resource
+         * @description Creates or updates a pattern resource definition.
+         */
+        post: operations["upsertPatternResource"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/content/patterns/resource/{designId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get pattern resource by ID */
+        get: operations["getPatternResource"];
+        put?: never;
+        post?: never;
+        /** Delete pattern resource */
+        delete: operations["deletePatternResource"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/content/patterns/{designId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get design by ID */
+        get: operations["getPattern"];
+        put?: never;
+        post?: never;
+        /** Delete design by ID */
+        delete: operations["deletePattern"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/content/patterns/clone/{designId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Clone design
+         * @description Creates a copy of an existing design.
+         */
+        post: operations["clonePattern"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/content/patterns/download/{designId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Download design file
+         * @description Downloads the raw design file for the specified design.
+         */
+        get: operations["getDesignPatternFile"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/content/patterns/upload/{designId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload design source content
+         * @description Replaces the raw source content blob stored alongside a design.
+         *     The server (meshery-cloud's UpsertPatternSourceContent handler)
+         *     reads the entire request body as opaque bytes via io.ReadAll and
+         *     persists them without interpretation, so the content-type is
+         *     whatever the uploader sent — `application/octet-stream` is the
+         *     canonical choice. The previous declaration reused
+         *     MesheryPatternImportRequestBody under multipart/form-data, which
+         *     the handler never parses; it remained wired up solely to share
+         *     a schema ref with /api/pattern/import. See meshery/schemas#771
+         *     for the drift analysis.
+         */
+        post: operations["upsertPatternSourceContent"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/pattern/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Import Design */
+        post: operations["importDesign"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/catalog/content/{type}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get catalog content */
+        get: operations["getCatalogContent"];
+        put?: never;
+        /** Publish catalog content */
+        post: operations["publishCatalogContent"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/catalog/content/{type}/unpublish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Unpublish catalog content */
+        post: operations["unPublishCatalogContent"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/catalog/content/classes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get catalog content classes */
+        get: operations["getCatalogContentClasses"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/catalog/requests/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve a catalog request */
+        post: operations["approveCatalogRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/catalog/requests/deny": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Deny a catalog request */
+        post: operations["denyCatalogRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/resource/{resourceType}/share/{resourceId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Share a resource */
+        post: operations["handleResourceShare"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/resource/{resourceType}/share/{resourceId}/{actorType}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get resource access actors by type */
+        get: operations["getResourceAccessActorsByType"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/content/design/share": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Share a design, view, or filter by email
+         * @description Shares a design (pattern), view, or filter with a list of email
+         *     addresses. When `share` is true, the content's visibility is flipped to
+         *     public and an invitation email is sent to each recipient. When `share`
+         *     is false, visibility is reverted to private. Only the owner of the
+         *     content may change its sharing mode.
+         */
+        post: operations["shareDesign"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/catalog/requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get catalog requests */
+        get: operations["getCatalogRequest"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+}
+export type webhooks = Record<string, never>;
+export interface components {
+    schemas: {
+        /** @description Reference to a design for bulk deletion by ID. */
+        DeletePatternModel: {
             /**
              * Format: uuid
-             * @description Connection ID
+             * @description Design ID targeted for deletion.
+             */
+            id?: string;
+            /** @description Human-readable design name (informational only; server matches on id). */
+            name?: string;
+        };
+        /**
+         * Design Schema
+         * @description Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.
+         */
+        PatternFile: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             id: string;
-            /** @description Connection Name */
+            /** @description Name of the design; a descriptive, but concise title for the design document. */
             name: string;
             /**
-             * Format: uuid
-             * @description Associated Credential ID
-             */
-            credentialId?: string;
-            /** @description Connection Type (platform, telemetry, collaboration) */
-            type: string;
-            /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
-            subType: string;
-            /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
-            kind: string;
-            /** @description Additional connection metadata */
-            metadata?: { [key: string]: unknown };
-            /**
-             * @description Connection Status
-             * @enum {string}
-             */
-            status:
-              | "discovered"
-              | "registered"
-              | "connected"
-              | "ignored"
-              | "maintenance"
-              | "disconnected"
-              | "deleted"
-              | "not found";
-            /**
-             * Format: uuid
-             * @description User ID who owns this connection
-             */
-            user_id?: string;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-            /**
-             * Format: date-time
-             * @description SQL null Timestamp to handle null values of time.
-             */
-            deleted_at?: string;
-            /** @description Associated environments for this connection */
-            environments?: {
-              /**
-               * Format: uuid
-               * @description ID
-               */
-              id: string;
-              /**
-               * @description Specifies the version of the schema to which the environment conforms.
-               * @default environments.meshery.io/v1beta1
-               * @example [
-               *   "v1",
-               *   "v1alpha1",
-               *   "v2beta3",
-               *   "v1.custom-suffix",
-               *   "models.meshery.io/v1beta1",
-               *   "capability.meshery.io/v1alpha1"
-               * ]
-               */
-              schemaVersion: string;
-              /** @description Environment name */
-              name: string;
-              /** @description Environment description */
-              description: string;
-              /**
-               * Format: uuid
-               * @description Environment organization ID
-               */
-              organization_id: string;
-              /**
-               * Format: uuid
-               * @description Environment owner
-               */
-              owner?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the resource was created.
-               */
-              created_at?: string;
-              /** @description Additional metadata associated with the environment. */
-              metadata?: { [key: string]: unknown };
-              /**
-               * Format: date-time
-               * @description Timestamp when the resource was updated.
-               */
-              updated_at?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
-               */
-              deleted_at?: string | null;
-            }[];
-            /**
-             * @description Specifies the version of the schema used for the definition.
-             * @default connections.meshery.io/v1beta1
+             * @description Specifies the version of the schema to which the design conforms.
              * @example [
-             *   "v1",
-             *   "v1alpha1",
-             *   "v2beta3",
-             *   "v1.custom-suffix",
-             *   "models.meshery.io/v1beta1",
-             *   "capability.meshery.io/v1alpha1"
-             * ]
+             *       "v1",
+             *       "v1alpha1",
+             *       "v2beta3",
+             *       "v1.custom-suffix",
+             *       "models.meshery.io/v1beta1",
+             *       "capability.meshery.io/v1alpha1"
+             *     ]
              */
             schemaVersion: string;
-          };
-          /**
-           * Format: uuid
-           * @description ID of the registrant.
-           */
-          registrantId: string;
-          /**
-           * Format: uuid
-           * @description ID of the category.
-           */
-          categoryId: string;
-          /** @description Category of the model. */
-          category: {
+            /**
+             * @description Revision of the design as expressed by an auto-incremented, SemVer-compliant version number. May be manually set by a user or third-party system, but will always be required to be of version number higher than the previously defined version number.
+             * @default v0.0.1
+             */
+            version: string;
+            /** @description Additional metadata associated with this resource. */
+            metadata?: {
+                /** @description Map of resolved aliases present in the design */
+                resolvedAliases?: {
+                    [key: string]: {
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        relationshipId: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        aliasComponentId: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        immediateParentId: string;
+                        /** @description The immediate ref field path of the nonresolvedalias. */
+                        immediateRefFieldPath: string[];
+                    } & {
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        resolvedParentId: string;
+                        /** @description Fully resolved field path targeted by the alias. */
+                        resolvedRefFieldPath: string[];
+                    };
+                };
+            } & {
+                [key: string]: unknown;
+            };
+            /** @description A list of one or more component declarations. */
+            components: {
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                id: string;
+                /**
+                 * @description Specifies the version of the schema to which the component definition conforms.
+                 * @default components.meshery.io/v1beta2
+                 * @example [
+                 *       "v1",
+                 *       "v1alpha1",
+                 *       "v2beta3",
+                 *       "v1.custom-suffix",
+                 *       "models.meshery.io/v1beta1",
+                 *       "capability.meshery.io/v1alpha1"
+                 *     ]
+                 */
+                schemaVersion: string;
+                /** @description Version of the component definition. */
+                version: string;
+                /** @description Name of the component in human-readable format. */
+                displayName: string;
+                /** @description A written representation of the purpose and characteristics of the component. */
+                description: string;
+                /**
+                 * @description Format specifies the format used in the `component.schema` field. JSON is the default.
+                 * @default JSON
+                 * @enum {string}
+                 */
+                format: "JSON" | "CUE";
+                /** @description Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+                model: {
+                    /**
+                     * Format: uuid
+                     * @description Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).
+                     */
+                    id: string;
+                    /**
+                     * @description Specifies the version of the schema used for the definition.
+                     * @default models.meshery.io/v1beta1
+                     * @example [
+                     *       "v1",
+                     *       "v1alpha1",
+                     *       "v2beta3",
+                     *       "v1.custom-suffix",
+                     *       "models.meshery.io/v1beta1",
+                     *       "capability.meshery.io/v1alpha1"
+                     *     ]
+                     */
+                    schemaVersion: string;
+                    /** @description Version of the model definition. */
+                    version: string;
+                    /**
+                     * @description The unique name for the model within the scope of a registrant.
+                     * @default untitled-model
+                     * @example cert-manager
+                     */
+                    name: string;
+                    /**
+                     * @description Human-readable name for the model.
+                     * @default Untitled Model
+                     * @example Cert Manager
+                     */
+                    displayName: string;
+                    /**
+                     * @description Description of the model.
+                     * @default A new Meshery model.
+                     */
+                    description: string;
+                    /**
+                     * @description Status of model, including:
+                     *     - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
+                     *     - maintenance: model is unavailable for a period of time.
+                     *     - enabled: model is available for use for all users of this Meshery Server.
+                     *     - ignored: model is unavailable for use for all users of this Meshery Server.
+                     * @default enabled
+                     * @enum {string}
+                     */
+                    status: "ignored" | "enabled" | "duplicate";
+                    /** @description Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections */
+                    registrant: {
+                        /**
+                         * Format: uuid
+                         * @description Connection ID
+                         */
+                        id: string;
+                        /** @description Connection Name */
+                        name: string;
+                        /**
+                         * Format: uuid
+                         * @description Associated Credential ID
+                         */
+                        credentialId?: string;
+                        /** @description Connection Type (platform, telemetry, collaboration) */
+                        type: string;
+                        /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+                        subType: string;
+                        /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+                        kind: string;
+                        /** @description Additional connection metadata */
+                        metadata?: Record<string, never>;
+                        /**
+                         * @description Connection Status
+                         * @enum {string}
+                         */
+                        status: "discovered" | "registered" | "connected" | "ignored" | "maintenance" | "disconnected" | "deleted" | "not found";
+                        /**
+                         * Format: uuid
+                         * @description User ID who owns this connection
+                         */
+                        user_id?: string;
+                        /** Format: date-time */
+                        created_at?: string;
+                        /** Format: date-time */
+                        updated_at?: string;
+                        /**
+                         * Format: date-time
+                         * @description SQL null Timestamp to handle null values of time.
+                         */
+                        deleted_at?: string;
+                        /** @description Associated environments for this connection */
+                        environments?: {
+                            /**
+                             * Format: uuid
+                             * @description ID
+                             */
+                            id: string;
+                            /**
+                             * @description Specifies the version of the schema to which the environment conforms.
+                             * @default environments.meshery.io/v1beta1
+                             * @example [
+                             *       "v1",
+                             *       "v1alpha1",
+                             *       "v2beta3",
+                             *       "v1.custom-suffix",
+                             *       "models.meshery.io/v1beta1",
+                             *       "capability.meshery.io/v1alpha1"
+                             *     ]
+                             */
+                            schemaVersion: string;
+                            /** @description Environment name */
+                            name: string;
+                            /** @description Environment description */
+                            description: string;
+                            /**
+                             * Format: uuid
+                             * @description Environment organization ID
+                             */
+                            organization_id: string;
+                            /**
+                             * Format: uuid
+                             * @description Environment owner
+                             */
+                            owner?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the resource was created.
+                             */
+                            created_at?: string;
+                            /** @description Additional metadata associated with the environment. */
+                            metadata?: Record<string, never>;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the resource was updated.
+                             */
+                            updated_at?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
+                             */
+                            deleted_at?: string | null;
+                        }[];
+                        /**
+                         * @description Specifies the version of the schema used for the definition.
+                         * @default connections.meshery.io/v1beta1
+                         * @example [
+                         *       "v1",
+                         *       "v1alpha1",
+                         *       "v2beta3",
+                         *       "v1.custom-suffix",
+                         *       "models.meshery.io/v1beta1",
+                         *       "capability.meshery.io/v1alpha1"
+                         *     ]
+                         */
+                        schemaVersion: string;
+                    };
+                    /**
+                     * Format: uuid
+                     * @description ID of the registrant.
+                     */
+                    registrantId: string;
+                    /**
+                     * Format: uuid
+                     * @description ID of the category.
+                     */
+                    categoryId: string;
+                    /** @description Category of the model. */
+                    category: {
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        id: string;
+                        /**
+                         * @description The category of the model that determines the main grouping.
+                         * @default Uncategorized
+                         * @enum {string}
+                         */
+                        name: "Analytics" | "App Definition and Development" | "Cloud Native Network" | "Cloud Native Storage" | "Database" | "Machine Learning" | "Observability and Analysis" | "Orchestration & Management" | "Platform" | "Provisioning" | "Runtime" | "Security & Compliance" | "Serverless" | "Tools" | "Uncategorized";
+                        /** @description Additional metadata associated with the category. */
+                        metadata: Record<string, never>;
+                    };
+                    /**
+                     * SubCategory
+                     * @description Sub category of the model determines the secondary grouping.
+                     * @default Uncategorized
+                     * @enum {string}
+                     */
+                    subCategory: "API Gateway" | "API Integration" | "Application Definition & Image Build" | "Automation & Configuration" | "Certified Kubernetes - Distribution" | "Chaos Engineering" | "Cloud Native Storage" | "Cloud Provider" | "CNI" | "Compute" | "Container Registry" | "Container Runtime" | "Container Security" | "Container" | "Content Delivery Network" | "Continuous Integration & Delivery" | "Coordination & Service Discovery" | "Database" | "Flowchart" | "Framework" | "Installable Platform" | "Key Management" | "Key Management Service" | "Kubernetes" | "Logging" | "Machine Learning" | "Management Governance" | "Metrics" | "Monitoring" | "Networking Content Delivery" | "Operating System" | "Query" | "Remote Procedure Call" | "Scheduling & Orchestration" | "Secrets Management" | "Security Identity & Compliance" | "Service Mesh" | "Service Proxy" | "Source Version Control" | "Storage" | "Specifications" | "Streaming & Messaging" | "Tools" | "Tracing" | "Uncategorized" | "Video Conferencing";
+                    /** @description Metadata containing additional information associated with the model. */
+                    metadata?: {
+                        /** @description Capabilities associated with the model */
+                        capabilities?: {
+                            /**
+                             * @description Specifies the version of the schema to which the capability definition conforms.
+                             * @example [
+                             *       "v1",
+                             *       "v1alpha1",
+                             *       "v2beta3",
+                             *       "v1.custom-suffix",
+                             *       "models.meshery.io/v1beta1",
+                             *       "capability.meshery.io/v1alpha1"
+                             *     ]
+                             */
+                            schemaVersion: string;
+                            /** @description Version of the capability definition. */
+                            version: string;
+                            /** @description Name of the capability in human-readible format. */
+                            displayName: string;
+                            /** @description A written representation of the purpose and characteristics of the capability. */
+                            description: string;
+                            /** @description Top-level categorization of the capability */
+                            kind: string | "action" | "mutate" | "view" | "interaction";
+                            /** @description Classification of capabilities. Used to group capabilities similar in nature. */
+                            type: string;
+                            /** @description Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
+                            subType: string;
+                            /** @description Key that backs the capability. */
+                            key: string;
+                            /** @description State of the entity in which the capability is applicable. */
+                            entityState: ("declaration" | "instance")[];
+                            /**
+                             * @description Status of the capability
+                             * @default enabled
+                             * @enum {string}
+                             */
+                            status: "enabled" | "disabled";
+                            /** @description Metadata contains additional information associated with the capability. Extension point. */
+                            metadata?: {
+                                [key: string]: unknown;
+                            };
+                        }[];
+                        /**
+                         * @description Indicates whether the model and its entities should be treated as deployable entities or as logical representations.
+                         * @default false
+                         */
+                        isAnnotation: boolean;
+                        /**
+                         * @description Primary color associated with the model.
+                         * @default #00b39f
+                         */
+                        primaryColor: string;
+                        /**
+                         * @description Secondary color associated with the model.
+                         * @default #00D3A9
+                         */
+                        secondaryColor: string;
+                        /**
+                         * @description SVG representation of the model in white color.
+                         * @default <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16.405 8.732v6.57l5.694-3.297-5.694-3.273Zm0 7.942v6.602l5.747-3.285-5.747-3.317Z" fill="#fff"/><path d="M15.586 15.256v-6.47l-5.622 3.225 5.622 3.245ZM4.307 23.252a13.809 13.809 0 0 0 4.362 4.39v-6.914l-4.362 2.524Zm11.279-.008v-6.52L9.95 19.985l5.636 3.258Z" fill="#fff" fill-opacity=".8"/><path d="m9.49 27.23 5.707-3.263-5.707-3.3v6.563Z" fill="#fff"/><path d="M22.54 27.265v-6.553l-5.699 3.259 5.7 3.294Zm5.58-4.773a13.697 13.697 0 0 0 1.612-5.895l-5.934 3.397 4.323 2.498Z" fill="#fff" fill-opacity=".8"/><path d="m23.362 19.298 5.728-3.276-5.728-3.291v6.567Z" fill="#fff"/><path d="M22.541 11.315V4.8l-5.673 3.253 5.673 3.262Zm0 7.955v-6.574l-5.685 3.292 5.685 3.281Z" fill="#fff" fill-opacity=".8"/><path d="M9.49 12.684v6.622l5.728-3.316-5.728-3.306Z" fill="#fff"/><path d="M15.586 2.25a13.69 13.69 0 0 0-6.037 1.595l6.037 3.463V2.25Z" fill="#fff" fill-opacity=".8"/><path d="M9.49 4.756v6.583l5.732-3.288L9.49 4.756Z" fill="#fff"/><path d="M8.669 4.356a13.83 13.83 0 0 0-4.362 4.39l4.362 2.518V4.356Z" fill="#fff" fill-opacity=".8"/><path d="M22.504 3.88a13.695 13.695 0 0 0-6.099-1.63v5.123l6.1-3.493ZM2.25 16.483c.071 2.12.634 4.196 1.644 6.062l4.418-2.559-6.062-3.503Zm1.644-7.028a13.68 13.68 0 0 0-1.644 6.036l6.068-3.482-4.424-2.554Z" fill="#fff"/><path d="M9.539 28.147a13.673 13.673 0 0 0 6.047 1.603v-5.062L9.54 28.147Z" fill="#fff" fill-opacity=".8"/><path d="M27.697 8.768a13.83 13.83 0 0 0-4.335-4.383v6.889l4.335-2.506ZM23.362 27.62a13.851 13.851 0 0 0 4.351-4.417l-4.351-2.514v6.93Z" fill="#fff"/><path d="M29.75 15.452a13.659 13.659 0 0 0-1.63-5.979l-4.381 2.53 6.011 3.45Z" fill="#fff" fill-opacity=".8"/><path d="M16.405 29.75a13.673 13.673 0 0 0 6.036-1.595l-6.036-3.498v5.093Z" fill="#fff"/><path d="M8.669 19.247v-6.494L3.03 15.986l5.639 3.261Z" fill="#fff" fill-opacity=".8"/></svg>
+                         */
+                        svgWhite: string;
+                        /**
+                         * @description SVG representation of the model in colored format.
+                         * @default <svg xmlns="http://www.w3.org/2000/svg" id="Layer_1" data-name="Layer 1" viewBox="0 0 134.95 135.02"><defs><style>.cls-1{fill:#00d3a9}.cls-2{fill:#00b39f}</style></defs><title>meshery-logo-light</title><polygon points="69.49 31.82 69.49 64.07 97.44 47.89 69.49 31.82" class="cls-1"/><polygon points="69.49 70.81 69.49 103.22 97.7 87.09 69.49 70.81" class="cls-1"/><polygon points="65.47 63.85 65.47 32.09 37.87 47.92 65.47 63.85" class="cls-2"/><path d="M10.1,103.1a67.79,67.79,0,0,0,21.41,21.55V90.71Z" class="cls-2"/><polygon points="65.47 103.06 65.47 71.05 37.8 87.07 65.47 103.06" class="cls-2"/><polygon points="35.54 122.63 63.56 106.61 35.54 90.41 35.54 122.63" class="cls-1"/><polygon points="99.61 122.8 99.61 90.63 71.63 106.63 99.61 122.8" class="cls-2"/><path d="M127,99.37a67.22,67.22,0,0,0,7.91-28.94L105.78,87.11Z" class="cls-2"/><polygon points="103.64 83.69 131.76 67.61 103.64 51.45 103.64 83.69" class="cls-1"/><polygon points="99.61 44.5 99.61 12.52 71.76 28.49 99.61 44.5" class="cls-2"/><polygon points="99.61 83.55 99.61 51.28 71.7 67.44 99.61 83.55" class="cls-2"/><polygon points="67.48 135.02 67.49 135.02 67.48 135.02 67.48 135.02" class="cls-2"/><polygon points="35.54 51.22 35.54 83.73 63.66 67.45 35.54 51.22" class="cls-1"/><path d="M65.47,0A67.2,67.2,0,0,0,35.83,7.83l29.64,17Z" class="cls-2"/><polygon points="35.54 12.3 35.54 44.62 63.68 28.48 35.54 12.3" class="cls-1"/><path d="M31.51,10.34A67.89,67.89,0,0,0,10.1,31.89L31.51,44.25Z" class="cls-2"/><path d="M99.43,8A67.23,67.23,0,0,0,69.49,0V25.15Z" class="cls-1"/><path d="M0,69.87A67.27,67.27,0,0,0,8.07,99.63L29.76,87.07Z" class="cls-1"/><path d="M8.07,35.37A67.16,67.16,0,0,0,0,65L29.79,47.91Z" class="cls-1"/><path d="M35.78,127.13A67.13,67.13,0,0,0,65.47,135V110.15Z" class="cls-2"/><path d="M124.92,32a67.9,67.9,0,0,0-21.28-21.52V44.3Z" class="cls-1"/><path d="M103.64,124.54A68,68,0,0,0,125,102.86L103.64,90.52Z" class="cls-1"/><path d="M135,64.81a67.06,67.06,0,0,0-8-29.35L105.49,47.88Z" class="cls-2"/><path d="M69.49,135a67.12,67.12,0,0,0,29.63-7.83L69.49,110Z" class="cls-1"/><polygon points="31.51 83.44 31.51 51.56 3.83 67.43 31.51 83.44" class="cls-2"/></svg>
+                         */
+                        svgColor: string;
+                        /** @description SVG representation of the complete model. */
+                        svgComplete?: string;
+                        /**
+                         * @description The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
+                         * @enum {string}
+                         */
+                        shape?: "ellipse" | "triangle" | "round-triangle" | "rectangle" | "round-rectangle" | "bottom-round-rectangle" | "cut-rectangle" | "barrel" | "rhomboid" | "diamond" | "round-diamond" | "pentagon" | "round-pentagon" | "hexagon" | "round-hexagon" | "concave-hexagon" | "heptagon" | "round-heptagon" | "octagon" | "round-octagon" | "star" | "tag" | "round-tag" | "vee" | "polygon";
+                    } & {
+                        [key: string]: unknown;
+                    };
+                    /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+                    model: {
+                        /** @description Version of the model as defined by the registrant. */
+                        version: string;
+                    };
+                    /** @description The relationships of the model. */
+                    relationships: unknown[];
+                    /** @description The components of the model. */
+                    components: unknown[];
+                    /**
+                     * @description Number of components associated with the model.
+                     * @default 0
+                     */
+                    componentsCount: number;
+                    /**
+                     * @description Number of relationships associated with the model.
+                     * @default 0
+                     */
+                    relationshipsCount: number;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the resource was created.
+                     */
+                    created_at?: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the resource was updated.
+                     */
+                    updated_at?: string;
+                };
+                /** @description Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+                modelReference: {
+                    /**
+                     * Format: uuid
+                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                     */
+                    id: string;
+                    /**
+                     * @description The unique name for the model within the scope of a registrant.
+                     * @example cert-manager
+                     */
+                    name: string;
+                    /** @description Version of the model definition. */
+                    version: string;
+                    /**
+                     * @description Human-readable name for the model.
+                     * @example Cert Manager
+                     */
+                    displayName: string;
+                    /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+                    model: {
+                        /** @description Version of the model as defined by the registrant. */
+                        version: string;
+                    };
+                    registrant: {
+                        /** @description Kind of the registrant. */
+                        kind: string;
+                    };
+                };
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                model_id?: string;
+                /** @description Visualization styles for a component */
+                styles?: ({
+                    /** @description Primary color of the component used for UI representation. */
+                    primaryColor: string;
+                    /** @description Secondary color of the entity used for UI representation. */
+                    secondaryColor?: string;
+                    /** @description White SVG of the entity used for UI representation on dark background. */
+                    svgWhite: string;
+                    /** @description Colored SVG of the entity used for UI representation on light background. */
+                    svgColor: string;
+                    /** @description Complete SVG of the entity used for UI representation, often inclusive of background. */
+                    svgComplete: string;
+                    /** @description The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+                    color?: string;
+                    /** @description The opacity of the label text, including its outline. */
+                    textOpacity?: number;
+                    /** @description A comma-separated list of font names to use on the label text. */
+                    fontFamily?: string;
+                    /** @description The size of the label text. */
+                    fontSize?: string;
+                    /** @description A CSS font style to be applied to the label text. */
+                    fontStyle?: string;
+                    /** @description A CSS font weight to be applied to the label text. */
+                    fontWeight?: string;
+                    /**
+                     * @description A transformation to apply to the label text
+                     * @enum {string}
+                     */
+                    textTransform?: "none" | "uppercase" | "lowercase";
+                    /** @description The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+                    opacity?: number;
+                    /** @description An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+                    zIndex?: number;
+                    /** @description The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+                    label?: string;
+                    /** @description The animation to apply to the element. example ripple,bounce,etc */
+                    animation?: Record<string, never>;
+                } & {
+                    [key: string]: unknown;
+                }) & {
+                    /**
+                     * @description The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
+                     * @enum {string}
+                     */
+                    shape: "ellipse" | "triangle" | "round-triangle" | "rectangle" | "round-rectangle" | "bottom-round-rectangle" | "cut-rectangle" | "barrel" | "rhomboid" | "diamond" | "round-diamond" | "pentagon" | "round-pentagon" | "hexagon" | "round-hexagon" | "concave-hexagon" | "heptagon" | "round-heptagon" | "octagon" | "round-octagon" | "star" | "tag" | "round-tag" | "vee" | "polygon";
+                    /** @description The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+                    position?: {
+                        /** @description The x-coordinate of the node. */
+                        x: number;
+                        /** @description The y-coordinate of the node. */
+                        y: number;
+                    };
+                    /** @description The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+                    bodyText?: string;
+                    /**
+                     * @description How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'.
+                     * @enum {string}
+                     */
+                    bodyTextWrap?: "none" | "wrap" | "ellipsis";
+                    /** @description The maximum width for wrapping text in the node. */
+                    bodyTextMaxWidth?: string;
+                    /** @description The opacity of the node's body text, including its outline. */
+                    bodyTextOpacity?: number;
+                    /** @description The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+                    bodyTextBackgroundColor?: string;
+                    /** @description The size of the node's body text. */
+                    bodyTextFontSize?: number;
+                    /** @description The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+                    bodyTextColor?: string;
+                    /** @description A CSS font weight to be applied to the node's body text. */
+                    bodyTextFontWeight?: string;
+                    /** @description A CSS horizontal alignment to be applied to the node's body text. */
+                    bodyTextHorizontalAlign?: string;
+                    /** @description A CSS text decoration to be applied to the node's body text. */
+                    bodyTextDecoration?: string;
+                    /** @description A CSS vertical alignment to be applied to the node's body text. */
+                    bodyTextVerticalAlign?: string;
+                    /** @description The width of the node's body or the width of an edge's line. */
+                    width?: number;
+                    /** @description The height of the node's body */
+                    height?: number;
+                    /**
+                     * Format: uri
+                     * @description The URL that points to the image to show in the node.
+                     */
+                    backgroundImage?: string;
+                    /** @description The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+                    backgroundColor?: string;
+                    /** @description Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+                    backgroundBlacken?: number;
+                    /** @description The opacity level of the node's background colour */
+                    backgroundOpacity?: number;
+                    /** @description The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+                    backgroundPositionX?: string;
+                    /** @description The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+                    backgroundPositionY?: string;
+                    /** @description The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+                    backgroundOffsetX?: string;
+                    /** @description The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+                    backgroundOffsetY?: string;
+                    /**
+                     * @description How the background image is fit to the node. Can be 'none', 'contain', or 'cover'.
+                     * @enum {string}
+                     */
+                    backgroundFit?: "none" | "contain" | "cover";
+                    /**
+                     * @description How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'.
+                     * @enum {string}
+                     */
+                    backgroundClip?: "none" | "node" | "node-border";
+                    /**
+                     * @description How the background image's width is determined. Can be 'none', 'inner', or 'outer'.
+                     * @enum {string}
+                     */
+                    backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+                    /**
+                     * @description How the background image's height is determined. Can be 'none', 'inner', or 'outer'.
+                     * @enum {string}
+                     */
+                    backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+                    /** @description The size of the node's border. */
+                    borderWidth?: number;
+                    /**
+                     * @description The style of the node's border
+                     * @enum {string}
+                     */
+                    borderStyle?: "solid" | "dotted" | "dashed" | "double";
+                    /** @description The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+                    borderColor?: string;
+                    /** @description The opacity of the node's border */
+                    borderOpacity?: number;
+                    /** @description The amount of padding around all sides of the node. */
+                    padding?: number;
+                    /**
+                     * @description The horizontal alignment of a node's label
+                     * @enum {string}
+                     */
+                    textHalign?: "left" | "center" | "right";
+                    /**
+                     * @description The vertical alignment of a node's label
+                     * @enum {string}
+                     */
+                    textValign?: "top" | "center" | "bottom";
+                    /**
+                     * @description Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset.
+                     * @default no
+                     * @enum {string}
+                     */
+                    ghost: "yes" | "no";
+                    /** @description The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+                    activeBgColor?: string;
+                    /** @description The opacity of the active background indicator. Selector needs to be *core*. */
+                    activeBgOpacity?: string;
+                    /** @description The opacity of the active background indicator. Selector needs to be *core*. */
+                    activeBgSize?: string;
+                    /** @description The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+                    selectionBoxColor?: string;
+                    /** @description The size of the border on the selection box. Selector needs to be *core* */
+                    selectionBoxBorderWidth?: number;
+                    /** @description The opacity of the selection box. Selector needs to be *core* */
+                    selectionBoxOpacity?: number;
+                    /** @description The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+                    outsideTextureBgColor?: string;
+                    /** @description The opacity of the area outside the viewport texture. Selector needs to be *core* */
+                    outsideTextureBgOpacity?: number;
+                    /** @description An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+                    shapePolygonPoints?: string;
+                    /** @description The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+                    menuBackgroundColor?: string;
+                    /** @description The opacity of the background of the component menu. */
+                    menuBackgroundOpacity?: number;
+                    /** @description The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+                    menuForgroundColor?: string;
+                };
+                /**
+                 * @description Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
+                 * @default [
+                 *       {
+                 *         "schemaVersion": "capability.meshery.io/v1beta1",
+                 *         "version": "0.7.0",
+                 *         "displayName": "Performance Test",
+                 *         "description": "Initiate a performance test. Meshery will execute the load generation, collect metrics, and present the results.",
+                 *         "kind": "action",
+                 *         "type": "operator",
+                 *         "subType": "perf-test",
+                 *         "key": "",
+                 *         "entityState": [
+                 *           "instance"
+                 *         ],
+                 *         "status": "enabled",
+                 *         "metadata": null
+                 *       },
+                 *       {
+                 *         "schemaVersion": "capability.meshery.io/v1beta1",
+                 *         "version": "0.7.0",
+                 *         "displayName": "Workload Configuration",
+                 *         "description": "Configure the workload specific setting of a component",
+                 *         "kind": "mutate",
+                 *         "type": "configuration",
+                 *         "subType": "config",
+                 *         "key": "",
+                 *         "entityState": [
+                 *           "declaration"
+                 *         ],
+                 *         "status": "enabled",
+                 *         "metadata": null
+                 *       },
+                 *       {
+                 *         "schemaVersion": "capability.meshery.io/v1beta1",
+                 *         "version": "0.7.0",
+                 *         "displayName": "Labels and Annotations Configuration",
+                 *         "description": "Configure Labels And Annotations for the component",
+                 *         "kind": "mutate",
+                 *         "type": "configuration",
+                 *         "subType": "labels-and-annotations",
+                 *         "key": "",
+                 *         "entityState": [
+                 *           "declaration"
+                 *         ],
+                 *         "status": "enabled",
+                 *         "metadata": null
+                 *       },
+                 *       {
+                 *         "schemaVersion": "capability.meshery.io/v1beta1",
+                 *         "version": "0.7.0",
+                 *         "displayName": "Relationships",
+                 *         "description": "View relationships for the component",
+                 *         "kind": "view",
+                 *         "type": "configuration",
+                 *         "subType": "relationship",
+                 *         "key": "",
+                 *         "entityState": [
+                 *           "declaration",
+                 *           "instance"
+                 *         ],
+                 *         "status": "enabled",
+                 *         "metadata": null
+                 *       },
+                 *       {
+                 *         "schemaVersion": "capability.meshery.io/v1beta1",
+                 *         "version": "0.7.0",
+                 *         "displayName": "Json Schema",
+                 *         "description": "View Component Definition ",
+                 *         "kind": "view",
+                 *         "type": "configuration",
+                 *         "subType": "definition",
+                 *         "key": "",
+                 *         "entityState": [
+                 *           "declaration",
+                 *           "instance"
+                 *         ],
+                 *         "status": "enabled",
+                 *         "metadata": null
+                 *       },
+                 *       {
+                 *         "schemaVersion": "capability.meshery.io/v1beta1",
+                 *         "version": "0.7.0",
+                 *         "displayName": "Styling",
+                 *         "description": "Configure the visual styles for the component",
+                 *         "kind": "mutate",
+                 *         "type": "style",
+                 *         "subType": "",
+                 *         "key": "",
+                 *         "entityState": [
+                 *           "declaration"
+                 *         ],
+                 *         "status": "enabled",
+                 *         "metadata": null
+                 *       },
+                 *       {
+                 *         "schemaVersion": "capability.meshery.io/v1beta1",
+                 *         "version": "0.7.0",
+                 *         "displayName": "Change Shape",
+                 *         "description": "Change the shape of the component",
+                 *         "kind": "mutate",
+                 *         "type": "style",
+                 *         "subType": "shape",
+                 *         "key": "",
+                 *         "entityState": [
+                 *           "declaration"
+                 *         ],
+                 *         "status": "enabled",
+                 *         "metadata": null
+                 *       },
+                 *       {
+                 *         "schemaVersion": "capability.meshery.io/v1beta1",
+                 *         "version": "0.7.0",
+                 *         "displayName": "Compound Drag And Drop",
+                 *         "description": "Drag and Drop a component into a parent component in graph view",
+                 *         "kind": "interaction",
+                 *         "type": "graph",
+                 *         "subType": "compoundDnd",
+                 *         "key": "",
+                 *         "entityState": [
+                 *           "declaration"
+                 *         ],
+                 *         "status": "enabled",
+                 *         "metadata": null
+                 *       }
+                 *     ]
+                 */
+                capabilities: {
+                    /**
+                     * @description Specifies the version of the schema to which the capability definition conforms.
+                     * @example [
+                     *       "v1",
+                     *       "v1alpha1",
+                     *       "v2beta3",
+                     *       "v1.custom-suffix",
+                     *       "models.meshery.io/v1beta1",
+                     *       "capability.meshery.io/v1alpha1"
+                     *     ]
+                     */
+                    schemaVersion: string;
+                    /** @description Version of the capability definition. */
+                    version: string;
+                    /** @description Name of the capability in human-readible format. */
+                    displayName: string;
+                    /** @description A written representation of the purpose and characteristics of the capability. */
+                    description: string;
+                    /** @description Top-level categorization of the capability */
+                    kind: string | "action" | "mutate" | "view" | "interaction";
+                    /** @description Classification of capabilities. Used to group capabilities similar in nature. */
+                    type: string;
+                    /** @description Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
+                    subType: string;
+                    /** @description Key that backs the capability. */
+                    key: string;
+                    /** @description State of the entity in which the capability is applicable. */
+                    entityState: ("declaration" | "instance")[];
+                    /**
+                     * @description Status of the capability
+                     * @default enabled
+                     * @enum {string}
+                     */
+                    status: "enabled" | "disabled";
+                    /** @description Metadata contains additional information associated with the capability. Extension point. */
+                    metadata?: {
+                        [key: string]: unknown;
+                    };
+                }[];
+                /**
+                 * @description Status of component, including:
+                 *     - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
+                 *     - maintenance: model is unavailable for a period of time.
+                 *     - enabled: model is available for use for all users of this Meshery Server.
+                 *     - ignored: model is unavailable for use for all users of this Meshery Server.
+                 * @default enabled
+                 * @enum {string}
+                 */
+                status: "ignored" | "enabled" | "duplicate" | "resolved" | "open";
+                /** @description Metadata contains additional information associated with the component. */
+                metadata: {
+                    /** @description Genealogy represents the various representational states of the component. */
+                    genealogy: string;
+                    /**
+                     * @description Identifies whether the component is semantically meaningful or not; identifies whether the component should be treated as deployable entity or is for purposes of logical representation.
+                     * @default false
+                     */
+                    isAnnotation: boolean;
+                    /** @description Identifies whether the component is scoped to namespace or cluster wide. */
+                    isNamespaced: boolean;
+                    /** @description 'published' controls whether the component should be registered in Meshery Registry. When the same 'published' property in Models, is set to 'false', the Model property takes precedence with all Entities in the Model not being registered. */
+                    published: boolean;
+                    /** @description InstanceDetails contains information about the instance of the component. */
+                    instanceDetails: Record<string, never>;
+                    /** @description Defines the UI schema for rendering the component's configuration. For more details, visit: https://rjsf-team.github.io/react-jsonschema-form/docs/api-reference/uiSchema/ . */
+                    configurationUISchema: string;
+                } & {
+                    [key: string]: unknown;
+                };
+                /** @description The configuration of the component. The configuration is based on the schema defined within the component definition(component.schema). */
+                configuration: Record<string, never>;
+                /** @description Data related to the third-party capability that a ComponentDefinition wraps; this payload is treated as a hermetically sealed, opaque object. */
+                component: {
+                    /** @description Version of the component produced by the registrant. Example: APIVersion of a Kubernetes Pod. */
+                    version: string;
+                    /** @description The unique identifier (name) assigned by the registrant to this component. Example: A Kubernetes Pod is of kind 'Pod'. */
+                    kind: string;
+                    /** @description JSON schema of the object as defined by the registrant. */
+                    schema: string;
+                };
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the resource was created.
+                 */
+                created_at?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the resource was updated.
+                 */
+                updated_at?: string;
+            }[];
+            /** @description Design-level preferences */
+            preferences?: {
+                /** @description Map of available layers, where keys are layer names. */
+                layers: Record<string, never>;
+            };
+            /** @description List of relationships between components */
+            relationships: {
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                id: string;
+                /**
+                 * @description Specifies the version of the schema used for the relationship definition.
+                 * @example [
+                 *       "v1",
+                 *       "v1alpha1",
+                 *       "v2beta3",
+                 *       "v1.custom-suffix",
+                 *       "models.meshery.io/v1beta1",
+                 *       "capability.meshery.io/v1alpha1"
+                 *     ]
+                 */
+                schemaVersion: string;
+                /** @description Specifies the version of the relationship definition. */
+                version: string;
+                /**
+                 * @description Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.
+                 * @enum {string}
+                 */
+                kind: "hierarchical" | "edge" | "sibling";
+                /** @description Classification of relationships. Used to group relationships similar in nature. */
+                type: string;
+                /** @description Most granular unit of relationship classification. The combination of Kind, Type and SubType together uniquely identify a Relationship. */
+                subType: string;
+                /**
+                 * @description Status of the relationship.
+                 * @enum {string}
+                 */
+                status?: "enabled" | "ignored" | "deleted" | "approved" | "pending";
+                /** @description Capabilities associated with the relationship. */
+                capabilities?: {
+                    /**
+                     * @description Specifies the version of the schema to which the capability definition conforms.
+                     * @example [
+                     *       "v1",
+                     *       "v1alpha1",
+                     *       "v2beta3",
+                     *       "v1.custom-suffix",
+                     *       "models.meshery.io/v1beta1",
+                     *       "capability.meshery.io/v1alpha1"
+                     *     ]
+                     */
+                    schemaVersion: string;
+                    /** @description Version of the capability definition. */
+                    version: string;
+                    /** @description Name of the capability in human-readible format. */
+                    displayName: string;
+                    /** @description A written representation of the purpose and characteristics of the capability. */
+                    description: string;
+                    /** @description Top-level categorization of the capability */
+                    kind: string | "action" | "mutate" | "view" | "interaction";
+                    /** @description Classification of capabilities. Used to group capabilities similar in nature. */
+                    type: string;
+                    /** @description Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
+                    subType: string;
+                    /** @description Key that backs the capability. */
+                    key: string;
+                    /** @description State of the entity in which the capability is applicable. */
+                    entityState: ("declaration" | "instance")[];
+                    /**
+                     * @description Status of the capability
+                     * @default enabled
+                     * @enum {string}
+                     */
+                    status: "enabled" | "disabled";
+                    /** @description Metadata contains additional information associated with the capability. Extension point. */
+                    metadata?: {
+                        [key: string]: unknown;
+                    };
+                }[];
+                /** @description Metadata contains additional information associated with the Relationship. */
+                metadata?: {
+                    /** @description Characterization of the meaning of the relationship and its relevance to both Meshery and entities under management. */
+                    description?: string;
+                    /** @description Visualization styles for a relationship */
+                    styles?: {
+                        /** @description Primary color of the component used for UI representation. */
+                        primaryColor: string;
+                        /** @description Secondary color of the entity used for UI representation. */
+                        secondaryColor?: string;
+                        /** @description White SVG of the entity used for UI representation on dark background. */
+                        svgWhite: string;
+                        /** @description Colored SVG of the entity used for UI representation on light background. */
+                        svgColor: string;
+                        /** @description Complete SVG of the entity used for UI representation, often inclusive of background. */
+                        svgComplete?: string;
+                        /** @description The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+                        color?: string;
+                        /**
+                         * Format: float
+                         * @description The opacity of the label text, including its outline.
+                         */
+                        textOpacity?: number;
+                        /** @description A comma-separated list of font names to use on the label text. */
+                        fontFamily?: string;
+                        /** @description The size of the label text. */
+                        fontSize?: string;
+                        /** @description A CSS font style to be applied to the label text. */
+                        fontStyle?: string;
+                        /** @description A CSS font weight to be applied to the label text. */
+                        fontWeight?: string;
+                        /**
+                         * @description A transformation to apply to the label text
+                         * @enum {string}
+                         */
+                        textTransform?: "none" | "uppercase" | "lowercase";
+                        /**
+                         * Format: float
+                         * @description The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.See https://js.cytoscape.org/#style/visibility
+                         */
+                        opacity?: number;
+                        /** @description An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+                        zIndex?: number;
+                        /** @description The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+                        label?: string;
+                        /** @description The animation to use for the edge. Can be like 'marching-ants' , 'blink' , 'moving-gradient',etc . */
+                        edgeAnimation?: string;
+                        /**
+                         * @description The curving method used to separate two or more edges between two nodes; may be haystack (very fast, bundled straight edges for which loops and compounds are unsupported), straight (straight edges with all arrows supported), bezier (bundled curved edges), unbundled-bezier (curved edges for use with manual control points), segments (a series of straight lines), taxi (right-angled lines, hierarchically bundled). Note that haystack edges work best with ellipse, rectangle, or similar nodes. Smaller node shapes, like triangle, will not be as aesthetically pleasing. Also note that edge endpoint arrows are unsupported for haystack edges.
+                         * @enum {string}
+                         */
+                        curveStyle?: "haystack" | "straight" | "bezier" | "unbundled-bezier" | "segments" | "taxi";
+                        /** @description The colour of the edge's line. Colours may be specified by name (e.g. red), hex (e.g. */
+                        lineColor?: string;
+                        /**
+                         * @description The style of the edge's line.
+                         * @enum {string}
+                         */
+                        lineStyle?: "solid" | "dotted" | "dashed";
+                        /**
+                         * @description The cap style of the edge's line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.
+                         * @enum {string}
+                         */
+                        lineCap?: "butt" | "round" | "square";
+                        /**
+                         * Format: float
+                         * @description The opacity of the edge's line and arrow. Useful if you wish to have a separate opacity for the edge label versus the edge line. Note that the opacity value of the edge element affects the effective opacity of its line and label subcomponents.
+                         */
+                        lineOpacity?: number;
+                        /** @description The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g. */
+                        targetArrowColor?: string;
+                        /**
+                         * @description The shape of the edge's source arrow
+                         * @enum {string}
+                         */
+                        targetArrowShape?: "triangle" | "triangle-tee" | "circle-triangle" | "triangle-cross" | "triangle-backcurve" | "vee" | "tee" | "square" | "circle" | "diamond" | "chevron" | "none";
+                        /**
+                         * @description The fill state of the edge's source arrow
+                         * @enum {string}
+                         */
+                        targetArrowFill?: "filled" | "hollow";
+                        /** @description The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g. */
+                        midTargetArrowColor?: string;
+                        /**
+                         * @description The shape of the edge's source arrow
+                         * @enum {string}
+                         */
+                        midTargetArrowShape?: "triangle" | "triangle-tee" | "circle-triangle" | "triangle-cross" | "triangle-backcurve" | "vee" | "tee" | "square" | "circle" | "diamond" | "chevron" | "none";
+                        /**
+                         * @description The fill state of the edge's source arrow
+                         * @enum {string}
+                         */
+                        midTargetArrowFill?: "filled" | "hollow";
+                        /**
+                         * Format: float
+                         * @description Scaling for the arrow size.
+                         */
+                        arrowScale?: number;
+                        /** @description The text to display for an edge's source label. Can give a path, e.g. data(id) will label with the elements id */
+                        sourceLabel?: string;
+                        /** @description The text to display for an edge's target label. Can give a path, e.g. data(id) will label with the elements id */
+                        targetLabel?: string;
+                    };
+                    /** @description Indicates whether the relationship should be treated as a logical representation only */
+                    isAnnotation?: boolean;
+                } & {
+                    [key: string]: unknown;
+                };
+                /** @description Model Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+                model: {
+                    /**
+                     * Format: uuid
+                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                     */
+                    id: string;
+                    /**
+                     * @description The unique name for the model within the scope of a registrant.
+                     * @example cert-manager
+                     */
+                    name: string;
+                    /** @description Version of the model definition. */
+                    version: string;
+                    /**
+                     * @description Human-readable name for the model.
+                     * @example Cert Manager
+                     */
+                    displayName: string;
+                    /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+                    model: {
+                        /** @description Version of the model as defined by the registrant. */
+                        version: string;
+                    };
+                    registrant: {
+                        /** @description Kind of the registrant. */
+                        kind: string;
+                    };
+                };
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                model_id?: string;
+                /** @description Optional. Assigns the policy to be used for the evaluation of the relationship. Deprecation Notice: In the future, this property is either to be removed or to it is to be an array of optional policy $refs. */
+                evaluationQuery?: string;
+                /** @description Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved. */
+                selectors?: {
+                    /** @description Selectors used to define relationships which are allowed. */
+                    allow: {
+                        /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
+                        from: {
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            id?: string;
+                            /** @description Kind of the resource. */
+                            kind?: string;
+                            /** @description Match configuration for selector */
+                            match?: {
+                                /** @description The refs of the matchselector. */
+                                refs?: string[][];
+                                /** @description The from of the matchselector. */
+                                from?: {
+                                    /**
+                                     * Format: uuid
+                                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                                     */
+                                    id?: string;
+                                    /** @description Kind of the resource. */
+                                    kind: string;
+                                    /** @description JSON ref to value from where patch should be applied. */
+                                    mutatorRef?: string[][];
+                                    mutatedRef?: string[][];
+                                }[];
+                                /** @description The to of the matchselector. */
+                                to?: {
+                                    /**
+                                     * Format: uuid
+                                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                                     */
+                                    id?: string;
+                                    /** @description Kind of the resource. */
+                                    kind: string;
+                                    /** @description JSON ref to value from where patch should be applied. */
+                                    mutatorRef?: string[][];
+                                    mutatedRef?: string[][];
+                                }[];
+                            };
+                            /** @description Match strategy matrix for the selector */
+                            matchStrategyMatrix?: string[][];
+                            /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
+                            model?: {
+                                /**
+                                 * Format: uuid
+                                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                                 */
+                                id: string;
+                                /**
+                                 * @description The unique name for the model within the scope of a registrant.
+                                 * @example cert-manager
+                                 */
+                                name: string;
+                                /** @description Version of the model definition. */
+                                version: string;
+                                /**
+                                 * @description Human-readable name for the model.
+                                 * @example Cert Manager
+                                 */
+                                displayName: string;
+                                /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+                                model: {
+                                    /** @description Version of the model as defined by the registrant. */
+                                    version: string;
+                                };
+                                registrant: {
+                                    /** @description Kind of the registrant. */
+                                    kind: string;
+                                };
+                            };
+                            /** @description Patch configuration for the selector */
+                            patch?: {
+                                /**
+                                 * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
+                                 *
+                                 *     add: Inserts a value into an array or adds a member to an object.
+                                 *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
+                                 *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
+                                 *     remove: Removes a value.
+                                 *     copy: Copies a value from one location to another.
+                                 *     move: Moves a value from one location to another.
+                                 *     test: Tests that a value at the target location is equal to a specified value.
+                                 * @enum {string}
+                                 */
+                                patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
+                                /** @description JSON ref to value from where patch should be applied. */
+                                mutatorRef?: string[][];
+                                mutatedRef?: string[][];
+                            };
+                        }[];
+                        /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
+                        to: {
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            id?: string;
+                            /** @description Kind of the resource. */
+                            kind?: string;
+                            /** @description Match configuration for selector */
+                            match?: {
+                                /** @description The refs of the matchselector. */
+                                refs?: string[][];
+                                /** @description The from of the matchselector. */
+                                from?: {
+                                    /**
+                                     * Format: uuid
+                                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                                     */
+                                    id?: string;
+                                    /** @description Kind of the resource. */
+                                    kind: string;
+                                    /** @description JSON ref to value from where patch should be applied. */
+                                    mutatorRef?: string[][];
+                                    mutatedRef?: string[][];
+                                }[];
+                                /** @description The to of the matchselector. */
+                                to?: {
+                                    /**
+                                     * Format: uuid
+                                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                                     */
+                                    id?: string;
+                                    /** @description Kind of the resource. */
+                                    kind: string;
+                                    /** @description JSON ref to value from where patch should be applied. */
+                                    mutatorRef?: string[][];
+                                    mutatedRef?: string[][];
+                                }[];
+                            };
+                            /** @description Match strategy matrix for the selector */
+                            matchStrategyMatrix?: string[][];
+                            /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
+                            model?: {
+                                /**
+                                 * Format: uuid
+                                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                                 */
+                                id: string;
+                                /**
+                                 * @description The unique name for the model within the scope of a registrant.
+                                 * @example cert-manager
+                                 */
+                                name: string;
+                                /** @description Version of the model definition. */
+                                version: string;
+                                /**
+                                 * @description Human-readable name for the model.
+                                 * @example Cert Manager
+                                 */
+                                displayName: string;
+                                /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+                                model: {
+                                    /** @description Version of the model as defined by the registrant. */
+                                    version: string;
+                                };
+                                registrant: {
+                                    /** @description Kind of the registrant. */
+                                    kind: string;
+                                };
+                            };
+                            /** @description Patch configuration for the selector */
+                            patch?: {
+                                /**
+                                 * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
+                                 *
+                                 *     add: Inserts a value into an array or adds a member to an object.
+                                 *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
+                                 *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
+                                 *     remove: Removes a value.
+                                 *     copy: Copies a value from one location to another.
+                                 *     move: Moves a value from one location to another.
+                                 *     test: Tests that a value at the target location is equal to a specified value.
+                                 * @enum {string}
+                                 */
+                                patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
+                                /** @description JSON ref to value from where patch should be applied. */
+                                mutatorRef?: string[][];
+                                mutatedRef?: string[][];
+                            };
+                        }[];
+                    };
+                    /** @description Optional selectors used to define relationships which should not be created / is restricted. */
+                    deny?: {
+                        /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
+                        from: {
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            id?: string;
+                            /** @description Kind of the resource. */
+                            kind?: string;
+                            /** @description Match configuration for selector */
+                            match?: {
+                                /** @description The refs of the matchselector. */
+                                refs?: string[][];
+                                /** @description The from of the matchselector. */
+                                from?: {
+                                    /**
+                                     * Format: uuid
+                                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                                     */
+                                    id?: string;
+                                    /** @description Kind of the resource. */
+                                    kind: string;
+                                    /** @description JSON ref to value from where patch should be applied. */
+                                    mutatorRef?: string[][];
+                                    mutatedRef?: string[][];
+                                }[];
+                                /** @description The to of the matchselector. */
+                                to?: {
+                                    /**
+                                     * Format: uuid
+                                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                                     */
+                                    id?: string;
+                                    /** @description Kind of the resource. */
+                                    kind: string;
+                                    /** @description JSON ref to value from where patch should be applied. */
+                                    mutatorRef?: string[][];
+                                    mutatedRef?: string[][];
+                                }[];
+                            };
+                            /** @description Match strategy matrix for the selector */
+                            matchStrategyMatrix?: string[][];
+                            /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
+                            model?: {
+                                /**
+                                 * Format: uuid
+                                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                                 */
+                                id: string;
+                                /**
+                                 * @description The unique name for the model within the scope of a registrant.
+                                 * @example cert-manager
+                                 */
+                                name: string;
+                                /** @description Version of the model definition. */
+                                version: string;
+                                /**
+                                 * @description Human-readable name for the model.
+                                 * @example Cert Manager
+                                 */
+                                displayName: string;
+                                /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+                                model: {
+                                    /** @description Version of the model as defined by the registrant. */
+                                    version: string;
+                                };
+                                registrant: {
+                                    /** @description Kind of the registrant. */
+                                    kind: string;
+                                };
+                            };
+                            /** @description Patch configuration for the selector */
+                            patch?: {
+                                /**
+                                 * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
+                                 *
+                                 *     add: Inserts a value into an array or adds a member to an object.
+                                 *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
+                                 *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
+                                 *     remove: Removes a value.
+                                 *     copy: Copies a value from one location to another.
+                                 *     move: Moves a value from one location to another.
+                                 *     test: Tests that a value at the target location is equal to a specified value.
+                                 * @enum {string}
+                                 */
+                                patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
+                                /** @description JSON ref to value from where patch should be applied. */
+                                mutatorRef?: string[][];
+                                mutatedRef?: string[][];
+                            };
+                        }[];
+                        /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
+                        to: {
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            id?: string;
+                            /** @description Kind of the resource. */
+                            kind?: string;
+                            /** @description Match configuration for selector */
+                            match?: {
+                                /** @description The refs of the matchselector. */
+                                refs?: string[][];
+                                /** @description The from of the matchselector. */
+                                from?: {
+                                    /**
+                                     * Format: uuid
+                                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                                     */
+                                    id?: string;
+                                    /** @description Kind of the resource. */
+                                    kind: string;
+                                    /** @description JSON ref to value from where patch should be applied. */
+                                    mutatorRef?: string[][];
+                                    mutatedRef?: string[][];
+                                }[];
+                                /** @description The to of the matchselector. */
+                                to?: {
+                                    /**
+                                     * Format: uuid
+                                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                                     */
+                                    id?: string;
+                                    /** @description Kind of the resource. */
+                                    kind: string;
+                                    /** @description JSON ref to value from where patch should be applied. */
+                                    mutatorRef?: string[][];
+                                    mutatedRef?: string[][];
+                                }[];
+                            };
+                            /** @description Match strategy matrix for the selector */
+                            matchStrategyMatrix?: string[][];
+                            /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
+                            model?: {
+                                /**
+                                 * Format: uuid
+                                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                                 */
+                                id: string;
+                                /**
+                                 * @description The unique name for the model within the scope of a registrant.
+                                 * @example cert-manager
+                                 */
+                                name: string;
+                                /** @description Version of the model definition. */
+                                version: string;
+                                /**
+                                 * @description Human-readable name for the model.
+                                 * @example Cert Manager
+                                 */
+                                displayName: string;
+                                /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+                                model: {
+                                    /** @description Version of the model as defined by the registrant. */
+                                    version: string;
+                                };
+                                registrant: {
+                                    /** @description Kind of the registrant. */
+                                    kind: string;
+                                };
+                            };
+                            /** @description Patch configuration for the selector */
+                            patch?: {
+                                /**
+                                 * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
+                                 *
+                                 *     add: Inserts a value into an array or adds a member to an object.
+                                 *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
+                                 *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
+                                 *     remove: Removes a value.
+                                 *     copy: Copies a value from one location to another.
+                                 *     move: Moves a value from one location to another.
+                                 *     test: Tests that a value at the target location is equal to a specified value.
+                                 * @enum {string}
+                                 */
+                                patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
+                                /** @description JSON ref to value from where patch should be applied. */
+                                mutatorRef?: string[][];
+                                mutatedRef?: string[][];
+                            };
+                        }[];
+                    };
+                }[];
+            }[];
+        };
+        /** @description Server-returned design (pattern) resource as persisted by meshery-cloud. */
+        MesheryPattern: {
             /**
              * Format: uuid
-             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             * @description Server-generated design ID.
              */
-            id: string;
-            /**
-             * @description The category of the model that determines the main grouping.
-             * @default Uncategorized
-             * @enum {string}
-             */
-            name:
-              | "Analytics"
-              | "App Definition and Development"
-              | "Cloud Native Network"
-              | "Cloud Native Storage"
-              | "Database"
-              | "Machine Learning"
-              | "Observability and Analysis"
-              | "Orchestration & Management"
-              | "Platform"
-              | "Provisioning"
-              | "Runtime"
-              | "Security & Compliance"
-              | "Serverless"
-              | "Tools"
-              | "Uncategorized";
-            /** @description Additional metadata associated with the category. */
-            metadata: { [key: string]: unknown };
-          };
-          /**
-           * SubCategory
-           * @description Sub category of the model determines the secondary grouping.
-           * @default Uncategorized
-           * @enum {string}
-           */
-          subCategory:
-            | "API Gateway"
-            | "API Integration"
-            | "Application Definition & Image Build"
-            | "Automation & Configuration"
-            | "Certified Kubernetes - Distribution"
-            | "Chaos Engineering"
-            | "Cloud Native Storage"
-            | "Cloud Provider"
-            | "CNI"
-            | "Compute"
-            | "Container Registry"
-            | "Container Runtime"
-            | "Container Security"
-            | "Container"
-            | "Content Delivery Network"
-            | "Continuous Integration & Delivery"
-            | "Coordination & Service Discovery"
-            | "Database"
-            | "Flowchart"
-            | "Framework"
-            | "Installable Platform"
-            | "Key Management"
-            | "Key Management Service"
-            | "Kubernetes"
-            | "Logging"
-            | "Machine Learning"
-            | "Management Governance"
-            | "Metrics"
-            | "Monitoring"
-            | "Networking Content Delivery"
-            | "Operating System"
-            | "Query"
-            | "Remote Procedure Call"
-            | "Scheduling & Orchestration"
-            | "Secrets Management"
-            | "Security Identity & Compliance"
-            | "Service Mesh"
-            | "Service Proxy"
-            | "Source Version Control"
-            | "Storage"
-            | "Specifications"
-            | "Streaming & Messaging"
-            | "Tools"
-            | "Tracing"
-            | "Uncategorized"
-            | "Video Conferencing";
-          /** @description Metadata containing additional information associated with the model. */
-          metadata?: {
-            /** @description Capabilities associated with the model */
-            capabilities?: {
-              /**
-               * @description Specifies the version of the schema to which the capability definition conforms.
-               * @example [
-               *   "v1",
-               *   "v1alpha1",
-               *   "v2beta3",
-               *   "v1.custom-suffix",
-               *   "models.meshery.io/v1beta1",
-               *   "capability.meshery.io/v1alpha1"
-               * ]
-               */
-              schemaVersion: string;
-              /** @description Version of the capability definition. */
-              version: string;
-              /** @description Name of the capability in human-readible format. */
-              displayName: string;
-              /** @description A written representation of the purpose and characteristics of the capability. */
-              description: string;
-              /** @description Top-level categorization of the capability */
-              kind: string;
-              /** @description Classification of capabilities. Used to group capabilities similar in nature. */
-              type: string;
-              /** @description Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
-              subType: string;
-              /** @description Key that backs the capability. */
-              key: string;
-              /** @description State of the entity in which the capability is applicable. */
-              entityState: ("declaration" | "instance")[];
-              /**
-               * @description Status of the capability
-               * @default enabled
-               * @enum {string}
-               */
-              status: "enabled" | "disabled";
-              /** @description Metadata contains additional information associated with the capability. Extension point. */
-              metadata?: { [key: string]: unknown };
-            }[];
-            /**
-             * @description Indicates whether the model and its entities should be treated as deployable entities or as logical representations.
-             * @default false
-             */
-            isAnnotation?: boolean;
-            /**
-             * @description Primary color associated with the model.
-             * @default #00b39f
-             */
-            primaryColor?: string;
-            /**
-             * @description Secondary color associated with the model.
-             * @default #00D3A9
-             */
-            secondaryColor?: string;
-            /**
-             * @description SVG representation of the model in white color.
-             * @default <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16.405 8.732v6.57l5.694-3.297-5.694-3.273Zm0 7.942v6.602l5.747-3.285-5.747-3.317Z" fill="#fff"/><path d="M15.586 15.256v-6.47l-5.622 3.225 5.622 3.245ZM4.307 23.252a13.809 13.809 0 0 0 4.362 4.39v-6.914l-4.362 2.524Zm11.279-.008v-6.52L9.95 19.985l5.636 3.258Z" fill="#fff" fill-opacity=".8"/><path d="m9.49 27.23 5.707-3.263-5.707-3.3v6.563Z" fill="#fff"/><path d="M22.54 27.265v-6.553l-5.699 3.259 5.7 3.294Zm5.58-4.773a13.697 13.697 0 0 0 1.612-5.895l-5.934 3.397 4.323 2.498Z" fill="#fff" fill-opacity=".8"/><path d="m23.362 19.298 5.728-3.276-5.728-3.291v6.567Z" fill="#fff"/><path d="M22.541 11.315V4.8l-5.673 3.253 5.673 3.262Zm0 7.955v-6.574l-5.685 3.292 5.685 3.281Z" fill="#fff" fill-opacity=".8"/><path d="M9.49 12.684v6.622l5.728-3.316-5.728-3.306Z" fill="#fff"/><path d="M15.586 2.25a13.69 13.69 0 0 0-6.037 1.595l6.037 3.463V2.25Z" fill="#fff" fill-opacity=".8"/><path d="M9.49 4.756v6.583l5.732-3.288L9.49 4.756Z" fill="#fff"/><path d="M8.669 4.356a13.83 13.83 0 0 0-4.362 4.39l4.362 2.518V4.356Z" fill="#fff" fill-opacity=".8"/><path d="M22.504 3.88a13.695 13.695 0 0 0-6.099-1.63v5.123l6.1-3.493ZM2.25 16.483c.071 2.12.634 4.196 1.644 6.062l4.418-2.559-6.062-3.503Zm1.644-7.028a13.68 13.68 0 0 0-1.644 6.036l6.068-3.482-4.424-2.554Z" fill="#fff"/><path d="M9.539 28.147a13.673 13.673 0 0 0 6.047 1.603v-5.062L9.54 28.147Z" fill="#fff" fill-opacity=".8"/><path d="M27.697 8.768a13.83 13.83 0 0 0-4.335-4.383v6.889l4.335-2.506ZM23.362 27.62a13.851 13.851 0 0 0 4.351-4.417l-4.351-2.514v6.93Z" fill="#fff"/><path d="M29.75 15.452a13.659 13.659 0 0 0-1.63-5.979l-4.381 2.53 6.011 3.45Z" fill="#fff" fill-opacity=".8"/><path d="M16.405 29.75a13.673 13.673 0 0 0 6.036-1.595l-6.036-3.498v5.093Z" fill="#fff"/><path d="M8.669 19.247v-6.494L3.03 15.986l5.639 3.261Z" fill="#fff" fill-opacity=".8"/></svg>
-             */
-            svgWhite: string;
-            /**
-             * @description SVG representation of the model in colored format.
-             * @default <svg xmlns="http://www.w3.org/2000/svg" id="Layer_1" data-name="Layer 1" viewBox="0 0 134.95 135.02"><defs><style>.cls-1{fill:#00d3a9}.cls-2{fill:#00b39f}</style></defs><title>meshery-logo-light</title><polygon points="69.49 31.82 69.49 64.07 97.44 47.89 69.49 31.82" class="cls-1"/><polygon points="69.49 70.81 69.49 103.22 97.7 87.09 69.49 70.81" class="cls-1"/><polygon points="65.47 63.85 65.47 32.09 37.87 47.92 65.47 63.85" class="cls-2"/><path d="M10.1,103.1a67.79,67.79,0,0,0,21.41,21.55V90.71Z" class="cls-2"/><polygon points="65.47 103.06 65.47 71.05 37.8 87.07 65.47 103.06" class="cls-2"/><polygon points="35.54 122.63 63.56 106.61 35.54 90.41 35.54 122.63" class="cls-1"/><polygon points="99.61 122.8 99.61 90.63 71.63 106.63 99.61 122.8" class="cls-2"/><path d="M127,99.37a67.22,67.22,0,0,0,7.91-28.94L105.78,87.11Z" class="cls-2"/><polygon points="103.64 83.69 131.76 67.61 103.64 51.45 103.64 83.69" class="cls-1"/><polygon points="99.61 44.5 99.61 12.52 71.76 28.49 99.61 44.5" class="cls-2"/><polygon points="99.61 83.55 99.61 51.28 71.7 67.44 99.61 83.55" class="cls-2"/><polygon points="67.48 135.02 67.49 135.02 67.48 135.02 67.48 135.02" class="cls-2"/><polygon points="35.54 51.22 35.54 83.73 63.66 67.45 35.54 51.22" class="cls-1"/><path d="M65.47,0A67.2,67.2,0,0,0,35.83,7.83l29.64,17Z" class="cls-2"/><polygon points="35.54 12.3 35.54 44.62 63.68 28.48 35.54 12.3" class="cls-1"/><path d="M31.51,10.34A67.89,67.89,0,0,0,10.1,31.89L31.51,44.25Z" class="cls-2"/><path d="M99.43,8A67.23,67.23,0,0,0,69.49,0V25.15Z" class="cls-1"/><path d="M0,69.87A67.27,67.27,0,0,0,8.07,99.63L29.76,87.07Z" class="cls-1"/><path d="M8.07,35.37A67.16,67.16,0,0,0,0,65L29.79,47.91Z" class="cls-1"/><path d="M35.78,127.13A67.13,67.13,0,0,0,65.47,135V110.15Z" class="cls-2"/><path d="M124.92,32a67.9,67.9,0,0,0-21.28-21.52V44.3Z" class="cls-1"/><path d="M103.64,124.54A68,68,0,0,0,125,102.86L103.64,90.52Z" class="cls-1"/><path d="M135,64.81a67.06,67.06,0,0,0-8-29.35L105.49,47.88Z" class="cls-2"/><path d="M69.49,135a67.12,67.12,0,0,0,29.63-7.83L69.49,110Z" class="cls-1"/><polygon points="31.51 83.44 31.51 51.56 3.83 67.43 31.51 83.44" class="cls-2"/></svg>
-             */
-            svgColor: string;
-            /** @description SVG representation of the complete model. */
-            svgComplete?: string;
-            /**
-             * @description The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
-             * @enum {string}
-             */
-            shape?:
-              | "ellipse"
-              | "triangle"
-              | "round-triangle"
-              | "rectangle"
-              | "round-rectangle"
-              | "bottom-round-rectangle"
-              | "cut-rectangle"
-              | "barrel"
-              | "rhomboid"
-              | "diamond"
-              | "round-diamond"
-              | "pentagon"
-              | "round-pentagon"
-              | "hexagon"
-              | "round-hexagon"
-              | "concave-hexagon"
-              | "heptagon"
-              | "round-heptagon"
-              | "octagon"
-              | "round-octagon"
-              | "star"
-              | "tag"
-              | "round-tag"
-              | "vee"
-              | "polygon";
-          } & { [key: string]: unknown };
-          /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
-          model: {
-            /** @description Version of the model as defined by the registrant. */
-            version: string;
-          };
-          /** @description The relationships of the model. */
-          relationships: unknown[];
-          /** @description The components of the model. */
-          components: unknown[];
-          /**
-           * @description Number of components associated with the model.
-           * @default 0
-           */
-          componentsCount: number;
-          /**
-           * @description Number of relationships associated with the model.
-           * @default 0
-           */
-          relationshipsCount: number;
-          /**
-           * Format: date-time
-           * @description Timestamp when the resource was created.
-           */
-          created_at?: string;
-          /**
-           * Format: date-time
-           * @description Timestamp when the resource was updated.
-           */
-          updated_at?: string;
-        };
-        /** @description Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
-        modelReference: {
-          /**
-           * Format: uuid
-           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-           */
-          id: string;
-          /** @description The unique name for the model within the scope of a registrant. */
-          name: string;
-          /** @description Version of the model definition. */
-          version: string;
-          /** @description Human-readable name for the model. */
-          displayName: string;
-          /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
-          model: {
-            /** @description Version of the model as defined by the registrant. */
-            version: string;
-          };
-          registrant: {
-            /** @description Kind of the registrant. */
-            kind: string;
-          };
-        };
-        /**
-         * Format: uuid
-         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-         */
-        model_id?: string;
-        /** @description Visualization styles for a component */
-        styles?: ({
-          /** @description Primary color of the component used for UI representation. */
-          primaryColor: string;
-          /** @description Secondary color of the entity used for UI representation. */
-          secondaryColor?: string;
-          /** @description White SVG of the entity used for UI representation on dark background. */
-          svgWhite: string;
-          /** @description Colored SVG of the entity used for UI representation on light background. */
-          svgColor: string;
-          /** @description Complete SVG of the entity used for UI representation, often inclusive of background. */
-          svgComplete: string;
-          /** @description The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
-          color?: string;
-          /** @description The opacity of the label text, including its outline. */
-          textOpacity?: number;
-          /** @description A comma-separated list of font names to use on the label text. */
-          fontFamily?: string;
-          /** @description The size of the label text. */
-          fontSize?: string;
-          /** @description A CSS font style to be applied to the label text. */
-          fontStyle?: string;
-          /** @description A CSS font weight to be applied to the label text. */
-          fontWeight?: string;
-          /**
-           * @description A transformation to apply to the label text
-           * @enum {string}
-           */
-          textTransform?: "none" | "uppercase" | "lowercase";
-          /** @description The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
-          opacity?: number;
-          /** @description An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
-          zIndex?: number;
-          /** @description The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
-          label?: string;
-          /** @description The animation to apply to the element. example ripple,bounce,etc */
-          animation?: { [key: string]: unknown };
-        } & { [key: string]: unknown }) & {
-          /**
-           * @description The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
-           * @enum {string}
-           */
-          shape?:
-            | "ellipse"
-            | "triangle"
-            | "round-triangle"
-            | "rectangle"
-            | "round-rectangle"
-            | "bottom-round-rectangle"
-            | "cut-rectangle"
-            | "barrel"
-            | "rhomboid"
-            | "diamond"
-            | "round-diamond"
-            | "pentagon"
-            | "round-pentagon"
-            | "hexagon"
-            | "round-hexagon"
-            | "concave-hexagon"
-            | "heptagon"
-            | "round-heptagon"
-            | "octagon"
-            | "round-octagon"
-            | "star"
-            | "tag"
-            | "round-tag"
-            | "vee"
-            | "polygon";
-          /** @description The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
-          position?: {
-            /** @description The x-coordinate of the node. */
-            x: number;
-            /** @description The y-coordinate of the node. */
-            y: number;
-          };
-          /** @description The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
-          bodyText?: string;
-          /**
-           * @description How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'.
-           * @enum {string}
-           */
-          bodyTextWrap?: "none" | "wrap" | "ellipsis";
-          /** @description The maximum width for wrapping text in the node. */
-          bodyTextMaxWidth?: string;
-          /** @description The opacity of the node's body text, including its outline. */
-          bodyTextOpacity?: number;
-          /** @description The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
-          bodyTextBackgroundColor?: string;
-          /** @description The size of the node's body text. */
-          bodyTextFontSize?: number;
-          /** @description The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
-          bodyTextColor?: string;
-          /** @description A CSS font weight to be applied to the node's body text. */
-          bodyTextFontWeight?: string;
-          /** @description A CSS horizontal alignment to be applied to the node's body text. */
-          bodyTextHorizontalAlign?: string;
-          /** @description A CSS text decoration to be applied to the node's body text. */
-          bodyTextDecoration?: string;
-          /** @description A CSS vertical alignment to be applied to the node's body text. */
-          bodyTextVerticalAlign?: string;
-          /** @description The width of the node's body or the width of an edge's line. */
-          width?: number;
-          /** @description The height of the node's body */
-          height?: number;
-          /**
-           * Format: uri
-           * @description The URL that points to the image to show in the node.
-           */
-          backgroundImage?: string;
-          /** @description The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
-          backgroundColor?: string;
-          /** @description Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
-          backgroundBlacken?: number;
-          /** @description The opacity level of the node's background colour */
-          backgroundOpacity?: number;
-          /** @description The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
-          backgroundPositionX?: string;
-          /** @description The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
-          backgroundPositionY?: string;
-          /** @description The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
-          backgroundOffsetX?: string;
-          /** @description The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
-          backgroundOffsetY?: string;
-          /**
-           * @description How the background image is fit to the node. Can be 'none', 'contain', or 'cover'.
-           * @enum {string}
-           */
-          backgroundFit?: "none" | "contain" | "cover";
-          /**
-           * @description How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'.
-           * @enum {string}
-           */
-          backgroundClip?: "none" | "node" | "node-border";
-          /**
-           * @description How the background image's width is determined. Can be 'none', 'inner', or 'outer'.
-           * @enum {string}
-           */
-          backgroundWidthRelativeTo?: "none" | "inner" | "outer";
-          /**
-           * @description How the background image's height is determined. Can be 'none', 'inner', or 'outer'.
-           * @enum {string}
-           */
-          backgroundHeightRelativeTo?: "none" | "inner" | "outer";
-          /** @description The size of the node's border. */
-          borderWidth?: number;
-          /**
-           * @description The style of the node's border
-           * @enum {string}
-           */
-          borderStyle?: "solid" | "dotted" | "dashed" | "double";
-          /** @description The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
-          borderColor?: string;
-          /** @description The opacity of the node's border */
-          borderOpacity?: number;
-          /** @description The amount of padding around all sides of the node. */
-          padding?: number;
-          /**
-           * @description The horizontal alignment of a node's label
-           * @enum {string}
-           */
-          textHalign?: "left" | "center" | "right";
-          /**
-           * @description The vertical alignment of a node's label
-           * @enum {string}
-           */
-          textValign?: "top" | "center" | "bottom";
-          /**
-           * @description Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset.
-           * @default no
-           * @enum {string}
-           */
-          ghost?: "yes" | "no";
-          /** @description The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
-          activeBgColor?: string;
-          /** @description The opacity of the active background indicator. Selector needs to be *core*. */
-          activeBgOpacity?: string;
-          /** @description The opacity of the active background indicator. Selector needs to be *core*. */
-          activeBgSize?: string;
-          /** @description The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
-          selectionBoxColor?: string;
-          /** @description The size of the border on the selection box. Selector needs to be *core* */
-          selectionBoxBorderWidth?: number;
-          /** @description The opacity of the selection box. Selector needs to be *core* */
-          selectionBoxOpacity?: number;
-          /** @description The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
-          outsideTextureBgColor?: string;
-          /** @description The opacity of the area outside the viewport texture. Selector needs to be *core* */
-          outsideTextureBgOpacity?: number;
-          /** @description An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
-          shapePolygonPoints?: string;
-          /** @description The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
-          menuBackgroundColor?: string;
-          /** @description The opacity of the background of the component menu. */
-          menuBackgroundOpacity?: number;
-          /** @description The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
-          menuForgroundColor?: string;
-        } & {
-          shape: unknown;
-          primaryColor: unknown;
-          svgColor: unknown;
-          svgWhite: unknown;
-          svgComplete: unknown;
-        };
-        /**
-         * @description Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
-         * @default [
-         *   {
-         *     "schemaVersion": "capability.meshery.io/v1beta1",
-         *     "version": "0.7.0",
-         *     "displayName": "Performance Test",
-         *     "description": "Initiate a performance test. Meshery will execute the load generation, collect metrics, and present the results.",
-         *     "kind": "action",
-         *     "type": "operator",
-         *     "subType": "perf-test",
-         *     "key": "",
-         *     "entityState": [
-         *       "instance"
-         *     ],
-         *     "status": "enabled",
-         *     "metadata": null
-         *   },
-         *   {
-         *     "schemaVersion": "capability.meshery.io/v1beta1",
-         *     "version": "0.7.0",
-         *     "displayName": "Workload Configuration",
-         *     "description": "Configure the workload specific setting of a component",
-         *     "kind": "mutate",
-         *     "type": "configuration",
-         *     "subType": "config",
-         *     "key": "",
-         *     "entityState": [
-         *       "declaration"
-         *     ],
-         *     "status": "enabled",
-         *     "metadata": null
-         *   },
-         *   {
-         *     "schemaVersion": "capability.meshery.io/v1beta1",
-         *     "version": "0.7.0",
-         *     "displayName": "Labels and Annotations Configuration",
-         *     "description": "Configure Labels And Annotations for the component",
-         *     "kind": "mutate",
-         *     "type": "configuration",
-         *     "subType": "labels-and-annotations",
-         *     "key": "",
-         *     "entityState": [
-         *       "declaration"
-         *     ],
-         *     "status": "enabled",
-         *     "metadata": null
-         *   },
-         *   {
-         *     "schemaVersion": "capability.meshery.io/v1beta1",
-         *     "version": "0.7.0",
-         *     "displayName": "Relationships",
-         *     "description": "View relationships for the component",
-         *     "kind": "view",
-         *     "type": "configuration",
-         *     "subType": "relationship",
-         *     "key": "",
-         *     "entityState": [
-         *       "declaration",
-         *       "instance"
-         *     ],
-         *     "status": "enabled",
-         *     "metadata": null
-         *   },
-         *   {
-         *     "schemaVersion": "capability.meshery.io/v1beta1",
-         *     "version": "0.7.0",
-         *     "displayName": "Json Schema",
-         *     "description": "View Component Definition ",
-         *     "kind": "view",
-         *     "type": "configuration",
-         *     "subType": "definition",
-         *     "key": "",
-         *     "entityState": [
-         *       "declaration",
-         *       "instance"
-         *     ],
-         *     "status": "enabled",
-         *     "metadata": null
-         *   },
-         *   {
-         *     "schemaVersion": "capability.meshery.io/v1beta1",
-         *     "version": "0.7.0",
-         *     "displayName": "Styling",
-         *     "description": "Configure the visual styles for the component",
-         *     "kind": "mutate",
-         *     "type": "style",
-         *     "subType": "",
-         *     "key": "",
-         *     "entityState": [
-         *       "declaration"
-         *     ],
-         *     "status": "enabled",
-         *     "metadata": null
-         *   },
-         *   {
-         *     "schemaVersion": "capability.meshery.io/v1beta1",
-         *     "version": "0.7.0",
-         *     "displayName": "Change Shape",
-         *     "description": "Change the shape of the component",
-         *     "kind": "mutate",
-         *     "type": "style",
-         *     "subType": "shape",
-         *     "key": "",
-         *     "entityState": [
-         *       "declaration"
-         *     ],
-         *     "status": "enabled",
-         *     "metadata": null
-         *   },
-         *   {
-         *     "schemaVersion": "capability.meshery.io/v1beta1",
-         *     "version": "0.7.0",
-         *     "displayName": "Compound Drag And Drop",
-         *     "description": "Drag and Drop a component into a parent component in graph view",
-         *     "kind": "interaction",
-         *     "type": "graph",
-         *     "subType": "compoundDnd",
-         *     "key": "",
-         *     "entityState": [
-         *       "declaration"
-         *     ],
-         *     "status": "enabled",
-         *     "metadata": null
-         *   }
-         * ]
-         */
-        capabilities?: {
-          /**
-           * @description Specifies the version of the schema to which the capability definition conforms.
-           * @example [
-           *   "v1",
-           *   "v1alpha1",
-           *   "v2beta3",
-           *   "v1.custom-suffix",
-           *   "models.meshery.io/v1beta1",
-           *   "capability.meshery.io/v1alpha1"
-           * ]
-           */
-          schemaVersion: string;
-          /** @description Version of the capability definition. */
-          version: string;
-          /** @description Name of the capability in human-readible format. */
-          displayName: string;
-          /** @description A written representation of the purpose and characteristics of the capability. */
-          description: string;
-          /** @description Top-level categorization of the capability */
-          kind: string;
-          /** @description Classification of capabilities. Used to group capabilities similar in nature. */
-          type: string;
-          /** @description Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
-          subType: string;
-          /** @description Key that backs the capability. */
-          key: string;
-          /** @description State of the entity in which the capability is applicable. */
-          entityState: ("declaration" | "instance")[];
-          /**
-           * @description Status of the capability
-           * @default enabled
-           * @enum {string}
-           */
-          status: "enabled" | "disabled";
-          /** @description Metadata contains additional information associated with the capability. Extension point. */
-          metadata?: { [key: string]: unknown };
-        }[];
-        /**
-         * @description Status of component, including:
-         * - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
-         * - maintenance: model is unavailable for a period of time.
-         * - enabled: model is available for use for all users of this Meshery Server.
-         * - ignored: model is unavailable for use for all users of this Meshery Server.
-         * @default enabled
-         * @enum {string}
-         */
-        status?: "ignored" | "enabled" | "duplicate" | "resolved" | "open";
-        /** @description Metadata contains additional information associated with the component. */
-        metadata: {
-          /** @description Genealogy represents the various representational states of the component. */
-          genealogy: string;
-          /**
-           * @description Identifies whether the component is semantically meaningful or not; identifies whether the component should be treated as deployable entity or is for purposes of logical representation.
-           * @default false
-           */
-          isAnnotation: boolean;
-          /** @description Identifies whether the component is scoped to namespace or cluster wide. */
-          isNamespaced: boolean;
-          /** @description 'published' controls whether the component should be registered in Meshery Registry. When the same 'published' property in Models, is set to 'false', the Model property takes precedence with all Entities in the Model not being registered. */
-          published: boolean;
-          /** @description InstanceDetails contains information about the instance of the component. */
-          instanceDetails: { [key: string]: unknown };
-          /** @description Defines the UI schema for rendering the component's configuration. For more details, visit: https://rjsf-team.github.io/react-jsonschema-form/docs/api-reference/uiSchema/ . */
-          configurationUISchema: string;
-        } & { [key: string]: unknown };
-        /** @description The configuration of the component. The configuration is based on the schema defined within the component definition(component.schema). */
-        configuration: { [key: string]: unknown };
-        /** @description Data related to the third-party capability that a ComponentDefinition wraps; this payload is treated as a hermetically sealed, opaque object. */
-        component: {
-          /** @description Version of the component produced by the registrant. Example: APIVersion of a Kubernetes Pod. */
-          version: string;
-          /** @description The unique identifier (name) assigned by the registrant to this component. Example: A Kubernetes Pod is of kind 'Pod'. */
-          kind: string;
-          /** @description JSON schema of the object as defined by the registrant. */
-          schema: string;
-        };
-        /**
-         * Format: date-time
-         * @description Timestamp when the resource was created.
-         */
-        created_at?: string;
-        /**
-         * Format: date-time
-         * @description Timestamp when the resource was updated.
-         */
-        updated_at?: string;
-      }[];
-      /** @description Design-level preferences */
-      preferences?: {
-        /** @description Map of available layers, where keys are layer names. */
-        layers: { [key: string]: unknown };
-      };
-      /** @description List of relationships between components */
-      relationships: {
-        /**
-         * Format: uuid
-         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-         */
-        id: string;
-        /**
-         * @description Specifies the version of the schema used for the relationship definition.
-         * @example [
-         *   "v1",
-         *   "v1alpha1",
-         *   "v2beta3",
-         *   "v1.custom-suffix",
-         *   "models.meshery.io/v1beta1",
-         *   "capability.meshery.io/v1alpha1"
-         * ]
-         */
-        schemaVersion: string;
-        /** @description Specifies the version of the relationship definition. */
-        version: string;
-        /**
-         * @description Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.
-         * @enum {string}
-         */
-        kind: "hierarchical" | "edge" | "sibling";
-        /** @description Classification of relationships. Used to group relationships similar in nature. */
-        type: string;
-        /** @description Most granular unit of relationship classification. The combination of Kind, Type and SubType together uniquely identify a Relationship. */
-        subType: string;
-        /**
-         * @description Status of the relationship.
-         * @enum {string}
-         */
-        status?: "enabled" | "ignored" | "deleted" | "approved" | "pending";
-        /** @description Capabilities associated with the relationship. */
-        capabilities?: {
-          /**
-           * @description Specifies the version of the schema to which the capability definition conforms.
-           * @example [
-           *   "v1",
-           *   "v1alpha1",
-           *   "v2beta3",
-           *   "v1.custom-suffix",
-           *   "models.meshery.io/v1beta1",
-           *   "capability.meshery.io/v1alpha1"
-           * ]
-           */
-          schemaVersion: string;
-          /** @description Version of the capability definition. */
-          version: string;
-          /** @description Name of the capability in human-readible format. */
-          displayName: string;
-          /** @description A written representation of the purpose and characteristics of the capability. */
-          description: string;
-          /** @description Top-level categorization of the capability */
-          kind: string;
-          /** @description Classification of capabilities. Used to group capabilities similar in nature. */
-          type: string;
-          /** @description Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
-          subType: string;
-          /** @description Key that backs the capability. */
-          key: string;
-          /** @description State of the entity in which the capability is applicable. */
-          entityState: ("declaration" | "instance")[];
-          /**
-           * @description Status of the capability
-           * @default enabled
-           * @enum {string}
-           */
-          status: "enabled" | "disabled";
-          /** @description Metadata contains additional information associated with the capability. Extension point. */
-          metadata?: { [key: string]: unknown };
-        }[];
-        /** @description Metadata contains additional information associated with the Relationship. */
-        metadata?: {
-          /** @description Characterization of the meaning of the relationship and its relevance to both Meshery and entities under management. */
-          description?: string;
-          /** @description Visualization styles for a relationship */
-          styles?: {
-            /** @description Primary color of the component used for UI representation. */
-            primaryColor: string;
-            /** @description Secondary color of the entity used for UI representation. */
-            secondaryColor?: string;
-            /** @description White SVG of the entity used for UI representation on dark background. */
-            svgWhite: string;
-            /** @description Colored SVG of the entity used for UI representation on light background. */
-            svgColor: string;
-            /** @description Complete SVG of the entity used for UI representation, often inclusive of background. */
-            svgComplete?: string;
-            /** @description The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
-            color?: string;
-            /**
-             * Format: float
-             * @description The opacity of the label text, including its outline.
-             */
-            textOpacity?: number;
-            /** @description A comma-separated list of font names to use on the label text. */
-            fontFamily?: string;
-            /** @description The size of the label text. */
-            fontSize?: string;
-            /** @description A CSS font style to be applied to the label text. */
-            fontStyle?: string;
-            /** @description A CSS font weight to be applied to the label text. */
-            fontWeight?: string;
-            /**
-             * @description A transformation to apply to the label text
-             * @enum {string}
-             */
-            textTransform?: "none" | "uppercase" | "lowercase";
-            /**
-             * Format: float
-             * @description The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.See https://js.cytoscape.org/#style/visibility
-             */
-            opacity?: number;
-            /** @description An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
-            zIndex?: number;
-            /** @description The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
-            label?: string;
-            /** @description The animation to use for the edge. Can be like 'marching-ants' , 'blink' , 'moving-gradient',etc . */
-            edgeAnimation?: string;
-            /**
-             * @description The curving method used to separate two or more edges between two nodes; may be haystack (very fast, bundled straight edges for which loops and compounds are unsupported), straight (straight edges with all arrows supported), bezier (bundled curved edges), unbundled-bezier (curved edges for use with manual control points), segments (a series of straight lines), taxi (right-angled lines, hierarchically bundled). Note that haystack edges work best with ellipse, rectangle, or similar nodes. Smaller node shapes, like triangle, will not be as aesthetically pleasing. Also note that edge endpoint arrows are unsupported for haystack edges.
-             * @enum {string}
-             */
-            curveStyle?:
-              | "haystack"
-              | "straight"
-              | "bezier"
-              | "unbundled-bezier"
-              | "segments"
-              | "taxi";
-            /** @description The colour of the edge's line. Colours may be specified by name (e.g. red), hex (e.g. */
-            lineColor?: string;
-            /**
-             * @description The style of the edge's line.
-             * @enum {string}
-             */
-            lineStyle?: "solid" | "dotted" | "dashed";
-            /**
-             * @description The cap style of the edge's line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.
-             * @enum {string}
-             */
-            lineCap?: "butt" | "round" | "square";
-            /**
-             * Format: float
-             * @description The opacity of the edge's line and arrow. Useful if you wish to have a separate opacity for the edge label versus the edge line. Note that the opacity value of the edge element affects the effective opacity of its line and label subcomponents.
-             */
-            lineOpacity?: number;
-            /** @description The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g. */
-            targetArrowColor?: string;
-            /**
-             * @description The shape of the edge's source arrow
-             * @enum {string}
-             */
-            targetArrowShape?:
-              | "triangle"
-              | "triangle-tee"
-              | "circle-triangle"
-              | "triangle-cross"
-              | "triangle-backcurve"
-              | "vee"
-              | "tee"
-              | "square"
-              | "circle"
-              | "diamond"
-              | "chevron"
-              | "none";
-            /**
-             * @description The fill state of the edge's source arrow
-             * @enum {string}
-             */
-            targetArrowFill?: "filled" | "hollow";
-            /** @description The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g. */
-            midTargetArrowColor?: string;
-            /**
-             * @description The shape of the edge's source arrow
-             * @enum {string}
-             */
-            midTargetArrowShape?:
-              | "triangle"
-              | "triangle-tee"
-              | "circle-triangle"
-              | "triangle-cross"
-              | "triangle-backcurve"
-              | "vee"
-              | "tee"
-              | "square"
-              | "circle"
-              | "diamond"
-              | "chevron"
-              | "none";
-            /**
-             * @description The fill state of the edge's source arrow
-             * @enum {string}
-             */
-            midTargetArrowFill?: "filled" | "hollow";
-            /**
-             * Format: float
-             * @description Scaling for the arrow size.
-             */
-            arrowScale?: number;
-            /** @description The text to display for an edge's source label. Can give a path, e.g. data(id) will label with the elements id */
-            sourceLabel?: string;
-            /** @description The text to display for an edge's target label. Can give a path, e.g. data(id) will label with the elements id */
-            targetLabel?: string;
-          };
-          /** @description Indicates whether the relationship should be treated as a logical representation only */
-          isAnnotation?: boolean;
-        } & { [key: string]: unknown };
-        /** @description Model Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
-        model: {
-          /**
-           * Format: uuid
-           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-           */
-          id: string;
-          /** @description The unique name for the model within the scope of a registrant. */
-          name: string;
-          /** @description Version of the model definition. */
-          version: string;
-          /** @description Human-readable name for the model. */
-          displayName: string;
-          /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
-          model: {
-            /** @description Version of the model as defined by the registrant. */
-            version: string;
-          };
-          registrant: {
-            /** @description Kind of the registrant. */
-            kind: string;
-          };
-        };
-        /**
-         * Format: uuid
-         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-         */
-        model_id?: string;
-        /** @description Optional. Assigns the policy to be used for the evaluation of the relationship. Deprecation Notice: In the future, this property is either to be removed or to it is to be an array of optional policy $refs. */
-        evaluationQuery?: string;
-        /** @description Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved. */
-        selectors?: {
-          /** @description Selectors used to define relationships which are allowed. */
-          allow: {
-            /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
-            from: {
-              /**
-               * Format: uuid
-               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-               */
-              id?: string;
-              /** @description Kind of the resource. */
-              kind?: string;
-              /** @description Match configuration for selector */
-              match?: {
-                /** @description The refs of the matchselector. */
-                refs?: string[][];
-                /** @description The from of the matchselector. */
-                from?: {
-                  /**
-                   * Format: uuid
-                   * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                   */
-                  id?: string;
-                  /** @description Kind of the resource. */
-                  kind: string;
-                  /** @description JSON ref to value from where patch should be applied. */
-                  mutatorRef?: string[][];
-                  mutatedRef?: string[][];
-                }[];
-                /** @description The to of the matchselector. */
-                to?: {
-                  /**
-                   * Format: uuid
-                   * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                   */
-                  id?: string;
-                  /** @description Kind of the resource. */
-                  kind: string;
-                  /** @description JSON ref to value from where patch should be applied. */
-                  mutatorRef?: string[][];
-                  mutatedRef?: string[][];
-                }[];
-              };
-              /** @description Match strategy matrix for the selector */
-              matchStrategyMatrix?: string[][];
-              /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
-              model?: {
-                /**
-                 * Format: uuid
-                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                 */
-                id: string;
-                /** @description The unique name for the model within the scope of a registrant. */
-                name: string;
-                /** @description Version of the model definition. */
-                version: string;
-                /** @description Human-readable name for the model. */
-                displayName: string;
-                /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
-                model: {
-                  /** @description Version of the model as defined by the registrant. */
-                  version: string;
-                };
-                registrant: {
-                  /** @description Kind of the registrant. */
-                  kind: string;
-                };
-              };
-              /** @description Patch configuration for the selector */
-              patch?: {
-                /**
-                 * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
-                 *
-                 * add: Inserts a value into an array or adds a member to an object.
-                 * merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
-                 * strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
-                 * remove: Removes a value.
-                 * copy: Copies a value from one location to another.
-                 * move: Moves a value from one location to another.
-                 * test: Tests that a value at the target location is equal to a specified value.
-                 *
-                 * @enum {string}
-                 */
-                patchStrategy?:
-                  | "merge"
-                  | "strategic"
-                  | "add"
-                  | "remove"
-                  | "copy"
-                  | "move"
-                  | "test";
-                /** @description JSON ref to value from where patch should be applied. */
-                mutatorRef?: string[][];
-                mutatedRef?: string[][];
-              };
-            }[];
-            /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
-            to: {
-              /**
-               * Format: uuid
-               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-               */
-              id?: string;
-              /** @description Kind of the resource. */
-              kind?: string;
-              /** @description Match configuration for selector */
-              match?: {
-                /** @description The refs of the matchselector. */
-                refs?: string[][];
-                /** @description The from of the matchselector. */
-                from?: {
-                  /**
-                   * Format: uuid
-                   * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                   */
-                  id?: string;
-                  /** @description Kind of the resource. */
-                  kind: string;
-                  /** @description JSON ref to value from where patch should be applied. */
-                  mutatorRef?: string[][];
-                  mutatedRef?: string[][];
-                }[];
-                /** @description The to of the matchselector. */
-                to?: {
-                  /**
-                   * Format: uuid
-                   * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                   */
-                  id?: string;
-                  /** @description Kind of the resource. */
-                  kind: string;
-                  /** @description JSON ref to value from where patch should be applied. */
-                  mutatorRef?: string[][];
-                  mutatedRef?: string[][];
-                }[];
-              };
-              /** @description Match strategy matrix for the selector */
-              matchStrategyMatrix?: string[][];
-              /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
-              model?: {
-                /**
-                 * Format: uuid
-                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                 */
-                id: string;
-                /** @description The unique name for the model within the scope of a registrant. */
-                name: string;
-                /** @description Version of the model definition. */
-                version: string;
-                /** @description Human-readable name for the model. */
-                displayName: string;
-                /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
-                model: {
-                  /** @description Version of the model as defined by the registrant. */
-                  version: string;
-                };
-                registrant: {
-                  /** @description Kind of the registrant. */
-                  kind: string;
-                };
-              };
-              /** @description Patch configuration for the selector */
-              patch?: {
-                /**
-                 * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
-                 *
-                 * add: Inserts a value into an array or adds a member to an object.
-                 * merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
-                 * strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
-                 * remove: Removes a value.
-                 * copy: Copies a value from one location to another.
-                 * move: Moves a value from one location to another.
-                 * test: Tests that a value at the target location is equal to a specified value.
-                 *
-                 * @enum {string}
-                 */
-                patchStrategy?:
-                  | "merge"
-                  | "strategic"
-                  | "add"
-                  | "remove"
-                  | "copy"
-                  | "move"
-                  | "test";
-                /** @description JSON ref to value from where patch should be applied. */
-                mutatorRef?: string[][];
-                mutatedRef?: string[][];
-              };
-            }[];
-          };
-          /** @description Optional selectors used to define relationships which should not be created / is restricted. */
-          deny?: {
-            /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
-            from: {
-              /**
-               * Format: uuid
-               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-               */
-              id?: string;
-              /** @description Kind of the resource. */
-              kind?: string;
-              /** @description Match configuration for selector */
-              match?: {
-                /** @description The refs of the matchselector. */
-                refs?: string[][];
-                /** @description The from of the matchselector. */
-                from?: {
-                  /**
-                   * Format: uuid
-                   * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                   */
-                  id?: string;
-                  /** @description Kind of the resource. */
-                  kind: string;
-                  /** @description JSON ref to value from where patch should be applied. */
-                  mutatorRef?: string[][];
-                  mutatedRef?: string[][];
-                }[];
-                /** @description The to of the matchselector. */
-                to?: {
-                  /**
-                   * Format: uuid
-                   * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                   */
-                  id?: string;
-                  /** @description Kind of the resource. */
-                  kind: string;
-                  /** @description JSON ref to value from where patch should be applied. */
-                  mutatorRef?: string[][];
-                  mutatedRef?: string[][];
-                }[];
-              };
-              /** @description Match strategy matrix for the selector */
-              matchStrategyMatrix?: string[][];
-              /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
-              model?: {
-                /**
-                 * Format: uuid
-                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                 */
-                id: string;
-                /** @description The unique name for the model within the scope of a registrant. */
-                name: string;
-                /** @description Version of the model definition. */
-                version: string;
-                /** @description Human-readable name for the model. */
-                displayName: string;
-                /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
-                model: {
-                  /** @description Version of the model as defined by the registrant. */
-                  version: string;
-                };
-                registrant: {
-                  /** @description Kind of the registrant. */
-                  kind: string;
-                };
-              };
-              /** @description Patch configuration for the selector */
-              patch?: {
-                /**
-                 * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
-                 *
-                 * add: Inserts a value into an array or adds a member to an object.
-                 * merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
-                 * strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
-                 * remove: Removes a value.
-                 * copy: Copies a value from one location to another.
-                 * move: Moves a value from one location to another.
-                 * test: Tests that a value at the target location is equal to a specified value.
-                 *
-                 * @enum {string}
-                 */
-                patchStrategy?:
-                  | "merge"
-                  | "strategic"
-                  | "add"
-                  | "remove"
-                  | "copy"
-                  | "move"
-                  | "test";
-                /** @description JSON ref to value from where patch should be applied. */
-                mutatorRef?: string[][];
-                mutatedRef?: string[][];
-              };
-            }[];
-            /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
-            to: {
-              /**
-               * Format: uuid
-               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-               */
-              id?: string;
-              /** @description Kind of the resource. */
-              kind?: string;
-              /** @description Match configuration for selector */
-              match?: {
-                /** @description The refs of the matchselector. */
-                refs?: string[][];
-                /** @description The from of the matchselector. */
-                from?: {
-                  /**
-                   * Format: uuid
-                   * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                   */
-                  id?: string;
-                  /** @description Kind of the resource. */
-                  kind: string;
-                  /** @description JSON ref to value from where patch should be applied. */
-                  mutatorRef?: string[][];
-                  mutatedRef?: string[][];
-                }[];
-                /** @description The to of the matchselector. */
-                to?: {
-                  /**
-                   * Format: uuid
-                   * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                   */
-                  id?: string;
-                  /** @description Kind of the resource. */
-                  kind: string;
-                  /** @description JSON ref to value from where patch should be applied. */
-                  mutatorRef?: string[][];
-                  mutatedRef?: string[][];
-                }[];
-              };
-              /** @description Match strategy matrix for the selector */
-              matchStrategyMatrix?: string[][];
-              /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
-              model?: {
-                /**
-                 * Format: uuid
-                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                 */
-                id: string;
-                /** @description The unique name for the model within the scope of a registrant. */
-                name: string;
-                /** @description Version of the model definition. */
-                version: string;
-                /** @description Human-readable name for the model. */
-                displayName: string;
-                /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
-                model: {
-                  /** @description Version of the model as defined by the registrant. */
-                  version: string;
-                };
-                registrant: {
-                  /** @description Kind of the registrant. */
-                  kind: string;
-                };
-              };
-              /** @description Patch configuration for the selector */
-              patch?: {
-                /**
-                 * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
-                 *
-                 * add: Inserts a value into an array or adds a member to an object.
-                 * merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
-                 * strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
-                 * remove: Removes a value.
-                 * copy: Copies a value from one location to another.
-                 * move: Moves a value from one location to another.
-                 * test: Tests that a value at the target location is equal to a specified value.
-                 *
-                 * @enum {string}
-                 */
-                patchStrategy?:
-                  | "merge"
-                  | "strategic"
-                  | "add"
-                  | "remove"
-                  | "copy"
-                  | "move"
-                  | "test";
-                /** @description JSON ref to value from where patch should be applied. */
-                mutatorRef?: string[][];
-                mutatedRef?: string[][];
-              };
-            }[];
-          };
-        }[];
-      }[];
-    };
-    /** @description Server-returned design (pattern) resource as persisted by meshery-cloud. */
-    MesheryPattern: {
-      /**
-       * Format: uuid
-       * @description Server-generated design ID.
-       */
-      id?: string;
-      /** @description Human-readable design name. */
-      name?: string;
-      /** @description Catalog metadata attached to the design when published. */
-      catalogData?: {
-        /** @description Tracks the specific content version that has been made available in the Catalog. */
-        publishedVersion?: string;
-        /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-        class?: string;
-        /**
-         * Model
-         * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
-         */
-        compatibility: "kubernetes"[];
-        /**
-         * Caveats and Considerations
-         * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
-         */
-        patternCaveats: string;
-        /**
-         * Description
-         * @description Purpose of the design along with its intended and unintended uses.
-         */
-        patternInfo: string;
-        /**
-         * Type
-         * @description Categorization of the type of design or operational flow depicted in this design.
-         * @default Deployment
-         * @enum {string}
-         */
-        type:
-          | "Deployment"
-          | "Observability"
-          | "Resiliency"
-          | "Scaling"
-          | "Security"
-          | "Traffic-management"
-          | "Troubleshooting"
-          | "Workloads";
-        /** @description Contains reference to the dark and light mode snapshots of the design. */
-        snapshotURL?: string[];
-      };
-      /**
-       * Format: uuid
-       * @description Owning user ID.
-       */
-      userId?: string;
-      /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
-      user?: {
-        /**
-         * Format: uuid
-         * @description Unique identifier for the user
-         */
-        id: string;
-        /** @description User identifier (username or external ID) */
-        userId: string;
-        /**
-         * @description Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)
-         * @example [
-         *   "local",
-         *   "github",
-         *   "google",
-         *   "twitter"
-         * ]
-         */
-        provider: string;
-        /**
-         * Format: email
-         * @description User's email address
-         */
-        email: string;
-        /** @description User's first name */
-        firstName: string;
-        /** @description User's last name */
-        lastName: string;
-        /**
-         * Format: uri
-         * @description URL to user's avatar image
-         */
-        avatarUrl?: string;
-        /**
-         * @description User account status
-         * @enum {string}
-         */
-        status: "active" | "inactive" | "pending" | "anonymous";
-        /**
-         * @description User's biography or description
-         * @default
-         */
-        bio?: string;
-        /** @description User's country information stored as JSONB */
-        country?: { [key: string]: unknown };
-        /** @description User's region information stored as JSONB */
-        region?: { [key: string]: unknown };
-        /** @description User preferences stored as JSONB */
-        preferences?: {
-          /** @description The mesh adapters of the preference. */
-          meshAdapters?: { [key: string]: unknown }[];
-          grafana?: {
-            /** @description Grafana URL for the user configuration. */
-            grafanaUrl?: string;
-            /** @description Grafana API key for the user configuration. */
-            grafanaApiKey?: string;
-            /** @description Selected Grafana board configurations for the user. */
-            selectedBoardsConfigs?: {
-              /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-              board?: { [key: string]: unknown };
-              /** @description Panels selected for the Grafana board configuration. */
-              panels?: { [key: string]: unknown }[];
-              /** @description Template variables applied to the selected Grafana board configuration. */
-              templateVars?: string[];
-            }[];
-          };
-          prometheus?: {
-            /** @description The prometheus URL of the prometheus. */
-            prometheusUrl?: string;
-            /** @description The selected prometheus boards configs of the prometheus. */
-            selectedPrometheusBoardsConfigs?: {
-              /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-              board?: { [key: string]: unknown };
-              /** @description Panels selected for the Grafana board configuration. */
-              panels?: { [key: string]: unknown }[];
-              /** @description Template variables applied to the selected Grafana board configuration. */
-              templateVars?: string[];
-            }[];
-          };
-          loadTestPrefs?: {
-            /** @description Concurrent requests */
-            c?: number;
-            /** @description Queries per second */
-            qps?: number;
-            /** @description Duration */
-            t?: string;
-            /** @description Load generator */
-            gen?: string;
-          };
-          /** @description The anonymous usage stats of the preference. */
-          anonymousUsageStats: boolean;
-          /** @description The anonymous perf results of the preference. */
-          anonymousPerfResults: boolean;
-          /**
-           * Format: date-time
-           * @description Timestamp of when the resource was last updated.
-           */
-          updatedAt: string;
-          /** @description The dashboard preferences of the preference. */
-          dashboardPreferences: { [key: string]: unknown };
-          /**
-           * Format: uuid
-           * @description ID of the associated selectedOrganization.
-           */
-          selectedOrganizationId: string;
-          /** @description The selected workspace for organizations of the preference. */
-          selectedWorkspaceForOrganizations: { [key: string]: string };
-          /** @description The users extension preferences of the preference. */
-          usersExtensionPreferences: { [key: string]: unknown };
-          /** @description The remote provider preferences of the preference. */
-          remoteProviderPreferences: { [key: string]: unknown };
-        };
-        /**
-         * Format: date-time
-         * @description Timestamp when user accepted terms and conditions
-         */
-        acceptedTermsAt?: string;
-        /**
-         * Format: date-time
-         * @description Timestamp of user's first login
-         */
-        firstLoginTime?: string;
-        /**
-         * Format: date-time
-         * @description Timestamp of user's most recent login
-         */
-        lastLoginTime: string;
-        /**
-         * Format: date-time
-         * @description Timestamp when the user record was created
-         */
-        createdAt: string;
-        /**
-         * Format: date-time
-         * @description Timestamp when the user record was last updated
-         */
-        updatedAt: string;
-        /** @description Various online profiles associated with the user account */
-        socials?: {
-          /** @description The site of the social. */
-          site: string;
-          /**
-           * Format: uri
-           * @description The link of the social.
-           */
-          link: string;
-        }[];
-        /**
-         * Format: date-time
-         * @description Timestamp when the user record was soft-deleted (null if not deleted)
-         */
-        deletedAt: string | null;
-        /**
-         * @description List of global roles assigned to the user
-         * @example [
-         *   "admin",
-         *   "meshmap"
-         * ]
-         */
-        roleNames?: (
-          | "admin"
-          | "meshmap"
-          | "curator"
-          | "team admin"
-          | "workspace admin"
-          | "workspace manager"
-          | "organization admin"
-          | "user"
-        )[];
-        /** @description Teams the user belongs to with role information */
-        teams?: {
-          /** @description Team memberships for the user with their assigned roles. */
-          teamsWithRoles?: { [key: string]: unknown }[];
-          /** @description Total number of team memberships returned for the user. */
-          totalCount?: number;
-        };
-        /** @description Organizations the user belongs to with role information */
-        organizations?: {
-          /** @description Organization memberships for the user with their assigned roles. */
-          organizationsWithRoles?: { [key: string]: unknown }[];
-          /** @description Total number of organization memberships returned for the user. */
-          totalCount?: number;
-        };
-      } | null;
-      /** @description Optional structured location metadata (branch, host, path, ...). */
-      location?: { [key: string]: string };
-      /** @description Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied. */
-      patternFile?: string;
-      /**
-       * @description Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
-       *
-       * @enum {string}
-       */
-      visibility?: "private" | "public" | "published";
-      /**
-       * @description Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
-       *
-       * @enum {string|null}
-       */
-      designType?:
-        | ("Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest")
-        | null;
-      /**
-       * Format: byte
-       * @description Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.
-       */
-      sourceContent?: string | null;
-      /**
-       * @description Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
-       *
-       * @default 0
-       */
-      viewCount?: number;
-      /**
-       * @description Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
-       *
-       * @default 0
-       */
-      downloadCount?: number;
-      /**
-       * @description Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
-       *
-       * @default 0
-       */
-      cloneCount?: number;
-      /**
-       * @description Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
-       *
-       * @default 0
-       */
-      deploymentCount?: number;
-      /**
-       * @description Server-aggregated count of share events for this design. Server-managed and ignored on writes.
-       *
-       * @default 0
-       */
-      shareCount?: number;
-      /**
-       * Format: date-time
-       * @description Timestamp of design creation.
-       */
-      createdAt?: string;
-      /**
-       * Format: date-time
-       * @description Timestamp of last design modification.
-       */
-      updatedAt?: string;
-    };
-    /** @description Paginated collection of designs. */
-    MesheryPatternPage: {
-      /** @description Current page number of the result set. */
-      page?: number;
-      /** @description Number of items per page. */
-      pageSize?: number;
-      /** @description Total number of items available. */
-      totalCount?: number;
-      /** @description Designs included on this page of results. */
-      patterns?: {
-        /**
-         * Format: uuid
-         * @description Server-generated design ID.
-         */
-        id?: string;
-        /** @description Human-readable design name. */
-        name?: string;
-        /** @description Catalog metadata attached to the design when published. */
-        catalogData?: {
-          /** @description Tracks the specific content version that has been made available in the Catalog. */
-          publishedVersion?: string;
-          /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-          class?: string;
-          /**
-           * Model
-           * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
-           */
-          compatibility: "kubernetes"[];
-          /**
-           * Caveats and Considerations
-           * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
-           */
-          patternCaveats: string;
-          /**
-           * Description
-           * @description Purpose of the design along with its intended and unintended uses.
-           */
-          patternInfo: string;
-          /**
-           * Type
-           * @description Categorization of the type of design or operational flow depicted in this design.
-           * @default Deployment
-           * @enum {string}
-           */
-          type:
-            | "Deployment"
-            | "Observability"
-            | "Resiliency"
-            | "Scaling"
-            | "Security"
-            | "Traffic-management"
-            | "Troubleshooting"
-            | "Workloads";
-          /** @description Contains reference to the dark and light mode snapshots of the design. */
-          snapshotURL?: string[];
-        };
-        /**
-         * Format: uuid
-         * @description Owning user ID.
-         */
-        userId?: string;
-        /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
-        user?: {
-          /**
-           * Format: uuid
-           * @description Unique identifier for the user
-           */
-          id: string;
-          /** @description User identifier (username or external ID) */
-          userId: string;
-          /**
-           * @description Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)
-           * @example [
-           *   "local",
-           *   "github",
-           *   "google",
-           *   "twitter"
-           * ]
-           */
-          provider: string;
-          /**
-           * Format: email
-           * @description User's email address
-           */
-          email: string;
-          /** @description User's first name */
-          firstName: string;
-          /** @description User's last name */
-          lastName: string;
-          /**
-           * Format: uri
-           * @description URL to user's avatar image
-           */
-          avatarUrl?: string;
-          /**
-           * @description User account status
-           * @enum {string}
-           */
-          status: "active" | "inactive" | "pending" | "anonymous";
-          /**
-           * @description User's biography or description
-           * @default
-           */
-          bio?: string;
-          /** @description User's country information stored as JSONB */
-          country?: { [key: string]: unknown };
-          /** @description User's region information stored as JSONB */
-          region?: { [key: string]: unknown };
-          /** @description User preferences stored as JSONB */
-          preferences?: {
-            /** @description The mesh adapters of the preference. */
-            meshAdapters?: { [key: string]: unknown }[];
-            grafana?: {
-              /** @description Grafana URL for the user configuration. */
-              grafanaUrl?: string;
-              /** @description Grafana API key for the user configuration. */
-              grafanaApiKey?: string;
-              /** @description Selected Grafana board configurations for the user. */
-              selectedBoardsConfigs?: {
-                /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                board?: { [key: string]: unknown };
-                /** @description Panels selected for the Grafana board configuration. */
-                panels?: { [key: string]: unknown }[];
-                /** @description Template variables applied to the selected Grafana board configuration. */
-                templateVars?: string[];
-              }[];
-            };
-            prometheus?: {
-              /** @description The prometheus URL of the prometheus. */
-              prometheusUrl?: string;
-              /** @description The selected prometheus boards configs of the prometheus. */
-              selectedPrometheusBoardsConfigs?: {
-                /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                board?: { [key: string]: unknown };
-                /** @description Panels selected for the Grafana board configuration. */
-                panels?: { [key: string]: unknown }[];
-                /** @description Template variables applied to the selected Grafana board configuration. */
-                templateVars?: string[];
-              }[];
-            };
-            loadTestPrefs?: {
-              /** @description Concurrent requests */
-              c?: number;
-              /** @description Queries per second */
-              qps?: number;
-              /** @description Duration */
-              t?: string;
-              /** @description Load generator */
-              gen?: string;
-            };
-            /** @description The anonymous usage stats of the preference. */
-            anonymousUsageStats: boolean;
-            /** @description The anonymous perf results of the preference. */
-            anonymousPerfResults: boolean;
-            /**
-             * Format: date-time
-             * @description Timestamp of when the resource was last updated.
-             */
-            updatedAt: string;
-            /** @description The dashboard preferences of the preference. */
-            dashboardPreferences: { [key: string]: unknown };
-            /**
-             * Format: uuid
-             * @description ID of the associated selectedOrganization.
-             */
-            selectedOrganizationId: string;
-            /** @description The selected workspace for organizations of the preference. */
-            selectedWorkspaceForOrganizations: { [key: string]: string };
-            /** @description The users extension preferences of the preference. */
-            usersExtensionPreferences: { [key: string]: unknown };
-            /** @description The remote provider preferences of the preference. */
-            remoteProviderPreferences: { [key: string]: unknown };
-          };
-          /**
-           * Format: date-time
-           * @description Timestamp when user accepted terms and conditions
-           */
-          acceptedTermsAt?: string;
-          /**
-           * Format: date-time
-           * @description Timestamp of user's first login
-           */
-          firstLoginTime?: string;
-          /**
-           * Format: date-time
-           * @description Timestamp of user's most recent login
-           */
-          lastLoginTime: string;
-          /**
-           * Format: date-time
-           * @description Timestamp when the user record was created
-           */
-          createdAt: string;
-          /**
-           * Format: date-time
-           * @description Timestamp when the user record was last updated
-           */
-          updatedAt: string;
-          /** @description Various online profiles associated with the user account */
-          socials?: {
-            /** @description The site of the social. */
-            site: string;
-            /**
-             * Format: uri
-             * @description The link of the social.
-             */
-            link: string;
-          }[];
-          /**
-           * Format: date-time
-           * @description Timestamp when the user record was soft-deleted (null if not deleted)
-           */
-          deletedAt: string | null;
-          /**
-           * @description List of global roles assigned to the user
-           * @example [
-           *   "admin",
-           *   "meshmap"
-           * ]
-           */
-          roleNames?: (
-            | "admin"
-            | "meshmap"
-            | "curator"
-            | "team admin"
-            | "workspace admin"
-            | "workspace manager"
-            | "organization admin"
-            | "user"
-          )[];
-          /** @description Teams the user belongs to with role information */
-          teams?: {
-            /** @description Team memberships for the user with their assigned roles. */
-            teamsWithRoles?: { [key: string]: unknown }[];
-            /** @description Total number of team memberships returned for the user. */
-            totalCount?: number;
-          };
-          /** @description Organizations the user belongs to with role information */
-          organizations?: {
-            /** @description Organization memberships for the user with their assigned roles. */
-            organizationsWithRoles?: { [key: string]: unknown }[];
-            /** @description Total number of organization memberships returned for the user. */
-            totalCount?: number;
-          };
-        } | null;
-        /** @description Optional structured location metadata (branch, host, path, ...). */
-        location?: { [key: string]: string };
-        /** @description Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied. */
-        patternFile?: string;
-        /**
-         * @description Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
-         *
-         * @enum {string}
-         */
-        visibility?: "private" | "public" | "published";
-        /**
-         * @description Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
-         *
-         * @enum {string|null}
-         */
-        designType?:
-          | ("Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest")
-          | null;
-        /**
-         * Format: byte
-         * @description Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.
-         */
-        sourceContent?: string | null;
-        /**
-         * @description Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
-         *
-         * @default 0
-         */
-        viewCount?: number;
-        /**
-         * @description Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
-         *
-         * @default 0
-         */
-        downloadCount?: number;
-        /**
-         * @description Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
-         *
-         * @default 0
-         */
-        cloneCount?: number;
-        /**
-         * @description Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
-         *
-         * @default 0
-         */
-        deploymentCount?: number;
-        /**
-         * @description Server-aggregated count of share events for this design. Server-managed and ignored on writes.
-         *
-         * @default 0
-         */
-        shareCount?: number;
-        /**
-         * Format: date-time
-         * @description Timestamp of design creation.
-         */
-        createdAt?: string;
-        /**
-         * Format: date-time
-         * @description Timestamp of last design modification.
-         */
-        updatedAt?: string;
-      }[];
-      /** @description Optional discriminator describing which collection the page represents. */
-      resultType?: string;
-    };
-    /** @description Payload for bulk deleting designs by ID. */
-    MesheryPatternDeleteRequestBody: {
-      /** @description Designs targeted for deletion. */
-      patterns?: {
-        /**
-         * Format: uuid
-         * @description Design ID targeted for deletion.
-         */
-        id?: string;
-        /** @description Human-readable design name (informational only; server matches on id). */
-        name?: string;
-      }[];
-    };
-    /** @description Client-settable subset of the design (pattern) entity used as the body of the inner `patternData` envelope on POST /api/content/patterns. Server-generated fields (createdAt, updatedAt, viewCount, downloadCount, cloneCount, deploymentCount, shareCount, the joined `user` object, and the imported-source `sourceContent` blob) are deliberately excluded — the server ignores them on writes and re-projects them on the response. */
-    MesheryPatternPayload: {
-      /**
-       * Format: uuid
-       * @description Existing design ID for updates; omit on create.
-       */
-      id?: string;
-      /** @description Human-readable design name. */
-      name?: string;
-      /**
-       * Format: uuid
-       * @description Owning user ID. Server overrides with the authenticated caller on create.
-       */
-      userId?: string;
-      /** @description Catalog metadata to attach to the design when publishing. */
-      catalogData?: {
-        /** @description Tracks the specific content version that has been made available in the Catalog. */
-        publishedVersion?: string;
-        /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-        class?: string;
-        /**
-         * Model
-         * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
-         */
-        compatibility: "kubernetes"[];
-        /**
-         * Caveats and Considerations
-         * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
-         */
-        patternCaveats: string;
-        /**
-         * Description
-         * @description Purpose of the design along with its intended and unintended uses.
-         */
-        patternInfo: string;
-        /**
-         * Type
-         * @description Categorization of the type of design or operational flow depicted in this design.
-         * @default Deployment
-         * @enum {string}
-         */
-        type:
-          | "Deployment"
-          | "Observability"
-          | "Resiliency"
-          | "Scaling"
-          | "Security"
-          | "Traffic-management"
-          | "Troubleshooting"
-          | "Workloads";
-        /** @description Contains reference to the dark and light mode snapshots of the design. */
-        snapshotURL?: string[];
-      };
-      /** @description Optional structured location metadata (branch, host, path, ...). */
-      location?: { [key: string]: string };
-      /** @description Raw design body to persist into the `pattern_file` column. See MesheryPattern.patternFile for the transcode boundary note that applies on both writes and reads. */
-      patternFile?: string;
-      /**
-       * @description Visibility scope of the design.
-       * @enum {string}
-       */
-      visibility?: "private" | "public" | "published";
-      /**
-       * @description Discriminator identifying the source format of the design body, stored in the `source_type` column. Optional on create (the server defaults missing values to `Design`).
-       *
-       * @enum {string|null}
-       */
-      designType?:
-        | ("Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest")
-        | null;
-    };
-    /** @description Payload for upserting a design via POST /api/content/patterns. */
-    MesheryPatternRequestBody: {
-      /** @description Optional source path the design was loaded from. */
-      path?: string;
-      /** @description Design body to persist. */
-      patternData?: {
-        /**
-         * Format: uuid
-         * @description Existing design ID for updates; omit on create.
-         */
-        id?: string;
-        /** @description Human-readable design name. */
-        name?: string;
-        /**
-         * Format: uuid
-         * @description Owning user ID. Server overrides with the authenticated caller on create.
-         */
-        userId?: string;
-        /** @description Catalog metadata to attach to the design when publishing. */
-        catalogData?: {
-          /** @description Tracks the specific content version that has been made available in the Catalog. */
-          publishedVersion?: string;
-          /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-          class?: string;
-          /**
-           * Model
-           * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
-           */
-          compatibility: "kubernetes"[];
-          /**
-           * Caveats and Considerations
-           * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
-           */
-          patternCaveats: string;
-          /**
-           * Description
-           * @description Purpose of the design along with its intended and unintended uses.
-           */
-          patternInfo: string;
-          /**
-           * Type
-           * @description Categorization of the type of design or operational flow depicted in this design.
-           * @default Deployment
-           * @enum {string}
-           */
-          type:
-            | "Deployment"
-            | "Observability"
-            | "Resiliency"
-            | "Scaling"
-            | "Security"
-            | "Traffic-management"
-            | "Troubleshooting"
-            | "Workloads";
-          /** @description Contains reference to the dark and light mode snapshots of the design. */
-          snapshotURL?: string[];
-        };
-        /** @description Optional structured location metadata (branch, host, path, ...). */
-        location?: { [key: string]: string };
-        /** @description Raw design body to persist into the `pattern_file` column. See MesheryPattern.patternFile for the transcode boundary note that applies on both writes and reads. */
-        patternFile?: string;
-        /**
-         * @description Visibility scope of the design.
-         * @enum {string}
-         */
-        visibility?: "private" | "public" | "published";
-        /**
-         * @description Discriminator identifying the source format of the design body, stored in the `source_type` column. Optional on create (the server defaults missing values to `Design`).
-         *
-         * @enum {string|null}
-         */
-        designType?:
-          | ("Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest")
-          | null;
-      };
-      /** @description When true, persist the design in addition to parsing it. */
-      save?: boolean;
-      /**
-       * Format: uri
-       * @description Optional source URL the design was fetched from.
-       */
-      url?: string;
-      /** @description Human-readable design name. */
-      name?: string;
-    };
-    /** @description Body for POST /api/pattern/import. Consumed by the server as application/json. Exactly one of two variants must be supplied: a File Import carrying base64-encoded bytes plus a file name, or a URL Import naming a remote location the server will fetch. Sending both variants at once, or neither, is rejected with 400. */
-    MesheryPatternImportRequestBody:
-      | {
-          /**
-           * Format: byte
-           * @description Base64-encoded file bytes. Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details.
-           */
-          file: string;
-          /** @description The name of the pattern file being imported. Include the extension (e.g. `design.yaml`), as the server uses it to identify the file type. */
-          fileName: string;
-          /**
-           * @description Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.
-           * @default Untitled Design
-           */
-          name?: string;
-        }
-      | {
-          /**
-           * Format: uri
-           * @description A direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Ensure the resource is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details.
-           */
-          url: string;
-          /**
-           * @description Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.
-           * @default Untitled Design
-           */
-          name?: string;
-        };
-    /**
-     * File Import
-     * @description Upload a design file from the local system. Both `file` and `fileName` are required; the server uses the file name to identify the file type (Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design).
-     */
-    MesheryPatternImportFilePayload: {
-      /**
-       * Format: byte
-       * @description Base64-encoded file bytes. Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details.
-       */
-      file: string;
-      /** @description The name of the pattern file being imported. Include the extension (e.g. `design.yaml`), as the server uses it to identify the file type. */
-      fileName: string;
-      /**
-       * @description Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.
-       * @default Untitled Design
-       */
-      name?: string;
-    };
-    /**
-     * URL Import
-     * @description Import a design by URL. The server will fetch the resource and derive the file type from the response.
-     */
-    MesheryPatternImportURLPayload: {
-      /**
-       * Format: uri
-       * @description A direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Ensure the resource is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details.
-       */
-      url: string;
-      /**
-       * @description Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.
-       * @default Untitled Design
-       */
-      name?: string;
-    };
-    /** @description Design-level preferences */
-    DesignPreferences: {
-      /** @description Map of available layers, where keys are layer names. */
-      layers: { [key: string]: unknown };
-    };
-    CatalogContentItem: { [key: string]: unknown };
-    /** @description Paginated catalog content listing (designs, filters, aggregate counts). */
-    CatalogContentPage: {
-      /** @description Current page number of the result set. */
-      page?: number;
-      /** @description Number of items per page. */
-      pageSize?: number;
-      /** @description Total number of items available. */
-      totalCount?: number;
-      /** @description Published designs included on this page. */
-      patterns?: {
-        /**
-         * Format: uuid
-         * @description Server-generated design ID.
-         */
-        id?: string;
-        /** @description Human-readable design name. */
-        name?: string;
-        /** @description Catalog metadata attached to the design when published. */
-        catalogData?: {
-          /** @description Tracks the specific content version that has been made available in the Catalog. */
-          publishedVersion?: string;
-          /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-          class?: string;
-          /**
-           * Model
-           * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
-           */
-          compatibility: "kubernetes"[];
-          /**
-           * Caveats and Considerations
-           * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
-           */
-          patternCaveats: string;
-          /**
-           * Description
-           * @description Purpose of the design along with its intended and unintended uses.
-           */
-          patternInfo: string;
-          /**
-           * Type
-           * @description Categorization of the type of design or operational flow depicted in this design.
-           * @default Deployment
-           * @enum {string}
-           */
-          type:
-            | "Deployment"
-            | "Observability"
-            | "Resiliency"
-            | "Scaling"
-            | "Security"
-            | "Traffic-management"
-            | "Troubleshooting"
-            | "Workloads";
-          /** @description Contains reference to the dark and light mode snapshots of the design. */
-          snapshotURL?: string[];
-        };
-        /**
-         * Format: uuid
-         * @description Owning user ID.
-         */
-        userId?: string;
-        /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
-        user?: {
-          /**
-           * Format: uuid
-           * @description Unique identifier for the user
-           */
-          id: string;
-          /** @description User identifier (username or external ID) */
-          userId: string;
-          /**
-           * @description Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)
-           * @example [
-           *   "local",
-           *   "github",
-           *   "google",
-           *   "twitter"
-           * ]
-           */
-          provider: string;
-          /**
-           * Format: email
-           * @description User's email address
-           */
-          email: string;
-          /** @description User's first name */
-          firstName: string;
-          /** @description User's last name */
-          lastName: string;
-          /**
-           * Format: uri
-           * @description URL to user's avatar image
-           */
-          avatarUrl?: string;
-          /**
-           * @description User account status
-           * @enum {string}
-           */
-          status: "active" | "inactive" | "pending" | "anonymous";
-          /**
-           * @description User's biography or description
-           * @default
-           */
-          bio?: string;
-          /** @description User's country information stored as JSONB */
-          country?: { [key: string]: unknown };
-          /** @description User's region information stored as JSONB */
-          region?: { [key: string]: unknown };
-          /** @description User preferences stored as JSONB */
-          preferences?: {
-            /** @description The mesh adapters of the preference. */
-            meshAdapters?: { [key: string]: unknown }[];
-            grafana?: {
-              /** @description Grafana URL for the user configuration. */
-              grafanaUrl?: string;
-              /** @description Grafana API key for the user configuration. */
-              grafanaApiKey?: string;
-              /** @description Selected Grafana board configurations for the user. */
-              selectedBoardsConfigs?: {
-                /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                board?: { [key: string]: unknown };
-                /** @description Panels selected for the Grafana board configuration. */
-                panels?: { [key: string]: unknown }[];
-                /** @description Template variables applied to the selected Grafana board configuration. */
-                templateVars?: string[];
-              }[];
-            };
-            prometheus?: {
-              /** @description The prometheus URL of the prometheus. */
-              prometheusUrl?: string;
-              /** @description The selected prometheus boards configs of the prometheus. */
-              selectedPrometheusBoardsConfigs?: {
-                /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                board?: { [key: string]: unknown };
-                /** @description Panels selected for the Grafana board configuration. */
-                panels?: { [key: string]: unknown }[];
-                /** @description Template variables applied to the selected Grafana board configuration. */
-                templateVars?: string[];
-              }[];
-            };
-            loadTestPrefs?: {
-              /** @description Concurrent requests */
-              c?: number;
-              /** @description Queries per second */
-              qps?: number;
-              /** @description Duration */
-              t?: string;
-              /** @description Load generator */
-              gen?: string;
-            };
-            /** @description The anonymous usage stats of the preference. */
-            anonymousUsageStats: boolean;
-            /** @description The anonymous perf results of the preference. */
-            anonymousPerfResults: boolean;
-            /**
-             * Format: date-time
-             * @description Timestamp of when the resource was last updated.
-             */
-            updatedAt: string;
-            /** @description The dashboard preferences of the preference. */
-            dashboardPreferences: { [key: string]: unknown };
-            /**
-             * Format: uuid
-             * @description ID of the associated selectedOrganization.
-             */
-            selectedOrganizationId: string;
-            /** @description The selected workspace for organizations of the preference. */
-            selectedWorkspaceForOrganizations: { [key: string]: string };
-            /** @description The users extension preferences of the preference. */
-            usersExtensionPreferences: { [key: string]: unknown };
-            /** @description The remote provider preferences of the preference. */
-            remoteProviderPreferences: { [key: string]: unknown };
-          };
-          /**
-           * Format: date-time
-           * @description Timestamp when user accepted terms and conditions
-           */
-          acceptedTermsAt?: string;
-          /**
-           * Format: date-time
-           * @description Timestamp of user's first login
-           */
-          firstLoginTime?: string;
-          /**
-           * Format: date-time
-           * @description Timestamp of user's most recent login
-           */
-          lastLoginTime: string;
-          /**
-           * Format: date-time
-           * @description Timestamp when the user record was created
-           */
-          createdAt: string;
-          /**
-           * Format: date-time
-           * @description Timestamp when the user record was last updated
-           */
-          updatedAt: string;
-          /** @description Various online profiles associated with the user account */
-          socials?: {
-            /** @description The site of the social. */
-            site: string;
-            /**
-             * Format: uri
-             * @description The link of the social.
-             */
-            link: string;
-          }[];
-          /**
-           * Format: date-time
-           * @description Timestamp when the user record was soft-deleted (null if not deleted)
-           */
-          deletedAt: string | null;
-          /**
-           * @description List of global roles assigned to the user
-           * @example [
-           *   "admin",
-           *   "meshmap"
-           * ]
-           */
-          roleNames?: (
-            | "admin"
-            | "meshmap"
-            | "curator"
-            | "team admin"
-            | "workspace admin"
-            | "workspace manager"
-            | "organization admin"
-            | "user"
-          )[];
-          /** @description Teams the user belongs to with role information */
-          teams?: {
-            /** @description Team memberships for the user with their assigned roles. */
-            teamsWithRoles?: { [key: string]: unknown }[];
-            /** @description Total number of team memberships returned for the user. */
-            totalCount?: number;
-          };
-          /** @description Organizations the user belongs to with role information */
-          organizations?: {
-            /** @description Organization memberships for the user with their assigned roles. */
-            organizationsWithRoles?: { [key: string]: unknown }[];
-            /** @description Total number of organization memberships returned for the user. */
-            totalCount?: number;
-          };
-        } | null;
-        /** @description Optional structured location metadata (branch, host, path, ...). */
-        location?: { [key: string]: string };
-        /** @description Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied. */
-        patternFile?: string;
-        /**
-         * @description Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
-         *
-         * @enum {string}
-         */
-        visibility?: "private" | "public" | "published";
-        /**
-         * @description Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
-         *
-         * @enum {string|null}
-         */
-        designType?:
-          | ("Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest")
-          | null;
-        /**
-         * Format: byte
-         * @description Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.
-         */
-        sourceContent?: string | null;
-        /**
-         * @description Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
-         *
-         * @default 0
-         */
-        viewCount?: number;
-        /**
-         * @description Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
-         *
-         * @default 0
-         */
-        downloadCount?: number;
-        /**
-         * @description Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
-         *
-         * @default 0
-         */
-        cloneCount?: number;
-        /**
-         * @description Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
-         *
-         * @default 0
-         */
-        deploymentCount?: number;
-        /**
-         * @description Server-aggregated count of share events for this design. Server-managed and ignored on writes.
-         *
-         * @default 0
-         */
-        shareCount?: number;
-        /**
-         * Format: date-time
-         * @description Timestamp of design creation.
-         */
-        createdAt?: string;
-        /**
-         * Format: date-time
-         * @description Timestamp of last design modification.
-         */
-        updatedAt?: string;
-      }[];
-      /** @description Published filters included on this page. */
-      filters?: {
-        /**
-         * Format: uuid
-         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-         */
-        id: string;
-        /** @description Human-readable filter name; required, used for catalog listings. */
-        name: string;
-        /**
-         * Format: uuid
-         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-         */
-        userId: string;
-        /**
-         * Format: byte
-         * @description Raw filter source persisted as a byte array (`bytea` column
-         * `filter_file`). Wire form is base64 per OpenAPI `format: byte`.
-         */
-        filterFile?: string;
-        /**
-         * @description Filter resource discriminator describing the filter body's source
-         * format (e.g. WASM module identifier or external resource path).
-         * Stored in the `filter_resource` text column.
-         */
-        filterResource?: string;
-        /** @description Optional structured location metadata (branch, host, path, ...). */
-        location?: { [key: string]: string };
-        /**
-         * @description Visibility scope (private, public, published).
-         * @enum {string}
-         */
-        visibility?: "private" | "public" | "published";
-        /** @description Catalog metadata attached to the filter when published. */
-        catalogData?: {
-          /** @description Tracks the specific content version that has been made available in the Catalog. */
-          publishedVersion?: string;
-          /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-          class?: string;
-          /**
-           * Model
-           * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
-           */
-          compatibility: "kubernetes"[];
-          /**
-           * Caveats and Considerations
-           * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
-           */
-          patternCaveats: string;
-          /**
-           * Description
-           * @description Purpose of the design along with its intended and unintended uses.
-           */
-          patternInfo: string;
-          /**
-           * Type
-           * @description Categorization of the type of design or operational flow depicted in this design.
-           * @default Deployment
-           * @enum {string}
-           */
-          type:
-            | "Deployment"
-            | "Observability"
-            | "Resiliency"
-            | "Scaling"
-            | "Security"
-            | "Traffic-management"
-            | "Troubleshooting"
-            | "Workloads";
-          /** @description Contains reference to the dark and light mode snapshots of the design. */
-          snapshotURL?: string[];
-        };
-        /**
-         * Format: date-time
-         * @description Timestamp of filter creation.
-         */
-        createdAt: string;
-        /**
-         * Format: date-time
-         * @description Timestamp of last filter modification.
-         */
-        updatedAt: string;
-      }[];
-      /** @description Model-by-count aggregates for the catalog page. */
-      modelsCount?: { [key: string]: unknown }[];
-      /** @description Category-by-count aggregates for the catalog page. */
-      categoryCount?: { [key: string]: unknown }[];
-    };
-    CatalogRequest: { [key: string]: unknown };
-    /** @description Paginated catalog-request listing (pending publish approvals). */
-    CatalogRequestsPage: {
-      /** @description Current page number of the result set. */
-      page?: number;
-      /** @description Number of items per page. */
-      pageSize?: number;
-      /** @description Total number of items available. */
-      totalCount?: number;
-      /** @description Catalog requests included on this page. */
-      catalogRequests?: { [key: string]: unknown }[];
-    };
-    CatalogContentClass: {
-      /** @description The class of the catalogcontentclass. */
-      class?: string;
-      /** @description Description of the catalogcontentclass. */
-      description?: string;
-    } & { [key: string]: unknown };
-    ResourceAccessMapping: { [key: string]: unknown };
-    ResourceAccessActorsResponse: {
-      /** @description The users of the resourceaccessactorsresponse. */
-      users?: { [key: string]: unknown }[];
-    };
-    /**
-     * @description Payload for sharing a piece of content (design, filter, or view) with one
-     * or more recipients by email. This schema backs both
-     * `POST /api/content/design/share` and `POST /api/content/view/share`; the
-     * server dispatches on `contentType` to decide which entity to mutate.
-     */
-    ContentSharePayload: {
-      /**
-       * Format: uuid
-       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-       */
-      contentId: string;
-      /**
-       * @description The kind of content being shared. Must match the entity the handler
-       * expects — `pattern` and `filter` are valid on the design share
-       * endpoint; `view` is valid on the view share endpoint.
-       *
-       * @enum {string}
-       */
-      contentType: "pattern" | "filter" | "view";
-      /** @description Email addresses of the recipients to share this content with. */
-      emails: string[];
-      /**
-       * @description When true, flip visibility to public and send invitation emails to
-       * the recipients. When false, revert visibility to private.
-       */
-      share: boolean;
-    };
-  };
-  responses: {
-    /** Invalid request body or request param */
-    400: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Expired JWT token used or insufficient privilege */
-    401: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Result not found */
-    404: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Internal server error */
-    500: {
-      content: {
-        "text/plain": string;
-      };
-    };
-  };
-  parameters: {
-    /** @description Design (Pattern) ID */
-    designId: string;
-    /** @description Get responses by page */
-    page: string;
-    /** @description Number of items per page (canonical camelCase form). */
-    pageSize: number;
-    /** @description Get responses that match search param value */
-    search: string;
-    /** @description Get ordered responses */
-    order: string;
-    /** @description User's organization ID */
-    orgIdQuery: string;
-  };
-  requestBodies: {
-    catalogContentPayload: {
-      content: {
-        "application/json": { [key: string]: unknown };
-      };
-    };
-    resourceSharePayload: {
-      content: {
-        "application/json": { [key: string]: unknown };
-      };
-    };
-    /** Body for sharing a design, filter, or view with recipients by email. */
-    contentSharePayload: {
-      content: {
-        "application/json": {
-          /**
-           * Format: uuid
-           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-           */
-          contentId: string;
-          /**
-           * @description The kind of content being shared. Must match the entity the handler
-           * expects — `pattern` and `filter` are valid on the design share
-           * endpoint; `view` is valid on the view share endpoint.
-           *
-           * @enum {string}
-           */
-          contentType: "pattern" | "filter" | "view";
-          /** @description Email addresses of the recipients to share this content with. */
-          emails: string[];
-          /**
-           * @description When true, flip visibility to public and send invitation emails to
-           * the recipients. When false, revert visibility to private.
-           */
-          share: boolean;
-        };
-      };
-    };
-  };
-}
-
-export interface operations {
-  /** Returns a paginated list of infrastructure designs accessible to the user. */
-  getPatterns: {
-    parameters: {
-      query: {
-        /** Get responses by page */
-        page?: string;
-        /** Number of items per page (canonical camelCase form). */
-        pageSize?: number;
-        /** Get responses that match search param value */
-        search?: string;
-        /** Get ordered responses */
-        order?: string;
-        /** User's organization ID */
-        orgId?: string;
-        /** Filter by visibility (public, private, published) */
-        visibility?: string;
-        /** UUID of User. Pass userId for fetching public and published designs. */
-        userId?: string;
-        /** Whether to include usage metrics in the response. */
-        metrics?: boolean;
-        /** Filter designs by workspace ID. */
-        workspaceId?: string;
-        /** Populate additional nested fields in the response. */
-        populate?: boolean;
-        /** Include designs shared with the caller. */
-        shared?: boolean;
-      };
-    };
-    responses: {
-      /** Designs response */
-      200: {
-        content: {
-          "application/json": {
-            /** @description Current page number of the result set. */
-            page?: number;
-            /** @description Number of items per page. */
-            pageSize?: number;
-            /** @description Total number of items available. */
-            totalCount?: number;
-            /** @description Designs included on this page of results. */
-            patterns?: {
-              /**
-               * Format: uuid
-               * @description Server-generated design ID.
-               */
-              id?: string;
-              /** @description Human-readable design name. */
-              name?: string;
-              /** @description Catalog metadata attached to the design when published. */
-              catalogData?: {
+            id?: string;
+            /** @description Human-readable design name. */
+            name?: string;
+            /** @description Catalog metadata attached to the design when published. */
+            catalogData?: {
                 /** @description Tracks the specific content version that has been made available in the Catalog. */
                 publishedVersion?: string;
                 /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                class?: string;
+                class?: string & ("official" | "verified" | "reference architecture");
                 /**
                  * Model
                  * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
@@ -3112,25 +1825,17 @@ export interface operations {
                  * @default Deployment
                  * @enum {string}
                  */
-                type:
-                  | "Deployment"
-                  | "Observability"
-                  | "Resiliency"
-                  | "Scaling"
-                  | "Security"
-                  | "Traffic-management"
-                  | "Troubleshooting"
-                  | "Workloads";
+                type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
                 /** @description Contains reference to the dark and light mode snapshots of the design. */
                 snapshotURL?: string[];
-              };
-              /**
-               * Format: uuid
-               * @description Owning user ID.
-               */
-              userId?: string;
-              /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
-              user?: {
+            };
+            /**
+             * Format: uuid
+             * @description Owning user ID.
+             */
+            userId?: string;
+            /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
+            user?: {
                 /**
                  * Format: uuid
                  * @description Unique identifier for the user
@@ -3139,13 +1844,13 @@ export interface operations {
                 /** @description User identifier (username or external ID) */
                 userId: string;
                 /**
-                 * @description Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)
+                 * @description Authentication provider (e.g., Google, Github)
                  * @example [
-                 *   "local",
-                 *   "github",
-                 *   "google",
-                 *   "twitter"
-                 * ]
+                 *       "local",
+                 *       "github",
+                 *       "google",
+                 *       "twitter"
+                 *     ]
                  */
                 provider: string;
                 /**
@@ -3171,75 +1876,87 @@ export interface operations {
                  * @description User's biography or description
                  * @default
                  */
-                bio?: string;
+                bio: string;
                 /** @description User's country information stored as JSONB */
-                country?: { [key: string]: unknown };
+                country?: {
+                    [key: string]: unknown;
+                };
                 /** @description User's region information stored as JSONB */
-                region?: { [key: string]: unknown };
+                region?: {
+                    [key: string]: unknown;
+                };
                 /** @description User preferences stored as JSONB */
                 preferences?: {
-                  /** @description The mesh adapters of the preference. */
-                  meshAdapters?: { [key: string]: unknown }[];
-                  grafana?: {
-                    /** @description Grafana URL for the user configuration. */
-                    grafanaUrl?: string;
-                    /** @description Grafana API key for the user configuration. */
-                    grafanaApiKey?: string;
-                    /** @description Selected Grafana board configurations for the user. */
-                    selectedBoardsConfigs?: {
-                      /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                      board?: { [key: string]: unknown };
-                      /** @description Panels selected for the Grafana board configuration. */
-                      panels?: { [key: string]: unknown }[];
-                      /** @description Template variables applied to the selected Grafana board configuration. */
-                      templateVars?: string[];
-                    }[];
-                  };
-                  prometheus?: {
-                    /** @description The prometheus URL of the prometheus. */
-                    prometheusUrl?: string;
-                    /** @description The selected prometheus boards configs of the prometheus. */
-                    selectedPrometheusBoardsConfigs?: {
-                      /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                      board?: { [key: string]: unknown };
-                      /** @description Panels selected for the Grafana board configuration. */
-                      panels?: { [key: string]: unknown }[];
-                      /** @description Template variables applied to the selected Grafana board configuration. */
-                      templateVars?: string[];
-                    }[];
-                  };
-                  loadTestPrefs?: {
-                    /** @description Concurrent requests */
-                    c?: number;
-                    /** @description Queries per second */
-                    qps?: number;
-                    /** @description Duration */
-                    t?: string;
-                    /** @description Load generator */
-                    gen?: string;
-                  };
-                  /** @description The anonymous usage stats of the preference. */
-                  anonymousUsageStats: boolean;
-                  /** @description The anonymous perf results of the preference. */
-                  anonymousPerfResults: boolean;
-                  /**
-                   * Format: date-time
-                   * @description Timestamp of when the resource was last updated.
-                   */
-                  updatedAt: string;
-                  /** @description The dashboard preferences of the preference. */
-                  dashboardPreferences: { [key: string]: unknown };
-                  /**
-                   * Format: uuid
-                   * @description ID of the associated selectedOrganization.
-                   */
-                  selectedOrganizationId: string;
-                  /** @description The selected workspace for organizations of the preference. */
-                  selectedWorkspaceForOrganizations: { [key: string]: string };
-                  /** @description The users extension preferences of the preference. */
-                  usersExtensionPreferences: { [key: string]: unknown };
-                  /** @description The remote provider preferences of the preference. */
-                  remoteProviderPreferences: { [key: string]: unknown };
+                    /** @description The mesh adapters of the preference. */
+                    meshAdapters?: Record<string, never>[];
+                    grafana?: {
+                        /** @description Grafana URL for the user configuration. */
+                        grafanaUrl?: string;
+                        /** @description Grafana API key for the user configuration. */
+                        grafanaApiKey?: string;
+                        /** @description Selected Grafana board configurations for the user. */
+                        selectedBoardsConfigs?: {
+                            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                            board?: Record<string, never>;
+                            /** @description Panels selected for the Grafana board configuration. */
+                            panels?: Record<string, never>[];
+                            /** @description Template variables applied to the selected Grafana board configuration. */
+                            templateVars?: string[];
+                        }[];
+                    };
+                    prometheus?: {
+                        /** @description The prometheus URL of the prometheus. */
+                        prometheusUrl?: string;
+                        /** @description The selected prometheus boards configs of the prometheus. */
+                        selectedPrometheusBoardsConfigs?: {
+                            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                            board?: Record<string, never>;
+                            /** @description Panels selected for the Grafana board configuration. */
+                            panels?: Record<string, never>[];
+                            /** @description Template variables applied to the selected Grafana board configuration. */
+                            templateVars?: string[];
+                        }[];
+                    };
+                    loadTestPrefs?: {
+                        /** @description Concurrent requests */
+                        c?: number;
+                        /** @description Queries per second */
+                        qps?: number;
+                        /** @description Duration */
+                        t?: string;
+                        /** @description Load generator */
+                        gen?: string;
+                    };
+                    /** @description The anonymous usage stats of the preference. */
+                    anonymousUsageStats: boolean;
+                    /** @description The anonymous perf results of the preference. */
+                    anonymousPerfResults: boolean;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp of when the resource was last updated.
+                     */
+                    updatedAt: string;
+                    /** @description The dashboard preferences of the preference. */
+                    dashboardPreferences: {
+                        [key: string]: unknown;
+                    };
+                    /**
+                     * Format: uuid
+                     * @description ID of the associated selectedOrganization.
+                     */
+                    selectedOrganizationId: string;
+                    /** @description The selected workspace for organizations of the preference. */
+                    selectedWorkspaceForOrganizations: {
+                        [key: string]: string;
+                    };
+                    /** @description The users extension preferences of the preference. */
+                    usersExtensionPreferences: {
+                        [key: string]: unknown;
+                    };
+                    /** @description The remote provider preferences of the preference. */
+                    remoteProviderPreferences: {
+                        [key: string]: unknown;
+                    };
                 };
                 /**
                  * Format: date-time
@@ -3268,13 +1985,13 @@ export interface operations {
                 updatedAt: string;
                 /** @description Various online profiles associated with the user account */
                 socials?: {
-                  /** @description The site of the social. */
-                  site: string;
-                  /**
-                   * Format: uri
-                   * @description The link of the social.
-                   */
-                  link: string;
+                    /** @description The site of the social. */
+                    site: string;
+                    /**
+                     * Format: uri
+                     * @description The link of the social.
+                     */
+                    link: string;
                 }[];
                 /**
                  * Format: date-time
@@ -3284,388 +2001,42 @@ export interface operations {
                 /**
                  * @description List of global roles assigned to the user
                  * @example [
-                 *   "admin",
-                 *   "meshmap"
-                 * ]
+                 *       "admin",
+                 *       "meshmap"
+                 *     ]
                  */
-                roleNames?: (
-                  | "admin"
-                  | "meshmap"
-                  | "curator"
-                  | "team admin"
-                  | "workspace admin"
-                  | "workspace manager"
-                  | "organization admin"
-                  | "user"
-                )[];
+                roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
                 /** @description Teams the user belongs to with role information */
                 teams?: {
-                  /** @description Team memberships for the user with their assigned roles. */
-                  teamsWithRoles?: { [key: string]: unknown }[];
-                  /** @description Total number of team memberships returned for the user. */
-                  totalCount?: number;
+                    /** @description Team memberships for the user with their assigned roles. */
+                    teamsWithRoles?: Record<string, never>[];
+                    /** @description Total number of team memberships returned for the user. */
+                    totalCount?: number;
                 };
                 /** @description Organizations the user belongs to with role information */
                 organizations?: {
-                  /** @description Organization memberships for the user with their assigned roles. */
-                  organizationsWithRoles?: { [key: string]: unknown }[];
-                  /** @description Total number of organization memberships returned for the user. */
-                  totalCount?: number;
+                    /** @description Organization memberships for the user with their assigned roles. */
+                    organizationsWithRoles?: Record<string, never>[];
+                    /** @description Total number of organization memberships returned for the user. */
+                    totalCount?: number;
                 };
-              } | null;
-              /** @description Optional structured location metadata (branch, host, path, ...). */
-              location?: { [key: string]: string };
-              /** @description Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied. */
-              patternFile?: string;
-              /**
-               * @description Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
-               *
-               * @enum {string}
-               */
-              visibility?: "private" | "public" | "published";
-              /**
-               * @description Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
-               *
-               * @enum {string|null}
-               */
-              designType?:
-                | (
-                    | "Design"
-                    | "Helm Chart"
-                    | "Docker Compose"
-                    | "Kubernetes Manifest"
-                  )
-                | null;
-              /**
-               * Format: byte
-               * @description Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.
-               */
-              sourceContent?: string | null;
-              /**
-               * @description Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
-               *
-               * @default 0
-               */
-              viewCount?: number;
-              /**
-               * @description Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
-               *
-               * @default 0
-               */
-              downloadCount?: number;
-              /**
-               * @description Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
-               *
-               * @default 0
-               */
-              cloneCount?: number;
-              /**
-               * @description Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
-               *
-               * @default 0
-               */
-              deploymentCount?: number;
-              /**
-               * @description Server-aggregated count of share events for this design. Server-managed and ignored on writes.
-               *
-               * @default 0
-               */
-              shareCount?: number;
-              /**
-               * Format: date-time
-               * @description Timestamp of design creation.
-               */
-              createdAt?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp of last design modification.
-               */
-              updatedAt?: string;
-            }[];
-            /** @description Optional discriminator describing which collection the page represents. */
-            resultType?: string;
-          };
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  /** Creates or updates an infrastructure design. */
-  upsertPattern: {
-    responses: {
-      /** Design saved */
-      200: {
-        content: {
-          "application/json": {
-            /**
-             * Format: uuid
-             * @description Server-generated design ID.
-             */
-            id?: string;
-            /** @description Human-readable design name. */
-            name?: string;
-            /** @description Catalog metadata attached to the design when published. */
-            catalogData?: {
-              /** @description Tracks the specific content version that has been made available in the Catalog. */
-              publishedVersion?: string;
-              /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-              class?: string;
-              /**
-               * Model
-               * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
-               */
-              compatibility: "kubernetes"[];
-              /**
-               * Caveats and Considerations
-               * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
-               */
-              patternCaveats: string;
-              /**
-               * Description
-               * @description Purpose of the design along with its intended and unintended uses.
-               */
-              patternInfo: string;
-              /**
-               * Type
-               * @description Categorization of the type of design or operational flow depicted in this design.
-               * @default Deployment
-               * @enum {string}
-               */
-              type:
-                | "Deployment"
-                | "Observability"
-                | "Resiliency"
-                | "Scaling"
-                | "Security"
-                | "Traffic-management"
-                | "Troubleshooting"
-                | "Workloads";
-              /** @description Contains reference to the dark and light mode snapshots of the design. */
-              snapshotURL?: string[];
-            };
-            /**
-             * Format: uuid
-             * @description Owning user ID.
-             */
-            userId?: string;
-            /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
-            user?: {
-              /**
-               * Format: uuid
-               * @description Unique identifier for the user
-               */
-              id: string;
-              /** @description User identifier (username or external ID) */
-              userId: string;
-              /**
-               * @description Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)
-               * @example [
-               *   "local",
-               *   "github",
-               *   "google",
-               *   "twitter"
-               * ]
-               */
-              provider: string;
-              /**
-               * Format: email
-               * @description User's email address
-               */
-              email: string;
-              /** @description User's first name */
-              firstName: string;
-              /** @description User's last name */
-              lastName: string;
-              /**
-               * Format: uri
-               * @description URL to user's avatar image
-               */
-              avatarUrl?: string;
-              /**
-               * @description User account status
-               * @enum {string}
-               */
-              status: "active" | "inactive" | "pending" | "anonymous";
-              /**
-               * @description User's biography or description
-               * @default
-               */
-              bio?: string;
-              /** @description User's country information stored as JSONB */
-              country?: { [key: string]: unknown };
-              /** @description User's region information stored as JSONB */
-              region?: { [key: string]: unknown };
-              /** @description User preferences stored as JSONB */
-              preferences?: {
-                /** @description The mesh adapters of the preference. */
-                meshAdapters?: { [key: string]: unknown }[];
-                grafana?: {
-                  /** @description Grafana URL for the user configuration. */
-                  grafanaUrl?: string;
-                  /** @description Grafana API key for the user configuration. */
-                  grafanaApiKey?: string;
-                  /** @description Selected Grafana board configurations for the user. */
-                  selectedBoardsConfigs?: {
-                    /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                    board?: { [key: string]: unknown };
-                    /** @description Panels selected for the Grafana board configuration. */
-                    panels?: { [key: string]: unknown }[];
-                    /** @description Template variables applied to the selected Grafana board configuration. */
-                    templateVars?: string[];
-                  }[];
-                };
-                prometheus?: {
-                  /** @description The prometheus URL of the prometheus. */
-                  prometheusUrl?: string;
-                  /** @description The selected prometheus boards configs of the prometheus. */
-                  selectedPrometheusBoardsConfigs?: {
-                    /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                    board?: { [key: string]: unknown };
-                    /** @description Panels selected for the Grafana board configuration. */
-                    panels?: { [key: string]: unknown }[];
-                    /** @description Template variables applied to the selected Grafana board configuration. */
-                    templateVars?: string[];
-                  }[];
-                };
-                loadTestPrefs?: {
-                  /** @description Concurrent requests */
-                  c?: number;
-                  /** @description Queries per second */
-                  qps?: number;
-                  /** @description Duration */
-                  t?: string;
-                  /** @description Load generator */
-                  gen?: string;
-                };
-                /** @description The anonymous usage stats of the preference. */
-                anonymousUsageStats: boolean;
-                /** @description The anonymous perf results of the preference. */
-                anonymousPerfResults: boolean;
-                /**
-                 * Format: date-time
-                 * @description Timestamp of when the resource was last updated.
-                 */
-                updatedAt: string;
-                /** @description The dashboard preferences of the preference. */
-                dashboardPreferences: { [key: string]: unknown };
-                /**
-                 * Format: uuid
-                 * @description ID of the associated selectedOrganization.
-                 */
-                selectedOrganizationId: string;
-                /** @description The selected workspace for organizations of the preference. */
-                selectedWorkspaceForOrganizations: { [key: string]: string };
-                /** @description The users extension preferences of the preference. */
-                usersExtensionPreferences: { [key: string]: unknown };
-                /** @description The remote provider preferences of the preference. */
-                remoteProviderPreferences: { [key: string]: unknown };
-              };
-              /**
-               * Format: date-time
-               * @description Timestamp when user accepted terms and conditions
-               */
-              acceptedTermsAt?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp of user's first login
-               */
-              firstLoginTime?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp of user's most recent login
-               */
-              lastLoginTime: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the user record was created
-               */
-              createdAt: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the user record was last updated
-               */
-              updatedAt: string;
-              /** @description Various online profiles associated with the user account */
-              socials?: {
-                /** @description The site of the social. */
-                site: string;
-                /**
-                 * Format: uri
-                 * @description The link of the social.
-                 */
-                link: string;
-              }[];
-              /**
-               * Format: date-time
-               * @description Timestamp when the user record was soft-deleted (null if not deleted)
-               */
-              deletedAt: string | null;
-              /**
-               * @description List of global roles assigned to the user
-               * @example [
-               *   "admin",
-               *   "meshmap"
-               * ]
-               */
-              roleNames?: (
-                | "admin"
-                | "meshmap"
-                | "curator"
-                | "team admin"
-                | "workspace admin"
-                | "workspace manager"
-                | "organization admin"
-                | "user"
-              )[];
-              /** @description Teams the user belongs to with role information */
-              teams?: {
-                /** @description Team memberships for the user with their assigned roles. */
-                teamsWithRoles?: { [key: string]: unknown }[];
-                /** @description Total number of team memberships returned for the user. */
-                totalCount?: number;
-              };
-              /** @description Organizations the user belongs to with role information */
-              organizations?: {
-                /** @description Organization memberships for the user with their assigned roles. */
-                organizationsWithRoles?: { [key: string]: unknown }[];
-                /** @description Total number of organization memberships returned for the user. */
-                totalCount?: number;
-              };
             } | null;
             /** @description Optional structured location metadata (branch, host, path, ...). */
-            location?: { [key: string]: string };
+            location?: {
+                [key: string]: string;
+            };
             /** @description Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied. */
             patternFile?: string;
             /**
              * @description Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
-             *
              * @enum {string}
              */
             visibility?: "private" | "public" | "published";
             /**
              * @description Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
-             *
              * @enum {string|null}
              */
-            designType?:
-              | (
-                  | "Design"
-                  | "Helm Chart"
-                  | "Docker Compose"
-                  | "Kubernetes Manifest"
-                )
-              | null;
+            designType?: "Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest" | null;
             /**
              * Format: byte
              * @description Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.
@@ -3673,34 +2044,29 @@ export interface operations {
             sourceContent?: string | null;
             /**
              * @description Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
-             *
              * @default 0
              */
-            viewCount?: number;
+            viewCount: number;
             /**
              * @description Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
-             *
              * @default 0
              */
-            downloadCount?: number;
+            downloadCount: number;
             /**
              * @description Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
-             *
              * @default 0
              */
-            cloneCount?: number;
+            cloneCount: number;
             /**
              * @description Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
-             *
              * @default 0
              */
-            deploymentCount?: number;
+            deploymentCount: number;
             /**
              * @description Server-aggregated count of share events for this design. Server-managed and ignored on writes.
-             *
              * @default 0
              */
-            shareCount?: number;
+            shareCount: number;
             /**
              * Format: date-time
              * @description Timestamp of design creation.
@@ -3711,35 +2077,322 @@ export interface operations {
              * @description Timestamp of last design modification.
              */
             updatedAt?: string;
-          };
         };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
+        /** @description Paginated collection of designs. */
+        MesheryPatternPage: {
+            /** @description Current page number of the result set. */
+            page?: number;
+            /** @description Number of items per page. */
+            pageSize?: number;
+            /** @description Total number of items available. */
+            totalCount?: number;
+            /** @description Designs included on this page of results. */
+            patterns?: {
+                /**
+                 * Format: uuid
+                 * @description Server-generated design ID.
+                 */
+                id?: string;
+                /** @description Human-readable design name. */
+                name?: string;
+                /** @description Catalog metadata attached to the design when published. */
+                catalogData?: {
+                    /** @description Tracks the specific content version that has been made available in the Catalog. */
+                    publishedVersion?: string;
+                    /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+                    class?: string & ("official" | "verified" | "reference architecture");
+                    /**
+                     * Model
+                     * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
+                     */
+                    compatibility: "kubernetes"[];
+                    /**
+                     * Caveats and Considerations
+                     * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
+                     */
+                    patternCaveats: string;
+                    /**
+                     * Description
+                     * @description Purpose of the design along with its intended and unintended uses.
+                     */
+                    patternInfo: string;
+                    /**
+                     * Type
+                     * @description Categorization of the type of design or operational flow depicted in this design.
+                     * @default Deployment
+                     * @enum {string}
+                     */
+                    type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
+                    /** @description Contains reference to the dark and light mode snapshots of the design. */
+                    snapshotURL?: string[];
+                };
+                /**
+                 * Format: uuid
+                 * @description Owning user ID.
+                 */
+                userId?: string;
+                /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
+                user?: {
+                    /**
+                     * Format: uuid
+                     * @description Unique identifier for the user
+                     */
+                    id: string;
+                    /** @description User identifier (username or external ID) */
+                    userId: string;
+                    /**
+                     * @description Authentication provider (e.g., Google, Github)
+                     * @example [
+                     *       "local",
+                     *       "github",
+                     *       "google",
+                     *       "twitter"
+                     *     ]
+                     */
+                    provider: string;
+                    /**
+                     * Format: email
+                     * @description User's email address
+                     */
+                    email: string;
+                    /** @description User's first name */
+                    firstName: string;
+                    /** @description User's last name */
+                    lastName: string;
+                    /**
+                     * Format: uri
+                     * @description URL to user's avatar image
+                     */
+                    avatarUrl?: string;
+                    /**
+                     * @description User account status
+                     * @enum {string}
+                     */
+                    status: "active" | "inactive" | "pending" | "anonymous";
+                    /**
+                     * @description User's biography or description
+                     * @default
+                     */
+                    bio: string;
+                    /** @description User's country information stored as JSONB */
+                    country?: {
+                        [key: string]: unknown;
+                    };
+                    /** @description User's region information stored as JSONB */
+                    region?: {
+                        [key: string]: unknown;
+                    };
+                    /** @description User preferences stored as JSONB */
+                    preferences?: {
+                        /** @description The mesh adapters of the preference. */
+                        meshAdapters?: Record<string, never>[];
+                        grafana?: {
+                            /** @description Grafana URL for the user configuration. */
+                            grafanaUrl?: string;
+                            /** @description Grafana API key for the user configuration. */
+                            grafanaApiKey?: string;
+                            /** @description Selected Grafana board configurations for the user. */
+                            selectedBoardsConfigs?: {
+                                /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                board?: Record<string, never>;
+                                /** @description Panels selected for the Grafana board configuration. */
+                                panels?: Record<string, never>[];
+                                /** @description Template variables applied to the selected Grafana board configuration. */
+                                templateVars?: string[];
+                            }[];
+                        };
+                        prometheus?: {
+                            /** @description The prometheus URL of the prometheus. */
+                            prometheusUrl?: string;
+                            /** @description The selected prometheus boards configs of the prometheus. */
+                            selectedPrometheusBoardsConfigs?: {
+                                /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                board?: Record<string, never>;
+                                /** @description Panels selected for the Grafana board configuration. */
+                                panels?: Record<string, never>[];
+                                /** @description Template variables applied to the selected Grafana board configuration. */
+                                templateVars?: string[];
+                            }[];
+                        };
+                        loadTestPrefs?: {
+                            /** @description Concurrent requests */
+                            c?: number;
+                            /** @description Queries per second */
+                            qps?: number;
+                            /** @description Duration */
+                            t?: string;
+                            /** @description Load generator */
+                            gen?: string;
+                        };
+                        /** @description The anonymous usage stats of the preference. */
+                        anonymousUsageStats: boolean;
+                        /** @description The anonymous perf results of the preference. */
+                        anonymousPerfResults: boolean;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp of when the resource was last updated.
+                         */
+                        updatedAt: string;
+                        /** @description The dashboard preferences of the preference. */
+                        dashboardPreferences: {
+                            [key: string]: unknown;
+                        };
+                        /**
+                         * Format: uuid
+                         * @description ID of the associated selectedOrganization.
+                         */
+                        selectedOrganizationId: string;
+                        /** @description The selected workspace for organizations of the preference. */
+                        selectedWorkspaceForOrganizations: {
+                            [key: string]: string;
+                        };
+                        /** @description The users extension preferences of the preference. */
+                        usersExtensionPreferences: {
+                            [key: string]: unknown;
+                        };
+                        /** @description The remote provider preferences of the preference. */
+                        remoteProviderPreferences: {
+                            [key: string]: unknown;
+                        };
+                    };
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when user accepted terms and conditions
+                     */
+                    acceptedTermsAt?: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp of user's first login
+                     */
+                    firstLoginTime?: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp of user's most recent login
+                     */
+                    lastLoginTime: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the user record was created
+                     */
+                    createdAt: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the user record was last updated
+                     */
+                    updatedAt: string;
+                    /** @description Various online profiles associated with the user account */
+                    socials?: {
+                        /** @description The site of the social. */
+                        site: string;
+                        /**
+                         * Format: uri
+                         * @description The link of the social.
+                         */
+                        link: string;
+                    }[];
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the user record was soft-deleted (null if not deleted)
+                     */
+                    deletedAt: string | null;
+                    /**
+                     * @description List of global roles assigned to the user
+                     * @example [
+                     *       "admin",
+                     *       "meshmap"
+                     *     ]
+                     */
+                    roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
+                    /** @description Teams the user belongs to with role information */
+                    teams?: {
+                        /** @description Team memberships for the user with their assigned roles. */
+                        teamsWithRoles?: Record<string, never>[];
+                        /** @description Total number of team memberships returned for the user. */
+                        totalCount?: number;
+                    };
+                    /** @description Organizations the user belongs to with role information */
+                    organizations?: {
+                        /** @description Organization memberships for the user with their assigned roles. */
+                        organizationsWithRoles?: Record<string, never>[];
+                        /** @description Total number of organization memberships returned for the user. */
+                        totalCount?: number;
+                    };
+                } | null;
+                /** @description Optional structured location metadata (branch, host, path, ...). */
+                location?: {
+                    [key: string]: string;
+                };
+                /** @description Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied. */
+                patternFile?: string;
+                /**
+                 * @description Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
+                 * @enum {string}
+                 */
+                visibility?: "private" | "public" | "published";
+                /**
+                 * @description Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+                 * @enum {string|null}
+                 */
+                designType?: "Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest" | null;
+                /**
+                 * Format: byte
+                 * @description Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.
+                 */
+                sourceContent?: string | null;
+                /**
+                 * @description Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+                 * @default 0
+                 */
+                viewCount: number;
+                /**
+                 * @description Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+                 * @default 0
+                 */
+                downloadCount: number;
+                /**
+                 * @description Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+                 * @default 0
+                 */
+                cloneCount: number;
+                /**
+                 * @description Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+                 * @default 0
+                 */
+                deploymentCount: number;
+                /**
+                 * @description Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+                 * @default 0
+                 */
+                shareCount: number;
+                /**
+                 * Format: date-time
+                 * @description Timestamp of design creation.
+                 */
+                createdAt?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp of last design modification.
+                 */
+                updatedAt?: string;
+            }[];
+            /** @description Optional discriminator describing which collection the page represents. */
+            resultType?: string;
         };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
+        /** @description Payload for bulk deleting designs by ID. */
+        MesheryPatternDeleteRequestBody: {
+            /** @description Designs targeted for deletion. */
+            patterns?: {
+                /**
+                 * Format: uuid
+                 * @description Design ID targeted for deletion.
+                 */
+                id?: string;
+                /** @description Human-readable design name (informational only; server matches on id). */
+                name?: string;
+            }[];
         };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": {
-          /** @description Optional source path the design was loaded from. */
-          path?: string;
-          /** @description Design body to persist. */
-          patternData?: {
+        /** @description Client-settable subset of the design (pattern) entity used as the body of the inner `patternData` envelope on POST /api/content/patterns. Server-generated fields (createdAt, updatedAt, viewCount, downloadCount, cloneCount, deploymentCount, shareCount, the joined `user` object, and the imported-source `sourceContent` blob) are deliberately excluded — the server ignores them on writes and re-projects them on the response. */
+        MesheryPatternPayload: {
             /**
              * Format: uuid
              * @description Existing design ID for updates; omit on create.
@@ -3754,45 +2407,39 @@ export interface operations {
             userId?: string;
             /** @description Catalog metadata to attach to the design when publishing. */
             catalogData?: {
-              /** @description Tracks the specific content version that has been made available in the Catalog. */
-              publishedVersion?: string;
-              /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-              class?: string;
-              /**
-               * Model
-               * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
-               */
-              compatibility: "kubernetes"[];
-              /**
-               * Caveats and Considerations
-               * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
-               */
-              patternCaveats: string;
-              /**
-               * Description
-               * @description Purpose of the design along with its intended and unintended uses.
-               */
-              patternInfo: string;
-              /**
-               * Type
-               * @description Categorization of the type of design or operational flow depicted in this design.
-               * @default Deployment
-               * @enum {string}
-               */
-              type:
-                | "Deployment"
-                | "Observability"
-                | "Resiliency"
-                | "Scaling"
-                | "Security"
-                | "Traffic-management"
-                | "Troubleshooting"
-                | "Workloads";
-              /** @description Contains reference to the dark and light mode snapshots of the design. */
-              snapshotURL?: string[];
+                /** @description Tracks the specific content version that has been made available in the Catalog. */
+                publishedVersion?: string;
+                /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+                class?: string & ("official" | "verified" | "reference architecture");
+                /**
+                 * Model
+                 * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
+                 */
+                compatibility: "kubernetes"[];
+                /**
+                 * Caveats and Considerations
+                 * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
+                 */
+                patternCaveats: string;
+                /**
+                 * Description
+                 * @description Purpose of the design along with its intended and unintended uses.
+                 */
+                patternInfo: string;
+                /**
+                 * Type
+                 * @description Categorization of the type of design or operational flow depicted in this design.
+                 * @default Deployment
+                 * @enum {string}
+                 */
+                type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
+                /** @description Contains reference to the dark and light mode snapshots of the design. */
+                snapshotURL?: string[];
             };
             /** @description Optional structured location metadata (branch, host, path, ...). */
-            location?: { [key: string]: string };
+            location?: {
+                [key: string]: string;
+            };
             /** @description Raw design body to persist into the `pattern_file` column. See MesheryPattern.patternFile for the transcode boundary note that applies on both writes and reads. */
             patternFile?: string;
             /**
@@ -3802,1072 +2449,180 @@ export interface operations {
             visibility?: "private" | "public" | "published";
             /**
              * @description Discriminator identifying the source format of the design body, stored in the `source_type` column. Optional on create (the server defaults missing values to `Design`).
-             *
              * @enum {string|null}
              */
-            designType?:
-              | (
-                  | "Design"
-                  | "Helm Chart"
-                  | "Docker Compose"
-                  | "Kubernetes Manifest"
-                )
-              | null;
-          };
-          /** @description When true, persist the design in addition to parsing it. */
-          save?: boolean;
-          /**
-           * Format: uri
-           * @description Optional source URL the design was fetched from.
-           */
-          url?: string;
-          /** @description Human-readable design name. */
-          name?: string;
+            designType?: "Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest" | null;
         };
-      };
-    };
-  };
-  /** Deletes multiple designs by ID. */
-  deletePatterns: {
-    responses: {
-      /** Designs deleted */
-      200: unknown;
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": {
-          /** @description Designs targeted for deletion. */
-          patterns?: {
-            /**
-             * Format: uuid
-             * @description Design ID targeted for deletion.
-             */
-            id?: string;
-            /** @description Human-readable design name (informational only; server matches on id). */
-            name?: string;
-          }[];
-        };
-      };
-    };
-  };
-  /** Returns pattern resource definitions. */
-  getPatternResources: {
-    parameters: {
-      query: {
-        /** Get responses by page */
-        page?: string;
-        /** Number of items per page (canonical camelCase form). */
-        pageSize?: number;
-        /** Get responses that match search param value */
-        search?: string;
-        /** Get ordered responses */
-        order?: string;
-      };
-    };
-    responses: {
-      /** Pattern resources response */
-      200: unknown;
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  /** Creates or updates a pattern resource definition. */
-  upsertPatternResource: {
-    responses: {
-      /** Pattern resource saved */
-      200: unknown;
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  getPatternResource: {
-    parameters: {
-      path: {
-        /** Design (Pattern) ID */
-        designId: string;
-      };
-    };
-    responses: {
-      /** Pattern resource response */
-      200: unknown;
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  deletePatternResource: {
-    parameters: {
-      path: {
-        /** Design (Pattern) ID */
-        designId: string;
-      };
-    };
-    responses: {
-      /** Pattern resource deleted */
-      204: never;
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  getPattern: {
-    parameters: {
-      path: {
-        /** Design (Pattern) ID */
-        designId: string;
-      };
-    };
-    responses: {
-      /** Design response */
-      200: {
-        content: {
-          "application/json": {
-            /**
-             * Format: uuid
-             * @description Server-generated design ID.
-             */
-            id?: string;
-            /** @description Human-readable design name. */
-            name?: string;
-            /** @description Catalog metadata attached to the design when published. */
-            catalogData?: {
-              /** @description Tracks the specific content version that has been made available in the Catalog. */
-              publishedVersion?: string;
-              /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-              class?: string;
-              /**
-               * Model
-               * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
-               */
-              compatibility: "kubernetes"[];
-              /**
-               * Caveats and Considerations
-               * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
-               */
-              patternCaveats: string;
-              /**
-               * Description
-               * @description Purpose of the design along with its intended and unintended uses.
-               */
-              patternInfo: string;
-              /**
-               * Type
-               * @description Categorization of the type of design or operational flow depicted in this design.
-               * @default Deployment
-               * @enum {string}
-               */
-              type:
-                | "Deployment"
-                | "Observability"
-                | "Resiliency"
-                | "Scaling"
-                | "Security"
-                | "Traffic-management"
-                | "Troubleshooting"
-                | "Workloads";
-              /** @description Contains reference to the dark and light mode snapshots of the design. */
-              snapshotURL?: string[];
-            };
-            /**
-             * Format: uuid
-             * @description Owning user ID.
-             */
-            userId?: string;
-            /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
-            user?: {
-              /**
-               * Format: uuid
-               * @description Unique identifier for the user
-               */
-              id: string;
-              /** @description User identifier (username or external ID) */
-              userId: string;
-              /**
-               * @description Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)
-               * @example [
-               *   "local",
-               *   "github",
-               *   "google",
-               *   "twitter"
-               * ]
-               */
-              provider: string;
-              /**
-               * Format: email
-               * @description User's email address
-               */
-              email: string;
-              /** @description User's first name */
-              firstName: string;
-              /** @description User's last name */
-              lastName: string;
-              /**
-               * Format: uri
-               * @description URL to user's avatar image
-               */
-              avatarUrl?: string;
-              /**
-               * @description User account status
-               * @enum {string}
-               */
-              status: "active" | "inactive" | "pending" | "anonymous";
-              /**
-               * @description User's biography or description
-               * @default
-               */
-              bio?: string;
-              /** @description User's country information stored as JSONB */
-              country?: { [key: string]: unknown };
-              /** @description User's region information stored as JSONB */
-              region?: { [key: string]: unknown };
-              /** @description User preferences stored as JSONB */
-              preferences?: {
-                /** @description The mesh adapters of the preference. */
-                meshAdapters?: { [key: string]: unknown }[];
-                grafana?: {
-                  /** @description Grafana URL for the user configuration. */
-                  grafanaUrl?: string;
-                  /** @description Grafana API key for the user configuration. */
-                  grafanaApiKey?: string;
-                  /** @description Selected Grafana board configurations for the user. */
-                  selectedBoardsConfigs?: {
-                    /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                    board?: { [key: string]: unknown };
-                    /** @description Panels selected for the Grafana board configuration. */
-                    panels?: { [key: string]: unknown }[];
-                    /** @description Template variables applied to the selected Grafana board configuration. */
-                    templateVars?: string[];
-                  }[];
-                };
-                prometheus?: {
-                  /** @description The prometheus URL of the prometheus. */
-                  prometheusUrl?: string;
-                  /** @description The selected prometheus boards configs of the prometheus. */
-                  selectedPrometheusBoardsConfigs?: {
-                    /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                    board?: { [key: string]: unknown };
-                    /** @description Panels selected for the Grafana board configuration. */
-                    panels?: { [key: string]: unknown }[];
-                    /** @description Template variables applied to the selected Grafana board configuration. */
-                    templateVars?: string[];
-                  }[];
-                };
-                loadTestPrefs?: {
-                  /** @description Concurrent requests */
-                  c?: number;
-                  /** @description Queries per second */
-                  qps?: number;
-                  /** @description Duration */
-                  t?: string;
-                  /** @description Load generator */
-                  gen?: string;
-                };
-                /** @description The anonymous usage stats of the preference. */
-                anonymousUsageStats: boolean;
-                /** @description The anonymous perf results of the preference. */
-                anonymousPerfResults: boolean;
-                /**
-                 * Format: date-time
-                 * @description Timestamp of when the resource was last updated.
-                 */
-                updatedAt: string;
-                /** @description The dashboard preferences of the preference. */
-                dashboardPreferences: { [key: string]: unknown };
+        /** @description Payload for upserting a design via POST /api/content/patterns. */
+        MesheryPatternRequestBody: {
+            /** @description Optional source path the design was loaded from. */
+            path?: string;
+            /** @description Design body to persist. */
+            patternData?: {
                 /**
                  * Format: uuid
-                 * @description ID of the associated selectedOrganization.
+                 * @description Existing design ID for updates; omit on create.
                  */
-                selectedOrganizationId: string;
-                /** @description The selected workspace for organizations of the preference. */
-                selectedWorkspaceForOrganizations: { [key: string]: string };
-                /** @description The users extension preferences of the preference. */
-                usersExtensionPreferences: { [key: string]: unknown };
-                /** @description The remote provider preferences of the preference. */
-                remoteProviderPreferences: { [key: string]: unknown };
-              };
-              /**
-               * Format: date-time
-               * @description Timestamp when user accepted terms and conditions
-               */
-              acceptedTermsAt?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp of user's first login
-               */
-              firstLoginTime?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp of user's most recent login
-               */
-              lastLoginTime: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the user record was created
-               */
-              createdAt: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the user record was last updated
-               */
-              updatedAt: string;
-              /** @description Various online profiles associated with the user account */
-              socials?: {
-                /** @description The site of the social. */
-                site: string;
-                /**
-                 * Format: uri
-                 * @description The link of the social.
-                 */
-                link: string;
-              }[];
-              /**
-               * Format: date-time
-               * @description Timestamp when the user record was soft-deleted (null if not deleted)
-               */
-              deletedAt: string | null;
-              /**
-               * @description List of global roles assigned to the user
-               * @example [
-               *   "admin",
-               *   "meshmap"
-               * ]
-               */
-              roleNames?: (
-                | "admin"
-                | "meshmap"
-                | "curator"
-                | "team admin"
-                | "workspace admin"
-                | "workspace manager"
-                | "organization admin"
-                | "user"
-              )[];
-              /** @description Teams the user belongs to with role information */
-              teams?: {
-                /** @description Team memberships for the user with their assigned roles. */
-                teamsWithRoles?: { [key: string]: unknown }[];
-                /** @description Total number of team memberships returned for the user. */
-                totalCount?: number;
-              };
-              /** @description Organizations the user belongs to with role information */
-              organizations?: {
-                /** @description Organization memberships for the user with their assigned roles. */
-                organizationsWithRoles?: { [key: string]: unknown }[];
-                /** @description Total number of organization memberships returned for the user. */
-                totalCount?: number;
-              };
-            } | null;
-            /** @description Optional structured location metadata (branch, host, path, ...). */
-            location?: { [key: string]: string };
-            /** @description Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied. */
-            patternFile?: string;
-            /**
-             * @description Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
-             *
-             * @enum {string}
-             */
-            visibility?: "private" | "public" | "published";
-            /**
-             * @description Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
-             *
-             * @enum {string|null}
-             */
-            designType?:
-              | (
-                  | "Design"
-                  | "Helm Chart"
-                  | "Docker Compose"
-                  | "Kubernetes Manifest"
-                )
-              | null;
-            /**
-             * Format: byte
-             * @description Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.
-             */
-            sourceContent?: string | null;
-            /**
-             * @description Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
-             *
-             * @default 0
-             */
-            viewCount?: number;
-            /**
-             * @description Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
-             *
-             * @default 0
-             */
-            downloadCount?: number;
-            /**
-             * @description Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
-             *
-             * @default 0
-             */
-            cloneCount?: number;
-            /**
-             * @description Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
-             *
-             * @default 0
-             */
-            deploymentCount?: number;
-            /**
-             * @description Server-aggregated count of share events for this design. Server-managed and ignored on writes.
-             *
-             * @default 0
-             */
-            shareCount?: number;
-            /**
-             * Format: date-time
-             * @description Timestamp of design creation.
-             */
-            createdAt?: string;
-            /**
-             * Format: date-time
-             * @description Timestamp of last design modification.
-             */
-            updatedAt?: string;
-          };
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  deletePattern: {
-    parameters: {
-      path: {
-        /** Design (Pattern) ID */
-        designId: string;
-      };
-    };
-    responses: {
-      /** Design deleted */
-      204: never;
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  /** Creates a copy of an existing design. */
-  clonePattern: {
-    parameters: {
-      path: {
-        /** Design (Pattern) ID */
-        designId: string;
-      };
-    };
-    responses: {
-      /** Design cloned */
-      200: {
-        content: {
-          "application/json": {
-            /**
-             * Format: uuid
-             * @description Server-generated design ID.
-             */
-            id?: string;
-            /** @description Human-readable design name. */
-            name?: string;
-            /** @description Catalog metadata attached to the design when published. */
-            catalogData?: {
-              /** @description Tracks the specific content version that has been made available in the Catalog. */
-              publishedVersion?: string;
-              /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-              class?: string;
-              /**
-               * Model
-               * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
-               */
-              compatibility: "kubernetes"[];
-              /**
-               * Caveats and Considerations
-               * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
-               */
-              patternCaveats: string;
-              /**
-               * Description
-               * @description Purpose of the design along with its intended and unintended uses.
-               */
-              patternInfo: string;
-              /**
-               * Type
-               * @description Categorization of the type of design or operational flow depicted in this design.
-               * @default Deployment
-               * @enum {string}
-               */
-              type:
-                | "Deployment"
-                | "Observability"
-                | "Resiliency"
-                | "Scaling"
-                | "Security"
-                | "Traffic-management"
-                | "Troubleshooting"
-                | "Workloads";
-              /** @description Contains reference to the dark and light mode snapshots of the design. */
-              snapshotURL?: string[];
-            };
-            /**
-             * Format: uuid
-             * @description Owning user ID.
-             */
-            userId?: string;
-            /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
-            user?: {
-              /**
-               * Format: uuid
-               * @description Unique identifier for the user
-               */
-              id: string;
-              /** @description User identifier (username or external ID) */
-              userId: string;
-              /**
-               * @description Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)
-               * @example [
-               *   "local",
-               *   "github",
-               *   "google",
-               *   "twitter"
-               * ]
-               */
-              provider: string;
-              /**
-               * Format: email
-               * @description User's email address
-               */
-              email: string;
-              /** @description User's first name */
-              firstName: string;
-              /** @description User's last name */
-              lastName: string;
-              /**
-               * Format: uri
-               * @description URL to user's avatar image
-               */
-              avatarUrl?: string;
-              /**
-               * @description User account status
-               * @enum {string}
-               */
-              status: "active" | "inactive" | "pending" | "anonymous";
-              /**
-               * @description User's biography or description
-               * @default
-               */
-              bio?: string;
-              /** @description User's country information stored as JSONB */
-              country?: { [key: string]: unknown };
-              /** @description User's region information stored as JSONB */
-              region?: { [key: string]: unknown };
-              /** @description User preferences stored as JSONB */
-              preferences?: {
-                /** @description The mesh adapters of the preference. */
-                meshAdapters?: { [key: string]: unknown }[];
-                grafana?: {
-                  /** @description Grafana URL for the user configuration. */
-                  grafanaUrl?: string;
-                  /** @description Grafana API key for the user configuration. */
-                  grafanaApiKey?: string;
-                  /** @description Selected Grafana board configurations for the user. */
-                  selectedBoardsConfigs?: {
-                    /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                    board?: { [key: string]: unknown };
-                    /** @description Panels selected for the Grafana board configuration. */
-                    panels?: { [key: string]: unknown }[];
-                    /** @description Template variables applied to the selected Grafana board configuration. */
-                    templateVars?: string[];
-                  }[];
-                };
-                prometheus?: {
-                  /** @description The prometheus URL of the prometheus. */
-                  prometheusUrl?: string;
-                  /** @description The selected prometheus boards configs of the prometheus. */
-                  selectedPrometheusBoardsConfigs?: {
-                    /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                    board?: { [key: string]: unknown };
-                    /** @description Panels selected for the Grafana board configuration. */
-                    panels?: { [key: string]: unknown }[];
-                    /** @description Template variables applied to the selected Grafana board configuration. */
-                    templateVars?: string[];
-                  }[];
-                };
-                loadTestPrefs?: {
-                  /** @description Concurrent requests */
-                  c?: number;
-                  /** @description Queries per second */
-                  qps?: number;
-                  /** @description Duration */
-                  t?: string;
-                  /** @description Load generator */
-                  gen?: string;
-                };
-                /** @description The anonymous usage stats of the preference. */
-                anonymousUsageStats: boolean;
-                /** @description The anonymous perf results of the preference. */
-                anonymousPerfResults: boolean;
-                /**
-                 * Format: date-time
-                 * @description Timestamp of when the resource was last updated.
-                 */
-                updatedAt: string;
-                /** @description The dashboard preferences of the preference. */
-                dashboardPreferences: { [key: string]: unknown };
+                id?: string;
+                /** @description Human-readable design name. */
+                name?: string;
                 /**
                  * Format: uuid
-                 * @description ID of the associated selectedOrganization.
+                 * @description Owning user ID. Server overrides with the authenticated caller on create.
                  */
-                selectedOrganizationId: string;
-                /** @description The selected workspace for organizations of the preference. */
-                selectedWorkspaceForOrganizations: { [key: string]: string };
-                /** @description The users extension preferences of the preference. */
-                usersExtensionPreferences: { [key: string]: unknown };
-                /** @description The remote provider preferences of the preference. */
-                remoteProviderPreferences: { [key: string]: unknown };
-              };
-              /**
-               * Format: date-time
-               * @description Timestamp when user accepted terms and conditions
-               */
-              acceptedTermsAt?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp of user's first login
-               */
-              firstLoginTime?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp of user's most recent login
-               */
-              lastLoginTime: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the user record was created
-               */
-              createdAt: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the user record was last updated
-               */
-              updatedAt: string;
-              /** @description Various online profiles associated with the user account */
-              socials?: {
-                /** @description The site of the social. */
-                site: string;
+                userId?: string;
+                /** @description Catalog metadata to attach to the design when publishing. */
+                catalogData?: {
+                    /** @description Tracks the specific content version that has been made available in the Catalog. */
+                    publishedVersion?: string;
+                    /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+                    class?: string & ("official" | "verified" | "reference architecture");
+                    /**
+                     * Model
+                     * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
+                     */
+                    compatibility: "kubernetes"[];
+                    /**
+                     * Caveats and Considerations
+                     * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
+                     */
+                    patternCaveats: string;
+                    /**
+                     * Description
+                     * @description Purpose of the design along with its intended and unintended uses.
+                     */
+                    patternInfo: string;
+                    /**
+                     * Type
+                     * @description Categorization of the type of design or operational flow depicted in this design.
+                     * @default Deployment
+                     * @enum {string}
+                     */
+                    type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
+                    /** @description Contains reference to the dark and light mode snapshots of the design. */
+                    snapshotURL?: string[];
+                };
+                /** @description Optional structured location metadata (branch, host, path, ...). */
+                location?: {
+                    [key: string]: string;
+                };
+                /** @description Raw design body to persist into the `pattern_file` column. See MesheryPattern.patternFile for the transcode boundary note that applies on both writes and reads. */
+                patternFile?: string;
                 /**
-                 * Format: uri
-                 * @description The link of the social.
+                 * @description Visibility scope of the design.
+                 * @enum {string}
                  */
-                link: string;
-              }[];
-              /**
-               * Format: date-time
-               * @description Timestamp when the user record was soft-deleted (null if not deleted)
-               */
-              deletedAt: string | null;
-              /**
-               * @description List of global roles assigned to the user
-               * @example [
-               *   "admin",
-               *   "meshmap"
-               * ]
-               */
-              roleNames?: (
-                | "admin"
-                | "meshmap"
-                | "curator"
-                | "team admin"
-                | "workspace admin"
-                | "workspace manager"
-                | "organization admin"
-                | "user"
-              )[];
-              /** @description Teams the user belongs to with role information */
-              teams?: {
-                /** @description Team memberships for the user with their assigned roles. */
-                teamsWithRoles?: { [key: string]: unknown }[];
-                /** @description Total number of team memberships returned for the user. */
-                totalCount?: number;
-              };
-              /** @description Organizations the user belongs to with role information */
-              organizations?: {
-                /** @description Organization memberships for the user with their assigned roles. */
-                organizationsWithRoles?: { [key: string]: unknown }[];
-                /** @description Total number of organization memberships returned for the user. */
-                totalCount?: number;
-              };
-            } | null;
-            /** @description Optional structured location metadata (branch, host, path, ...). */
-            location?: { [key: string]: string };
-            /** @description Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied. */
-            patternFile?: string;
+                visibility?: "private" | "public" | "published";
+                /**
+                 * @description Discriminator identifying the source format of the design body, stored in the `source_type` column. Optional on create (the server defaults missing values to `Design`).
+                 * @enum {string|null}
+                 */
+                designType?: "Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest" | null;
+            };
+            /** @description When true, persist the design in addition to parsing it. */
+            save?: boolean;
             /**
-             * @description Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
-             *
-             * @enum {string}
+             * Format: uri
+             * @description Optional source URL the design was fetched from.
              */
-            visibility?: "private" | "public" | "published";
-            /**
-             * @description Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
-             *
-             * @enum {string|null}
-             */
-            designType?:
-              | (
-                  | "Design"
-                  | "Helm Chart"
-                  | "Docker Compose"
-                  | "Kubernetes Manifest"
-                )
-              | null;
+            url?: string;
+            /** @description Human-readable design name. */
+            name?: string;
+        };
+        /** @description Body for POST /api/pattern/import. Consumed by the server as application/json. Exactly one of two variants must be supplied: a File Import carrying base64-encoded bytes plus a file name, or a URL Import naming a remote location the server will fetch. Sending both variants at once, or neither, is rejected with 400. */
+        MesheryPatternImportRequestBody: {
             /**
              * Format: byte
-             * @description Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.
+             * @description Base64-encoded file bytes. Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details.
              */
-            sourceContent?: string | null;
+            file: string;
+            /** @description The name of the pattern file being imported. Include the extension (e.g. `design.yaml`), as the server uses it to identify the file type. */
+            fileName: string;
             /**
-             * @description Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
-             *
-             * @default 0
+             * @description Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.
+             * @default Untitled Design
              */
-            viewCount?: number;
+            name: string;
+        } | {
             /**
-             * @description Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
-             *
-             * @default 0
+             * Format: uri
+             * @description A direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Ensure the resource is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details.
              */
-            downloadCount?: number;
+            url: string;
             /**
-             * @description Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
-             *
-             * @default 0
+             * @description Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.
+             * @default Untitled Design
              */
-            cloneCount?: number;
+            name: string;
+        };
+        /**
+         * File Import
+         * @description Upload a design file from the local system. Both `file` and `fileName` are required; the server uses the file name to identify the file type (Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design).
+         */
+        MesheryPatternImportFilePayload: {
             /**
-             * @description Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
-             *
-             * @default 0
+             * Format: byte
+             * @description Base64-encoded file bytes. Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details.
              */
-            deploymentCount?: number;
+            file: string;
+            /** @description The name of the pattern file being imported. Include the extension (e.g. `design.yaml`), as the server uses it to identify the file type. */
+            fileName: string;
             /**
-             * @description Server-aggregated count of share events for this design. Server-managed and ignored on writes.
-             *
-             * @default 0
+             * @description Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.
+             * @default Untitled Design
              */
-            shareCount?: number;
+            name: string;
+        };
+        /**
+         * URL Import
+         * @description Import a design by URL. The server will fetch the resource and derive the file type from the response.
+         */
+        MesheryPatternImportURLPayload: {
             /**
-             * Format: date-time
-             * @description Timestamp of design creation.
+             * Format: uri
+             * @description A direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Ensure the resource is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details.
              */
-            createdAt?: string;
+            url: string;
             /**
-             * Format: date-time
-             * @description Timestamp of last design modification.
+             * @description Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.
+             * @default Untitled Design
              */
-            updatedAt?: string;
-          };
+            name: string;
         };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
+        /** @description Flat canonical representation of the design import form that combines the discriminator field with the union of properties from MesheryPatternImportFilePayload and MesheryPatternImportURLPayload. This schema is the authoritative source for the canonical RJSF form schema at schemas/constructs/v1beta3/design/forms/import.json. The server receives either a File-import payload or a URL-import payload (as defined by MesheryPatternImportRequestBody); this form schema captures the superset of user-facing fields so the form schema can be validated as a subset of this canonical type. */
+        MesheryPatternImportFormPayload: {
+            /**
+             * @description Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.
+             * @default Untitled Design
+             */
+            name: string;
+            /**
+             * Upload method
+             * @description UI-level discriminator that controls which import variant the form submits. The client maps "File Upload" to MesheryPatternImportFilePayload and "URL Import" to MesheryPatternImportURLPayload before calling the API.
+             * @enum {string}
+             */
+            uploadType?: "File Upload" | "URL Import";
+            /**
+             * Format: byte
+             * @description Base64-encoded file bytes. Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs.
+             */
+            file?: string;
+            /**
+             * Format: uri
+             * @description A direct URL to a single file. Ensure the resource is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design.
+             */
+            url?: string;
         };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
+        /** @description Design-level preferences */
+        DesignPreferences: {
+            /** @description Map of available layers, where keys are layer names. */
+            layers: Record<string, never>;
         };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
+        CatalogContentItem: {
+            [key: string]: unknown;
         };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  /** Downloads the raw design file for the specified design. */
-  getDesignPatternFile: {
-    parameters: {
-      path: {
-        /** Design (Pattern) ID */
-        designId: string;
-      };
-    };
-    responses: {
-      /** Design file content */
-      200: {
-        content: {
-          "application/yaml": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  /**
-   * Replaces the raw source content blob stored alongside a design.
-   * The server (meshery-cloud's UpsertPatternSourceContent handler)
-   * reads the entire request body as opaque bytes via io.ReadAll and
-   * persists them without interpretation, so the content-type is
-   * whatever the uploader sent — `application/octet-stream` is the
-   * canonical choice. The previous declaration reused
-   * MesheryPatternImportRequestBody under multipart/form-data, which
-   * the handler never parses; it remained wired up solely to share
-   * a schema ref with /api/pattern/import. See meshery/schemas#771
-   * for the drift analysis.
-   */
-  upsertPatternSourceContent: {
-    parameters: {
-      path: {
-        /** Design (Pattern) ID */
-        designId: string;
-      };
-    };
-    responses: {
-      /** Design source content uploaded */
-      200: unknown;
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-    requestBody: {
-      content: {
-        "application/octet-stream": string;
-      };
-    };
-  };
-  importDesign: {
-    responses: {
-      /** Successful Import */
-      200: {
-        content: {
-          "application/json": {
-            message?: string;
-          };
-        };
-      };
-      /** Invalid request format */
-      400: unknown;
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: unknown;
-    };
-    requestBody: {
-      content: {
-        "application/json":
-          | {
-              /**
-               * Format: byte
-               * @description Base64-encoded file bytes. Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details.
-               */
-              file: string;
-              /** @description The name of the pattern file being imported. Include the extension (e.g. `design.yaml`), as the server uses it to identify the file type. */
-              fileName: string;
-              /**
-               * @description Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.
-               * @default Untitled Design
-               */
-              name?: string;
-            }
-          | {
-              /**
-               * Format: uri
-               * @description A direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Ensure the resource is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details.
-               */
-              url: string;
-              /**
-               * @description Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.
-               * @default Untitled Design
-               */
-              name?: string;
-            };
-      };
-    };
-  };
-  getCatalogContent: {
-    parameters: {
-      path: {
-        type: string;
-      };
-      query: {
-        /** Get responses by page */
-        page?: string;
-        /** Number of items per page (canonical camelCase form). */
-        pageSize?: number;
-        /** Get responses that match search param value */
-        search?: string;
-        /** Get ordered responses */
-        order?: string;
-        type?: string;
-        technology?: string;
-        metrics?: boolean;
-        class?: string;
-        userId?: string;
-        orgId?: string;
-        workspaceId?: string;
-        teamId?: string;
-        populate?: boolean;
-      };
-    };
-    responses: {
-      /** Catalog content page */
-      200: {
-        content: {
-          "application/json": {
+        /** @description Paginated catalog content listing (designs, filters, aggregate counts). */
+        CatalogContentPage: {
             /** @description Current page number of the result set. */
             page?: number;
             /** @description Number of items per page. */
@@ -4876,779 +2631,384 @@ export interface operations {
             totalCount?: number;
             /** @description Published designs included on this page. */
             patterns?: {
-              /**
-               * Format: uuid
-               * @description Server-generated design ID.
-               */
-              id?: string;
-              /** @description Human-readable design name. */
-              name?: string;
-              /** @description Catalog metadata attached to the design when published. */
-              catalogData?: {
-                /** @description Tracks the specific content version that has been made available in the Catalog. */
-                publishedVersion?: string;
-                /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                class?: string;
-                /**
-                 * Model
-                 * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
-                 */
-                compatibility: "kubernetes"[];
-                /**
-                 * Caveats and Considerations
-                 * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
-                 */
-                patternCaveats: string;
-                /**
-                 * Description
-                 * @description Purpose of the design along with its intended and unintended uses.
-                 */
-                patternInfo: string;
-                /**
-                 * Type
-                 * @description Categorization of the type of design or operational flow depicted in this design.
-                 * @default Deployment
-                 * @enum {string}
-                 */
-                type:
-                  | "Deployment"
-                  | "Observability"
-                  | "Resiliency"
-                  | "Scaling"
-                  | "Security"
-                  | "Traffic-management"
-                  | "Troubleshooting"
-                  | "Workloads";
-                /** @description Contains reference to the dark and light mode snapshots of the design. */
-                snapshotURL?: string[];
-              };
-              /**
-               * Format: uuid
-               * @description Owning user ID.
-               */
-              userId?: string;
-              /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
-              user?: {
                 /**
                  * Format: uuid
-                 * @description Unique identifier for the user
+                 * @description Server-generated design ID.
                  */
-                id: string;
-                /** @description User identifier (username or external ID) */
-                userId: string;
+                id?: string;
+                /** @description Human-readable design name. */
+                name?: string;
+                /** @description Catalog metadata attached to the design when published. */
+                catalogData?: {
+                    /** @description Tracks the specific content version that has been made available in the Catalog. */
+                    publishedVersion?: string;
+                    /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+                    class?: string & ("official" | "verified" | "reference architecture");
+                    /**
+                     * Model
+                     * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
+                     */
+                    compatibility: "kubernetes"[];
+                    /**
+                     * Caveats and Considerations
+                     * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
+                     */
+                    patternCaveats: string;
+                    /**
+                     * Description
+                     * @description Purpose of the design along with its intended and unintended uses.
+                     */
+                    patternInfo: string;
+                    /**
+                     * Type
+                     * @description Categorization of the type of design or operational flow depicted in this design.
+                     * @default Deployment
+                     * @enum {string}
+                     */
+                    type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
+                    /** @description Contains reference to the dark and light mode snapshots of the design. */
+                    snapshotURL?: string[];
+                };
                 /**
-                 * @description Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)
-                 * @example [
-                 *   "local",
-                 *   "github",
-                 *   "google",
-                 *   "twitter"
-                 * ]
+                 * Format: uuid
+                 * @description Owning user ID.
                  */
-                provider: string;
+                userId?: string;
+                /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
+                user?: {
+                    /**
+                     * Format: uuid
+                     * @description Unique identifier for the user
+                     */
+                    id: string;
+                    /** @description User identifier (username or external ID) */
+                    userId: string;
+                    /**
+                     * @description Authentication provider (e.g., Google, Github)
+                     * @example [
+                     *       "local",
+                     *       "github",
+                     *       "google",
+                     *       "twitter"
+                     *     ]
+                     */
+                    provider: string;
+                    /**
+                     * Format: email
+                     * @description User's email address
+                     */
+                    email: string;
+                    /** @description User's first name */
+                    firstName: string;
+                    /** @description User's last name */
+                    lastName: string;
+                    /**
+                     * Format: uri
+                     * @description URL to user's avatar image
+                     */
+                    avatarUrl?: string;
+                    /**
+                     * @description User account status
+                     * @enum {string}
+                     */
+                    status: "active" | "inactive" | "pending" | "anonymous";
+                    /**
+                     * @description User's biography or description
+                     * @default
+                     */
+                    bio: string;
+                    /** @description User's country information stored as JSONB */
+                    country?: {
+                        [key: string]: unknown;
+                    };
+                    /** @description User's region information stored as JSONB */
+                    region?: {
+                        [key: string]: unknown;
+                    };
+                    /** @description User preferences stored as JSONB */
+                    preferences?: {
+                        /** @description The mesh adapters of the preference. */
+                        meshAdapters?: Record<string, never>[];
+                        grafana?: {
+                            /** @description Grafana URL for the user configuration. */
+                            grafanaUrl?: string;
+                            /** @description Grafana API key for the user configuration. */
+                            grafanaApiKey?: string;
+                            /** @description Selected Grafana board configurations for the user. */
+                            selectedBoardsConfigs?: {
+                                /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                board?: Record<string, never>;
+                                /** @description Panels selected for the Grafana board configuration. */
+                                panels?: Record<string, never>[];
+                                /** @description Template variables applied to the selected Grafana board configuration. */
+                                templateVars?: string[];
+                            }[];
+                        };
+                        prometheus?: {
+                            /** @description The prometheus URL of the prometheus. */
+                            prometheusUrl?: string;
+                            /** @description The selected prometheus boards configs of the prometheus. */
+                            selectedPrometheusBoardsConfigs?: {
+                                /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                board?: Record<string, never>;
+                                /** @description Panels selected for the Grafana board configuration. */
+                                panels?: Record<string, never>[];
+                                /** @description Template variables applied to the selected Grafana board configuration. */
+                                templateVars?: string[];
+                            }[];
+                        };
+                        loadTestPrefs?: {
+                            /** @description Concurrent requests */
+                            c?: number;
+                            /** @description Queries per second */
+                            qps?: number;
+                            /** @description Duration */
+                            t?: string;
+                            /** @description Load generator */
+                            gen?: string;
+                        };
+                        /** @description The anonymous usage stats of the preference. */
+                        anonymousUsageStats: boolean;
+                        /** @description The anonymous perf results of the preference. */
+                        anonymousPerfResults: boolean;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp of when the resource was last updated.
+                         */
+                        updatedAt: string;
+                        /** @description The dashboard preferences of the preference. */
+                        dashboardPreferences: {
+                            [key: string]: unknown;
+                        };
+                        /**
+                         * Format: uuid
+                         * @description ID of the associated selectedOrganization.
+                         */
+                        selectedOrganizationId: string;
+                        /** @description The selected workspace for organizations of the preference. */
+                        selectedWorkspaceForOrganizations: {
+                            [key: string]: string;
+                        };
+                        /** @description The users extension preferences of the preference. */
+                        usersExtensionPreferences: {
+                            [key: string]: unknown;
+                        };
+                        /** @description The remote provider preferences of the preference. */
+                        remoteProviderPreferences: {
+                            [key: string]: unknown;
+                        };
+                    };
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when user accepted terms and conditions
+                     */
+                    acceptedTermsAt?: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp of user's first login
+                     */
+                    firstLoginTime?: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp of user's most recent login
+                     */
+                    lastLoginTime: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the user record was created
+                     */
+                    createdAt: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the user record was last updated
+                     */
+                    updatedAt: string;
+                    /** @description Various online profiles associated with the user account */
+                    socials?: {
+                        /** @description The site of the social. */
+                        site: string;
+                        /**
+                         * Format: uri
+                         * @description The link of the social.
+                         */
+                        link: string;
+                    }[];
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the user record was soft-deleted (null if not deleted)
+                     */
+                    deletedAt: string | null;
+                    /**
+                     * @description List of global roles assigned to the user
+                     * @example [
+                     *       "admin",
+                     *       "meshmap"
+                     *     ]
+                     */
+                    roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
+                    /** @description Teams the user belongs to with role information */
+                    teams?: {
+                        /** @description Team memberships for the user with their assigned roles. */
+                        teamsWithRoles?: Record<string, never>[];
+                        /** @description Total number of team memberships returned for the user. */
+                        totalCount?: number;
+                    };
+                    /** @description Organizations the user belongs to with role information */
+                    organizations?: {
+                        /** @description Organization memberships for the user with their assigned roles. */
+                        organizationsWithRoles?: Record<string, never>[];
+                        /** @description Total number of organization memberships returned for the user. */
+                        totalCount?: number;
+                    };
+                } | null;
+                /** @description Optional structured location metadata (branch, host, path, ...). */
+                location?: {
+                    [key: string]: string;
+                };
+                /** @description Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied. */
+                patternFile?: string;
                 /**
-                 * Format: email
-                 * @description User's email address
-                 */
-                email: string;
-                /** @description User's first name */
-                firstName: string;
-                /** @description User's last name */
-                lastName: string;
-                /**
-                 * Format: uri
-                 * @description URL to user's avatar image
-                 */
-                avatarUrl?: string;
-                /**
-                 * @description User account status
+                 * @description Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
                  * @enum {string}
                  */
-                status: "active" | "inactive" | "pending" | "anonymous";
+                visibility?: "private" | "public" | "published";
                 /**
-                 * @description User's biography or description
-                 * @default
+                 * @description Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+                 * @enum {string|null}
                  */
-                bio?: string;
-                /** @description User's country information stored as JSONB */
-                country?: { [key: string]: unknown };
-                /** @description User's region information stored as JSONB */
-                region?: { [key: string]: unknown };
-                /** @description User preferences stored as JSONB */
-                preferences?: {
-                  /** @description The mesh adapters of the preference. */
-                  meshAdapters?: { [key: string]: unknown }[];
-                  grafana?: {
-                    /** @description Grafana URL for the user configuration. */
-                    grafanaUrl?: string;
-                    /** @description Grafana API key for the user configuration. */
-                    grafanaApiKey?: string;
-                    /** @description Selected Grafana board configurations for the user. */
-                    selectedBoardsConfigs?: {
-                      /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                      board?: { [key: string]: unknown };
-                      /** @description Panels selected for the Grafana board configuration. */
-                      panels?: { [key: string]: unknown }[];
-                      /** @description Template variables applied to the selected Grafana board configuration. */
-                      templateVars?: string[];
-                    }[];
-                  };
-                  prometheus?: {
-                    /** @description The prometheus URL of the prometheus. */
-                    prometheusUrl?: string;
-                    /** @description The selected prometheus boards configs of the prometheus. */
-                    selectedPrometheusBoardsConfigs?: {
-                      /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                      board?: { [key: string]: unknown };
-                      /** @description Panels selected for the Grafana board configuration. */
-                      panels?: { [key: string]: unknown }[];
-                      /** @description Template variables applied to the selected Grafana board configuration. */
-                      templateVars?: string[];
-                    }[];
-                  };
-                  loadTestPrefs?: {
-                    /** @description Concurrent requests */
-                    c?: number;
-                    /** @description Queries per second */
-                    qps?: number;
-                    /** @description Duration */
-                    t?: string;
-                    /** @description Load generator */
-                    gen?: string;
-                  };
-                  /** @description The anonymous usage stats of the preference. */
-                  anonymousUsageStats: boolean;
-                  /** @description The anonymous perf results of the preference. */
-                  anonymousPerfResults: boolean;
-                  /**
-                   * Format: date-time
-                   * @description Timestamp of when the resource was last updated.
-                   */
-                  updatedAt: string;
-                  /** @description The dashboard preferences of the preference. */
-                  dashboardPreferences: { [key: string]: unknown };
-                  /**
-                   * Format: uuid
-                   * @description ID of the associated selectedOrganization.
-                   */
-                  selectedOrganizationId: string;
-                  /** @description The selected workspace for organizations of the preference. */
-                  selectedWorkspaceForOrganizations: { [key: string]: string };
-                  /** @description The users extension preferences of the preference. */
-                  usersExtensionPreferences: { [key: string]: unknown };
-                  /** @description The remote provider preferences of the preference. */
-                  remoteProviderPreferences: { [key: string]: unknown };
+                designType?: "Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest" | null;
+                /**
+                 * Format: byte
+                 * @description Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.
+                 */
+                sourceContent?: string | null;
+                /**
+                 * @description Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+                 * @default 0
+                 */
+                viewCount: number;
+                /**
+                 * @description Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+                 * @default 0
+                 */
+                downloadCount: number;
+                /**
+                 * @description Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+                 * @default 0
+                 */
+                cloneCount: number;
+                /**
+                 * @description Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+                 * @default 0
+                 */
+                deploymentCount: number;
+                /**
+                 * @description Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+                 * @default 0
+                 */
+                shareCount: number;
+                /**
+                 * Format: date-time
+                 * @description Timestamp of design creation.
+                 */
+                createdAt?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp of last design modification.
+                 */
+                updatedAt?: string;
+            }[];
+            /** @description Published filters included on this page. */
+            filters?: {
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                id: string;
+                /** @description Human-readable filter name; required, used for catalog listings. */
+                name: string;
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                userId: string;
+                /**
+                 * Format: byte
+                 * @description Raw filter source persisted as a byte array (`bytea` column
+                 *     `filter_file`). Wire form is base64 per OpenAPI `format: byte`.
+                 */
+                filterFile?: string;
+                /**
+                 * @description Filter resource discriminator describing the filter body's source
+                 *     format (e.g. WASM module identifier or external resource path).
+                 *     Stored in the `filter_resource` text column.
+                 */
+                filterResource?: string;
+                /** @description Optional structured location metadata (branch, host, path, ...). */
+                location?: {
+                    [key: string]: string;
+                };
+                /**
+                 * @description Visibility scope (private, public, published).
+                 * @enum {string}
+                 */
+                visibility?: "private" | "public" | "published";
+                /** @description Catalog metadata attached to the filter when published. */
+                catalogData?: {
+                    /** @description Tracks the specific content version that has been made available in the Catalog. */
+                    publishedVersion?: string;
+                    /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+                    class?: string & ("official" | "verified" | "reference architecture");
+                    /**
+                     * Model
+                     * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
+                     */
+                    compatibility: "kubernetes"[];
+                    /**
+                     * Caveats and Considerations
+                     * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
+                     */
+                    patternCaveats: string;
+                    /**
+                     * Description
+                     * @description Purpose of the design along with its intended and unintended uses.
+                     */
+                    patternInfo: string;
+                    /**
+                     * Type
+                     * @description Categorization of the type of design or operational flow depicted in this design.
+                     * @default Deployment
+                     * @enum {string}
+                     */
+                    type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
+                    /** @description Contains reference to the dark and light mode snapshots of the design. */
+                    snapshotURL?: string[];
                 };
                 /**
                  * Format: date-time
-                 * @description Timestamp when user accepted terms and conditions
-                 */
-                acceptedTermsAt?: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp of user's first login
-                 */
-                firstLoginTime?: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp of user's most recent login
-                 */
-                lastLoginTime: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the user record was created
+                 * @description Timestamp of filter creation.
                  */
                 createdAt: string;
                 /**
                  * Format: date-time
-                 * @description Timestamp when the user record was last updated
+                 * @description Timestamp of last filter modification.
                  */
                 updatedAt: string;
-                /** @description Various online profiles associated with the user account */
-                socials?: {
-                  /** @description The site of the social. */
-                  site: string;
-                  /**
-                   * Format: uri
-                   * @description The link of the social.
-                   */
-                  link: string;
-                }[];
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the user record was soft-deleted (null if not deleted)
-                 */
-                deletedAt: string | null;
-                /**
-                 * @description List of global roles assigned to the user
-                 * @example [
-                 *   "admin",
-                 *   "meshmap"
-                 * ]
-                 */
-                roleNames?: (
-                  | "admin"
-                  | "meshmap"
-                  | "curator"
-                  | "team admin"
-                  | "workspace admin"
-                  | "workspace manager"
-                  | "organization admin"
-                  | "user"
-                )[];
-                /** @description Teams the user belongs to with role information */
-                teams?: {
-                  /** @description Team memberships for the user with their assigned roles. */
-                  teamsWithRoles?: { [key: string]: unknown }[];
-                  /** @description Total number of team memberships returned for the user. */
-                  totalCount?: number;
-                };
-                /** @description Organizations the user belongs to with role information */
-                organizations?: {
-                  /** @description Organization memberships for the user with their assigned roles. */
-                  organizationsWithRoles?: { [key: string]: unknown }[];
-                  /** @description Total number of organization memberships returned for the user. */
-                  totalCount?: number;
-                };
-              } | null;
-              /** @description Optional structured location metadata (branch, host, path, ...). */
-              location?: { [key: string]: string };
-              /** @description Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied. */
-              patternFile?: string;
-              /**
-               * @description Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
-               *
-               * @enum {string}
-               */
-              visibility?: "private" | "public" | "published";
-              /**
-               * @description Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
-               *
-               * @enum {string|null}
-               */
-              designType?:
-                | (
-                    | "Design"
-                    | "Helm Chart"
-                    | "Docker Compose"
-                    | "Kubernetes Manifest"
-                  )
-                | null;
-              /**
-               * Format: byte
-               * @description Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.
-               */
-              sourceContent?: string | null;
-              /**
-               * @description Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
-               *
-               * @default 0
-               */
-              viewCount?: number;
-              /**
-               * @description Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
-               *
-               * @default 0
-               */
-              downloadCount?: number;
-              /**
-               * @description Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
-               *
-               * @default 0
-               */
-              cloneCount?: number;
-              /**
-               * @description Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
-               *
-               * @default 0
-               */
-              deploymentCount?: number;
-              /**
-               * @description Server-aggregated count of share events for this design. Server-managed and ignored on writes.
-               *
-               * @default 0
-               */
-              shareCount?: number;
-              /**
-               * Format: date-time
-               * @description Timestamp of design creation.
-               */
-              createdAt?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp of last design modification.
-               */
-              updatedAt?: string;
-            }[];
-            /** @description Published filters included on this page. */
-            filters?: {
-              /**
-               * Format: uuid
-               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-               */
-              id: string;
-              /** @description Human-readable filter name; required, used for catalog listings. */
-              name: string;
-              /**
-               * Format: uuid
-               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-               */
-              userId: string;
-              /**
-               * Format: byte
-               * @description Raw filter source persisted as a byte array (`bytea` column
-               * `filter_file`). Wire form is base64 per OpenAPI `format: byte`.
-               */
-              filterFile?: string;
-              /**
-               * @description Filter resource discriminator describing the filter body's source
-               * format (e.g. WASM module identifier or external resource path).
-               * Stored in the `filter_resource` text column.
-               */
-              filterResource?: string;
-              /** @description Optional structured location metadata (branch, host, path, ...). */
-              location?: { [key: string]: string };
-              /**
-               * @description Visibility scope (private, public, published).
-               * @enum {string}
-               */
-              visibility?: "private" | "public" | "published";
-              /** @description Catalog metadata attached to the filter when published. */
-              catalogData?: {
-                /** @description Tracks the specific content version that has been made available in the Catalog. */
-                publishedVersion?: string;
-                /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                class?: string;
-                /**
-                 * Model
-                 * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
-                 */
-                compatibility: "kubernetes"[];
-                /**
-                 * Caveats and Considerations
-                 * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
-                 */
-                patternCaveats: string;
-                /**
-                 * Description
-                 * @description Purpose of the design along with its intended and unintended uses.
-                 */
-                patternInfo: string;
-                /**
-                 * Type
-                 * @description Categorization of the type of design or operational flow depicted in this design.
-                 * @default Deployment
-                 * @enum {string}
-                 */
-                type:
-                  | "Deployment"
-                  | "Observability"
-                  | "Resiliency"
-                  | "Scaling"
-                  | "Security"
-                  | "Traffic-management"
-                  | "Troubleshooting"
-                  | "Workloads";
-                /** @description Contains reference to the dark and light mode snapshots of the design. */
-                snapshotURL?: string[];
-              };
-              /**
-               * Format: date-time
-               * @description Timestamp of filter creation.
-               */
-              createdAt: string;
-              /**
-               * Format: date-time
-               * @description Timestamp of last filter modification.
-               */
-              updatedAt: string;
             }[];
             /** @description Model-by-count aggregates for the catalog page. */
-            modelsCount?: { [key: string]: unknown }[];
+            modelsCount?: {
+                [key: string]: unknown;
+            }[];
             /** @description Category-by-count aggregates for the catalog page. */
-            categoryCount?: { [key: string]: unknown }[];
-          };
+            categoryCount?: {
+                [key: string]: unknown;
+            }[];
         };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
+        CatalogRequest: {
+            [key: string]: unknown;
         };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  publishCatalogContent: {
-    parameters: {
-      path: {
-        type: string;
-      };
-    };
-    responses: {
-      /** Catalog request result */
-      200: {
-        content: {
-          "application/json": { [key: string]: unknown };
-        };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Conflict */
-      409: unknown;
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": { [key: string]: unknown };
-      };
-    };
-  };
-  unPublishCatalogContent: {
-    parameters: {
-      path: {
-        type: string;
-      };
-    };
-    responses: {
-      /** Catalog request result */
-      200: {
-        content: {
-          "application/json": { [key: string]: unknown };
-        };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Conflict */
-      409: unknown;
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": { [key: string]: unknown };
-      };
-    };
-  };
-  getCatalogContentClasses: {
-    parameters: {
-      query: {
-        /** Get responses by page */
-        page?: string;
-        /** Number of items per page (canonical camelCase form). */
-        pageSize?: number;
-      };
-    };
-    responses: {
-      /** Catalog content classes */
-      200: {
-        content: {
-          "application/json": ({
-            /** @description The class of the catalogcontentclass. */
-            class?: string;
-            /** @description Description of the catalogcontentclass. */
-            description?: string;
-          } & { [key: string]: unknown })[];
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  approveCatalogRequest: {
-    responses: {
-      /** Request approved */
-      200: {
-        content: {
-          "application/json": { [key: string]: unknown };
-        };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Conflict */
-      409: unknown;
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": { [key: string]: unknown };
-      };
-    };
-  };
-  denyCatalogRequest: {
-    responses: {
-      /** Request denied */
-      200: {
-        content: {
-          "application/json": { [key: string]: unknown };
-        };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Conflict */
-      409: unknown;
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": { [key: string]: unknown };
-      };
-    };
-  };
-  handleResourceShare: {
-    parameters: {
-      path: {
-        resourceType: string;
-        resourceId: string;
-      };
-    };
-    responses: {
-      /** Resource access mapping */
-      200: {
-        content: {
-          "application/json": { [key: string]: unknown };
-        };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": { [key: string]: unknown };
-      };
-    };
-  };
-  getResourceAccessActorsByType: {
-    parameters: {
-      path: {
-        resourceType: string;
-        resourceId: string;
-        actorType: string;
-      };
-    };
-    responses: {
-      /** Resource access actors */
-      200: {
-        content: {
-          "application/json": {
-            /** @description The users of the resourceaccessactorsresponse. */
-            users?: { [key: string]: unknown }[];
-          };
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  /**
-   * Shares a design (pattern), view, or filter with a list of email
-   * addresses. When `share` is true, the content's visibility is flipped to
-   * public and an invitation email is sent to each recipient. When `share`
-   * is false, visibility is reverted to private. Only the owner of the
-   * content may change its sharing mode.
-   */
-  shareDesign: {
-    responses: {
-      /** Content shared. */
-      200: unknown;
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Caller is not the owner of the content. */
-      403: unknown;
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-    /** Body for sharing a design, filter, or view with recipients by email. */
-    requestBody: {
-      content: {
-        "application/json": {
-          /**
-           * Format: uuid
-           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-           */
-          contentId: string;
-          /**
-           * @description The kind of content being shared. Must match the entity the handler
-           * expects — `pattern` and `filter` are valid on the design share
-           * endpoint; `view` is valid on the view share endpoint.
-           *
-           * @enum {string}
-           */
-          contentType: "pattern" | "filter" | "view";
-          /** @description Email addresses of the recipients to share this content with. */
-          emails: string[];
-          /**
-           * @description When true, flip visibility to public and send invitation emails to
-           * the recipients. When false, revert visibility to private.
-           */
-          share: boolean;
-        };
-      };
-    };
-  };
-  getCatalogRequest: {
-    parameters: {
-      query: {
-        /** Get responses by page */
-        page?: string;
-        /** Number of items per page (canonical camelCase form). */
-        pageSize?: number;
-        /** Get responses that match search param value */
-        search?: string;
-        /** Get ordered responses */
-        order?: string;
-        filter?: string;
-      };
-    };
-    responses: {
-      /** Catalog requests page */
-      200: {
-        content: {
-          "application/json": {
+        /** @description Paginated catalog-request listing (pending publish approvals). */
+        CatalogRequestsPage: {
             /** @description Current page number of the result set. */
             page?: number;
             /** @description Number of items per page. */
@@ -5656,24 +3016,3111 @@ export interface operations {
             /** @description Total number of items available. */
             totalCount?: number;
             /** @description Catalog requests included on this page. */
-            catalogRequests?: { [key: string]: unknown }[];
-          };
+            catalogRequests?: {
+                [key: string]: unknown;
+            }[];
         };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
+        CatalogContentClass: {
+            /** @description The class of the catalogcontentclass. */
+            class?: string;
+            /** @description Description of the catalogcontentclass. */
+            description?: string;
+        } & {
+            [key: string]: unknown;
         };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
+        ResourceAccessMapping: {
+            [key: string]: unknown;
         };
-      };
+        ResourceAccessActorsResponse: {
+            /** @description The users of the resourceaccessactorsresponse. */
+            users?: {
+                [key: string]: unknown;
+            }[];
+        };
+        /**
+         * @description Payload for sharing a piece of content (design, filter, or view) with one
+         *     or more recipients by email. This schema backs both
+         *     `POST /api/content/design/share` and `POST /api/content/view/share`; the
+         *     server dispatches on `contentType` to decide which entity to mutate.
+         */
+        ContentSharePayload: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            contentId: string;
+            /**
+             * @description The kind of content being shared. Must match the entity the handler
+             *     expects — `pattern` and `filter` are valid on the design share
+             *     endpoint; `view` is valid on the view share endpoint.
+             * @enum {string}
+             */
+            contentType: "pattern" | "filter" | "view";
+            /** @description Email addresses of the recipients to share this content with. */
+            emails: string[];
+            /**
+             * @description When true, flip visibility to public and send invitation emails to
+             *     the recipients. When false, revert visibility to private.
+             */
+            share: boolean;
+        };
     };
-  };
+    responses: {
+        /** @description Invalid request body or request param */
+        400: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Expired JWT token used or insufficient privilege */
+        401: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Result not found */
+        404: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Internal server error */
+        500: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+    };
+    parameters: {
+        /** @description Design (Pattern) ID */
+        designId: string;
+        /** @description Get responses by page */
+        page: string;
+        /** @description Number of items per page (canonical camelCase form). */
+        pageSize: number;
+        /** @description Get responses that match search param value */
+        search: string;
+        /** @description Get ordered responses */
+        order: string;
+        /** @description User's organization ID */
+        orgIdQuery: string;
+    };
+    requestBodies: {
+        catalogContentPayload: {
+            content: {
+                "application/json": {
+                    [key: string]: unknown;
+                };
+            };
+        };
+        resourceSharePayload: {
+            content: {
+                "application/json": {
+                    [key: string]: unknown;
+                };
+            };
+        };
+        /** @description Body for sharing a design, filter, or view with recipients by email. */
+        contentSharePayload: {
+            content: {
+                "application/json": {
+                    /**
+                     * Format: uuid
+                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                     */
+                    contentId: string;
+                    /**
+                     * @description The kind of content being shared. Must match the entity the handler
+                     *     expects — `pattern` and `filter` are valid on the design share
+                     *     endpoint; `view` is valid on the view share endpoint.
+                     * @enum {string}
+                     */
+                    contentType: "pattern" | "filter" | "view";
+                    /** @description Email addresses of the recipients to share this content with. */
+                    emails: string[];
+                    /**
+                     * @description When true, flip visibility to public and send invitation emails to
+                     *     the recipients. When false, revert visibility to private.
+                     */
+                    share: boolean;
+                };
+            };
+        };
+    };
+    headers: never;
+    pathItems: never;
 }
-
-export interface external {}
+export type $defs = Record<string, never>;
+export interface operations {
+    getPatterns: {
+        parameters: {
+            query?: {
+                /** @description Get responses by page */
+                page?: string;
+                /** @description Number of items per page (canonical camelCase form). */
+                pageSize?: number;
+                /** @description Get responses that match search param value */
+                search?: string;
+                /** @description Get ordered responses */
+                order?: string;
+                /** @description User's organization ID */
+                orgId?: string;
+                /** @description Filter by visibility (public, private, published) */
+                visibility?: string;
+                /** @description UUID of User. Pass userId for fetching public and published designs. */
+                userId?: string;
+                /** @description Whether to include usage metrics in the response. */
+                metrics?: boolean;
+                /** @description Filter designs by workspace ID. */
+                workspaceId?: string;
+                /** @description Populate additional nested fields in the response. */
+                populate?: boolean;
+                /** @description Include designs shared with the caller. */
+                shared?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Designs response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Current page number of the result set. */
+                        page?: number;
+                        /** @description Number of items per page. */
+                        pageSize?: number;
+                        /** @description Total number of items available. */
+                        totalCount?: number;
+                        /** @description Designs included on this page of results. */
+                        patterns?: {
+                            /**
+                             * Format: uuid
+                             * @description Server-generated design ID.
+                             */
+                            id?: string;
+                            /** @description Human-readable design name. */
+                            name?: string;
+                            /** @description Catalog metadata attached to the design when published. */
+                            catalogData?: {
+                                /** @description Tracks the specific content version that has been made available in the Catalog. */
+                                publishedVersion?: string;
+                                /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+                                class?: string & ("official" | "verified" | "reference architecture");
+                                /**
+                                 * Model
+                                 * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
+                                 */
+                                compatibility: "kubernetes"[];
+                                /**
+                                 * Caveats and Considerations
+                                 * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
+                                 */
+                                patternCaveats: string;
+                                /**
+                                 * Description
+                                 * @description Purpose of the design along with its intended and unintended uses.
+                                 */
+                                patternInfo: string;
+                                /**
+                                 * Type
+                                 * @description Categorization of the type of design or operational flow depicted in this design.
+                                 * @default Deployment
+                                 * @enum {string}
+                                 */
+                                type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
+                                /** @description Contains reference to the dark and light mode snapshots of the design. */
+                                snapshotURL?: string[];
+                            };
+                            /**
+                             * Format: uuid
+                             * @description Owning user ID.
+                             */
+                            userId?: string;
+                            /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
+                            user?: {
+                                /**
+                                 * Format: uuid
+                                 * @description Unique identifier for the user
+                                 */
+                                id: string;
+                                /** @description User identifier (username or external ID) */
+                                userId: string;
+                                /**
+                                 * @description Authentication provider (e.g., Google, Github)
+                                 * @example [
+                                 *       "local",
+                                 *       "github",
+                                 *       "google",
+                                 *       "twitter"
+                                 *     ]
+                                 */
+                                provider: string;
+                                /**
+                                 * Format: email
+                                 * @description User's email address
+                                 */
+                                email: string;
+                                /** @description User's first name */
+                                firstName: string;
+                                /** @description User's last name */
+                                lastName: string;
+                                /**
+                                 * Format: uri
+                                 * @description URL to user's avatar image
+                                 */
+                                avatarUrl?: string;
+                                /**
+                                 * @description User account status
+                                 * @enum {string}
+                                 */
+                                status: "active" | "inactive" | "pending" | "anonymous";
+                                /**
+                                 * @description User's biography or description
+                                 * @default
+                                 */
+                                bio: string;
+                                /** @description User's country information stored as JSONB */
+                                country?: {
+                                    [key: string]: unknown;
+                                };
+                                /** @description User's region information stored as JSONB */
+                                region?: {
+                                    [key: string]: unknown;
+                                };
+                                /** @description User preferences stored as JSONB */
+                                preferences?: {
+                                    /** @description The mesh adapters of the preference. */
+                                    meshAdapters?: Record<string, never>[];
+                                    grafana?: {
+                                        /** @description Grafana URL for the user configuration. */
+                                        grafanaUrl?: string;
+                                        /** @description Grafana API key for the user configuration. */
+                                        grafanaApiKey?: string;
+                                        /** @description Selected Grafana board configurations for the user. */
+                                        selectedBoardsConfigs?: {
+                                            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                            board?: Record<string, never>;
+                                            /** @description Panels selected for the Grafana board configuration. */
+                                            panels?: Record<string, never>[];
+                                            /** @description Template variables applied to the selected Grafana board configuration. */
+                                            templateVars?: string[];
+                                        }[];
+                                    };
+                                    prometheus?: {
+                                        /** @description The prometheus URL of the prometheus. */
+                                        prometheusUrl?: string;
+                                        /** @description The selected prometheus boards configs of the prometheus. */
+                                        selectedPrometheusBoardsConfigs?: {
+                                            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                            board?: Record<string, never>;
+                                            /** @description Panels selected for the Grafana board configuration. */
+                                            panels?: Record<string, never>[];
+                                            /** @description Template variables applied to the selected Grafana board configuration. */
+                                            templateVars?: string[];
+                                        }[];
+                                    };
+                                    loadTestPrefs?: {
+                                        /** @description Concurrent requests */
+                                        c?: number;
+                                        /** @description Queries per second */
+                                        qps?: number;
+                                        /** @description Duration */
+                                        t?: string;
+                                        /** @description Load generator */
+                                        gen?: string;
+                                    };
+                                    /** @description The anonymous usage stats of the preference. */
+                                    anonymousUsageStats: boolean;
+                                    /** @description The anonymous perf results of the preference. */
+                                    anonymousPerfResults: boolean;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp of when the resource was last updated.
+                                     */
+                                    updatedAt: string;
+                                    /** @description The dashboard preferences of the preference. */
+                                    dashboardPreferences: {
+                                        [key: string]: unknown;
+                                    };
+                                    /**
+                                     * Format: uuid
+                                     * @description ID of the associated selectedOrganization.
+                                     */
+                                    selectedOrganizationId: string;
+                                    /** @description The selected workspace for organizations of the preference. */
+                                    selectedWorkspaceForOrganizations: {
+                                        [key: string]: string;
+                                    };
+                                    /** @description The users extension preferences of the preference. */
+                                    usersExtensionPreferences: {
+                                        [key: string]: unknown;
+                                    };
+                                    /** @description The remote provider preferences of the preference. */
+                                    remoteProviderPreferences: {
+                                        [key: string]: unknown;
+                                    };
+                                };
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when user accepted terms and conditions
+                                 */
+                                acceptedTermsAt?: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp of user's first login
+                                 */
+                                firstLoginTime?: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp of user's most recent login
+                                 */
+                                lastLoginTime: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the user record was created
+                                 */
+                                createdAt: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the user record was last updated
+                                 */
+                                updatedAt: string;
+                                /** @description Various online profiles associated with the user account */
+                                socials?: {
+                                    /** @description The site of the social. */
+                                    site: string;
+                                    /**
+                                     * Format: uri
+                                     * @description The link of the social.
+                                     */
+                                    link: string;
+                                }[];
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the user record was soft-deleted (null if not deleted)
+                                 */
+                                deletedAt: string | null;
+                                /**
+                                 * @description List of global roles assigned to the user
+                                 * @example [
+                                 *       "admin",
+                                 *       "meshmap"
+                                 *     ]
+                                 */
+                                roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
+                                /** @description Teams the user belongs to with role information */
+                                teams?: {
+                                    /** @description Team memberships for the user with their assigned roles. */
+                                    teamsWithRoles?: Record<string, never>[];
+                                    /** @description Total number of team memberships returned for the user. */
+                                    totalCount?: number;
+                                };
+                                /** @description Organizations the user belongs to with role information */
+                                organizations?: {
+                                    /** @description Organization memberships for the user with their assigned roles. */
+                                    organizationsWithRoles?: Record<string, never>[];
+                                    /** @description Total number of organization memberships returned for the user. */
+                                    totalCount?: number;
+                                };
+                            } | null;
+                            /** @description Optional structured location metadata (branch, host, path, ...). */
+                            location?: {
+                                [key: string]: string;
+                            };
+                            /** @description Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied. */
+                            patternFile?: string;
+                            /**
+                             * @description Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
+                             * @enum {string}
+                             */
+                            visibility?: "private" | "public" | "published";
+                            /**
+                             * @description Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+                             * @enum {string|null}
+                             */
+                            designType?: "Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest" | null;
+                            /**
+                             * Format: byte
+                             * @description Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.
+                             */
+                            sourceContent?: string | null;
+                            /**
+                             * @description Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+                             * @default 0
+                             */
+                            viewCount: number;
+                            /**
+                             * @description Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+                             * @default 0
+                             */
+                            downloadCount: number;
+                            /**
+                             * @description Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+                             * @default 0
+                             */
+                            cloneCount: number;
+                            /**
+                             * @description Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+                             * @default 0
+                             */
+                            deploymentCount: number;
+                            /**
+                             * @description Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+                             * @default 0
+                             */
+                            shareCount: number;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of design creation.
+                             */
+                            createdAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of last design modification.
+                             */
+                            updatedAt?: string;
+                        }[];
+                        /** @description Optional discriminator describing which collection the page represents. */
+                        resultType?: string;
+                    };
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    upsertPattern: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description Optional source path the design was loaded from. */
+                    path?: string;
+                    /** @description Design body to persist. */
+                    patternData?: {
+                        /**
+                         * Format: uuid
+                         * @description Existing design ID for updates; omit on create.
+                         */
+                        id?: string;
+                        /** @description Human-readable design name. */
+                        name?: string;
+                        /**
+                         * Format: uuid
+                         * @description Owning user ID. Server overrides with the authenticated caller on create.
+                         */
+                        userId?: string;
+                        /** @description Catalog metadata to attach to the design when publishing. */
+                        catalogData?: {
+                            /** @description Tracks the specific content version that has been made available in the Catalog. */
+                            publishedVersion?: string;
+                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+                            class?: string & ("official" | "verified" | "reference architecture");
+                            /**
+                             * Model
+                             * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
+                             */
+                            compatibility: "kubernetes"[];
+                            /**
+                             * Caveats and Considerations
+                             * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
+                             */
+                            patternCaveats: string;
+                            /**
+                             * Description
+                             * @description Purpose of the design along with its intended and unintended uses.
+                             */
+                            patternInfo: string;
+                            /**
+                             * Type
+                             * @description Categorization of the type of design or operational flow depicted in this design.
+                             * @default Deployment
+                             * @enum {string}
+                             */
+                            type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
+                            /** @description Contains reference to the dark and light mode snapshots of the design. */
+                            snapshotURL?: string[];
+                        };
+                        /** @description Optional structured location metadata (branch, host, path, ...). */
+                        location?: {
+                            [key: string]: string;
+                        };
+                        /** @description Raw design body to persist into the `pattern_file` column. See MesheryPattern.patternFile for the transcode boundary note that applies on both writes and reads. */
+                        patternFile?: string;
+                        /**
+                         * @description Visibility scope of the design.
+                         * @enum {string}
+                         */
+                        visibility?: "private" | "public" | "published";
+                        /**
+                         * @description Discriminator identifying the source format of the design body, stored in the `source_type` column. Optional on create (the server defaults missing values to `Design`).
+                         * @enum {string|null}
+                         */
+                        designType?: "Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest" | null;
+                    };
+                    /** @description When true, persist the design in addition to parsing it. */
+                    save?: boolean;
+                    /**
+                     * Format: uri
+                     * @description Optional source URL the design was fetched from.
+                     */
+                    url?: string;
+                    /** @description Human-readable design name. */
+                    name?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Design saved */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Server-generated design ID.
+                         */
+                        id?: string;
+                        /** @description Human-readable design name. */
+                        name?: string;
+                        /** @description Catalog metadata attached to the design when published. */
+                        catalogData?: {
+                            /** @description Tracks the specific content version that has been made available in the Catalog. */
+                            publishedVersion?: string;
+                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+                            class?: string & ("official" | "verified" | "reference architecture");
+                            /**
+                             * Model
+                             * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
+                             */
+                            compatibility: "kubernetes"[];
+                            /**
+                             * Caveats and Considerations
+                             * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
+                             */
+                            patternCaveats: string;
+                            /**
+                             * Description
+                             * @description Purpose of the design along with its intended and unintended uses.
+                             */
+                            patternInfo: string;
+                            /**
+                             * Type
+                             * @description Categorization of the type of design or operational flow depicted in this design.
+                             * @default Deployment
+                             * @enum {string}
+                             */
+                            type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
+                            /** @description Contains reference to the dark and light mode snapshots of the design. */
+                            snapshotURL?: string[];
+                        };
+                        /**
+                         * Format: uuid
+                         * @description Owning user ID.
+                         */
+                        userId?: string;
+                        /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
+                        user?: {
+                            /**
+                             * Format: uuid
+                             * @description Unique identifier for the user
+                             */
+                            id: string;
+                            /** @description User identifier (username or external ID) */
+                            userId: string;
+                            /**
+                             * @description Authentication provider (e.g., Google, Github)
+                             * @example [
+                             *       "local",
+                             *       "github",
+                             *       "google",
+                             *       "twitter"
+                             *     ]
+                             */
+                            provider: string;
+                            /**
+                             * Format: email
+                             * @description User's email address
+                             */
+                            email: string;
+                            /** @description User's first name */
+                            firstName: string;
+                            /** @description User's last name */
+                            lastName: string;
+                            /**
+                             * Format: uri
+                             * @description URL to user's avatar image
+                             */
+                            avatarUrl?: string;
+                            /**
+                             * @description User account status
+                             * @enum {string}
+                             */
+                            status: "active" | "inactive" | "pending" | "anonymous";
+                            /**
+                             * @description User's biography or description
+                             * @default
+                             */
+                            bio: string;
+                            /** @description User's country information stored as JSONB */
+                            country?: {
+                                [key: string]: unknown;
+                            };
+                            /** @description User's region information stored as JSONB */
+                            region?: {
+                                [key: string]: unknown;
+                            };
+                            /** @description User preferences stored as JSONB */
+                            preferences?: {
+                                /** @description The mesh adapters of the preference. */
+                                meshAdapters?: Record<string, never>[];
+                                grafana?: {
+                                    /** @description Grafana URL for the user configuration. */
+                                    grafanaUrl?: string;
+                                    /** @description Grafana API key for the user configuration. */
+                                    grafanaApiKey?: string;
+                                    /** @description Selected Grafana board configurations for the user. */
+                                    selectedBoardsConfigs?: {
+                                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                        board?: Record<string, never>;
+                                        /** @description Panels selected for the Grafana board configuration. */
+                                        panels?: Record<string, never>[];
+                                        /** @description Template variables applied to the selected Grafana board configuration. */
+                                        templateVars?: string[];
+                                    }[];
+                                };
+                                prometheus?: {
+                                    /** @description The prometheus URL of the prometheus. */
+                                    prometheusUrl?: string;
+                                    /** @description The selected prometheus boards configs of the prometheus. */
+                                    selectedPrometheusBoardsConfigs?: {
+                                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                        board?: Record<string, never>;
+                                        /** @description Panels selected for the Grafana board configuration. */
+                                        panels?: Record<string, never>[];
+                                        /** @description Template variables applied to the selected Grafana board configuration. */
+                                        templateVars?: string[];
+                                    }[];
+                                };
+                                loadTestPrefs?: {
+                                    /** @description Concurrent requests */
+                                    c?: number;
+                                    /** @description Queries per second */
+                                    qps?: number;
+                                    /** @description Duration */
+                                    t?: string;
+                                    /** @description Load generator */
+                                    gen?: string;
+                                };
+                                /** @description The anonymous usage stats of the preference. */
+                                anonymousUsageStats: boolean;
+                                /** @description The anonymous perf results of the preference. */
+                                anonymousPerfResults: boolean;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp of when the resource was last updated.
+                                 */
+                                updatedAt: string;
+                                /** @description The dashboard preferences of the preference. */
+                                dashboardPreferences: {
+                                    [key: string]: unknown;
+                                };
+                                /**
+                                 * Format: uuid
+                                 * @description ID of the associated selectedOrganization.
+                                 */
+                                selectedOrganizationId: string;
+                                /** @description The selected workspace for organizations of the preference. */
+                                selectedWorkspaceForOrganizations: {
+                                    [key: string]: string;
+                                };
+                                /** @description The users extension preferences of the preference. */
+                                usersExtensionPreferences: {
+                                    [key: string]: unknown;
+                                };
+                                /** @description The remote provider preferences of the preference. */
+                                remoteProviderPreferences: {
+                                    [key: string]: unknown;
+                                };
+                            };
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when user accepted terms and conditions
+                             */
+                            acceptedTermsAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of user's first login
+                             */
+                            firstLoginTime?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of user's most recent login
+                             */
+                            lastLoginTime: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was created
+                             */
+                            createdAt: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was last updated
+                             */
+                            updatedAt: string;
+                            /** @description Various online profiles associated with the user account */
+                            socials?: {
+                                /** @description The site of the social. */
+                                site: string;
+                                /**
+                                 * Format: uri
+                                 * @description The link of the social.
+                                 */
+                                link: string;
+                            }[];
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was soft-deleted (null if not deleted)
+                             */
+                            deletedAt: string | null;
+                            /**
+                             * @description List of global roles assigned to the user
+                             * @example [
+                             *       "admin",
+                             *       "meshmap"
+                             *     ]
+                             */
+                            roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
+                            /** @description Teams the user belongs to with role information */
+                            teams?: {
+                                /** @description Team memberships for the user with their assigned roles. */
+                                teamsWithRoles?: Record<string, never>[];
+                                /** @description Total number of team memberships returned for the user. */
+                                totalCount?: number;
+                            };
+                            /** @description Organizations the user belongs to with role information */
+                            organizations?: {
+                                /** @description Organization memberships for the user with their assigned roles. */
+                                organizationsWithRoles?: Record<string, never>[];
+                                /** @description Total number of organization memberships returned for the user. */
+                                totalCount?: number;
+                            };
+                        } | null;
+                        /** @description Optional structured location metadata (branch, host, path, ...). */
+                        location?: {
+                            [key: string]: string;
+                        };
+                        /** @description Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied. */
+                        patternFile?: string;
+                        /**
+                         * @description Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
+                         * @enum {string}
+                         */
+                        visibility?: "private" | "public" | "published";
+                        /**
+                         * @description Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+                         * @enum {string|null}
+                         */
+                        designType?: "Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest" | null;
+                        /**
+                         * Format: byte
+                         * @description Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.
+                         */
+                        sourceContent?: string | null;
+                        /**
+                         * @description Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+                         * @default 0
+                         */
+                        viewCount: number;
+                        /**
+                         * @description Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+                         * @default 0
+                         */
+                        downloadCount: number;
+                        /**
+                         * @description Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+                         * @default 0
+                         */
+                        cloneCount: number;
+                        /**
+                         * @description Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+                         * @default 0
+                         */
+                        deploymentCount: number;
+                        /**
+                         * @description Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+                         * @default 0
+                         */
+                        shareCount: number;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp of design creation.
+                         */
+                        createdAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp of last design modification.
+                         */
+                        updatedAt?: string;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    deletePatterns: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description Designs targeted for deletion. */
+                    patterns?: {
+                        /**
+                         * Format: uuid
+                         * @description Design ID targeted for deletion.
+                         */
+                        id?: string;
+                        /** @description Human-readable design name (informational only; server matches on id). */
+                        name?: string;
+                    }[];
+                };
+            };
+        };
+        responses: {
+            /** @description Designs deleted */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getPatternResources: {
+        parameters: {
+            query?: {
+                /** @description Get responses by page */
+                page?: string;
+                /** @description Number of items per page (canonical camelCase form). */
+                pageSize?: number;
+                /** @description Get responses that match search param value */
+                search?: string;
+                /** @description Get ordered responses */
+                order?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Pattern resources response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    upsertPatternResource: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Pattern resource saved */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getPatternResource: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Design (Pattern) ID */
+                designId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Pattern resource response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    deletePatternResource: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Design (Pattern) ID */
+                designId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Pattern resource deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getPattern: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Design (Pattern) ID */
+                designId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Design response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Server-generated design ID.
+                         */
+                        id?: string;
+                        /** @description Human-readable design name. */
+                        name?: string;
+                        /** @description Catalog metadata attached to the design when published. */
+                        catalogData?: {
+                            /** @description Tracks the specific content version that has been made available in the Catalog. */
+                            publishedVersion?: string;
+                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+                            class?: string & ("official" | "verified" | "reference architecture");
+                            /**
+                             * Model
+                             * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
+                             */
+                            compatibility: "kubernetes"[];
+                            /**
+                             * Caveats and Considerations
+                             * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
+                             */
+                            patternCaveats: string;
+                            /**
+                             * Description
+                             * @description Purpose of the design along with its intended and unintended uses.
+                             */
+                            patternInfo: string;
+                            /**
+                             * Type
+                             * @description Categorization of the type of design or operational flow depicted in this design.
+                             * @default Deployment
+                             * @enum {string}
+                             */
+                            type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
+                            /** @description Contains reference to the dark and light mode snapshots of the design. */
+                            snapshotURL?: string[];
+                        };
+                        /**
+                         * Format: uuid
+                         * @description Owning user ID.
+                         */
+                        userId?: string;
+                        /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
+                        user?: {
+                            /**
+                             * Format: uuid
+                             * @description Unique identifier for the user
+                             */
+                            id: string;
+                            /** @description User identifier (username or external ID) */
+                            userId: string;
+                            /**
+                             * @description Authentication provider (e.g., Google, Github)
+                             * @example [
+                             *       "local",
+                             *       "github",
+                             *       "google",
+                             *       "twitter"
+                             *     ]
+                             */
+                            provider: string;
+                            /**
+                             * Format: email
+                             * @description User's email address
+                             */
+                            email: string;
+                            /** @description User's first name */
+                            firstName: string;
+                            /** @description User's last name */
+                            lastName: string;
+                            /**
+                             * Format: uri
+                             * @description URL to user's avatar image
+                             */
+                            avatarUrl?: string;
+                            /**
+                             * @description User account status
+                             * @enum {string}
+                             */
+                            status: "active" | "inactive" | "pending" | "anonymous";
+                            /**
+                             * @description User's biography or description
+                             * @default
+                             */
+                            bio: string;
+                            /** @description User's country information stored as JSONB */
+                            country?: {
+                                [key: string]: unknown;
+                            };
+                            /** @description User's region information stored as JSONB */
+                            region?: {
+                                [key: string]: unknown;
+                            };
+                            /** @description User preferences stored as JSONB */
+                            preferences?: {
+                                /** @description The mesh adapters of the preference. */
+                                meshAdapters?: Record<string, never>[];
+                                grafana?: {
+                                    /** @description Grafana URL for the user configuration. */
+                                    grafanaUrl?: string;
+                                    /** @description Grafana API key for the user configuration. */
+                                    grafanaApiKey?: string;
+                                    /** @description Selected Grafana board configurations for the user. */
+                                    selectedBoardsConfigs?: {
+                                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                        board?: Record<string, never>;
+                                        /** @description Panels selected for the Grafana board configuration. */
+                                        panels?: Record<string, never>[];
+                                        /** @description Template variables applied to the selected Grafana board configuration. */
+                                        templateVars?: string[];
+                                    }[];
+                                };
+                                prometheus?: {
+                                    /** @description The prometheus URL of the prometheus. */
+                                    prometheusUrl?: string;
+                                    /** @description The selected prometheus boards configs of the prometheus. */
+                                    selectedPrometheusBoardsConfigs?: {
+                                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                        board?: Record<string, never>;
+                                        /** @description Panels selected for the Grafana board configuration. */
+                                        panels?: Record<string, never>[];
+                                        /** @description Template variables applied to the selected Grafana board configuration. */
+                                        templateVars?: string[];
+                                    }[];
+                                };
+                                loadTestPrefs?: {
+                                    /** @description Concurrent requests */
+                                    c?: number;
+                                    /** @description Queries per second */
+                                    qps?: number;
+                                    /** @description Duration */
+                                    t?: string;
+                                    /** @description Load generator */
+                                    gen?: string;
+                                };
+                                /** @description The anonymous usage stats of the preference. */
+                                anonymousUsageStats: boolean;
+                                /** @description The anonymous perf results of the preference. */
+                                anonymousPerfResults: boolean;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp of when the resource was last updated.
+                                 */
+                                updatedAt: string;
+                                /** @description The dashboard preferences of the preference. */
+                                dashboardPreferences: {
+                                    [key: string]: unknown;
+                                };
+                                /**
+                                 * Format: uuid
+                                 * @description ID of the associated selectedOrganization.
+                                 */
+                                selectedOrganizationId: string;
+                                /** @description The selected workspace for organizations of the preference. */
+                                selectedWorkspaceForOrganizations: {
+                                    [key: string]: string;
+                                };
+                                /** @description The users extension preferences of the preference. */
+                                usersExtensionPreferences: {
+                                    [key: string]: unknown;
+                                };
+                                /** @description The remote provider preferences of the preference. */
+                                remoteProviderPreferences: {
+                                    [key: string]: unknown;
+                                };
+                            };
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when user accepted terms and conditions
+                             */
+                            acceptedTermsAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of user's first login
+                             */
+                            firstLoginTime?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of user's most recent login
+                             */
+                            lastLoginTime: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was created
+                             */
+                            createdAt: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was last updated
+                             */
+                            updatedAt: string;
+                            /** @description Various online profiles associated with the user account */
+                            socials?: {
+                                /** @description The site of the social. */
+                                site: string;
+                                /**
+                                 * Format: uri
+                                 * @description The link of the social.
+                                 */
+                                link: string;
+                            }[];
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was soft-deleted (null if not deleted)
+                             */
+                            deletedAt: string | null;
+                            /**
+                             * @description List of global roles assigned to the user
+                             * @example [
+                             *       "admin",
+                             *       "meshmap"
+                             *     ]
+                             */
+                            roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
+                            /** @description Teams the user belongs to with role information */
+                            teams?: {
+                                /** @description Team memberships for the user with their assigned roles. */
+                                teamsWithRoles?: Record<string, never>[];
+                                /** @description Total number of team memberships returned for the user. */
+                                totalCount?: number;
+                            };
+                            /** @description Organizations the user belongs to with role information */
+                            organizations?: {
+                                /** @description Organization memberships for the user with their assigned roles. */
+                                organizationsWithRoles?: Record<string, never>[];
+                                /** @description Total number of organization memberships returned for the user. */
+                                totalCount?: number;
+                            };
+                        } | null;
+                        /** @description Optional structured location metadata (branch, host, path, ...). */
+                        location?: {
+                            [key: string]: string;
+                        };
+                        /** @description Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied. */
+                        patternFile?: string;
+                        /**
+                         * @description Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
+                         * @enum {string}
+                         */
+                        visibility?: "private" | "public" | "published";
+                        /**
+                         * @description Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+                         * @enum {string|null}
+                         */
+                        designType?: "Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest" | null;
+                        /**
+                         * Format: byte
+                         * @description Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.
+                         */
+                        sourceContent?: string | null;
+                        /**
+                         * @description Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+                         * @default 0
+                         */
+                        viewCount: number;
+                        /**
+                         * @description Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+                         * @default 0
+                         */
+                        downloadCount: number;
+                        /**
+                         * @description Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+                         * @default 0
+                         */
+                        cloneCount: number;
+                        /**
+                         * @description Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+                         * @default 0
+                         */
+                        deploymentCount: number;
+                        /**
+                         * @description Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+                         * @default 0
+                         */
+                        shareCount: number;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp of design creation.
+                         */
+                        createdAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp of last design modification.
+                         */
+                        updatedAt?: string;
+                    };
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    deletePattern: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Design (Pattern) ID */
+                designId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Design deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    clonePattern: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Design (Pattern) ID */
+                designId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Design cloned */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Server-generated design ID.
+                         */
+                        id?: string;
+                        /** @description Human-readable design name. */
+                        name?: string;
+                        /** @description Catalog metadata attached to the design when published. */
+                        catalogData?: {
+                            /** @description Tracks the specific content version that has been made available in the Catalog. */
+                            publishedVersion?: string;
+                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+                            class?: string & ("official" | "verified" | "reference architecture");
+                            /**
+                             * Model
+                             * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
+                             */
+                            compatibility: "kubernetes"[];
+                            /**
+                             * Caveats and Considerations
+                             * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
+                             */
+                            patternCaveats: string;
+                            /**
+                             * Description
+                             * @description Purpose of the design along with its intended and unintended uses.
+                             */
+                            patternInfo: string;
+                            /**
+                             * Type
+                             * @description Categorization of the type of design or operational flow depicted in this design.
+                             * @default Deployment
+                             * @enum {string}
+                             */
+                            type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
+                            /** @description Contains reference to the dark and light mode snapshots of the design. */
+                            snapshotURL?: string[];
+                        };
+                        /**
+                         * Format: uuid
+                         * @description Owning user ID.
+                         */
+                        userId?: string;
+                        /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
+                        user?: {
+                            /**
+                             * Format: uuid
+                             * @description Unique identifier for the user
+                             */
+                            id: string;
+                            /** @description User identifier (username or external ID) */
+                            userId: string;
+                            /**
+                             * @description Authentication provider (e.g., Google, Github)
+                             * @example [
+                             *       "local",
+                             *       "github",
+                             *       "google",
+                             *       "twitter"
+                             *     ]
+                             */
+                            provider: string;
+                            /**
+                             * Format: email
+                             * @description User's email address
+                             */
+                            email: string;
+                            /** @description User's first name */
+                            firstName: string;
+                            /** @description User's last name */
+                            lastName: string;
+                            /**
+                             * Format: uri
+                             * @description URL to user's avatar image
+                             */
+                            avatarUrl?: string;
+                            /**
+                             * @description User account status
+                             * @enum {string}
+                             */
+                            status: "active" | "inactive" | "pending" | "anonymous";
+                            /**
+                             * @description User's biography or description
+                             * @default
+                             */
+                            bio: string;
+                            /** @description User's country information stored as JSONB */
+                            country?: {
+                                [key: string]: unknown;
+                            };
+                            /** @description User's region information stored as JSONB */
+                            region?: {
+                                [key: string]: unknown;
+                            };
+                            /** @description User preferences stored as JSONB */
+                            preferences?: {
+                                /** @description The mesh adapters of the preference. */
+                                meshAdapters?: Record<string, never>[];
+                                grafana?: {
+                                    /** @description Grafana URL for the user configuration. */
+                                    grafanaUrl?: string;
+                                    /** @description Grafana API key for the user configuration. */
+                                    grafanaApiKey?: string;
+                                    /** @description Selected Grafana board configurations for the user. */
+                                    selectedBoardsConfigs?: {
+                                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                        board?: Record<string, never>;
+                                        /** @description Panels selected for the Grafana board configuration. */
+                                        panels?: Record<string, never>[];
+                                        /** @description Template variables applied to the selected Grafana board configuration. */
+                                        templateVars?: string[];
+                                    }[];
+                                };
+                                prometheus?: {
+                                    /** @description The prometheus URL of the prometheus. */
+                                    prometheusUrl?: string;
+                                    /** @description The selected prometheus boards configs of the prometheus. */
+                                    selectedPrometheusBoardsConfigs?: {
+                                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                        board?: Record<string, never>;
+                                        /** @description Panels selected for the Grafana board configuration. */
+                                        panels?: Record<string, never>[];
+                                        /** @description Template variables applied to the selected Grafana board configuration. */
+                                        templateVars?: string[];
+                                    }[];
+                                };
+                                loadTestPrefs?: {
+                                    /** @description Concurrent requests */
+                                    c?: number;
+                                    /** @description Queries per second */
+                                    qps?: number;
+                                    /** @description Duration */
+                                    t?: string;
+                                    /** @description Load generator */
+                                    gen?: string;
+                                };
+                                /** @description The anonymous usage stats of the preference. */
+                                anonymousUsageStats: boolean;
+                                /** @description The anonymous perf results of the preference. */
+                                anonymousPerfResults: boolean;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp of when the resource was last updated.
+                                 */
+                                updatedAt: string;
+                                /** @description The dashboard preferences of the preference. */
+                                dashboardPreferences: {
+                                    [key: string]: unknown;
+                                };
+                                /**
+                                 * Format: uuid
+                                 * @description ID of the associated selectedOrganization.
+                                 */
+                                selectedOrganizationId: string;
+                                /** @description The selected workspace for organizations of the preference. */
+                                selectedWorkspaceForOrganizations: {
+                                    [key: string]: string;
+                                };
+                                /** @description The users extension preferences of the preference. */
+                                usersExtensionPreferences: {
+                                    [key: string]: unknown;
+                                };
+                                /** @description The remote provider preferences of the preference. */
+                                remoteProviderPreferences: {
+                                    [key: string]: unknown;
+                                };
+                            };
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when user accepted terms and conditions
+                             */
+                            acceptedTermsAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of user's first login
+                             */
+                            firstLoginTime?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of user's most recent login
+                             */
+                            lastLoginTime: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was created
+                             */
+                            createdAt: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was last updated
+                             */
+                            updatedAt: string;
+                            /** @description Various online profiles associated with the user account */
+                            socials?: {
+                                /** @description The site of the social. */
+                                site: string;
+                                /**
+                                 * Format: uri
+                                 * @description The link of the social.
+                                 */
+                                link: string;
+                            }[];
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was soft-deleted (null if not deleted)
+                             */
+                            deletedAt: string | null;
+                            /**
+                             * @description List of global roles assigned to the user
+                             * @example [
+                             *       "admin",
+                             *       "meshmap"
+                             *     ]
+                             */
+                            roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
+                            /** @description Teams the user belongs to with role information */
+                            teams?: {
+                                /** @description Team memberships for the user with their assigned roles. */
+                                teamsWithRoles?: Record<string, never>[];
+                                /** @description Total number of team memberships returned for the user. */
+                                totalCount?: number;
+                            };
+                            /** @description Organizations the user belongs to with role information */
+                            organizations?: {
+                                /** @description Organization memberships for the user with their assigned roles. */
+                                organizationsWithRoles?: Record<string, never>[];
+                                /** @description Total number of organization memberships returned for the user. */
+                                totalCount?: number;
+                            };
+                        } | null;
+                        /** @description Optional structured location metadata (branch, host, path, ...). */
+                        location?: {
+                            [key: string]: string;
+                        };
+                        /** @description Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied. */
+                        patternFile?: string;
+                        /**
+                         * @description Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
+                         * @enum {string}
+                         */
+                        visibility?: "private" | "public" | "published";
+                        /**
+                         * @description Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+                         * @enum {string|null}
+                         */
+                        designType?: "Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest" | null;
+                        /**
+                         * Format: byte
+                         * @description Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.
+                         */
+                        sourceContent?: string | null;
+                        /**
+                         * @description Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+                         * @default 0
+                         */
+                        viewCount: number;
+                        /**
+                         * @description Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+                         * @default 0
+                         */
+                        downloadCount: number;
+                        /**
+                         * @description Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+                         * @default 0
+                         */
+                        cloneCount: number;
+                        /**
+                         * @description Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+                         * @default 0
+                         */
+                        deploymentCount: number;
+                        /**
+                         * @description Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+                         * @default 0
+                         */
+                        shareCount: number;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp of design creation.
+                         */
+                        createdAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp of last design modification.
+                         */
+                        updatedAt?: string;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getDesignPatternFile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Design (Pattern) ID */
+                designId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Design file content */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/yaml": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    upsertPatternSourceContent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Design (Pattern) ID */
+                designId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/octet-stream": string;
+            };
+        };
+        responses: {
+            /** @description Design source content uploaded */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    importDesign: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * Format: byte
+                     * @description Base64-encoded file bytes. Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details.
+                     */
+                    file: string;
+                    /** @description The name of the pattern file being imported. Include the extension (e.g. `design.yaml`), as the server uses it to identify the file type. */
+                    fileName: string;
+                    /**
+                     * @description Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.
+                     * @default Untitled Design
+                     */
+                    name?: string;
+                } | {
+                    /**
+                     * Format: uri
+                     * @description A direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Ensure the resource is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details.
+                     */
+                    url: string;
+                    /**
+                     * @description Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.
+                     * @default Untitled Design
+                     */
+                    name?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Successful Import */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Invalid request format */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getCatalogContent: {
+        parameters: {
+            query?: {
+                /** @description Get responses by page */
+                page?: string;
+                /** @description Number of items per page (canonical camelCase form). */
+                pageSize?: number;
+                /** @description Get responses that match search param value */
+                search?: string;
+                /** @description Get ordered responses */
+                order?: string;
+                type?: string;
+                technology?: string;
+                metrics?: boolean;
+                class?: string;
+                userId?: string;
+                orgId?: string;
+                workspaceId?: string;
+                teamId?: string;
+                populate?: boolean;
+            };
+            header?: never;
+            path: {
+                type: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Catalog content page */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Current page number of the result set. */
+                        page?: number;
+                        /** @description Number of items per page. */
+                        pageSize?: number;
+                        /** @description Total number of items available. */
+                        totalCount?: number;
+                        /** @description Published designs included on this page. */
+                        patterns?: {
+                            /**
+                             * Format: uuid
+                             * @description Server-generated design ID.
+                             */
+                            id?: string;
+                            /** @description Human-readable design name. */
+                            name?: string;
+                            /** @description Catalog metadata attached to the design when published. */
+                            catalogData?: {
+                                /** @description Tracks the specific content version that has been made available in the Catalog. */
+                                publishedVersion?: string;
+                                /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+                                class?: string & ("official" | "verified" | "reference architecture");
+                                /**
+                                 * Model
+                                 * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
+                                 */
+                                compatibility: "kubernetes"[];
+                                /**
+                                 * Caveats and Considerations
+                                 * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
+                                 */
+                                patternCaveats: string;
+                                /**
+                                 * Description
+                                 * @description Purpose of the design along with its intended and unintended uses.
+                                 */
+                                patternInfo: string;
+                                /**
+                                 * Type
+                                 * @description Categorization of the type of design or operational flow depicted in this design.
+                                 * @default Deployment
+                                 * @enum {string}
+                                 */
+                                type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
+                                /** @description Contains reference to the dark and light mode snapshots of the design. */
+                                snapshotURL?: string[];
+                            };
+                            /**
+                             * Format: uuid
+                             * @description Owning user ID.
+                             */
+                            userId?: string;
+                            /** @description Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
+                            user?: {
+                                /**
+                                 * Format: uuid
+                                 * @description Unique identifier for the user
+                                 */
+                                id: string;
+                                /** @description User identifier (username or external ID) */
+                                userId: string;
+                                /**
+                                 * @description Authentication provider (e.g., Google, Github)
+                                 * @example [
+                                 *       "local",
+                                 *       "github",
+                                 *       "google",
+                                 *       "twitter"
+                                 *     ]
+                                 */
+                                provider: string;
+                                /**
+                                 * Format: email
+                                 * @description User's email address
+                                 */
+                                email: string;
+                                /** @description User's first name */
+                                firstName: string;
+                                /** @description User's last name */
+                                lastName: string;
+                                /**
+                                 * Format: uri
+                                 * @description URL to user's avatar image
+                                 */
+                                avatarUrl?: string;
+                                /**
+                                 * @description User account status
+                                 * @enum {string}
+                                 */
+                                status: "active" | "inactive" | "pending" | "anonymous";
+                                /**
+                                 * @description User's biography or description
+                                 * @default
+                                 */
+                                bio: string;
+                                /** @description User's country information stored as JSONB */
+                                country?: {
+                                    [key: string]: unknown;
+                                };
+                                /** @description User's region information stored as JSONB */
+                                region?: {
+                                    [key: string]: unknown;
+                                };
+                                /** @description User preferences stored as JSONB */
+                                preferences?: {
+                                    /** @description The mesh adapters of the preference. */
+                                    meshAdapters?: Record<string, never>[];
+                                    grafana?: {
+                                        /** @description Grafana URL for the user configuration. */
+                                        grafanaUrl?: string;
+                                        /** @description Grafana API key for the user configuration. */
+                                        grafanaApiKey?: string;
+                                        /** @description Selected Grafana board configurations for the user. */
+                                        selectedBoardsConfigs?: {
+                                            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                            board?: Record<string, never>;
+                                            /** @description Panels selected for the Grafana board configuration. */
+                                            panels?: Record<string, never>[];
+                                            /** @description Template variables applied to the selected Grafana board configuration. */
+                                            templateVars?: string[];
+                                        }[];
+                                    };
+                                    prometheus?: {
+                                        /** @description The prometheus URL of the prometheus. */
+                                        prometheusUrl?: string;
+                                        /** @description The selected prometheus boards configs of the prometheus. */
+                                        selectedPrometheusBoardsConfigs?: {
+                                            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                            board?: Record<string, never>;
+                                            /** @description Panels selected for the Grafana board configuration. */
+                                            panels?: Record<string, never>[];
+                                            /** @description Template variables applied to the selected Grafana board configuration. */
+                                            templateVars?: string[];
+                                        }[];
+                                    };
+                                    loadTestPrefs?: {
+                                        /** @description Concurrent requests */
+                                        c?: number;
+                                        /** @description Queries per second */
+                                        qps?: number;
+                                        /** @description Duration */
+                                        t?: string;
+                                        /** @description Load generator */
+                                        gen?: string;
+                                    };
+                                    /** @description The anonymous usage stats of the preference. */
+                                    anonymousUsageStats: boolean;
+                                    /** @description The anonymous perf results of the preference. */
+                                    anonymousPerfResults: boolean;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp of when the resource was last updated.
+                                     */
+                                    updatedAt: string;
+                                    /** @description The dashboard preferences of the preference. */
+                                    dashboardPreferences: {
+                                        [key: string]: unknown;
+                                    };
+                                    /**
+                                     * Format: uuid
+                                     * @description ID of the associated selectedOrganization.
+                                     */
+                                    selectedOrganizationId: string;
+                                    /** @description The selected workspace for organizations of the preference. */
+                                    selectedWorkspaceForOrganizations: {
+                                        [key: string]: string;
+                                    };
+                                    /** @description The users extension preferences of the preference. */
+                                    usersExtensionPreferences: {
+                                        [key: string]: unknown;
+                                    };
+                                    /** @description The remote provider preferences of the preference. */
+                                    remoteProviderPreferences: {
+                                        [key: string]: unknown;
+                                    };
+                                };
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when user accepted terms and conditions
+                                 */
+                                acceptedTermsAt?: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp of user's first login
+                                 */
+                                firstLoginTime?: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp of user's most recent login
+                                 */
+                                lastLoginTime: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the user record was created
+                                 */
+                                createdAt: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the user record was last updated
+                                 */
+                                updatedAt: string;
+                                /** @description Various online profiles associated with the user account */
+                                socials?: {
+                                    /** @description The site of the social. */
+                                    site: string;
+                                    /**
+                                     * Format: uri
+                                     * @description The link of the social.
+                                     */
+                                    link: string;
+                                }[];
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the user record was soft-deleted (null if not deleted)
+                                 */
+                                deletedAt: string | null;
+                                /**
+                                 * @description List of global roles assigned to the user
+                                 * @example [
+                                 *       "admin",
+                                 *       "meshmap"
+                                 *     ]
+                                 */
+                                roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
+                                /** @description Teams the user belongs to with role information */
+                                teams?: {
+                                    /** @description Team memberships for the user with their assigned roles. */
+                                    teamsWithRoles?: Record<string, never>[];
+                                    /** @description Total number of team memberships returned for the user. */
+                                    totalCount?: number;
+                                };
+                                /** @description Organizations the user belongs to with role information */
+                                organizations?: {
+                                    /** @description Organization memberships for the user with their assigned roles. */
+                                    organizationsWithRoles?: Record<string, never>[];
+                                    /** @description Total number of organization memberships returned for the user. */
+                                    totalCount?: number;
+                                };
+                            } | null;
+                            /** @description Optional structured location metadata (branch, host, path, ...). */
+                            location?: {
+                                [key: string]: string;
+                            };
+                            /** @description Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied. */
+                            patternFile?: string;
+                            /**
+                             * @description Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
+                             * @enum {string}
+                             */
+                            visibility?: "private" | "public" | "published";
+                            /**
+                             * @description Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+                             * @enum {string|null}
+                             */
+                            designType?: "Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest" | null;
+                            /**
+                             * Format: byte
+                             * @description Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.
+                             */
+                            sourceContent?: string | null;
+                            /**
+                             * @description Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+                             * @default 0
+                             */
+                            viewCount: number;
+                            /**
+                             * @description Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+                             * @default 0
+                             */
+                            downloadCount: number;
+                            /**
+                             * @description Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+                             * @default 0
+                             */
+                            cloneCount: number;
+                            /**
+                             * @description Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+                             * @default 0
+                             */
+                            deploymentCount: number;
+                            /**
+                             * @description Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+                             * @default 0
+                             */
+                            shareCount: number;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of design creation.
+                             */
+                            createdAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of last design modification.
+                             */
+                            updatedAt?: string;
+                        }[];
+                        /** @description Published filters included on this page. */
+                        filters?: {
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            id: string;
+                            /** @description Human-readable filter name; required, used for catalog listings. */
+                            name: string;
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            userId: string;
+                            /**
+                             * Format: byte
+                             * @description Raw filter source persisted as a byte array (`bytea` column
+                             *     `filter_file`). Wire form is base64 per OpenAPI `format: byte`.
+                             */
+                            filterFile?: string;
+                            /**
+                             * @description Filter resource discriminator describing the filter body's source
+                             *     format (e.g. WASM module identifier or external resource path).
+                             *     Stored in the `filter_resource` text column.
+                             */
+                            filterResource?: string;
+                            /** @description Optional structured location metadata (branch, host, path, ...). */
+                            location?: {
+                                [key: string]: string;
+                            };
+                            /**
+                             * @description Visibility scope (private, public, published).
+                             * @enum {string}
+                             */
+                            visibility?: "private" | "public" | "published";
+                            /** @description Catalog metadata attached to the filter when published. */
+                            catalogData?: {
+                                /** @description Tracks the specific content version that has been made available in the Catalog. */
+                                publishedVersion?: string;
+                                /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+                                class?: string & ("official" | "verified" | "reference architecture");
+                                /**
+                                 * Model
+                                 * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
+                                 */
+                                compatibility: "kubernetes"[];
+                                /**
+                                 * Caveats and Considerations
+                                 * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
+                                 */
+                                patternCaveats: string;
+                                /**
+                                 * Description
+                                 * @description Purpose of the design along with its intended and unintended uses.
+                                 */
+                                patternInfo: string;
+                                /**
+                                 * Type
+                                 * @description Categorization of the type of design or operational flow depicted in this design.
+                                 * @default Deployment
+                                 * @enum {string}
+                                 */
+                                type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
+                                /** @description Contains reference to the dark and light mode snapshots of the design. */
+                                snapshotURL?: string[];
+                            };
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of filter creation.
+                             */
+                            createdAt: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of last filter modification.
+                             */
+                            updatedAt: string;
+                        }[];
+                        /** @description Model-by-count aggregates for the catalog page. */
+                        modelsCount?: {
+                            [key: string]: unknown;
+                        }[];
+                        /** @description Category-by-count aggregates for the catalog page. */
+                        categoryCount?: {
+                            [key: string]: unknown;
+                        }[];
+                    };
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    publishCatalogContent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                type: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    [key: string]: unknown;
+                };
+            };
+        };
+        responses: {
+            /** @description Catalog request result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    unPublishCatalogContent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                type: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    [key: string]: unknown;
+                };
+            };
+        };
+        responses: {
+            /** @description Catalog request result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getCatalogContentClasses: {
+        parameters: {
+            query?: {
+                /** @description Get responses by page */
+                page?: string;
+                /** @description Number of items per page (canonical camelCase form). */
+                pageSize?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Catalog content classes */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": ({
+                        /** @description The class of the catalogcontentclass. */
+                        class?: string;
+                        /** @description Description of the catalogcontentclass. */
+                        description?: string;
+                    } & {
+                        [key: string]: unknown;
+                    })[];
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    approveCatalogRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    [key: string]: unknown;
+                };
+            };
+        };
+        responses: {
+            /** @description Request approved */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    denyCatalogRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    [key: string]: unknown;
+                };
+            };
+        };
+        responses: {
+            /** @description Request denied */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    handleResourceShare: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                resourceType: string;
+                resourceId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    [key: string]: unknown;
+                };
+            };
+        };
+        responses: {
+            /** @description Resource access mapping */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getResourceAccessActorsByType: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                resourceType: string;
+                resourceId: string;
+                actorType: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Resource access actors */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The users of the resourceaccessactorsresponse. */
+                        users?: {
+                            [key: string]: unknown;
+                        }[];
+                    };
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    shareDesign: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Body for sharing a design, filter, or view with recipients by email. */
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * Format: uuid
+                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                     */
+                    contentId: string;
+                    /**
+                     * @description The kind of content being shared. Must match the entity the handler
+                     *     expects — `pattern` and `filter` are valid on the design share
+                     *     endpoint; `view` is valid on the view share endpoint.
+                     * @enum {string}
+                     */
+                    contentType: "pattern" | "filter" | "view";
+                    /** @description Email addresses of the recipients to share this content with. */
+                    emails: string[];
+                    /**
+                     * @description When true, flip visibility to public and send invitation emails to
+                     *     the recipients. When false, revert visibility to private.
+                     */
+                    share: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description Content shared. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Caller is not the owner of the content. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getCatalogRequest: {
+        parameters: {
+            query?: {
+                /** @description Get responses by page */
+                page?: string;
+                /** @description Number of items per page (canonical camelCase form). */
+                pageSize?: number;
+                /** @description Get responses that match search param value */
+                search?: string;
+                /** @description Get ordered responses */
+                order?: string;
+                filter?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Catalog requests page */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Current page number of the result set. */
+                        page?: number;
+                        /** @description Number of items per page. */
+                        pageSize?: number;
+                        /** @description Total number of items available. */
+                        totalCount?: number;
+                        /** @description Catalog requests included on this page. */
+                        catalogRequests?: {
+                            [key: string]: unknown;
+                        }[];
+                    };
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+}

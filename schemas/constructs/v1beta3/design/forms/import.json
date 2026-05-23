@@ -1,0 +1,59 @@
+{
+  "title": "Import Design",
+  "description": "RJSF form schema for the import-design modal. Captures the user-input fields drawn from the canonical MesheryPatternImportFormPayload schema in meshery/schemas/constructs/v1beta3/design/api.yml. The uploadType discriminator determines which branch's conditional required fields apply. Field shape, types, and required lists MUST stay a subset of the canonical schema components; the Go validator at validation/forms_test.go enforces that.",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "title": "Design file name",
+      "default": "Untitled Design",
+      "description": "Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.",
+      "x-rjsf-grid-area": "12"
+    },
+    "uploadType": {
+      "type": "string",
+      "title": "Upload method",
+      "enum": ["File Upload", "URL Import"],
+      "default": "URL Import",
+      "description": "Choose the method you prefer. Select 'File Upload' if you have the file on your local system, or 'URL Import' if you have the file hosted online.",
+      "x-rjsf-grid-area": "12"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "uploadType": {
+            "type": "string",
+            "const": "File Upload"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "data-url",
+            "title": "File",
+            "description": "RFC 2397 data URL emitted by the RJSF FileWidget — shape `data:<mime>;base64,<payload>`. `<payload>` is the base64-encoded file bytes accepted by the import API (canonical `format: byte`); consumers strip the `data:<mime>;base64,` prefix before posting. Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See Import Designs Documentation for details.",
+            "x-rjsf-grid-area": "12"
+          }
+        },
+        "required": ["file"]
+      },
+      "else": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "title": "URL",
+            "description": "A direct URL to a single file, for example: https://raw.githubusercontent.com/your-design-file.yaml. Ensure the resource is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design.",
+            "x-rjsf-grid-area": "12"
+          }
+        },
+        "required": ["url"]
+      }
+    }
+  ],
+  "required": ["uploadType", "name"]
+}

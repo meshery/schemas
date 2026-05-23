@@ -221,13 +221,34 @@ const ConnectionSchema: Record<string, unknown> = {
                             "minLength": 1,
                             "maxLength": 255
                           },
+                          "description": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "description",
+                              "json": "description"
+                            },
+                            "x-order": 3,
+                            "type": "string",
+                            "description": "Human-readable description of the connection and its purpose.",
+                            "maxLength": 1000
+                          },
+                          "url": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "url",
+                              "json": "url"
+                            },
+                            "x-order": 4,
+                            "type": "string",
+                            "format": "uri",
+                            "description": "URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL).",
+                            "maxLength": 2048
+                          },
                           "credentialId": {
                             "x-go-name": "CredentialID",
                             "x-oapi-codegen-extra-tags": {
                               "db": "credential_id",
                               "json": "credentialId"
                             },
-                            "x-order": 3,
+                            "x-order": 5,
                             "description": "Associated Credential ID",
                             "type": "string",
                             "format": "uuid",
@@ -240,7 +261,7 @@ const ConnectionSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "type"
                             },
-                            "x-order": 4,
+                            "x-order": 6,
                             "type": "string",
                             "description": "Connection Type (platform, telemetry, collaboration)",
                             "maxLength": 255
@@ -250,7 +271,7 @@ const ConnectionSchema: Record<string, unknown> = {
                               "db": "sub_type",
                               "json": "subType"
                             },
-                            "x-order": 5,
+                            "x-order": 7,
                             "type": "string",
                             "description": "Connection Subtype (cloud, identity, metrics, chat, git, orchestration)",
                             "maxLength": 255
@@ -259,7 +280,7 @@ const ConnectionSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "kind"
                             },
-                            "x-order": 6,
+                            "x-order": 8,
                             "type": "string",
                             "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github)",
                             "maxLength": 255
@@ -268,7 +289,7 @@ const ConnectionSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "metadata"
                             },
-                            "x-order": 7,
+                            "x-order": 9,
                             "x-go-type": "core.Map",
                             "x-go-type-import": {
                               "path": "github.com/meshery/schemas/models/core"
@@ -281,7 +302,7 @@ const ConnectionSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "status"
                             },
-                            "x-order": 8,
+                            "x-order": 10,
                             "description": "Connection Status",
                             "type": "string",
                             "enum": [
@@ -301,7 +322,7 @@ const ConnectionSchema: Record<string, unknown> = {
                               "db": "user_id",
                               "json": "userId"
                             },
-                            "x-order": 9,
+                            "x-order": 11,
                             "description": "User ID who owns this connection",
                             "type": "string",
                             "format": "uuid",
@@ -316,7 +337,7 @@ const ConnectionSchema: Record<string, unknown> = {
                               "db": "created_at",
                               "json": "createdAt"
                             },
-                            "x-order": 10,
+                            "x-order": 12,
                             "type": "string",
                             "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
@@ -327,7 +348,7 @@ const ConnectionSchema: Record<string, unknown> = {
                               "db": "updated_at",
                               "json": "updatedAt"
                             },
-                            "x-order": 11,
+                            "x-order": 13,
                             "type": "string",
                             "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
@@ -338,7 +359,7 @@ const ConnectionSchema: Record<string, unknown> = {
                               "db": "deleted_at",
                               "json": "deletedAt"
                             },
-                            "x-order": 12,
+                            "x-order": 14,
                             "x-go-type": "meshcore.NullTime",
                             "x-go-type-import": {
                               "name": "meshcore",
@@ -529,11 +550,11 @@ const ConnectionSchema: Record<string, unknown> = {
                               "gorm": "-"
                             },
                             "x-go-type-skip-optional-pointer": true,
-                            "x-order": 13
+                            "x-order": 15
                           },
                           "schemaVersion": {
                             "description": "Specifies the version of the schema used for the definition.",
-                            "x-order": 14,
+                            "x-order": 16,
                             "x-oapi-codegen-extra-tags": {
                               "db": "-",
                               "gorm": "-"
@@ -778,13 +799,34 @@ const ConnectionSchema: Record<string, unknown> = {
                       "minLength": 1,
                       "maxLength": 255
                     },
+                    "description": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "description",
+                        "json": "description"
+                      },
+                      "x-order": 3,
+                      "type": "string",
+                      "description": "Human-readable description of the connection and its purpose.",
+                      "maxLength": 1000
+                    },
+                    "url": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "url",
+                        "json": "url"
+                      },
+                      "x-order": 4,
+                      "type": "string",
+                      "format": "uri",
+                      "description": "URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL).",
+                      "maxLength": 2048
+                    },
                     "credentialId": {
                       "x-go-name": "CredentialID",
                       "x-oapi-codegen-extra-tags": {
                         "db": "credential_id",
                         "json": "credentialId"
                       },
-                      "x-order": 3,
+                      "x-order": 5,
                       "description": "Associated Credential ID",
                       "type": "string",
                       "format": "uuid",
@@ -797,7 +839,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "type"
                       },
-                      "x-order": 4,
+                      "x-order": 6,
                       "type": "string",
                       "description": "Connection Type (platform, telemetry, collaboration)",
                       "maxLength": 255
@@ -807,7 +849,7 @@ const ConnectionSchema: Record<string, unknown> = {
                         "db": "sub_type",
                         "json": "subType"
                       },
-                      "x-order": 5,
+                      "x-order": 7,
                       "type": "string",
                       "description": "Connection Subtype (cloud, identity, metrics, chat, git, orchestration)",
                       "maxLength": 255
@@ -816,7 +858,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "kind"
                       },
-                      "x-order": 6,
+                      "x-order": 8,
                       "type": "string",
                       "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github)",
                       "maxLength": 255
@@ -825,7 +867,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "metadata"
                       },
-                      "x-order": 7,
+                      "x-order": 9,
                       "x-go-type": "core.Map",
                       "x-go-type-import": {
                         "path": "github.com/meshery/schemas/models/core"
@@ -838,7 +880,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "status"
                       },
-                      "x-order": 8,
+                      "x-order": 10,
                       "description": "Connection Status",
                       "type": "string",
                       "enum": [
@@ -858,7 +900,7 @@ const ConnectionSchema: Record<string, unknown> = {
                         "db": "user_id",
                         "json": "userId"
                       },
-                      "x-order": 9,
+                      "x-order": 11,
                       "description": "User ID who owns this connection",
                       "type": "string",
                       "format": "uuid",
@@ -873,7 +915,7 @@ const ConnectionSchema: Record<string, unknown> = {
                         "db": "created_at",
                         "json": "createdAt"
                       },
-                      "x-order": 10,
+                      "x-order": 12,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
@@ -884,7 +926,7 @@ const ConnectionSchema: Record<string, unknown> = {
                         "db": "updated_at",
                         "json": "updatedAt"
                       },
-                      "x-order": 11,
+                      "x-order": 13,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
@@ -895,7 +937,7 @@ const ConnectionSchema: Record<string, unknown> = {
                         "db": "deleted_at",
                         "json": "deletedAt"
                       },
-                      "x-order": 12,
+                      "x-order": 14,
                       "x-go-type": "meshcore.NullTime",
                       "x-go-type-import": {
                         "name": "meshcore",
@@ -1086,11 +1128,11 @@ const ConnectionSchema: Record<string, unknown> = {
                         "gorm": "-"
                       },
                       "x-go-type-skip-optional-pointer": true,
-                      "x-order": 13
+                      "x-order": 15
                     },
                     "schemaVersion": {
                       "description": "Specifies the version of the schema used for the definition.",
-                      "x-order": 14,
+                      "x-order": 16,
                       "x-oapi-codegen-extra-tags": {
                         "db": "-",
                         "gorm": "-"
@@ -1216,13 +1258,34 @@ const ConnectionSchema: Record<string, unknown> = {
                       "minLength": 1,
                       "maxLength": 255
                     },
+                    "description": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "description",
+                        "json": "description"
+                      },
+                      "x-order": 3,
+                      "type": "string",
+                      "description": "Human-readable description of the connection and its purpose.",
+                      "maxLength": 1000
+                    },
+                    "url": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "url",
+                        "json": "url"
+                      },
+                      "x-order": 4,
+                      "type": "string",
+                      "format": "uri",
+                      "description": "URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL).",
+                      "maxLength": 2048
+                    },
                     "credentialId": {
                       "x-go-name": "CredentialID",
                       "x-oapi-codegen-extra-tags": {
                         "db": "credential_id",
                         "json": "credentialId"
                       },
-                      "x-order": 3,
+                      "x-order": 5,
                       "description": "Associated Credential ID",
                       "type": "string",
                       "format": "uuid",
@@ -1235,7 +1298,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "type"
                       },
-                      "x-order": 4,
+                      "x-order": 6,
                       "type": "string",
                       "description": "Connection Type (platform, telemetry, collaboration)",
                       "maxLength": 255
@@ -1245,7 +1308,7 @@ const ConnectionSchema: Record<string, unknown> = {
                         "db": "sub_type",
                         "json": "subType"
                       },
-                      "x-order": 5,
+                      "x-order": 7,
                       "type": "string",
                       "description": "Connection Subtype (cloud, identity, metrics, chat, git, orchestration)",
                       "maxLength": 255
@@ -1254,7 +1317,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "kind"
                       },
-                      "x-order": 6,
+                      "x-order": 8,
                       "type": "string",
                       "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github)",
                       "maxLength": 255
@@ -1263,7 +1326,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "metadata"
                       },
-                      "x-order": 7,
+                      "x-order": 9,
                       "x-go-type": "core.Map",
                       "x-go-type-import": {
                         "path": "github.com/meshery/schemas/models/core"
@@ -1276,7 +1339,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "status"
                       },
-                      "x-order": 8,
+                      "x-order": 10,
                       "description": "Connection Status",
                       "type": "string",
                       "enum": [
@@ -1296,7 +1359,7 @@ const ConnectionSchema: Record<string, unknown> = {
                         "db": "user_id",
                         "json": "userId"
                       },
-                      "x-order": 9,
+                      "x-order": 11,
                       "description": "User ID who owns this connection",
                       "type": "string",
                       "format": "uuid",
@@ -1311,7 +1374,7 @@ const ConnectionSchema: Record<string, unknown> = {
                         "db": "created_at",
                         "json": "createdAt"
                       },
-                      "x-order": 10,
+                      "x-order": 12,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
@@ -1322,7 +1385,7 @@ const ConnectionSchema: Record<string, unknown> = {
                         "db": "updated_at",
                         "json": "updatedAt"
                       },
-                      "x-order": 11,
+                      "x-order": 13,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
@@ -1333,7 +1396,7 @@ const ConnectionSchema: Record<string, unknown> = {
                         "db": "deleted_at",
                         "json": "deletedAt"
                       },
-                      "x-order": 12,
+                      "x-order": 14,
                       "x-go-type": "meshcore.NullTime",
                       "x-go-type-import": {
                         "name": "meshcore",
@@ -1524,11 +1587,11 @@ const ConnectionSchema: Record<string, unknown> = {
                         "gorm": "-"
                       },
                       "x-go-type-skip-optional-pointer": true,
-                      "x-order": 13
+                      "x-order": 15
                     },
                     "schemaVersion": {
                       "description": "Specifies the version of the schema used for the definition.",
-                      "x-order": 14,
+                      "x-order": 16,
                       "x-oapi-codegen-extra-tags": {
                         "db": "-",
                         "gorm": "-"
@@ -1755,13 +1818,34 @@ const ConnectionSchema: Record<string, unknown> = {
                       "minLength": 1,
                       "maxLength": 255
                     },
+                    "description": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "description",
+                        "json": "description"
+                      },
+                      "x-order": 3,
+                      "type": "string",
+                      "description": "Human-readable description of the connection and its purpose.",
+                      "maxLength": 1000
+                    },
+                    "url": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "url",
+                        "json": "url"
+                      },
+                      "x-order": 4,
+                      "type": "string",
+                      "format": "uri",
+                      "description": "URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL).",
+                      "maxLength": 2048
+                    },
                     "credentialId": {
                       "x-go-name": "CredentialID",
                       "x-oapi-codegen-extra-tags": {
                         "db": "credential_id",
                         "json": "credentialId"
                       },
-                      "x-order": 3,
+                      "x-order": 5,
                       "description": "Associated Credential ID",
                       "type": "string",
                       "format": "uuid",
@@ -1774,7 +1858,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "type"
                       },
-                      "x-order": 4,
+                      "x-order": 6,
                       "type": "string",
                       "description": "Connection Type (platform, telemetry, collaboration)",
                       "maxLength": 255
@@ -1784,7 +1868,7 @@ const ConnectionSchema: Record<string, unknown> = {
                         "db": "sub_type",
                         "json": "subType"
                       },
-                      "x-order": 5,
+                      "x-order": 7,
                       "type": "string",
                       "description": "Connection Subtype (cloud, identity, metrics, chat, git, orchestration)",
                       "maxLength": 255
@@ -1793,7 +1877,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "kind"
                       },
-                      "x-order": 6,
+                      "x-order": 8,
                       "type": "string",
                       "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github)",
                       "maxLength": 255
@@ -1802,7 +1886,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "metadata"
                       },
-                      "x-order": 7,
+                      "x-order": 9,
                       "x-go-type": "core.Map",
                       "x-go-type-import": {
                         "path": "github.com/meshery/schemas/models/core"
@@ -1815,7 +1899,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "status"
                       },
-                      "x-order": 8,
+                      "x-order": 10,
                       "description": "Connection Status",
                       "type": "string",
                       "enum": [
@@ -1835,7 +1919,7 @@ const ConnectionSchema: Record<string, unknown> = {
                         "db": "user_id",
                         "json": "userId"
                       },
-                      "x-order": 9,
+                      "x-order": 11,
                       "description": "User ID who owns this connection",
                       "type": "string",
                       "format": "uuid",
@@ -1850,7 +1934,7 @@ const ConnectionSchema: Record<string, unknown> = {
                         "db": "created_at",
                         "json": "createdAt"
                       },
-                      "x-order": 10,
+                      "x-order": 12,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
@@ -1861,7 +1945,7 @@ const ConnectionSchema: Record<string, unknown> = {
                         "db": "updated_at",
                         "json": "updatedAt"
                       },
-                      "x-order": 11,
+                      "x-order": 13,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
@@ -1872,7 +1956,7 @@ const ConnectionSchema: Record<string, unknown> = {
                         "db": "deleted_at",
                         "json": "deletedAt"
                       },
-                      "x-order": 12,
+                      "x-order": 14,
                       "x-go-type": "meshcore.NullTime",
                       "x-go-type-import": {
                         "name": "meshcore",
@@ -2063,11 +2147,11 @@ const ConnectionSchema: Record<string, unknown> = {
                         "gorm": "-"
                       },
                       "x-go-type-skip-optional-pointer": true,
-                      "x-order": 13
+                      "x-order": 15
                     },
                     "schemaVersion": {
                       "description": "Specifies the version of the schema used for the definition.",
-                      "x-order": 14,
+                      "x-order": 16,
                       "x-oapi-codegen-extra-tags": {
                         "db": "-",
                         "gorm": "-"
@@ -2658,13 +2742,34 @@ const ConnectionSchema: Record<string, unknown> = {
             "minLength": 1,
             "maxLength": 255
           },
+          "description": {
+            "x-oapi-codegen-extra-tags": {
+              "db": "description",
+              "json": "description"
+            },
+            "x-order": 3,
+            "type": "string",
+            "description": "Human-readable description of the connection and its purpose.",
+            "maxLength": 1000
+          },
+          "url": {
+            "x-oapi-codegen-extra-tags": {
+              "db": "url",
+              "json": "url"
+            },
+            "x-order": 4,
+            "type": "string",
+            "format": "uri",
+            "description": "URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL).",
+            "maxLength": 2048
+          },
           "credentialId": {
             "x-go-name": "CredentialID",
             "x-oapi-codegen-extra-tags": {
               "db": "credential_id",
               "json": "credentialId"
             },
-            "x-order": 3,
+            "x-order": 5,
             "description": "Associated Credential ID",
             "type": "string",
             "format": "uuid",
@@ -2677,7 +2782,7 @@ const ConnectionSchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "db": "type"
             },
-            "x-order": 4,
+            "x-order": 6,
             "type": "string",
             "description": "Connection Type (platform, telemetry, collaboration)",
             "maxLength": 255
@@ -2687,7 +2792,7 @@ const ConnectionSchema: Record<string, unknown> = {
               "db": "sub_type",
               "json": "subType"
             },
-            "x-order": 5,
+            "x-order": 7,
             "type": "string",
             "description": "Connection Subtype (cloud, identity, metrics, chat, git, orchestration)",
             "maxLength": 255
@@ -2696,7 +2801,7 @@ const ConnectionSchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "db": "kind"
             },
-            "x-order": 6,
+            "x-order": 8,
             "type": "string",
             "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github)",
             "maxLength": 255
@@ -2705,7 +2810,7 @@ const ConnectionSchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "db": "metadata"
             },
-            "x-order": 7,
+            "x-order": 9,
             "x-go-type": "core.Map",
             "x-go-type-import": {
               "path": "github.com/meshery/schemas/models/core"
@@ -2718,7 +2823,7 @@ const ConnectionSchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "db": "status"
             },
-            "x-order": 8,
+            "x-order": 10,
             "description": "Connection Status",
             "type": "string",
             "enum": [
@@ -2738,7 +2843,7 @@ const ConnectionSchema: Record<string, unknown> = {
               "db": "user_id",
               "json": "userId"
             },
-            "x-order": 9,
+            "x-order": 11,
             "description": "User ID who owns this connection",
             "type": "string",
             "format": "uuid",
@@ -2753,7 +2858,7 @@ const ConnectionSchema: Record<string, unknown> = {
               "db": "created_at",
               "json": "createdAt"
             },
-            "x-order": 10,
+            "x-order": 12,
             "type": "string",
             "format": "date-time",
             "x-go-type-skip-optional-pointer": true
@@ -2764,7 +2869,7 @@ const ConnectionSchema: Record<string, unknown> = {
               "db": "updated_at",
               "json": "updatedAt"
             },
-            "x-order": 11,
+            "x-order": 13,
             "type": "string",
             "format": "date-time",
             "x-go-type-skip-optional-pointer": true
@@ -2775,7 +2880,7 @@ const ConnectionSchema: Record<string, unknown> = {
               "db": "deleted_at",
               "json": "deletedAt"
             },
-            "x-order": 12,
+            "x-order": 14,
             "x-go-type": "meshcore.NullTime",
             "x-go-type-import": {
               "name": "meshcore",
@@ -2966,11 +3071,11 @@ const ConnectionSchema: Record<string, unknown> = {
               "gorm": "-"
             },
             "x-go-type-skip-optional-pointer": true,
-            "x-order": 13
+            "x-order": 15
           },
           "schemaVersion": {
             "description": "Specifies the version of the schema used for the definition.",
-            "x-order": 14,
+            "x-order": 16,
             "x-oapi-codegen-extra-tags": {
               "db": "-",
               "gorm": "-"
@@ -3046,13 +3151,34 @@ const ConnectionSchema: Record<string, unknown> = {
                   "minLength": 1,
                   "maxLength": 255
                 },
+                "description": {
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "description",
+                    "json": "description"
+                  },
+                  "x-order": 3,
+                  "type": "string",
+                  "description": "Human-readable description of the connection and its purpose.",
+                  "maxLength": 1000
+                },
+                "url": {
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "url",
+                    "json": "url"
+                  },
+                  "x-order": 4,
+                  "type": "string",
+                  "format": "uri",
+                  "description": "URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL).",
+                  "maxLength": 2048
+                },
                 "credentialId": {
                   "x-go-name": "CredentialID",
                   "x-oapi-codegen-extra-tags": {
                     "db": "credential_id",
                     "json": "credentialId"
                   },
-                  "x-order": 3,
+                  "x-order": 5,
                   "description": "Associated Credential ID",
                   "type": "string",
                   "format": "uuid",
@@ -3065,7 +3191,7 @@ const ConnectionSchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "type"
                   },
-                  "x-order": 4,
+                  "x-order": 6,
                   "type": "string",
                   "description": "Connection Type (platform, telemetry, collaboration)",
                   "maxLength": 255
@@ -3075,7 +3201,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "db": "sub_type",
                     "json": "subType"
                   },
-                  "x-order": 5,
+                  "x-order": 7,
                   "type": "string",
                   "description": "Connection Subtype (cloud, identity, metrics, chat, git, orchestration)",
                   "maxLength": 255
@@ -3084,7 +3210,7 @@ const ConnectionSchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "kind"
                   },
-                  "x-order": 6,
+                  "x-order": 8,
                   "type": "string",
                   "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github)",
                   "maxLength": 255
@@ -3093,7 +3219,7 @@ const ConnectionSchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "metadata"
                   },
-                  "x-order": 7,
+                  "x-order": 9,
                   "x-go-type": "core.Map",
                   "x-go-type-import": {
                     "path": "github.com/meshery/schemas/models/core"
@@ -3106,7 +3232,7 @@ const ConnectionSchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "status"
                   },
-                  "x-order": 8,
+                  "x-order": 10,
                   "description": "Connection Status",
                   "type": "string",
                   "enum": [
@@ -3126,7 +3252,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "db": "user_id",
                     "json": "userId"
                   },
-                  "x-order": 9,
+                  "x-order": 11,
                   "description": "User ID who owns this connection",
                   "type": "string",
                   "format": "uuid",
@@ -3141,7 +3267,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "db": "created_at",
                     "json": "createdAt"
                   },
-                  "x-order": 10,
+                  "x-order": 12,
                   "type": "string",
                   "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
@@ -3152,7 +3278,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "db": "updated_at",
                     "json": "updatedAt"
                   },
-                  "x-order": 11,
+                  "x-order": 13,
                   "type": "string",
                   "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
@@ -3163,7 +3289,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "db": "deleted_at",
                     "json": "deletedAt"
                   },
-                  "x-order": 12,
+                  "x-order": 14,
                   "x-go-type": "meshcore.NullTime",
                   "x-go-type-import": {
                     "name": "meshcore",
@@ -3354,11 +3480,11 @@ const ConnectionSchema: Record<string, unknown> = {
                     "gorm": "-"
                   },
                   "x-go-type-skip-optional-pointer": true,
-                  "x-order": 13
+                  "x-order": 15
                 },
                 "schemaVersion": {
                   "description": "Specifies the version of the schema used for the definition.",
-                  "x-order": 14,
+                  "x-order": 16,
                   "x-oapi-codegen-extra-tags": {
                     "db": "-",
                     "gorm": "-"

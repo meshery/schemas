@@ -4,738 +4,325 @@
  */
 
 export interface paths {
-  "/api/entitlement/subscriptions": {
-    /** Returns all subscriptions for the organization */
-    get: operations["getSubscriptions"];
-  };
-  "/api/entitlement/subscriptions/{subscriptionId}/cancel": {
-    post: operations["cancelSubscription"];
-  };
-  "/api/entitlement/subscriptions/create": {
-    post: operations["createSubscription"];
-  };
-  "/api/entitlement/subscriptions/{subscriptionId}/upgrade": {
-    post: operations["upgradeSubscription"];
-  };
-  "/api/entitlement/subscriptions/{subscriptionId}/upgrade-preview": {
-    post: operations["previewSubscriptionUpgrade"];
-  };
-  "/api/entitlement/subscriptions/webhooks": {
-    post: operations["handleSubscriptionWebhook"];
-  };
+    "/api/entitlement/subscriptions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read subscriptions
+         * @description Returns all subscriptions for the organization
+         */
+        get: operations["getSubscriptions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/entitlement/subscriptions/{subscriptionId}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel an existing subscription. The subscription will remain active until the end of the billing period and then it will be canceled. */
+        post: operations["cancelSubscription"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/entitlement/subscriptions/create": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a new subscription for an organization */
+        post: operations["createSubscription"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/entitlement/subscriptions/{subscriptionId}/upgrade": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Upgrade or downgrade an existing subscription by changing one of the plans in the subscription */
+        post: operations["upgradeSubscription"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/entitlement/subscriptions/{subscriptionId}/upgrade-preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Preview the invoice for upgrading or downgrading an existing subscription by changing one of the plans in the subscription */
+        post: operations["previewSubscriptionUpgrade"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/entitlement/subscriptions/webhooks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Handle webhook events from payment processors */
+        post: operations["handleSubscriptionWebhook"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
-
+export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    /**
-     * @description Payment processor used to charge the subscription.
-     * @enum {string}
-     */
-    PaymentProcessor: "stripe" | "paypal" | "braintree";
-    /** @description Payload for creating a new subscription through a payment processor. */
-    CreateSubscriptionRequest: {
-      /**
-       * Format: uuid
-       * @description ID of the organization subscribing.
-       */
-      orgId?: string;
-      /** @description Price ID from the payment processor. */
-      planId?: string;
-      /** @description Coupon ID to apply. */
-      couponId?: string;
-      /** @description Number of users in the organization. */
-      userCount?: number;
-      /**
-       * Format: email
-       * @description Email of the customer.
-       */
-      email?: string;
-      /**
-       * @description Payment processor used to complete the subscription checkout.
-       * @enum {string}
-       */
-      paymentProcessor?: "stripe" | "paypal" | "braintree";
-    };
-    /** @description Payload for upgrading or downgrading a subscription by changing one of its plans. */
-    UpgradeSubscriptionRequest: {
-      /**
-       * Format: uuid
-       * @description Plan ID that is being replaced.
-       */
-      oldPlanId?: string;
-      /**
-       * Format: uuid
-       * @description Plan ID that replaces the old plan.
-       */
-      newPlanId?: string;
-    };
-    /** @description Response body returned after a subscription is created. */
-    CreateSubscriptionResponse: {
-      /** @description ID of the associated subscription in the payment processor. */
-      subscriptionId?: string;
-      /** @description Client secret returned by the payment processor for the subscription checkout flow. */
-      clientSecret?: string;
-    };
-    /** @description Payload for synchronizing the current user count with the payment processor. */
-    UpdateUsersRequest: {
-      /**
-       * @description Payment processor currently billing the subscription.
-       * @enum {string}
-       */
-      paymentProcessor?: "stripe" | "paypal" | "braintree";
-    };
-    /** @description Payload for cancelling a subscription in an external processor. */
-    CancelSubscriptionRequest: {
-      /** @description Subscription ID from the payment processor. */
-      subscriptionId?: string;
-      /**
-       * @description Payment processor currently billing the subscription.
-       * @enum {string}
-       */
-      paymentProcessor?: "stripe" | "paypal" | "braintree";
-    };
-    /** @description Payload for webhook events from payment processors. */
-    WebhookEvent: { [key: string]: unknown };
-    /** @description Paginated list of subscriptions. */
-    SubscriptionPage: {
-      /** @description Current page number of the result set. */
-      page: number;
-      /** @description Number of items per page. */
-      pageSize: number;
-      /** @description Total number of items available. */
-      totalCount: number;
-      /** @description Subscriptions returned on the current page. */
-      subscriptions: {
+    schemas: {
         /**
-         * Format: uuid
-         * @description Unique identifier for the subscription.
-         */
-        id: string;
-        /**
-         * Format: uuid
-         * @description ID of the organization that owns this subscription.
-         */
-        orgId: string;
-        /**
-         * Format: uuid
-         * @description ID of the plan this subscription is for.
-         */
-        planId: string;
-        /** @description Eager-loaded plan associated with this subscription. */
-        plan?: {
-          /**
-           * Format: uuid
-           * @description Unique identifier for the plan.
-           */
-          id: string;
-          /**
-           * @description Display name of the plan.
-           * @enum {string}
-           */
-          name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-          /**
-           * @description Billing cadence for the plan (monthly, annually, or none).
-           * @enum {string}
-           */
-          cadence: "none" | "monthly" | "annually";
-          /**
-           * @description Unit of consumption this plan charges against (e.g. user).
-           * @enum {string}
-           */
-          unit: "user" | "free";
-          /** @description Minimum number of units required for the plan. */
-          minimumUnits: number;
-          /** @description Price per unit of the plan. */
-          pricePerUnit: number;
-          /**
-           * @description Currency in which the plan is priced.
-           * @enum {string}
-           */
-          currency: "usd";
-        };
-        /** @description Number of units subscribed (eg number of users). */
-        quantity: number;
-        /**
-         * Format: date-time
-         * @description Timestamp when the subscription period started.
-         */
-        startDate?: string;
-        /**
-         * Format: date-time
-         * @description Timestamp when the current subscription period ends.
-         */
-        endDate?: string;
-        /**
-         * @description Current status of the subscription (e.g. active, past_due, canceled).
+         * @description Payment processor used to charge the subscription.
          * @enum {string}
          */
-        status:
-          | "incomplete"
-          | "incomplete_expired"
-          | "trialing"
-          | "active"
-          | "past_due"
-          | "canceled"
-          | "unpaid";
-        /**
-         * Format: date-time
-         * @description Timestamp when the subscription was created.
-         */
-        createdAt?: string;
-        /**
-         * Format: date-time
-         * @description Timestamp when the subscription was last updated.
-         */
-        updatedAt?: string;
-        /**
-         * Format: date-time
-         * @description Timestamp when the subscription was soft-deleted, if applicable.
-         */
-        deletedAt?: string;
-        /** @description Billing ID of the subscription. The ID of the subscription in the external billing system (for example, Stripe). */
-        billingId: string;
-      }[];
-    };
-    /** @description Subscription entity schema. */
-    Subscription: {
-      /**
-       * Format: uuid
-       * @description Unique identifier for the subscription.
-       */
-      id: string;
-      /**
-       * Format: uuid
-       * @description ID of the organization that owns this subscription.
-       */
-      orgId: string;
-      /**
-       * Format: uuid
-       * @description ID of the plan this subscription is for.
-       */
-      planId: string;
-      /** @description Eager-loaded plan associated with this subscription. */
-      plan?: {
-        /**
-         * Format: uuid
-         * @description Unique identifier for the plan.
-         */
-        id: string;
-        /**
-         * @description Display name of the plan.
-         * @enum {string}
-         */
-        name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-        /**
-         * @description Billing cadence for the plan (monthly, annually, or none).
-         * @enum {string}
-         */
-        cadence: "none" | "monthly" | "annually";
-        /**
-         * @description Unit of consumption this plan charges against (e.g. user).
-         * @enum {string}
-         */
-        unit: "user" | "free";
-        /** @description Minimum number of units required for the plan. */
-        minimumUnits: number;
-        /** @description Price per unit of the plan. */
-        pricePerUnit: number;
-        /**
-         * @description Currency in which the plan is priced.
-         * @enum {string}
-         */
-        currency: "usd";
-      };
-      /** @description Number of units subscribed (eg number of users). */
-      quantity: number;
-      /**
-       * Format: date-time
-       * @description Timestamp when the subscription period started.
-       */
-      startDate?: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the current subscription period ends.
-       */
-      endDate?: string;
-      /**
-       * @description Current status of the subscription (e.g. active, past_due, canceled).
-       * @enum {string}
-       */
-      status:
-        | "incomplete"
-        | "incomplete_expired"
-        | "trialing"
-        | "active"
-        | "past_due"
-        | "canceled"
-        | "unpaid";
-      /**
-       * Format: date-time
-       * @description Timestamp when the subscription was created.
-       */
-      createdAt?: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the subscription was last updated.
-       */
-      updatedAt?: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the subscription was soft-deleted, if applicable.
-       */
-      deletedAt?: string;
-      /** @description Billing ID of the subscription. The ID of the subscription in the external billing system (for example, Stripe). */
-      billingId: string;
-    };
-    /**
-     * @description Possible statuses of a Stripe subscription.
-     * @enum {string}
-     */
-    SubscriptionStatus:
-      | "incomplete"
-      | "incomplete_expired"
-      | "trialing"
-      | "active"
-      | "past_due"
-      | "canceled"
-      | "unpaid";
-  };
-  responses: {
-    /** Invalid request body or request param */
-    400: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Expired JWT token used or insufficient privilege */
-    401: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Result not found */
-    404: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Internal server error */
-    500: {
-      content: {
-        "text/plain": string;
-      };
-    };
-  };
-  parameters: {
-    /** @description Subscription ID */
-    subscriptionId: string;
-    /** @description Get responses by page */
-    page: string;
-    /** @description Get responses by pagesize */
-    pagesize: string;
-    /** @description Get responses by pagesize (pass all to get all responses) */
-    pagesizeWithAll: string;
-    /** @description Get ordered responses */
-    order: string;
-  };
-}
-
-export interface operations {
-  /** Returns all subscriptions for the organization */
-  getSubscriptions: {
-    parameters: {
-      query: {
-        /** Get responses by page */
-        page?: string;
-        /** Get responses by pagesize */
-        pagesize?: string;
-        /** Get ordered responses */
-        order?: string;
-        /** Filter subscriptions by status */
-        status?: string[];
-      };
-    };
-    responses: {
-      /** Subscriptions response */
-      200: {
-        content: {
-          "application/json": {
-            /** @description Current page number of the result set. */
-            page: number;
-            /** @description Number of items per page. */
-            pageSize: number;
-            /** @description Total number of items available. */
-            totalCount: number;
-            /** @description Subscriptions returned on the current page. */
-            subscriptions: {
-              /**
-               * Format: uuid
-               * @description Unique identifier for the subscription.
-               */
-              id: string;
-              /**
-               * Format: uuid
-               * @description ID of the organization that owns this subscription.
-               */
-              orgId: string;
-              /**
-               * Format: uuid
-               * @description ID of the plan this subscription is for.
-               */
-              planId: string;
-              /** @description Eager-loaded plan associated with this subscription. */
-              plan?: {
-                /**
-                 * Format: uuid
-                 * @description Unique identifier for the plan.
-                 */
-                id: string;
-                /**
-                 * @description Display name of the plan.
-                 * @enum {string}
-                 */
-                name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-                /**
-                 * @description Billing cadence for the plan (monthly, annually, or none).
-                 * @enum {string}
-                 */
-                cadence: "none" | "monthly" | "annually";
-                /**
-                 * @description Unit of consumption this plan charges against (e.g. user).
-                 * @enum {string}
-                 */
-                unit: "user" | "free";
-                /** @description Minimum number of units required for the plan. */
-                minimumUnits: number;
-                /** @description Price per unit of the plan. */
-                pricePerUnit: number;
-                /**
-                 * @description Currency in which the plan is priced.
-                 * @enum {string}
-                 */
-                currency: "usd";
-              };
-              /** @description Number of units subscribed (eg number of users). */
-              quantity: number;
-              /**
-               * Format: date-time
-               * @description Timestamp when the subscription period started.
-               */
-              startDate?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the current subscription period ends.
-               */
-              endDate?: string;
-              /**
-               * @description Current status of the subscription (e.g. active, past_due, canceled).
-               * @enum {string}
-               */
-              status:
-                | "incomplete"
-                | "incomplete_expired"
-                | "trialing"
-                | "active"
-                | "past_due"
-                | "canceled"
-                | "unpaid";
-              /**
-               * Format: date-time
-               * @description Timestamp when the subscription was created.
-               */
-              createdAt?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the subscription was last updated.
-               */
-              updatedAt?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the subscription was soft-deleted, if applicable.
-               */
-              deletedAt?: string;
-              /** @description Billing ID of the subscription. The ID of the subscription in the external billing system (for example, Stripe). */
-              billingId: string;
-            }[];
-          };
+        PaymentProcessor: "stripe" | "paypal" | "braintree";
+        /** @description Payload for creating a new subscription through a payment processor. */
+        CreateSubscriptionRequest: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            orgId?: string;
+            /** @description Price ID from the payment processor. */
+            planId?: string;
+            /** @description Coupon ID to apply. */
+            couponId?: string;
+            /** @description Number of users in the organization. */
+            userCount?: number;
+            /**
+             * Format: email
+             * @description Email of the customer.
+             */
+            email?: string;
+            /**
+             * @description Payment processor used to complete the subscription checkout.
+             * @enum {string}
+             */
+            paymentProcessor?: "stripe" | "paypal" | "braintree";
         };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
+        /** @description Payload for upgrading or downgrading a subscription by changing one of its plans. */
+        UpgradeSubscriptionRequest: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            oldPlanId?: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            newPlanId?: string;
         };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  cancelSubscription: {
-    parameters: {
-      path: {
-        /** Subscription ID */
-        subscriptionId: string;
-      };
-    };
-    responses: {
-      /** Subscription cancellation scheduled */
-      200: {
-        content: {
-          "application/json": {
-            /** @description Current page number of the result set. */
-            page: number;
-            /** @description Number of items per page. */
-            pageSize: number;
-            /** @description Total number of items available. */
-            totalCount: number;
-            /** @description Subscriptions returned on the current page. */
-            subscriptions: {
-              /**
-               * Format: uuid
-               * @description Unique identifier for the subscription.
-               */
-              id: string;
-              /**
-               * Format: uuid
-               * @description ID of the organization that owns this subscription.
-               */
-              orgId: string;
-              /**
-               * Format: uuid
-               * @description ID of the plan this subscription is for.
-               */
-              planId: string;
-              /** @description Eager-loaded plan associated with this subscription. */
-              plan?: {
-                /**
-                 * Format: uuid
-                 * @description Unique identifier for the plan.
-                 */
-                id: string;
-                /**
-                 * @description Display name of the plan.
-                 * @enum {string}
-                 */
-                name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-                /**
-                 * @description Billing cadence for the plan (monthly, annually, or none).
-                 * @enum {string}
-                 */
-                cadence: "none" | "monthly" | "annually";
-                /**
-                 * @description Unit of consumption this plan charges against (e.g. user).
-                 * @enum {string}
-                 */
-                unit: "user" | "free";
-                /** @description Minimum number of units required for the plan. */
-                minimumUnits: number;
-                /** @description Price per unit of the plan. */
-                pricePerUnit: number;
-                /**
-                 * @description Currency in which the plan is priced.
-                 * @enum {string}
-                 */
-                currency: "usd";
-              };
-              /** @description Number of units subscribed (eg number of users). */
-              quantity: number;
-              /**
-               * Format: date-time
-               * @description Timestamp when the subscription period started.
-               */
-              startDate?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the current subscription period ends.
-               */
-              endDate?: string;
-              /**
-               * @description Current status of the subscription (e.g. active, past_due, canceled).
-               * @enum {string}
-               */
-              status:
-                | "incomplete"
-                | "incomplete_expired"
-                | "trialing"
-                | "active"
-                | "past_due"
-                | "canceled"
-                | "unpaid";
-              /**
-               * Format: date-time
-               * @description Timestamp when the subscription was created.
-               */
-              createdAt?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the subscription was last updated.
-               */
-              updatedAt?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the subscription was soft-deleted, if applicable.
-               */
-              deletedAt?: string;
-              /** @description Billing ID of the subscription. The ID of the subscription in the external billing system (for example, Stripe). */
-              billingId: string;
-            }[];
-          };
-        };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  createSubscription: {
-    responses: {
-      /** A new subscription has been created */
-      201: {
-        content: {
-          "application/json": {
+        /** @description Response body returned after a subscription is created. */
+        CreateSubscriptionResponse: {
             /** @description ID of the associated subscription in the payment processor. */
             subscriptionId?: string;
             /** @description Client secret returned by the payment processor for the subscription checkout flow. */
             clientSecret?: string;
-          };
         };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
+        /** @description Payload for synchronizing the current user count with the payment processor. */
+        UpdateUsersRequest: {
+            /**
+             * @description Payment processor currently billing the subscription.
+             * @enum {string}
+             */
+            paymentProcessor?: "stripe" | "paypal" | "braintree";
         };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
+        /** @description Payload for cancelling a subscription in an external processor. */
+        CancelSubscriptionRequest: {
+            /** @description Subscription ID from the payment processor. */
+            subscriptionId?: string;
+            /**
+             * @description Payment processor currently billing the subscription.
+             * @enum {string}
+             */
+            paymentProcessor?: "stripe" | "paypal" | "braintree";
         };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
+        /** @description Payload for webhook events from payment processors. */
+        WebhookEvent: Record<string, never>;
+        /** @description Paginated list of subscriptions. */
+        SubscriptionPage: {
+            /** @description Current page number of the result set. */
+            page: number;
+            /** @description Number of items per page. */
+            pageSize: number;
+            /** @description Total number of items available. */
+            totalCount: number;
+            /** @description Subscriptions returned on the current page. */
+            subscriptions: {
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                id: string;
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                orgId: string;
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                planId: string;
+                /** @description Eager-loaded plan associated with this subscription. */
+                plan?: {
+                    /**
+                     * Format: uuid
+                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                     */
+                    id: string;
+                    /**
+                     * @description Display name of the plan.
+                     * @enum {string}
+                     */
+                    name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+                    /**
+                     * @description Billing cadence for the plan (monthly, annually, or none).
+                     * @enum {string}
+                     */
+                    cadence: "none" | "monthly" | "annually";
+                    /**
+                     * @description Unit of consumption this plan charges against (e.g. user).
+                     * @enum {string}
+                     */
+                    unit: "user" | "free";
+                    /** @description Minimum number of units required for the plan. */
+                    minimumUnits: number;
+                    /** @description Price per unit of the plan. */
+                    pricePerUnit: number;
+                    /**
+                     * @description Currency in which the plan is priced.
+                     * @enum {string}
+                     */
+                    currency: "usd";
+                };
+                /** @description Number of units subscribed (eg number of users). */
+                quantity: number;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the subscription period started.
+                 */
+                startDate?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the current subscription period ends.
+                 */
+                endDate?: string;
+                /**
+                 * @description Current status of the subscription (e.g. active, past_due, canceled).
+                 * @enum {string}
+                 */
+                status: "incomplete" | "incomplete_expired" | "trialing" | "active" | "past_due" | "canceled" | "unpaid";
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the subscription was created.
+                 */
+                createdAt?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the subscription was last updated.
+                 */
+                updatedAt?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the subscription was soft-deleted, if applicable.
+                 */
+                deletedAt?: string;
+                /** @description Billing ID of the subscription. The ID of the subscription in the external billing system (for example, Stripe). */
+                billingId: string;
+            }[];
         };
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": {
-          /**
-           * Format: uuid
-           * @description ID of the organization subscribing.
-           */
-          orgId?: string;
-          /** @description Price ID from the payment processor. */
-          planId?: string;
-          /** @description Coupon ID to apply. */
-          couponId?: string;
-          /** @description Number of users in the organization. */
-          userCount?: number;
-          /**
-           * Format: email
-           * @description Email of the customer.
-           */
-          email?: string;
-          /**
-           * @description Payment processor used to complete the subscription checkout.
-           * @enum {string}
-           */
-          paymentProcessor?: "stripe" | "paypal" | "braintree";
-        };
-      };
-    };
-  };
-  upgradeSubscription: {
-    parameters: {
-      path: {
-        /** Subscription ID */
-        subscriptionId: string;
-      };
-    };
-    responses: {
-      /** Subscription upgraded */
-      200: {
-        content: {
-          "application/json": {
+        /** @description Subscription entity schema. */
+        Subscription: {
             /**
              * Format: uuid
-             * @description Unique identifier for the subscription.
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             id: string;
             /**
              * Format: uuid
-             * @description ID of the organization that owns this subscription.
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             orgId: string;
             /**
              * Format: uuid
-             * @description ID of the plan this subscription is for.
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             planId: string;
             /** @description Eager-loaded plan associated with this subscription. */
             plan?: {
-              /**
-               * Format: uuid
-               * @description Unique identifier for the plan.
-               */
-              id: string;
-              /**
-               * @description Display name of the plan.
-               * @enum {string}
-               */
-              name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-              /**
-               * @description Billing cadence for the plan (monthly, annually, or none).
-               * @enum {string}
-               */
-              cadence: "none" | "monthly" | "annually";
-              /**
-               * @description Unit of consumption this plan charges against (e.g. user).
-               * @enum {string}
-               */
-              unit: "user" | "free";
-              /** @description Minimum number of units required for the plan. */
-              minimumUnits: number;
-              /** @description Price per unit of the plan. */
-              pricePerUnit: number;
-              /**
-               * @description Currency in which the plan is priced.
-               * @enum {string}
-               */
-              currency: "usd";
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                id: string;
+                /**
+                 * @description Display name of the plan.
+                 * @enum {string}
+                 */
+                name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+                /**
+                 * @description Billing cadence for the plan (monthly, annually, or none).
+                 * @enum {string}
+                 */
+                cadence: "none" | "monthly" | "annually";
+                /**
+                 * @description Unit of consumption this plan charges against (e.g. user).
+                 * @enum {string}
+                 */
+                unit: "user" | "free";
+                /** @description Minimum number of units required for the plan. */
+                minimumUnits: number;
+                /** @description Price per unit of the plan. */
+                pricePerUnit: number;
+                /**
+                 * @description Currency in which the plan is priced.
+                 * @enum {string}
+                 */
+                currency: "usd";
             };
             /** @description Number of units subscribed (eg number of users). */
             quantity: number;
@@ -753,14 +340,7 @@ export interface operations {
              * @description Current status of the subscription (e.g. active, past_due, canceled).
              * @enum {string}
              */
-            status:
-              | "incomplete"
-              | "incomplete_expired"
-              | "trialing"
-              | "active"
-              | "past_due"
-              | "canceled"
-              | "unpaid";
+            status: "incomplete" | "incomplete_expired" | "trialing" | "active" | "past_due" | "canceled" | "unpaid";
             /**
              * Format: date-time
              * @description Timestamp when the subscription was created.
@@ -778,136 +358,723 @@ export interface operations {
             deletedAt?: string;
             /** @description Billing ID of the subscription. The ID of the subscription in the external billing system (for example, Stripe). */
             billingId: string;
-          };
         };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
+        /**
+         * @description Possible statuses of a Stripe subscription.
+         * @enum {string}
+         */
+        SubscriptionStatus: "incomplete" | "incomplete_expired" | "trialing" | "active" | "past_due" | "canceled" | "unpaid";
     };
-    requestBody: {
-      content: {
-        "application/json": {
-          /**
-           * Format: uuid
-           * @description Plan ID that is being replaced.
-           */
-          oldPlanId?: string;
-          /**
-           * Format: uuid
-           * @description Plan ID that replaces the old plan.
-           */
-          newPlanId?: string;
+    responses: {
+        /** @description Invalid request body or request param */
+        400: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
         };
-      };
+        /** @description Expired JWT token used or insufficient privilege */
+        401: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Result not found */
+        404: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Internal server error */
+        500: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
     };
-  };
-  previewSubscriptionUpgrade: {
     parameters: {
-      path: {
-        /** Subscription ID */
+        /** @description Subscription ID */
         subscriptionId: string;
-      };
+        /** @description Get responses by page */
+        page: string;
+        /** @description Get responses by pagesize */
+        pagesize: string;
+        /** @description Get responses by pagesize (pass all to get all responses) */
+        pagesizeWithAll: string;
+        /** @description Get ordered responses */
+        order: string;
     };
-    responses: {
-      /** Preview of the upgraded subscription invoice */
-      200: {
-        content: {
-          "application/json": { [key: string]: unknown };
-        };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": {
-          /**
-           * Format: uuid
-           * @description Plan ID that is being replaced.
-           */
-          oldPlanId?: string;
-          /**
-           * Format: uuid
-           * @description Plan ID that replaces the old plan.
-           */
-          newPlanId?: string;
-        };
-      };
-    };
-  };
-  handleSubscriptionWebhook: {
-    responses: {
-      /** Webhook processed */
-      200: unknown;
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": { [key: string]: unknown };
-      };
-    };
-  };
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
-
-export interface external {}
+export type $defs = Record<string, never>;
+export interface operations {
+    getSubscriptions: {
+        parameters: {
+            query?: {
+                /** @description Get responses by page */
+                page?: string;
+                /** @description Get responses by pagesize */
+                pagesize?: string;
+                /** @description Get ordered responses */
+                order?: string;
+                /** @description Filter subscriptions by status */
+                status?: string[];
+                /** @description Filter subscriptions by plan UUID. Repeat for multiple values. */
+                planId?: string[];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Subscriptions response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Current page number of the result set. */
+                        page: number;
+                        /** @description Number of items per page. */
+                        pageSize: number;
+                        /** @description Total number of items available. */
+                        totalCount: number;
+                        /** @description Subscriptions returned on the current page. */
+                        subscriptions: {
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            id: string;
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            orgId: string;
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            planId: string;
+                            /** @description Eager-loaded plan associated with this subscription. */
+                            plan?: {
+                                /**
+                                 * Format: uuid
+                                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                                 */
+                                id: string;
+                                /**
+                                 * @description Display name of the plan.
+                                 * @enum {string}
+                                 */
+                                name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+                                /**
+                                 * @description Billing cadence for the plan (monthly, annually, or none).
+                                 * @enum {string}
+                                 */
+                                cadence: "none" | "monthly" | "annually";
+                                /**
+                                 * @description Unit of consumption this plan charges against (e.g. user).
+                                 * @enum {string}
+                                 */
+                                unit: "user" | "free";
+                                /** @description Minimum number of units required for the plan. */
+                                minimumUnits: number;
+                                /** @description Price per unit of the plan. */
+                                pricePerUnit: number;
+                                /**
+                                 * @description Currency in which the plan is priced.
+                                 * @enum {string}
+                                 */
+                                currency: "usd";
+                            };
+                            /** @description Number of units subscribed (eg number of users). */
+                            quantity: number;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the subscription period started.
+                             */
+                            startDate?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the current subscription period ends.
+                             */
+                            endDate?: string;
+                            /**
+                             * @description Current status of the subscription (e.g. active, past_due, canceled).
+                             * @enum {string}
+                             */
+                            status: "incomplete" | "incomplete_expired" | "trialing" | "active" | "past_due" | "canceled" | "unpaid";
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the subscription was created.
+                             */
+                            createdAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the subscription was last updated.
+                             */
+                            updatedAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the subscription was soft-deleted, if applicable.
+                             */
+                            deletedAt?: string;
+                            /** @description Billing ID of the subscription. The ID of the subscription in the external billing system (for example, Stripe). */
+                            billingId: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    cancelSubscription: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Subscription ID */
+                subscriptionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Subscription cancellation scheduled */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Current page number of the result set. */
+                        page: number;
+                        /** @description Number of items per page. */
+                        pageSize: number;
+                        /** @description Total number of items available. */
+                        totalCount: number;
+                        /** @description Subscriptions returned on the current page. */
+                        subscriptions: {
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            id: string;
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            orgId: string;
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            planId: string;
+                            /** @description Eager-loaded plan associated with this subscription. */
+                            plan?: {
+                                /**
+                                 * Format: uuid
+                                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                                 */
+                                id: string;
+                                /**
+                                 * @description Display name of the plan.
+                                 * @enum {string}
+                                 */
+                                name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+                                /**
+                                 * @description Billing cadence for the plan (monthly, annually, or none).
+                                 * @enum {string}
+                                 */
+                                cadence: "none" | "monthly" | "annually";
+                                /**
+                                 * @description Unit of consumption this plan charges against (e.g. user).
+                                 * @enum {string}
+                                 */
+                                unit: "user" | "free";
+                                /** @description Minimum number of units required for the plan. */
+                                minimumUnits: number;
+                                /** @description Price per unit of the plan. */
+                                pricePerUnit: number;
+                                /**
+                                 * @description Currency in which the plan is priced.
+                                 * @enum {string}
+                                 */
+                                currency: "usd";
+                            };
+                            /** @description Number of units subscribed (eg number of users). */
+                            quantity: number;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the subscription period started.
+                             */
+                            startDate?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the current subscription period ends.
+                             */
+                            endDate?: string;
+                            /**
+                             * @description Current status of the subscription (e.g. active, past_due, canceled).
+                             * @enum {string}
+                             */
+                            status: "incomplete" | "incomplete_expired" | "trialing" | "active" | "past_due" | "canceled" | "unpaid";
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the subscription was created.
+                             */
+                            createdAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the subscription was last updated.
+                             */
+                            updatedAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the subscription was soft-deleted, if applicable.
+                             */
+                            deletedAt?: string;
+                            /** @description Billing ID of the subscription. The ID of the subscription in the external billing system (for example, Stripe). */
+                            billingId: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    createSubscription: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * Format: uuid
+                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                     */
+                    orgId?: string;
+                    /** @description Price ID from the payment processor. */
+                    planId?: string;
+                    /** @description Coupon ID to apply. */
+                    couponId?: string;
+                    /** @description Number of users in the organization. */
+                    userCount?: number;
+                    /**
+                     * Format: email
+                     * @description Email of the customer.
+                     */
+                    email?: string;
+                    /**
+                     * @description Payment processor used to complete the subscription checkout.
+                     * @enum {string}
+                     */
+                    paymentProcessor?: "stripe" | "paypal" | "braintree";
+                };
+            };
+        };
+        responses: {
+            /** @description A new subscription has been created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description ID of the associated subscription in the payment processor. */
+                        subscriptionId?: string;
+                        /** @description Client secret returned by the payment processor for the subscription checkout flow. */
+                        clientSecret?: string;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    upgradeSubscription: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Subscription ID */
+                subscriptionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * Format: uuid
+                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                     */
+                    oldPlanId?: string;
+                    /**
+                     * Format: uuid
+                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                     */
+                    newPlanId?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Subscription upgraded */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        id: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        orgId: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        planId: string;
+                        /** @description Eager-loaded plan associated with this subscription. */
+                        plan?: {
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            id: string;
+                            /**
+                             * @description Display name of the plan.
+                             * @enum {string}
+                             */
+                            name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+                            /**
+                             * @description Billing cadence for the plan (monthly, annually, or none).
+                             * @enum {string}
+                             */
+                            cadence: "none" | "monthly" | "annually";
+                            /**
+                             * @description Unit of consumption this plan charges against (e.g. user).
+                             * @enum {string}
+                             */
+                            unit: "user" | "free";
+                            /** @description Minimum number of units required for the plan. */
+                            minimumUnits: number;
+                            /** @description Price per unit of the plan. */
+                            pricePerUnit: number;
+                            /**
+                             * @description Currency in which the plan is priced.
+                             * @enum {string}
+                             */
+                            currency: "usd";
+                        };
+                        /** @description Number of units subscribed (eg number of users). */
+                        quantity: number;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the subscription period started.
+                         */
+                        startDate?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the current subscription period ends.
+                         */
+                        endDate?: string;
+                        /**
+                         * @description Current status of the subscription (e.g. active, past_due, canceled).
+                         * @enum {string}
+                         */
+                        status: "incomplete" | "incomplete_expired" | "trialing" | "active" | "past_due" | "canceled" | "unpaid";
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the subscription was created.
+                         */
+                        createdAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the subscription was last updated.
+                         */
+                        updatedAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the subscription was soft-deleted, if applicable.
+                         */
+                        deletedAt?: string;
+                        /** @description Billing ID of the subscription. The ID of the subscription in the external billing system (for example, Stripe). */
+                        billingId: string;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    previewSubscriptionUpgrade: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Subscription ID */
+                subscriptionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * Format: uuid
+                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                     */
+                    oldPlanId?: string;
+                    /**
+                     * Format: uuid
+                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                     */
+                    newPlanId?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Preview of the upgraded subscription invoice */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    handleSubscriptionWebhook: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": Record<string, never>;
+            };
+        };
+        responses: {
+            /** @description Webhook processed */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+}

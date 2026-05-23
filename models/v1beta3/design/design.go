@@ -10,6 +10,7 @@ import (
 	core "github.com/meshery/schemas/models/core"
 	catalogv1alpha2 "github.com/meshery/schemas/models/v1alpha2/catalog"
 	component "github.com/meshery/schemas/models/v1beta2/component"
+	corev1beta2 "github.com/meshery/schemas/models/v1beta2/core"
 	relationship "github.com/meshery/schemas/models/v1beta2/relationship"
 	userV1beta "github.com/meshery/schemas/models/v1beta2/user"
 	filterv1beta3 "github.com/meshery/schemas/models/v1beta3/filter"
@@ -37,6 +38,12 @@ const (
 	MesheryPatternVisibilityPrivate   MesheryPatternVisibility = "private"
 	MesheryPatternVisibilityPublic    MesheryPatternVisibility = "public"
 	MesheryPatternVisibilityPublished MesheryPatternVisibility = "published"
+)
+
+// Defines values for MesheryPatternImportFormPayloadUploadType.
+const (
+	FileUpload MesheryPatternImportFormPayloadUploadType = "File Upload"
+	URLImport  MesheryPatternImportFormPayloadUploadType = "URL Import"
 )
 
 // Defines values for MesheryPatternPayloadDesignType.
@@ -177,7 +184,7 @@ type MesheryPattern struct {
 	SourceContent *[]byte           `db:"source_content" json:"sourceContent,omitempty" yaml:"sourceContent,omitempty"`
 	UpdatedAt     core.Time `db:"updated_at" json:"updatedAt,omitempty" yaml:"updatedAt,omitempty"`
 
-	// User Represents a user in Layer5 Cloud (Meshery)
+	// User Represents a user
 	User   *userV1beta.User `db:"-" json:"user,omitempty" yaml:"user,omitempty"`
 	UserId core.Id    `db:"user_id" json:"userId,omitempty" yaml:"userId,omitempty"`
 
@@ -211,6 +218,24 @@ type MesheryPatternImportFilePayload struct {
 	// Name Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.
 	Name *string `json:"name,omitempty" yaml:"name,omitempty"`
 }
+
+// MesheryPatternImportFormPayload Flat canonical representation of the design import form that combines the discriminator field with the union of properties from MesheryPatternImportFilePayload and MesheryPatternImportURLPayload. This schema is the authoritative source for the canonical RJSF form schema at schemas/constructs/v1beta3/design/forms/import.json. The server receives either a File-import payload or a URL-import payload (as defined by MesheryPatternImportRequestBody); this form schema captures the superset of user-facing fields so the form schema can be validated as a subset of this canonical type.
+type MesheryPatternImportFormPayload struct {
+	// File Base64-encoded file bytes. Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs.
+	File *[]byte `json:"file,omitempty" yaml:"file,omitempty"`
+
+	// Name Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.
+	Name *string `json:"name,omitempty" yaml:"name,omitempty"`
+
+	// UploadType UI-level discriminator that controls which import variant the form submits. The client maps "File Upload" to MesheryPatternImportFilePayload and "URL Import" to MesheryPatternImportURLPayload before calling the API.
+	UploadType *MesheryPatternImportFormPayloadUploadType `json:"uploadType,omitempty" yaml:"uploadType,omitempty"`
+
+	// Url A direct URL to a single file. Ensure the resource is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design.
+	Url *string `json:"url,omitempty" yaml:"url,omitempty"`
+}
+
+// MesheryPatternImportFormPayloadUploadType UI-level discriminator that controls which import variant the form submits. The client maps "File Upload" to MesheryPatternImportFilePayload and "URL Import" to MesheryPatternImportURLPayload before calling the API.
+type MesheryPatternImportFormPayloadUploadType string
 
 // MesheryPatternImportRequestBody Body for POST /api/pattern/import. Consumed by the server as application/json. Exactly one of two variants must be supplied: a File Import carrying base64-encoded bytes plus a file name, or a URL Import naming a remote location the server will fetch. Sending both variants at once, or neither, is rejected with 400.
 type MesheryPatternImportRequestBody struct {
@@ -314,8 +339,8 @@ type PatternFile struct {
 // PatternFile_Metadata Additional metadata associated with this resource.
 type PatternFile_Metadata struct {
 	// ResolvedAliases Map of resolved aliases present in the design
-	ResolvedAliases      *map[string]core.ResolvedAlias `json:"resolvedAliases,omitempty" yaml:"resolvedAliases,omitempty"`
-	AdditionalProperties map[string]interface{}         `json:"-" yaml:"-"`
+	ResolvedAliases      *map[string]corev1beta2.ResolvedAlias `json:"resolvedAliases,omitempty" yaml:"resolvedAliases,omitempty"`
+	AdditionalProperties map[string]interface{}                `json:"-" yaml:"-"`
 }
 
 // ResourceAccessActorsResponse defines model for ResourceAccessActorsResponse.

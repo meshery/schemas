@@ -197,12 +197,14 @@ func extractGorillaEndpoints(call *ast.CallExpr, fset *token.FileSet) []consumer
 	}
 
 	out := make([]consumerEndpoint, 0, len(verbs))
+	anonymousAccess := boolPtr(gorillaHandlerAllowsAnonymous(handlerExpr))
 	for _, verb := range verbs {
 		ep := consumerEndpoint{
-			Method:      verb,
-			Path:        path,
-			HandlerName: handlerName,
-			RouterLine:  line,
+			Method:          verb,
+			Path:            path,
+			HandlerName:     handlerName,
+			RouterLine:      line,
+			AnonymousAccess: anonymousAccess,
 		}
 		if note != "" {
 			ep.Notes = append(ep.Notes, note)
@@ -210,6 +212,19 @@ func extractGorillaEndpoints(call *ast.CallExpr, fset *token.FileSet) []consumer
 		out = append(out, ep)
 	}
 	return out
+}
+
+func gorillaHandlerAllowsAnonymous(handlerExpr ast.Expr) bool {
+	if handlerExpr == nil {
+		return true
+	}
+	if exprMentionsName(handlerExpr, func(name string) bool { return name == "NoAuth" }) {
+		return true
+	}
+	if exprMentionsName(handlerExpr, func(name string) bool { return name == "ProviderAuth" || name == "AuthMiddleware" }) {
+		return false
+	}
+	return true
 }
 
 // walkChain walks an AST chain head-first, invoking visit on every CallExpr

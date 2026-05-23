@@ -3,44 +3,32 @@
  * Do not make direct changes to the file.
  */
 
-export interface paths {}
-
+export type paths = Record<string, never>;
+export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    /** @description Category of the model. */
-    CategoryDefinition: {
-      /**
-       * Format: uuid
-       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-       */
-      id: string;
-      /**
-       * @description The category of the model that determines the main grouping.
-       * @default Uncategorized
-       * @enum {string}
-       */
-      name:
-        | "Analytics"
-        | "App Definition and Development"
-        | "Cloud Native Network"
-        | "Cloud Native Storage"
-        | "Database"
-        | "Machine Learning"
-        | "Observability and Analysis"
-        | "Orchestration & Management"
-        | "Platform"
-        | "Provisioning"
-        | "Runtime"
-        | "Security & Compliance"
-        | "Serverless"
-        | "Tools"
-        | "Uncategorized";
-      /** @description Additional metadata associated with the category. */
-      metadata: { [key: string]: unknown };
+    schemas: {
+        /** @description Category of the model. */
+        CategoryDefinition: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            id: string;
+            /**
+             * @description The category of the model that determines the main grouping.
+             * @default Uncategorized
+             * @enum {string}
+             */
+            name: "Analytics" | "App Definition and Development" | "Cloud Native Network" | "Cloud Native Storage" | "Database" | "Machine Learning" | "Observability and Analysis" | "Orchestration & Management" | "Platform" | "Provisioning" | "Runtime" | "Security & Compliance" | "Serverless" | "Tools" | "Uncategorized";
+            /** @description Additional metadata associated with the category. */
+            metadata: Record<string, never>;
+        };
     };
-  };
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
-
-export interface operations {}
-
-export interface external {}
+export type $defs = Record<string, never>;
+export type operations = Record<string, never>;

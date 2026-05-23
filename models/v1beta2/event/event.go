@@ -57,7 +57,7 @@ type EventResult struct {
 	// Provider One of (x-oapi-codegen-extra-tags-cloud, github, google)
 	Provider core.Provider `json:"provider,omitempty" yaml:"provider,omitempty"`
 	SystemID core.SystemId `db:"system_id" json:"system_id,omitempty" yaml:"system_id,omitempty"`
-	UserID   core.UserUuid `db:"user_id" json:"user_id" yaml:"user_id"`
+	UserID   core.UserUuid `db:"user_id" json:"userId" yaml:"userId"`
 }
 
 // EventSummary defines model for EventSummary.

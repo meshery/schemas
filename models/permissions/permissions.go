@@ -387,7 +387,7 @@ var (
 	// IdentityAccessManagementViewOrganizations - See all organizations of which you are an administrator. See all members of those organizations.
 	IdentityAccessManagementViewOrganizations = PermissionKey(uuid.Must(uuid.FromString("172fa7d3-0d8a-4646-a789-bf64f52ba40b")))
 
-	// IdentityAccessManagementViewAllOrganizations - See all organizations within a Layer5 Cloud deployment. See all organizations, teams, and users.
+	// IdentityAccessManagementViewAllOrganizations - See all organizations within a Cloud deployment. See all organizations, teams, and users.
 	IdentityAccessManagementViewAllOrganizations = PermissionKey(uuid.Must(uuid.FromString("e996c998-a50f-4cb8-ae7b-f2f1b523c971")))
 
 	// IdentityAccessManagementRemoveRolesFromOrganizationMembers - Remove roles from users in an organization

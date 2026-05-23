@@ -150,6 +150,43 @@ export namespace v1beta1 {
   export type Workspace = WorkspaceComponents["schemas"]["Workspace"];
 }
 
+// Canonical RJSF form schemas. See typescript/forms/ and
+// docs/form-schemas-roadmap.md. Each form is validated against the
+// corresponding canonical OpenAPI construct by validation/forms_test.go
+// (subset-of: every form field is present in canonical, types match,
+// enums are subsets, required fields exist in canonical).
+export {
+  CatalogPublishRjsfSchemaV1Beta2,
+  CatalogPublishRjsfUiSchemaV1Beta2,
+  ConnectionHelmCreateRjsfSchemaV1Beta3,
+  ConnectionHelmCreateRjsfUiSchemaV1Beta3,
+  DesignImportRjsfSchemaV1Beta3,
+  DesignImportRjsfUiSchemaV1Beta3,
+  EnvironmentCreateOrEditRjsfSchemaV1Beta3,
+  EnvironmentCreateOrEditRjsfUiSchemaV1Beta3,
+  FilterImportRjsfSchemaV1Beta3,
+  FilterImportRjsfUiSchemaV1Beta3,
+  GrafanaCredentialRjsfSchemaV1Beta1,
+  GrafanaCredentialRjsfUiSchemaV1Beta1,
+  KubernetesCredentialRjsfSchemaV1Beta1,
+  KubernetesCredentialRjsfUiSchemaV1Beta1,
+  ModelImportRjsfSchemaV1Beta2,
+  ModelImportRjsfUiSchemaV1Beta2,
+  PrometheusCredentialRjsfSchemaV1Beta1,
+  PrometheusCredentialRjsfUiSchemaV1Beta1,
+  SupportRequestRjsfSchemaV1Beta1,
+  SupportRequestRjsfUiSchemaV1Beta1,
+  WorkspaceCreateOrEditRjsfSchemaV1Beta3,
+  WorkspaceCreateOrEditRjsfUiSchemaV1Beta3
+} from "./forms";
+
+// Public types for the canonical RJSF form-schema artifacts. Exported so
+// downstream consumers (sistent, meshery, meshery-cloud) can name the
+// shape when they spread or otherwise derive variants from a canonical
+// schema — without that, tsup's DTS bundler errors on emitted .d.ts
+// references to a type declared but never re-exported. See #871.
+export type { RJSFSchema, UiSchema } from "./forms/types";
+
 export namespace v1beta2 {
   export type Academy =
     V1Beta2AcademyComponents["schemas"]["AcademyCurricula"];

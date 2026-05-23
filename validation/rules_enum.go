@@ -70,7 +70,7 @@ func visitEnumsInSchema(schema *openapi3.Schema, path string,
 				Message: fmt.Sprintf(
 					`%s — new enum value %q must be lowercase. `+
 						`Existing published enum values are exempt for compatibility; `+
-						`use %q for new additions. See AGENTS.md § "Casing rules at a glance".`,
+						`use %q for new additions. See docs/casing-rules.md.`,
 					path, strVal, strings.ToLower(strVal)),
 				Severity:   sev,
 				RuleNumber: 8,

@@ -18,13 +18,19 @@ include build/Makefile.show-help.mk
 #-----------------------------------------------------------------------------
 # Schemas Site and public reference
 #-----------------------------------------------------------------------------
-.PHONY: site
+.PHONY: site generate-site-index
 
 jekyll = bundle exec jekyll
 
 ## Build and run schemas.meshery.io website
 site:
-	bundle install; $(jekyll) serve --drafts --incremental --livereload
+	node build/generate-site-index.js
+	bundle install
+	$(jekyll) serve --drafts --incremental --livereload
+
+## Generate the plain schemas index page from latest construct versions
+generate-site-index:
+	node build/generate-site-index.js
 
 #-----------------------------------------------------------------------------
 # OpenAPI spec
@@ -42,6 +48,7 @@ generate-ts:
 
 ## Bundle Typescript library, json templates, yaml templates
 build-ts: generate-ts
+	rm -rf dist/
 	npm run build
 
 ## Publish schemas package to @meshery/schemas on npmjs.com

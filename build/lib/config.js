@@ -70,11 +70,12 @@ const excludePackages = [
  * but oapi-codegen is not run on them.
  */
 const excludeFromGoGeneration = [
-  // Core is a bundled base schema. The v1alpha1/core Go package provides
-  // the generated types. v1beta1/core and v1beta2/core schemas exist for
-  // $ref resolution but don't need their own Go packages.
+  // Core is a bundled base schema. The unversioned models/core Go package
+  // is generated from v1alpha1/core and retained for the snake_case
+  // v1beta1 alias wire form.
+  // v1beta2/core now generates its own Go package at models/v1beta2/core/
+  // with canonical camelCase JSON tags.
   "v1beta1/core",
-  "v1beta2/core",
   // v1beta2/catalog: excluded from Go generation. Catalog Go models
   // exist at models/v1alpha2/catalog (original) and models/v1beta1/catalog
   // (promoted). The GO_IMPORT_OVERRIDES in generate-golang.js routes

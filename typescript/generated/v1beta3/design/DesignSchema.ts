@@ -346,7 +346,7 @@ const DesignSchema: Record<string, unknown> = {
                               "provider": {
                                 "type": "string",
                                 "maxLength": 100,
-                                "description": "Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)",
+                                "description": "Authentication provider (e.g., Google, Github)",
                                 "example": [
                                   "local",
                                   "github",
@@ -1360,7 +1360,7 @@ const DesignSchema: Record<string, unknown> = {
                         "provider": {
                           "type": "string",
                           "maxLength": 100,
-                          "description": "Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)",
+                          "description": "Authentication provider (e.g., Google, Github)",
                           "example": [
                             "local",
                             "github",
@@ -2521,7 +2521,7 @@ const DesignSchema: Record<string, unknown> = {
                         "provider": {
                           "type": "string",
                           "maxLength": 100,
-                          "description": "Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)",
+                          "description": "Authentication provider (e.g., Google, Github)",
                           "example": [
                             "local",
                             "github",
@@ -3413,7 +3413,7 @@ const DesignSchema: Record<string, unknown> = {
                         "provider": {
                           "type": "string",
                           "maxLength": 100,
-                          "description": "Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)",
+                          "description": "Authentication provider (e.g., Google, Github)",
                           "example": [
                             "local",
                             "github",
@@ -4639,7 +4639,7 @@ const DesignSchema: Record<string, unknown> = {
                               "provider": {
                                 "type": "string",
                                 "maxLength": 100,
-                                "description": "Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)",
+                                "description": "Authentication provider (e.g., Google, Github)",
                                 "example": [
                                   "local",
                                   "github",
@@ -6469,10 +6469,10 @@ const DesignSchema: Record<string, unknown> = {
               "resolvedAliases": {
                 "description": "Map of resolved aliases present in the design",
                 "type": "object",
-                "x-go-type": "map[string]core.ResolvedAlias",
+                "x-go-type": "map[string]corev1beta2.ResolvedAlias",
                 "x-go-type-import": {
-                  "path": "github.com/meshery/schemas/models/core",
-                  "name": "core"
+                  "path": "github.com/meshery/schemas/models/v1beta2/core",
+                  "name": "corev1beta2"
                 },
                 "additionalProperties": {
                   "description": "An resolved alias is an component that acts as an ref/pointer to a field in another component, resolvedAlias are aware of there immediate parents and completely resolved parents also",
@@ -11242,7 +11242,7 @@ const DesignSchema: Record<string, unknown> = {
               "provider": {
                 "type": "string",
                 "maxLength": 100,
-                "description": "Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)",
+                "description": "Authentication provider (e.g., Google, Github)",
                 "example": [
                   "local",
                   "github",
@@ -12025,7 +12025,7 @@ const DesignSchema: Record<string, unknown> = {
                     "provider": {
                       "type": "string",
                       "maxLength": 100,
-                      "description": "Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)",
+                      "description": "Authentication provider (e.g., Google, Github)",
                       "example": [
                         "local",
                         "github",
@@ -13119,6 +13119,39 @@ const DesignSchema: Record<string, unknown> = {
           }
         }
       },
+      "MesheryPatternImportFormPayload": {
+        "type": "object",
+        "description": "Flat canonical representation of the design import form that combines the discriminator field with the union of properties from MesheryPatternImportFilePayload and MesheryPatternImportURLPayload. This schema is the authoritative source for the canonical RJSF form schema at schemas/constructs/v1beta3/design/forms/import.json. The server receives either a File-import payload or a URL-import payload (as defined by MesheryPatternImportRequestBody); this form schema captures the superset of user-facing fields so the form schema can be validated as a subset of this canonical type.\n",
+        "properties": {
+          "name": {
+            "type": "string",
+            "default": "Untitled Design",
+            "description": "Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "uploadType": {
+            "type": "string",
+            "title": "Upload method",
+            "x-enum-casing-exempt": true,
+            "enum": [
+              "File Upload",
+              "URL Import"
+            ],
+            "description": "UI-level discriminator that controls which import variant the form submits. The client maps \"File Upload\" to MesheryPatternImportFilePayload and \"URL Import\" to MesheryPatternImportURLPayload before calling the API.\n"
+          },
+          "file": {
+            "type": "string",
+            "format": "byte",
+            "description": "Base64-encoded file bytes. Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs."
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "A direct URL to a single file. Ensure the resource is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design."
+          }
+        }
+      },
       "DesignPreferences": {
         "type": "object",
         "description": "Design-level preferences",
@@ -13336,7 +13369,7 @@ const DesignSchema: Record<string, unknown> = {
                     "provider": {
                       "type": "string",
                       "maxLength": 100,
-                      "description": "Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)",
+                      "description": "Authentication provider (e.g., Google, Github)",
                       "example": [
                         "local",
                         "github",

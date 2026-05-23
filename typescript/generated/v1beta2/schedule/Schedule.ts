@@ -4,183 +4,114 @@
  */
 
 export interface paths {
-  "/user/schedules": {
-    /** Returns all schedules for the authenticated user. */
-    get: operations["getSchedules"];
-    /** Creates or updates a schedule for the authenticated user. */
-    post: operations["upsertSchedule"];
-  };
-  "/user/schedules/{scheduleId}": {
-    /** Returns a specific schedule by its ID. */
-    get: operations["getSchedule"];
-    /** Deletes a schedule by its ID. */
-    delete: operations["deleteSchedule"];
-  };
+    "/user/schedules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get schedules
+         * @description Returns all schedules for the authenticated user.
+         */
+        get: operations["getSchedules"];
+        put?: never;
+        /**
+         * Create or update schedule
+         * @description Creates or updates a schedule for the authenticated user.
+         */
+        post: operations["upsertSchedule"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/user/schedules/{scheduleId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get schedule by ID
+         * @description Returns a specific schedule by its ID.
+         */
+        get: operations["getSchedule"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete schedule
+         * @description Deletes a schedule by its ID.
+         */
+        delete: operations["deleteSchedule"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
-
+export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    /** @description A schedule defines a recurring cron-based trigger for performance tests or other automated tasks. */
-    Schedule: {
-      /**
-       * Format: uuid
-       * @description Unique identifier for the schedule.
-       */
-      id?: string;
-      /** @description Human-readable name for the schedule. */
-      name: string;
-      /**
-       * Format: uuid
-       * @description UUID of the user who owns this schedule.
-       */
-      userId: string;
-      /** @description Cron expression defining the schedule's recurrence (e.g. "0 0 * * *" for daily at midnight). */
-      cronExpression: string;
-      /**
-       * Format: date-time
-       * @description Server-computed timestamp of the schedule's most recent execution. Null until the first run completes. Server-managed; clients must not set this on create/update.
-       */
-      lastRun?: string;
-      /**
-       * Format: date-time
-       * @description Server-computed timestamp of the schedule's next planned execution, derived from the cron expression. Server-managed; clients must not set this on create/update.
-       */
-      nextRun?: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the schedule was created.
-       */
-      createdAt?: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the schedule was last updated.
-       */
-      updatedAt?: string;
-    };
-    /** @description Payload for upserting a schedule. Includes only client-settable fields. */
-    SchedulePayload: {
-      /**
-       * Format: uuid
-       * @description Existing schedule ID for updates; omit on create.
-       */
-      id?: string;
-      /** @description Human-readable name for the schedule. */
-      name: string;
-      /**
-       * Format: uuid
-       * @description Owner user ID; inferred from the authenticated user when omitted.
-       */
-      userId?: string;
-      /** @description Cron expression defining the schedule's recurrence (e.g. "0 0 * * *" for daily at midnight). */
-      cronExpression: string;
-    };
-    /** @description A paginated list of schedules. */
-    SchedulePage: {
-      /** @description Current page number (zero-based). */
-      page: number;
-      /** @description Number of schedules per page. */
-      pageSize: number;
-      /** @description Total number of schedules across all pages. */
-      totalCount: number;
-      /** @description The schedules of the schedulepage. */
-      schedules: {
-        /**
-         * Format: uuid
-         * @description Unique identifier for the schedule.
-         */
-        id?: string;
-        /** @description Human-readable name for the schedule. */
-        name: string;
-        /**
-         * Format: uuid
-         * @description UUID of the user who owns this schedule.
-         */
-        userId: string;
-        /** @description Cron expression defining the schedule's recurrence (e.g. "0 0 * * *" for daily at midnight). */
-        cronExpression: string;
-        /**
-         * Format: date-time
-         * @description Server-computed timestamp of the schedule's most recent execution. Null until the first run completes. Server-managed; clients must not set this on create/update.
-         */
-        lastRun?: string;
-        /**
-         * Format: date-time
-         * @description Server-computed timestamp of the schedule's next planned execution, derived from the cron expression. Server-managed; clients must not set this on create/update.
-         */
-        nextRun?: string;
-        /**
-         * Format: date-time
-         * @description Timestamp when the schedule was created.
-         */
-        createdAt?: string;
-        /**
-         * Format: date-time
-         * @description Timestamp when the schedule was last updated.
-         */
-        updatedAt?: string;
-      }[];
-    };
-  };
-  responses: {
-    /** Invalid request body or request param */
-    400: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Expired JWT token used or insufficient privilege */
-    401: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Result not found */
-    404: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Internal server error */
-    500: {
-      content: {
-        "text/plain": string;
-      };
-    };
-  };
-  parameters: {
-    /** @description Schedule ID */
-    scheduleId: string;
-    /** @description Get responses by page */
-    page: string;
-    /** @description Get responses by page size */
-    pageSize: string;
-    /** @description Get responses that match search param value */
-    search: string;
-    /** @description Get ordered responses */
-    order: string;
-  };
-}
-
-export interface operations {
-  /** Returns all schedules for the authenticated user. */
-  getSchedules: {
-    parameters: {
-      query: {
-        /** Get responses by page */
-        page?: string;
-        /** Get responses by page size */
-        pageSize?: string;
-        /** Get responses that match search param value */
-        search?: string;
-        /** Get ordered responses */
-        order?: string;
-      };
-    };
-    responses: {
-      /** Schedules response */
-      200: {
-        content: {
-          "application/json": {
+    schemas: {
+        /** @description A schedule defines a recurring cron-based trigger for performance tests or other automated tasks. */
+        Schedule: {
+            /**
+             * Format: uuid
+             * @description Unique identifier for the schedule.
+             */
+            id?: string;
+            /** @description Human-readable name for the schedule. */
+            name: string;
+            /**
+             * Format: uuid
+             * @description UUID of the user who owns this schedule.
+             */
+            userId: string;
+            /** @description Cron expression defining the schedule's recurrence (e.g. "0 0 * * *" for daily at midnight). */
+            cronExpression: string;
+            /**
+             * Format: date-time
+             * @description Server-computed timestamp of the schedule's most recent execution. Null until the first run completes. Server-managed; clients must not set this on create/update.
+             */
+            lastRun?: string;
+            /**
+             * Format: date-time
+             * @description Server-computed timestamp of the schedule's next planned execution, derived from the cron expression. Server-managed; clients must not set this on create/update.
+             */
+            nextRun?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the schedule was created.
+             */
+            createdAt?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the schedule was last updated.
+             */
+            updatedAt?: string;
+        };
+        /** @description Payload for upserting a schedule. Includes only client-settable fields. */
+        SchedulePayload: {
+            /**
+             * Format: uuid
+             * @description Existing schedule ID for updates; omit on create.
+             */
+            id?: string;
+            /** @description Human-readable name for the schedule. */
+            name: string;
+            /**
+             * Format: uuid
+             * @description Owner user ID; inferred from the authenticated user when omitted.
+             */
+            userId?: string;
+            /** @description Cron expression defining the schedule's recurrence (e.g. "0 0 * * *" for daily at midnight). */
+            cronExpression: string;
+        };
+        /** @description A paginated list of schedules. */
+        SchedulePage: {
             /** @description Current page number (zero-based). */
             page: number;
             /** @description Number of schedules per page. */
@@ -189,243 +120,422 @@ export interface operations {
             totalCount: number;
             /** @description The schedules of the schedulepage. */
             schedules: {
-              /**
-               * Format: uuid
-               * @description Unique identifier for the schedule.
-               */
-              id?: string;
-              /** @description Human-readable name for the schedule. */
-              name: string;
-              /**
-               * Format: uuid
-               * @description UUID of the user who owns this schedule.
-               */
-              userId: string;
-              /** @description Cron expression defining the schedule's recurrence (e.g. "0 0 * * *" for daily at midnight). */
-              cronExpression: string;
-              /**
-               * Format: date-time
-               * @description Server-computed timestamp of the schedule's most recent execution. Null until the first run completes. Server-managed; clients must not set this on create/update.
-               */
-              lastRun?: string;
-              /**
-               * Format: date-time
-               * @description Server-computed timestamp of the schedule's next planned execution, derived from the cron expression. Server-managed; clients must not set this on create/update.
-               */
-              nextRun?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the schedule was created.
-               */
-              createdAt?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the schedule was last updated.
-               */
-              updatedAt?: string;
+                /**
+                 * Format: uuid
+                 * @description Unique identifier for the schedule.
+                 */
+                id?: string;
+                /** @description Human-readable name for the schedule. */
+                name: string;
+                /**
+                 * Format: uuid
+                 * @description UUID of the user who owns this schedule.
+                 */
+                userId: string;
+                /** @description Cron expression defining the schedule's recurrence (e.g. "0 0 * * *" for daily at midnight). */
+                cronExpression: string;
+                /**
+                 * Format: date-time
+                 * @description Server-computed timestamp of the schedule's most recent execution. Null until the first run completes. Server-managed; clients must not set this on create/update.
+                 */
+                lastRun?: string;
+                /**
+                 * Format: date-time
+                 * @description Server-computed timestamp of the schedule's next planned execution, derived from the cron expression. Server-managed; clients must not set this on create/update.
+                 */
+                nextRun?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the schedule was created.
+                 */
+                createdAt?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the schedule was last updated.
+                 */
+                updatedAt?: string;
             }[];
-          };
         };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
     };
-  };
-  /** Creates or updates a schedule for the authenticated user. */
-  upsertSchedule: {
     responses: {
-      /** Schedule upserted */
-      200: {
-        content: {
-          "application/json": {
-            /**
-             * Format: uuid
-             * @description Unique identifier for the schedule.
-             */
-            id?: string;
-            /** @description Human-readable name for the schedule. */
-            name: string;
-            /**
-             * Format: uuid
-             * @description UUID of the user who owns this schedule.
-             */
-            userId: string;
-            /** @description Cron expression defining the schedule's recurrence (e.g. "0 0 * * *" for daily at midnight). */
-            cronExpression: string;
-            /**
-             * Format: date-time
-             * @description Server-computed timestamp of the schedule's most recent execution. Null until the first run completes. Server-managed; clients must not set this on create/update.
-             */
-            lastRun?: string;
-            /**
-             * Format: date-time
-             * @description Server-computed timestamp of the schedule's next planned execution, derived from the cron expression. Server-managed; clients must not set this on create/update.
-             */
-            nextRun?: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the schedule was created.
-             */
-            createdAt?: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the schedule was last updated.
-             */
-            updatedAt?: string;
-          };
+        /** @description Invalid request body or request param */
+        400: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
         };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
+        /** @description Expired JWT token used or insufficient privilege */
+        401: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
         };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
+        /** @description Result not found */
+        404: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
         };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
+        /** @description Internal server error */
+        500: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
         };
-      };
     };
-    requestBody: {
-      content: {
-        "application/json": {
-          /**
-           * Format: uuid
-           * @description Existing schedule ID for updates; omit on create.
-           */
-          id?: string;
-          /** @description Human-readable name for the schedule. */
-          name: string;
-          /**
-           * Format: uuid
-           * @description Owner user ID; inferred from the authenticated user when omitted.
-           */
-          userId?: string;
-          /** @description Cron expression defining the schedule's recurrence (e.g. "0 0 * * *" for daily at midnight). */
-          cronExpression: string;
-        };
-      };
-    };
-  };
-  /** Returns a specific schedule by its ID. */
-  getSchedule: {
     parameters: {
-      path: {
-        /** Schedule ID */
+        /** @description Schedule ID */
         scheduleId: string;
-      };
+        /** @description Get responses by page */
+        page: string;
+        /** @description Get responses by page size */
+        pageSize: string;
+        /** @description Get responses that match search param value */
+        search: string;
+        /** @description Get ordered responses */
+        order: string;
     };
-    responses: {
-      /** Schedule response */
-      200: {
-        content: {
-          "application/json": {
-            /**
-             * Format: uuid
-             * @description Unique identifier for the schedule.
-             */
-            id?: string;
-            /** @description Human-readable name for the schedule. */
-            name: string;
-            /**
-             * Format: uuid
-             * @description UUID of the user who owns this schedule.
-             */
-            userId: string;
-            /** @description Cron expression defining the schedule's recurrence (e.g. "0 0 * * *" for daily at midnight). */
-            cronExpression: string;
-            /**
-             * Format: date-time
-             * @description Server-computed timestamp of the schedule's most recent execution. Null until the first run completes. Server-managed; clients must not set this on create/update.
-             */
-            lastRun?: string;
-            /**
-             * Format: date-time
-             * @description Server-computed timestamp of the schedule's next planned execution, derived from the cron expression. Server-managed; clients must not set this on create/update.
-             */
-            nextRun?: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the schedule was created.
-             */
-            createdAt?: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the schedule was last updated.
-             */
-            updatedAt?: string;
-          };
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  /** Deletes a schedule by its ID. */
-  deleteSchedule: {
-    parameters: {
-      path: {
-        /** Schedule ID */
-        scheduleId: string;
-      };
-    };
-    responses: {
-      /** Schedule deleted */
-      204: never;
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
-
-export interface external {}
+export type $defs = Record<string, never>;
+export interface operations {
+    getSchedules: {
+        parameters: {
+            query?: {
+                /** @description Get responses by page */
+                page?: string;
+                /** @description Get responses by page size */
+                pageSize?: string;
+                /** @description Get responses that match search param value */
+                search?: string;
+                /** @description Get ordered responses */
+                order?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Schedules response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Current page number (zero-based). */
+                        page: number;
+                        /** @description Number of schedules per page. */
+                        pageSize: number;
+                        /** @description Total number of schedules across all pages. */
+                        totalCount: number;
+                        /** @description The schedules of the schedulepage. */
+                        schedules: {
+                            /**
+                             * Format: uuid
+                             * @description Unique identifier for the schedule.
+                             */
+                            id?: string;
+                            /** @description Human-readable name for the schedule. */
+                            name: string;
+                            /**
+                             * Format: uuid
+                             * @description UUID of the user who owns this schedule.
+                             */
+                            userId: string;
+                            /** @description Cron expression defining the schedule's recurrence (e.g. "0 0 * * *" for daily at midnight). */
+                            cronExpression: string;
+                            /**
+                             * Format: date-time
+                             * @description Server-computed timestamp of the schedule's most recent execution. Null until the first run completes. Server-managed; clients must not set this on create/update.
+                             */
+                            lastRun?: string;
+                            /**
+                             * Format: date-time
+                             * @description Server-computed timestamp of the schedule's next planned execution, derived from the cron expression. Server-managed; clients must not set this on create/update.
+                             */
+                            nextRun?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the schedule was created.
+                             */
+                            createdAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the schedule was last updated.
+                             */
+                            updatedAt?: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    upsertSchedule: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * Format: uuid
+                     * @description Existing schedule ID for updates; omit on create.
+                     */
+                    id?: string;
+                    /** @description Human-readable name for the schedule. */
+                    name: string;
+                    /**
+                     * Format: uuid
+                     * @description Owner user ID; inferred from the authenticated user when omitted.
+                     */
+                    userId?: string;
+                    /** @description Cron expression defining the schedule's recurrence (e.g. "0 0 * * *" for daily at midnight). */
+                    cronExpression: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Schedule upserted */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Unique identifier for the schedule.
+                         */
+                        id?: string;
+                        /** @description Human-readable name for the schedule. */
+                        name: string;
+                        /**
+                         * Format: uuid
+                         * @description UUID of the user who owns this schedule.
+                         */
+                        userId: string;
+                        /** @description Cron expression defining the schedule's recurrence (e.g. "0 0 * * *" for daily at midnight). */
+                        cronExpression: string;
+                        /**
+                         * Format: date-time
+                         * @description Server-computed timestamp of the schedule's most recent execution. Null until the first run completes. Server-managed; clients must not set this on create/update.
+                         */
+                        lastRun?: string;
+                        /**
+                         * Format: date-time
+                         * @description Server-computed timestamp of the schedule's next planned execution, derived from the cron expression. Server-managed; clients must not set this on create/update.
+                         */
+                        nextRun?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the schedule was created.
+                         */
+                        createdAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the schedule was last updated.
+                         */
+                        updatedAt?: string;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getSchedule: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Schedule ID */
+                scheduleId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Schedule response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Unique identifier for the schedule.
+                         */
+                        id?: string;
+                        /** @description Human-readable name for the schedule. */
+                        name: string;
+                        /**
+                         * Format: uuid
+                         * @description UUID of the user who owns this schedule.
+                         */
+                        userId: string;
+                        /** @description Cron expression defining the schedule's recurrence (e.g. "0 0 * * *" for daily at midnight). */
+                        cronExpression: string;
+                        /**
+                         * Format: date-time
+                         * @description Server-computed timestamp of the schedule's most recent execution. Null until the first run completes. Server-managed; clients must not set this on create/update.
+                         */
+                        lastRun?: string;
+                        /**
+                         * Format: date-time
+                         * @description Server-computed timestamp of the schedule's next planned execution, derived from the cron expression. Server-managed; clients must not set this on create/update.
+                         */
+                        nextRun?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the schedule was created.
+                         */
+                        createdAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the schedule was last updated.
+                         */
+                        updatedAt?: string;
+                    };
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    deleteSchedule: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Schedule ID */
+                scheduleId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Schedule deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+}

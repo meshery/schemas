@@ -1,0 +1,30 @@
+{
+  "title": "Support Form",
+  "description": "RJSF form schema for the help-and-support modal. Captures the user-input fields of the canonical SupportRequest construct (meshery/schemas/constructs/v1beta1/support/api.yml). Field shape, types, enums, and required list MUST stay a subset of SupportRequest; the Go validator at validation/forms_test.go enforces that.",
+  "type": "object",
+  "properties": {
+    "subject": {
+      "type": "string",
+      "title": "Subject",
+      "description": "Enter a concise and descriptive title for your support request. This will help us quickly understand the nature of your inquiry.",
+      "minLength": 1,
+      "x-rjsf-grid-area": "12"
+    },
+    "message": {
+      "type": "string",
+      "title": "Description",
+      "description": "Please provide a detailed description of your issue or question. Include any relevant information that will help us assist you more effectively.",
+      "minLength": 10,
+      "format": "textarea",
+      "x-rjsf-grid-area": "12"
+    },
+    "scope": {
+      "type": "string",
+      "title": "Scope of Questions",
+      "description": "Select the category that best represents the nature of your inquiry.",
+      "enum": ["Support", "Community", "Account", "Commercial"],
+      "x-rjsf-grid-area": "12"
+    }
+  },
+  "required": ["subject", "message"]
+}

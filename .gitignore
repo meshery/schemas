@@ -1,12 +1,6 @@
 # Claude Code worktrees (local state, not project files)
 .claude/worktrees/
-
-# mesheryctl
-mesheryctl/cmd/mesheryctl/mesheryctl
-mesheryctl/.meshery/
-mesheryctl/mesheryctl
-mesheryctl/default.profraw
-main
+.claude/settings.local.json
 
 # api-audit local binary (built via `go build ./cmd/api-audit`)
 /api-audit
@@ -25,25 +19,12 @@ main
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
-
 .DS_Store
-
 .vscode/
-
 *.config
-
-Chart.min.js
-
-fortio_chart.js
-
 **/node_modules/
-
 **/out/
-
-**/ui/playground/
 **/.next/
-
-cmd/meshery
 
 log.txt
 
@@ -53,11 +34,8 @@ log.txt
 **/.jekyll-cache
 
 dist/
-
 */npm-debug.log
-
 **/.idea
-
 yarn.lock
 
 # Generated files
@@ -71,8 +49,4 @@ default.profraw
 **errorutil_errors_export.json
 .ruby-version
 
-wasm/policies/temp-bundle-extract-dir/**
 .nvim.lua
-
-.claude/worktrees/
-.claude/settings.local.json

@@ -133,7 +133,7 @@ const UserSchema: Record<string, unknown> = {
                       "type": "array",
                       "items": {
                         "type": "object",
-                        "description": "Represents a user in Layer5 Cloud (Meshery)",
+                        "description": "Represents a user",
                         "required": [
                           "id",
                           "userId",
@@ -175,7 +175,7 @@ const UserSchema: Record<string, unknown> = {
                           "provider": {
                             "type": "string",
                             "maxLength": 100,
-                            "description": "Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)",
+                            "description": "Authentication provider (e.g., Google, Github)",
                             "example": [
                               "local",
                               "github",
@@ -765,7 +765,7 @@ const UserSchema: Record<string, unknown> = {
                       "type": "array",
                       "items": {
                         "type": "object",
-                        "description": "Represents a user in Layer5 Cloud (Meshery)",
+                        "description": "Represents a user",
                         "required": [
                           "id",
                           "userId",
@@ -807,7 +807,7 @@ const UserSchema: Record<string, unknown> = {
                           "provider": {
                             "type": "string",
                             "maxLength": 100,
-                            "description": "Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)",
+                            "description": "Authentication provider (e.g., Google, Github)",
                             "example": [
                               "local",
                               "github",
@@ -1339,7 +1339,7 @@ const UserSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "Represents a user in Layer5 Cloud (Meshery)",
+                  "description": "Represents a user",
                   "required": [
                     "id",
                     "userId",
@@ -1381,7 +1381,7 @@ const UserSchema: Record<string, unknown> = {
                     "provider": {
                       "type": "string",
                       "maxLength": 100,
-                      "description": "Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)",
+                      "description": "Authentication provider (e.g., Google, Github)",
                       "example": [
                         "local",
                         "github",
@@ -1902,7 +1902,7 @@ const UserSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "Represents a user in Layer5 Cloud (Meshery)",
+                  "description": "Represents a user",
                   "required": [
                     "id",
                     "userId",
@@ -1944,7 +1944,7 @@ const UserSchema: Record<string, unknown> = {
                     "provider": {
                       "type": "string",
                       "maxLength": 100,
-                      "description": "Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)",
+                      "description": "Authentication provider (e.g., Google, Github)",
                       "example": [
                         "local",
                         "github",
@@ -2558,7 +2558,7 @@ const UserSchema: Record<string, unknown> = {
     "schemas": {
       "User": {
         "type": "object",
-        "description": "Represents a user in Layer5 Cloud (Meshery)",
+        "description": "Represents a user",
         "required": [
           "id",
           "userId",
@@ -2600,7 +2600,7 @@ const UserSchema: Record<string, unknown> = {
           "provider": {
             "type": "string",
             "maxLength": 100,
-            "description": "Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)",
+            "description": "Authentication provider (e.g., Google, Github)",
             "example": [
               "local",
               "github",
@@ -3080,7 +3080,7 @@ const UserSchema: Record<string, unknown> = {
             "type": "array",
             "items": {
               "type": "object",
-              "description": "Represents a user in Layer5 Cloud (Meshery)",
+              "description": "Represents a user",
               "required": [
                 "id",
                 "userId",
@@ -3122,7 +3122,7 @@ const UserSchema: Record<string, unknown> = {
                 "provider": {
                   "type": "string",
                   "maxLength": 100,
-                  "description": "Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)",
+                  "description": "Authentication provider (e.g., Google, Github)",
                   "example": [
                     "local",
                     "github",
@@ -3606,7 +3606,7 @@ const UserSchema: Record<string, unknown> = {
             "type": "array",
             "items": {
               "type": "object",
-              "description": "Represents a user in Layer5 Cloud (Meshery)",
+              "description": "Represents a user",
               "required": [
                 "id",
                 "userId",
@@ -3648,7 +3648,7 @@ const UserSchema: Record<string, unknown> = {
                 "provider": {
                   "type": "string",
                   "maxLength": 100,
-                  "description": "Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)",
+                  "description": "Authentication provider (e.g., Google, Github)",
                   "example": [
                     "local",
                     "github",

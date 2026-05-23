@@ -130,7 +130,7 @@ type Social struct {
 	Site string `json:"site" yaml:"site"`
 }
 
-// User Represents a user in Layer5 Cloud (Meshery)
+// User Represents a user
 type User struct {
 	AcceptedTermsAt core.Time `db:"accepted_terms_at" json:"accepted_terms_at" yaml:"accepted_terms_at,omitempty"`
 
@@ -171,7 +171,7 @@ type User struct {
 	} `db:"organizations" json:"organizations" yaml:"organizations"`
 	Preferences *Preference `db:"preferences" json:"preferences" yaml:"preferences,omitempty"`
 
-	// Provider Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)
+	// Provider Authentication provider (e.g., Google, Github)
 	Provider string `db:"provider" json:"provider" yaml:"provider"`
 
 	// Region User's region information stored as JSONB

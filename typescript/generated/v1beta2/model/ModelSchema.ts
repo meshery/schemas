@@ -1819,6 +1819,60 @@ const ModelSchema: Record<string, unknown> = {
             "description": "The models of the meshmodelmodelspage."
           }
         }
+      },
+      "MesheryModelImportFormPayload": {
+        "type": "object",
+        "description": "Flat canonical representation of the model import form that combines the UI-level uploadType discriminator with the union of fields from the ImportBody oneOf variants. This schema is the authoritative source for the canonical RJSF form schema at schemas/constructs/v1beta2/model/forms/import.json. The server receives an ImportRequest; this form schema captures the superset of user-facing fields so the form schema can be validated as a subset of this canonical type.\n",
+        "required": [
+          "uploadType"
+        ],
+        "properties": {
+          "uploadType": {
+            "type": "string",
+            "title": "Upload method",
+            "x-enum-casing-exempt": true,
+            "enum": [
+              "file",
+              "urlImport",
+              "csv"
+            ],
+            "enumNames": [
+              "File Import",
+              "URL Import",
+              "CSV Import"
+            ],
+            "description": "Choose the method you prefer. Select 'File Import' or 'CSV Import' if you have the file on your local system, or 'URL Import' if you have the file hosted online."
+          },
+          "fileName": {
+            "type": "string",
+            "description": "Name of the model file being uploaded.",
+            "maxLength": 255
+          },
+          "modelFile": {
+            "type": "string",
+            "description": "Model file content. Supported formats: .tar, .tar.gz, .tgz."
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "A direct URL to a single model file. Supported formats: .tar, .tar.gz, .tgz."
+          },
+          "modelCsv": {
+            "type": "string",
+            "format": "binary",
+            "description": "CSV file containing model definitions."
+          },
+          "componentCsv": {
+            "type": "string",
+            "format": "binary",
+            "description": "CSV file containing component definitions."
+          },
+          "relationshipCsv": {
+            "type": "string",
+            "format": "binary",
+            "description": "CSV file containing relationship definitions."
+          }
+        }
       }
     }
   }

@@ -330,7 +330,7 @@ const RoleSchema: Record<string, unknown> = {
                       "items": {
                         "x-go-type": "Role",
                         "type": "object",
-                        "description": "Role definition for Layer5 Cloud (Meshery).",
+                        "description": "Role definition",
                         "required": [
                           "roleName",
                           "description"
@@ -522,7 +522,7 @@ const RoleSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "Role definition for Layer5 Cloud (Meshery).",
+                  "description": "Role definition",
                   "required": [
                     "roleName",
                     "description"
@@ -1453,7 +1453,7 @@ const RoleSchema: Record<string, unknown> = {
     "schemas": {
       "Role": {
         "type": "object",
-        "description": "Role definition for Layer5 Cloud (Meshery).",
+        "description": "Role definition",
         "required": [
           "roleName",
           "description"
@@ -1597,7 +1597,7 @@ const RoleSchema: Record<string, unknown> = {
             "items": {
               "x-go-type": "Role",
               "type": "object",
-              "description": "Role definition for Layer5 Cloud (Meshery).",
+              "description": "Role definition",
               "required": [
                 "roleName",
                 "description"

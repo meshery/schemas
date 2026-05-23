@@ -51,6 +51,14 @@ var echoGroupPrefixes = map[string]string{
 	"e":                       "",
 }
 
+var echoAuthenticatedReceivers = map[string]bool{
+	"authedAPI":               true,
+	"authByPasskeyAPI":        true,
+	"authedORSpecialTokenAPI": true,
+	"authedGroup":             true,
+	"authedApiGroup":          true,
+}
+
 // echoParamRE matches Echo's `:paramName` placeholders. The character class
 // includes `-` because the cloud router uses kebab-cased param names like
 // `:meshery-version` (see meshery-cloud/server/router/router.go:578).
@@ -155,11 +163,12 @@ func extractEchoEndpoints(file *ast.File, fset *token.FileSet, routerFile string
 		}
 
 		ep := consumerEndpoint{
-			Method:      verb,
-			Path:        path,
-			HandlerName: handlerName,
-			RouterFile:  routerFile,
-			Notes:       notes,
+			Method:          verb,
+			Path:            path,
+			HandlerName:     handlerName,
+			RouterFile:      routerFile,
+			Notes:           notes,
+			AnonymousAccess: boolPtr(echoRouteAllowsAnonymous(recv, call.Args[2:])),
 		}
 		if call.Pos().IsValid() && fset != nil {
 			ep.RouterLine = fset.Position(call.Pos()).Line
@@ -170,6 +179,33 @@ func extractEchoEndpoints(file *ast.File, fset *token.FileSet, routerFile string
 	})
 
 	return endpoints, nil
+}
+
+func echoRouteAllowsAnonymous(receiver string, middlewareArgs []ast.Expr) bool {
+	if echoAuthenticatedReceivers[receiver] {
+		return false
+	}
+	for _, arg := range middlewareArgs {
+		if exprMentionsName(arg, isAuthMiddlewareName) {
+			return false
+		}
+	}
+	return true
+}
+
+func isAuthMiddlewareName(name string) bool {
+	switch name {
+	case "Authorization", "PreventAnonymous":
+		return true
+	}
+	return hasCamelSuffix(name, "Auth") ||
+		hasCamelSuffix(name, "AuthMiddleware") ||
+		hasCamelSuffix(name, "Authorization") ||
+		hasCamelSuffix(name, "AuthorizationMiddleware") ||
+		hasCamelSuffix(name, "PreventAnonymous") ||
+		hasCamelPrefix(name, "AuthMiddleware") ||
+		hasCamelPrefix(name, "AuthorizationMiddleware") ||
+		hasCamelPrefix(name, "PreventAnonymous")
 }
 
 // receiverString turns a receiver expression into a flat dotted identifier

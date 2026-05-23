@@ -1,6 +1,7 @@
 import { mesheryBaseApi as api } from "./api";
 export const addTagTypes = [
   "Evaluation_Evaluation",
+  "System_API_System",
   "credential_credentials",
   "Key_users",
   "Model_Models",
@@ -24,6 +25,31 @@ const injectedRtkApi = api
       postEvaluate: build.mutation<PostEvaluateApiResponse, PostEvaluateApiArg>({
         query: (queryArg) => ({ url: `/evaluate`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Evaluation_Evaluation"],
+      }),
+      getSystemDatabase: build.query<GetSystemDatabaseApiResponse, GetSystemDatabaseApiArg>({
+        query: (queryArg) => ({
+          url: `/api/system/database`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            sort: queryArg?.sort,
+            order: queryArg?.order,
+          },
+        }),
+        providesTags: ["System_API_System"],
+      }),
+      resetSystemDatabase: build.mutation<ResetSystemDatabaseApiResponse, ResetSystemDatabaseApiArg>({
+        query: () => ({ url: `/api/system/database/reset`, method: "DELETE" }),
+        invalidatesTags: ["System_API_System"],
+      }),
+      getSystemVersion: build.query<GetSystemVersionApiResponse, GetSystemVersionApiArg>({
+        query: () => ({ url: `/api/system/version` }),
+        providesTags: ["System_API_System"],
+      }),
+      getSystemSync: build.query<GetSystemSyncApiResponse, GetSystemSyncApiArg>({
+        query: () => ({ url: `/api/system/sync` }),
+        providesTags: ["System_API_System"],
       }),
       getUserCredentials: build.query<GetUserCredentialsApiResponse, GetUserCredentialsApiArg>({
         query: (queryArg) => ({
@@ -2531,6 +2557,78 @@ export type PostEvaluateApiArg = {
     };
   };
 };
+export type GetSystemDatabaseApiResponse = /** status 200 Database summary */ {
+  /** Zero-based page index of the returned table slice. */
+  page: number;
+  /** Number of tables included in this page. */
+  pageSize: number;
+  /** Total number of tables in the database matching the search filter. */
+  totalTables: number;
+  /** Aggregate row count across the tables returned in this page. */
+  recordCount: number;
+  /** Tables included in this page, with per-table row counts. */
+  tables: {
+    /** Name of the table. */
+    name: string;
+    /** SQLite object type (e.g. `table`). */
+    type: string;
+    /** Number of rows currently in the table. */
+    count: number;
+  }[];
+};
+export type GetSystemDatabaseApiArg = {
+  /** Zero-based page index for the table list. */
+  page?: number;
+  /** Number of tables to include per page. */
+  pageSize?: number;
+  /** Substring filter applied to table names. */
+  search?: string;
+  /** Column to order the table list by. */
+  sort?: "name";
+  /** Sort direction for the `sort` column. */
+  order?: "asc" | "desc";
+};
+export type ResetSystemDatabaseApiResponse = /** status 200 Database reset */ {
+  /** Human-readable status message. */
+  message: string;
+};
+export type ResetSystemDatabaseApiArg = void;
+export type GetSystemVersionApiResponse = /** status 200 Server version metadata */ {
+  /** Meshery Cloud deployment version. */
+  version?: string;
+  /** Build identifier (typically the git tag of the running binary). */
+  build?: string;
+  /** Latest available Meshery release tag fetched from GitHub. */
+  latest?: string;
+  /** True when the running build is older than the latest available release. */
+  outdated?: boolean;
+  /** Git commit SHA of the running service. The wire field is `commitsha`. */
+  commitsha?: string;
+  /** Release channel of the running binary (e.g. `stable`, `edge`). */
+  releaseChannel?: string;
+};
+export type GetSystemVersionApiArg = void;
+export type GetSystemSyncApiResponse = /** status 200 Session sync payload */ {
+  /** Kubernetes contexts currently tracked by the Meshery server. */
+  k8sConfig?: {
+    /** Stable identifier for the Kubernetes context. */
+    id?: string;
+    /** Human-readable name of the Kubernetes context. */
+    name?: string;
+    /** True when Meshery has a usable kubeconfig for this context. */
+    clusterConfigured?: boolean;
+    /** API server URL for the Kubernetes context. */
+    server?: string;
+    /** Kubernetes server ID associated with this context. */
+    clusterId?: string;
+    /** When the context was first registered with Meshery. */
+    createdAt?: string;
+    /** When the context was last updated. */
+    updatedAt?: string;
+  }[];
+  [key: string]: any;
+};
+export type GetSystemSyncApiArg = void;
 export type GetUserCredentialsApiResponse = /** status 200 Credentials response */ {
   /** The credentials returned on the current page. */
   credentials: {
@@ -3624,7 +3722,7 @@ export type GetUsersForOrgApiResponse = /** status 200 Paginated list of organiz
     id: string;
     /** User identifier (username or external ID) */
     userId: string;
-    /** Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github) */
+    /** Authentication provider (e.g., Google, Github) */
     provider: string;
     /** User's email address */
     email: string;
@@ -3788,7 +3886,7 @@ export type GetUsersApiResponse = /** status 200 Paginated list of public users 
     id: string;
     /** User identifier (username or external ID) */
     userId: string;
-    /** Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github) */
+    /** Authentication provider (e.g., Google, Github) */
     provider: string;
     /** User's email address */
     email: string;
@@ -3940,7 +4038,7 @@ export type GetUserProfileByIdApiResponse = /** status 200 User profile for the 
   id: string;
   /** User identifier (username or external ID) */
   userId: string;
-  /** Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github) */
+  /** Authentication provider (e.g., Google, Github) */
   provider: string;
   /** User's email address */
   email: string;
@@ -4083,7 +4181,7 @@ export type GetUserApiResponse = /** status 200 Current user profile and role co
   id: string;
   /** User identifier (username or external ID) */
   userId: string;
-  /** Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github) */
+  /** Authentication provider (e.g., Google, Github) */
   provider: string;
   /** User's email address */
   email: string;
@@ -4225,6 +4323,10 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
     id: string;
     /** Connection Name */
     name: string;
+    /** Human-readable description of the connection and its purpose. */
+    description?: string;
+    /** URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL). */
+    url?: string;
     /** Associated Credential ID */
     credentialId?: string;
     /** Connection Type (platform, telemetry, collaboration) */
@@ -4326,6 +4428,10 @@ export type RegisterConnectionApiResponse = /** status 201 Connection registered
   id: string;
   /** Connection Name */
   name: string;
+  /** Human-readable description of the connection and its purpose. */
+  description?: string;
+  /** URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL). */
+  url?: string;
   /** Associated Credential ID */
   credentialId?: string;
   /** Connection Type (platform, telemetry, collaboration) */
@@ -4407,6 +4513,10 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
   id: string;
   /** Connection Name */
   name: string;
+  /** Human-readable description of the connection and its purpose. */
+  description?: string;
+  /** URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL). */
+  url?: string;
   /** Associated Credential ID */
   credentialId?: string;
   /** Connection Type (platform, telemetry, collaboration) */
@@ -4470,6 +4580,10 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated */ {
   id: string;
   /** Connection Name */
   name: string;
+  /** Human-readable description of the connection and its purpose. */
+  description?: string;
+  /** URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL). */
+  url?: string;
   /** Associated Credential ID */
   credentialId?: string;
   /** Connection Type (platform, telemetry, collaboration) */
@@ -6289,6 +6403,10 @@ export type UnassignViewFromWorkspaceApiArg = {
 };
 export const {
   usePostEvaluateMutation,
+  useGetSystemDatabaseQuery,
+  useResetSystemDatabaseMutation,
+  useGetSystemVersionQuery,
+  useGetSystemSyncQuery,
   useGetUserCredentialsQuery,
   useSaveUserCredentialMutation,
   useUpdateUserCredentialMutation,

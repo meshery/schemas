@@ -28,6 +28,31 @@ type consumerEndpoint struct {
 	WritesRawResponse  bool        // handler calls Write/io.Copy/Blob/Stream/etc. (raw output, no typed schema)
 	SuccessStatusCodes []int       // explicit 2xx success codes found in the handler body
 	Notes              []string    // parser-side notes (e.g. "anonymous handler")
+	AnonymousAccess    *bool       // route registration permits unauthenticated/anonymous access
+}
+
+func boolPtr(v bool) *bool {
+	return &v
+}
+
+func exprMentionsName(expr ast.Expr, match func(string) bool) bool {
+	found := false
+	ast.Inspect(expr, func(n ast.Node) bool {
+		switch x := n.(type) {
+		case *ast.Ident:
+			if match(x.Name) {
+				found = true
+				return false
+			}
+		case *ast.SelectorExpr:
+			if x.Sel != nil && match(x.Sel.Name) {
+				found = true
+				return false
+			}
+		}
+		return true
+	})
+	return found
 }
 
 type goTypeOrigin string

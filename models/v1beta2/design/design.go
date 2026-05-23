@@ -10,6 +10,7 @@ import (
 	core "github.com/meshery/schemas/models/core"
 	catalogv1alpha2 "github.com/meshery/schemas/models/v1alpha2/catalog"
 	component "github.com/meshery/schemas/models/v1beta2/component"
+	corev1beta2 "github.com/meshery/schemas/models/v1beta2/core"
 	relationship "github.com/meshery/schemas/models/v1beta2/relationship"
 	"github.com/oapi-codegen/runtime"
 	openapi_types "github.com/oapi-codegen/runtime/types"
@@ -225,8 +226,8 @@ type PatternFile struct {
 // PatternFile_Metadata Additional metadata associated with this resource.
 type PatternFile_Metadata struct {
 	// ResolvedAliases Map of resolved aliases present in the design
-	ResolvedAliases      *map[string]core.ResolvedAlias `json:"resolvedAliases,omitempty" yaml:"resolvedAliases,omitempty"`
-	AdditionalProperties map[string]interface{}         `json:"-" yaml:"-"`
+	ResolvedAliases      *map[string]corev1beta2.ResolvedAlias `json:"resolvedAliases,omitempty" yaml:"resolvedAliases,omitempty"`
+	AdditionalProperties map[string]interface{}                `json:"-" yaml:"-"`
 }
 
 // ResourceAccessActorsResponse defines model for ResourceAccessActorsResponse.

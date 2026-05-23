@@ -3,864 +3,776 @@
  * Do not make direct changes to the file.
  */
 
-export interface paths {}
-
+export type paths = Record<string, never>;
+export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    /** @description A string starting with an alphanumeric character. Spaces and hyphens allowed. */
-    InputString: string;
-    /**
-     * @description API version of the object, optionally prefixed with an API group (e.g. "group.example.io/v1beta1" or bare "v1beta1").
-     * @example [
-     *   "v1",
-     *   "v1alpha1",
-     *   "v2beta3",
-     *   "v1.custom-suffix",
-     *   "models.meshery.io/v1beta1",
-     *   "capability.meshery.io/v1alpha1"
-     * ]
-     */
-    VersionString: string;
-    /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
-    SemverString: string;
-    /**
-     * Format: uuid
-     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-     */
-    Uuid: string;
-    /** Format: uuid */
-    Id: string;
-    Username: string;
-    /** @description One of (x-oapi-codegen-extra-tags-cloud, github, google) */
-    Provider: string;
-    /** Format: date-time */
-    Time: string;
-    /** Format: date-time */
-    SqlNullTime: string;
-    /**
-     * Format: email
-     * @description email
-     */
-    Email: string;
-    Text: string;
-    /**
-     * @description Visibility level of a resource. Controls who can see and access it.
-     * - `private`: Only the owner and explicitly shared users can access.
-     * - `public`: Anyone in the organization (or anonymous, depending on resource) can discover and access.
-     * - `published`: Promoted to the catalog for broad discovery beyond the owning organization.
-     *
-     * @enum {string}
-     */
-    Visibility: "private" | "public" | "published";
-    Number: number;
-    /** @description Link for profile picture */
-    AvatarUrl: string;
-    MapObject: { [key: string]: string };
-    Status: string;
-    Bio: string;
-    AcceptedTermsAt: string;
-    Emails: string[];
-    UserIds: string[];
-    /** Format: int32 */
-    Price: number;
-    /**
-     * Format: uri
-     * @description endpoint
-     */
-    Endpoint: string;
-    RoleNames: string[];
-    RecordsPage: {
-      /** @description Current page number of the result set. */
-      page?: number;
-      /** @description Number of items per page. */
-      page_size?: number;
-      /** @description The records total of the recordspage. */
-      recordsTotal?: number;
-      /** @description The record type of the recordspage. */
-      recordType?: string;
+    schemas: {
+        /** @description A string starting with an alphanumeric character. Spaces and hyphens allowed. */
+        InputString: string;
+        /**
+         * @description API version of the object, optionally prefixed with an API group (e.g. "group.example.io/v1beta1" or bare "v1beta1").
+         * @example [
+         *       "v1",
+         *       "v1alpha1",
+         *       "v2beta3",
+         *       "v1.custom-suffix",
+         *       "models.meshery.io/v1beta1",
+         *       "capability.meshery.io/v1alpha1"
+         *     ]
+         */
+        VersionString: string;
+        /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+        SemverString: string;
+        /**
+         * Format: uuid
+         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+         */
+        Uuid: string;
+        /** Format: uuid */
+        Id: string;
+        Username: string;
+        /** @description One of (x-oapi-codegen-extra-tags-cloud, github, google) */
+        Provider: string;
+        /** Format: date-time */
+        Time: string;
+        /** Format: date-time */
+        SqlNullTime: string;
+        /**
+         * Format: email
+         * @description email
+         */
+        Email: string;
+        Text: string;
+        /**
+         * @description Visibility level of a resource. Controls who can see and access it.
+         *     - `private`: Only the owner and explicitly shared users can access.
+         *     - `public`: Anyone in the organization (or anonymous, depending on resource) can discover and access.
+         *     - `published`: Promoted to the catalog for broad discovery beyond the owning organization.
+         * @enum {string}
+         */
+        Visibility: "private" | "public" | "published";
+        Number: number;
+        /** @description Link for profile picture */
+        AvatarUrl: string;
+        MapObject: {
+            [key: string]: string;
+        };
+        Status: string;
+        Bio: string;
+        AcceptedTermsAt: string;
+        Emails: string[];
+        UserIds: string[];
+        /** Format: int32 */
+        Price: number;
+        /**
+         * Format: uri
+         * @description endpoint
+         */
+        Endpoint: string;
+        RoleNames: string[];
+        RecordsPage: {
+            /** @description Current page number of the result set. */
+            page?: number;
+            /** @description Number of items per page. */
+            pageSize?: number;
+            /** @description The records total of the recordspage. */
+            recordsTotal?: number;
+            /** @description The record type of the recordspage. */
+            recordType?: string;
+        };
+        ResultsPage: {
+            /** @description Current page number of the result set. */
+            page?: number;
+            /** @description Number of items per page. */
+            pageSize?: number;
+            /** @description Total number of items available. */
+            totalCount?: number;
+            /** @description The result type of the resultspage. */
+            resultType?: string;
+        };
+        /** @description Body for empty request */
+        Empty: Record<string, never>;
+        EmailPreference: {
+            /** @description The welcome email of the emailpreference. */
+            welcomeEmail?: boolean;
+            /** @description The notify role change of the emailpreference. */
+            notifyRoleChange?: boolean;
+        };
+        /** Format: uuid */
+        UserUuid: string;
+        /** Format: uuid */
+        OrganizationId: string;
+        /** Format: uuid */
+        GeneralId: string;
+        /** Format: uuid */
+        EnvironmentId: string;
+        /** Format: uuid */
+        WorkspaceId: string;
+        /** Format: uuid */
+        ViewId: string;
+        /** Format: uuid */
+        TeamId: string;
+        /** Format: uuid */
+        DesignId: string;
+        /** Format: uuid */
+        CredentialUuid: string;
+        /** Format: uuid */
+        MesheryInstanceUuid: string;
+        /** Format: uuid */
+        KubernetesServerUuid: string;
+        /** Format: uuid */
+        SystemId: string;
+        /** Format: uuid */
+        OperationId: string;
+        /** @description user's email or username */
+        UserId: string;
+        /**
+         * Format: date-time
+         * @description Timestamp when the resource was created.
+         */
+        CreatedAt: string;
+        /**
+         * Format: date-time
+         * @description Timestamp when the resource was updated.
+         */
+        UpdatedAt: string;
+        /**
+         * Format: date-time
+         * @description Timestamp when the resource was deleted.
+         */
+        DeletedAt: string;
+        /**
+         * Format: date-time
+         * @description SQL null Timestamp to handle null values of time.
+         */
+        NullTime: string;
+        /** @description Common styles for all entities */
+        Styles: {
+            /** @description Primary color of the component used for UI representation. */
+            primaryColor: string;
+            /** @description Secondary color of the entity used for UI representation. */
+            secondaryColor?: string;
+            /** @description White SVG of the entity used for UI representation on dark background. */
+            svgWhite: string;
+            /** @description Colored SVG of the entity used for UI representation on light background. */
+            svgColor: string;
+            /** @description Complete SVG of the entity used for UI representation, often inclusive of background. */
+            svgComplete: string;
+            /** @description The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+            color?: string;
+            /** @description The opacity of the label text, including its outline. */
+            textOpacity?: number;
+            /** @description A comma-separated list of font names to use on the label text. */
+            fontFamily?: string;
+            /** @description The size of the label text. */
+            fontSize?: string;
+            /** @description A CSS font style to be applied to the label text. */
+            fontStyle?: string;
+            /** @description A CSS font weight to be applied to the label text. */
+            fontWeight?: string;
+            /**
+             * @description A transformation to apply to the label text
+             * @enum {string}
+             */
+            textTransform?: "none" | "uppercase" | "lowercase";
+            /** @description The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+            opacity?: number;
+            /** @description An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+            zIndex?: number;
+            /** @description The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+            label?: string;
+            /** @description The animation to apply to the element. example ripple,bounce,etc */
+            animation?: Record<string, never>;
+        } & {
+            [key: string]: unknown;
+        };
+        /**
+         * @description The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
+         * @enum {string}
+         */
+        Shape: "ellipse" | "triangle" | "round-triangle" | "rectangle" | "round-rectangle" | "bottom-round-rectangle" | "cut-rectangle" | "barrel" | "rhomboid" | "diamond" | "round-diamond" | "pentagon" | "round-pentagon" | "hexagon" | "round-hexagon" | "concave-hexagon" | "heptagon" | "round-heptagon" | "octagon" | "round-octagon" | "star" | "tag" | "round-tag" | "vee" | "polygon";
+        /** @description Visualization styles for a relationship */
+        EdgeStyles: ({
+            /** @description Primary color of the component used for UI representation. */
+            primaryColor: string;
+            /** @description Secondary color of the entity used for UI representation. */
+            secondaryColor?: string;
+            /** @description White SVG of the entity used for UI representation on dark background. */
+            svgWhite: string;
+            /** @description Colored SVG of the entity used for UI representation on light background. */
+            svgColor: string;
+            /** @description Complete SVG of the entity used for UI representation, often inclusive of background. */
+            svgComplete: string;
+            /** @description The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+            color?: string;
+            /** @description The opacity of the label text, including its outline. */
+            textOpacity?: number;
+            /** @description A comma-separated list of font names to use on the label text. */
+            fontFamily?: string;
+            /** @description The size of the label text. */
+            fontSize?: string;
+            /** @description A CSS font style to be applied to the label text. */
+            fontStyle?: string;
+            /** @description A CSS font weight to be applied to the label text. */
+            fontWeight?: string;
+            /**
+             * @description A transformation to apply to the label text
+             * @enum {string}
+             */
+            textTransform?: "none" | "uppercase" | "lowercase";
+            /** @description The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+            opacity?: number;
+            /** @description An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+            zIndex?: number;
+            /** @description The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+            label?: string;
+            /** @description The animation to apply to the element. example ripple,bounce,etc */
+            animation?: Record<string, never>;
+        } & {
+            [key: string]: unknown;
+        }) & {
+            /** @description The animation to use for the edge. Can be like 'marching-ants' , 'blink' , 'moving-gradient',etc . */
+            edgeAnimation?: string;
+            /**
+             * @description The curving method used to separate two or more edges between two nodes; may be haystack (very fast, bundled straight edges for which loops and compounds are unsupported), straight (straight edges with all arrows supported), bezier (bundled curved edges), unbundled-bezier (curved edges for use with manual control points), segments (a series of straight lines), taxi (right-angled lines, hierarchically bundled). Note that haystack edges work best with ellipse, rectangle, or similar nodes. Smaller node shapes, like triangle, will not be as aesthetically pleasing. Also note that edge endpoint arrows are unsupported for haystack edges.
+             * @default straight
+             * @enum {string}
+             */
+            curveStyle: "straight" | "haystack" | "bezier" | "unbundled-bezier" | "segments" | "taxi";
+            /** @description The colour of the edge's line. Colours may be specified by name (e.g. red), hex (e.g. */
+            lineColor?: string;
+            /**
+             * @description The style of the edge's line.
+             * @enum {string}
+             */
+            lineStyle?: "solid" | "dotted" | "dashed";
+            /**
+             * @description The cap style of the edge's line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.
+             * @default butt
+             * @enum {string}
+             */
+            lineCap: "butt" | "round" | "square";
+            /**
+             * @description The opacity of the edge's line and arrow. Useful if you wish to have a separate opacity for the edge label versus the edge line. Note that the opacity value of the edge element affects the effective opacity of its line and label subcomponents.
+             * @default 1
+             */
+            lineOpacity: number;
+            /** @description The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g. */
+            targetArrowColor?: string;
+            /**
+             * @description The shape of the edge's source arrow
+             * @enum {string}
+             */
+            targetArrowShape?: "triangle" | "triangle-tee" | "circle-triangle" | "triangle-cross" | "triangle-backcurve" | "vee" | "tee" | "square" | "circle" | "diamond" | "chevron" | "none";
+            /**
+             * @description The fill state of the edge's source arrow
+             * @enum {string}
+             */
+            targetArrowFill?: "filled" | "hollow";
+            /** @description The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g. */
+            midTargetArrowColor?: string;
+            /**
+             * @description The shape of the edge's source arrow
+             * @enum {string}
+             */
+            midTargetArrowShape?: "triangle" | "triangle-tee" | "circle-triangle" | "triangle-cross" | "triangle-backcurve" | "vee" | "tee" | "square" | "circle" | "diamond" | "chevron" | "none";
+            /**
+             * @description The fill state of the edge's source arrow
+             * @enum {string}
+             */
+            midTargetArrowFill?: "filled" | "hollow";
+            /** @description Scaling for the arrow size. */
+            arrowScale?: number;
+            /** @description The text to display for an edge's source label. Can give a path, e.g. data(id) will label with the elements id */
+            sourceLabel?: string;
+            /** @description The text to display for an edge's target label. Can give a path, e.g. data(id) will label with the elements id */
+            targetLabel?: string;
+        };
+        /** @description Visualization styles for a component */
+        ComponentStyles: ({
+            /** @description Primary color of the component used for UI representation. */
+            primaryColor: string;
+            /** @description Secondary color of the entity used for UI representation. */
+            secondaryColor?: string;
+            /** @description White SVG of the entity used for UI representation on dark background. */
+            svgWhite: string;
+            /** @description Colored SVG of the entity used for UI representation on light background. */
+            svgColor: string;
+            /** @description Complete SVG of the entity used for UI representation, often inclusive of background. */
+            svgComplete: string;
+            /** @description The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+            color?: string;
+            /** @description The opacity of the label text, including its outline. */
+            textOpacity?: number;
+            /** @description A comma-separated list of font names to use on the label text. */
+            fontFamily?: string;
+            /** @description The size of the label text. */
+            fontSize?: string;
+            /** @description A CSS font style to be applied to the label text. */
+            fontStyle?: string;
+            /** @description A CSS font weight to be applied to the label text. */
+            fontWeight?: string;
+            /**
+             * @description A transformation to apply to the label text
+             * @enum {string}
+             */
+            textTransform?: "none" | "uppercase" | "lowercase";
+            /** @description The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+            opacity?: number;
+            /** @description An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+            zIndex?: number;
+            /** @description The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+            label?: string;
+            /** @description The animation to apply to the element. example ripple,bounce,etc */
+            animation?: Record<string, never>;
+        } & {
+            [key: string]: unknown;
+        }) & {
+            /**
+             * @description The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
+             * @enum {string}
+             */
+            shape: "ellipse" | "triangle" | "round-triangle" | "rectangle" | "round-rectangle" | "bottom-round-rectangle" | "cut-rectangle" | "barrel" | "rhomboid" | "diamond" | "round-diamond" | "pentagon" | "round-pentagon" | "hexagon" | "round-hexagon" | "concave-hexagon" | "heptagon" | "round-heptagon" | "octagon" | "round-octagon" | "star" | "tag" | "round-tag" | "vee" | "polygon";
+            /** @description The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+            position?: {
+                /** @description The x-coordinate of the node. */
+                x: number;
+                /** @description The y-coordinate of the node. */
+                y: number;
+            };
+            /** @description The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+            bodyText?: string;
+            /**
+             * @description How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'.
+             * @enum {string}
+             */
+            bodyTextWrap?: "none" | "wrap" | "ellipsis";
+            /** @description The maximum width for wrapping text in the node. */
+            bodyTextMaxWidth?: string;
+            /** @description The opacity of the node's body text, including its outline. */
+            bodyTextOpacity?: number;
+            /** @description The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+            bodyTextBackgroundColor?: string;
+            /** @description The size of the node's body text. */
+            bodyTextFontSize?: number;
+            /** @description The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+            bodyTextColor?: string;
+            /** @description A CSS font weight to be applied to the node's body text. */
+            bodyTextFontWeight?: string;
+            /** @description A CSS horizontal alignment to be applied to the node's body text. */
+            bodyTextHorizontalAlign?: string;
+            /** @description A CSS text decoration to be applied to the node's body text. */
+            bodyTextDecoration?: string;
+            /** @description A CSS vertical alignment to be applied to the node's body text. */
+            bodyTextVerticalAlign?: string;
+            /** @description The width of the node's body or the width of an edge's line. */
+            width?: number;
+            /** @description The height of the node's body */
+            height?: number;
+            /**
+             * Format: uri
+             * @description The URL that points to the image to show in the node.
+             */
+            backgroundImage?: string;
+            /** @description The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+            backgroundColor?: string;
+            /** @description Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+            backgroundBlacken?: number;
+            /** @description The opacity level of the node's background colour */
+            backgroundOpacity?: number;
+            /** @description The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+            backgroundPositionX?: string;
+            /** @description The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+            backgroundPositionY?: string;
+            /** @description The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+            backgroundOffsetX?: string;
+            /** @description The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+            backgroundOffsetY?: string;
+            /**
+             * @description How the background image is fit to the node. Can be 'none', 'contain', or 'cover'.
+             * @enum {string}
+             */
+            backgroundFit?: "none" | "contain" | "cover";
+            /**
+             * @description How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'.
+             * @enum {string}
+             */
+            backgroundClip?: "none" | "node" | "node-border";
+            /**
+             * @description How the background image's width is determined. Can be 'none', 'inner', or 'outer'.
+             * @enum {string}
+             */
+            backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+            /**
+             * @description How the background image's height is determined. Can be 'none', 'inner', or 'outer'.
+             * @enum {string}
+             */
+            backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+            /** @description The size of the node's border. */
+            borderWidth?: number;
+            /**
+             * @description The style of the node's border
+             * @enum {string}
+             */
+            borderStyle?: "solid" | "dotted" | "dashed" | "double";
+            /** @description The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+            borderColor?: string;
+            /** @description The opacity of the node's border */
+            borderOpacity?: number;
+            /** @description The amount of padding around all sides of the node. */
+            padding?: number;
+            /**
+             * @description The horizontal alignment of a node's label
+             * @enum {string}
+             */
+            textHalign?: "left" | "center" | "right";
+            /**
+             * @description The vertical alignment of a node's label
+             * @enum {string}
+             */
+            textValign?: "top" | "center" | "bottom";
+            /**
+             * @description Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset.
+             * @default no
+             * @enum {string}
+             */
+            ghost: "yes" | "no";
+            /** @description The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+            activeBgColor?: string;
+            /** @description The opacity of the active background indicator. Selector needs to be *core*. */
+            activeBgOpacity?: string;
+            /** @description The opacity of the active background indicator. Selector needs to be *core*. */
+            activeBgSize?: string;
+            /** @description The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+            selectionBoxColor?: string;
+            /** @description The size of the border on the selection box. Selector needs to be *core* */
+            selectionBoxBorderWidth?: number;
+            /** @description The opacity of the selection box. Selector needs to be *core* */
+            selectionBoxOpacity?: number;
+            /** @description The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+            outsideTextureBgColor?: string;
+            /** @description The opacity of the area outside the viewport texture. Selector needs to be *core* */
+            outsideTextureBgOpacity?: number;
+            /** @description An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+            shapePolygonPoints?: string;
+            /** @description The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+            menuBackgroundColor?: string;
+            /** @description The opacity of the background of the component menu. */
+            menuBackgroundOpacity?: number;
+            /** @description The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+            menuForgroundColor?: string;
+        };
+        RelationshipStyles: (({
+            /** @description Primary color of the component used for UI representation. */
+            primaryColor: string;
+            /** @description Secondary color of the entity used for UI representation. */
+            secondaryColor?: string;
+            /** @description White SVG of the entity used for UI representation on dark background. */
+            svgWhite: string;
+            /** @description Colored SVG of the entity used for UI representation on light background. */
+            svgColor: string;
+            /** @description Complete SVG of the entity used for UI representation, often inclusive of background. */
+            svgComplete: string;
+            /** @description The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+            color?: string;
+            /** @description The opacity of the label text, including its outline. */
+            textOpacity?: number;
+            /** @description A comma-separated list of font names to use on the label text. */
+            fontFamily?: string;
+            /** @description The size of the label text. */
+            fontSize?: string;
+            /** @description A CSS font style to be applied to the label text. */
+            fontStyle?: string;
+            /** @description A CSS font weight to be applied to the label text. */
+            fontWeight?: string;
+            /**
+             * @description A transformation to apply to the label text
+             * @enum {string}
+             */
+            textTransform?: "none" | "uppercase" | "lowercase";
+            /** @description The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+            opacity?: number;
+            /** @description An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+            zIndex?: number;
+            /** @description The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+            label?: string;
+            /** @description The animation to apply to the element. example ripple,bounce,etc */
+            animation?: Record<string, never>;
+        } & {
+            [key: string]: unknown;
+        }) & {
+            /** @description The animation to use for the edge. Can be like 'marching-ants' , 'blink' , 'moving-gradient',etc . */
+            edgeAnimation?: string;
+            /**
+             * @description The curving method used to separate two or more edges between two nodes; may be haystack (very fast, bundled straight edges for which loops and compounds are unsupported), straight (straight edges with all arrows supported), bezier (bundled curved edges), unbundled-bezier (curved edges for use with manual control points), segments (a series of straight lines), taxi (right-angled lines, hierarchically bundled). Note that haystack edges work best with ellipse, rectangle, or similar nodes. Smaller node shapes, like triangle, will not be as aesthetically pleasing. Also note that edge endpoint arrows are unsupported for haystack edges.
+             * @default straight
+             * @enum {string}
+             */
+            curveStyle: "straight" | "haystack" | "bezier" | "unbundled-bezier" | "segments" | "taxi";
+            /** @description The colour of the edge's line. Colours may be specified by name (e.g. red), hex (e.g. */
+            lineColor?: string;
+            /**
+             * @description The style of the edge's line.
+             * @enum {string}
+             */
+            lineStyle?: "solid" | "dotted" | "dashed";
+            /**
+             * @description The cap style of the edge's line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.
+             * @default butt
+             * @enum {string}
+             */
+            lineCap: "butt" | "round" | "square";
+            /**
+             * @description The opacity of the edge's line and arrow. Useful if you wish to have a separate opacity for the edge label versus the edge line. Note that the opacity value of the edge element affects the effective opacity of its line and label subcomponents.
+             * @default 1
+             */
+            lineOpacity: number;
+            /** @description The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g. */
+            targetArrowColor?: string;
+            /**
+             * @description The shape of the edge's source arrow
+             * @enum {string}
+             */
+            targetArrowShape?: "triangle" | "triangle-tee" | "circle-triangle" | "triangle-cross" | "triangle-backcurve" | "vee" | "tee" | "square" | "circle" | "diamond" | "chevron" | "none";
+            /**
+             * @description The fill state of the edge's source arrow
+             * @enum {string}
+             */
+            targetArrowFill?: "filled" | "hollow";
+            /** @description The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g. */
+            midTargetArrowColor?: string;
+            /**
+             * @description The shape of the edge's source arrow
+             * @enum {string}
+             */
+            midTargetArrowShape?: "triangle" | "triangle-tee" | "circle-triangle" | "triangle-cross" | "triangle-backcurve" | "vee" | "tee" | "square" | "circle" | "diamond" | "chevron" | "none";
+            /**
+             * @description The fill state of the edge's source arrow
+             * @enum {string}
+             */
+            midTargetArrowFill?: "filled" | "hollow";
+            /** @description Scaling for the arrow size. */
+            arrowScale?: number;
+            /** @description The text to display for an edge's source label. Can give a path, e.g. data(id) will label with the elements id */
+            sourceLabel?: string;
+            /** @description The text to display for an edge's target label. Can give a path, e.g. data(id) will label with the elements id */
+            targetLabel?: string;
+        }) | (({
+            /** @description Primary color of the component used for UI representation. */
+            primaryColor: string;
+            /** @description Secondary color of the entity used for UI representation. */
+            secondaryColor?: string;
+            /** @description White SVG of the entity used for UI representation on dark background. */
+            svgWhite: string;
+            /** @description Colored SVG of the entity used for UI representation on light background. */
+            svgColor: string;
+            /** @description Complete SVG of the entity used for UI representation, often inclusive of background. */
+            svgComplete: string;
+            /** @description The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+            color?: string;
+            /** @description The opacity of the label text, including its outline. */
+            textOpacity?: number;
+            /** @description A comma-separated list of font names to use on the label text. */
+            fontFamily?: string;
+            /** @description The size of the label text. */
+            fontSize?: string;
+            /** @description A CSS font style to be applied to the label text. */
+            fontStyle?: string;
+            /** @description A CSS font weight to be applied to the label text. */
+            fontWeight?: string;
+            /**
+             * @description A transformation to apply to the label text
+             * @enum {string}
+             */
+            textTransform?: "none" | "uppercase" | "lowercase";
+            /** @description The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+            opacity?: number;
+            /** @description An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+            zIndex?: number;
+            /** @description The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+            label?: string;
+            /** @description The animation to apply to the element. example ripple,bounce,etc */
+            animation?: Record<string, never>;
+        } & {
+            [key: string]: unknown;
+        }) & {
+            [key: string]: unknown;
+        });
+        /** @description An alias is an component that acts as an ref/pointer to a field in another component, nonResolvedAlias are not aware of there immediate parents */
+        NonResolvedAlias: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            relationshipId: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            aliasComponentId: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            immediateParentId: string;
+            /** @description The immediate ref field path of the nonresolvedalias. */
+            immediateRefFieldPath: string[];
+        };
+        /** @description An resolved alias is an component that acts as an ref/pointer to a field in another component, resolvedAlias are aware of there immediate parents and completely resolved parents also */
+        ResolvedAlias: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            relationshipId: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            aliasComponentId: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            immediateParentId: string;
+            /** @description The immediate ref field path of the nonresolvedalias. */
+            immediateRefFieldPath: string[];
+        } & {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            resolvedParentId: string;
+            /** @description Fully resolved field path targeted by the alias. */
+            resolvedRefFieldPath: string[];
+        };
+        /**
+         * @description The type of the IaC file
+         * @enum {string}
+         */
+        IaCFileTypes: "meshery-design" | "helm-chart" | "k8s-manifest" | "docker-compose" | "k8s-kustomize";
     };
-    ResultsPage: {
-      /** @description Current page number of the result set. */
-      page?: number;
-      /** @description Number of items per page. */
-      page_size?: number;
-      /** @description Total number of items available. */
-      total_count?: number;
-      /** @description The result type of the resultspage. */
-      resultType?: string;
+    responses: {
+        /** @description ok */
+        200: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        201: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Invalid request body or request param */
+        400: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Expired JWT token used or insufficient privilege */
+        401: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Result not found */
+        404: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Publish request already exists */
+        409: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Internal server error */
+        500: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
     };
-    /** @description Body for empty request */
-    Empty: { [key: string]: unknown };
-    EmailPreference: {
-      /** @description The welcome email of the emailpreference. */
-      welcomeEmail?: boolean;
-      /** @description The notify role change of the emailpreference. */
-      notifyRoleChange?: boolean;
+    parameters: {
+        /** @description Unique identifier */
+        id: string;
+        /** @description Get all possible entries */
+        all: boolean;
+        /** @description Get responses by page */
+        page: string;
+        /** @description Filter catalog items by user ID. Pass multiple user IDs to fetch content for several users simultaneously. */
+        userId: string;
+        /** @description Include metrics associated with the designs. */
+        metrics: string;
+        /** @description Filter catalog items based on their support class. Specify one or more classes per request as needed. Example: 'official' and 'verified' */
+        class: string;
+        /** @description Get responses by pagesize */
+        pagesize: string;
+        /** @description Get responses by pagesize (pass all to get all responses) */
+        pagesizeWithAll: string;
+        /** @description Get ordered responses */
+        order: string;
+        /** @description Get responses based on visibility - private, public or published */
+        visibility: "private" | "public" | "published";
+        /** @description Populate the response with additional data like pattern_file */
+        populate: string;
+        /** @description Get responses that match search param value */
+        search: string;
+        /** @description Get filtered reponses */
+        filter: string;
+        /** @description To get OAuth tokens as well */
+        isOAuth: string;
+        /** @description Name of the resource */
+        name: string;
+        /** @description Purpose for which token is generated */
+        purpose: string;
+        /** @description Cumulative events */
+        cumulative: string;
+        /** @description meshery version */
+        mesheryVersion: string;
+        /** @description user's os */
+        os: string;
+        /** @description Is playground mode */
+        playground: string;
+        /** @description Namespace */
+        namespace: string;
+        /** @description Type */
+        type: string;
+        /** @description Type of actor e.g user, team, system, registrant */
+        actorType: string;
+        /** @description Type of resource e.g design, filter, view, environment, workspace */
+        resourceType: string;
+        /** @description Filter catalog data based on type of content e.g (deployment, workloads, scaling...) multiple params can be passed */
+        contentType: string;
+        /** @description Filter catalog data based on technology(compatibility) of content e.g (kubernetes, istio...) multiple params can be passed */
+        contentTechnology: string;
     };
-    /** Format: uuid */
-    UserUuid: string;
-    /** Format: uuid */
-    OrganizationId: string;
-    /** Format: uuid */
-    GeneralId: string;
-    /** Format: uuid */
-    EnvironmentId: string;
-    /** Format: uuid */
-    WorkspaceId: string;
-    /** Format: uuid */
-    ViewId: string;
-    /** Format: uuid */
-    TeamId: string;
-    /** Format: uuid */
-    DesignId: string;
-    /** Format: uuid */
-    CredentialUuid: string;
-    /** Format: uuid */
-    MesheryInstanceUuid: string;
-    /** Format: uuid */
-    KubernetesServerUuid: string;
-    /** Format: uuid */
-    SystemId: string;
-    /** Format: uuid */
-    OperationId: string;
-    /** @description user's email or username */
-    UserId: string;
-    /**
-     * Format: date-time
-     * @description Timestamp when the resource was created.
-     */
-    CreatedAt: string;
-    /**
-     * Format: date-time
-     * @description Timestamp when the resource was updated.
-     */
-    UpdatedAt: string;
-    /**
-     * Format: date-time
-     * @description Timestamp when the resource was deleted.
-     */
-    DeletedAt: string;
-    /**
-     * Format: date-time
-     * @description SQL null Timestamp to handle null values of time.
-     */
-    NullTime: string;
-    /** @description Common styles for all entities */
-    Styles: {
-      /** @description Primary color of the component used for UI representation. */
-      primaryColor: string;
-      /** @description Secondary color of the entity used for UI representation. */
-      secondaryColor?: string;
-      /** @description White SVG of the entity used for UI representation on dark background. */
-      svgWhite: string;
-      /** @description Colored SVG of the entity used for UI representation on light background. */
-      svgColor: string;
-      /** @description Complete SVG of the entity used for UI representation, often inclusive of background. */
-      svgComplete: string;
-      /** @description The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
-      color?: string;
-      /** @description The opacity of the label text, including its outline. */
-      textOpacity?: number;
-      /** @description A comma-separated list of font names to use on the label text. */
-      fontFamily?: string;
-      /** @description The size of the label text. */
-      fontSize?: string;
-      /** @description A CSS font style to be applied to the label text. */
-      fontStyle?: string;
-      /** @description A CSS font weight to be applied to the label text. */
-      fontWeight?: string;
-      /**
-       * @description A transformation to apply to the label text
-       * @enum {string}
-       */
-      textTransform?: "none" | "uppercase" | "lowercase";
-      /** @description The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
-      opacity?: number;
-      /** @description An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
-      zIndex?: number;
-      /** @description The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
-      label?: string;
-      /** @description The animation to apply to the element. example ripple,bounce,etc */
-      animation?: { [key: string]: unknown };
-    } & { [key: string]: unknown };
-    /**
-     * @description The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
-     * @enum {string}
-     */
-    Shape:
-      | "ellipse"
-      | "triangle"
-      | "round-triangle"
-      | "rectangle"
-      | "round-rectangle"
-      | "bottom-round-rectangle"
-      | "cut-rectangle"
-      | "barrel"
-      | "rhomboid"
-      | "diamond"
-      | "round-diamond"
-      | "pentagon"
-      | "round-pentagon"
-      | "hexagon"
-      | "round-hexagon"
-      | "concave-hexagon"
-      | "heptagon"
-      | "round-heptagon"
-      | "octagon"
-      | "round-octagon"
-      | "star"
-      | "tag"
-      | "round-tag"
-      | "vee"
-      | "polygon";
-    /** @description Visualization styles for a relationship */
-    EdgeStyles: ({
-      /** @description Primary color of the component used for UI representation. */
-      primaryColor: string;
-      /** @description Secondary color of the entity used for UI representation. */
-      secondaryColor?: string;
-      /** @description White SVG of the entity used for UI representation on dark background. */
-      svgWhite: string;
-      /** @description Colored SVG of the entity used for UI representation on light background. */
-      svgColor: string;
-      /** @description Complete SVG of the entity used for UI representation, often inclusive of background. */
-      svgComplete: string;
-      /** @description The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
-      color?: string;
-      /** @description The opacity of the label text, including its outline. */
-      textOpacity?: number;
-      /** @description A comma-separated list of font names to use on the label text. */
-      fontFamily?: string;
-      /** @description The size of the label text. */
-      fontSize?: string;
-      /** @description A CSS font style to be applied to the label text. */
-      fontStyle?: string;
-      /** @description A CSS font weight to be applied to the label text. */
-      fontWeight?: string;
-      /**
-       * @description A transformation to apply to the label text
-       * @enum {string}
-       */
-      textTransform?: "none" | "uppercase" | "lowercase";
-      /** @description The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
-      opacity?: number;
-      /** @description An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
-      zIndex?: number;
-      /** @description The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
-      label?: string;
-      /** @description The animation to apply to the element. example ripple,bounce,etc */
-      animation?: { [key: string]: unknown };
-    } & { [key: string]: unknown }) & {
-      /** @description The animation to use for the edge. Can be like 'marching-ants' , 'blink' , 'moving-gradient',etc . */
-      edgeAnimation?: string;
-      /**
-       * @description The curving method used to separate two or more edges between two nodes; may be haystack (very fast, bundled straight edges for which loops and compounds are unsupported), straight (straight edges with all arrows supported), bezier (bundled curved edges), unbundled-bezier (curved edges for use with manual control points), segments (a series of straight lines), taxi (right-angled lines, hierarchically bundled). Note that haystack edges work best with ellipse, rectangle, or similar nodes. Smaller node shapes, like triangle, will not be as aesthetically pleasing. Also note that edge endpoint arrows are unsupported for haystack edges.
-       * @default straight
-       * @enum {string}
-       */
-      curveStyle?:
-        | "straight"
-        | "haystack"
-        | "bezier"
-        | "unbundled-bezier"
-        | "segments"
-        | "taxi";
-      /** @description The colour of the edge's line. Colours may be specified by name (e.g. red), hex (e.g. */
-      lineColor?: string;
-      /**
-       * @description The style of the edge's line.
-       * @enum {string}
-       */
-      lineStyle?: "solid" | "dotted" | "dashed";
-      /**
-       * @description The cap style of the edge's line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.
-       * @default butt
-       * @enum {string}
-       */
-      lineCap?: "butt" | "round" | "square";
-      /**
-       * @description The opacity of the edge's line and arrow. Useful if you wish to have a separate opacity for the edge label versus the edge line. Note that the opacity value of the edge element affects the effective opacity of its line and label subcomponents.
-       * @default 1
-       */
-      lineOpacity?: number;
-      /** @description The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g. */
-      targetArrowColor?: string;
-      /**
-       * @description The shape of the edge's source arrow
-       * @enum {string}
-       */
-      targetArrowShape?:
-        | "triangle"
-        | "triangle-tee"
-        | "circle-triangle"
-        | "triangle-cross"
-        | "triangle-backcurve"
-        | "vee"
-        | "tee"
-        | "square"
-        | "circle"
-        | "diamond"
-        | "chevron"
-        | "none";
-      /**
-       * @description The fill state of the edge's source arrow
-       * @enum {string}
-       */
-      targetArrowFill?: "filled" | "hollow";
-      /** @description The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g. */
-      midTargetArrowColor?: string;
-      /**
-       * @description The shape of the edge's source arrow
-       * @enum {string}
-       */
-      midTargetArrowShape?:
-        | "triangle"
-        | "triangle-tee"
-        | "circle-triangle"
-        | "triangle-cross"
-        | "triangle-backcurve"
-        | "vee"
-        | "tee"
-        | "square"
-        | "circle"
-        | "diamond"
-        | "chevron"
-        | "none";
-      /**
-       * @description The fill state of the edge's source arrow
-       * @enum {string}
-       */
-      midTargetArrowFill?: "filled" | "hollow";
-      /** @description Scaling for the arrow size. */
-      arrowScale?: number;
-      /** @description The text to display for an edge's source label. Can give a path, e.g. data(id) will label with the elements id */
-      sourceLabel?: string;
-      /** @description The text to display for an edge's target label. Can give a path, e.g. data(id) will label with the elements id */
-      targetLabel?: string;
-    };
-    /** @description Visualization styles for a component */
-    ComponentStyles: ({
-      /** @description Primary color of the component used for UI representation. */
-      primaryColor: string;
-      /** @description Secondary color of the entity used for UI representation. */
-      secondaryColor?: string;
-      /** @description White SVG of the entity used for UI representation on dark background. */
-      svgWhite: string;
-      /** @description Colored SVG of the entity used for UI representation on light background. */
-      svgColor: string;
-      /** @description Complete SVG of the entity used for UI representation, often inclusive of background. */
-      svgComplete: string;
-      /** @description The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
-      color?: string;
-      /** @description The opacity of the label text, including its outline. */
-      textOpacity?: number;
-      /** @description A comma-separated list of font names to use on the label text. */
-      fontFamily?: string;
-      /** @description The size of the label text. */
-      fontSize?: string;
-      /** @description A CSS font style to be applied to the label text. */
-      fontStyle?: string;
-      /** @description A CSS font weight to be applied to the label text. */
-      fontWeight?: string;
-      /**
-       * @description A transformation to apply to the label text
-       * @enum {string}
-       */
-      textTransform?: "none" | "uppercase" | "lowercase";
-      /** @description The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
-      opacity?: number;
-      /** @description An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
-      zIndex?: number;
-      /** @description The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
-      label?: string;
-      /** @description The animation to apply to the element. example ripple,bounce,etc */
-      animation?: { [key: string]: unknown };
-    } & { [key: string]: unknown }) & {
-      /**
-       * @description The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
-       * @enum {string}
-       */
-      shape?:
-        | "ellipse"
-        | "triangle"
-        | "round-triangle"
-        | "rectangle"
-        | "round-rectangle"
-        | "bottom-round-rectangle"
-        | "cut-rectangle"
-        | "barrel"
-        | "rhomboid"
-        | "diamond"
-        | "round-diamond"
-        | "pentagon"
-        | "round-pentagon"
-        | "hexagon"
-        | "round-hexagon"
-        | "concave-hexagon"
-        | "heptagon"
-        | "round-heptagon"
-        | "octagon"
-        | "round-octagon"
-        | "star"
-        | "tag"
-        | "round-tag"
-        | "vee"
-        | "polygon";
-      /** @description The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
-      position?: {
-        /** @description The x-coordinate of the node. */
-        x: number;
-        /** @description The y-coordinate of the node. */
-        y: number;
-      };
-      /** @description The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
-      bodyText?: string;
-      /**
-       * @description How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'.
-       * @enum {string}
-       */
-      bodyTextWrap?: "none" | "wrap" | "ellipsis";
-      /** @description The maximum width for wrapping text in the node. */
-      bodyTextMaxWidth?: string;
-      /** @description The opacity of the node's body text, including its outline. */
-      bodyTextOpacity?: number;
-      /** @description The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
-      bodyTextBackgroundColor?: string;
-      /** @description The size of the node's body text. */
-      bodyTextFontSize?: number;
-      /** @description The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
-      bodyTextColor?: string;
-      /** @description A CSS font weight to be applied to the node's body text. */
-      bodyTextFontWeight?: string;
-      /** @description A CSS horizontal alignment to be applied to the node's body text. */
-      bodyTextHorizontalAlign?: string;
-      /** @description A CSS text decoration to be applied to the node's body text. */
-      bodyTextDecoration?: string;
-      /** @description A CSS vertical alignment to be applied to the node's body text. */
-      bodyTextVerticalAlign?: string;
-      /** @description The width of the node's body or the width of an edge's line. */
-      width?: number;
-      /** @description The height of the node's body */
-      height?: number;
-      /**
-       * Format: uri
-       * @description The URL that points to the image to show in the node.
-       */
-      backgroundImage?: string;
-      /** @description The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
-      backgroundColor?: string;
-      /** @description Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
-      backgroundBlacken?: number;
-      /** @description The opacity level of the node's background colour */
-      backgroundOpacity?: number;
-      /** @description The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
-      backgroundPositionX?: string;
-      /** @description The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
-      backgroundPositionY?: string;
-      /** @description The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
-      backgroundOffsetX?: string;
-      /** @description The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
-      backgroundOffsetY?: string;
-      /**
-       * @description How the background image is fit to the node. Can be 'none', 'contain', or 'cover'.
-       * @enum {string}
-       */
-      backgroundFit?: "none" | "contain" | "cover";
-      /**
-       * @description How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'.
-       * @enum {string}
-       */
-      backgroundClip?: "none" | "node" | "node-border";
-      /**
-       * @description How the background image's width is determined. Can be 'none', 'inner', or 'outer'.
-       * @enum {string}
-       */
-      backgroundWidthRelativeTo?: "none" | "inner" | "outer";
-      /**
-       * @description How the background image's height is determined. Can be 'none', 'inner', or 'outer'.
-       * @enum {string}
-       */
-      backgroundHeightRelativeTo?: "none" | "inner" | "outer";
-      /** @description The size of the node's border. */
-      borderWidth?: number;
-      /**
-       * @description The style of the node's border
-       * @enum {string}
-       */
-      borderStyle?: "solid" | "dotted" | "dashed" | "double";
-      /** @description The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
-      borderColor?: string;
-      /** @description The opacity of the node's border */
-      borderOpacity?: number;
-      /** @description The amount of padding around all sides of the node. */
-      padding?: number;
-      /**
-       * @description The horizontal alignment of a node's label
-       * @enum {string}
-       */
-      textHalign?: "left" | "center" | "right";
-      /**
-       * @description The vertical alignment of a node's label
-       * @enum {string}
-       */
-      textValign?: "top" | "center" | "bottom";
-      /**
-       * @description Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset.
-       * @default no
-       * @enum {string}
-       */
-      ghost?: "yes" | "no";
-      /** @description The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
-      activeBgColor?: string;
-      /** @description The opacity of the active background indicator. Selector needs to be *core*. */
-      activeBgOpacity?: string;
-      /** @description The opacity of the active background indicator. Selector needs to be *core*. */
-      activeBgSize?: string;
-      /** @description The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
-      selectionBoxColor?: string;
-      /** @description The size of the border on the selection box. Selector needs to be *core* */
-      selectionBoxBorderWidth?: number;
-      /** @description The opacity of the selection box. Selector needs to be *core* */
-      selectionBoxOpacity?: number;
-      /** @description The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
-      outsideTextureBgColor?: string;
-      /** @description The opacity of the area outside the viewport texture. Selector needs to be *core* */
-      outsideTextureBgOpacity?: number;
-      /** @description An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
-      shapePolygonPoints?: string;
-      /** @description The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
-      menuBackgroundColor?: string;
-      /** @description The opacity of the background of the component menu. */
-      menuBackgroundOpacity?: number;
-      /** @description The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
-      menuForgroundColor?: string;
-    } & {
-      shape: unknown;
-      primaryColor: unknown;
-      svgColor: unknown;
-      svgWhite: unknown;
-      svgComplete: unknown;
-    };
-    RelationshipStyles:
-      | (({
-          /** @description Primary color of the component used for UI representation. */
-          primaryColor: string;
-          /** @description Secondary color of the entity used for UI representation. */
-          secondaryColor?: string;
-          /** @description White SVG of the entity used for UI representation on dark background. */
-          svgWhite: string;
-          /** @description Colored SVG of the entity used for UI representation on light background. */
-          svgColor: string;
-          /** @description Complete SVG of the entity used for UI representation, often inclusive of background. */
-          svgComplete: string;
-          /** @description The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
-          color?: string;
-          /** @description The opacity of the label text, including its outline. */
-          textOpacity?: number;
-          /** @description A comma-separated list of font names to use on the label text. */
-          fontFamily?: string;
-          /** @description The size of the label text. */
-          fontSize?: string;
-          /** @description A CSS font style to be applied to the label text. */
-          fontStyle?: string;
-          /** @description A CSS font weight to be applied to the label text. */
-          fontWeight?: string;
-          /**
-           * @description A transformation to apply to the label text
-           * @enum {string}
-           */
-          textTransform?: "none" | "uppercase" | "lowercase";
-          /** @description The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
-          opacity?: number;
-          /** @description An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
-          zIndex?: number;
-          /** @description The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
-          label?: string;
-          /** @description The animation to apply to the element. example ripple,bounce,etc */
-          animation?: { [key: string]: unknown };
-        } & { [key: string]: unknown }) & {
-          /** @description The animation to use for the edge. Can be like 'marching-ants' , 'blink' , 'moving-gradient',etc . */
-          edgeAnimation?: string;
-          /**
-           * @description The curving method used to separate two or more edges between two nodes; may be haystack (very fast, bundled straight edges for which loops and compounds are unsupported), straight (straight edges with all arrows supported), bezier (bundled curved edges), unbundled-bezier (curved edges for use with manual control points), segments (a series of straight lines), taxi (right-angled lines, hierarchically bundled). Note that haystack edges work best with ellipse, rectangle, or similar nodes. Smaller node shapes, like triangle, will not be as aesthetically pleasing. Also note that edge endpoint arrows are unsupported for haystack edges.
-           * @default straight
-           * @enum {string}
-           */
-          curveStyle?:
-            | "straight"
-            | "haystack"
-            | "bezier"
-            | "unbundled-bezier"
-            | "segments"
-            | "taxi";
-          /** @description The colour of the edge's line. Colours may be specified by name (e.g. red), hex (e.g. */
-          lineColor?: string;
-          /**
-           * @description The style of the edge's line.
-           * @enum {string}
-           */
-          lineStyle?: "solid" | "dotted" | "dashed";
-          /**
-           * @description The cap style of the edge's line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.
-           * @default butt
-           * @enum {string}
-           */
-          lineCap?: "butt" | "round" | "square";
-          /**
-           * @description The opacity of the edge's line and arrow. Useful if you wish to have a separate opacity for the edge label versus the edge line. Note that the opacity value of the edge element affects the effective opacity of its line and label subcomponents.
-           * @default 1
-           */
-          lineOpacity?: number;
-          /** @description The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g. */
-          targetArrowColor?: string;
-          /**
-           * @description The shape of the edge's source arrow
-           * @enum {string}
-           */
-          targetArrowShape?:
-            | "triangle"
-            | "triangle-tee"
-            | "circle-triangle"
-            | "triangle-cross"
-            | "triangle-backcurve"
-            | "vee"
-            | "tee"
-            | "square"
-            | "circle"
-            | "diamond"
-            | "chevron"
-            | "none";
-          /**
-           * @description The fill state of the edge's source arrow
-           * @enum {string}
-           */
-          targetArrowFill?: "filled" | "hollow";
-          /** @description The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g. */
-          midTargetArrowColor?: string;
-          /**
-           * @description The shape of the edge's source arrow
-           * @enum {string}
-           */
-          midTargetArrowShape?:
-            | "triangle"
-            | "triangle-tee"
-            | "circle-triangle"
-            | "triangle-cross"
-            | "triangle-backcurve"
-            | "vee"
-            | "tee"
-            | "square"
-            | "circle"
-            | "diamond"
-            | "chevron"
-            | "none";
-          /**
-           * @description The fill state of the edge's source arrow
-           * @enum {string}
-           */
-          midTargetArrowFill?: "filled" | "hollow";
-          /** @description Scaling for the arrow size. */
-          arrowScale?: number;
-          /** @description The text to display for an edge's source label. Can give a path, e.g. data(id) will label with the elements id */
-          sourceLabel?: string;
-          /** @description The text to display for an edge's target label. Can give a path, e.g. data(id) will label with the elements id */
-          targetLabel?: string;
-        })
-      | (({
-          /** @description Primary color of the component used for UI representation. */
-          primaryColor: string;
-          /** @description Secondary color of the entity used for UI representation. */
-          secondaryColor?: string;
-          /** @description White SVG of the entity used for UI representation on dark background. */
-          svgWhite: string;
-          /** @description Colored SVG of the entity used for UI representation on light background. */
-          svgColor: string;
-          /** @description Complete SVG of the entity used for UI representation, often inclusive of background. */
-          svgComplete: string;
-          /** @description The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
-          color?: string;
-          /** @description The opacity of the label text, including its outline. */
-          textOpacity?: number;
-          /** @description A comma-separated list of font names to use on the label text. */
-          fontFamily?: string;
-          /** @description The size of the label text. */
-          fontSize?: string;
-          /** @description A CSS font style to be applied to the label text. */
-          fontStyle?: string;
-          /** @description A CSS font weight to be applied to the label text. */
-          fontWeight?: string;
-          /**
-           * @description A transformation to apply to the label text
-           * @enum {string}
-           */
-          textTransform?: "none" | "uppercase" | "lowercase";
-          /** @description The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
-          opacity?: number;
-          /** @description An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
-          zIndex?: number;
-          /** @description The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
-          label?: string;
-          /** @description The animation to apply to the element. example ripple,bounce,etc */
-          animation?: { [key: string]: unknown };
-        } & { [key: string]: unknown }) & { [key: string]: unknown });
-    /** @description An alias is an component that acts as an ref/pointer to a field in another component, nonResolvedAlias are not aware of there immediate parents */
-    NonResolvedAlias: {
-      /**
-       * Format: uuid
-       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-       */
-      relationshipId: string;
-      /**
-       * Format: uuid
-       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-       */
-      aliasComponentId: string;
-      /**
-       * Format: uuid
-       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-       */
-      immediateParentId: string;
-      /** @description The immediate ref field path of the nonresolvedalias. */
-      immediateRefFieldPath: string[];
-    };
-    /** @description An resolved alias is an component that acts as an ref/pointer to a field in another component, resolvedAlias are aware of there immediate parents and completely resolved parents also */
-    ResolvedAlias: {
-      /**
-       * Format: uuid
-       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-       */
-      relationshipId: string;
-      /**
-       * Format: uuid
-       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-       */
-      aliasComponentId: string;
-      /**
-       * Format: uuid
-       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-       */
-      immediateParentId: string;
-      /** @description The immediate ref field path of the nonresolvedalias. */
-      immediateRefFieldPath: string[];
-    } & {
-      /**
-       * Format: uuid
-       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-       */
-      resolvedParentId: string;
-      /** @description Fully resolved field path targeted by the alias. */
-      resolvedRefFieldPath: string[];
-    };
-    /**
-     * @description The type of the IaC file
-     * @enum {string}
-     */
-    IaCFileTypes:
-      | "meshery-design"
-      | "helm-chart"
-      | "k8s-manifest"
-      | "docker-compose"
-      | "k8s-kustomize";
-  };
-  responses: {
-    /** ok */
-    200: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    201: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Invalid request body or request param */
-    400: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Expired JWT token used or insufficient privilege */
-    401: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Result not found */
-    404: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Publish request already exists */
-    409: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Internal server error */
-    500: {
-      content: {
-        "text/plain": string;
-      };
-    };
-  };
-  parameters: {
-    /** @description Unique identifier */
-    id: string;
-    /** @description Get all possible entries */
-    all: boolean;
-    /** @description Get responses by page */
-    page: string;
-    /** @description Filter catalog items by user ID. Pass multiple user IDs to fetch content for several users simultaneously. */
-    userId: string;
-    /** @description Include metrics associated with the designs. */
-    metrics: string;
-    /** @description Filter catalog items based on their support class. Specify one or more classes per request as needed. Example: 'official' and 'verified' */
-    class: string;
-    /** @description Get responses by pagesize */
-    pagesize: string;
-    /** @description Get responses by pagesize (pass all to get all responses) */
-    pagesizeWithAll: string;
-    /** @description Get ordered responses */
-    order: string;
-    /** @description Get responses based on visibility - private, public or published */
-    visibility: "private" | "public" | "published";
-    /** @description Populate the response with additional data like pattern_file */
-    populate: string;
-    /** @description Get responses that match search param value */
-    search: string;
-    /** @description Get filtered reponses */
-    filter: string;
-    /** @description To get OAuth tokens as well */
-    isOAuth: string;
-    /** @description Name of the resource */
-    name: string;
-    /** @description Purpose for which token is generated */
-    purpose: string;
-    /** @description Cumulative events */
-    cumulative: string;
-    /** @description meshery version */
-    mesheryVersion: string;
-    /** @description user's os */
-    os: string;
-    /** @description Is playground mode */
-    playground: string;
-    /** @description Namespace */
-    namespace: string;
-    /** @description Type */
-    type: string;
-    /** @description Type of actor e.g user, team, system, registrant */
-    actorType: string;
-    /** @description Type of resource e.g design, filter, view, environment, workspace */
-    resourceType: string;
-    /** @description Filter catalog data based on type of content e.g (deployment, workloads, scaling...) multiple params can be passed */
-    contentType: string;
-    /** @description Filter catalog data based on technology(compatibility) of content e.g (kubernetes, istio...) multiple params can be passed */
-    contentTechnology: string;
-  };
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
-
-export interface operations {}
-
-export interface external {}
+export type $defs = Record<string, never>;
+export type operations = Record<string, never>;
