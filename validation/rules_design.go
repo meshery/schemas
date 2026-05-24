@@ -651,3 +651,51 @@ func collectParamNames(item *openapi3.PathItem, op *openapi3.Operation) map[stri
 	}
 	return names
 }
+
+// --- Rule 47: 2xx responses (except 204 and 205) must have content and schema ---
+
+func checkRule47(filePath string, doc *openapi3.T, opts AuditOptions) []Violation {
+	if doc == nil || doc.Paths == nil {
+		return nil
+	}
+	var out []Violation
+	for path, item := range doc.Paths.Map() {
+		for _, method := range httpMethods {
+			op := getOperation(item, method)
+			if op == nil || op.Responses == nil {
+				continue
+			}
+			label := fmt.Sprintf("%s %s", strings.ToUpper(method), path)
+			for code, respRef := range op.Responses.Map() {
+				// Only interested in 2xx responses, excluding 204 (No Content) and 205 (Reset Content).
+				if !strings.HasPrefix(code, "2") || code == "204" || code == "205" {
+					continue
+				}
+				if respRef == nil || respRef.Value == nil {
+					continue
+				}
+				resp := respRef.Value
+				if len(resp.Content) == 0 {
+					out = append(out, Violation{
+						File:       filePath,
+						Message:    fmt.Sprintf("%s — response %s is missing a `content` block. All 2xx responses (except 204 and 205) must declare a content-type.", label, code),
+						Severity:   classifyDesignIssue(opts),
+						RuleNumber: 47,
+					})
+					continue
+				}
+				for contentType, media := range resp.Content {
+					if media == nil || media.Schema == nil {
+						out = append(out, Violation{
+							File:       filePath,
+							Message:    fmt.Sprintf("%s — response %s (%s) is missing a `schema`. Every response content block must define a schema to ensure valid client generation.", label, code, contentType),
+							Severity:   classifyDesignIssue(opts),
+							RuleNumber: 47,
+						})
+					}
+				}
+			}
+		}
+	}
+	return out
+}
