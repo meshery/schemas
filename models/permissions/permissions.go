@@ -5,7 +5,7 @@ package permissions
 import "github.com/gofrs/uuid"
 
 // Index ID used to generate this file
-const IndexID = "5f793c7ea40d5f3b0aa28a0ba30b509e64c8fbe44241c2bd46fb67c38b2663be"
+const IndexID = "723d8ad72edce8ae7d2fff93925098157bcb2af2188d2621080c85516671ce87"
 
 
 // PermissionKey represents a permission key identifier.
@@ -122,6 +122,9 @@ var (
 
 	// CatalogManagementDeleteADesign - Delete a design
 	CatalogManagementDeleteADesign = PermissionKey(uuid.Must(uuid.FromString("f024fcf7-3c3d-4521-b83e-6d659353ca0e")))
+
+	// CatalogManagementEvaluateRelationships - Evaluate relationships inside a design
+	CatalogManagementEvaluateRelationships = PermissionKey(uuid.Must(uuid.FromString("c7752be7-5c0f-465d-a8ba-5594acd08b93")))
 
 	// CatalogManagementDownloadADesign - Download a Meshery design in OCI or YAML format
 	CatalogManagementDownloadADesign = PermissionKey(uuid.Must(uuid.FromString("64de96b7-60db-4aab-b311-afc64066b2c4")))
@@ -579,28 +582,28 @@ var (
 	// KanvasConfigureFieldrefs - No description available
 	KanvasConfigureFieldrefs = PermissionKey(uuid.Must(uuid.FromString("4770f8cc-8f58-4da9-89e2-a7e7c2ea4e2f")))
 
-	// KanvasDeleteComponents - In Kanvas, a Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to delete a component from canvas.
+	// KanvasDeleteComponents - A Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to delete a component from canvas.
 	KanvasDeleteComponents = PermissionKey(uuid.Must(uuid.FromString("9f2264fa-9e40-4625-8bc0-5c9162d617a7")))
 
-	// KanvasCloneComponents - In Kanvas, a Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to clone a component, along with it's configuration, on canvas.
+	// KanvasCloneComponents - A Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to clone a component, along with it's configuration, on canvas.
 	KanvasCloneComponents = PermissionKey(uuid.Must(uuid.FromString("8d640c90-8a8e-4ac0-a4bb-010f81cfc00a")))
 
-	// KanvasCopyComponents - In Kanvas, a Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to clone a component, along with it's configuration, on canvas.
+	// KanvasCopyComponents - A Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to clone a component, along with it's configuration, on canvas.
 	KanvasCopyComponents = PermissionKey(uuid.Must(uuid.FromString("fbeacff4-9eed-4f55-aee3-9c3da53bdc9b")))
 
-	// KanvasLockComponents - In Kanvas, a Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to lock a component's state present on canvas.
+	// KanvasLockComponents - A Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to lock a component's state present on canvas.
 	KanvasLockComponents = PermissionKey(uuid.Must(uuid.FromString("08ebbd83-870f-4267-b3b7-7e50669b1e26")))
 
-	// KanvasAddComponents - In Kanvas, a Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to copy a component present on canvas. The canvas is where the design and all it's components are displayed and configured. This permission grants the user the ability to cofigure/edit/update a design by adding new components to the canvas.
+	// KanvasAddComponents - A Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to copy a component present on canvas. The canvas is where the design and all it's components are displayed and configured. This permission grants the user the ability to cofigure/edit/update a design by adding new components to the canvas.
 	KanvasAddComponents = PermissionKey(uuid.Must(uuid.FromString("3a345a78-2ac7-4916-bc99-91769f5c4959")))
 
-	// KanvasConfigureComponentStyles - In Kanvas, a Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to configure the style of a component.
+	// KanvasConfigureComponentStyles - A Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to configure the style of a component.
 	KanvasConfigureComponentStyles = PermissionKey(uuid.Must(uuid.FromString("af9f2e20-1cae-41ac-94b2-379fddc2660f")))
 
-	// KanvasResetComponentStyles - In Kanvas, a Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to reset a component to it's initial style.
+	// KanvasResetComponentStyles - A Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to reset a component to it's initial style.
 	KanvasResetComponentStyles = PermissionKey(uuid.Must(uuid.FromString("faa0cb66-af78-4a6f-84f0-3bfae7254276")))
 
-	// KanvasResizeComponents - In Kanvas, a Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to reset a component to it's initial style.
+	// KanvasResizeComponents - A Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to reset a component to it's initial style.
 	KanvasResizeComponents = PermissionKey(uuid.Must(uuid.FromString("faa0cb66-af78-4a6f-84f0-3bfae7254276")))
 
 	// KanvasDeleteShapes - Kanvas Designer allows users to draw shapes, lines, text, add custom styles, images and icons to represent the components and relationships of Kubernetes clusters as they see fit. This permission grants the user the ability to delete a shape from canvas.
@@ -666,7 +669,7 @@ var (
 	// KanvasResetSectionStyles - Kanvas Designer allows users to draw shapes, lines, text, add custom styles, images and icons to represent the components and relationships of Kubernetes clusters as they see fit. This permission grants the user the ability to reset the styles of sections present on canvas.
 	KanvasResetSectionStyles = PermissionKey(uuid.Must(uuid.FromString("21bce984-73c1-4025-acd5-f18cdbd796db")))
 
-	// KanvasAddTextToTextboxes - Kanvas Designer allows users to draw shapes, lines, text, add custom styles, images and icons to represent the components and relationships of Kubernetes clusters as they see fit. This permission grants the user the ability to add text to the textboxes currently on canvas.
+	// KanvasAddTextToTextboxes - Designer allows users to draw shapes, lines, text, add custom styles, images and icons to represent the components and relationships of Kubernetes clusters as they see fit. This permission grants the user the ability to add text to the textboxes currently on canvas.
 	KanvasAddTextToTextboxes = PermissionKey(uuid.Must(uuid.FromString("e0fabc93-1566-4780-934d-adddf2275f64")))
 
 	// KanvasCreateDynamicFieldrefs - No description available
@@ -690,10 +693,10 @@ var (
 	// KanvasUndoOrRedo - This permission grants the user the ability to undo/redo any action in done in Kanvas
 	KanvasUndoOrRedo = PermissionKey(uuid.Must(uuid.FromString("1ae55743-0496-45f7-9a42-aabb7f0d6c70")))
 
-	// KanvasUsePencil - Pencil is mouse/tool mode available in Kanvas that allows users to draw freehand shapes. This permission grants user the ability to use the pencil mode in Kanvas.
+	// KanvasUsePencil - Pencil is a tool mode that allows users to draw freehand shapes. This permission grants user the ability to use the pencil mode.
 	KanvasUsePencil = PermissionKey(uuid.Must(uuid.FromString("02c7afe9-44b2-4fe7-8c8b-1c12a0da600f")))
 
-	// KanvasUsePen - Pen is a mouse/tool mode available in Kanvas that allows users to draw edges from one component to another. This permission grants user the ability to use the pencil mode in Kanvas.
+	// KanvasUsePen - Pen is a tool mode that allows users to draw edges (connections) from one component to another. This permission grants user the ability to use the pencil mode.
 	KanvasUsePen = PermissionKey(uuid.Must(uuid.FromString("b5aaeaf2-a563-4e7a-a556-7670a41cc946")))
 
 	// KanvasWhiteboarding - Ability to freeform draw any shapes, draw edges
@@ -705,10 +708,10 @@ var (
 	// KanvasModels - Generator for GCP via K8s CRDs
 	KanvasModels = PermissionKey(uuid.Must(uuid.FromString("8a10b666-b5f8-4310-90da-9c33ceae4058")))
 
-	// KanvasViewHelpCenter - Help center houses various ways through which the users might try to learn more about the Kanvas and it's features or reach out through various channels for help. This permission grants the user the ability to view the help center and use it's features
+	// KanvasViewHelpCenter - The Help Center contains various ways through which the users might try to learn more about the tooling and it's features or reach out through various channels for help. This permission grants the user the ability to view the help center and use it's features.
 	KanvasViewHelpCenter = PermissionKey(uuid.Must(uuid.FromString("1a7eab59-2f09-45a5-9ad3-b02faf0f8f6a")))
 
-	// KanvasScreenshotCanvas - The canvas is where the design and all it's components are displayed. This permission grants the user the ability to take a screenshot of the current state of canvas
+	// KanvasScreenshotCanvas - The canvas is where the design and all it's components are displayed. This permission grants the user the ability to take a screenshot of the current state of canvas.
 	KanvasScreenshotCanvas = PermissionKey(uuid.Must(uuid.FromString("31994492-1bae-400d-835b-1a4ff63e9e15")))
 
 	// KanvasConfigureVisibleLayers - Layers refer to the collection of various entities present on the canvas, for example, components, relationships, component badges, etc. This permission grants the user the ability to decide which entities to display/hide on the canvas.
@@ -1134,7 +1137,7 @@ var (
 	// AcademyCreateCertifications - No description available
 	AcademyCreateCertifications = PermissionKey(uuid.Must(uuid.FromString("efd922b6-daff-4857-aaee-840637a5f696")))
 
-	// SupportAndDeploymentWebhooks - Layer5 Cloud uses webhooks to automate approval flows and email notifications. This guide will help you customize and add your own custom webhooks.
+	// SupportAndDeploymentWebhooks - Cloud uses webhooks to automate approval flows and email notifications. This guide will help you customize and add your own custom webhooks.
 	SupportAndDeploymentWebhooks = PermissionKey(uuid.Must(uuid.FromString("df2c9b99-fad3-405b-9733-6cf10e1909ed")))
 
 	// SupportAndDeploymentRestApiUserDocumentation - Provides a powerful and flexible way to interact with the platform, enabling automation, integration, and customization to optimize your cloud native development and management processes.
@@ -1143,22 +1146,22 @@ var (
 	// SupportAndDeploymentRestApiReference - Provides a powerful and flexible way to interact with the platform, enabling automation, integration, and customization to optimize your cloud native development and management processes.
 	SupportAndDeploymentRestApiReference = PermissionKey(uuid.Must(uuid.FromString("776ec711-26aa-47b1-a822-b1b14192b1e7")))
 
-	// SupportAndDeploymentWhiteLabel - Customize the appearance and branding of your engineering platform powered by Layer5 Cloud.
+	// SupportAndDeploymentWhiteLabel - Customize the appearance and branding of your engineering platform powered by Cloud.
 	SupportAndDeploymentWhiteLabel = PermissionKey(uuid.Must(uuid.FromString("a27a55af-b71b-400f-a8b1-3f3b1afff4f6")))
 
 	// SupportAndDeploymentCommunitySupport - Get help with most of your Meshery questions and issues in our Community Forum.
 	SupportAndDeploymentCommunitySupport = PermissionKey(uuid.Must(uuid.FromString("1ae12fbe-32d9-46ef-9ae6-897f9a0017d6")))
 
-	// SupportAndDeploymentStandardSupport - Layer5 Support can help you troubleshoot issues you run into while using Meshery. Get support via the web.
+	// SupportAndDeploymentStandardSupport - Support can help you troubleshoot issues you run into while using Meshery. Get support via the web.
 	SupportAndDeploymentStandardSupport = PermissionKey(uuid.Must(uuid.FromString("e2131b18-fe30-47c2-84e7-0207bdc89f0e")))
 
 	// SupportAndDeploymentPremiumAndPremiumPlusSupport - With Premium, get a 30-minute SLA and 24/7 web and phone support. With Premium Plus, get everything in Premium plus your own Support Account Manager and more.
 	SupportAndDeploymentPremiumAndPremiumPlusSupport = PermissionKey(uuid.Must(uuid.FromString("e49c8c16-58e5-465e-be6d-a81b115c31ee")))
 
-	// SupportAndDeploymentSelfHostedDeployment - Self-hosted Layer5 Cloud for on-prem appliances or self-managed cloud tenants. Keep your Kanvas designs internal to your workplace. Get remote support from Layer5 when you need it.
+	// SupportAndDeploymentSelfHostedDeployment - Self-hosted Cloud for on-prem appliances or self-managed cloud tenants. Keep your designs internal to your workplace. Get remote support when you need it.
 	SupportAndDeploymentSelfHostedDeployment = PermissionKey(uuid.Must(uuid.FromString("3e0aa2da-ca58-4109-a0cc-0dece0ec47c3")))
 
-	// SupportAndDeploymentPhoneSupport - Layer5 Support can help you troubleshoot issues you run into while using Meshery. Get support via phone.
+	// SupportAndDeploymentPhoneSupport - Support can help you troubleshoot issues you run into while using Meshery. Get support via phone.
 	SupportAndDeploymentPhoneSupport = PermissionKey(uuid.Must(uuid.FromString("4e7cf974-7f6e-461c-989b-1176f2d46448")))
 
 	// SupportAndDeploymentPayBillsViaInvoiceRatherThanUsingYourCreditCard - No description available
