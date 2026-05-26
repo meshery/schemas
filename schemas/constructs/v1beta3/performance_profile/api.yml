@@ -26,9 +26,9 @@ tags:
     description: APIs for managing Meshery performance profiles.
 
 paths:
-  /api/performance-profiles:
+  /api/performance/profiles:
     get:
-      x-internal: ["cloud"]
+      x-internal: ["cloud", "meshery"]
       tags:
         - performance
       operationId: getPerformanceProfiles
@@ -53,7 +53,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
     post:
-      x-internal: ["cloud"]
+      x-internal: ["cloud", "meshery"]
       tags:
         - performance
       operationId: upsertPerformanceProfile
@@ -75,9 +75,9 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  /api/performance-profiles/{performanceProfileId}:
+  /api/performance/profiles/{performanceProfileId}:
     get:
-      x-internal: ["cloud"]
+      x-internal: ["cloud", "meshery"]
       tags:
         - performance
       operationId: getPerformanceProfile
@@ -100,34 +100,8 @@ paths:
           $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
-    put:
-      x-internal: ["cloud"]
-      tags:
-        - performance
-      operationId: updatePerformanceProfile
-      summary: Update a performance profile
-      description: Updates the performance profile identified by the path parameter.
-      parameters:
-        - $ref: "#/components/parameters/performanceProfileId"
-      requestBody:
-        $ref: "#/components/requestBodies/performanceProfilePayload"
-      responses:
-        "200":
-          description: Performance profile
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PerformanceProfile"
-        "400":
-          $ref: "#/components/responses/400"
-        "401":
-          $ref: "#/components/responses/401"
-        "404":
-          $ref: "#/components/responses/404"
-        "500":
-          $ref: "#/components/responses/500"
     delete:
-      x-internal: ["cloud"]
+      x-internal: ["cloud", "meshery"]
       tags:
         - performance
       operationId: deletePerformanceProfile
