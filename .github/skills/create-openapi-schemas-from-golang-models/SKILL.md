@@ -238,7 +238,7 @@ make generate-golang
 
    For amorphous JSON blob fields that lack a fixed schema definition (e.g., a freeform `metadata` map), use `x-go-type: "core.Map"` on the property instead — do not use `x-generate-db-helpers` for those.
 
-3. If helpers are still needed for non-generated behavior (e.g., `TableName()`, custom business logic), create `helpers.go` manually. When implementing `Scan`/`Value`, follow these rules (see AGENTS.md § "SQL Driver Rules"):
+3. If helpers are still needed for non-generated behavior (e.g., `TableName()`, custom business logic), create `helpers.go` manually. When implementing `Scan`/`Value`, follow these rules (see docs/schema-authoring-reference.md § "SQL Driver (`Scan`/`Value`) Implementation Rules"):
    - `Value()` must always marshal — never return `(nil, nil)`. A nil map produces JSON `"null"`, not SQL NULL.
    - `Scan()` must zero the receiver (`*m = nil`) when `src` is nil, not silently return.
 

@@ -13,8 +13,8 @@ import (
 //
 // The pre-canonical rule required DB-backed property names to match their
 // snake_case `db:` tag exactly. Under the new contract (see
-// docs/identifier-naming-migration.md §1 and AGENTS.md § Casing rules at
-// a glance), the wire property name is camelCase and the snake_case DB
+// docs/identifier-naming-migration.md §1 and docs/casing-rules.md),
+// the wire property name is camelCase and the snake_case DB
 // column name lives only in `x-oapi-codegen-extra-tags.db` — so a
 // property whose name differs from its `db:` tag is the *expected* shape
 // for DB-backed fields, not a violation.
@@ -29,8 +29,8 @@ func checkRule32ForAPI(_ string, _ *openapi3.T, _ AuditOptions) []Violation {
 // --- Rule 33: Pagination envelopes use canonical camelCase ---
 //
 // Under the canonical identifier-naming contract (see
-// docs/identifier-naming-migration.md §1 and AGENTS.md § Casing rules at
-// a glance), pagination envelope properties are camelCase on the wire:
+// docs/identifier-naming-migration.md §1 and docs/casing-rules.md),
+// pagination envelope properties are camelCase on the wire:
 // page, pageSize, totalCount. The legacy snake_case forms (page_size,
 // total_count) are still accepted inside existing API versions for
 // backward compatibility, but newly authored / canonical-casing API

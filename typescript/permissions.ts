@@ -13,7 +13,7 @@ export type PermissionKey = string & { readonly __brand: 'PermissionKey' };
 /**
  * Permissions Index ID used for this generated file.
  */
-export const PERMISSIONS_INDEX_ID = "5f793c7ea40d5f3b0aa28a0ba30b509e64c8fbe44241c2bd46fb67c38b2663be" as const;
+export const PERMISSIONS_INDEX_ID = "723d8ad72edce8ae7d2fff93925098157bcb2af2188d2621080c85516671ce87" as const;
 
 /**
  * Creates a PermissionKey from a UUID string.
@@ -188,6 +188,11 @@ export const PermissionKeys = {
    * Delete a design
    */
   CatalogManagementDeleteADesign: "f024fcf7-3c3d-4521-b83e-6d659353ca0e" as PermissionKey,
+
+  /**
+   * Evaluate relationships inside a design
+   */
+  CatalogManagementEvaluateRelationships: "c7752be7-5c0f-465d-a8ba-5594acd08b93" as PermissionKey,
 
   /**
    * Download a Meshery design in OCI or YAML format
@@ -950,42 +955,42 @@ export const PermissionKeys = {
   KanvasConfigureFieldrefs: "4770f8cc-8f58-4da9-89e2-a7e7c2ea4e2f" as PermissionKey,
 
   /**
-   * In Kanvas, a Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to delete a component from canvas.
+   * A Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to delete a component from canvas.
    */
   KanvasDeleteComponents: "9f2264fa-9e40-4625-8bc0-5c9162d617a7" as PermissionKey,
 
   /**
-   * In Kanvas, a Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to clone a component, along with it's configuration, on canvas.
+   * A Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to clone a component, along with it's configuration, on canvas.
    */
   KanvasCloneComponents: "8d640c90-8a8e-4ac0-a4bb-010f81cfc00a" as PermissionKey,
 
   /**
-   * In Kanvas, a Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to clone a component, along with it's configuration, on canvas.
+   * A Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to clone a component, along with it's configuration, on canvas.
    */
   KanvasCopyComponents: "fbeacff4-9eed-4f55-aee3-9c3da53bdc9b" as PermissionKey,
 
   /**
-   * In Kanvas, a Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to lock a component's state present on canvas.
+   * A Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to lock a component's state present on canvas.
    */
   KanvasLockComponents: "08ebbd83-870f-4267-b3b7-7e50669b1e26" as PermissionKey,
 
   /**
-   * In Kanvas, a Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to copy a component present on canvas. The canvas is where the design and all it's components are displayed and configured. This permission grants the user the ability to cofigure/edit/update a design by adding new components to the canvas.
+   * A Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to copy a component present on canvas. The canvas is where the design and all it's components are displayed and configured. This permission grants the user the ability to cofigure/edit/update a design by adding new components to the canvas.
    */
   KanvasAddComponents: "3a345a78-2ac7-4916-bc99-91769f5c4959" as PermissionKey,
 
   /**
-   * In Kanvas, a Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to configure the style of a component.
+   * A Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to configure the style of a component.
    */
   KanvasConfigureComponentStyles: "af9f2e20-1cae-41ac-94b2-379fddc2660f" as PermissionKey,
 
   /**
-   * In Kanvas, a Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to reset a component to it's initial style.
+   * A Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to reset a component to it's initial style.
    */
   KanvasResetComponentStyles: "faa0cb66-af78-4a6f-84f0-3bfae7254276" as PermissionKey,
 
   /**
-   * In Kanvas, a Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to reset a component to it's initial style.
+   * A Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to reset a component to it's initial style.
    */
   KanvasResizeComponents: "faa0cb66-af78-4a6f-84f0-3bfae7254276" as PermissionKey,
 
@@ -1095,7 +1100,7 @@ export const PermissionKeys = {
   KanvasResetSectionStyles: "21bce984-73c1-4025-acd5-f18cdbd796db" as PermissionKey,
 
   /**
-   * Kanvas Designer allows users to draw shapes, lines, text, add custom styles, images and icons to represent the components and relationships of Kubernetes clusters as they see fit. This permission grants the user the ability to add text to the textboxes currently on canvas.
+   * Designer allows users to draw shapes, lines, text, add custom styles, images and icons to represent the components and relationships of Kubernetes clusters as they see fit. This permission grants the user the ability to add text to the textboxes currently on canvas.
    */
   KanvasAddTextToTextboxes: "e0fabc93-1566-4780-934d-adddf2275f64" as PermissionKey,
 
@@ -1135,12 +1140,12 @@ export const PermissionKeys = {
   KanvasUndoOrRedo: "1ae55743-0496-45f7-9a42-aabb7f0d6c70" as PermissionKey,
 
   /**
-   * Pencil is mouse/tool mode available in Kanvas that allows users to draw freehand shapes. This permission grants user the ability to use the pencil mode in Kanvas.
+   * Pencil is a tool mode that allows users to draw freehand shapes. This permission grants user the ability to use the pencil mode.
    */
   KanvasUsePencil: "02c7afe9-44b2-4fe7-8c8b-1c12a0da600f" as PermissionKey,
 
   /**
-   * Pen is a mouse/tool mode available in Kanvas that allows users to draw edges from one component to another. This permission grants user the ability to use the pencil mode in Kanvas.
+   * Pen is a tool mode that allows users to draw edges (connections) from one component to another. This permission grants user the ability to use the pencil mode.
    */
   KanvasUsePen: "b5aaeaf2-a563-4e7a-a556-7670a41cc946" as PermissionKey,
 
@@ -1160,12 +1165,12 @@ export const PermissionKeys = {
   KanvasModels: "8a10b666-b5f8-4310-90da-9c33ceae4058" as PermissionKey,
 
   /**
-   * Help center houses various ways through which the users might try to learn more about the Kanvas and it's features or reach out through various channels for help. This permission grants the user the ability to view the help center and use it's features
+   * The Help Center contains various ways through which the users might try to learn more about the tooling and it's features or reach out through various channels for help. This permission grants the user the ability to view the help center and use it's features.
    */
   KanvasViewHelpCenter: "1a7eab59-2f09-45a5-9ad3-b02faf0f8f6a" as PermissionKey,
 
   /**
-   * The canvas is where the design and all it's components are displayed. This permission grants the user the ability to take a screenshot of the current state of canvas
+   * The canvas is where the design and all it's components are displayed. This permission grants the user the ability to take a screenshot of the current state of canvas.
    */
   KanvasScreenshotCanvas: "31994492-1bae-400d-835b-1a4ff63e9e15" as PermissionKey,
 
@@ -1875,7 +1880,7 @@ export const PermissionKeys = {
   AcademyCreateCertifications: "efd922b6-daff-4857-aaee-840637a5f696" as PermissionKey,
 
   /**
-   * Layer5 Cloud uses webhooks to automate approval flows and email notifications. This guide will help you customize and add your own custom webhooks.
+   * Cloud uses webhooks to automate approval flows and email notifications. This guide will help you customize and add your own custom webhooks.
    */
   SupportAndDeploymentWebhooks: "df2c9b99-fad3-405b-9733-6cf10e1909ed" as PermissionKey,
 
@@ -1890,7 +1895,7 @@ export const PermissionKeys = {
   SupportAndDeploymentRestApiReference: "776ec711-26aa-47b1-a822-b1b14192b1e7" as PermissionKey,
 
   /**
-   * Customize the appearance and branding of your engineering platform powered by Layer5 Cloud.
+   * Customize the appearance and branding of your engineering platform powered by Cloud.
    */
   SupportAndDeploymentWhiteLabel: "a27a55af-b71b-400f-a8b1-3f3b1afff4f6" as PermissionKey,
 
@@ -1900,7 +1905,7 @@ export const PermissionKeys = {
   SupportAndDeploymentCommunitySupport: "1ae12fbe-32d9-46ef-9ae6-897f9a0017d6" as PermissionKey,
 
   /**
-   * Layer5 Support can help you troubleshoot issues you run into while using Meshery. Get support via the web.
+   * Support can help you troubleshoot issues you run into while using Meshery. Get support via the web.
    */
   SupportAndDeploymentStandardSupport: "e2131b18-fe30-47c2-84e7-0207bdc89f0e" as PermissionKey,
 
@@ -1910,12 +1915,12 @@ export const PermissionKeys = {
   SupportAndDeploymentPremiumAndPremiumPlusSupport: "e49c8c16-58e5-465e-be6d-a81b115c31ee" as PermissionKey,
 
   /**
-   * Self-hosted Layer5 Cloud for on-prem appliances or self-managed cloud tenants. Keep your Kanvas designs internal to your workplace. Get remote support from Layer5 when you need it.
+   * Self-hosted Cloud for on-prem appliances or self-managed cloud tenants. Keep your designs internal to your workplace. Get remote support when you need it.
    */
   SupportAndDeploymentSelfHostedDeployment: "3e0aa2da-ca58-4109-a0cc-0dece0ec47c3" as PermissionKey,
 
   /**
-   * Layer5 Support can help you troubleshoot issues you run into while using Meshery. Get support via phone.
+   * Support can help you troubleshoot issues you run into while using Meshery. Get support via phone.
    */
   SupportAndDeploymentPhoneSupport: "4e7cf974-7f6e-461c-989b-1176f2d46448" as PermissionKey,
 

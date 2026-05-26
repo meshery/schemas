@@ -252,7 +252,7 @@ var tsWireKeyRE = regexp.MustCompile(`(?m)(?:[{,]\s*|^\s*)([A-Za-z_$][\w$]*)\s*:
 // tsAllowedSnakeKeys is the set of snake_case wire keys that are part of a
 // published contract (pagination envelope) rather than legacy drift. These
 // must not flip to camelCase inside an already-published API version per
-// the "Casing rules at a glance" table in AGENTS.md.
+// the casing table in docs/casing-rules.md.
 var tsAllowedSnakeKeys = map[string]struct{}{
 	"page_size":   {},
 	"total_count": {},
