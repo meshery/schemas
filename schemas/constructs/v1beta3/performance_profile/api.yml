@@ -147,6 +147,92 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
+  /api/performance/profiles/{performanceProfileId}/results:
+    get:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - performance
+      operationId: getPerformanceProfileResults
+      summary: List performance results for a profile
+      description: Returns paginated load-test results associated with the performance profile identified by the path parameter.
+      parameters:
+        - $ref: "#/components/parameters/performanceProfileId"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+      responses:
+        "200":
+          description: Performance results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PerformanceResultPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/performance/profiles/{performanceProfileId}/results/{resultId}:
+    get:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - performance
+      operationId: getPerformanceProfileResult
+      summary: Get a performance result for a profile
+      description: Returns one load-test result associated with the performance profile identified by the path parameter.
+      parameters:
+        - $ref: "#/components/parameters/performanceProfileId"
+        - $ref: "#/components/parameters/resultId"
+      responses:
+        "200":
+          description: Performance result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PerformanceResult"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/performance/results:
+    get:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - performance
+      operationId: getPerformanceResults
+      summary: List all performance results
+      description: Returns paginated load-test results visible to the authenticated user.
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/from"
+        - $ref: "#/components/parameters/to"
+      responses:
+        "200":
+          description: Performance results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PerformanceResultPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
 components:
   responses:
     200:
@@ -168,6 +254,13 @@ components:
       schema:
         $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
       required: true
+    resultId:
+      name: resultId
+      in: path
+      description: Performance result ID.
+      schema:
+        $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+      required: true
     search:
       $ref: "../../v1alpha1/core/api.yml#/components/parameters/search"
     order:
@@ -176,6 +269,26 @@ components:
       $ref: "../../v1alpha1/core/api.yml#/components/parameters/page"
     pagesize:
       $ref: "../../v1alpha1/core/api.yml#/components/parameters/pagesize"
+    pageSize:
+      name: pageSize
+      in: query
+      description: Maximum number of items to return on each page.
+      schema:
+        type: string
+    from:
+      name: from
+      in: query
+      description: Start date for filtering results by test start time, in YYYY-MM-DD format.
+      schema:
+        type: string
+        pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    to:
+      name: to
+      in: query
+      description: End date for filtering results by test start time, in YYYY-MM-DD format.
+      schema:
+        type: string
+        pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
 
   securitySchemes:
     jwt:
@@ -360,6 +473,142 @@ components:
           items:
             x-go-type: PerformanceProfile
             $ref: "#/components/schemas/PerformanceProfile"
+
+    PerformanceResult:
+      type: object
+      description: Load-test result captured for a Meshery performance profile.
+      additionalProperties: false
+      properties:
+        mesheryId:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+          description: Unique identifier for the performance result.
+          x-go-name: ID
+          x-oapi-codegen-extra-tags:
+            db: id
+            json: "mesheryId,omitempty"
+        name:
+          type: string
+          description: Human-readable name of the performance result.
+          maxLength: 255
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: name
+            json: "name,omitempty"
+        mesh:
+          type: string
+          description: Service mesh under test for this result.
+          maxLength: 255
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: mesh
+            json: "mesh,omitempty"
+        performanceProfile:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+          description: Performance profile associated with this result.
+          nullable: true
+          x-oapi-codegen-extra-tags:
+            db: performance_profile
+            json: "performanceProfile,omitempty"
+        testId:
+          type: string
+          description: Provider-assigned test identifier for this result.
+          maxLength: 255
+          x-go-name: TestID
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "testId,omitempty"
+        runnerResults:
+          type: object
+          description: Raw load-generator output for this performance result.
+          additionalProperties: true
+          x-go-type: core.Map
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: runner_results
+            json: "runnerResults,omitempty"
+        serverMetrics:
+          type: object
+          description: Server-side metrics collected for this performance result.
+          additionalProperties: true
+          x-go-type: core.Map
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: server_metrics
+            json: "serverMetrics,omitempty"
+        serverBoardConfig:
+          type: object
+          description: Server board configuration associated with this performance result.
+          additionalProperties: true
+          x-go-type: core.Map
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: server_board_config
+            json: "serverBoardConfig,omitempty"
+        testStartTime:
+          type: string
+          format: date-time
+          description: Time when the load test started.
+          x-oapi-codegen-extra-tags:
+            db: test_start_time
+            json: "testStartTime,omitempty"
+        userId:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+          description: User ID of the result owner.
+          x-go-name: UserID
+          x-oapi-codegen-extra-tags:
+            db: user_id
+            json: "userId,omitempty"
+        createdAt:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/created_at"
+          description: Timestamp when the performance result was created.
+          x-oapi-codegen-extra-tags:
+            db: created_at
+            json: "createdAt,omitempty"
+        updatedAt:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/updated_at"
+          description: Timestamp when the performance result was last updated.
+          x-oapi-codegen-extra-tags:
+            db: updated_at
+            json: "updatedAt,omitempty"
+
+    PerformanceResultPage:
+      type: object
+      description: Paginated list of performance results.
+      required:
+        - page
+        - pageSize
+        - totalCount
+        - results
+      properties:
+        page:
+          type: integer
+          description: Zero-based page index returned in this response.
+          minimum: 0
+          maximum: 1000000
+          x-go-type-skip-optional-pointer: true
+        pageSize:
+          type: integer
+          description: Maximum number of items returned on each page.
+          minimum: 1
+          maximum: 1000
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: pageSize
+        totalCount:
+          type: integer
+          description: Total number of performance results across all pages.
+          minimum: 0
+          maximum: 100000000
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: totalCount
+        results:
+          type: array
+          description: Performance results in this page.
+          x-go-type-skip-optional-pointer: true
+          items:
+            x-go-type: PerformanceResult
+            $ref: "#/components/schemas/PerformanceResult"
 
     PerformanceTestConfig:
       type: object
