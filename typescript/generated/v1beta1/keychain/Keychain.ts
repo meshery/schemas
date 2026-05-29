@@ -4,639 +4,860 @@
  */
 
 export interface paths {
-  "/api/auth/keychains": {
-    get: operations["getKeychains"];
-    post: operations["createKeychain"];
-  };
-  "/api/auth/keychains/{keychainId}": {
-    get: operations["getKeychainById"];
-    put: operations["updateKeychain"];
-    delete: operations["deleteKeychain"];
-  };
-  "/api/auth/keychains/{keychainId}/{keyId}": {
-    post: operations["addKeyToKeychain"];
-    delete: operations["removeKeyFromKeychain"];
-  };
-  "/api/auth/keychains/{keychainId}/keys": {
-    get: operations["getKeysOfKeychain"];
-  };
+    "/api/auth/keychains": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List keychains */
+        get: operations["getKeychains"];
+        put?: never;
+        /** Create a keychain */
+        post: operations["createKeychain"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/keychains/{keychainId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get keychain by ID */
+        get: operations["getKeychainById"];
+        /** Update keychain */
+        put: operations["updateKeychain"];
+        post?: never;
+        /** Delete keychain */
+        delete: operations["deleteKeychain"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/keychains/{keychainId}/{keyId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add key to keychain */
+        post: operations["addKeyToKeychain"];
+        /** Remove key from keychain */
+        delete: operations["removeKeyFromKeychain"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/keychains/{keychainId}/keys": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List keys in a keychain */
+        get: operations["getKeysOfKeychain"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
-
+export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    /** @description Represents a collection of keys. */
-    Keychain: {
-      /**
-       * Format: uuid
-       * @description Unique identifier for the keychain.
-       */
-      id: string;
-      /** @description Name of the keychain. */
-      name: string;
-      /**
-       * Format: uuid
-       * @description Owner of the keychain.
-       */
-      owner: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the resource was created.
-       */
-      created_at: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the resource was updated.
-       */
-      updated_at: string;
-      /**
-       * Format: date-time
-       * @description SQL null Timestamp to handle null values of time.
-       */
-      deleted_at?: string;
-    };
-    /** @description Input payload for creating or updating a keychain. */
-    KeychainInput: {
-      /** @description Name of the keychain. */
-      name: string;
-      /**
-       * Format: uuid
-       * @description Owner of the keychain.
-       */
-      owner?: string;
-    };
-    KeychainPage: {
-      page: number;
-      page_size: number;
-      total_count: number;
-      /** @description The keychains of the keychainpage. */
-      keychains: {
-        /**
-         * Format: uuid
-         * @description Unique identifier for the keychain.
-         */
-        id: string;
-        /** @description Name of the keychain. */
-        name: string;
-        /**
-         * Format: uuid
-         * @description Owner of the keychain.
-         */
-        owner: string;
-        /**
-         * Format: date-time
-         * @description Timestamp when the resource was created.
-         */
-        created_at: string;
-        /**
-         * Format: date-time
-         * @description Timestamp when the resource was updated.
-         */
-        updated_at: string;
-        /**
-         * Format: date-time
-         * @description SQL null Timestamp to handle null values of time.
-         */
-        deleted_at?: string;
-      }[];
-    };
-  };
-  responses: {
-    /** Invalid request body or request param */
-    400: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Expired JWT token used or insufficient privilege */
-    401: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Result not found */
-    404: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Internal server error */
-    500: {
-      content: {
-        "text/plain": string;
-      };
-    };
-  };
-  parameters: {
-    /** @description Key ID */
-    keyId: string;
-    /** @description Keychain ID */
-    keychainId: string;
-    /** @description Get responses by page */
-    page: string;
-    /** @description Get responses by pagesize */
-    pagesize: string;
-    /** @description Get ordered responses */
-    order: string;
-    /** @description Get responses that match search param value */
-    search: string;
-  };
-}
-
-export interface operations {
-  getKeychains: {
-    parameters: {
-      query: {
-        /** Get responses by page */
-        page?: string;
-        /** Get responses by pagesize */
-        pagesize?: string;
-        /** Get responses that match search param value */
-        search?: string;
-        /** Get ordered responses */
-        order?: string;
-      };
-    };
-    responses: {
-      /** Keychain(s) fetched */
-      200: {
-        content: {
-          "application/json": {
+    schemas: {
+        /** @description Represents a collection of keys. */
+        Keychain: {
+            /**
+             * Format: uuid
+             * @description Unique identifier for the keychain.
+             */
+            id: string;
+            /** @description Name of the keychain. */
+            name: string;
+            /**
+             * Format: uuid
+             * @description Owner of the keychain.
+             */
+            owner: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the resource was created.
+             */
+            created_at: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the resource was updated.
+             */
+            updated_at: string;
+            /**
+             * Format: date-time
+             * @description SQL null Timestamp to handle null values of time.
+             */
+            deleted_at?: string;
+        };
+        /** @description Input payload for creating or updating a keychain. */
+        KeychainInput: {
+            /** @description Name of the keychain. */
+            name: string;
+            /**
+             * Format: uuid
+             * @description Owner of the keychain.
+             */
+            owner?: string;
+        };
+        KeychainPage: {
             page: number;
             page_size: number;
             total_count: number;
             /** @description The keychains of the keychainpage. */
             keychains: {
-              /**
-               * Format: uuid
-               * @description Unique identifier for the keychain.
-               */
-              id: string;
-              /** @description Name of the keychain. */
-              name: string;
-              /**
-               * Format: uuid
-               * @description Owner of the keychain.
-               */
-              owner: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the resource was created.
-               */
-              created_at: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the resource was updated.
-               */
-              updated_at: string;
-              /**
-               * Format: date-time
-               * @description SQL null Timestamp to handle null values of time.
-               */
-              deleted_at?: string;
+                /**
+                 * Format: uuid
+                 * @description Unique identifier for the keychain.
+                 */
+                id: string;
+                /** @description Name of the keychain. */
+                name: string;
+                /**
+                 * Format: uuid
+                 * @description Owner of the keychain.
+                 */
+                owner: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the resource was created.
+                 */
+                created_at: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the resource was updated.
+                 */
+                updated_at: string;
+                /**
+                 * Format: date-time
+                 * @description SQL null Timestamp to handle null values of time.
+                 */
+                deleted_at?: string;
             }[];
-          };
         };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  createKeychain: {
-    responses: {
-      /** Keychain created */
-      200: {
-        content: {
-          "application/json": {
-            /**
-             * Format: uuid
-             * @description Unique identifier for the keychain.
-             */
-            id: string;
-            /** @description Name of the keychain. */
-            name: string;
-            /**
-             * Format: uuid
-             * @description Owner of the keychain.
-             */
-            owner: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the resource was created.
-             */
-            created_at: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the resource was updated.
-             */
-            updated_at: string;
-            /**
-             * Format: date-time
-             * @description SQL null Timestamp to handle null values of time.
-             */
-            deleted_at?: string;
-          };
-        };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": {
-          /** @description Name of the keychain. */
-          name: string;
-          /**
-           * Format: uuid
-           * @description Owner of the keychain.
-           */
-          owner?: string;
-        };
-      };
-    };
-  };
-  getKeychainById: {
-    parameters: {
-      path: {
-        /** Keychain ID */
-        keychainId: string;
-      };
     };
     responses: {
-      /** Keychain fetched */
-      200: {
-        content: {
-          "application/json": {
-            /**
-             * Format: uuid
-             * @description Unique identifier for the keychain.
-             */
-            id: string;
-            /** @description Name of the keychain. */
-            name: string;
-            /**
-             * Format: uuid
-             * @description Owner of the keychain.
-             */
-            owner: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the resource was created.
-             */
-            created_at: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the resource was updated.
-             */
-            updated_at: string;
-            /**
-             * Format: date-time
-             * @description SQL null Timestamp to handle null values of time.
-             */
-            deleted_at?: string;
-          };
+        /** @description Invalid request body or request param */
+        400: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
         };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
+        /** @description Expired JWT token used or insufficient privilege */
+        401: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
         };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
+        /** @description Result not found */
+        404: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
         };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
+        /** @description Internal server error */
+        500: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
         };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
     };
-  };
-  updateKeychain: {
     parameters: {
-      path: {
-        /** Keychain ID */
-        keychainId: string;
-      };
-    };
-    responses: {
-      /** Keychain updated */
-      200: {
-        content: {
-          "application/json": {
-            /**
-             * Format: uuid
-             * @description Unique identifier for the keychain.
-             */
-            id: string;
-            /** @description Name of the keychain. */
-            name: string;
-            /**
-             * Format: uuid
-             * @description Owner of the keychain.
-             */
-            owner: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the resource was created.
-             */
-            created_at: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the resource was updated.
-             */
-            updated_at: string;
-            /**
-             * Format: date-time
-             * @description SQL null Timestamp to handle null values of time.
-             */
-            deleted_at?: string;
-          };
-        };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": {
-          /** @description Name of the keychain. */
-          name: string;
-          /**
-           * Format: uuid
-           * @description Owner of the keychain.
-           */
-          owner?: string;
-        };
-      };
-    };
-  };
-  deleteKeychain: {
-    parameters: {
-      path: {
-        /** Keychain ID */
-        keychainId: string;
-      };
-    };
-    responses: {
-      /** Keychain deleted */
-      204: never;
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  addKeyToKeychain: {
-    parameters: {
-      path: {
-        /** Keychain ID */
-        keychainId: string;
-        /** Key ID */
+        /** @description Key ID */
         keyId: string;
-      };
-    };
-    responses: {
-      /** Key added to keychain */
-      204: never;
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  removeKeyFromKeychain: {
-    parameters: {
-      path: {
-        /** Keychain ID */
+        /** @description Keychain ID */
         keychainId: string;
-        /** Key ID */
-        keyId: string;
-      };
+        /** @description Get responses by page */
+        page: string;
+        /** @description Get responses by pagesize */
+        pagesize: string;
+        /** @description Get ordered responses */
+        order: string;
+        /** @description Get responses that match search param value */
+        search: string;
     };
-    responses: {
-      /** Key removed from keychain */
-      204: never;
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  getKeysOfKeychain: {
-    parameters: {
-      path: {
-        /** Keychain ID */
-        keychainId: string;
-      };
-      query: {
-        /** Get responses by page */
-        page?: string;
-        /** Get responses by pagesize */
-        pagesize?: string;
-        /** Get responses that match search param value */
-        search?: string;
-        /** Get ordered responses */
-        order?: string;
-      };
-    };
-    responses: {
-      /** Keys response */
-      200: {
-        content: {
-          "application/json": {
-            page: number;
-            page_size: number;
-            total_count: number;
-            /** @description The keys of the keypage. */
-            keys: {
-              /**
-               * Format: uuid
-               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-               */
-              id: string;
-              /**
-               * Format: uuid
-               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-               */
-              owner: string;
-              /** @description Operation permitted by the key. */
-              function: string;
-              /** @description Category for the key. */
-              category: string;
-              /** @description Subcategory for the key. */
-              subcategory: string;
-              /** @description Human readable description of the key. */
-              description: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the resource was created.
-               */
-              created_at: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the resource was updated.
-               */
-              updated_at: string;
-              /**
-               * Format: date-time
-               * @description SQL null Timestamp to handle null values of time.
-               */
-              deleted_at?: string;
-            }[];
-          };
-        };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
-
-export interface external {}
+export type $defs = Record<string, never>;
+export interface operations {
+    getKeychains: {
+        parameters: {
+            query?: {
+                /** @description Get responses by page */
+                page?: string;
+                /** @description Get responses by pagesize */
+                pagesize?: string;
+                /** @description Get responses that match search param value */
+                search?: string;
+                /** @description Get ordered responses */
+                order?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Keychain(s) fetched */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        page: number;
+                        page_size: number;
+                        total_count: number;
+                        /** @description The keychains of the keychainpage. */
+                        keychains: {
+                            /**
+                             * Format: uuid
+                             * @description Unique identifier for the keychain.
+                             */
+                            id: string;
+                            /** @description Name of the keychain. */
+                            name: string;
+                            /**
+                             * Format: uuid
+                             * @description Owner of the keychain.
+                             */
+                            owner: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the resource was created.
+                             */
+                            created_at: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the resource was updated.
+                             */
+                            updated_at: string;
+                            /**
+                             * Format: date-time
+                             * @description SQL null Timestamp to handle null values of time.
+                             */
+                            deleted_at?: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    createKeychain: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description Name of the keychain. */
+                    name: string;
+                    /**
+                     * Format: uuid
+                     * @description Owner of the keychain.
+                     */
+                    owner?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Keychain created */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Unique identifier for the keychain.
+                         */
+                        id: string;
+                        /** @description Name of the keychain. */
+                        name: string;
+                        /**
+                         * Format: uuid
+                         * @description Owner of the keychain.
+                         */
+                        owner: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the resource was created.
+                         */
+                        created_at: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the resource was updated.
+                         */
+                        updated_at: string;
+                        /**
+                         * Format: date-time
+                         * @description SQL null Timestamp to handle null values of time.
+                         */
+                        deleted_at?: string;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getKeychainById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Keychain ID */
+                keychainId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Keychain fetched */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Unique identifier for the keychain.
+                         */
+                        id: string;
+                        /** @description Name of the keychain. */
+                        name: string;
+                        /**
+                         * Format: uuid
+                         * @description Owner of the keychain.
+                         */
+                        owner: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the resource was created.
+                         */
+                        created_at: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the resource was updated.
+                         */
+                        updated_at: string;
+                        /**
+                         * Format: date-time
+                         * @description SQL null Timestamp to handle null values of time.
+                         */
+                        deleted_at?: string;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    updateKeychain: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Keychain ID */
+                keychainId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description Name of the keychain. */
+                    name: string;
+                    /**
+                     * Format: uuid
+                     * @description Owner of the keychain.
+                     */
+                    owner?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Keychain updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Unique identifier for the keychain.
+                         */
+                        id: string;
+                        /** @description Name of the keychain. */
+                        name: string;
+                        /**
+                         * Format: uuid
+                         * @description Owner of the keychain.
+                         */
+                        owner: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the resource was created.
+                         */
+                        created_at: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the resource was updated.
+                         */
+                        updated_at: string;
+                        /**
+                         * Format: date-time
+                         * @description SQL null Timestamp to handle null values of time.
+                         */
+                        deleted_at?: string;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    deleteKeychain: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Keychain ID */
+                keychainId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Keychain deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    addKeyToKeychain: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Keychain ID */
+                keychainId: string;
+                /** @description Key ID */
+                keyId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Key added to keychain */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    removeKeyFromKeychain: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Keychain ID */
+                keychainId: string;
+                /** @description Key ID */
+                keyId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Key removed from keychain */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getKeysOfKeychain: {
+        parameters: {
+            query?: {
+                /** @description Get responses by page */
+                page?: string;
+                /** @description Get responses by pagesize */
+                pagesize?: string;
+                /** @description Get responses that match search param value */
+                search?: string;
+                /** @description Get ordered responses */
+                order?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Keychain ID */
+                keychainId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Keys response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        page: number;
+                        page_size: number;
+                        total_count: number;
+                        /** @description The keys of the keypage. */
+                        keys: {
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            id: string;
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            owner: string;
+                            /** @description Operation permitted by the key. */
+                            function: string;
+                            /** @description Category for the key. */
+                            category: string;
+                            /** @description Subcategory for the key. */
+                            subcategory: string;
+                            /** @description Human readable description of the key. */
+                            description: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the resource was created.
+                             */
+                            created_at: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the resource was updated.
+                             */
+                            updated_at: string;
+                            /**
+                             * Format: date-time
+                             * @description SQL null Timestamp to handle null values of time.
+                             */
+                            deleted_at?: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+}

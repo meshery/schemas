@@ -4,144 +4,70 @@
  */
 
 export interface paths {
-  "/api/entitlement/plans": {
-    get: operations["getPlans"];
-  };
+    "/api/entitlement/plans": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all plans supported by the system */
+        get: operations["getPlans"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
-
+export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    /** @description Paginated list of plans supported by the system. */
-    PlanPage: {
-      /** @description Current page number of the result set. */
-      page: number;
-      /** @description Number of items per page. */
-      pageSize: number;
-      /** @description Total number of items available. */
-      totalCount: number;
-      /** @description Plans returned on the current page. */
-      plans: {
-        /**
-         * Format: uuid
-         * @description Unique identifier for the plan.
-         */
-        id: string;
-        /**
-         * @description Display name of the plan.
-         * @enum {string}
-         */
-        name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-        /**
-         * @description Billing cadence for the plan (monthly, annually, or none).
-         * @enum {string}
-         */
-        cadence: "none" | "monthly" | "annually";
-        /**
-         * @description Unit of consumption this plan charges against (e.g. user).
-         * @enum {string}
-         */
-        unit: "user" | "free";
-        /** @description Minimum number of units required for the plan. */
-        minimumUnits: number;
-        /** @description Price per unit of the plan. */
-        pricePerUnit: number;
-        /**
-         * @description Currency in which the plan is priced.
-         * @enum {string}
-         */
-        currency: "usd";
-      }[];
-    };
-    /** @description Plan entity schema. */
-    Plan: {
-      /**
-       * Format: uuid
-       * @description Unique identifier for the plan.
-       */
-      id: string;
-      /**
-       * @description Display name of the plan.
-       * @enum {string}
-       */
-      name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-      /**
-       * @description Billing cadence for the plan (monthly, annually, or none).
-       * @enum {string}
-       */
-      cadence: "none" | "monthly" | "annually";
-      /**
-       * @description Unit of consumption this plan charges against (e.g. user).
-       * @enum {string}
-       */
-      unit: "user" | "free";
-      /** @description Minimum number of units required for the plan. */
-      minimumUnits: number;
-      /** @description Price per unit of the plan. */
-      pricePerUnit: number;
-      /**
-       * @description Currency in which the plan is priced.
-       * @enum {string}
-       */
-      currency: "usd";
-    };
-    /**
-     * @description Display name of the subscription plan.
-     * @enum {string}
-     */
-    PlanName: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-    /**
-     * @description Billing cadence of the subscription plan.
-     * @enum {string}
-     */
-    PlanCadence: "none" | "monthly" | "annually";
-    /**
-     * @description Unit of consumption the plan charges against.
-     * @enum {string}
-     */
-    PlanUnit: "user" | "free";
-    /**
-     * @description Currency code for the plan pricing.
-     * @enum {string}
-     */
-    Currency: "usd";
-  };
-  responses: {
-    /** Invalid request body or request param */
-    400: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Expired JWT token used or insufficient privilege */
-    401: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Internal server error */
-    500: {
-      content: {
-        "text/plain": string;
-      };
-    };
-  };
-}
-
-export interface operations {
-  getPlans: {
-    parameters: {
-      query: {
-        /** Get responses by page */
-        page?: string;
-        /** Get responses by pagesize */
-        pagesize?: string;
-      };
-    };
-    responses: {
-      /** Plans response */
-      200: {
-        content: {
-          "application/json": {
+    schemas: {
+        /** @description Paginated list of plans supported by the system. */
+        PlanPage: {
+            /** @description Current page number of the result set. */
+            page: number;
+            /** @description Number of items per page. */
+            pageSize: number;
+            /** @description Total number of items available. */
+            totalCount: number;
+            /** @description Plans returned on the current page. */
+            plans: {
+                /**
+                 * Format: uuid
+                 * @description Unique identifier for the plan.
+                 */
+                id: string;
+                /**
+                 * @description Display name of the plan.
+                 * @enum {string}
+                 */
+                name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+                /**
+                 * @description Billing cadence for the plan (monthly, annually, or none).
+                 * @enum {string}
+                 */
+                cadence: "none" | "monthly" | "annually";
+                /**
+                 * @description Unit of consumption this plan charges against (e.g. user).
+                 * @enum {string}
+                 */
+                unit: "user" | "free";
+                /** @description Minimum number of units required for the plan. */
+                minimumUnits: number;
+                /** @description Price per unit of the plan. */
+                pricePerUnit: number;
+                /**
+                 * @description Currency in which the plan is priced.
+                 * @enum {string}
+                 */
+                currency: "usd";
+            }[];
+        };
+        /** @description Plan entity schema. */
+        Plan: {
             /**
              * Format: uuid
              * @description Unique identifier for the plan.
@@ -171,29 +97,144 @@ export interface operations {
              * @enum {string}
              */
             currency: "usd";
-          }[];
         };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
+        /**
+         * @description Display name of the subscription plan.
+         * @enum {string}
+         */
+        PlanName: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+        /**
+         * @description Billing cadence of the subscription plan.
+         * @enum {string}
+         */
+        PlanCadence: "none" | "monthly" | "annually";
+        /**
+         * @description Unit of consumption the plan charges against.
+         * @enum {string}
+         */
+        PlanUnit: "user" | "free";
+        /**
+         * @description Currency code for the plan pricing.
+         * @enum {string}
+         */
+        Currency: "usd";
     };
-  };
+    responses: {
+        /** @description Invalid request body or request param */
+        400: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Expired JWT token used or insufficient privilege */
+        401: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Internal server error */
+        500: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+    };
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
-
-export interface external {}
+export type $defs = Record<string, never>;
+export interface operations {
+    getPlans: {
+        parameters: {
+            query?: {
+                /** @description Get responses by page */
+                page?: string;
+                /** @description Get responses by pagesize */
+                pagesize?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Plans response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Unique identifier for the plan.
+                         */
+                        id: string;
+                        /**
+                         * @description Display name of the plan.
+                         * @enum {string}
+                         */
+                        name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+                        /**
+                         * @description Billing cadence for the plan (monthly, annually, or none).
+                         * @enum {string}
+                         */
+                        cadence: "none" | "monthly" | "annually";
+                        /**
+                         * @description Unit of consumption this plan charges against (e.g. user).
+                         * @enum {string}
+                         */
+                        unit: "user" | "free";
+                        /** @description Minimum number of units required for the plan. */
+                        minimumUnits: number;
+                        /** @description Price per unit of the plan. */
+                        pricePerUnit: number;
+                        /**
+                         * @description Currency in which the plan is priced.
+                         * @enum {string}
+                         */
+                        currency: "usd";
+                    }[];
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+}

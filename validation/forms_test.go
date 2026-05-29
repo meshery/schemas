@@ -30,9 +30,6 @@ import (
 //     canonical's properties (i.e. you cannot require a field the
 //     canonical doesn't define).
 //
-// This is the core enforcement for meshery/schemas#866 — it prevents the
-// drift that motivated moving form schemas from layer5io/sistent into
-// this canonical home.
 // formCase pairs a form-schema JSON with its canonical OpenAPI source.
 // Every entry under `schemas/constructs/<v>/<c>/forms/*.json` (the
 // forms tree of record) MUST appear here — the

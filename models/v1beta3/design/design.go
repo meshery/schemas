@@ -184,7 +184,7 @@ type MesheryPattern struct {
 	SourceContent *[]byte           `db:"source_content" json:"sourceContent,omitempty" yaml:"sourceContent,omitempty"`
 	UpdatedAt     core.Time `db:"updated_at" json:"updatedAt,omitempty" yaml:"updatedAt,omitempty"`
 
-	// User Represents a user in Layer5 Cloud (Meshery)
+	// User Represents a user
 	User   *userV1beta.User `db:"-" json:"user,omitempty" yaml:"user,omitempty"`
 	UserId core.Id    `db:"user_id" json:"userId,omitempty" yaml:"userId,omitempty"`
 

@@ -186,7 +186,7 @@ components:
   schemas:
     User:
       type: object
-      description: Represents a user in Layer5 Cloud (Meshery)
+      description: Represents a user
       required:
         - id
         - userId
@@ -218,7 +218,7 @@ components:
         provider:
           type: string
           maxLength: 100
-          description: "Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)"
+          description: "Authentication provider (e.g., Google, Github)"
           example:
             - local
             - github

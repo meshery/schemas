@@ -38,7 +38,7 @@ func checkRule3(filePath string, doc *openapi3.T, opts AuditOptions) []Violation
 				suggestion := SuggestOperationID(opID)
 				out = append(out, Violation{
 					File:       filePath,
-					Message:    fmt.Sprintf(`%s — operationId %q uses "ID" suffix instead of "Id". Use: %q. See AGENTS.md § "Casing rules at a glance".`, label, opID, suggestion),
+					Message:    fmt.Sprintf(`%s — operationId %q uses "ID" suffix instead of "Id". Use: %q. See docs/casing-rules.md.`, label, opID, suggestion),
 					Severity:   *sev,
 					RuleNumber: 3,
 				})
@@ -60,7 +60,7 @@ func checkRule3(filePath string, doc *openapi3.T, opts AuditOptions) []Violation
 // uniformly (see `collectAllParams`).
 //
 // The canonical URL-parameter contract is camelCase with an `Id` suffix for
-// ID-like names (see AGENTS.md § "Casing rules at a glance" — URL path params
+// ID-like names (see docs/casing-rules.md — URL path params
 // + ID-like query params). The same `IsBadPathParam`/`SuggestPathParam`
 // predicate governs both path and query parameters because they share the
 // same wire contract: both appear in the client-visible URL.
@@ -153,8 +153,8 @@ func checkRule4(filePath string, doc *openapi3.T, opts AuditOptions) []Violation
 
 // Rule 6: schema property names (on api.yml components/schemas).
 //
-// Under the canonical identifier-naming contract (AGENTS.md § Identifier-
-// naming migration, docs/identifier-naming-migration.md §1), every schema
+// Under the canonical identifier-naming contract (docs/schema-tooling.md §
+// Identifier-naming migration, docs/identifier-naming-migration.md §1), every schema
 // property name / JSON tag is camelCase regardless of DB backing. Rule 6 is
 // therefore unconditional — DB-mirrored fields are no longer exempt and are
 // flagged through the same `--style-debt` severity path as any other
@@ -222,7 +222,7 @@ func checkPropertyNameCasing(filePath, schemaName string, schema *openapi3.Schem
 					msg += fmt.Sprintf(` Use: %q.`, suggestion)
 				}
 				msg += schemaPropertyDBContext(propName)
-				msg += ` See AGENTS.md § "Casing rules at a glance".`
+				msg += ` See docs/casing-rules.md.`
 				out = append(out, Violation{File: filePath, Message: msg, Severity: sev, RuleNumber: 6})
 			}
 			// Recurse into the property's own schema to surface nested
@@ -290,7 +290,7 @@ func checkRule7(filePath string, doc *openapi3.T, opts AuditOptions) []Violation
 			suggestion := strings.ToUpper(name[:1]) + name[1:]
 			out = append(out, Violation{
 				File:       filePath,
-				Message:    fmt.Sprintf(`Schema component name %q must be PascalCase. Suggested: %q. See AGENTS.md § "Casing rules at a glance".`, name, suggestion),
+				Message:    fmt.Sprintf(`Schema component name %q must be PascalCase. Suggested: %q. See docs/casing-rules.md.`, name, suggestion),
 				Severity:   *sev,
 				RuleNumber: 7,
 			})
@@ -354,7 +354,7 @@ func checkRule10(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 				suggestion := toKebabCase(seg)
 				out = append(out, Violation{
 					File:       filePath,
-					Message:    fmt.Sprintf(`Path %q — segment %q must be kebab-case. Suggested: %q. See AGENTS.md § "Casing rules at a glance".`, path, seg, suggestion),
+					Message:    fmt.Sprintf(`Path %q — segment %q must be kebab-case. Suggested: %q. See docs/casing-rules.md.`, path, seg, suggestion),
 					Severity:   *sev,
 					RuleNumber: 10,
 				})
@@ -473,7 +473,7 @@ func getExtraTag(extensions map[string]any, tagName string) string {
 // wire-form property names (schema-property key, or the
 // `x-oapi-codegen-extra-tags.json` override when present) mix two or more
 // casing families — camel / snake / screaming. Under the canonical
-// identifier-naming contract (AGENTS.md § Casing rules at a glance,
+// identifier-naming contract (docs/casing-rules.md,
 // docs/identifier-naming-migration.md §1), when a resource's wire format
 // changes, the change must land on a new API version and migrate *every*
 // property consistently. A struct that publishes `userId` + `user_id` +
@@ -587,7 +587,7 @@ func rule45Message(schemaName string, families map[string][]string) string {
 		parts = append(parts, fmt.Sprintf("%s: [%s]", f, strings.Join(out, ", ")))
 	}
 	return fmt.Sprintf(
-		`Schema %q mixes JSON-tag casing conventions across its properties — %s. Partial casing migrations are forbidden under the canonical identifier-naming contract. If the wire format must change, introduce a new API version and migrate every property consistently. See AGENTS.md § "Casing rules at a glance" and docs/identifier-naming-migration.md §9.`,
+		`Schema %q mixes JSON-tag casing conventions across its properties — %s. Partial casing migrations are forbidden under the canonical identifier-naming contract. If the wire format must change, introduce a new API version and migrate every property consistently. See docs/casing-rules.md and docs/identifier-naming-migration.md §9.`,
 		schemaName, strings.Join(parts, "; "))
 }
 

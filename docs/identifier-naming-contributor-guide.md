@@ -1,6 +1,6 @@
 # Identifier Naming — Contributor Guide
 
-> The canonical, evergreen reference for identifier naming across every Layer5 / Meshery repository — Go, TypeScript, OpenAPI, SQL, URLs, file names, error codes. If you're contributing code or reviewing a PR in any Layer5 / Meshery repo, this document tells you the right form for every element type.
+> The canonical, evergreen reference for identifier naming across every Meshery component and repository — Go, TypeScript, OpenAPI, SQL, URLs, file names, error codes. If you're contributing code or reviewing a PR in any repo, this document tells you the right form for every element type.
 >
 > For a one-time announcement summarizing the migration that produced this convention (PR counts, releases cut, contributors, timeline), see [`identifier-naming-announcement-2026-04-24.md`](identifier-naming-announcement-2026-04-24.md).
 

@@ -1,6 +1,6 @@
 ---
 name: create-openapi-schemas-from-golang-models
-description: 'Create OpenAPI schemas from Golang models in Layer5 Cloud, generating schema artifacts in Meshery Schemas repository. Handles cross-repository schema creation workflow with proper naming conventions, Go code generation, and backwards compatibility validation.'
+description: 'Create OpenAPI schemas from Golang models in Meshery Cloud, generating schema artifacts in Meshery Schemas repository. Handles cross-repository schema creation workflow with proper naming conventions, Go code generation, and backwards compatibility validation.'
 ---
 
 # Create OpenAPI Schemas from Golang Models
@@ -9,7 +9,7 @@ description: 'Create OpenAPI schemas from Golang models in Layer5 Cloud, generat
 
 ## Overview
 
-This skill guides you through creating OpenAPI schemas from existing Golang models in Layer5 Cloud (layer5io/meshery-cloud), with the generated schemas stored in Meshery Schemas (meshery/schemas). This cross-repository workflow ensures consistent API contracts between the two projects.
+This skill guides you through creating OpenAPI schemas from existing Golang models in Meshery Cloud (layer5io/meshery-cloud), with the generated schemas stored in Meshery Schemas (meshery/schemas). This cross-repository workflow ensures consistent API contracts between the two projects.
 
 ## Prerequisites
 
@@ -17,7 +17,7 @@ This skill guides you through creating OpenAPI schemas from existing Golang mode
 
 Both repositories must be locally cloned and available:
 
-- **Layer5 Cloud**: `/Users/l/code/meshery-cloud` (https://github.com/layer5io/meshery-cloud)
+- **Meshery Cloud**: `/Users/l/code/meshery-cloud` (https://github.com/layer5io/meshery-cloud)
 - **Meshery Schemas**: `/Users/l/code/schemas` (https://github.com/meshery/schemas)
 
 ### Required Knowledge
@@ -116,7 +116,7 @@ properties:
 
 #### API Definition (`api.yml`)
 
-Define endpoints matching the Layer5 Cloud router. All `POST`/`PUT` operations **must** use a `{Construct}Payload` request body — never the full entity schema.
+Define endpoints matching the Meshery Cloud router. All `POST`/`PUT` operations **must** use a `{Construct}Payload` request body — never the full entity schema.
 
 ```yaml
 openapi: 3.0.3
@@ -238,7 +238,7 @@ make generate-golang
 
    For amorphous JSON blob fields that lack a fixed schema definition (e.g., a freeform `metadata` map), use `x-go-type: "core.Map"` on the property instead — do not use `x-generate-db-helpers` for those.
 
-3. If helpers are still needed for non-generated behavior (e.g., `TableName()`, custom business logic), create `helpers.go` manually. When implementing `Scan`/`Value`, follow these rules (see AGENTS.md § "SQL Driver Rules"):
+3. If helpers are still needed for non-generated behavior (e.g., `TableName()`, custom business logic), create `helpers.go` manually. When implementing `Scan`/`Value`, follow these rules (see docs/schema-authoring-reference.md § "SQL Driver (`Scan`/`Value`) Implementation Rules"):
    - `Value()` must always marshal — never return `(nil, nil)`. A nil map produces JSON `"null"`, not SQL NULL.
    - `Scan()` must zero the receiver (`*m = nil`) when `src` is nil, not silently return.
 
@@ -279,7 +279,7 @@ go test ./...
 
 ### Task 3: Validate Backwards Compatibility
 
-Compare generated models with Layer5 Cloud models:
+Compare generated models with Meshery Cloud models:
 
 **Source**: `layer5io/meshery-cloud/server/models/<construct>.go`
 **Generated**: `meshery/schemas/models/v1beta1/<construct_name>/<construct_name>.go`
@@ -374,7 +374,7 @@ The **Academy** construct in `meshery/schemas` serves as the primary exemplar fo
 
 ## Example: Role Construct
 
-### Source Files in Layer5 Cloud
+### Source Files in Meshery Cloud
 
 - Model: `server/models/roles.go`
 - Handler: `server/handlers/roles.go`

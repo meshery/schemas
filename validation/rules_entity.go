@@ -265,7 +265,7 @@ func checkRule6ForEntity(filePath string, entity *entitySchema, opts AuditOption
 				msg += fmt.Sprintf(` Use: %q.`, suggestion)
 			}
 			msg += schemaPropertyDBContext(propName)
-			msg += ` See AGENTS.md § "Casing rules at a glance".`
+			msg += ` See docs/casing-rules.md.`
 			out = append(out, Violation{File: filePath, Message: msg, Severity: *sev, RuleNumber: 6})
 		}
 	}

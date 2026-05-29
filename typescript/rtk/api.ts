@@ -11,7 +11,7 @@ interface RootState {
 
 export const SUPPORTED_SOCIAL_ACCOUNTS = ["github", "google"];
 
-export const CURRENT_ORG_KEY = "Layer5-Current-Orgid";
+export const CURRENT_ORG_KEY = "X-Current-Orgid";
 export const DEFAULT_DESIGN_VERSION = "0.0.1";
 export const MESHERY_PROD_URL = "https://playground.meshery.io/";
 

@@ -346,7 +346,7 @@ const DesignSchema: Record<string, unknown> = {
                               "provider": {
                                 "type": "string",
                                 "maxLength": 100,
-                                "description": "Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)",
+                                "description": "Authentication provider (e.g., Google, Github)",
                                 "example": [
                                   "local",
                                   "github",
@@ -1360,7 +1360,7 @@ const DesignSchema: Record<string, unknown> = {
                         "provider": {
                           "type": "string",
                           "maxLength": 100,
-                          "description": "Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)",
+                          "description": "Authentication provider (e.g., Google, Github)",
                           "example": [
                             "local",
                             "github",
@@ -2521,7 +2521,7 @@ const DesignSchema: Record<string, unknown> = {
                         "provider": {
                           "type": "string",
                           "maxLength": 100,
-                          "description": "Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)",
+                          "description": "Authentication provider (e.g., Google, Github)",
                           "example": [
                             "local",
                             "github",
@@ -3413,7 +3413,7 @@ const DesignSchema: Record<string, unknown> = {
                         "provider": {
                           "type": "string",
                           "maxLength": 100,
-                          "description": "Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)",
+                          "description": "Authentication provider (e.g., Google, Github)",
                           "example": [
                             "local",
                             "github",
@@ -4639,7 +4639,7 @@ const DesignSchema: Record<string, unknown> = {
                               "provider": {
                                 "type": "string",
                                 "maxLength": 100,
-                                "description": "Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)",
+                                "description": "Authentication provider (e.g., Google, Github)",
                                 "example": [
                                   "local",
                                   "github",
@@ -11242,7 +11242,7 @@ const DesignSchema: Record<string, unknown> = {
               "provider": {
                 "type": "string",
                 "maxLength": 100,
-                "description": "Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)",
+                "description": "Authentication provider (e.g., Google, Github)",
                 "example": [
                   "local",
                   "github",
@@ -12025,7 +12025,7 @@ const DesignSchema: Record<string, unknown> = {
                     "provider": {
                       "type": "string",
                       "maxLength": 100,
-                      "description": "Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)",
+                      "description": "Authentication provider (e.g., Google, Github)",
                       "example": [
                         "local",
                         "github",
@@ -13369,7 +13369,7 @@ const DesignSchema: Record<string, unknown> = {
                     "provider": {
                       "type": "string",
                       "maxLength": 100,
-                      "description": "Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)",
+                      "description": "Authentication provider (e.g., Google, Github)",
                       "example": [
                         "local",
                         "github",

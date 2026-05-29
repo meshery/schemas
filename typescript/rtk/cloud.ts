@@ -2,6 +2,7 @@ import { cloudBaseApi as api } from "./api";
 export const addTagTypes = [
   "Feature_Features",
   "Support_Support",
+  "System_API_System",
   "Badge_Badge",
   "credential_credentials",
   "Key_users",
@@ -49,6 +50,10 @@ const injectedRtkApi = api
       submitSupportRequest: build.mutation<SubmitSupportRequestApiResponse, SubmitSupportRequestApiArg>({
         query: (queryArg) => ({ url: `/api/integrations/support`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Support_Support"],
+      }),
+      getSystemVersion: build.query<GetSystemVersionApiResponse, GetSystemVersionApiArg>({
+        query: () => ({ url: `/api/system/version` }),
+        providesTags: ["System_API_System"],
       }),
       deleteBadgeById: build.mutation<DeleteBadgeByIdApiResponse, DeleteBadgeByIdApiArg>({
         query: (queryArg) => ({ url: `/api/organizations/badges/${queryArg.badgeId}`, method: "DELETE" }),
@@ -1524,6 +1529,21 @@ export type SubmitSupportRequestApiArg = {
     scope?: "Support" | "Community" | "Account" | "Commercial";
   };
 };
+export type GetSystemVersionApiResponse = /** status 200 Server version metadata */ {
+  /** Meshery Cloud deployment version. */
+  version?: string;
+  /** Build identifier (typically the git tag of the running binary). */
+  build?: string;
+  /** Latest available Meshery release tag fetched from GitHub. */
+  latest?: string;
+  /** True when the running build is older than the latest available release. */
+  outdated?: boolean;
+  /** Git commit SHA of the running service. The wire field is `commitsha`. */
+  commitsha?: string;
+  /** Release channel of the running binary (e.g. `stable`, `edge`). */
+  releaseChannel?: string;
+};
+export type GetSystemVersionApiArg = void;
 export type DeleteBadgeByIdApiResponse = unknown;
 export type DeleteBadgeByIdApiArg = {
   /** Badge ID */
@@ -3271,7 +3291,7 @@ export type GetUsersForOrgApiResponse = /** status 200 Paginated list of organiz
     id: string;
     /** User identifier (username or external ID) */
     userId: string;
-    /** Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github) */
+    /** Authentication provider (e.g., Google, Github) */
     provider: string;
     /** User's email address */
     email: string;
@@ -3435,7 +3455,7 @@ export type GetUsersApiResponse = /** status 200 Paginated list of public users 
     id: string;
     /** User identifier (username or external ID) */
     userId: string;
-    /** Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github) */
+    /** Authentication provider (e.g., Google, Github) */
     provider: string;
     /** User's email address */
     email: string;
@@ -3587,7 +3607,7 @@ export type GetUserProfileByIdApiResponse = /** status 200 User profile for the 
   id: string;
   /** User identifier (username or external ID) */
   userId: string;
-  /** Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github) */
+  /** Authentication provider (e.g., Google, Github) */
   provider: string;
   /** User's email address */
   email: string;
@@ -3730,7 +3750,7 @@ export type GetUserApiResponse = /** status 200 Current user profile and role co
   id: string;
   /** User identifier (username or external ID) */
   userId: string;
-  /** Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github) */
+  /** Authentication provider (e.g., Google, Github) */
   provider: string;
   /** User's email address */
   email: string;
@@ -6212,7 +6232,7 @@ export type GetPatternsApiResponse = /** status 200 Designs response */ {
       id: string;
       /** User identifier (username or external ID) */
       userId: string;
-      /** Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github) */
+      /** Authentication provider (e.g., Google, Github) */
       provider: string;
       /** User's email address */
       email: string;
@@ -6448,7 +6468,7 @@ export type UpsertPatternApiResponse = /** status 200 Design saved */ {
     id: string;
     /** User identifier (username or external ID) */
     userId: string;
-    /** Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github) */
+    /** Authentication provider (e.g., Google, Github) */
     provider: string;
     /** User's email address */
     email: string;
@@ -6750,7 +6770,7 @@ export type GetPatternApiResponse = /** status 200 Design response */ {
     id: string;
     /** User identifier (username or external ID) */
     userId: string;
-    /** Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github) */
+    /** Authentication provider (e.g., Google, Github) */
     provider: string;
     /** User's email address */
     email: string;
@@ -6968,7 +6988,7 @@ export type ClonePatternApiResponse = /** status 200 Design cloned */ {
     id: string;
     /** User identifier (username or external ID) */
     userId: string;
-    /** Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github) */
+    /** Authentication provider (e.g., Google, Github) */
     provider: string;
     /** User's email address */
     email: string;
@@ -7220,7 +7240,7 @@ export type GetCatalogContentApiResponse = /** status 200 Catalog content page *
       id: string;
       /** User identifier (username or external ID) */
       userId: string;
-      /** Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github) */
+      /** Authentication provider (e.g., Google, Github) */
       provider: string;
       /** User's email address */
       email: string;
@@ -10843,6 +10863,7 @@ export const {
   useGetFeaturesQuery,
   useGetFeaturesByOrganizationQuery,
   useSubmitSupportRequestMutation,
+  useGetSystemVersionQuery,
   useDeleteBadgeByIdMutation,
   useGetBadgeByIdQuery,
   useCreateOrUpdateBadgeMutation,
