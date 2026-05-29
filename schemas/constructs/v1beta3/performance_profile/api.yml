@@ -179,7 +179,7 @@ paths:
 
   /api/performance/profiles/{performanceProfileId}/results/{resultId}:
     get:
-      x-internal: ["cloud", "meshery"]
+      x-internal: ["cloud"]
       tags:
         - performance
       operationId: getPerformanceProfileResult
