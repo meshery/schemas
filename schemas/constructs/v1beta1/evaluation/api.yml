@@ -21,6 +21,7 @@ tags:
 paths:
   /api/meshmodels/relationships/evaluate:
     post:
+      operationId: evaluateRelationships
       x-internal: ["meshery"]
       tags:
         - Evaluation
