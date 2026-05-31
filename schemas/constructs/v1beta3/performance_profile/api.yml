@@ -158,7 +158,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/performanceProfileId"
         - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/pagesize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
       responses:
@@ -214,7 +214,7 @@ paths:
       description: Returns paginated load-test results visible to the authenticated user.
       parameters:
         - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/pagesize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
         - $ref: "#/components/parameters/from"
@@ -269,14 +269,6 @@ components:
       $ref: "../../v1alpha1/core/api.yml#/components/parameters/page"
     pagesize:
       $ref: "../../v1alpha1/core/api.yml#/components/parameters/pagesize"
-    pageSize:
-      name: pageSize
-      in: query
-      description: Maximum number of items to return on each page.
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 1000
     from:
       name: from
       in: query
