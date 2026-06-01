@@ -4,8 +4,11 @@
 package performance_profile
 
 import (
+	"time"
+
 	"github.com/lib/pq"
 	"github.com/meshery/schemas/models/core"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 // PerformanceProfile A performance profile captures the configuration for a load test run by Meshery against one or more service-mesh endpoints. Profiles are owned by a user and can optionally be associated with a recurring schedule. Learn more at https://docs.meshery.io/tasks/performance-management
@@ -23,10 +26,10 @@ type PerformanceProfile struct {
 	Schedule *core.Uuid `db:"schedule" json:"schedule,omitempty" yaml:"schedule,omitempty"`
 
 	// LoadGenerators Load generators (e.g. fortio, wrk2, nighthawk) to drive the profile's load test.
-	LoadGenerators pq.StringArray `db:"load_generators" json:"loadGenerators" yaml:"loadGenerators"`
+	LoadGenerators pq.StringArray `db:"load_generators" gorm:"type:text[]" json:"loadGenerators" yaml:"loadGenerators"`
 
 	// Endpoints Endpoints (URLs) targeted by the performance profile's load test.
-	Endpoints pq.StringArray `db:"endpoints" json:"endpoints" yaml:"endpoints"`
+	Endpoints pq.StringArray `db:"endpoints" gorm:"type:text[]" json:"endpoints" yaml:"endpoints"`
 
 	// ServiceMesh Service mesh under test for the profile (e.g. istio, linkerd, consul). Empty string when the profile is mesh-agnostic.
 	ServiceMesh string `db:"service_mesh" json:"serviceMesh" yaml:"serviceMesh"`
@@ -131,6 +134,123 @@ type PerformanceProfilePayload struct {
 	UserID *core.Uuid `json:"userId,omitempty" yaml:"userId,omitempty"`
 }
 
+// PerformanceResult Load-test result captured for a Meshery performance profile.
+type PerformanceResult struct {
+	// CreatedAt Timestamp when the resource was created.
+	CreatedAt core.CreatedAt `db:"created_at" json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
+
+	// Mesh Service mesh under test for this result.
+	Mesh string `db:"mesh" json:"mesh,omitempty" yaml:"mesh,omitempty"`
+
+	// MesheryId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID *core.Uuid `db:"id" json:"mesheryId,omitempty" yaml:"mesheryId,omitempty"`
+
+	// Name Human-readable name of the performance result.
+	Name string `db:"name" json:"name,omitempty" yaml:"name,omitempty"`
+
+	// PerformanceProfile A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	PerformanceProfile *core.Uuid `db:"performance_profile" json:"performanceProfile,omitempty" yaml:"performanceProfile,omitempty"`
+
+	// RunnerResults Raw load-generator output for this performance result.
+	RunnerResults core.Map `db:"runner_results" json:"runnerResults,omitempty" yaml:"runnerResults,omitempty"`
+
+	// ServerBoardConfig Server board configuration associated with this performance result.
+	ServerBoardConfig core.Map `db:"server_board_config" json:"serverBoardConfig,omitempty" yaml:"serverBoardConfig,omitempty"`
+
+	// ServerMetrics Server-side metrics collected for this performance result.
+	ServerMetrics core.Map `db:"server_metrics" json:"serverMetrics,omitempty" yaml:"serverMetrics,omitempty"`
+
+	// TestID Provider-assigned test identifier for this result.
+	TestID string `json:"testId,omitempty" yaml:"testId,omitempty"`
+
+	// TestStartTime Time when the load test started.
+	TestStartTime *time.Time `db:"test_start_time" json:"testStartTime,omitempty" yaml:"testStartTime,omitempty"`
+
+	// UpdatedAt Timestamp when the resource was updated.
+	UpdatedAt core.UpdatedAt `db:"updated_at" json:"updatedAt,omitempty" yaml:"updatedAt,omitempty"`
+
+	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	UserID *core.Uuid `db:"user_id" json:"userId,omitempty" yaml:"userId,omitempty"`
+}
+
+// PerformanceResultPage Paginated list of performance results.
+type PerformanceResultPage struct {
+	// Page Zero-based page index returned in this response.
+	Page int `json:"page" yaml:"page"`
+
+	// PageSize Maximum number of items returned on each page.
+	PageSize int `json:"pageSize" yaml:"pageSize"`
+
+	// Results Performance results in this page.
+	Results []PerformanceResult `json:"results" yaml:"results"`
+
+	// TotalCount Total number of performance results across all pages.
+	TotalCount int `json:"totalCount" yaml:"totalCount"`
+}
+
+// PerformanceTestClient A single load-generation client within a PerformanceTestConfig. It is the Meshery-native replacement for the deprecated service-mesh-performance (SMP) PerformanceTestConfig_Client.
+type PerformanceTestClient struct {
+	// Internal Whether the client runs inside the cluster (internal) rather than against an external endpoint.
+	Internal bool `json:"internal,omitempty" yaml:"internal,omitempty"`
+
+	// LoadGenerator Load generator used to drive the test (e.g. "fortio"). Empty defaults to the server's supported generator.
+	LoadGenerator string `json:"loadGenerator,omitempty" yaml:"loadGenerator,omitempty"`
+
+	// Protocol Application protocol exercised by the client (e.g. "http", "tcp", "udp", "grpc").
+	Protocol string `json:"protocol,omitempty" yaml:"protocol,omitempty"`
+
+	// Connections Number of concurrent connections the client opens to the endpoint.
+	Connections int `json:"connections,omitempty" yaml:"connections,omitempty"`
+
+	// Rps Target requests-per-second issued by the client. Zero means unthrottled.
+	Rps int `json:"rps,omitempty" yaml:"rps,omitempty"`
+
+	// Headers HTTP request headers sent on each request.
+	Headers map[string]string `json:"headers,omitempty" yaml:"headers,omitempty"`
+
+	// Cookies HTTP request cookies sent on each request.
+	Cookies map[string]string `json:"cookies,omitempty" yaml:"cookies,omitempty"`
+
+	// Body Request body sent on each request.
+	Body string `json:"body,omitempty" yaml:"body,omitempty"`
+
+	// ContentType Content-Type header applied to the request body (e.g. "application/json").
+	ContentType string `json:"contentType,omitempty" yaml:"contentType,omitempty"`
+
+	// EndpointUrls Target endpoint URLs the client issues requests against.
+	EndpointUrls []string `json:"endpointUrls" yaml:"endpointUrls"`
+
+	// SslCertificate PEM-encoded SSL certificate presented by the client, when required.
+	SslCertificate string `json:"sslCertificate,omitempty" yaml:"sslCertificate,omitempty"`
+
+	// AdditionalOptions Additional load-generator-specific options passed through to the generator.
+	AdditionalOptions string `json:"additionalOptions,omitempty" yaml:"additionalOptions,omitempty"`
+}
+
+// PerformanceTestConfig Runtime configuration for a single performance (load) test run. This is the executable test definition that drives load generation, distinct from a saved PerformanceProfile. It is the Meshery-native replacement for the deprecated service-mesh-performance (SMP) PerformanceTestConfig.
+type PerformanceTestConfig struct {
+	// SmpVersion Version of the performance test configuration format.
+	SmpVersion string `json:"smpVersion,omitempty" yaml:"smpVersion,omitempty"`
+
+	// ID Opaque identifier assigned to the persisted test configuration. Server-assigned (a UUID string); accepted as a free-form string for backward compatibility with externally authored test files.
+	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+
+	// Name Human-readable name of the performance test.
+	Name string `json:"name" yaml:"name"`
+
+	// Labels Arbitrary key/value labels attached to the test configuration.
+	Labels map[string]string `json:"labels,omitempty" yaml:"labels,omitempty"`
+
+	// Clients Load-generation clients that issue requests during the test. A single client is typical; multiple clients describe a distributed load test.
+	Clients []PerformanceTestClient `json:"clients" yaml:"clients"`
+
+	// Duration Length of time the endpoint is held under load, expressed as a Go duration string (e.g. "30s", "5m", "1h").
+	Duration string `json:"duration" yaml:"duration"`
+}
+
+// From defines model for from.
+type From = openapi_types.Date
+
 // Order defines model for order.
 type Order = string
 
@@ -143,5 +263,11 @@ type Pagesize = string
 // PerformanceProfileId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 type PerformanceProfileId = core.Uuid
 
+// ResultId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+type ResultId = core.Uuid
+
 // Search defines model for search.
 type Search = string
+
+// To defines model for to.
+type To = openapi_types.Date

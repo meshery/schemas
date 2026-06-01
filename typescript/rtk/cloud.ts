@@ -1160,7 +1160,7 @@ const injectedRtkApi = api
       }),
       getPerformanceProfiles: build.query<GetPerformanceProfilesApiResponse, GetPerformanceProfilesApiArg>({
         query: (queryArg) => ({
-          url: `/api/performance-profiles`,
+          url: `/api/performance/profiles`,
           params: {
             page: queryArg?.page,
             pagesize: queryArg?.pagesize,
@@ -1171,24 +1171,62 @@ const injectedRtkApi = api
         providesTags: ["Performance_Profile_performance"],
       }),
       upsertPerformanceProfile: build.mutation<UpsertPerformanceProfileApiResponse, UpsertPerformanceProfileApiArg>({
-        query: (queryArg) => ({ url: `/api/performance-profiles`, method: "POST", body: queryArg.body }),
+        query: (queryArg) => ({ url: `/api/performance/profiles`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Performance_Profile_performance"],
       }),
       getPerformanceProfile: build.query<GetPerformanceProfileApiResponse, GetPerformanceProfileApiArg>({
-        query: (queryArg) => ({ url: `/api/performance-profiles/${queryArg.performanceProfileId}` }),
+        query: (queryArg) => ({ url: `/api/performance/profiles/${queryArg.performanceProfileId}` }),
         providesTags: ["Performance_Profile_performance"],
       }),
       updatePerformanceProfile: build.mutation<UpdatePerformanceProfileApiResponse, UpdatePerformanceProfileApiArg>({
         query: (queryArg) => ({
-          url: `/api/performance-profiles/${queryArg.performanceProfileId}`,
+          url: `/api/performance/profiles/${queryArg.performanceProfileId}`,
           method: "PUT",
           body: queryArg.body,
         }),
         invalidatesTags: ["Performance_Profile_performance"],
       }),
       deletePerformanceProfile: build.mutation<DeletePerformanceProfileApiResponse, DeletePerformanceProfileApiArg>({
-        query: (queryArg) => ({ url: `/api/performance-profiles/${queryArg.performanceProfileId}`, method: "DELETE" }),
+        query: (queryArg) => ({ url: `/api/performance/profiles/${queryArg.performanceProfileId}`, method: "DELETE" }),
         invalidatesTags: ["Performance_Profile_performance"],
+      }),
+      getPerformanceProfileResults: build.query<
+        GetPerformanceProfileResultsApiResponse,
+        GetPerformanceProfileResultsApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/performance/profiles/${queryArg.performanceProfileId}/results`,
+          params: {
+            page: queryArg?.page,
+            pagesize: queryArg?.pagesize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+          },
+        }),
+        providesTags: ["Performance_Profile_performance"],
+      }),
+      getPerformanceProfileResult: build.query<
+        GetPerformanceProfileResultApiResponse,
+        GetPerformanceProfileResultApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/performance/profiles/${queryArg.performanceProfileId}/results/${queryArg.resultId}`,
+        }),
+        providesTags: ["Performance_Profile_performance"],
+      }),
+      getPerformanceResults: build.query<GetPerformanceResultsApiResponse, GetPerformanceResultsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/performance/results`,
+          params: {
+            page: queryArg?.page,
+            pagesize: queryArg?.pagesize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            from: queryArg?.["from"],
+            to: queryArg?.to,
+          },
+        }),
+        providesTags: ["Performance_Profile_performance"],
       }),
       getPlans: build.query<GetPlansApiResponse, GetPlansApiArg>({
         query: (queryArg) => ({
@@ -9009,6 +9047,152 @@ export type DeletePerformanceProfileApiArg = {
   /** Performance profile ID. */
   performanceProfileId: string;
 };
+export type GetPerformanceProfileResultsApiResponse = /** status 200 Performance results */ {
+  /** Zero-based page index returned in this response. */
+  page: number;
+  /** Maximum number of items returned on each page. */
+  pageSize: number;
+  /** Total number of performance results across all pages. */
+  totalCount: number;
+  /** Performance results in this page. */
+  results: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    mesheryId?: string;
+    /** Human-readable name of the performance result. */
+    name?: string;
+    /** Service mesh under test for this result. */
+    mesh?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    performanceProfile?: string | null;
+    /** Provider-assigned test identifier for this result. */
+    testId?: string;
+    /** Raw load-generator output for this performance result. */
+    runnerResults?: {
+      [key: string]: any;
+    };
+    /** Server-side metrics collected for this performance result. */
+    serverMetrics?: {
+      [key: string]: any;
+    };
+    /** Server board configuration associated with this performance result. */
+    serverBoardConfig?: {
+      [key: string]: any;
+    };
+    /** Time when the load test started. */
+    testStartTime?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    userId?: string;
+    /** Timestamp when the performance result was created. */
+    createdAt?: string;
+    /** Timestamp when the performance result was last updated. */
+    updatedAt?: string;
+  }[];
+};
+export type GetPerformanceProfileResultsApiArg = {
+  /** Performance profile ID. */
+  performanceProfileId: string;
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+};
+export type GetPerformanceProfileResultApiResponse = /** status 200 Performance result */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  mesheryId?: string;
+  /** Human-readable name of the performance result. */
+  name?: string;
+  /** Service mesh under test for this result. */
+  mesh?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  performanceProfile?: string | null;
+  /** Provider-assigned test identifier for this result. */
+  testId?: string;
+  /** Raw load-generator output for this performance result. */
+  runnerResults?: {
+    [key: string]: any;
+  };
+  /** Server-side metrics collected for this performance result. */
+  serverMetrics?: {
+    [key: string]: any;
+  };
+  /** Server board configuration associated with this performance result. */
+  serverBoardConfig?: {
+    [key: string]: any;
+  };
+  /** Time when the load test started. */
+  testStartTime?: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  userId?: string;
+  /** Timestamp when the performance result was created. */
+  createdAt?: string;
+  /** Timestamp when the performance result was last updated. */
+  updatedAt?: string;
+};
+export type GetPerformanceProfileResultApiArg = {
+  /** Performance profile ID. */
+  performanceProfileId: string;
+  /** Performance result ID. */
+  resultId: string;
+};
+export type GetPerformanceResultsApiResponse = /** status 200 Performance results */ {
+  /** Zero-based page index returned in this response. */
+  page: number;
+  /** Maximum number of items returned on each page. */
+  pageSize: number;
+  /** Total number of performance results across all pages. */
+  totalCount: number;
+  /** Performance results in this page. */
+  results: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    mesheryId?: string;
+    /** Human-readable name of the performance result. */
+    name?: string;
+    /** Service mesh under test for this result. */
+    mesh?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    performanceProfile?: string | null;
+    /** Provider-assigned test identifier for this result. */
+    testId?: string;
+    /** Raw load-generator output for this performance result. */
+    runnerResults?: {
+      [key: string]: any;
+    };
+    /** Server-side metrics collected for this performance result. */
+    serverMetrics?: {
+      [key: string]: any;
+    };
+    /** Server board configuration associated with this performance result. */
+    serverBoardConfig?: {
+      [key: string]: any;
+    };
+    /** Time when the load test started. */
+    testStartTime?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    userId?: string;
+    /** Timestamp when the performance result was created. */
+    createdAt?: string;
+    /** Timestamp when the performance result was last updated. */
+    updatedAt?: string;
+  }[];
+};
+export type GetPerformanceResultsApiArg = {
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Start date for filtering results by test start time, in YYYY-MM-DD format. */
+  from?: string;
+  /** End date for filtering results by test start time, in YYYY-MM-DD format. */
+  to?: string;
+};
 export type GetPlansApiResponse = /** status 200 Plans response */ {
   /** Unique identifier for the plan. */
   id: string;
@@ -11022,6 +11206,9 @@ export const {
   useGetPerformanceProfileQuery,
   useUpdatePerformanceProfileMutation,
   useDeletePerformanceProfileMutation,
+  useGetPerformanceProfileResultsQuery,
+  useGetPerformanceProfileResultQuery,
+  useGetPerformanceResultsQuery,
   useGetPlansQuery,
   useGetSubscriptionsQuery,
   useCancelSubscriptionMutation,
