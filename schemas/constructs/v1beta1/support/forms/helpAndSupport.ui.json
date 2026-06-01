@@ -1,4 +1,5 @@
 {
+  "ui:options": { "label": false },
   "subject": {
     "ui:placeholder": "Summary or title for your support request"
   },
