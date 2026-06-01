@@ -45,10 +45,11 @@ const PerformanceProfileSchema: Record<string, unknown> = {
     }
   ],
   "paths": {
-    "/api/performance-profiles": {
+    "/api/performance/profiles": {
       "get": {
         "x-internal": [
-          "cloud"
+          "cloud",
+          "meshery"
         ],
         "tags": [
           "performance"
@@ -227,6 +228,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                             "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "load_generators",
+                              "gorm": "type:text[]",
                               "json": "loadGenerators"
                             }
                           },
@@ -248,6 +250,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                             "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "endpoints",
+                              "gorm": "type:text[]",
                               "json": "endpoints"
                             }
                           },
@@ -450,7 +453,8 @@ const PerformanceProfileSchema: Record<string, unknown> = {
       },
       "post": {
         "x-internal": [
-          "cloud"
+          "cloud",
+          "meshery"
         ],
         "tags": [
           "performance"
@@ -747,6 +751,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "load_generators",
+                        "gorm": "type:text[]",
                         "json": "loadGenerators"
                       }
                     },
@@ -768,6 +773,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "endpoints",
+                        "gorm": "type:text[]",
                         "json": "endpoints"
                       }
                     },
@@ -966,10 +972,11 @@ const PerformanceProfileSchema: Record<string, unknown> = {
         }
       }
     },
-    "/api/performance-profiles/{performanceProfileId}": {
+    "/api/performance/profiles/{performanceProfileId}": {
       "get": {
         "x-internal": [
-          "cloud"
+          "cloud",
+          "meshery"
         ],
         "tags": [
           "performance"
@@ -1089,6 +1096,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "load_generators",
+                        "gorm": "type:text[]",
                         "json": "loadGenerators"
                       }
                     },
@@ -1110,6 +1118,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "endpoints",
+                        "gorm": "type:text[]",
                         "json": "endpoints"
                       }
                     },
@@ -1319,7 +1328,8 @@ const PerformanceProfileSchema: Record<string, unknown> = {
       },
       "put": {
         "x-internal": [
-          "cloud"
+          "cloud",
+          "meshery"
         ],
         "tags": [
           "performance"
@@ -1633,6 +1643,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "load_generators",
+                        "gorm": "type:text[]",
                         "json": "loadGenerators"
                       }
                     },
@@ -1654,6 +1665,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "endpoints",
+                        "gorm": "type:text[]",
                         "json": "endpoints"
                       }
                     },
@@ -1863,7 +1875,8 @@ const PerformanceProfileSchema: Record<string, unknown> = {
       },
       "delete": {
         "x-internal": [
-          "cloud"
+          "cloud",
+          "meshery"
         ],
         "tags": [
           "performance"
@@ -1914,6 +1927,848 @@ const PerformanceProfileSchema: Record<string, unknown> = {
           },
           "404": {
             "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/performance/profiles/{performanceProfileId}/results": {
+      "get": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
+        "tags": [
+          "performance"
+        ],
+        "operationId": "getPerformanceProfileResults",
+        "summary": "List performance results for a profile",
+        "description": "Returns paginated load-test results associated with the performance profile identified by the path parameter.",
+        "parameters": [
+          {
+            "name": "performanceProfileId",
+            "in": "path",
+            "description": "Performance profile ID.",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              }
+            },
+            "required": true
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Get responses by page",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pagesize",
+            "in": "query",
+            "description": "Get responses by pagesize",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Get responses that match search param value",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "Get ordered responses",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Performance results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Paginated list of performance results.",
+                  "required": [
+                    "page",
+                    "pageSize",
+                    "totalCount",
+                    "results"
+                  ],
+                  "properties": {
+                    "page": {
+                      "type": "integer",
+                      "description": "Zero-based page index returned in this response.",
+                      "minimum": 0,
+                      "maximum": 1000000,
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "pageSize": {
+                      "type": "integer",
+                      "description": "Maximum number of items returned on each page.",
+                      "minimum": 1,
+                      "maximum": 1000,
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "pageSize"
+                      }
+                    },
+                    "totalCount": {
+                      "type": "integer",
+                      "description": "Total number of performance results across all pages.",
+                      "minimum": 0,
+                      "maximum": 100000000,
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "totalCount"
+                      }
+                    },
+                    "results": {
+                      "type": "array",
+                      "description": "Performance results in this page.",
+                      "x-go-type-skip-optional-pointer": true,
+                      "items": {
+                        "x-go-type": "PerformanceResult",
+                        "type": "object",
+                        "description": "Load-test result captured for a Meshery performance profile.",
+                        "additionalProperties": false,
+                        "properties": {
+                          "mesheryId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-name": "ID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "id",
+                              "json": "mesheryId,omitempty"
+                            }
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Human-readable name of the performance result.",
+                            "maxLength": 255,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "name",
+                              "json": "name,omitempty"
+                            }
+                          },
+                          "mesh": {
+                            "type": "string",
+                            "description": "Service mesh under test for this result.",
+                            "maxLength": 255,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "mesh",
+                              "json": "mesh,omitempty"
+                            }
+                          },
+                          "performanceProfile": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "nullable": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "performance_profile",
+                              "json": "performanceProfile,omitempty"
+                            }
+                          },
+                          "testId": {
+                            "type": "string",
+                            "description": "Provider-assigned test identifier for this result.",
+                            "maxLength": 255,
+                            "x-go-name": "TestID",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "testId,omitempty"
+                            }
+                          },
+                          "runnerResults": {
+                            "type": "object",
+                            "description": "Raw load-generator output for this performance result.",
+                            "additionalProperties": true,
+                            "x-go-type": "core.Map",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "runner_results",
+                              "json": "runnerResults,omitempty"
+                            }
+                          },
+                          "serverMetrics": {
+                            "type": "object",
+                            "description": "Server-side metrics collected for this performance result.",
+                            "additionalProperties": true,
+                            "x-go-type": "core.Map",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "server_metrics",
+                              "json": "serverMetrics,omitempty"
+                            }
+                          },
+                          "serverBoardConfig": {
+                            "type": "object",
+                            "description": "Server board configuration associated with this performance result.",
+                            "additionalProperties": true,
+                            "x-go-type": "core.Map",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "server_board_config",
+                              "json": "serverBoardConfig,omitempty"
+                            }
+                          },
+                          "testStartTime": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Time when the load test started.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "test_start_time",
+                              "json": "testStartTime,omitempty"
+                            }
+                          },
+                          "userId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-name": "UserID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "user_id",
+                              "json": "userId,omitempty"
+                            }
+                          },
+                          "createdAt": {
+                            "description": "Timestamp when the performance result was created.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at",
+                              "yaml": "created_at",
+                              "json": "createdAt,omitempty"
+                            },
+                            "x-go-type": "time.Time",
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-name": "CreatedAt",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "updatedAt": {
+                            "description": "Timestamp when the performance result was last updated.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at",
+                              "yaml": "updated_at",
+                              "json": "updatedAt,omitempty"
+                            },
+                            "x-go-type": "time.Time",
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-name": "UpdatedAt",
+                            "x-go-type-skip-optional-pointer": true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/performance/profiles/{performanceProfileId}/results/{resultId}": {
+      "get": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "performance"
+        ],
+        "operationId": "getPerformanceProfileResult",
+        "summary": "Get a performance result for a profile",
+        "description": "Returns one load-test result associated with the performance profile identified by the path parameter.",
+        "parameters": [
+          {
+            "name": "performanceProfileId",
+            "in": "path",
+            "description": "Performance profile ID.",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              }
+            },
+            "required": true
+          },
+          {
+            "name": "resultId",
+            "in": "path",
+            "description": "Performance result ID.",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              }
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Performance result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Load-test result captured for a Meshery performance profile.",
+                  "additionalProperties": false,
+                  "properties": {
+                    "mesheryId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "x-go-name": "ID",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "id",
+                        "json": "mesheryId,omitempty"
+                      }
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Human-readable name of the performance result.",
+                      "maxLength": 255,
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "name",
+                        "json": "name,omitempty"
+                      }
+                    },
+                    "mesh": {
+                      "type": "string",
+                      "description": "Service mesh under test for this result.",
+                      "maxLength": 255,
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "mesh",
+                        "json": "mesh,omitempty"
+                      }
+                    },
+                    "performanceProfile": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "nullable": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "performance_profile",
+                        "json": "performanceProfile,omitempty"
+                      }
+                    },
+                    "testId": {
+                      "type": "string",
+                      "description": "Provider-assigned test identifier for this result.",
+                      "maxLength": 255,
+                      "x-go-name": "TestID",
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "testId,omitempty"
+                      }
+                    },
+                    "runnerResults": {
+                      "type": "object",
+                      "description": "Raw load-generator output for this performance result.",
+                      "additionalProperties": true,
+                      "x-go-type": "core.Map",
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "runner_results",
+                        "json": "runnerResults,omitempty"
+                      }
+                    },
+                    "serverMetrics": {
+                      "type": "object",
+                      "description": "Server-side metrics collected for this performance result.",
+                      "additionalProperties": true,
+                      "x-go-type": "core.Map",
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "server_metrics",
+                        "json": "serverMetrics,omitempty"
+                      }
+                    },
+                    "serverBoardConfig": {
+                      "type": "object",
+                      "description": "Server board configuration associated with this performance result.",
+                      "additionalProperties": true,
+                      "x-go-type": "core.Map",
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "server_board_config",
+                        "json": "serverBoardConfig,omitempty"
+                      }
+                    },
+                    "testStartTime": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Time when the load test started.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "test_start_time",
+                        "json": "testStartTime,omitempty"
+                      }
+                    },
+                    "userId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "x-go-name": "UserID",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "user_id",
+                        "json": "userId,omitempty"
+                      }
+                    },
+                    "createdAt": {
+                      "description": "Timestamp when the performance result was created.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at",
+                        "yaml": "created_at",
+                        "json": "createdAt,omitempty"
+                      },
+                      "x-go-type": "time.Time",
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-name": "CreatedAt",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "updatedAt": {
+                      "description": "Timestamp when the performance result was last updated.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at",
+                        "yaml": "updated_at",
+                        "json": "updatedAt,omitempty"
+                      },
+                      "x-go-type": "time.Time",
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-name": "UpdatedAt",
+                      "x-go-type-skip-optional-pointer": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/performance/results": {
+      "get": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
+        "tags": [
+          "performance"
+        ],
+        "operationId": "getPerformanceResults",
+        "summary": "List all performance results",
+        "description": "Returns paginated load-test results visible to the authenticated user.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Get responses by page",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pagesize",
+            "in": "query",
+            "description": "Get responses by pagesize",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Get responses that match search param value",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "Get ordered responses",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "description": "Start date for filtering results by test start time, in YYYY-MM-DD format.",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "End date for filtering results by test start time, in YYYY-MM-DD format.",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Performance results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Paginated list of performance results.",
+                  "required": [
+                    "page",
+                    "pageSize",
+                    "totalCount",
+                    "results"
+                  ],
+                  "properties": {
+                    "page": {
+                      "type": "integer",
+                      "description": "Zero-based page index returned in this response.",
+                      "minimum": 0,
+                      "maximum": 1000000,
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "pageSize": {
+                      "type": "integer",
+                      "description": "Maximum number of items returned on each page.",
+                      "minimum": 1,
+                      "maximum": 1000,
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "pageSize"
+                      }
+                    },
+                    "totalCount": {
+                      "type": "integer",
+                      "description": "Total number of performance results across all pages.",
+                      "minimum": 0,
+                      "maximum": 100000000,
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "totalCount"
+                      }
+                    },
+                    "results": {
+                      "type": "array",
+                      "description": "Performance results in this page.",
+                      "x-go-type-skip-optional-pointer": true,
+                      "items": {
+                        "x-go-type": "PerformanceResult",
+                        "type": "object",
+                        "description": "Load-test result captured for a Meshery performance profile.",
+                        "additionalProperties": false,
+                        "properties": {
+                          "mesheryId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-name": "ID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "id",
+                              "json": "mesheryId,omitempty"
+                            }
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Human-readable name of the performance result.",
+                            "maxLength": 255,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "name",
+                              "json": "name,omitempty"
+                            }
+                          },
+                          "mesh": {
+                            "type": "string",
+                            "description": "Service mesh under test for this result.",
+                            "maxLength": 255,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "mesh",
+                              "json": "mesh,omitempty"
+                            }
+                          },
+                          "performanceProfile": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "nullable": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "performance_profile",
+                              "json": "performanceProfile,omitempty"
+                            }
+                          },
+                          "testId": {
+                            "type": "string",
+                            "description": "Provider-assigned test identifier for this result.",
+                            "maxLength": 255,
+                            "x-go-name": "TestID",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "testId,omitempty"
+                            }
+                          },
+                          "runnerResults": {
+                            "type": "object",
+                            "description": "Raw load-generator output for this performance result.",
+                            "additionalProperties": true,
+                            "x-go-type": "core.Map",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "runner_results",
+                              "json": "runnerResults,omitempty"
+                            }
+                          },
+                          "serverMetrics": {
+                            "type": "object",
+                            "description": "Server-side metrics collected for this performance result.",
+                            "additionalProperties": true,
+                            "x-go-type": "core.Map",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "server_metrics",
+                              "json": "serverMetrics,omitempty"
+                            }
+                          },
+                          "serverBoardConfig": {
+                            "type": "object",
+                            "description": "Server board configuration associated with this performance result.",
+                            "additionalProperties": true,
+                            "x-go-type": "core.Map",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "server_board_config",
+                              "json": "serverBoardConfig,omitempty"
+                            }
+                          },
+                          "testStartTime": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Time when the load test started.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "test_start_time",
+                              "json": "testStartTime,omitempty"
+                            }
+                          },
+                          "userId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-name": "UserID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "user_id",
+                              "json": "userId,omitempty"
+                            }
+                          },
+                          "createdAt": {
+                            "description": "Timestamp when the performance result was created.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at",
+                              "yaml": "created_at",
+                              "json": "createdAt,omitempty"
+                            },
+                            "x-go-type": "time.Time",
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-name": "CreatedAt",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "updatedAt": {
+                            "description": "Timestamp when the performance result was last updated.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at",
+                              "yaml": "updated_at",
+                              "json": "updatedAt,omitempty"
+                            },
+                            "x-go-type": "time.Time",
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-name": "UpdatedAt",
+                            "x-go-type-skip-optional-pointer": true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
             "content": {
               "text/plain": {
                 "schema": {
@@ -2005,6 +2860,21 @@ const PerformanceProfileSchema: Record<string, unknown> = {
         },
         "required": true
       },
+      "resultId": {
+        "name": "resultId",
+        "in": "path",
+        "description": "Performance result ID.",
+        "schema": {
+          "type": "string",
+          "format": "uuid",
+          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+          "x-go-type": "uuid.UUID",
+          "x-go-type-import": {
+            "path": "github.com/gofrs/uuid"
+          }
+        },
+        "required": true
+      },
       "search": {
         "name": "search",
         "in": "query",
@@ -2035,6 +2905,24 @@ const PerformanceProfileSchema: Record<string, unknown> = {
         "description": "Get responses by pagesize",
         "schema": {
           "type": "string"
+        }
+      },
+      "from": {
+        "name": "from",
+        "in": "query",
+        "description": "Start date for filtering results by test start time, in YYYY-MM-DD format.",
+        "schema": {
+          "type": "string",
+          "format": "date"
+        }
+      },
+      "to": {
+        "name": "to",
+        "in": "query",
+        "description": "End date for filtering results by test start time, in YYYY-MM-DD format.",
+        "schema": {
+          "type": "string",
+          "format": "date"
         }
       }
     },
@@ -2136,6 +3024,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
             "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "load_generators",
+              "gorm": "type:text[]",
               "json": "loadGenerators"
             }
           },
@@ -2157,6 +3046,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
             "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "endpoints",
+              "gorm": "type:text[]",
               "json": "endpoints"
             }
           },
@@ -2637,6 +3527,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                   "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "load_generators",
+                    "gorm": "type:text[]",
                     "json": "loadGenerators"
                   }
                 },
@@ -2658,6 +3549,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                   "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "endpoints",
+                    "gorm": "type:text[]",
                     "json": "endpoints"
                   }
                 },
@@ -2819,6 +3711,706 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                   "x-go-type-skip-optional-pointer": true
                 }
               }
+            }
+          }
+        }
+      },
+      "PerformanceResult": {
+        "type": "object",
+        "description": "Load-test result captured for a Meshery performance profile.",
+        "additionalProperties": false,
+        "properties": {
+          "mesheryId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-name": "ID",
+            "x-oapi-codegen-extra-tags": {
+              "db": "id",
+              "json": "mesheryId,omitempty"
+            }
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable name of the performance result.",
+            "maxLength": 255,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "name",
+              "json": "name,omitempty"
+            }
+          },
+          "mesh": {
+            "type": "string",
+            "description": "Service mesh under test for this result.",
+            "maxLength": 255,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "mesh",
+              "json": "mesh,omitempty"
+            }
+          },
+          "performanceProfile": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "nullable": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "performance_profile",
+              "json": "performanceProfile,omitempty"
+            }
+          },
+          "testId": {
+            "type": "string",
+            "description": "Provider-assigned test identifier for this result.",
+            "maxLength": 255,
+            "x-go-name": "TestID",
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "testId,omitempty"
+            }
+          },
+          "runnerResults": {
+            "type": "object",
+            "description": "Raw load-generator output for this performance result.",
+            "additionalProperties": true,
+            "x-go-type": "core.Map",
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "runner_results",
+              "json": "runnerResults,omitempty"
+            }
+          },
+          "serverMetrics": {
+            "type": "object",
+            "description": "Server-side metrics collected for this performance result.",
+            "additionalProperties": true,
+            "x-go-type": "core.Map",
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "server_metrics",
+              "json": "serverMetrics,omitempty"
+            }
+          },
+          "serverBoardConfig": {
+            "type": "object",
+            "description": "Server board configuration associated with this performance result.",
+            "additionalProperties": true,
+            "x-go-type": "core.Map",
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "server_board_config",
+              "json": "serverBoardConfig,omitempty"
+            }
+          },
+          "testStartTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Time when the load test started.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "test_start_time",
+              "json": "testStartTime,omitempty"
+            }
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-name": "UserID",
+            "x-oapi-codegen-extra-tags": {
+              "db": "user_id",
+              "json": "userId,omitempty"
+            }
+          },
+          "createdAt": {
+            "description": "Timestamp when the performance result was created.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "created_at",
+              "yaml": "created_at",
+              "json": "createdAt,omitempty"
+            },
+            "x-go-type": "time.Time",
+            "type": "string",
+            "format": "date-time",
+            "x-go-name": "CreatedAt",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "updatedAt": {
+            "description": "Timestamp when the performance result was last updated.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "updated_at",
+              "yaml": "updated_at",
+              "json": "updatedAt,omitempty"
+            },
+            "x-go-type": "time.Time",
+            "type": "string",
+            "format": "date-time",
+            "x-go-name": "UpdatedAt",
+            "x-go-type-skip-optional-pointer": true
+          }
+        }
+      },
+      "PerformanceResultPage": {
+        "type": "object",
+        "description": "Paginated list of performance results.",
+        "required": [
+          "page",
+          "pageSize",
+          "totalCount",
+          "results"
+        ],
+        "properties": {
+          "page": {
+            "type": "integer",
+            "description": "Zero-based page index returned in this response.",
+            "minimum": 0,
+            "maximum": 1000000,
+            "x-go-type-skip-optional-pointer": true
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Maximum number of items returned on each page.",
+            "minimum": 1,
+            "maximum": 1000,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "pageSize"
+            }
+          },
+          "totalCount": {
+            "type": "integer",
+            "description": "Total number of performance results across all pages.",
+            "minimum": 0,
+            "maximum": 100000000,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "totalCount"
+            }
+          },
+          "results": {
+            "type": "array",
+            "description": "Performance results in this page.",
+            "x-go-type-skip-optional-pointer": true,
+            "items": {
+              "x-go-type": "PerformanceResult",
+              "type": "object",
+              "description": "Load-test result captured for a Meshery performance profile.",
+              "additionalProperties": false,
+              "properties": {
+                "mesheryId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-go-name": "ID",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "id",
+                    "json": "mesheryId,omitempty"
+                  }
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Human-readable name of the performance result.",
+                  "maxLength": 255,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "name",
+                    "json": "name,omitempty"
+                  }
+                },
+                "mesh": {
+                  "type": "string",
+                  "description": "Service mesh under test for this result.",
+                  "maxLength": 255,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "mesh",
+                    "json": "mesh,omitempty"
+                  }
+                },
+                "performanceProfile": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "nullable": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "performance_profile",
+                    "json": "performanceProfile,omitempty"
+                  }
+                },
+                "testId": {
+                  "type": "string",
+                  "description": "Provider-assigned test identifier for this result.",
+                  "maxLength": 255,
+                  "x-go-name": "TestID",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "testId,omitempty"
+                  }
+                },
+                "runnerResults": {
+                  "type": "object",
+                  "description": "Raw load-generator output for this performance result.",
+                  "additionalProperties": true,
+                  "x-go-type": "core.Map",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "runner_results",
+                    "json": "runnerResults,omitempty"
+                  }
+                },
+                "serverMetrics": {
+                  "type": "object",
+                  "description": "Server-side metrics collected for this performance result.",
+                  "additionalProperties": true,
+                  "x-go-type": "core.Map",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "server_metrics",
+                    "json": "serverMetrics,omitempty"
+                  }
+                },
+                "serverBoardConfig": {
+                  "type": "object",
+                  "description": "Server board configuration associated with this performance result.",
+                  "additionalProperties": true,
+                  "x-go-type": "core.Map",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "server_board_config",
+                    "json": "serverBoardConfig,omitempty"
+                  }
+                },
+                "testStartTime": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Time when the load test started.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "test_start_time",
+                    "json": "testStartTime,omitempty"
+                  }
+                },
+                "userId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-go-name": "UserID",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "user_id",
+                    "json": "userId,omitempty"
+                  }
+                },
+                "createdAt": {
+                  "description": "Timestamp when the performance result was created.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "created_at",
+                    "yaml": "created_at",
+                    "json": "createdAt,omitempty"
+                  },
+                  "x-go-type": "time.Time",
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-name": "CreatedAt",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "updatedAt": {
+                  "description": "Timestamp when the performance result was last updated.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "updated_at",
+                    "yaml": "updated_at",
+                    "json": "updatedAt,omitempty"
+                  },
+                  "x-go-type": "time.Time",
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-name": "UpdatedAt",
+                  "x-go-type-skip-optional-pointer": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "PerformanceTestConfig": {
+        "type": "object",
+        "description": "Runtime configuration for a single performance (load) test run. This is the executable test definition that drives load generation, distinct from a saved PerformanceProfile. It is the Meshery-native replacement for the deprecated service-mesh-performance (SMP) PerformanceTestConfig.",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "duration",
+          "clients"
+        ],
+        "properties": {
+          "smpVersion": {
+            "type": "string",
+            "description": "Version of the performance test configuration format.",
+            "maxLength": 64,
+            "x-order": 1,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "smpVersion,omitempty"
+            }
+          },
+          "id": {
+            "type": "string",
+            "description": "Opaque identifier assigned to the persisted test configuration. Server-assigned (a UUID string); accepted as a free-form string for backward compatibility with externally authored test files.",
+            "x-id-format": "external",
+            "maxLength": 255,
+            "x-order": 2,
+            "x-go-name": "ID",
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "id,omitempty"
+            }
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable name of the performance test.",
+            "minLength": 1,
+            "maxLength": 255,
+            "x-order": 3,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "name"
+            }
+          },
+          "labels": {
+            "type": "object",
+            "description": "Arbitrary key/value labels attached to the test configuration.",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "x-order": 4,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "labels,omitempty"
+            }
+          },
+          "clients": {
+            "type": "array",
+            "description": "Load-generation clients that issue requests during the test. A single client is typical; multiple clients describe a distributed load test.",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "description": "A single load-generation client within a PerformanceTestConfig. It is the Meshery-native replacement for the deprecated service-mesh-performance (SMP) PerformanceTestConfig_Client.",
+              "additionalProperties": false,
+              "required": [
+                "endpointUrls"
+              ],
+              "properties": {
+                "internal": {
+                  "type": "boolean",
+                  "description": "Whether the client runs inside the cluster (internal) rather than against an external endpoint.",
+                  "x-order": 1,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "internal,omitempty"
+                  }
+                },
+                "loadGenerator": {
+                  "type": "string",
+                  "description": "Load generator used to drive the test (e.g. \"fortio\"). Empty defaults to the server's supported generator.",
+                  "maxLength": 64,
+                  "x-order": 2,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "loadGenerator,omitempty"
+                  }
+                },
+                "protocol": {
+                  "type": "string",
+                  "description": "Application protocol exercised by the client (e.g. \"http\", \"tcp\", \"udp\", \"grpc\").",
+                  "maxLength": 32,
+                  "x-order": 3,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "protocol,omitempty"
+                  }
+                },
+                "connections": {
+                  "type": "integer",
+                  "description": "Number of concurrent connections the client opens to the endpoint.",
+                  "minimum": 0,
+                  "maximum": 100000,
+                  "x-order": 4,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "connections,omitempty"
+                  }
+                },
+                "rps": {
+                  "type": "integer",
+                  "description": "Target requests-per-second issued by the client. Zero means unthrottled.",
+                  "minimum": 0,
+                  "maximum": 10000000,
+                  "x-order": 5,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "rps,omitempty"
+                  }
+                },
+                "headers": {
+                  "type": "object",
+                  "description": "HTTP request headers sent on each request.",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "x-order": 6,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "headers,omitempty"
+                  }
+                },
+                "cookies": {
+                  "type": "object",
+                  "description": "HTTP request cookies sent on each request.",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "x-order": 7,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "cookies,omitempty"
+                  }
+                },
+                "body": {
+                  "type": "string",
+                  "description": "Request body sent on each request.",
+                  "maxLength": 1048576,
+                  "x-order": 8,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "body,omitempty"
+                  }
+                },
+                "contentType": {
+                  "type": "string",
+                  "description": "Content-Type header applied to the request body (e.g. \"application/json\").",
+                  "maxLength": 255,
+                  "x-order": 9,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "contentType,omitempty"
+                  }
+                },
+                "endpointUrls": {
+                  "type": "array",
+                  "description": "Target endpoint URLs the client issues requests against.",
+                  "minItems": 1,
+                  "items": {
+                    "type": "string",
+                    "description": "A single endpoint URL.",
+                    "minLength": 1,
+                    "maxLength": 2048
+                  },
+                  "x-order": 10,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "endpointUrls"
+                  }
+                },
+                "sslCertificate": {
+                  "type": "string",
+                  "description": "PEM-encoded SSL certificate presented by the client, when required.",
+                  "maxLength": 1048576,
+                  "x-order": 11,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "sslCertificate,omitempty"
+                  }
+                },
+                "additionalOptions": {
+                  "type": "string",
+                  "description": "Additional load-generator-specific options passed through to the generator.",
+                  "maxLength": 16384,
+                  "x-order": 12,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "additionalOptions,omitempty"
+                  }
+                }
+              }
+            },
+            "x-order": 5,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "clients"
+            }
+          },
+          "duration": {
+            "type": "string",
+            "description": "Length of time the endpoint is held under load, expressed as a Go duration string (e.g. \"30s\", \"5m\", \"1h\").",
+            "minLength": 1,
+            "maxLength": 32,
+            "pattern": "^[0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h)([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))*$",
+            "x-order": 6,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "duration"
+            }
+          }
+        }
+      },
+      "PerformanceTestClient": {
+        "type": "object",
+        "description": "A single load-generation client within a PerformanceTestConfig. It is the Meshery-native replacement for the deprecated service-mesh-performance (SMP) PerformanceTestConfig_Client.",
+        "additionalProperties": false,
+        "required": [
+          "endpointUrls"
+        ],
+        "properties": {
+          "internal": {
+            "type": "boolean",
+            "description": "Whether the client runs inside the cluster (internal) rather than against an external endpoint.",
+            "x-order": 1,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "internal,omitempty"
+            }
+          },
+          "loadGenerator": {
+            "type": "string",
+            "description": "Load generator used to drive the test (e.g. \"fortio\"). Empty defaults to the server's supported generator.",
+            "maxLength": 64,
+            "x-order": 2,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "loadGenerator,omitempty"
+            }
+          },
+          "protocol": {
+            "type": "string",
+            "description": "Application protocol exercised by the client (e.g. \"http\", \"tcp\", \"udp\", \"grpc\").",
+            "maxLength": 32,
+            "x-order": 3,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "protocol,omitempty"
+            }
+          },
+          "connections": {
+            "type": "integer",
+            "description": "Number of concurrent connections the client opens to the endpoint.",
+            "minimum": 0,
+            "maximum": 100000,
+            "x-order": 4,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "connections,omitempty"
+            }
+          },
+          "rps": {
+            "type": "integer",
+            "description": "Target requests-per-second issued by the client. Zero means unthrottled.",
+            "minimum": 0,
+            "maximum": 10000000,
+            "x-order": 5,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "rps,omitempty"
+            }
+          },
+          "headers": {
+            "type": "object",
+            "description": "HTTP request headers sent on each request.",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "x-order": 6,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "headers,omitempty"
+            }
+          },
+          "cookies": {
+            "type": "object",
+            "description": "HTTP request cookies sent on each request.",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "x-order": 7,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "cookies,omitempty"
+            }
+          },
+          "body": {
+            "type": "string",
+            "description": "Request body sent on each request.",
+            "maxLength": 1048576,
+            "x-order": 8,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "body,omitempty"
+            }
+          },
+          "contentType": {
+            "type": "string",
+            "description": "Content-Type header applied to the request body (e.g. \"application/json\").",
+            "maxLength": 255,
+            "x-order": 9,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "contentType,omitempty"
+            }
+          },
+          "endpointUrls": {
+            "type": "array",
+            "description": "Target endpoint URLs the client issues requests against.",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "description": "A single endpoint URL.",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            "x-order": 10,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "endpointUrls"
+            }
+          },
+          "sslCertificate": {
+            "type": "string",
+            "description": "PEM-encoded SSL certificate presented by the client, when required.",
+            "maxLength": 1048576,
+            "x-order": 11,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "sslCertificate,omitempty"
+            }
+          },
+          "additionalOptions": {
+            "type": "string",
+            "description": "Additional load-generator-specific options passed through to the generator.",
+            "maxLength": 16384,
+            "x-order": 12,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "additionalOptions,omitempty"
             }
           }
         }

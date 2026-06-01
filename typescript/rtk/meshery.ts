@@ -12,6 +12,7 @@ export const addTagTypes = [
   "Design_designs",
   "Environment_environments",
   "Events_events",
+  "Performance_Profile_performance",
   "Workspace_workspaces",
   "Workspace_designs",
   "Workspace_views",
@@ -422,6 +423,67 @@ const injectedRtkApi = api
       updateEventStatus: build.mutation<UpdateEventStatusApiResponse, UpdateEventStatusApiArg>({
         query: (queryArg) => ({ url: `/events/${queryArg.eventId}/status`, method: "PUT", body: queryArg.body }),
         invalidatesTags: ["Events_events"],
+      }),
+      getPerformanceProfiles: build.query<GetPerformanceProfilesApiResponse, GetPerformanceProfilesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/performance/profiles`,
+          params: {
+            page: queryArg?.page,
+            pagesize: queryArg?.pagesize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+          },
+        }),
+        providesTags: ["Performance_Profile_performance"],
+      }),
+      upsertPerformanceProfile: build.mutation<UpsertPerformanceProfileApiResponse, UpsertPerformanceProfileApiArg>({
+        query: (queryArg) => ({ url: `/api/performance/profiles`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Performance_Profile_performance"],
+      }),
+      getPerformanceProfile: build.query<GetPerformanceProfileApiResponse, GetPerformanceProfileApiArg>({
+        query: (queryArg) => ({ url: `/api/performance/profiles/${queryArg.performanceProfileId}` }),
+        providesTags: ["Performance_Profile_performance"],
+      }),
+      updatePerformanceProfile: build.mutation<UpdatePerformanceProfileApiResponse, UpdatePerformanceProfileApiArg>({
+        query: (queryArg) => ({
+          url: `/api/performance/profiles/${queryArg.performanceProfileId}`,
+          method: "PUT",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Performance_Profile_performance"],
+      }),
+      deletePerformanceProfile: build.mutation<DeletePerformanceProfileApiResponse, DeletePerformanceProfileApiArg>({
+        query: (queryArg) => ({ url: `/api/performance/profiles/${queryArg.performanceProfileId}`, method: "DELETE" }),
+        invalidatesTags: ["Performance_Profile_performance"],
+      }),
+      getPerformanceProfileResults: build.query<
+        GetPerformanceProfileResultsApiResponse,
+        GetPerformanceProfileResultsApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/performance/profiles/${queryArg.performanceProfileId}/results`,
+          params: {
+            page: queryArg?.page,
+            pagesize: queryArg?.pagesize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+          },
+        }),
+        providesTags: ["Performance_Profile_performance"],
+      }),
+      getPerformanceResults: build.query<GetPerformanceResultsApiResponse, GetPerformanceResultsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/performance/results`,
+          params: {
+            page: queryArg?.page,
+            pagesize: queryArg?.pagesize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            from: queryArg?.["from"],
+            to: queryArg?.to,
+          },
+        }),
+        providesTags: ["Performance_Profile_performance"],
       }),
       getWorkspaces: build.query<GetWorkspacesApiResponse, GetWorkspacesApiArg>({
         query: (queryArg) => ({
@@ -4956,6 +5018,386 @@ export type UpdateEventStatusApiArg = {
     status: string;
   };
 };
+export type GetPerformanceProfilesApiResponse = /** status 200 Performance profiles */ {
+  /** Zero-based page index returned in this response. */
+  page: number;
+  /** Maximum number of items returned on each page. */
+  pageSize: number;
+  /** Total number of performance profiles across all pages. */
+  totalCount: number;
+  /** Performance profiles in this page. */
+  profiles: {
+    /** Unique identifier for the performance profile. */
+    id: string;
+    /** Human-readable name of the performance profile. */
+    name: string;
+    /** User ID of the profile owner. */
+    userId: string;
+    /** Optional schedule ID associated with this performance profile. Null when the profile is not bound to a recurring schedule. */
+    schedule?: string | null;
+    /** Load generators (e.g. fortio, wrk2, nighthawk) to drive the profile's load test. */
+    loadGenerators?: string[];
+    /** Endpoints (URLs) targeted by the performance profile's load test. */
+    endpoints?: string[];
+    /** Service mesh under test for the profile (e.g. istio, linkerd, consul). Empty string when the profile is mesh-agnostic. */
+    serviceMesh?: string;
+    /** Number of concurrent requests issued by the load generator. */
+    concurrentRequest?: number;
+    /** Target queries-per-second rate for the load generator. Zero indicates the generator runs unthrottled. */
+    qps?: number;
+    /** Duration of the load test, expressed as a Go duration string (e.g. "30s", "5m", "1h"). */
+    duration?: string;
+    /** HTTP request headers, serialized as JSON, sent on each load-test request. Empty string when no headers are configured. */
+    requestHeaders?: string;
+    /** HTTP request cookies, serialized as JSON, sent on each load-test request. Empty string when no cookies are configured. */
+    requestCookies?: string;
+    /** HTTP request body sent on each load-test request. Empty string when no body is configured. */
+    requestBody?: string;
+    /** Content-Type header value applied to each load-test request body (e.g. "application/json"). Empty string when no body is configured. */
+    contentType?: string;
+    /** Free-form metadata associated with the performance profile. */
+    metadata?: {
+      [key: string]: any;
+    };
+    /** Server-computed timestamp of the most recent load-test run that used this profile. Null until the first run completes. Server-managed; clients must not set this on create/update. */
+    lastRun?: string | null;
+    /** Server-computed count of load-test results recorded for this profile. Server-managed; clients must not set this on create/update. */
+    totalResults?: number;
+    /** Timestamp when the performance profile was created. */
+    createdAt: string;
+    /** Timestamp when the performance profile was last updated. */
+    updatedAt: string;
+  }[];
+};
+export type GetPerformanceProfilesApiArg = {
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+};
+export type UpsertPerformanceProfileApiResponse = /** status 200 Performance profile upserted */ {
+  /** Unique identifier for the performance profile. */
+  id: string;
+  /** Human-readable name of the performance profile. */
+  name: string;
+  /** User ID of the profile owner. */
+  userId: string;
+  /** Optional schedule ID associated with this performance profile. Null when the profile is not bound to a recurring schedule. */
+  schedule?: string | null;
+  /** Load generators (e.g. fortio, wrk2, nighthawk) to drive the profile's load test. */
+  loadGenerators?: string[];
+  /** Endpoints (URLs) targeted by the performance profile's load test. */
+  endpoints?: string[];
+  /** Service mesh under test for the profile (e.g. istio, linkerd, consul). Empty string when the profile is mesh-agnostic. */
+  serviceMesh?: string;
+  /** Number of concurrent requests issued by the load generator. */
+  concurrentRequest?: number;
+  /** Target queries-per-second rate for the load generator. Zero indicates the generator runs unthrottled. */
+  qps?: number;
+  /** Duration of the load test, expressed as a Go duration string (e.g. "30s", "5m", "1h"). */
+  duration?: string;
+  /** HTTP request headers, serialized as JSON, sent on each load-test request. Empty string when no headers are configured. */
+  requestHeaders?: string;
+  /** HTTP request cookies, serialized as JSON, sent on each load-test request. Empty string when no cookies are configured. */
+  requestCookies?: string;
+  /** HTTP request body sent on each load-test request. Empty string when no body is configured. */
+  requestBody?: string;
+  /** Content-Type header value applied to each load-test request body (e.g. "application/json"). Empty string when no body is configured. */
+  contentType?: string;
+  /** Free-form metadata associated with the performance profile. */
+  metadata?: {
+    [key: string]: any;
+  };
+  /** Server-computed timestamp of the most recent load-test run that used this profile. Null until the first run completes. Server-managed; clients must not set this on create/update. */
+  lastRun?: string | null;
+  /** Server-computed count of load-test results recorded for this profile. Server-managed; clients must not set this on create/update. */
+  totalResults?: number;
+  /** Timestamp when the performance profile was created. */
+  createdAt: string;
+  /** Timestamp when the performance profile was last updated. */
+  updatedAt: string;
+};
+export type UpsertPerformanceProfileApiArg = {
+  /** Body for creating or updating a performance profile. */
+  body: {
+    /** Existing performance-profile ID for updates; omit on create. */
+    id?: string;
+    /** Human-readable name of the performance profile. */
+    name: string;
+    /** Owner user ID. When omitted, the server infers it from the authenticated user. */
+    userId?: string;
+    /** Optional schedule ID associating the profile with a recurring run. */
+    schedule?: string | null;
+    /** Load generators (e.g. fortio, wrk2, nighthawk) to drive the profile's load test. */
+    loadGenerators: string[];
+    /** Endpoints (URLs) targeted by the performance profile's load test. */
+    endpoints: string[];
+    /** Service mesh under test for the profile (e.g. istio, linkerd, consul). Empty string when the profile is mesh-agnostic. */
+    serviceMesh?: string;
+    /** Number of concurrent requests issued by the load generator. */
+    concurrentRequest?: number;
+    /** Target queries-per-second rate for the load generator. Zero indicates the generator runs unthrottled. */
+    qps?: number;
+    /** Duration of the load test, expressed as a Go duration string (e.g. "30s", "5m", "1h"). */
+    duration: string;
+    /** HTTP request headers, serialized as JSON, sent on each load-test request. */
+    requestHeaders?: string;
+    /** HTTP request cookies, serialized as JSON, sent on each load-test request. */
+    requestCookies?: string;
+    /** HTTP request body sent on each load-test request. */
+    requestBody?: string;
+    /** Content-Type header value applied to each load-test request body (e.g. "application/json"). */
+    contentType?: string;
+    /** Free-form metadata associated with the performance profile. */
+    metadata?: {
+      [key: string]: any;
+    };
+  };
+};
+export type GetPerformanceProfileApiResponse = /** status 200 Performance profile */ {
+  /** Unique identifier for the performance profile. */
+  id: string;
+  /** Human-readable name of the performance profile. */
+  name: string;
+  /** User ID of the profile owner. */
+  userId: string;
+  /** Optional schedule ID associated with this performance profile. Null when the profile is not bound to a recurring schedule. */
+  schedule?: string | null;
+  /** Load generators (e.g. fortio, wrk2, nighthawk) to drive the profile's load test. */
+  loadGenerators?: string[];
+  /** Endpoints (URLs) targeted by the performance profile's load test. */
+  endpoints?: string[];
+  /** Service mesh under test for the profile (e.g. istio, linkerd, consul). Empty string when the profile is mesh-agnostic. */
+  serviceMesh?: string;
+  /** Number of concurrent requests issued by the load generator. */
+  concurrentRequest?: number;
+  /** Target queries-per-second rate for the load generator. Zero indicates the generator runs unthrottled. */
+  qps?: number;
+  /** Duration of the load test, expressed as a Go duration string (e.g. "30s", "5m", "1h"). */
+  duration?: string;
+  /** HTTP request headers, serialized as JSON, sent on each load-test request. Empty string when no headers are configured. */
+  requestHeaders?: string;
+  /** HTTP request cookies, serialized as JSON, sent on each load-test request. Empty string when no cookies are configured. */
+  requestCookies?: string;
+  /** HTTP request body sent on each load-test request. Empty string when no body is configured. */
+  requestBody?: string;
+  /** Content-Type header value applied to each load-test request body (e.g. "application/json"). Empty string when no body is configured. */
+  contentType?: string;
+  /** Free-form metadata associated with the performance profile. */
+  metadata?: {
+    [key: string]: any;
+  };
+  /** Server-computed timestamp of the most recent load-test run that used this profile. Null until the first run completes. Server-managed; clients must not set this on create/update. */
+  lastRun?: string | null;
+  /** Server-computed count of load-test results recorded for this profile. Server-managed; clients must not set this on create/update. */
+  totalResults?: number;
+  /** Timestamp when the performance profile was created. */
+  createdAt: string;
+  /** Timestamp when the performance profile was last updated. */
+  updatedAt: string;
+};
+export type GetPerformanceProfileApiArg = {
+  /** Performance profile ID. */
+  performanceProfileId: string;
+};
+export type UpdatePerformanceProfileApiResponse = /** status 200 Performance profile */ {
+  /** Unique identifier for the performance profile. */
+  id: string;
+  /** Human-readable name of the performance profile. */
+  name: string;
+  /** User ID of the profile owner. */
+  userId: string;
+  /** Optional schedule ID associated with this performance profile. Null when the profile is not bound to a recurring schedule. */
+  schedule?: string | null;
+  /** Load generators (e.g. fortio, wrk2, nighthawk) to drive the profile's load test. */
+  loadGenerators?: string[];
+  /** Endpoints (URLs) targeted by the performance profile's load test. */
+  endpoints?: string[];
+  /** Service mesh under test for the profile (e.g. istio, linkerd, consul). Empty string when the profile is mesh-agnostic. */
+  serviceMesh?: string;
+  /** Number of concurrent requests issued by the load generator. */
+  concurrentRequest?: number;
+  /** Target queries-per-second rate for the load generator. Zero indicates the generator runs unthrottled. */
+  qps?: number;
+  /** Duration of the load test, expressed as a Go duration string (e.g. "30s", "5m", "1h"). */
+  duration?: string;
+  /** HTTP request headers, serialized as JSON, sent on each load-test request. Empty string when no headers are configured. */
+  requestHeaders?: string;
+  /** HTTP request cookies, serialized as JSON, sent on each load-test request. Empty string when no cookies are configured. */
+  requestCookies?: string;
+  /** HTTP request body sent on each load-test request. Empty string when no body is configured. */
+  requestBody?: string;
+  /** Content-Type header value applied to each load-test request body (e.g. "application/json"). Empty string when no body is configured. */
+  contentType?: string;
+  /** Free-form metadata associated with the performance profile. */
+  metadata?: {
+    [key: string]: any;
+  };
+  /** Server-computed timestamp of the most recent load-test run that used this profile. Null until the first run completes. Server-managed; clients must not set this on create/update. */
+  lastRun?: string | null;
+  /** Server-computed count of load-test results recorded for this profile. Server-managed; clients must not set this on create/update. */
+  totalResults?: number;
+  /** Timestamp when the performance profile was created. */
+  createdAt: string;
+  /** Timestamp when the performance profile was last updated. */
+  updatedAt: string;
+};
+export type UpdatePerformanceProfileApiArg = {
+  /** Performance profile ID. */
+  performanceProfileId: string;
+  /** Body for creating or updating a performance profile. */
+  body: {
+    /** Existing performance-profile ID for updates; omit on create. */
+    id?: string;
+    /** Human-readable name of the performance profile. */
+    name: string;
+    /** Owner user ID. When omitted, the server infers it from the authenticated user. */
+    userId?: string;
+    /** Optional schedule ID associating the profile with a recurring run. */
+    schedule?: string | null;
+    /** Load generators (e.g. fortio, wrk2, nighthawk) to drive the profile's load test. */
+    loadGenerators: string[];
+    /** Endpoints (URLs) targeted by the performance profile's load test. */
+    endpoints: string[];
+    /** Service mesh under test for the profile (e.g. istio, linkerd, consul). Empty string when the profile is mesh-agnostic. */
+    serviceMesh?: string;
+    /** Number of concurrent requests issued by the load generator. */
+    concurrentRequest?: number;
+    /** Target queries-per-second rate for the load generator. Zero indicates the generator runs unthrottled. */
+    qps?: number;
+    /** Duration of the load test, expressed as a Go duration string (e.g. "30s", "5m", "1h"). */
+    duration: string;
+    /** HTTP request headers, serialized as JSON, sent on each load-test request. */
+    requestHeaders?: string;
+    /** HTTP request cookies, serialized as JSON, sent on each load-test request. */
+    requestCookies?: string;
+    /** HTTP request body sent on each load-test request. */
+    requestBody?: string;
+    /** Content-Type header value applied to each load-test request body (e.g. "application/json"). */
+    contentType?: string;
+    /** Free-form metadata associated with the performance profile. */
+    metadata?: {
+      [key: string]: any;
+    };
+  };
+};
+export type DeletePerformanceProfileApiResponse = unknown;
+export type DeletePerformanceProfileApiArg = {
+  /** Performance profile ID. */
+  performanceProfileId: string;
+};
+export type GetPerformanceProfileResultsApiResponse = /** status 200 Performance results */ {
+  /** Zero-based page index returned in this response. */
+  page: number;
+  /** Maximum number of items returned on each page. */
+  pageSize: number;
+  /** Total number of performance results across all pages. */
+  totalCount: number;
+  /** Performance results in this page. */
+  results: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    mesheryId?: string;
+    /** Human-readable name of the performance result. */
+    name?: string;
+    /** Service mesh under test for this result. */
+    mesh?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    performanceProfile?: string | null;
+    /** Provider-assigned test identifier for this result. */
+    testId?: string;
+    /** Raw load-generator output for this performance result. */
+    runnerResults?: {
+      [key: string]: any;
+    };
+    /** Server-side metrics collected for this performance result. */
+    serverMetrics?: {
+      [key: string]: any;
+    };
+    /** Server board configuration associated with this performance result. */
+    serverBoardConfig?: {
+      [key: string]: any;
+    };
+    /** Time when the load test started. */
+    testStartTime?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    userId?: string;
+    /** Timestamp when the performance result was created. */
+    createdAt?: string;
+    /** Timestamp when the performance result was last updated. */
+    updatedAt?: string;
+  }[];
+};
+export type GetPerformanceProfileResultsApiArg = {
+  /** Performance profile ID. */
+  performanceProfileId: string;
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+};
+export type GetPerformanceResultsApiResponse = /** status 200 Performance results */ {
+  /** Zero-based page index returned in this response. */
+  page: number;
+  /** Maximum number of items returned on each page. */
+  pageSize: number;
+  /** Total number of performance results across all pages. */
+  totalCount: number;
+  /** Performance results in this page. */
+  results: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    mesheryId?: string;
+    /** Human-readable name of the performance result. */
+    name?: string;
+    /** Service mesh under test for this result. */
+    mesh?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    performanceProfile?: string | null;
+    /** Provider-assigned test identifier for this result. */
+    testId?: string;
+    /** Raw load-generator output for this performance result. */
+    runnerResults?: {
+      [key: string]: any;
+    };
+    /** Server-side metrics collected for this performance result. */
+    serverMetrics?: {
+      [key: string]: any;
+    };
+    /** Server board configuration associated with this performance result. */
+    serverBoardConfig?: {
+      [key: string]: any;
+    };
+    /** Time when the load test started. */
+    testStartTime?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    userId?: string;
+    /** Timestamp when the performance result was created. */
+    createdAt?: string;
+    /** Timestamp when the performance result was last updated. */
+    updatedAt?: string;
+  }[];
+};
+export type GetPerformanceResultsApiArg = {
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Start date for filtering results by test start time, in YYYY-MM-DD format. */
+  from?: string;
+  /** End date for filtering results by test start time, in YYYY-MM-DD format. */
+  to?: string;
+};
 export type GetWorkspacesApiResponse = /** status 200 Workspaces */ {
   /** Zero-based page index returned in this response. */
   page?: number;
@@ -6459,6 +6901,13 @@ export const {
   useBulkDeleteEventsMutation,
   useBulkUpdateEventStatusMutation,
   useUpdateEventStatusMutation,
+  useGetPerformanceProfilesQuery,
+  useUpsertPerformanceProfileMutation,
+  useGetPerformanceProfileQuery,
+  useUpdatePerformanceProfileMutation,
+  useDeletePerformanceProfileMutation,
+  useGetPerformanceProfileResultsQuery,
+  useGetPerformanceResultsQuery,
   useGetWorkspacesQuery,
   useCreateWorkspaceMutation,
   useGetWorkspaceByIdQuery,
