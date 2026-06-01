@@ -1,3 +1,4 @@
 {
+  "ui:options": { "label": false },
   "ui:order": ["type", "compatibility", "patternInfo", "patternCaveats"]
 }
