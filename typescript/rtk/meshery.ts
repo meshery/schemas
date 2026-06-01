@@ -23,8 +23,8 @@ const injectedRtkApi = api
   })
   .injectEndpoints({
     endpoints: (build) => ({
-      postEvaluate: build.mutation<PostEvaluateApiResponse, PostEvaluateApiArg>({
-        query: (queryArg) => ({ url: `/evaluate`, method: "POST", body: queryArg.body }),
+      evaluateRelationships: build.mutation<EvaluateRelationshipsApiResponse, EvaluateRelationshipsApiArg>({
+        query: (queryArg) => ({ url: `/api/meshmodels/relationships/evaluate`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Evaluation_Evaluation"],
       }),
       getSystemDatabase: build.query<GetSystemDatabaseApiResponse, GetSystemDatabaseApiArg>({
@@ -636,7 +636,7 @@ const injectedRtkApi = api
     overrideExisting: false,
   });
 export { injectedRtkApi as mesheryApi, injectedRtkApi };
-export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
+export type EvaluateRelationshipsApiResponse = /** status 200 Successful evaluation */ {
   /** Specifies the version of the schema to which the evaluation response conforms. */
   schemaVersion: string;
   /** The final evaluated design, including all updated components and relationships. This can be either the complete updated design or only a diff of changes. The version of the design will be automatically incremented if any modifications are made during the evaluation process. This field provides a comprehensive view of the design state after all relationship evaluations and policy applications have been completed. */
@@ -1633,7 +1633,7 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
     value: object;
   }[];
 };
-export type PostEvaluateApiArg = {
+export type EvaluateRelationshipsApiArg = {
   body: {
     /** Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes. */
     design: {
@@ -6844,7 +6844,7 @@ export type UnassignViewFromWorkspaceApiArg = {
   viewId: string;
 };
 export const {
-  usePostEvaluateMutation,
+  useEvaluateRelationshipsMutation,
   useGetSystemDatabaseQuery,
   useResetSystemDatabaseMutation,
   useGetSystemVersionQuery,
