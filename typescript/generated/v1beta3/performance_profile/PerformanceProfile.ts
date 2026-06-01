@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-    "/api/performance-profiles": {
+    "/api/performance/profiles": {
         parameters: {
             query?: never;
             header?: never;
@@ -28,7 +28,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/performance-profiles/{performanceProfileId}": {
+    "/api/performance/profiles/{performanceProfileId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -51,6 +51,66 @@ export interface paths {
          * @description Deletes the performance profile identified by the path parameter and any associated performance results.
          */
         delete: operations["deletePerformanceProfile"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/performance/profiles/{performanceProfileId}/results": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List performance results for a profile
+         * @description Returns paginated load-test results associated with the performance profile identified by the path parameter.
+         */
+        get: operations["getPerformanceProfileResults"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/performance/profiles/{performanceProfileId}/results/{resultId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a performance result for a profile
+         * @description Returns one load-test result associated with the performance profile identified by the path parameter.
+         */
+        get: operations["getPerformanceProfileResult"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/performance/results": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List all performance results
+         * @description Returns paginated load-test results visible to the authenticated user.
+         */
+        get: operations["getPerformanceResults"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -238,6 +298,194 @@ export interface components {
                 updatedAt: string;
             }[];
         };
+        /** @description Load-test result captured for a Meshery performance profile. */
+        PerformanceResult: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            mesheryId?: string;
+            /** @description Human-readable name of the performance result. */
+            name?: string;
+            /** @description Service mesh under test for this result. */
+            mesh?: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            performanceProfile?: string | null;
+            /** @description Provider-assigned test identifier for this result. */
+            testId?: string;
+            /** @description Raw load-generator output for this performance result. */
+            runnerResults?: {
+                [key: string]: unknown;
+            };
+            /** @description Server-side metrics collected for this performance result. */
+            serverMetrics?: {
+                [key: string]: unknown;
+            };
+            /** @description Server board configuration associated with this performance result. */
+            serverBoardConfig?: {
+                [key: string]: unknown;
+            };
+            /**
+             * Format: date-time
+             * @description Time when the load test started.
+             */
+            testStartTime?: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            userId?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the performance result was created.
+             */
+            createdAt?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the performance result was last updated.
+             */
+            updatedAt?: string;
+        };
+        /** @description Paginated list of performance results. */
+        PerformanceResultPage: {
+            /** @description Zero-based page index returned in this response. */
+            page: number;
+            /** @description Maximum number of items returned on each page. */
+            pageSize: number;
+            /** @description Total number of performance results across all pages. */
+            totalCount: number;
+            /** @description Performance results in this page. */
+            results: {
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                mesheryId?: string;
+                /** @description Human-readable name of the performance result. */
+                name?: string;
+                /** @description Service mesh under test for this result. */
+                mesh?: string;
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                performanceProfile?: string | null;
+                /** @description Provider-assigned test identifier for this result. */
+                testId?: string;
+                /** @description Raw load-generator output for this performance result. */
+                runnerResults?: {
+                    [key: string]: unknown;
+                };
+                /** @description Server-side metrics collected for this performance result. */
+                serverMetrics?: {
+                    [key: string]: unknown;
+                };
+                /** @description Server board configuration associated with this performance result. */
+                serverBoardConfig?: {
+                    [key: string]: unknown;
+                };
+                /**
+                 * Format: date-time
+                 * @description Time when the load test started.
+                 */
+                testStartTime?: string;
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                userId?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the performance result was created.
+                 */
+                createdAt?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the performance result was last updated.
+                 */
+                updatedAt?: string;
+            }[];
+        };
+        /** @description Runtime configuration for a single performance (load) test run. This is the executable test definition that drives load generation, distinct from a saved PerformanceProfile. It is the Meshery-native replacement for the deprecated service-mesh-performance (SMP) PerformanceTestConfig. */
+        PerformanceTestConfig: {
+            /** @description Version of the performance test configuration format. */
+            smpVersion?: string;
+            /** @description Opaque identifier assigned to the persisted test configuration. Server-assigned (a UUID string); accepted as a free-form string for backward compatibility with externally authored test files. */
+            id?: string;
+            /** @description Human-readable name of the performance test. */
+            name: string;
+            /** @description Arbitrary key/value labels attached to the test configuration. */
+            labels?: {
+                [key: string]: string;
+            };
+            /** @description Load-generation clients that issue requests during the test. A single client is typical; multiple clients describe a distributed load test. */
+            clients: {
+                /** @description Whether the client runs inside the cluster (internal) rather than against an external endpoint. */
+                internal?: boolean;
+                /** @description Load generator used to drive the test (e.g. "fortio"). Empty defaults to the server's supported generator. */
+                loadGenerator?: string;
+                /** @description Application protocol exercised by the client (e.g. "http", "tcp", "udp", "grpc"). */
+                protocol?: string;
+                /** @description Number of concurrent connections the client opens to the endpoint. */
+                connections?: number;
+                /** @description Target requests-per-second issued by the client. Zero means unthrottled. */
+                rps?: number;
+                /** @description HTTP request headers sent on each request. */
+                headers?: {
+                    [key: string]: string;
+                };
+                /** @description HTTP request cookies sent on each request. */
+                cookies?: {
+                    [key: string]: string;
+                };
+                /** @description Request body sent on each request. */
+                body?: string;
+                /** @description Content-Type header applied to the request body (e.g. "application/json"). */
+                contentType?: string;
+                /** @description Target endpoint URLs the client issues requests against. */
+                endpointUrls: string[];
+                /** @description PEM-encoded SSL certificate presented by the client, when required. */
+                sslCertificate?: string;
+                /** @description Additional load-generator-specific options passed through to the generator. */
+                additionalOptions?: string;
+            }[];
+            /** @description Length of time the endpoint is held under load, expressed as a Go duration string (e.g. "30s", "5m", "1h"). */
+            duration: string;
+        };
+        /** @description A single load-generation client within a PerformanceTestConfig. It is the Meshery-native replacement for the deprecated service-mesh-performance (SMP) PerformanceTestConfig_Client. */
+        PerformanceTestClient: {
+            /** @description Whether the client runs inside the cluster (internal) rather than against an external endpoint. */
+            internal?: boolean;
+            /** @description Load generator used to drive the test (e.g. "fortio"). Empty defaults to the server's supported generator. */
+            loadGenerator?: string;
+            /** @description Application protocol exercised by the client (e.g. "http", "tcp", "udp", "grpc"). */
+            protocol?: string;
+            /** @description Number of concurrent connections the client opens to the endpoint. */
+            connections?: number;
+            /** @description Target requests-per-second issued by the client. Zero means unthrottled. */
+            rps?: number;
+            /** @description HTTP request headers sent on each request. */
+            headers?: {
+                [key: string]: string;
+            };
+            /** @description HTTP request cookies sent on each request. */
+            cookies?: {
+                [key: string]: string;
+            };
+            /** @description Request body sent on each request. */
+            body?: string;
+            /** @description Content-Type header applied to the request body (e.g. "application/json"). */
+            contentType?: string;
+            /** @description Target endpoint URLs the client issues requests against. */
+            endpointUrls: string[];
+            /** @description PEM-encoded SSL certificate presented by the client, when required. */
+            sslCertificate?: string;
+            /** @description Additional load-generator-specific options passed through to the generator. */
+            additionalOptions?: string;
+        };
     };
     responses: {
         /** @description ok */
@@ -289,6 +537,8 @@ export interface components {
     parameters: {
         /** @description Performance profile ID. */
         performanceProfileId: string;
+        /** @description Performance result ID. */
+        resultId: string;
         /** @description Get responses that match search param value */
         search: string;
         /** @description Get ordered responses */
@@ -297,6 +547,10 @@ export interface components {
         page: string;
         /** @description Get responses by pagesize */
         pagesize: string;
+        /** @description Start date for filtering results by test start time, in YYYY-MM-DD format. */
+        from: string;
+        /** @description End date for filtering results by test start time, in YYYY-MM-DD format. */
+        to: string;
     };
     requestBodies: {
         /** @description Body for creating or updating a performance profile. */
@@ -952,6 +1206,360 @@ export interface operations {
             };
             /** @description Result not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getPerformanceProfileResults: {
+        parameters: {
+            query?: {
+                /** @description Get responses by page */
+                page?: string;
+                /** @description Get responses by pagesize */
+                pagesize?: string;
+                /** @description Get responses that match search param value */
+                search?: string;
+                /** @description Get ordered responses */
+                order?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Performance profile ID. */
+                performanceProfileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Performance results */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Zero-based page index returned in this response. */
+                        page: number;
+                        /** @description Maximum number of items returned on each page. */
+                        pageSize: number;
+                        /** @description Total number of performance results across all pages. */
+                        totalCount: number;
+                        /** @description Performance results in this page. */
+                        results: {
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            mesheryId?: string;
+                            /** @description Human-readable name of the performance result. */
+                            name?: string;
+                            /** @description Service mesh under test for this result. */
+                            mesh?: string;
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            performanceProfile?: string | null;
+                            /** @description Provider-assigned test identifier for this result. */
+                            testId?: string;
+                            /** @description Raw load-generator output for this performance result. */
+                            runnerResults?: {
+                                [key: string]: unknown;
+                            };
+                            /** @description Server-side metrics collected for this performance result. */
+                            serverMetrics?: {
+                                [key: string]: unknown;
+                            };
+                            /** @description Server board configuration associated with this performance result. */
+                            serverBoardConfig?: {
+                                [key: string]: unknown;
+                            };
+                            /**
+                             * Format: date-time
+                             * @description Time when the load test started.
+                             */
+                            testStartTime?: string;
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            userId?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the performance result was created.
+                             */
+                            createdAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the performance result was last updated.
+                             */
+                            updatedAt?: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getPerformanceProfileResult: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Performance profile ID. */
+                performanceProfileId: string;
+                /** @description Performance result ID. */
+                resultId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Performance result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        mesheryId?: string;
+                        /** @description Human-readable name of the performance result. */
+                        name?: string;
+                        /** @description Service mesh under test for this result. */
+                        mesh?: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        performanceProfile?: string | null;
+                        /** @description Provider-assigned test identifier for this result. */
+                        testId?: string;
+                        /** @description Raw load-generator output for this performance result. */
+                        runnerResults?: {
+                            [key: string]: unknown;
+                        };
+                        /** @description Server-side metrics collected for this performance result. */
+                        serverMetrics?: {
+                            [key: string]: unknown;
+                        };
+                        /** @description Server board configuration associated with this performance result. */
+                        serverBoardConfig?: {
+                            [key: string]: unknown;
+                        };
+                        /**
+                         * Format: date-time
+                         * @description Time when the load test started.
+                         */
+                        testStartTime?: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        userId?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the performance result was created.
+                         */
+                        createdAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the performance result was last updated.
+                         */
+                        updatedAt?: string;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getPerformanceResults: {
+        parameters: {
+            query?: {
+                /** @description Get responses by page */
+                page?: string;
+                /** @description Get responses by pagesize */
+                pagesize?: string;
+                /** @description Get responses that match search param value */
+                search?: string;
+                /** @description Get ordered responses */
+                order?: string;
+                /** @description Start date for filtering results by test start time, in YYYY-MM-DD format. */
+                from?: string;
+                /** @description End date for filtering results by test start time, in YYYY-MM-DD format. */
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Performance results */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Zero-based page index returned in this response. */
+                        page: number;
+                        /** @description Maximum number of items returned on each page. */
+                        pageSize: number;
+                        /** @description Total number of performance results across all pages. */
+                        totalCount: number;
+                        /** @description Performance results in this page. */
+                        results: {
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            mesheryId?: string;
+                            /** @description Human-readable name of the performance result. */
+                            name?: string;
+                            /** @description Service mesh under test for this result. */
+                            mesh?: string;
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            performanceProfile?: string | null;
+                            /** @description Provider-assigned test identifier for this result. */
+                            testId?: string;
+                            /** @description Raw load-generator output for this performance result. */
+                            runnerResults?: {
+                                [key: string]: unknown;
+                            };
+                            /** @description Server-side metrics collected for this performance result. */
+                            serverMetrics?: {
+                                [key: string]: unknown;
+                            };
+                            /** @description Server board configuration associated with this performance result. */
+                            serverBoardConfig?: {
+                                [key: string]: unknown;
+                            };
+                            /**
+                             * Format: date-time
+                             * @description Time when the load test started.
+                             */
+                            testStartTime?: string;
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            userId?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the performance result was created.
+                             */
+                            createdAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the performance result was last updated.
+                             */
+                            updatedAt?: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };
