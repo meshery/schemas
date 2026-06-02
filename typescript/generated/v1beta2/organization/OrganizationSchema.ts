@@ -301,6 +301,37 @@ const OrganizationSchema: Record<string, unknown> = {
                                     "type": "object",
                                     "description": "Preferences specific to dashboard behavior.",
                                     "additionalProperties": true
+                                  },
+                                  "authLinks": {
+                                    "x-go-type": "AuthLinks",
+                                    "type": "object",
+                                    "description": "Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults.",
+                                    "properties": {
+                                      "termsOfService": {
+                                        "type": "string",
+                                        "description": "URL of the organization's Terms of Service page."
+                                      },
+                                      "privacy": {
+                                        "type": "string",
+                                        "description": "URL of the organization's Privacy Policy page."
+                                      },
+                                      "discussionForum": {
+                                        "type": "string",
+                                        "description": "URL of the organization's discussion forum."
+                                      },
+                                      "email": {
+                                        "type": "string",
+                                        "description": "Support email address, rendered as a mailto link."
+                                      },
+                                      "slack": {
+                                        "type": "string",
+                                        "description": "URL of the organization's Slack workspace or invite."
+                                      }
+                                    }
+                                  },
+                                  "showAuthCarousel": {
+                                    "type": "boolean",
+                                    "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
                                   }
                                 }
                               }
@@ -551,6 +582,37 @@ const OrganizationSchema: Record<string, unknown> = {
                         "type": "object",
                         "description": "Preferences specific to dashboard behavior.",
                         "additionalProperties": true
+                      },
+                      "authLinks": {
+                        "x-go-type": "AuthLinks",
+                        "type": "object",
+                        "description": "Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults.",
+                        "properties": {
+                          "termsOfService": {
+                            "type": "string",
+                            "description": "URL of the organization's Terms of Service page."
+                          },
+                          "privacy": {
+                            "type": "string",
+                            "description": "URL of the organization's Privacy Policy page."
+                          },
+                          "discussionForum": {
+                            "type": "string",
+                            "description": "URL of the organization's discussion forum."
+                          },
+                          "email": {
+                            "type": "string",
+                            "description": "Support email address, rendered as a mailto link."
+                          },
+                          "slack": {
+                            "type": "string",
+                            "description": "URL of the organization's Slack workspace or invite."
+                          }
+                        }
+                      },
+                      "showAuthCarousel": {
+                        "type": "boolean",
+                        "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
                       }
                     }
                   }
@@ -774,6 +836,37 @@ const OrganizationSchema: Record<string, unknown> = {
                                     "type": "object",
                                     "description": "Preferences specific to dashboard behavior.",
                                     "additionalProperties": true
+                                  },
+                                  "authLinks": {
+                                    "x-go-type": "AuthLinks",
+                                    "type": "object",
+                                    "description": "Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults.",
+                                    "properties": {
+                                      "termsOfService": {
+                                        "type": "string",
+                                        "description": "URL of the organization's Terms of Service page."
+                                      },
+                                      "privacy": {
+                                        "type": "string",
+                                        "description": "URL of the organization's Privacy Policy page."
+                                      },
+                                      "discussionForum": {
+                                        "type": "string",
+                                        "description": "URL of the organization's discussion forum."
+                                      },
+                                      "email": {
+                                        "type": "string",
+                                        "description": "Support email address, rendered as a mailto link."
+                                      },
+                                      "slack": {
+                                        "type": "string",
+                                        "description": "URL of the organization's Slack workspace or invite."
+                                      }
+                                    }
+                                  },
+                                  "showAuthCarousel": {
+                                    "type": "boolean",
+                                    "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
                                   }
                                 }
                               }
@@ -1293,6 +1386,37 @@ const OrganizationSchema: Record<string, unknown> = {
                                     "type": "object",
                                     "description": "Preferences specific to dashboard behavior.",
                                     "additionalProperties": true
+                                  },
+                                  "authLinks": {
+                                    "x-go-type": "AuthLinks",
+                                    "type": "object",
+                                    "description": "Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults.",
+                                    "properties": {
+                                      "termsOfService": {
+                                        "type": "string",
+                                        "description": "URL of the organization's Terms of Service page."
+                                      },
+                                      "privacy": {
+                                        "type": "string",
+                                        "description": "URL of the organization's Privacy Policy page."
+                                      },
+                                      "discussionForum": {
+                                        "type": "string",
+                                        "description": "URL of the organization's discussion forum."
+                                      },
+                                      "email": {
+                                        "type": "string",
+                                        "description": "Support email address, rendered as a mailto link."
+                                      },
+                                      "slack": {
+                                        "type": "string",
+                                        "description": "URL of the organization's Slack workspace or invite."
+                                      }
+                                    }
+                                  },
+                                  "showAuthCarousel": {
+                                    "type": "boolean",
+                                    "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
                                   }
                                 }
                               }
@@ -1656,6 +1780,37 @@ const OrganizationSchema: Record<string, unknown> = {
                         "type": "object",
                         "description": "Preferences specific to dashboard behavior.",
                         "additionalProperties": true
+                      },
+                      "authLinks": {
+                        "x-go-type": "AuthLinks",
+                        "type": "object",
+                        "description": "Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults.",
+                        "properties": {
+                          "termsOfService": {
+                            "type": "string",
+                            "description": "URL of the organization's Terms of Service page."
+                          },
+                          "privacy": {
+                            "type": "string",
+                            "description": "URL of the organization's Privacy Policy page."
+                          },
+                          "discussionForum": {
+                            "type": "string",
+                            "description": "URL of the organization's discussion forum."
+                          },
+                          "email": {
+                            "type": "string",
+                            "description": "Support email address, rendered as a mailto link."
+                          },
+                          "slack": {
+                            "type": "string",
+                            "description": "URL of the organization's Slack workspace or invite."
+                          }
+                        }
+                      },
+                      "showAuthCarousel": {
+                        "type": "boolean",
+                        "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
                       }
                     }
                   }
@@ -1879,6 +2034,37 @@ const OrganizationSchema: Record<string, unknown> = {
                                     "type": "object",
                                     "description": "Preferences specific to dashboard behavior.",
                                     "additionalProperties": true
+                                  },
+                                  "authLinks": {
+                                    "x-go-type": "AuthLinks",
+                                    "type": "object",
+                                    "description": "Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults.",
+                                    "properties": {
+                                      "termsOfService": {
+                                        "type": "string",
+                                        "description": "URL of the organization's Terms of Service page."
+                                      },
+                                      "privacy": {
+                                        "type": "string",
+                                        "description": "URL of the organization's Privacy Policy page."
+                                      },
+                                      "discussionForum": {
+                                        "type": "string",
+                                        "description": "URL of the organization's discussion forum."
+                                      },
+                                      "email": {
+                                        "type": "string",
+                                        "description": "Support email address, rendered as a mailto link."
+                                      },
+                                      "slack": {
+                                        "type": "string",
+                                        "description": "URL of the organization's Slack workspace or invite."
+                                      }
+                                    }
+                                  },
+                                  "showAuthCarousel": {
+                                    "type": "boolean",
+                                    "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
                                   }
                                 }
                               }
@@ -2150,6 +2336,37 @@ const OrganizationSchema: Record<string, unknown> = {
                           "type": "object",
                           "description": "Preferences specific to dashboard behavior.",
                           "additionalProperties": true
+                        },
+                        "authLinks": {
+                          "x-go-type": "AuthLinks",
+                          "type": "object",
+                          "description": "Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults.",
+                          "properties": {
+                            "termsOfService": {
+                              "type": "string",
+                              "description": "URL of the organization's Terms of Service page."
+                            },
+                            "privacy": {
+                              "type": "string",
+                              "description": "URL of the organization's Privacy Policy page."
+                            },
+                            "discussionForum": {
+                              "type": "string",
+                              "description": "URL of the organization's discussion forum."
+                            },
+                            "email": {
+                              "type": "string",
+                              "description": "Support email address, rendered as a mailto link."
+                            },
+                            "slack": {
+                              "type": "string",
+                              "description": "URL of the organization's Slack workspace or invite."
+                            }
+                          }
+                        },
+                        "showAuthCarousel": {
+                          "type": "boolean",
+                          "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
                         }
                       }
                     }
@@ -3212,6 +3429,37 @@ const OrganizationSchema: Record<string, unknown> = {
                       "type": "object",
                       "description": "Preferences specific to dashboard behavior.",
                       "additionalProperties": true
+                    },
+                    "authLinks": {
+                      "x-go-type": "AuthLinks",
+                      "type": "object",
+                      "description": "Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults.",
+                      "properties": {
+                        "termsOfService": {
+                          "type": "string",
+                          "description": "URL of the organization's Terms of Service page."
+                        },
+                        "privacy": {
+                          "type": "string",
+                          "description": "URL of the organization's Privacy Policy page."
+                        },
+                        "discussionForum": {
+                          "type": "string",
+                          "description": "URL of the organization's discussion forum."
+                        },
+                        "email": {
+                          "type": "string",
+                          "description": "Support email address, rendered as a mailto link."
+                        },
+                        "slack": {
+                          "type": "string",
+                          "description": "URL of the organization's Slack workspace or invite."
+                        }
+                      }
+                    },
+                    "showAuthCarousel": {
+                      "type": "boolean",
+                      "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
                     }
                   }
                 }
@@ -3508,6 +3756,32 @@ const OrganizationSchema: Record<string, unknown> = {
         "description": "Preferences specific to dashboard behavior.",
         "additionalProperties": true
       },
+      "AuthLinks": {
+        "type": "object",
+        "description": "Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults.",
+        "properties": {
+          "termsOfService": {
+            "type": "string",
+            "description": "URL of the organization's Terms of Service page."
+          },
+          "privacy": {
+            "type": "string",
+            "description": "URL of the organization's Privacy Policy page."
+          },
+          "discussionForum": {
+            "type": "string",
+            "description": "URL of the organization's discussion forum."
+          },
+          "email": {
+            "type": "string",
+            "description": "Support email address, rendered as a mailto link."
+          },
+          "slack": {
+            "type": "string",
+            "description": "URL of the organization's Slack workspace or invite."
+          }
+        }
+      },
       "Preferences": {
         "type": "object",
         "description": "Organization-level user experience preferences.",
@@ -3640,6 +3914,37 @@ const OrganizationSchema: Record<string, unknown> = {
             "type": "object",
             "description": "Preferences specific to dashboard behavior.",
             "additionalProperties": true
+          },
+          "authLinks": {
+            "x-go-type": "AuthLinks",
+            "type": "object",
+            "description": "Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults.",
+            "properties": {
+              "termsOfService": {
+                "type": "string",
+                "description": "URL of the organization's Terms of Service page."
+              },
+              "privacy": {
+                "type": "string",
+                "description": "URL of the organization's Privacy Policy page."
+              },
+              "discussionForum": {
+                "type": "string",
+                "description": "URL of the organization's discussion forum."
+              },
+              "email": {
+                "type": "string",
+                "description": "Support email address, rendered as a mailto link."
+              },
+              "slack": {
+                "type": "string",
+                "description": "URL of the organization's Slack workspace or invite."
+              }
+            }
+          },
+          "showAuthCarousel": {
+            "type": "boolean",
+            "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
           }
         }
       },
@@ -3783,6 +4088,37 @@ const OrganizationSchema: Record<string, unknown> = {
                 "type": "object",
                 "description": "Preferences specific to dashboard behavior.",
                 "additionalProperties": true
+              },
+              "authLinks": {
+                "x-go-type": "AuthLinks",
+                "type": "object",
+                "description": "Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults.",
+                "properties": {
+                  "termsOfService": {
+                    "type": "string",
+                    "description": "URL of the organization's Terms of Service page."
+                  },
+                  "privacy": {
+                    "type": "string",
+                    "description": "URL of the organization's Privacy Policy page."
+                  },
+                  "discussionForum": {
+                    "type": "string",
+                    "description": "URL of the organization's discussion forum."
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "Support email address, rendered as a mailto link."
+                  },
+                  "slack": {
+                    "type": "string",
+                    "description": "URL of the organization's Slack workspace or invite."
+                  }
+                }
+              },
+              "showAuthCarousel": {
+                "type": "boolean",
+                "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
               }
             }
           }
@@ -4107,6 +4443,37 @@ const OrganizationSchema: Record<string, unknown> = {
                     "type": "object",
                     "description": "Preferences specific to dashboard behavior.",
                     "additionalProperties": true
+                  },
+                  "authLinks": {
+                    "x-go-type": "AuthLinks",
+                    "type": "object",
+                    "description": "Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults.",
+                    "properties": {
+                      "termsOfService": {
+                        "type": "string",
+                        "description": "URL of the organization's Terms of Service page."
+                      },
+                      "privacy": {
+                        "type": "string",
+                        "description": "URL of the organization's Privacy Policy page."
+                      },
+                      "discussionForum": {
+                        "type": "string",
+                        "description": "URL of the organization's discussion forum."
+                      },
+                      "email": {
+                        "type": "string",
+                        "description": "Support email address, rendered as a mailto link."
+                      },
+                      "slack": {
+                        "type": "string",
+                        "description": "URL of the organization's Slack workspace or invite."
+                      }
+                    }
+                  },
+                  "showAuthCarousel": {
+                    "type": "boolean",
+                    "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
                   }
                 }
               }
@@ -4354,6 +4721,37 @@ const OrganizationSchema: Record<string, unknown> = {
                           "type": "object",
                           "description": "Preferences specific to dashboard behavior.",
                           "additionalProperties": true
+                        },
+                        "authLinks": {
+                          "x-go-type": "AuthLinks",
+                          "type": "object",
+                          "description": "Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults.",
+                          "properties": {
+                            "termsOfService": {
+                              "type": "string",
+                              "description": "URL of the organization's Terms of Service page."
+                            },
+                            "privacy": {
+                              "type": "string",
+                              "description": "URL of the organization's Privacy Policy page."
+                            },
+                            "discussionForum": {
+                              "type": "string",
+                              "description": "URL of the organization's discussion forum."
+                            },
+                            "email": {
+                              "type": "string",
+                              "description": "Support email address, rendered as a mailto link."
+                            },
+                            "slack": {
+                              "type": "string",
+                              "description": "URL of the organization's Slack workspace or invite."
+                            }
+                          }
+                        },
+                        "showAuthCarousel": {
+                          "type": "boolean",
+                          "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
                         }
                       }
                     }
@@ -4605,6 +5003,37 @@ const OrganizationSchema: Record<string, unknown> = {
                           "type": "object",
                           "description": "Preferences specific to dashboard behavior.",
                           "additionalProperties": true
+                        },
+                        "authLinks": {
+                          "x-go-type": "AuthLinks",
+                          "type": "object",
+                          "description": "Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults.",
+                          "properties": {
+                            "termsOfService": {
+                              "type": "string",
+                              "description": "URL of the organization's Terms of Service page."
+                            },
+                            "privacy": {
+                              "type": "string",
+                              "description": "URL of the organization's Privacy Policy page."
+                            },
+                            "discussionForum": {
+                              "type": "string",
+                              "description": "URL of the organization's discussion forum."
+                            },
+                            "email": {
+                              "type": "string",
+                              "description": "Support email address, rendered as a mailto link."
+                            },
+                            "slack": {
+                              "type": "string",
+                              "description": "URL of the organization's Slack workspace or invite."
+                            }
+                          }
+                        },
+                        "showAuthCarousel": {
+                          "type": "boolean",
+                          "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
                         }
                       }
                     }
@@ -4806,6 +5235,37 @@ const OrganizationSchema: Record<string, unknown> = {
                 "type": "object",
                 "description": "Preferences specific to dashboard behavior.",
                 "additionalProperties": true
+              },
+              "authLinks": {
+                "x-go-type": "AuthLinks",
+                "type": "object",
+                "description": "Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults.",
+                "properties": {
+                  "termsOfService": {
+                    "type": "string",
+                    "description": "URL of the organization's Terms of Service page."
+                  },
+                  "privacy": {
+                    "type": "string",
+                    "description": "URL of the organization's Privacy Policy page."
+                  },
+                  "discussionForum": {
+                    "type": "string",
+                    "description": "URL of the organization's discussion forum."
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "Support email address, rendered as a mailto link."
+                  },
+                  "slack": {
+                    "type": "string",
+                    "description": "URL of the organization's Slack workspace or invite."
+                  }
+                }
+              },
+              "showAuthCarousel": {
+                "type": "boolean",
+                "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
               }
             }
           }

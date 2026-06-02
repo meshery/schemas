@@ -15,6 +15,24 @@ const (
 	Delete OrgTeamActionPayloadAction = "delete"
 )
 
+// AuthLinks Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults.
+type AuthLinks struct {
+	// DiscussionForum URL of the organization's discussion forum.
+	DiscussionForum *string `json:"discussionForum,omitempty" yaml:"discussionForum,omitempty"`
+
+	// Email Support email address, rendered as a mailto link.
+	Email *string `json:"email,omitempty" yaml:"email,omitempty"`
+
+	// Privacy URL of the organization's Privacy Policy page.
+	Privacy *string `json:"privacy,omitempty" yaml:"privacy,omitempty"`
+
+	// Slack URL of the organization's Slack workspace or invite.
+	Slack *string `json:"slack,omitempty" yaml:"slack,omitempty"`
+
+	// TermsOfService URL of the organization's Terms of Service page.
+	TermsOfService *string `json:"termsOfService,omitempty" yaml:"termsOfService,omitempty"`
+}
+
 // AvailableOrganization Organization listing record used in list and get responses.
 type AvailableOrganization struct {
 	Country     Text         `json:"country,omitempty" yaml:"country,omitempty"`
@@ -175,8 +193,14 @@ type OrganizationsPage struct {
 
 // Preferences Organization-level user experience preferences.
 type Preferences struct {
+	// AuthLinks Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults.
+	AuthLinks *AuthLinks `json:"authLinks,omitempty" yaml:"authLinks,omitempty"`
+
 	// Dashboard Preferences specific to dashboard behavior.
 	Dashboard DashboardPrefs `json:"dashboard" yaml:"dashboard"`
+
+	// ShowAuthCarousel Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
+	ShowAuthCarousel *bool `json:"showAuthCarousel,omitempty" yaml:"showAuthCarousel,omitempty"`
 
 	// Theme UI theme configured for an organization.
 	Theme Theme `json:"theme" yaml:"theme"`

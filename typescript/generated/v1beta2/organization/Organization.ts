@@ -261,6 +261,19 @@ export interface components {
         DashboardPrefs: {
             [key: string]: unknown;
         };
+        /** @description Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults. */
+        AuthLinks: {
+            /** @description URL of the organization's Terms of Service page. */
+            termsOfService?: string;
+            /** @description URL of the organization's Privacy Policy page. */
+            privacy?: string;
+            /** @description URL of the organization's discussion forum. */
+            discussionForum?: string;
+            /** @description Support email address, rendered as a mailto link. */
+            email?: string;
+            /** @description URL of the organization's Slack workspace or invite. */
+            slack?: string;
+        };
         /** @description Organization-level user experience preferences. */
         Preferences: {
             /** @description UI theme configured for an organization. */
@@ -310,6 +323,21 @@ export interface components {
             dashboard: {
                 [key: string]: unknown;
             };
+            /** @description Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults. */
+            authLinks?: {
+                /** @description URL of the organization's Terms of Service page. */
+                termsOfService?: string;
+                /** @description URL of the organization's Privacy Policy page. */
+                privacy?: string;
+                /** @description URL of the organization's discussion forum. */
+                discussionForum?: string;
+                /** @description Support email address, rendered as a mailto link. */
+                email?: string;
+                /** @description URL of the organization's Slack workspace or invite. */
+                slack?: string;
+            };
+            /** @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+            showAuthCarousel?: boolean;
         };
         /** @description Free-form metadata associated with an organization, including preferences. */
         OrgMetadata: {
@@ -362,6 +390,21 @@ export interface components {
                 dashboard: {
                     [key: string]: unknown;
                 };
+                /** @description Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults. */
+                authLinks?: {
+                    /** @description URL of the organization's Terms of Service page. */
+                    termsOfService?: string;
+                    /** @description URL of the organization's Privacy Policy page. */
+                    privacy?: string;
+                    /** @description URL of the organization's discussion forum. */
+                    discussionForum?: string;
+                    /** @description Support email address, rendered as a mailto link. */
+                    email?: string;
+                    /** @description URL of the organization's Slack workspace or invite. */
+                    slack?: string;
+                };
+                /** @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+                showAuthCarousel?: boolean;
             };
         };
         /** @description An organization in Meshery Cloud. Organizations are the top-level tenancy boundary and own teams, workspaces, environments, designs, and other resources. Learn more at https://docs.meshery.io/concepts/logical/organizations */
@@ -472,6 +515,21 @@ export interface components {
                     dashboard: {
                         [key: string]: unknown;
                     };
+                    /** @description Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults. */
+                    authLinks?: {
+                        /** @description URL of the organization's Terms of Service page. */
+                        termsOfService?: string;
+                        /** @description URL of the organization's Privacy Policy page. */
+                        privacy?: string;
+                        /** @description URL of the organization's discussion forum. */
+                        discussionForum?: string;
+                        /** @description Support email address, rendered as a mailto link. */
+                        email?: string;
+                        /** @description URL of the organization's Slack workspace or invite. */
+                        slack?: string;
+                    };
+                    /** @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+                    showAuthCarousel?: boolean;
                 };
             };
             /**
@@ -566,6 +624,21 @@ export interface components {
                         dashboard: {
                             [key: string]: unknown;
                         };
+                        /** @description Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults. */
+                        authLinks?: {
+                            /** @description URL of the organization's Terms of Service page. */
+                            termsOfService?: string;
+                            /** @description URL of the organization's Privacy Policy page. */
+                            privacy?: string;
+                            /** @description URL of the organization's discussion forum. */
+                            discussionForum?: string;
+                            /** @description Support email address, rendered as a mailto link. */
+                            email?: string;
+                            /** @description URL of the organization's Slack workspace or invite. */
+                            slack?: string;
+                        };
+                        /** @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+                        showAuthCarousel?: boolean;
                     };
                 };
                 /**
@@ -661,6 +734,21 @@ export interface components {
                         dashboard: {
                             [key: string]: unknown;
                         };
+                        /** @description Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults. */
+                        authLinks?: {
+                            /** @description URL of the organization's Terms of Service page. */
+                            termsOfService?: string;
+                            /** @description URL of the organization's Privacy Policy page. */
+                            privacy?: string;
+                            /** @description URL of the organization's discussion forum. */
+                            discussionForum?: string;
+                            /** @description Support email address, rendered as a mailto link. */
+                            email?: string;
+                            /** @description URL of the organization's Slack workspace or invite. */
+                            slack?: string;
+                        };
+                        /** @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+                        showAuthCarousel?: boolean;
                     };
                 };
                 /**
@@ -741,6 +829,21 @@ export interface components {
                 dashboard: {
                     [key: string]: unknown;
                 };
+                /** @description Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults. */
+                authLinks?: {
+                    /** @description URL of the organization's Terms of Service page. */
+                    termsOfService?: string;
+                    /** @description URL of the organization's Privacy Policy page. */
+                    privacy?: string;
+                    /** @description URL of the organization's discussion forum. */
+                    discussionForum?: string;
+                    /** @description Support email address, rendered as a mailto link. */
+                    email?: string;
+                    /** @description URL of the organization's Slack workspace or invite. */
+                    slack?: string;
+                };
+                /** @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+                showAuthCarousel?: boolean;
             };
         };
         /** @description Team listing record used in team listings associated with an organization. */
@@ -1014,6 +1117,21 @@ export interface components {
                         dashboard: {
                             [key: string]: unknown;
                         };
+                        /** @description Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults. */
+                        authLinks?: {
+                            /** @description URL of the organization's Terms of Service page. */
+                            termsOfService?: string;
+                            /** @description URL of the organization's Privacy Policy page. */
+                            privacy?: string;
+                            /** @description URL of the organization's discussion forum. */
+                            discussionForum?: string;
+                            /** @description Support email address, rendered as a mailto link. */
+                            email?: string;
+                            /** @description URL of the organization's Slack workspace or invite. */
+                            slack?: string;
+                        };
+                        /** @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+                        showAuthCarousel?: boolean;
                     };
                 };
             };
@@ -1125,6 +1243,21 @@ export interface operations {
                                     dashboard: {
                                         [key: string]: unknown;
                                     };
+                                    /** @description Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults. */
+                                    authLinks?: {
+                                        /** @description URL of the organization's Terms of Service page. */
+                                        termsOfService?: string;
+                                        /** @description URL of the organization's Privacy Policy page. */
+                                        privacy?: string;
+                                        /** @description URL of the organization's discussion forum. */
+                                        discussionForum?: string;
+                                        /** @description Support email address, rendered as a mailto link. */
+                                        email?: string;
+                                        /** @description URL of the organization's Slack workspace or invite. */
+                                        slack?: string;
+                                    };
+                                    /** @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+                                    showAuthCarousel?: boolean;
                                 };
                             };
                             /**
@@ -1243,6 +1376,21 @@ export interface operations {
                         dashboard: {
                             [key: string]: unknown;
                         };
+                        /** @description Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults. */
+                        authLinks?: {
+                            /** @description URL of the organization's Terms of Service page. */
+                            termsOfService?: string;
+                            /** @description URL of the organization's Privacy Policy page. */
+                            privacy?: string;
+                            /** @description URL of the organization's discussion forum. */
+                            discussionForum?: string;
+                            /** @description Support email address, rendered as a mailto link. */
+                            email?: string;
+                            /** @description URL of the organization's Slack workspace or invite. */
+                            slack?: string;
+                        };
+                        /** @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+                        showAuthCarousel?: boolean;
                     };
                 };
             };
@@ -1329,6 +1477,21 @@ export interface operations {
                                     dashboard: {
                                         [key: string]: unknown;
                                     };
+                                    /** @description Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults. */
+                                    authLinks?: {
+                                        /** @description URL of the organization's Terms of Service page. */
+                                        termsOfService?: string;
+                                        /** @description URL of the organization's Privacy Policy page. */
+                                        privacy?: string;
+                                        /** @description URL of the organization's discussion forum. */
+                                        discussionForum?: string;
+                                        /** @description Support email address, rendered as a mailto link. */
+                                        email?: string;
+                                        /** @description URL of the organization's Slack workspace or invite. */
+                                        slack?: string;
+                                    };
+                                    /** @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+                                    showAuthCarousel?: boolean;
                                 };
                             };
                             /**
@@ -1556,6 +1719,21 @@ export interface operations {
                                     dashboard: {
                                         [key: string]: unknown;
                                     };
+                                    /** @description Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults. */
+                                    authLinks?: {
+                                        /** @description URL of the organization's Terms of Service page. */
+                                        termsOfService?: string;
+                                        /** @description URL of the organization's Privacy Policy page. */
+                                        privacy?: string;
+                                        /** @description URL of the organization's discussion forum. */
+                                        discussionForum?: string;
+                                        /** @description Support email address, rendered as a mailto link. */
+                                        email?: string;
+                                        /** @description URL of the organization's Slack workspace or invite. */
+                                        slack?: string;
+                                    };
+                                    /** @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+                                    showAuthCarousel?: boolean;
                                 };
                             };
                             /**
@@ -1679,6 +1857,21 @@ export interface operations {
                         dashboard: {
                             [key: string]: unknown;
                         };
+                        /** @description Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults. */
+                        authLinks?: {
+                            /** @description URL of the organization's Terms of Service page. */
+                            termsOfService?: string;
+                            /** @description URL of the organization's Privacy Policy page. */
+                            privacy?: string;
+                            /** @description URL of the organization's discussion forum. */
+                            discussionForum?: string;
+                            /** @description Support email address, rendered as a mailto link. */
+                            email?: string;
+                            /** @description URL of the organization's Slack workspace or invite. */
+                            slack?: string;
+                        };
+                        /** @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+                        showAuthCarousel?: boolean;
                     };
                 };
             };
@@ -1765,6 +1958,21 @@ export interface operations {
                                     dashboard: {
                                         [key: string]: unknown;
                                     };
+                                    /** @description Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults. */
+                                    authLinks?: {
+                                        /** @description URL of the organization's Terms of Service page. */
+                                        termsOfService?: string;
+                                        /** @description URL of the organization's Privacy Policy page. */
+                                        privacy?: string;
+                                        /** @description URL of the organization's discussion forum. */
+                                        discussionForum?: string;
+                                        /** @description Support email address, rendered as a mailto link. */
+                                        email?: string;
+                                        /** @description URL of the organization's Slack workspace or invite. */
+                                        slack?: string;
+                                    };
+                                    /** @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+                                    showAuthCarousel?: boolean;
                                 };
                             };
                             /**
@@ -1949,6 +2157,21 @@ export interface operations {
                             dashboard: {
                                 [key: string]: unknown;
                             };
+                            /** @description Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults. */
+                            authLinks?: {
+                                /** @description URL of the organization's Terms of Service page. */
+                                termsOfService?: string;
+                                /** @description URL of the organization's Privacy Policy page. */
+                                privacy?: string;
+                                /** @description URL of the organization's discussion forum. */
+                                discussionForum?: string;
+                                /** @description Support email address, rendered as a mailto link. */
+                                email?: string;
+                                /** @description URL of the organization's Slack workspace or invite. */
+                                slack?: string;
+                            };
+                            /** @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+                            showAuthCarousel?: boolean;
                         };
                     };
                 };
