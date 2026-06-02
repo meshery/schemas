@@ -15,18 +15,6 @@ const (
 	Delete OrgTeamActionPayloadAction = "delete"
 )
 
-// AuthLinks Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults.
-type AuthLinks struct {
-	// Privacy URL of the organization's Privacy Policy page.
-	Privacy *string `json:"privacy,omitempty" yaml:"privacy,omitempty"`
-
-	// Support Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number.
-	Support *map[string]string `json:"support,omitempty" yaml:"support,omitempty"`
-
-	// TermsOfService URL of the organization's Terms of Service page.
-	TermsOfService *string `json:"termsOfService,omitempty" yaml:"termsOfService,omitempty"`
-}
-
 // AvailableOrganization Organization listing record used in list and get responses.
 type AvailableOrganization struct {
 	Country     Text         `json:"country,omitempty" yaml:"country,omitempty"`
@@ -187,14 +175,8 @@ type OrganizationsPage struct {
 
 // Preferences Organization-level user experience preferences.
 type Preferences struct {
-	// AuthLinks Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults.
-	AuthLinks *AuthLinks `json:"authLinks,omitempty" yaml:"authLinks,omitempty"`
-
 	// Dashboard Preferences specific to dashboard behavior.
 	Dashboard DashboardPrefs `json:"dashboard" yaml:"dashboard"`
-
-	// ShowAuthCarousel Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
-	ShowAuthCarousel *bool `json:"showAuthCarousel,omitempty" yaml:"showAuthCarousel,omitempty"`
 
 	// Theme UI theme configured for an organization.
 	Theme Theme `json:"theme" yaml:"theme"`

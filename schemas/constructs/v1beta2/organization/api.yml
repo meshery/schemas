@@ -479,8 +479,9 @@ components:
       description: Preferences specific to dashboard behavior.
       additionalProperties: true
 
-    AuthLinks:
+    Links:
       type: object
+      x-internal: ["cloud"]
       description: >-
         Per-organization overrides for the legal and support links shown on
         the auth pages and the error page. termsOfService and privacy are the
@@ -523,9 +524,9 @@ components:
         dashboard:
           x-go-type: "DashboardPrefs"
           $ref: "#/components/schemas/DashboardPrefs"
-        authLinks:
-          x-go-type: "AuthLinks"
-          $ref: "#/components/schemas/AuthLinks"
+        links:
+          x-go-type: "Links"
+          $ref: "#/components/schemas/Links"
         showAuthCarousel:
           type: boolean
           description: >-
