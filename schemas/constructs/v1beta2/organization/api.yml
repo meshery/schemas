@@ -490,18 +490,28 @@ components:
       properties:
         termsOfService:
           type: string
+          format: uri
+          maxLength: 2048
           description: URL of the organization's Terms of Service page.
         privacy:
           type: string
+          format: uri
+          maxLength: 2048
           description: URL of the organization's Privacy Policy page.
         discussionForum:
           type: string
+          format: uri
+          maxLength: 2048
           description: URL of the organization's discussion forum.
         email:
           type: string
+          format: email
+          maxLength: 320
           description: Support email address, rendered as a mailto link.
         slack:
           type: string
+          format: uri
+          maxLength: 2048
           description: URL of the organization's Slack workspace or invite.
 
     Preferences:
