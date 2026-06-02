@@ -15,19 +15,13 @@ const (
 	Delete OrgTeamActionPayloadAction = "delete"
 )
 
-// AuthLinks Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults.
+// AuthLinks Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults.
 type AuthLinks struct {
-	// DiscussionForum URL of the organization's discussion forum.
-	DiscussionForum *string `json:"discussionForum,omitempty" yaml:"discussionForum,omitempty"`
-
-	// Email Support email address, rendered as a mailto link.
-	Email *string `json:"email,omitempty" yaml:"email,omitempty"`
-
 	// Privacy URL of the organization's Privacy Policy page.
 	Privacy *string `json:"privacy,omitempty" yaml:"privacy,omitempty"`
 
-	// Slack URL of the organization's Slack workspace or invite.
-	Slack *string `json:"slack,omitempty" yaml:"slack,omitempty"`
+	// Support Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number.
+	Support *map[string]string `json:"support,omitempty" yaml:"support,omitempty"`
 
 	// TermsOfService URL of the organization's Terms of Service page.
 	TermsOfService *string `json:"termsOfService,omitempty" yaml:"termsOfService,omitempty"`
@@ -193,7 +187,7 @@ type OrganizationsPage struct {
 
 // Preferences Organization-level user experience preferences.
 type Preferences struct {
-	// AuthLinks Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults.
+	// AuthLinks Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults.
 	AuthLinks *AuthLinks `json:"authLinks,omitempty" yaml:"authLinks,omitempty"`
 
 	// Dashboard Preferences specific to dashboard behavior.

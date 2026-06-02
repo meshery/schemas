@@ -261,18 +261,22 @@ export interface components {
         DashboardPrefs: {
             [key: string]: unknown;
         };
-        /** @description Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults. */
+        /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
         AuthLinks: {
-            /** @description URL of the organization's Terms of Service page. */
+            /**
+             * Format: uri
+             * @description URL of the organization's Terms of Service page.
+             */
             termsOfService?: string;
-            /** @description URL of the organization's Privacy Policy page. */
+            /**
+             * Format: uri
+             * @description URL of the organization's Privacy Policy page.
+             */
             privacy?: string;
-            /** @description URL of the organization's discussion forum. */
-            discussionForum?: string;
-            /** @description Support email address, rendered as a mailto link. */
-            email?: string;
-            /** @description URL of the organization's Slack workspace or invite. */
-            slack?: string;
+            /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+            support?: {
+                [key: string]: string;
+            };
         };
         /** @description Organization-level user experience preferences. */
         Preferences: {
@@ -323,18 +327,22 @@ export interface components {
             dashboard: {
                 [key: string]: unknown;
             };
-            /** @description Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults. */
+            /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
             authLinks?: {
-                /** @description URL of the organization's Terms of Service page. */
+                /**
+                 * Format: uri
+                 * @description URL of the organization's Terms of Service page.
+                 */
                 termsOfService?: string;
-                /** @description URL of the organization's Privacy Policy page. */
+                /**
+                 * Format: uri
+                 * @description URL of the organization's Privacy Policy page.
+                 */
                 privacy?: string;
-                /** @description URL of the organization's discussion forum. */
-                discussionForum?: string;
-                /** @description Support email address, rendered as a mailto link. */
-                email?: string;
-                /** @description URL of the organization's Slack workspace or invite. */
-                slack?: string;
+                /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+                support?: {
+                    [key: string]: string;
+                };
             };
             /** @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
             showAuthCarousel?: boolean;
@@ -390,18 +398,22 @@ export interface components {
                 dashboard: {
                     [key: string]: unknown;
                 };
-                /** @description Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults. */
+                /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
                 authLinks?: {
-                    /** @description URL of the organization's Terms of Service page. */
+                    /**
+                     * Format: uri
+                     * @description URL of the organization's Terms of Service page.
+                     */
                     termsOfService?: string;
-                    /** @description URL of the organization's Privacy Policy page. */
+                    /**
+                     * Format: uri
+                     * @description URL of the organization's Privacy Policy page.
+                     */
                     privacy?: string;
-                    /** @description URL of the organization's discussion forum. */
-                    discussionForum?: string;
-                    /** @description Support email address, rendered as a mailto link. */
-                    email?: string;
-                    /** @description URL of the organization's Slack workspace or invite. */
-                    slack?: string;
+                    /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+                    support?: {
+                        [key: string]: string;
+                    };
                 };
                 /** @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
                 showAuthCarousel?: boolean;
@@ -515,18 +527,22 @@ export interface components {
                     dashboard: {
                         [key: string]: unknown;
                     };
-                    /** @description Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults. */
+                    /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
                     authLinks?: {
-                        /** @description URL of the organization's Terms of Service page. */
+                        /**
+                         * Format: uri
+                         * @description URL of the organization's Terms of Service page.
+                         */
                         termsOfService?: string;
-                        /** @description URL of the organization's Privacy Policy page. */
+                        /**
+                         * Format: uri
+                         * @description URL of the organization's Privacy Policy page.
+                         */
                         privacy?: string;
-                        /** @description URL of the organization's discussion forum. */
-                        discussionForum?: string;
-                        /** @description Support email address, rendered as a mailto link. */
-                        email?: string;
-                        /** @description URL of the organization's Slack workspace or invite. */
-                        slack?: string;
+                        /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+                        support?: {
+                            [key: string]: string;
+                        };
                     };
                     /** @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
                     showAuthCarousel?: boolean;
@@ -624,18 +640,22 @@ export interface components {
                         dashboard: {
                             [key: string]: unknown;
                         };
-                        /** @description Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults. */
+                        /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
                         authLinks?: {
-                            /** @description URL of the organization's Terms of Service page. */
+                            /**
+                             * Format: uri
+                             * @description URL of the organization's Terms of Service page.
+                             */
                             termsOfService?: string;
-                            /** @description URL of the organization's Privacy Policy page. */
+                            /**
+                             * Format: uri
+                             * @description URL of the organization's Privacy Policy page.
+                             */
                             privacy?: string;
-                            /** @description URL of the organization's discussion forum. */
-                            discussionForum?: string;
-                            /** @description Support email address, rendered as a mailto link. */
-                            email?: string;
-                            /** @description URL of the organization's Slack workspace or invite. */
-                            slack?: string;
+                            /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+                            support?: {
+                                [key: string]: string;
+                            };
                         };
                         /** @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
                         showAuthCarousel?: boolean;
@@ -734,18 +754,22 @@ export interface components {
                         dashboard: {
                             [key: string]: unknown;
                         };
-                        /** @description Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults. */
+                        /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
                         authLinks?: {
-                            /** @description URL of the organization's Terms of Service page. */
+                            /**
+                             * Format: uri
+                             * @description URL of the organization's Terms of Service page.
+                             */
                             termsOfService?: string;
-                            /** @description URL of the organization's Privacy Policy page. */
+                            /**
+                             * Format: uri
+                             * @description URL of the organization's Privacy Policy page.
+                             */
                             privacy?: string;
-                            /** @description URL of the organization's discussion forum. */
-                            discussionForum?: string;
-                            /** @description Support email address, rendered as a mailto link. */
-                            email?: string;
-                            /** @description URL of the organization's Slack workspace or invite. */
-                            slack?: string;
+                            /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+                            support?: {
+                                [key: string]: string;
+                            };
                         };
                         /** @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
                         showAuthCarousel?: boolean;
@@ -829,18 +853,22 @@ export interface components {
                 dashboard: {
                     [key: string]: unknown;
                 };
-                /** @description Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults. */
+                /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
                 authLinks?: {
-                    /** @description URL of the organization's Terms of Service page. */
+                    /**
+                     * Format: uri
+                     * @description URL of the organization's Terms of Service page.
+                     */
                     termsOfService?: string;
-                    /** @description URL of the organization's Privacy Policy page. */
+                    /**
+                     * Format: uri
+                     * @description URL of the organization's Privacy Policy page.
+                     */
                     privacy?: string;
-                    /** @description URL of the organization's discussion forum. */
-                    discussionForum?: string;
-                    /** @description Support email address, rendered as a mailto link. */
-                    email?: string;
-                    /** @description URL of the organization's Slack workspace or invite. */
-                    slack?: string;
+                    /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+                    support?: {
+                        [key: string]: string;
+                    };
                 };
                 /** @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
                 showAuthCarousel?: boolean;
@@ -1117,18 +1145,22 @@ export interface components {
                         dashboard: {
                             [key: string]: unknown;
                         };
-                        /** @description Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults. */
+                        /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
                         authLinks?: {
-                            /** @description URL of the organization's Terms of Service page. */
+                            /**
+                             * Format: uri
+                             * @description URL of the organization's Terms of Service page.
+                             */
                             termsOfService?: string;
-                            /** @description URL of the organization's Privacy Policy page. */
+                            /**
+                             * Format: uri
+                             * @description URL of the organization's Privacy Policy page.
+                             */
                             privacy?: string;
-                            /** @description URL of the organization's discussion forum. */
-                            discussionForum?: string;
-                            /** @description Support email address, rendered as a mailto link. */
-                            email?: string;
-                            /** @description URL of the organization's Slack workspace or invite. */
-                            slack?: string;
+                            /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+                            support?: {
+                                [key: string]: string;
+                            };
                         };
                         /** @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
                         showAuthCarousel?: boolean;
@@ -1243,18 +1275,22 @@ export interface operations {
                                     dashboard: {
                                         [key: string]: unknown;
                                     };
-                                    /** @description Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults. */
+                                    /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
                                     authLinks?: {
-                                        /** @description URL of the organization's Terms of Service page. */
+                                        /**
+                                         * Format: uri
+                                         * @description URL of the organization's Terms of Service page.
+                                         */
                                         termsOfService?: string;
-                                        /** @description URL of the organization's Privacy Policy page. */
+                                        /**
+                                         * Format: uri
+                                         * @description URL of the organization's Privacy Policy page.
+                                         */
                                         privacy?: string;
-                                        /** @description URL of the organization's discussion forum. */
-                                        discussionForum?: string;
-                                        /** @description Support email address, rendered as a mailto link. */
-                                        email?: string;
-                                        /** @description URL of the organization's Slack workspace or invite. */
-                                        slack?: string;
+                                        /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+                                        support?: {
+                                            [key: string]: string;
+                                        };
                                     };
                                     /** @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
                                     showAuthCarousel?: boolean;
@@ -1376,18 +1412,22 @@ export interface operations {
                         dashboard: {
                             [key: string]: unknown;
                         };
-                        /** @description Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults. */
+                        /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
                         authLinks?: {
-                            /** @description URL of the organization's Terms of Service page. */
+                            /**
+                             * Format: uri
+                             * @description URL of the organization's Terms of Service page.
+                             */
                             termsOfService?: string;
-                            /** @description URL of the organization's Privacy Policy page. */
+                            /**
+                             * Format: uri
+                             * @description URL of the organization's Privacy Policy page.
+                             */
                             privacy?: string;
-                            /** @description URL of the organization's discussion forum. */
-                            discussionForum?: string;
-                            /** @description Support email address, rendered as a mailto link. */
-                            email?: string;
-                            /** @description URL of the organization's Slack workspace or invite. */
-                            slack?: string;
+                            /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+                            support?: {
+                                [key: string]: string;
+                            };
                         };
                         /** @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
                         showAuthCarousel?: boolean;
@@ -1477,18 +1517,22 @@ export interface operations {
                                     dashboard: {
                                         [key: string]: unknown;
                                     };
-                                    /** @description Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults. */
+                                    /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
                                     authLinks?: {
-                                        /** @description URL of the organization's Terms of Service page. */
+                                        /**
+                                         * Format: uri
+                                         * @description URL of the organization's Terms of Service page.
+                                         */
                                         termsOfService?: string;
-                                        /** @description URL of the organization's Privacy Policy page. */
+                                        /**
+                                         * Format: uri
+                                         * @description URL of the organization's Privacy Policy page.
+                                         */
                                         privacy?: string;
-                                        /** @description URL of the organization's discussion forum. */
-                                        discussionForum?: string;
-                                        /** @description Support email address, rendered as a mailto link. */
-                                        email?: string;
-                                        /** @description URL of the organization's Slack workspace or invite. */
-                                        slack?: string;
+                                        /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+                                        support?: {
+                                            [key: string]: string;
+                                        };
                                     };
                                     /** @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
                                     showAuthCarousel?: boolean;
@@ -1719,18 +1763,22 @@ export interface operations {
                                     dashboard: {
                                         [key: string]: unknown;
                                     };
-                                    /** @description Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults. */
+                                    /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
                                     authLinks?: {
-                                        /** @description URL of the organization's Terms of Service page. */
+                                        /**
+                                         * Format: uri
+                                         * @description URL of the organization's Terms of Service page.
+                                         */
                                         termsOfService?: string;
-                                        /** @description URL of the organization's Privacy Policy page. */
+                                        /**
+                                         * Format: uri
+                                         * @description URL of the organization's Privacy Policy page.
+                                         */
                                         privacy?: string;
-                                        /** @description URL of the organization's discussion forum. */
-                                        discussionForum?: string;
-                                        /** @description Support email address, rendered as a mailto link. */
-                                        email?: string;
-                                        /** @description URL of the organization's Slack workspace or invite. */
-                                        slack?: string;
+                                        /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+                                        support?: {
+                                            [key: string]: string;
+                                        };
                                     };
                                     /** @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
                                     showAuthCarousel?: boolean;
@@ -1857,18 +1905,22 @@ export interface operations {
                         dashboard: {
                             [key: string]: unknown;
                         };
-                        /** @description Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults. */
+                        /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
                         authLinks?: {
-                            /** @description URL of the organization's Terms of Service page. */
+                            /**
+                             * Format: uri
+                             * @description URL of the organization's Terms of Service page.
+                             */
                             termsOfService?: string;
-                            /** @description URL of the organization's Privacy Policy page. */
+                            /**
+                             * Format: uri
+                             * @description URL of the organization's Privacy Policy page.
+                             */
                             privacy?: string;
-                            /** @description URL of the organization's discussion forum. */
-                            discussionForum?: string;
-                            /** @description Support email address, rendered as a mailto link. */
-                            email?: string;
-                            /** @description URL of the organization's Slack workspace or invite. */
-                            slack?: string;
+                            /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+                            support?: {
+                                [key: string]: string;
+                            };
                         };
                         /** @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
                         showAuthCarousel?: boolean;
@@ -1958,18 +2010,22 @@ export interface operations {
                                     dashboard: {
                                         [key: string]: unknown;
                                     };
-                                    /** @description Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults. */
+                                    /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
                                     authLinks?: {
-                                        /** @description URL of the organization's Terms of Service page. */
+                                        /**
+                                         * Format: uri
+                                         * @description URL of the organization's Terms of Service page.
+                                         */
                                         termsOfService?: string;
-                                        /** @description URL of the organization's Privacy Policy page. */
+                                        /**
+                                         * Format: uri
+                                         * @description URL of the organization's Privacy Policy page.
+                                         */
                                         privacy?: string;
-                                        /** @description URL of the organization's discussion forum. */
-                                        discussionForum?: string;
-                                        /** @description Support email address, rendered as a mailto link. */
-                                        email?: string;
-                                        /** @description URL of the organization's Slack workspace or invite. */
-                                        slack?: string;
+                                        /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+                                        support?: {
+                                            [key: string]: string;
+                                        };
                                     };
                                     /** @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
                                     showAuthCarousel?: boolean;
@@ -2157,18 +2213,22 @@ export interface operations {
                             dashboard: {
                                 [key: string]: unknown;
                             };
-                            /** @description Per-organization overrides for the legal and support links shown on the auth pages (Terms / Privacy) and the error page (discussion forum / email / Slack). Each value is a full URL, or a bare address for email (rendered as a mailto: link). Empty or omitted fields fall back to the platform defaults. */
+                            /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
                             authLinks?: {
-                                /** @description URL of the organization's Terms of Service page. */
+                                /**
+                                 * Format: uri
+                                 * @description URL of the organization's Terms of Service page.
+                                 */
                                 termsOfService?: string;
-                                /** @description URL of the organization's Privacy Policy page. */
+                                /**
+                                 * Format: uri
+                                 * @description URL of the organization's Privacy Policy page.
+                                 */
                                 privacy?: string;
-                                /** @description URL of the organization's discussion forum. */
-                                discussionForum?: string;
-                                /** @description Support email address, rendered as a mailto link. */
-                                email?: string;
-                                /** @description URL of the organization's Slack workspace or invite. */
-                                slack?: string;
+                                /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+                                support?: {
+                                    [key: string]: string;
+                                };
                             };
                             /** @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
                             showAuthCarousel?: boolean;
