@@ -24,15 +24,54 @@ func NewTime(t time.Time) NullTime {
 }
 
 // Scan implements the Scanner interface.
+//
+// Besides the time.Time most drivers return, it also parses string/[]byte
+// timestamps. Some SQL drivers surface timestamps as text rather than
+// time.Time — notably SQLite, which returns a computed column such as
+// DATETIME(MAX(...)) as a string. Without the string handling those values
+// silently scanned as NULL (Valid=false), even though the predecessor type
+// (meshery's sql.Time) parsed them.
+//
+// The conversion is intentionally additive: any value that previously scanned
+// successfully behaves identically, and any unrecognized value (including an
+// unparseable string) still falls back to Valid=false without returning an
+// error — matching the prior lenient behavior, so no existing consumer can
+// newly fail.
 func (nt *NullTime) Scan(value any) error {
-	if value == nil {
+	switch v := value.(type) {
+	case time.Time:
+		nt.Time, nt.Valid = v, true
+	case string:
+		nt.scanString(v)
+	case []byte:
+		nt.scanString(string(v))
+	default: // nil or any unexpected type
 		nt.Time, nt.Valid = time.Time{}, false
-		return nil
 	}
-	t, ok := value.(time.Time)
-	nt.Time = t
-	nt.Valid = ok
 	return nil
+}
+
+// scanString parses the time layouts SQL drivers emit when handing back
+// timestamps as text. An empty or unparseable string yields Valid=false.
+func (nt *NullTime) scanString(s string) {
+	if s == "" {
+		nt.Time, nt.Valid = time.Time{}, false
+		return
+	}
+	layouts := []string{
+		"2006-01-02 15:04:05.999999999-07:00", // SQLite, with offset
+		"2006-01-02 15:04:05.999999999",       // SQLite, fractional seconds
+		"2006-01-02 15:04:05",                  // SQLite DATETIME()
+		time.RFC3339Nano,
+		time.RFC3339,
+	}
+	for _, layout := range layouts {
+		if t, err := time.Parse(layout, s); err == nil {
+			nt.Time, nt.Valid = t, true
+			return
+		}
+	}
+	nt.Time, nt.Valid = time.Time{}, false
 }
 
 // Value implements the driver Valuer interface.
