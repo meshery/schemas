@@ -51,21 +51,25 @@ func (nt *NullTime) Scan(value any) error {
 	return nil
 }
 
-// scanString parses the time layouts SQL drivers emit when handing back
-// timestamps as text. An empty or unparseable string yields Valid=false.
+// scanLayouts are the timestamp formats SQL drivers emit when handing back
+// values as text, tried in order. Package-level to avoid re-allocating on
+// every Scan (called per row).
+var scanLayouts = []string{
+	"2006-01-02 15:04:05.999999999-07:00", // SQLite, with offset
+	"2006-01-02 15:04:05.999999999",       // SQLite, fractional seconds
+	"2006-01-02 15:04:05",                  // SQLite DATETIME()
+	time.RFC3339Nano,
+	time.RFC3339,
+}
+
+// scanString parses a textual timestamp into the receiver. An empty or
+// unparseable string yields Valid=false.
 func (nt *NullTime) scanString(s string) {
 	if s == "" {
 		nt.Time, nt.Valid = time.Time{}, false
 		return
 	}
-	layouts := []string{
-		"2006-01-02 15:04:05.999999999-07:00", // SQLite, with offset
-		"2006-01-02 15:04:05.999999999",       // SQLite, fractional seconds
-		"2006-01-02 15:04:05",                  // SQLite DATETIME()
-		time.RFC3339Nano,
-		time.RFC3339,
-	}
-	for _, layout := range layouts {
+	for _, layout := range scanLayouts {
 		if t, err := time.Parse(layout, s); err == nil {
 			nt.Time, nt.Valid = t, true
 			return
