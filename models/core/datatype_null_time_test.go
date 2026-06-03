@@ -30,7 +30,37 @@ func TestNullTime(t *testing.T) {
 
 		// Invalid scan
 		err = nt.Scan("not a time")
-		assert.NoError(t, err) // type assertion fails, but no error
+		assert.NoError(t, err) // unparseable string, but no error
+		assert.False(t, nt.Valid)
+	})
+
+	t.Run("ScanString", func(t *testing.T) {
+		// Drivers such as SQLite return computed timestamp columns (e.g.
+		// DATETIME(MAX(...))) as strings/[]byte rather than time.Time. These
+		// must scan to a Valid time, not silently NULL.
+		want := time.Date(2026, 6, 3, 17, 27, 54, 0, time.UTC)
+
+		cases := []struct {
+			name  string
+			value any
+		}{
+			{"sqlite datetime string", "2026-06-03 17:27:54"},
+			{"sqlite datetime bytes", []byte("2026-06-03 17:27:54")},
+			{"rfc3339 string", "2026-06-03T17:27:54Z"},
+		}
+		for _, tc := range cases {
+			t.Run(tc.name, func(t *testing.T) {
+				nt := &NullTime{}
+				err := nt.Scan(tc.value)
+				assert.NoError(t, err)
+				assert.True(t, nt.Valid)
+				assert.True(t, want.Equal(nt.Time))
+			})
+		}
+
+		// Empty string is NULL, not an error.
+		nt := &NullTime{}
+		assert.NoError(t, nt.Scan(""))
 		assert.False(t, nt.Valid)
 	})
 
