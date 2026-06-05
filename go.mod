@@ -1,6 +1,6 @@
 module github.com/meshery/schemas
 
-go 1.25.8
+go 1.26.4
 
 require (
 	github.com/getkin/kin-openapi v0.133.0
