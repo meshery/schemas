@@ -529,6 +529,7 @@ components:
           $ref: "#/components/schemas/Links"
         showAuthCarousel:
           type: boolean
+          default: true
           description: >-
             Whether the feature carousel renders on the organization's auth
             pages. Unset is treated as true (shown); set false to hide it.
