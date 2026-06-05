@@ -556,3 +556,94 @@ components:
           description: Indicates whether the relationship should be treated as a logical representation only
           x-oapi-codegen-extra-tags:
             json: "isAnnotation"
+
+    RelationshipGroupEntry:
+      type: object
+      description: "A grouping of relationships by a specific key (e.g., model name)."
+      required:
+        - key
+        - count
+      properties:
+        key:
+          type: string
+          description: "The name of the group."
+          maxLength: 500
+        count:
+          type: integer
+          format: int32
+          description: "The number of relationships in this group."
+          minimum: 0
+
+    RelationshipSummary:
+      type: object
+      description: "Summary of relationships grouped by various criteria."
+      required:
+        - total
+      additionalProperties: false
+      properties:
+        total:
+          type: integer
+          format: int64
+          description: "Total number of relationships."
+          minimum: 0
+        byModel:
+          type: array
+          items:
+            $ref: "#/components/schemas/RelationshipGroupEntry"
+          description: "Relationships grouped by model."
+        byKind:
+          type: array
+          items:
+            $ref: "#/components/schemas/RelationshipGroupEntry"
+          description: "Relationships grouped by kind."
+        byType:
+          type: array
+          items:
+            $ref: "#/components/schemas/RelationshipGroupEntry"
+          description: "Relationships grouped by type."
+        bySubType:
+          type: array
+          items:
+            $ref: "#/components/schemas/RelationshipGroupEntry"
+          description: "Relationships grouped by sub-type."
+
+    RelationshipSummaryFilter:
+      type: object
+      description: "Filter parameters for relationship summary."
+      additionalProperties: false
+      properties:
+        kind:
+          type: string
+          description: "Filter by relationship kind."
+          maxLength: 255
+        greedy:
+          type: boolean
+          description: "Filter by greedy status."
+          default: false
+        subType:
+          type: string
+          description: "Filter by sub-type."
+          maxLength: 255
+        relationshipType:
+          type: string
+          description: "Filter by relationship type."
+          maxLength: 255
+        version:
+          type: string
+          description: "Filter by version."
+          maxLength: 100
+        modelName:
+          type: string
+          description: "Filter by model name."
+          maxLength: 500
+        status:
+          type: string
+          description: "Filter by status (e.g., enabled, disabled)."
+          default: "enabled"
+          maxLength: 50
+        include:
+          type: array
+          items:
+            type: string
+            enum: ["byModel", "byKind", "byType", "bySubType"]
+          description: "Criteria for grouping the summary."
