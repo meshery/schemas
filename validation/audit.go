@@ -23,16 +23,25 @@ type constructSpec struct {
 	APIYMLPath   string
 	RelativePath string
 	APIExists    bool
+	IsDeprecated bool
 	Doc          *openapi3.T
 	LoadErr      error
 }
 
-// walkValidatedConstructSpecs is the single, canonical walker for the
-// schemas/constructs tree. It visits every non-deprecated construct spec in
-// deterministic sorted order and invokes fn for each one. Both the schema
-// validator (Audit) and the consumer-audit endpoint indexer use this function
-// so the walk logic, filtering, and load behaviour stay in sync.
+// walkValidatedConstructSpecs is the canonical walker for current endpoint
+// consumers. It visits the latest construct spec in deterministic sorted order
+// and invokes fn for each one.
 func walkValidatedConstructSpecs(rootDir string, fn func(constructSpec) error) error {
+	return walkConstructSpecs(rootDir, false, fn)
+}
+
+// walkValidatedAndDeprecatedConstructSpecs visits the latest construct specs
+// plus deprecated versions retained for compatibility.
+func walkValidatedAndDeprecatedConstructSpecs(rootDir string, fn func(constructSpec) error) error {
+	return walkConstructSpecs(rootDir, true, fn)
+}
+
+func walkConstructSpecs(rootDir string, includeDeprecated bool, fn func(constructSpec) error) error {
 	constructsDir := filepath.Join(rootDir, "schemas", "constructs")
 
 	info, err := os.Stat(constructsDir)
@@ -49,6 +58,7 @@ func walkValidatedConstructSpecs(rootDir string, fn func(constructSpec) error) e
 	})
 
 	latestByConstruct := make(map[string]constructSpec)
+	deprecatedSpecs := []constructSpec{}
 	for _, vEntry := range versionEntries {
 		if !vEntry.IsDir() {
 			continue
@@ -74,8 +84,17 @@ func walkValidatedConstructSpecs(rootDir string, fn func(constructSpec) error) e
 
 			constructDir := filepath.Join(versionDir, cEntry.Name())
 			apiYmlPath := filepath.Join(constructDir, "api.yml")
-			if _, err := os.Stat(apiYmlPath); err != nil {
-				continue
+			var apiExists bool
+			var doc *openapi3.T
+			var loadErr error
+			isDeprecated := false
+
+			if _, err := os.Stat(apiYmlPath); err == nil {
+				apiExists = true
+				doc, loadErr = loadAPISpec(apiYmlPath)
+				if loadErr == nil {
+					isDeprecated = isDeprecatedDoc(doc)
+				}
 			}
 
 			spec := constructSpec{
@@ -84,19 +103,15 @@ func walkValidatedConstructSpecs(rootDir string, fn func(constructSpec) error) e
 				ConstructDir: constructDir,
 				APIYMLPath:   apiYmlPath,
 				RelativePath: relativeToRoot(apiYmlPath, rootDir),
-				APIExists:    true,
+				APIExists:    apiExists,
+				IsDeprecated: isDeprecated,
+				Doc:          doc,
+				LoadErr:      loadErr,
 			}
 
-			doc, loadErr := loadAPISpec(apiYmlPath)
-			if loadErr != nil {
-				spec.LoadErr = loadErr
-			} else {
-				if isDeprecatedDoc(doc) {
-					continue
-				}
-				spec.Doc = doc
+			if includeDeprecated && spec.IsDeprecated {
+				deprecatedSpecs = append(deprecatedSpecs, spec)
 			}
-
 			prev, ok := latestByConstruct[spec.Construct]
 			if !ok || compareAPIVersions(spec.Version, prev.Version) > 0 {
 				latestByConstruct[spec.Construct] = spec
@@ -104,8 +119,16 @@ func walkValidatedConstructSpecs(rootDir string, fn func(constructSpec) error) e
 		}
 	}
 
-	specs := make([]constructSpec, 0, len(latestByConstruct))
+	specs := make([]constructSpec, 0, len(latestByConstruct)+len(deprecatedSpecs))
+	seen := make(map[string]bool)
 	for _, spec := range latestByConstruct {
+		specs = append(specs, spec)
+		seen[spec.ConstructDir] = true
+	}
+	for _, spec := range deprecatedSpecs {
+		if seen[spec.ConstructDir] {
+			continue
+		}
 		specs = append(specs, spec)
 	}
 	sort.Slice(specs, func(i, j int) bool {
@@ -151,18 +174,18 @@ func Audit(opts AuditOptions) AuditResult {
 	// Walk validated construct specs. Errors are intentionally ignored:
 	// Audit returns AuditResult, not error, and individual load failures
 	// are reported as blocking violations inside auditAPISpec.
-	_ = walkValidatedConstructSpecs(opts.RootDir, func(spec constructSpec) error {
+	_ = walkValidatedAndDeprecatedConstructSpecs(opts.RootDir, func(spec constructSpec) error {
 		// Validate entity schemas (*.yaml, not api.yml).
-		auditEntitySchemas(spec.ConstructDir, opts, baseline, &result)
+		auditEntitySchemas(spec.ConstructDir, opts, baseline, &result, spec.IsDeprecated)
 
 		// Validate template files (Rule 18, 34).
-		auditTemplateFiles(spec.ConstructDir, spec.Construct, opts, baseline, &result)
+		auditTemplateFiles(spec.ConstructDir, spec.Construct, opts, baseline, &result, spec.IsDeprecated)
 
 		// Validate api.yml if it exists. spec.Doc is nil when load failed;
 		// auditAPISpec handles nil docs by reporting a blocking violation.
 		if spec.APIExists {
 			auditAPISpec(spec.APIYMLPath, spec.ConstructDir, opts, baseline, &result,
-				fingerprints, enumBaselineRef, spec.Doc)
+				fingerprints, enumBaselineRef, spec.Doc, spec.IsDeprecated)
 			// Collect Rule 46 cross-file parity candidates from this
 			// api.yml. The file's version prefix (e.g. "v1beta1") defines
 			// the comparison group.
@@ -259,7 +282,7 @@ func isDeprecatedDoc(doc *openapi3.T) bool {
 
 // auditEntitySchemas validates all *.yaml entity files in a construct directory.
 func auditEntitySchemas(constructDir string, opts AuditOptions,
-	baseline map[string]bool, result *AuditResult) {
+	baseline map[string]bool, result *AuditResult, deprecated bool) {
 
 	entries, err := os.ReadDir(constructDir)
 	if err != nil {
@@ -287,46 +310,46 @@ func auditEntitySchemas(constructDir string, opts AuditOptions,
 
 		// Rule 1: additionalProperties: false.
 		for _, v := range checkRule1(relPath, entity, opts) {
-			addViolation(result, v, baseline)
+			addConstructViolation(result, v, baseline, deprecated)
 		}
 
 		// Rule 20: properties and required sections.
 		for _, v := range checkRule20(relPath, entity, opts) {
-			addViolation(result, v, baseline)
+			addConstructViolation(result, v, baseline, deprecated)
 		}
 
 		// Rule 6: entity property casing (unconditional camelCase; no DB
 		// exception under the canonical identifier-naming contract).
 		for _, v := range checkRule6ForEntity(relPath, entity, opts) {
-			addViolation(result, v, baseline)
+			addConstructViolation(result, v, baseline, deprecated)
 		}
 
 		// Rule 35: entity property x-go-type / x-go-type-import consistency.
 		for _, v := range checkRule35ForEntity(relPath, entity, opts) {
-			addViolation(result, v, baseline)
+			addConstructViolation(result, v, baseline, deprecated)
 		}
 
 		// Rules 37–41: property-constraint advisories.
 		for _, v := range checkEntityPropertyConstraints(relPath, entity, opts) {
-			addViolation(result, v, baseline)
+			addConstructViolation(result, v, baseline, deprecated)
 		}
 	}
 }
 
 // auditTemplateFiles validates template files in a construct directory.
 func auditTemplateFiles(constructDir, constructName string, opts AuditOptions,
-	baseline map[string]bool, result *AuditResult) {
+	baseline map[string]bool, result *AuditResult, deprecated bool) {
 
 	relDir := relativeToRoot(constructDir, opts.RootDir)
 
 	// Rule 18: template files must exist.
 	for _, v := range checkRule18(relDir, constructDir, constructName, opts) {
-		addViolation(result, v, baseline)
+		addConstructViolation(result, v, baseline, deprecated)
 	}
 
 	// Rule 34: template value types must match schema.
 	for _, v := range checkRule34(relDir, constructDir, opts) {
-		addViolation(result, v, baseline)
+		addConstructViolation(result, v, baseline, deprecated)
 	}
 }
 
@@ -336,7 +359,7 @@ func auditTemplateFiles(constructDir, constructName string, opts AuditOptions,
 func auditAPISpec(apiYmlPath, constructDir string, opts AuditOptions,
 	baseline map[string]bool, result *AuditResult,
 	fingerprints map[string][]schemaLocation, enumBaselineRef string,
-	doc *openapi3.T) {
+	doc *openapi3.T, deprecated bool) {
 
 	relPath := relativeToRoot(apiYmlPath, opts.RootDir)
 
@@ -370,28 +393,28 @@ func auditAPISpec(apiYmlPath, constructDir string, opts AuditOptions,
 
 	for _, check := range ruleChecks {
 		for _, v := range check(relPath, doc, opts) {
-			addViolation(result, v, baseline)
+			addConstructViolation(result, v, baseline, deprecated)
 		}
 	}
 
 	// Rules 15-16: cross-construct refs (raw YAML needed for $ref siblings).
 	for _, v := range checkRule15(relPath, rawDoc, doc, opts) {
-		addViolation(result, v, baseline)
+		addConstructViolation(result, v, baseline, deprecated)
 	}
 
 	// Rule 8: enum values.
 	for _, v := range checkRule8(apiYmlPath, relPath, doc, opts, enumBaselineRef) {
-		addViolation(result, v, baseline)
+		addConstructViolation(result, v, baseline, deprecated)
 	}
 
 	// Rule 33: pagination envelope fields.
 	for _, v := range checkRule33(relPath, doc, opts) {
-		addViolation(result, v, baseline)
+		addConstructViolation(result, v, baseline, deprecated)
 	}
 
 	// Rules 37-41: property constraints.
 	for _, v := range checkPropertyConstraints(relPath, doc, opts) {
-		addViolation(result, v, baseline)
+		addConstructViolation(result, v, baseline, deprecated)
 	}
 
 	// Rule 29: collect fingerprints.
@@ -440,6 +463,48 @@ func auditHelperFiles(modelsDir string, opts AuditOptions,
 			}
 		}
 	}
+}
+
+var deprecatedConstructBlockingRules = map[int]bool{
+	1:  true,
+	2:  true,
+	5:  true,
+	11: true,
+	12: true,
+	13: true,
+	14: true,
+	15: true,
+	16: true,
+	17: true,
+	20: true,
+	22: true,
+	27: true,
+	32: true,
+}
+
+// addConstructViolation adds a violation to the result. Deprecated constructs
+// retain only the small rule surface that catches codegen-breaking regressions;
+// legacy template and style debt remains quiet.
+func addConstructViolation(result *AuditResult, v Violation, baseline map[string]bool, deprecated bool) {
+	if deprecated && !isDeprecatedConstructBlockingViolation(v) {
+		return
+	}
+	addViolation(result, v, baseline)
+}
+
+func isDeprecatedConstructBlockingViolation(v Violation) bool {
+	if !deprecatedConstructBlockingRules[v.RuleNumber] || v.Severity != SeverityBlocking {
+		return false
+	}
+
+	// Rule 27 mixes codegen-breaking tag errors with design advisories. In
+	// strict mode the advisory branch is promoted to blocking, but deprecated
+	// constructs should still suppress that legacy style debt.
+	if v.RuleNumber == 27 && strings.Contains(v.Message, "manual `yaml:` tag") {
+		return false
+	}
+
+	return true
 }
 
 // addViolation adds a violation to the result, applying baseline filtering
