@@ -301,6 +301,41 @@ const OrganizationSchema: Record<string, unknown> = {
                                     "type": "object",
                                     "description": "Preferences specific to dashboard behavior.",
                                     "additionalProperties": true
+                                  },
+                                  "links": {
+                                    "x-go-type": "Links",
+                                    "type": "object",
+                                    "x-internal": [
+                                      "cloud"
+                                    ],
+                                    "description": "Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults.",
+                                    "properties": {
+                                      "termsOfService": {
+                                        "type": "string",
+                                        "format": "uri",
+                                        "maxLength": 2048,
+                                        "description": "URL of the organization's Terms of Service page."
+                                      },
+                                      "privacy": {
+                                        "type": "string",
+                                        "format": "uri",
+                                        "maxLength": 2048,
+                                        "description": "URL of the organization's Privacy Policy page."
+                                      },
+                                      "support": {
+                                        "type": "object",
+                                        "additionalProperties": {
+                                          "type": "string",
+                                          "maxLength": 2048
+                                        },
+                                        "description": "Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a \"slack\" entry pointing at https://slack.meshery.io, a \"discussion forum\" entry, or a \"support desk\" entry holding a phone number."
+                                      }
+                                    }
+                                  },
+                                  "showAuthCarousel": {
+                                    "type": "boolean",
+                                    "default": true,
+                                    "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
                                   }
                                 }
                               }
@@ -551,6 +586,41 @@ const OrganizationSchema: Record<string, unknown> = {
                         "type": "object",
                         "description": "Preferences specific to dashboard behavior.",
                         "additionalProperties": true
+                      },
+                      "links": {
+                        "x-go-type": "Links",
+                        "type": "object",
+                        "x-internal": [
+                          "cloud"
+                        ],
+                        "description": "Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults.",
+                        "properties": {
+                          "termsOfService": {
+                            "type": "string",
+                            "format": "uri",
+                            "maxLength": 2048,
+                            "description": "URL of the organization's Terms of Service page."
+                          },
+                          "privacy": {
+                            "type": "string",
+                            "format": "uri",
+                            "maxLength": 2048,
+                            "description": "URL of the organization's Privacy Policy page."
+                          },
+                          "support": {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "string",
+                              "maxLength": 2048
+                            },
+                            "description": "Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a \"slack\" entry pointing at https://slack.meshery.io, a \"discussion forum\" entry, or a \"support desk\" entry holding a phone number."
+                          }
+                        }
+                      },
+                      "showAuthCarousel": {
+                        "type": "boolean",
+                        "default": true,
+                        "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
                       }
                     }
                   }
@@ -774,6 +844,41 @@ const OrganizationSchema: Record<string, unknown> = {
                                     "type": "object",
                                     "description": "Preferences specific to dashboard behavior.",
                                     "additionalProperties": true
+                                  },
+                                  "links": {
+                                    "x-go-type": "Links",
+                                    "type": "object",
+                                    "x-internal": [
+                                      "cloud"
+                                    ],
+                                    "description": "Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults.",
+                                    "properties": {
+                                      "termsOfService": {
+                                        "type": "string",
+                                        "format": "uri",
+                                        "maxLength": 2048,
+                                        "description": "URL of the organization's Terms of Service page."
+                                      },
+                                      "privacy": {
+                                        "type": "string",
+                                        "format": "uri",
+                                        "maxLength": 2048,
+                                        "description": "URL of the organization's Privacy Policy page."
+                                      },
+                                      "support": {
+                                        "type": "object",
+                                        "additionalProperties": {
+                                          "type": "string",
+                                          "maxLength": 2048
+                                        },
+                                        "description": "Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a \"slack\" entry pointing at https://slack.meshery.io, a \"discussion forum\" entry, or a \"support desk\" entry holding a phone number."
+                                      }
+                                    }
+                                  },
+                                  "showAuthCarousel": {
+                                    "type": "boolean",
+                                    "default": true,
+                                    "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
                                   }
                                 }
                               }
@@ -1293,6 +1398,41 @@ const OrganizationSchema: Record<string, unknown> = {
                                     "type": "object",
                                     "description": "Preferences specific to dashboard behavior.",
                                     "additionalProperties": true
+                                  },
+                                  "links": {
+                                    "x-go-type": "Links",
+                                    "type": "object",
+                                    "x-internal": [
+                                      "cloud"
+                                    ],
+                                    "description": "Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults.",
+                                    "properties": {
+                                      "termsOfService": {
+                                        "type": "string",
+                                        "format": "uri",
+                                        "maxLength": 2048,
+                                        "description": "URL of the organization's Terms of Service page."
+                                      },
+                                      "privacy": {
+                                        "type": "string",
+                                        "format": "uri",
+                                        "maxLength": 2048,
+                                        "description": "URL of the organization's Privacy Policy page."
+                                      },
+                                      "support": {
+                                        "type": "object",
+                                        "additionalProperties": {
+                                          "type": "string",
+                                          "maxLength": 2048
+                                        },
+                                        "description": "Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a \"slack\" entry pointing at https://slack.meshery.io, a \"discussion forum\" entry, or a \"support desk\" entry holding a phone number."
+                                      }
+                                    }
+                                  },
+                                  "showAuthCarousel": {
+                                    "type": "boolean",
+                                    "default": true,
+                                    "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
                                   }
                                 }
                               }
@@ -1656,6 +1796,41 @@ const OrganizationSchema: Record<string, unknown> = {
                         "type": "object",
                         "description": "Preferences specific to dashboard behavior.",
                         "additionalProperties": true
+                      },
+                      "links": {
+                        "x-go-type": "Links",
+                        "type": "object",
+                        "x-internal": [
+                          "cloud"
+                        ],
+                        "description": "Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults.",
+                        "properties": {
+                          "termsOfService": {
+                            "type": "string",
+                            "format": "uri",
+                            "maxLength": 2048,
+                            "description": "URL of the organization's Terms of Service page."
+                          },
+                          "privacy": {
+                            "type": "string",
+                            "format": "uri",
+                            "maxLength": 2048,
+                            "description": "URL of the organization's Privacy Policy page."
+                          },
+                          "support": {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "string",
+                              "maxLength": 2048
+                            },
+                            "description": "Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a \"slack\" entry pointing at https://slack.meshery.io, a \"discussion forum\" entry, or a \"support desk\" entry holding a phone number."
+                          }
+                        }
+                      },
+                      "showAuthCarousel": {
+                        "type": "boolean",
+                        "default": true,
+                        "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
                       }
                     }
                   }
@@ -1879,6 +2054,41 @@ const OrganizationSchema: Record<string, unknown> = {
                                     "type": "object",
                                     "description": "Preferences specific to dashboard behavior.",
                                     "additionalProperties": true
+                                  },
+                                  "links": {
+                                    "x-go-type": "Links",
+                                    "type": "object",
+                                    "x-internal": [
+                                      "cloud"
+                                    ],
+                                    "description": "Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults.",
+                                    "properties": {
+                                      "termsOfService": {
+                                        "type": "string",
+                                        "format": "uri",
+                                        "maxLength": 2048,
+                                        "description": "URL of the organization's Terms of Service page."
+                                      },
+                                      "privacy": {
+                                        "type": "string",
+                                        "format": "uri",
+                                        "maxLength": 2048,
+                                        "description": "URL of the organization's Privacy Policy page."
+                                      },
+                                      "support": {
+                                        "type": "object",
+                                        "additionalProperties": {
+                                          "type": "string",
+                                          "maxLength": 2048
+                                        },
+                                        "description": "Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a \"slack\" entry pointing at https://slack.meshery.io, a \"discussion forum\" entry, or a \"support desk\" entry holding a phone number."
+                                      }
+                                    }
+                                  },
+                                  "showAuthCarousel": {
+                                    "type": "boolean",
+                                    "default": true,
+                                    "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
                                   }
                                 }
                               }
@@ -2150,6 +2360,41 @@ const OrganizationSchema: Record<string, unknown> = {
                           "type": "object",
                           "description": "Preferences specific to dashboard behavior.",
                           "additionalProperties": true
+                        },
+                        "links": {
+                          "x-go-type": "Links",
+                          "type": "object",
+                          "x-internal": [
+                            "cloud"
+                          ],
+                          "description": "Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults.",
+                          "properties": {
+                            "termsOfService": {
+                              "type": "string",
+                              "format": "uri",
+                              "maxLength": 2048,
+                              "description": "URL of the organization's Terms of Service page."
+                            },
+                            "privacy": {
+                              "type": "string",
+                              "format": "uri",
+                              "maxLength": 2048,
+                              "description": "URL of the organization's Privacy Policy page."
+                            },
+                            "support": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "string",
+                                "maxLength": 2048
+                              },
+                              "description": "Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a \"slack\" entry pointing at https://slack.meshery.io, a \"discussion forum\" entry, or a \"support desk\" entry holding a phone number."
+                            }
+                          }
+                        },
+                        "showAuthCarousel": {
+                          "type": "boolean",
+                          "default": true,
+                          "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
                         }
                       }
                     }
@@ -3212,6 +3457,41 @@ const OrganizationSchema: Record<string, unknown> = {
                       "type": "object",
                       "description": "Preferences specific to dashboard behavior.",
                       "additionalProperties": true
+                    },
+                    "links": {
+                      "x-go-type": "Links",
+                      "type": "object",
+                      "x-internal": [
+                        "cloud"
+                      ],
+                      "description": "Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults.",
+                      "properties": {
+                        "termsOfService": {
+                          "type": "string",
+                          "format": "uri",
+                          "maxLength": 2048,
+                          "description": "URL of the organization's Terms of Service page."
+                        },
+                        "privacy": {
+                          "type": "string",
+                          "format": "uri",
+                          "maxLength": 2048,
+                          "description": "URL of the organization's Privacy Policy page."
+                        },
+                        "support": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "string",
+                            "maxLength": 2048
+                          },
+                          "description": "Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a \"slack\" entry pointing at https://slack.meshery.io, a \"discussion forum\" entry, or a \"support desk\" entry holding a phone number."
+                        }
+                      }
+                    },
+                    "showAuthCarousel": {
+                      "type": "boolean",
+                      "default": true,
+                      "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
                     }
                   }
                 }
@@ -3508,6 +3788,35 @@ const OrganizationSchema: Record<string, unknown> = {
         "description": "Preferences specific to dashboard behavior.",
         "additionalProperties": true
       },
+      "Links": {
+        "type": "object",
+        "x-internal": [
+          "cloud"
+        ],
+        "description": "Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults.",
+        "properties": {
+          "termsOfService": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 2048,
+            "description": "URL of the organization's Terms of Service page."
+          },
+          "privacy": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 2048,
+            "description": "URL of the organization's Privacy Policy page."
+          },
+          "support": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "maxLength": 2048
+            },
+            "description": "Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a \"slack\" entry pointing at https://slack.meshery.io, a \"discussion forum\" entry, or a \"support desk\" entry holding a phone number."
+          }
+        }
+      },
       "Preferences": {
         "type": "object",
         "description": "Organization-level user experience preferences.",
@@ -3640,6 +3949,41 @@ const OrganizationSchema: Record<string, unknown> = {
             "type": "object",
             "description": "Preferences specific to dashboard behavior.",
             "additionalProperties": true
+          },
+          "links": {
+            "x-go-type": "Links",
+            "type": "object",
+            "x-internal": [
+              "cloud"
+            ],
+            "description": "Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults.",
+            "properties": {
+              "termsOfService": {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 2048,
+                "description": "URL of the organization's Terms of Service page."
+              },
+              "privacy": {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 2048,
+                "description": "URL of the organization's Privacy Policy page."
+              },
+              "support": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string",
+                  "maxLength": 2048
+                },
+                "description": "Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a \"slack\" entry pointing at https://slack.meshery.io, a \"discussion forum\" entry, or a \"support desk\" entry holding a phone number."
+              }
+            }
+          },
+          "showAuthCarousel": {
+            "type": "boolean",
+            "default": true,
+            "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
           }
         }
       },
@@ -3783,6 +4127,41 @@ const OrganizationSchema: Record<string, unknown> = {
                 "type": "object",
                 "description": "Preferences specific to dashboard behavior.",
                 "additionalProperties": true
+              },
+              "links": {
+                "x-go-type": "Links",
+                "type": "object",
+                "x-internal": [
+                  "cloud"
+                ],
+                "description": "Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults.",
+                "properties": {
+                  "termsOfService": {
+                    "type": "string",
+                    "format": "uri",
+                    "maxLength": 2048,
+                    "description": "URL of the organization's Terms of Service page."
+                  },
+                  "privacy": {
+                    "type": "string",
+                    "format": "uri",
+                    "maxLength": 2048,
+                    "description": "URL of the organization's Privacy Policy page."
+                  },
+                  "support": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string",
+                      "maxLength": 2048
+                    },
+                    "description": "Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a \"slack\" entry pointing at https://slack.meshery.io, a \"discussion forum\" entry, or a \"support desk\" entry holding a phone number."
+                  }
+                }
+              },
+              "showAuthCarousel": {
+                "type": "boolean",
+                "default": true,
+                "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
               }
             }
           }
@@ -4107,6 +4486,41 @@ const OrganizationSchema: Record<string, unknown> = {
                     "type": "object",
                     "description": "Preferences specific to dashboard behavior.",
                     "additionalProperties": true
+                  },
+                  "links": {
+                    "x-go-type": "Links",
+                    "type": "object",
+                    "x-internal": [
+                      "cloud"
+                    ],
+                    "description": "Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults.",
+                    "properties": {
+                      "termsOfService": {
+                        "type": "string",
+                        "format": "uri",
+                        "maxLength": 2048,
+                        "description": "URL of the organization's Terms of Service page."
+                      },
+                      "privacy": {
+                        "type": "string",
+                        "format": "uri",
+                        "maxLength": 2048,
+                        "description": "URL of the organization's Privacy Policy page."
+                      },
+                      "support": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "string",
+                          "maxLength": 2048
+                        },
+                        "description": "Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a \"slack\" entry pointing at https://slack.meshery.io, a \"discussion forum\" entry, or a \"support desk\" entry holding a phone number."
+                      }
+                    }
+                  },
+                  "showAuthCarousel": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
                   }
                 }
               }
@@ -4354,6 +4768,41 @@ const OrganizationSchema: Record<string, unknown> = {
                           "type": "object",
                           "description": "Preferences specific to dashboard behavior.",
                           "additionalProperties": true
+                        },
+                        "links": {
+                          "x-go-type": "Links",
+                          "type": "object",
+                          "x-internal": [
+                            "cloud"
+                          ],
+                          "description": "Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults.",
+                          "properties": {
+                            "termsOfService": {
+                              "type": "string",
+                              "format": "uri",
+                              "maxLength": 2048,
+                              "description": "URL of the organization's Terms of Service page."
+                            },
+                            "privacy": {
+                              "type": "string",
+                              "format": "uri",
+                              "maxLength": 2048,
+                              "description": "URL of the organization's Privacy Policy page."
+                            },
+                            "support": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "string",
+                                "maxLength": 2048
+                              },
+                              "description": "Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a \"slack\" entry pointing at https://slack.meshery.io, a \"discussion forum\" entry, or a \"support desk\" entry holding a phone number."
+                            }
+                          }
+                        },
+                        "showAuthCarousel": {
+                          "type": "boolean",
+                          "default": true,
+                          "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
                         }
                       }
                     }
@@ -4605,6 +5054,41 @@ const OrganizationSchema: Record<string, unknown> = {
                           "type": "object",
                           "description": "Preferences specific to dashboard behavior.",
                           "additionalProperties": true
+                        },
+                        "links": {
+                          "x-go-type": "Links",
+                          "type": "object",
+                          "x-internal": [
+                            "cloud"
+                          ],
+                          "description": "Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults.",
+                          "properties": {
+                            "termsOfService": {
+                              "type": "string",
+                              "format": "uri",
+                              "maxLength": 2048,
+                              "description": "URL of the organization's Terms of Service page."
+                            },
+                            "privacy": {
+                              "type": "string",
+                              "format": "uri",
+                              "maxLength": 2048,
+                              "description": "URL of the organization's Privacy Policy page."
+                            },
+                            "support": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "string",
+                                "maxLength": 2048
+                              },
+                              "description": "Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a \"slack\" entry pointing at https://slack.meshery.io, a \"discussion forum\" entry, or a \"support desk\" entry holding a phone number."
+                            }
+                          }
+                        },
+                        "showAuthCarousel": {
+                          "type": "boolean",
+                          "default": true,
+                          "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
                         }
                       }
                     }
@@ -4806,6 +5290,41 @@ const OrganizationSchema: Record<string, unknown> = {
                 "type": "object",
                 "description": "Preferences specific to dashboard behavior.",
                 "additionalProperties": true
+              },
+              "links": {
+                "x-go-type": "Links",
+                "type": "object",
+                "x-internal": [
+                  "cloud"
+                ],
+                "description": "Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults.",
+                "properties": {
+                  "termsOfService": {
+                    "type": "string",
+                    "format": "uri",
+                    "maxLength": 2048,
+                    "description": "URL of the organization's Terms of Service page."
+                  },
+                  "privacy": {
+                    "type": "string",
+                    "format": "uri",
+                    "maxLength": 2048,
+                    "description": "URL of the organization's Privacy Policy page."
+                  },
+                  "support": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string",
+                      "maxLength": 2048
+                    },
+                    "description": "Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a \"slack\" entry pointing at https://slack.meshery.io, a \"discussion forum\" entry, or a \"support desk\" entry holding a phone number."
+                  }
+                }
+              },
+              "showAuthCarousel": {
+                "type": "boolean",
+                "default": true,
+                "description": "Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it."
               }
             }
           }

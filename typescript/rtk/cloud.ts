@@ -2238,6 +2238,19 @@ export type GetOrgsApiResponse = /** status 200 Organizations response */ {
         dashboard: {
           [key: string]: any;
         };
+        /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+        links?: {
+          /** URL of the organization's Terms of Service page. */
+          termsOfService?: string;
+          /** URL of the organization's Privacy Policy page. */
+          privacy?: string;
+          /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+          support?: {
+            [key: string]: string;
+          };
+        };
+        /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+        showAuthCarousel?: boolean;
       };
     };
     /** Timestamp when the organization was created. */
@@ -2329,6 +2342,19 @@ export type CreateOrgApiResponse = /** status 201 Single-organization page respo
         dashboard: {
           [key: string]: any;
         };
+        /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+        links?: {
+          /** URL of the organization's Terms of Service page. */
+          termsOfService?: string;
+          /** URL of the organization's Privacy Policy page. */
+          privacy?: string;
+          /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+          support?: {
+            [key: string]: string;
+          };
+        };
+        /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+        showAuthCarousel?: boolean;
       };
     };
     /** Timestamp when the organization was created. */
@@ -2398,6 +2424,19 @@ export type CreateOrgApiArg = {
       dashboard: {
         [key: string]: any;
       };
+      /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+      links?: {
+        /** URL of the organization's Terms of Service page. */
+        termsOfService?: string;
+        /** URL of the organization's Privacy Policy page. */
+        privacy?: string;
+        /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+        support?: {
+          [key: string]: string;
+        };
+      };
+      /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+      showAuthCarousel?: boolean;
     };
   };
 };
@@ -2498,6 +2537,19 @@ export type GetOrgApiResponse = /** status 200 Single-organization page response
         dashboard: {
           [key: string]: any;
         };
+        /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+        links?: {
+          /** URL of the organization's Terms of Service page. */
+          termsOfService?: string;
+          /** URL of the organization's Privacy Policy page. */
+          privacy?: string;
+          /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+          support?: {
+            [key: string]: string;
+          };
+        };
+        /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+        showAuthCarousel?: boolean;
       };
     };
     /** Timestamp when the organization was created. */
@@ -2586,6 +2638,19 @@ export type UpdateOrgApiResponse = /** status 200 Single-organization page respo
         dashboard: {
           [key: string]: any;
         };
+        /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+        links?: {
+          /** URL of the organization's Terms of Service page. */
+          termsOfService?: string;
+          /** URL of the organization's Privacy Policy page. */
+          privacy?: string;
+          /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+          support?: {
+            [key: string]: string;
+          };
+        };
+        /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+        showAuthCarousel?: boolean;
       };
     };
     /** Timestamp when the organization was created. */
@@ -2657,6 +2722,19 @@ export type UpdateOrgApiArg = {
       dashboard: {
         [key: string]: any;
       };
+      /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+      links?: {
+        /** URL of the organization's Terms of Service page. */
+        termsOfService?: string;
+        /** URL of the organization's Privacy Policy page. */
+        privacy?: string;
+        /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+        support?: {
+          [key: string]: string;
+        };
+      };
+      /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+      showAuthCarousel?: boolean;
     };
   };
 };
@@ -2707,6 +2785,19 @@ export type GetOrgPreferencesApiResponse = /** status 200 Organization metadata,
     dashboard: {
       [key: string]: any;
     };
+    /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+    links?: {
+      /** URL of the organization's Terms of Service page. */
+      termsOfService?: string;
+      /** URL of the organization's Privacy Policy page. */
+      privacy?: string;
+      /** Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+      support?: {
+        [key: string]: string;
+      };
+    };
+    /** Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it. */
+    showAuthCarousel?: boolean;
   };
 };
 export type GetOrgPreferencesApiArg = {
