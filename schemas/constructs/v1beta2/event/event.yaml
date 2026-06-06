@@ -2,7 +2,7 @@ type: object
 additionalProperties: false
 description: EventResult entity schema.
 properties:
-  user_id:
+  userId:
     $ref: ../core/api.yml#/components/schemas/UserUuid
   system_id:
     $ref: ../core/api.yml#/components/schemas/SystemId
@@ -33,6 +33,6 @@ properties:
   created_at:
     $ref: ../core/api.yml#/components/schemas/CreatedAt
 required:
-- user_id
+- userId
 - category
 - action
