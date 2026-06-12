@@ -1,0 +1,67 @@
+type: object
+additionalProperties: false
+description: >-
+  A feature is a quantified entitlement granted to an organization through its
+  subscription plan, such as the number of components allowed in a design.
+required:
+  - id
+  - plan_id
+  - name
+  - quantity
+  - created_at
+  - updated_at
+properties:
+  id:
+    $ref: ../core/api.yml#/components/schemas/uuid
+    description: Unique identifier for the feature.
+    x-go-name: ID
+    x-oapi-codegen-extra-tags:
+      db: id
+      csv: id
+    x-order: 1
+  plan_id:
+    $ref: ../core/api.yml#/components/schemas/uuid
+    description: Identifier of the plan granting this feature.
+    x-oapi-codegen-extra-tags:
+      db: plan_id
+      csv: plan_id
+    x-order: 2
+  plan:
+    $ref: ../../v1beta3/plan/api.yml#/components/schemas/Plan
+    description: >-
+      The plan granting this feature. Populated only when the association is
+      explicitly loaded.
+    x-go-type: planv1beta3.Plan
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/v1beta3/plan
+      name: planv1beta3
+    x-oapi-codegen-extra-tags:
+      belongs_to: plans
+      fk_id: PlanId
+      json: plan,omitempty
+    x-order: 3
+  name:
+    $ref: ./api.yml#/components/schemas/FeatureName
+    description: Name of the entitled feature.
+    x-go-type: FeatureName
+    x-oapi-codegen-extra-tags:
+      db: name
+      csv: name
+    x-order: 4
+  quantity:
+    type: number
+    format: double
+    description: >-
+      Quantity of the feature granted by the plan. The sentinel value
+      999999999999 denotes unlimited.
+    minimum: 0
+    x-oapi-codegen-extra-tags:
+      db: quantity
+      csv: quantity
+    x-order: 5
+  created_at:
+    $ref: ../core/api.yml#/components/schemas/created_at
+    x-order: 6
+  updated_at:
+    $ref: ../core/api.yml#/components/schemas/updated_at
+    x-order: 7

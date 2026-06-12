@@ -1,0 +1,55 @@
+# Feature API path item definitions.
+# Referenced from api.yml paths section via $ref.
+collection:
+  get:
+    x-internal: ["cloud"]
+    tags:
+      - Features
+    summary: Get all features defined across plans
+    operationId: getFeatures
+    parameters:
+      - $ref: "../core/api.yml#/components/parameters/page"
+      - $ref: "../core/api.yml#/components/parameters/pagesize"
+    responses:
+      "200":
+        description: Features response
+        content:
+          application/json:
+            schema:
+              $ref: "./api.yml#/components/schemas/FeaturesPage"
+      "400":
+        $ref: "../core/api.yml#/components/responses/400"
+      "401":
+        $ref: "../core/api.yml#/components/responses/401"
+      "500":
+        $ref: "../core/api.yml#/components/responses/500"
+
+organizationCollection:
+  get:
+    x-internal: ["cloud"]
+    tags:
+      - Features
+    summary: Get the active features entitled to an organization through its subscriptions
+    operationId: getFeaturesByOrganization
+    parameters:
+      - name: orgId
+        in: path
+        description: The ID of the organization
+        required: true
+        schema:
+          $ref: "../core/api.yml#/components/schemas/uuid"
+    responses:
+      "200":
+        description: Features response
+        content:
+          application/json:
+            schema:
+              $ref: "./api.yml#/components/schemas/FeaturesPage"
+      "400":
+        $ref: "../core/api.yml#/components/responses/400"
+      "401":
+        $ref: "../core/api.yml#/components/responses/401"
+      "404":
+        $ref: "../core/api.yml#/components/responses/404"
+      "500":
+        $ref: "../core/api.yml#/components/responses/500"
