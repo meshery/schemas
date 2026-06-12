@@ -22,6 +22,7 @@ properties:
   plan_id:
     $ref: ../core/api.yml#/components/schemas/uuid
     description: Identifier of the plan granting this feature.
+    x-go-name: PlanId
     x-oapi-codegen-extra-tags:
       db: plan_id
       csv: plan_id

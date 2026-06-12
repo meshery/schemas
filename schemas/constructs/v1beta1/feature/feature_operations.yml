@@ -32,12 +32,7 @@ organizationCollection:
     summary: Get the active features entitled to an organization through its subscriptions
     operationId: getFeaturesByOrganization
     parameters:
-      - name: orgId
-        in: path
-        description: The ID of the organization
-        required: true
-        schema:
-          $ref: "../core/api.yml#/components/schemas/uuid"
+      - $ref: "./api.yml#/components/parameters/orgId"
     responses:
       "200":
         description: Features response
