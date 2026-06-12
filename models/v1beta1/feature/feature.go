@@ -5,7 +5,7 @@ package feature
 
 import (
 	core "github.com/meshery/schemas/models/core"
-	planv1beta1 "github.com/meshery/schemas/models/v1beta1/plan"
+	planv1beta3 "github.com/meshery/schemas/models/v1beta3/plan"
 )
 
 // Defines values for FeatureName.
@@ -18,30 +18,41 @@ const (
 	WorkspacesInOrganization FeatureName = "WorkspacesInOrganization"
 )
 
-// Feature defines model for Feature.
+// Feature A feature is a quantified entitlement granted to an organization through its subscription plan, such as the number of components allowed in a design.
 type Feature struct {
-	CreatedAt core.Time `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
-
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ID core.Uuid `db:"id" json:"id" yaml:"id"`
-
-	// Name Enumeration of possible feature types
-	Name FeatureName        `db:"name" json:"name" yaml:"name"`
-	Plan *planv1beta1.Plan `fk_id:"PlanId" belongs_to:"plans" json:"plan,omitempty" yaml:"plan,omitempty"`
+	ID core.Uuid `csv:"id" db:"id" json:"id" yaml:"id"`
 
 	// PlanId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	PlanId core.Uuid `db:"plan_id" json:"plan_id" yaml:"plan_id"`
+	PlanId core.Uuid `csv:"plan_id" db:"plan_id" json:"plan_id" yaml:"plan_id"`
 
-	// Quantity Quantity of the feature allowed, use 9999999999 for unlimited
-	Quantity  float32           `db:"quantity" json:"quantity" yaml:"quantity"`
-	UpdatedAt core.Time `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	// Plan Plan entity schema.
+	Plan *planv1beta3.Plan `fk_id:"PlanId" belongs_to:"plans" json:"plan,omitempty" yaml:"plan,omitempty"`
+
+	// Name Enumeration of feature names that can be granted by a plan.
+	Name FeatureName `csv:"name" db:"name" json:"name" yaml:"name"`
+
+	// Quantity Quantity of the feature granted by the plan. The sentinel value 999999999999 denotes unlimited.
+	Quantity float64 `csv:"quantity" db:"quantity" json:"quantity" yaml:"quantity"`
+
+	// CreatedAt Timestamp when the resource was created.
+	CreatedAt core.CreatedAt `db:"created_at" json:"created_at" yaml:"created_at"`
+
+	// UpdatedAt Timestamp when the resource was updated.
+	UpdatedAt core.UpdatedAt `db:"updated_at" json:"updated_at" yaml:"updated_at"`
 }
 
-// FeatureName Enumeration of possible feature types
+// FeatureName Enumeration of feature names that can be granted by a plan.
 type FeatureName string
 
-// FeaturesPage defines model for FeaturesPage.
-type FeaturesPage = []Feature
+// Page defines model for page.
+type Page = string
 
-// OrganizationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-type OrganizationId = core.Uuid
+// OrgId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+type OrgId = core.Uuid
+
+// CorePage defines model for page.
+type CorePage = string
+
+// Pagesize defines model for pagesize.
+type Pagesize = string

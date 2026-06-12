@@ -38,13 +38,17 @@ const injectedRtkApi = api
   .injectEndpoints({
     endpoints: (build) => ({
       getFeatures: build.query<GetFeaturesApiResponse, GetFeaturesApiArg>({
-        query: () => ({ url: `/api/entitlement/features` }),
+        query: (queryArg) => ({
+          url: `/api/entitlement/features`,
+          params: {
+            page: queryArg?.page,
+            pagesize: queryArg?.pagesize,
+          },
+        }),
         providesTags: ["Feature_Features"],
       }),
       getFeaturesByOrganization: build.query<GetFeaturesByOrganizationApiResponse, GetFeaturesByOrganizationApiArg>({
-        query: (queryArg) => ({
-          url: `/api/entitlement/subscriptions/organizations/${queryArg.organizationId}/features`,
-        }),
+        query: (queryArg) => ({ url: `/api/entitlement/subscriptions/organizations/${queryArg.orgId}/features` }),
         providesTags: ["Feature_Features"],
       }),
       submitSupportRequest: build.mutation<SubmitSupportRequestApiResponse, SubmitSupportRequestApiArg>({
@@ -1488,24 +1492,28 @@ const injectedRtkApi = api
   });
 export { injectedRtkApi as cloudApi };
 export type GetFeaturesApiResponse = /** status 200 Features response */ {
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  /** Unique identifier for the feature. */
   id: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  /** Identifier of the plan granting this feature. */
   plan_id: string;
+  /** The plan granting this feature. Populated only when the association is explicitly loaded. */
   plan?: {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    /** Unique identifier for the plan. */
     id: string;
-    /** Name of the plan */
+    /** Display name of the plan. */
     name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-    cadence: "monthly" | "yearly";
+    /** Billing cadence for the plan (monthly, annually, or none). */
+    cadence: "none" | "monthly" | "annually";
+    /** Unit of consumption this plan charges against (e.g. user). */
     unit: "user" | "free";
-    /** Minimum number of units required for the plan */
-    minimum_units: number;
-    /** Price per unit of the plan */
-    price_per_unit: number;
+    /** Minimum number of units required for the plan. */
+    minimumUnits: number;
+    /** Price per unit of the plan. */
+    pricePerUnit: number;
+    /** Currency in which the plan is priced. */
     currency: "usd";
   };
-  /** Enumeration of possible feature types */
+  /** Name of the entitled feature. */
   name:
     | "ComponentsInDesign"
     | "RelationshipsInDesign"
@@ -1513,31 +1521,42 @@ export type GetFeaturesApiResponse = /** status 200 Features response */ {
     | "WorkspacesInOrganization"
     | "ImageSizeInDesign"
     | "SizePerDesign";
-  /** Quantity of the feature allowed, use 9999999999 for unlimited */
+  /** Quantity of the feature granted by the plan. The sentinel value 999999999999 denotes unlimited. */
   quantity: number;
-  created_at?: string;
-  updated_at?: string;
+  /** Timestamp when the resource was created. */
+  created_at: string;
+  /** Timestamp when the resource was updated. */
+  updated_at: string;
 }[];
-export type GetFeaturesApiArg = void;
+export type GetFeaturesApiArg = {
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+};
 export type GetFeaturesByOrganizationApiResponse = /** status 200 Features response */ {
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  /** Unique identifier for the feature. */
   id: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  /** Identifier of the plan granting this feature. */
   plan_id: string;
+  /** The plan granting this feature. Populated only when the association is explicitly loaded. */
   plan?: {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    /** Unique identifier for the plan. */
     id: string;
-    /** Name of the plan */
+    /** Display name of the plan. */
     name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-    cadence: "monthly" | "yearly";
+    /** Billing cadence for the plan (monthly, annually, or none). */
+    cadence: "none" | "monthly" | "annually";
+    /** Unit of consumption this plan charges against (e.g. user). */
     unit: "user" | "free";
-    /** Minimum number of units required for the plan */
-    minimum_units: number;
-    /** Price per unit of the plan */
-    price_per_unit: number;
+    /** Minimum number of units required for the plan. */
+    minimumUnits: number;
+    /** Price per unit of the plan. */
+    pricePerUnit: number;
+    /** Currency in which the plan is priced. */
     currency: "usd";
   };
-  /** Enumeration of possible feature types */
+  /** Name of the entitled feature. */
   name:
     | "ComponentsInDesign"
     | "RelationshipsInDesign"
@@ -1545,14 +1564,16 @@ export type GetFeaturesByOrganizationApiResponse = /** status 200 Features respo
     | "WorkspacesInOrganization"
     | "ImageSizeInDesign"
     | "SizePerDesign";
-  /** Quantity of the feature allowed, use 9999999999 for unlimited */
+  /** Quantity of the feature granted by the plan. The sentinel value 999999999999 denotes unlimited. */
   quantity: number;
-  created_at?: string;
-  updated_at?: string;
+  /** Timestamp when the resource was created. */
+  created_at: string;
+  /** Timestamp when the resource was updated. */
+  updated_at: string;
 }[];
 export type GetFeaturesByOrganizationApiArg = {
   /** The ID of the organization */
-  organizationId: string;
+  orgId: string;
 };
 export type SubmitSupportRequestApiResponse = /** status 201 Support request submitted */ {
   message?: string;

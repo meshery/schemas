@@ -1,7 +1,9 @@
 openapi: 3.0.0
 info:
   title: Feature
-  description: OpenAPI schema for the Features construct with entitlement-related properties.
+  description: >-
+    OpenAPI schema for the Features construct - the quantified entitlements
+    granted by Meshery Cloud subscription plans.
   version: v1beta1
   contact:
     name: Meshery Maintainers
@@ -20,75 +22,43 @@ tags:
 
 paths:
   /api/entitlement/features:
-    get:
-      x-internal: ["cloud"]
-      operationId: getFeatures
-      tags:
-        - Features
-      summary: Get all features associated with plans
-      responses:
-        "200":
-          description: Features response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/FeaturesPage"
-        "400":
-          $ref: "../core/api.yml#/components/responses/400"
-        "401":
-          $ref: "../core/api.yml#/components/responses/401"
-        "500":
-          $ref: "../core/api.yml#/components/responses/500"
-
-  /api/entitlement/subscriptions/organizations/{organizationId}/features:
-    get:
-      x-internal: ["cloud"]
-      operationId: getFeaturesByOrganization
-      tags:
-        - Features
-      summary: Get all features associated with plans
-      parameters:
-        - $ref: "#/components/parameters/organization_id"
-
-      responses:
-        "200":
-          description: Features response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/FeaturesPage"
-
-        "400":
-          $ref: "../core/api.yml#/components/responses/400"
-        "404":
-          $ref: "../core/api.yml#/components/responses/404"
-        "401":
-          $ref: "../core/api.yml#/components/responses/401"
-        "500":
-          $ref: "../core/api.yml#/components/responses/500"
+    $ref: "./feature_operations.yml#/collection"
+  /api/entitlement/subscriptions/organizations/{orgId}/features:
+    $ref: "./feature_operations.yml#/organizationCollection"
 
 components:
+  responses:
+    400:
+      $ref: "../core/api.yml#/components/responses/400"
+    401:
+      $ref: "../core/api.yml#/components/responses/401"
+    404:
+      $ref: "../core/api.yml#/components/responses/404"
+    500:
+      $ref: "../core/api.yml#/components/responses/500"
+
+  parameters:
+    orgId:
+      name: orgId
+      in: path
+      description: The ID of the organization
+      required: true
+      schema:
+        $ref: ../core/api.yml#/components/schemas/uuid
+    page:
+      $ref: ../core/api.yml#/components/parameters/page
+    pagesize:
+      $ref: ../core/api.yml#/components/parameters/pagesize
+
   securitySchemes:
     jwt:
       type: http
       scheme: bearer
       bearerFormat: JWT
 
-  parameters:
-    organization_id:
-      name: organizationId
-      in: path
-      description: The ID of the organization
-      required: true
-      schema:
-        $ref: "../core/api.yml#/components/schemas/uuid"
-
   schemas:
-    FeaturesPage:
-      type: "array"
-      items:
-        $ref: "#/components/schemas/Feature"
-        x-go-type: Feature
+    Feature:
+      $ref: "./feature.yaml"
 
     FeatureName:
       type: string
@@ -100,51 +70,11 @@ components:
         - WorkspacesInOrganization
         - ImageSizeInDesign
         - SizePerDesign
-      description: Enumeration of possible feature types
+      description: Enumeration of feature names that can be granted by a plan.
 
-    Feature:
-      type: object
-      required:
-        - id
-        - plan_id
-        - quantity
-        - name
-      properties:
-        id:
-          $ref: "../core/api.yml#/components/schemas/uuid"
-          x-oapi-codegen-extra-tags:
-            db: "id"
-        plan_id:
-          $ref: "../core/api.yml#/components/schemas/uuid"
-          x-oapi-codegen-extra-tags:
-            db: "plan_id"
-        plan:
-          $ref: "../plan/api.yml#/components/schemas/Plan"
-          x-go-type: planv1beta1.Plan
-          x-go-type-import:
-            path: github.com/meshery/schemas/models/v1beta1/plan
-            name: planv1beta1
-          x-oapi-codegen-extra-tags:
-            belongs_to: "plans"
-            fk_id: "PlanId"
-            json: "plan,omitempty"
-        name:
-          $ref: "#/components/schemas/FeatureName"
-          x-go-type: FeatureName
-          x-oapi-codegen-extra-tags:
-            db: "name"
-        quantity:
-          type: number
-          description: Quantity of the feature allowed, use 9999999999 for unlimited
-          x-oapi-codegen-extra-tags:
-            db: "quantity"
-          minimum: 0
-        created_at:
-          $ref: "../core/api.yml#/components/schemas/Time"
-          x-oapi-codegen-extra-tags:
-            db: "created_at"
-        updated_at:
-          $ref: "../core/api.yml#/components/schemas/Time"
-          x-oapi-codegen-extra-tags:
-            db: "updated_at"
-      additionalProperties: false
+    FeaturesPage:
+      type: array
+      description: List of features.
+      items:
+        $ref: "#/components/schemas/Feature"
+        x-go-type: Feature
