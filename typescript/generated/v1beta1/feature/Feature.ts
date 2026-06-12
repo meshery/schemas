@@ -11,7 +11,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get all features associated with plans */
+        /** Get all features defined across plans */
         get: operations["getFeatures"];
         put?: never;
         post?: never;
@@ -21,14 +21,14 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/entitlement/subscriptions/organizations/{organizationId}/features": {
+    "/api/entitlement/subscriptions/organizations/{orgId}/features": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get all features associated with plans */
+        /** Get the active features entitled to an organization through its subscriptions */
         get: operations["getFeaturesByOrganization"];
         put?: never;
         post?: never;
@@ -42,106 +42,187 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        FeaturesPage: {
-            /**
-             * Format: uuid
-             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-             */
-            id: string;
-            /**
-             * Format: uuid
-             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-             */
-            plan_id: string;
-            plan?: {
-                /**
-                 * Format: uuid
-                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                 */
-                id: string;
-                /**
-                 * @description Name of the plan
-                 * @enum {string}
-                 */
-                name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-                /** @enum {string} */
-                cadence: "monthly" | "yearly";
-                /** @enum {string} */
-                unit: "user" | "free";
-                /** @description Minimum number of units required for the plan */
-                minimum_units: number;
-                /** @description Price per unit of the plan */
-                price_per_unit: number;
-                /** @enum {string} */
-                currency: "usd";
-            };
-            /**
-             * @description Enumeration of possible feature types
-             * @enum {string}
-             */
-            name: "ComponentsInDesign" | "RelationshipsInDesign" | "DesignsInWorkspace" | "WorkspacesInOrganization" | "ImageSizeInDesign" | "SizePerDesign";
-            /** @description Quantity of the feature allowed, use 9999999999 for unlimited */
-            quantity: number;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-        }[];
-        /**
-         * @description Enumeration of possible feature types
-         * @enum {string}
-         */
-        FeatureName: "ComponentsInDesign" | "RelationshipsInDesign" | "DesignsInWorkspace" | "WorkspacesInOrganization" | "ImageSizeInDesign" | "SizePerDesign";
+        /** @description A feature is a quantified entitlement granted to an organization through its subscription plan, such as the number of components allowed in a design. */
         Feature: {
             /**
              * Format: uuid
-             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             * @description Unique identifier for the feature.
              */
             id: string;
             /**
              * Format: uuid
-             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             * @description Identifier of the plan granting this feature.
              */
             plan_id: string;
+            /** @description The plan granting this feature. Populated only when the association is explicitly loaded. */
             plan?: {
                 /**
                  * Format: uuid
-                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 * @description Unique identifier for the plan.
                  */
                 id: string;
                 /**
-                 * @description Name of the plan
+                 * @description Display name of the plan.
                  * @enum {string}
                  */
                 name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-                /** @enum {string} */
-                cadence: "monthly" | "yearly";
-                /** @enum {string} */
+                /**
+                 * @description Billing cadence for the plan (monthly, annually, or none).
+                 * @enum {string}
+                 */
+                cadence: "none" | "monthly" | "annually";
+                /**
+                 * @description Unit of consumption this plan charges against (e.g. user).
+                 * @enum {string}
+                 */
                 unit: "user" | "free";
-                /** @description Minimum number of units required for the plan */
-                minimum_units: number;
-                /** @description Price per unit of the plan */
-                price_per_unit: number;
-                /** @enum {string} */
+                /** @description Minimum number of units required for the plan. */
+                minimumUnits: number;
+                /** @description Price per unit of the plan. */
+                pricePerUnit: number;
+                /**
+                 * @description Currency in which the plan is priced.
+                 * @enum {string}
+                 */
                 currency: "usd";
             };
             /**
-             * @description Enumeration of possible feature types
+             * @description Name of the entitled feature.
              * @enum {string}
              */
             name: "ComponentsInDesign" | "RelationshipsInDesign" | "DesignsInWorkspace" | "WorkspacesInOrganization" | "ImageSizeInDesign" | "SizePerDesign";
-            /** @description Quantity of the feature allowed, use 9999999999 for unlimited */
+            /**
+             * Format: double
+             * @description Quantity of the feature granted by the plan. The sentinel value 999999999999 denotes unlimited.
+             */
             quantity: number;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the resource was created.
+             */
+            created_at: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the resource was updated.
+             */
+            updated_at: string;
+        };
+        /**
+         * @description Enumeration of feature names that can be granted by a plan.
+         * @enum {string}
+         */
+        FeatureName: "ComponentsInDesign" | "RelationshipsInDesign" | "DesignsInWorkspace" | "WorkspacesInOrganization" | "ImageSizeInDesign" | "SizePerDesign";
+        /** @description List of features. */
+        FeaturesPage: {
+            /**
+             * Format: uuid
+             * @description Unique identifier for the feature.
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description Identifier of the plan granting this feature.
+             */
+            plan_id: string;
+            /** @description The plan granting this feature. Populated only when the association is explicitly loaded. */
+            plan?: {
+                /**
+                 * Format: uuid
+                 * @description Unique identifier for the plan.
+                 */
+                id: string;
+                /**
+                 * @description Display name of the plan.
+                 * @enum {string}
+                 */
+                name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+                /**
+                 * @description Billing cadence for the plan (monthly, annually, or none).
+                 * @enum {string}
+                 */
+                cadence: "none" | "monthly" | "annually";
+                /**
+                 * @description Unit of consumption this plan charges against (e.g. user).
+                 * @enum {string}
+                 */
+                unit: "user" | "free";
+                /** @description Minimum number of units required for the plan. */
+                minimumUnits: number;
+                /** @description Price per unit of the plan. */
+                pricePerUnit: number;
+                /**
+                 * @description Currency in which the plan is priced.
+                 * @enum {string}
+                 */
+                currency: "usd";
+            };
+            /**
+             * @description Name of the entitled feature.
+             * @enum {string}
+             */
+            name: "ComponentsInDesign" | "RelationshipsInDesign" | "DesignsInWorkspace" | "WorkspacesInOrganization" | "ImageSizeInDesign" | "SizePerDesign";
+            /**
+             * Format: double
+             * @description Quantity of the feature granted by the plan. The sentinel value 999999999999 denotes unlimited.
+             */
+            quantity: number;
+            /**
+             * Format: date-time
+             * @description Timestamp when the resource was created.
+             */
+            created_at: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the resource was updated.
+             */
+            updated_at: string;
+        }[];
+    };
+    responses: {
+        /** @description Invalid request body or request param */
+        400: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Expired JWT token used or insufficient privilege */
+        401: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Result not found */
+        404: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Internal server error */
+        500: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
         };
     };
-    responses: never;
     parameters: {
         /** @description The ID of the organization */
-        organization_id: string;
+        orgId: string;
+        /** @description Get responses by page */
+        page: string;
+        /** @description Get responses by pagesize */
+        pagesize: string;
     };
     requestBodies: never;
     headers: never;
@@ -151,7 +232,12 @@ export type $defs = Record<string, never>;
 export interface operations {
     getFeatures: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Get responses by page */
+                page?: string;
+                /** @description Get responses by pagesize */
+                pagesize?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -167,47 +253,66 @@ export interface operations {
                     "application/json": {
                         /**
                          * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         * @description Unique identifier for the feature.
                          */
                         id: string;
                         /**
                          * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         * @description Identifier of the plan granting this feature.
                          */
                         plan_id: string;
+                        /** @description The plan granting this feature. Populated only when the association is explicitly loaded. */
                         plan?: {
                             /**
                              * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             * @description Unique identifier for the plan.
                              */
                             id: string;
                             /**
-                             * @description Name of the plan
+                             * @description Display name of the plan.
                              * @enum {string}
                              */
                             name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-                            /** @enum {string} */
-                            cadence: "monthly" | "yearly";
-                            /** @enum {string} */
+                            /**
+                             * @description Billing cadence for the plan (monthly, annually, or none).
+                             * @enum {string}
+                             */
+                            cadence: "none" | "monthly" | "annually";
+                            /**
+                             * @description Unit of consumption this plan charges against (e.g. user).
+                             * @enum {string}
+                             */
                             unit: "user" | "free";
-                            /** @description Minimum number of units required for the plan */
-                            minimum_units: number;
-                            /** @description Price per unit of the plan */
-                            price_per_unit: number;
-                            /** @enum {string} */
+                            /** @description Minimum number of units required for the plan. */
+                            minimumUnits: number;
+                            /** @description Price per unit of the plan. */
+                            pricePerUnit: number;
+                            /**
+                             * @description Currency in which the plan is priced.
+                             * @enum {string}
+                             */
                             currency: "usd";
                         };
                         /**
-                         * @description Enumeration of possible feature types
+                         * @description Name of the entitled feature.
                          * @enum {string}
                          */
                         name: "ComponentsInDesign" | "RelationshipsInDesign" | "DesignsInWorkspace" | "WorkspacesInOrganization" | "ImageSizeInDesign" | "SizePerDesign";
-                        /** @description Quantity of the feature allowed, use 9999999999 for unlimited */
+                        /**
+                         * Format: double
+                         * @description Quantity of the feature granted by the plan. The sentinel value 999999999999 denotes unlimited.
+                         */
                         quantity: number;
-                        /** Format: date-time */
-                        created_at?: string;
-                        /** Format: date-time */
-                        updated_at?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the resource was created.
+                         */
+                        created_at: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the resource was updated.
+                         */
+                        updated_at: string;
                     }[];
                 };
             };
@@ -246,7 +351,7 @@ export interface operations {
             header?: never;
             path: {
                 /** @description The ID of the organization */
-                organizationId: string;
+                orgId: string;
             };
             cookie?: never;
         };
@@ -261,47 +366,66 @@ export interface operations {
                     "application/json": {
                         /**
                          * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         * @description Unique identifier for the feature.
                          */
                         id: string;
                         /**
                          * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         * @description Identifier of the plan granting this feature.
                          */
                         plan_id: string;
+                        /** @description The plan granting this feature. Populated only when the association is explicitly loaded. */
                         plan?: {
                             /**
                              * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             * @description Unique identifier for the plan.
                              */
                             id: string;
                             /**
-                             * @description Name of the plan
+                             * @description Display name of the plan.
                              * @enum {string}
                              */
                             name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-                            /** @enum {string} */
-                            cadence: "monthly" | "yearly";
-                            /** @enum {string} */
+                            /**
+                             * @description Billing cadence for the plan (monthly, annually, or none).
+                             * @enum {string}
+                             */
+                            cadence: "none" | "monthly" | "annually";
+                            /**
+                             * @description Unit of consumption this plan charges against (e.g. user).
+                             * @enum {string}
+                             */
                             unit: "user" | "free";
-                            /** @description Minimum number of units required for the plan */
-                            minimum_units: number;
-                            /** @description Price per unit of the plan */
-                            price_per_unit: number;
-                            /** @enum {string} */
+                            /** @description Minimum number of units required for the plan. */
+                            minimumUnits: number;
+                            /** @description Price per unit of the plan. */
+                            pricePerUnit: number;
+                            /**
+                             * @description Currency in which the plan is priced.
+                             * @enum {string}
+                             */
                             currency: "usd";
                         };
                         /**
-                         * @description Enumeration of possible feature types
+                         * @description Name of the entitled feature.
                          * @enum {string}
                          */
                         name: "ComponentsInDesign" | "RelationshipsInDesign" | "DesignsInWorkspace" | "WorkspacesInOrganization" | "ImageSizeInDesign" | "SizePerDesign";
-                        /** @description Quantity of the feature allowed, use 9999999999 for unlimited */
+                        /**
+                         * Format: double
+                         * @description Quantity of the feature granted by the plan. The sentinel value 999999999999 denotes unlimited.
+                         */
                         quantity: number;
-                        /** Format: date-time */
-                        created_at?: string;
-                        /** Format: date-time */
-                        updated_at?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the resource was created.
+                         */
+                        created_at: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the resource was updated.
+                         */
+                        updated_at: string;
                     }[];
                 };
             };
