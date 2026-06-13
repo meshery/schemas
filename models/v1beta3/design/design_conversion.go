@@ -14,7 +14,7 @@ import (
 	"github.com/meshery/schemas/models/conversion"
 	"github.com/meshery/schemas/models/v1alpha2"
 	"github.com/meshery/schemas/models/v1beta3"
-	model "github.com/meshery/schemas/models/v1beta1/model"
+	model "github.com/meshery/schemas/models/v1beta2/model"
 	component "github.com/meshery/schemas/models/v1beta2/component"
 	relationship "github.com/meshery/schemas/models/v1beta2/relationship"
 	"github.com/pkg/errors"

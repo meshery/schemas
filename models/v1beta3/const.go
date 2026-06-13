@@ -6,12 +6,11 @@ package v1beta3
 // callers (meshkit, meshery) can construct fixtures without hard-coding
 // the version literal.
 //
-// Note: the design itself is v1beta3, but the components and model
-// definitions nested inside a v1beta3 design are v1beta2 — that matches
-// the Go import graph of the generated types in this package tree
-// (v1beta3/design.PatternFile.Components references v1beta2/component).
+// Note: ComponentSchemaVersion uses v1beta3 because v1beta3/component.ComponentDefinition
+// is the canonical generated type (component.yaml default = "components.meshery.io/v1beta3").
+// ModelSchemaVersion remains v1beta2 — no v1beta3/model exists by design.
 const (
 	DesignSchemaVersion    = "designs.meshery.io/v1beta3"
-	ComponentSchemaVersion = "components.meshery.io/v1beta2"
+	ComponentSchemaVersion = "components.meshery.io/v1beta3"
 	ModelSchemaVersion     = "models.meshery.io/v1beta2"
 )

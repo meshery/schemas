@@ -9,7 +9,7 @@ import (
 
 	core "github.com/meshery/schemas/models/core"
 	capabilityv1beta1 "github.com/meshery/schemas/models/v1beta1/capability"
-	modelv1beta1 "github.com/meshery/schemas/models/v1beta1/model"
+	modelv1beta2 "github.com/meshery/schemas/models/v1beta2/model"
 )
 
 // Defines values for ComponentDefinitionFormat.
@@ -60,10 +60,10 @@ type ComponentDefinition struct {
 	Format ComponentDefinitionFormat `json:"format" yaml:"format"`
 
 	// Model Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.
-	Model *modelv1beta1.ModelDefinition `gorm:"foreignKey:ModelID;references:ID" json:"model" yaml:"model"`
+	Model *modelv1beta2.ModelDefinition `gorm:"foreignKey:ModelID;references:ID" json:"model" yaml:"model"`
 
 	// ModelReference Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
-	ModelReference modelv1beta1.ModelReference `gorm:"-" json:"modelReference" yaml:"modelReference"`
+	ModelReference modelv1beta2.ModelReference `gorm:"-" json:"modelReference" yaml:"modelReference"`
 
 	// Styles Visualization styles for a component
 	Styles *core.ComponentStyles `gorm:"type:bytes;serializer:json" json:"styles" yaml:"styles"`
