@@ -42,6 +42,9 @@ import { components as V1Beta2RelationshipComponents } from "./generated/v1beta2
 import { components as V1Beta2SubscriptionComponents } from "./generated/v1beta2/subscription/Subscription";
 import { components as V1Beta2TokenComponents } from "./generated/v1beta2/token/Token";
 
+// v1beta3
+import { components as V1Beta3ProviderComponents } from "./generated/v1beta3/provider/Provider";
+
 /**
  * SCHEMA OPTIMIZATION NOTICE
  * -------------------------
@@ -209,4 +212,28 @@ export namespace v1beta2 {
   export type Subscription =
     V1Beta2SubscriptionComponents["schemas"]["Subscription"];
   export type Token = V1Beta2TokenComponents["schemas"]["UserToken"];
+}
+
+export namespace v1beta3 {
+  export type Provider = V1Beta3ProviderComponents["schemas"]["Provider"];
+  export type ProviderMap = V1Beta3ProviderComponents["schemas"]["ProviderMap"];
+  export type ProviderCapabilities = V1Beta3ProviderComponents["schemas"]["ProviderCapabilities"];
+  export type ProviderCapability = V1Beta3ProviderComponents["schemas"]["ProviderCapability"];
+  export type ProviderExtensions = V1Beta3ProviderComponents["schemas"]["ProviderExtensions"];
+  export type NavigatorExtension = V1Beta3ProviderComponents["schemas"]["NavigatorExtension"];
+  export type NavigatorExtensionChild = V1Beta3ProviderComponents["schemas"]["NavigatorExtensionChild"];
+  export type AccountExtension = V1Beta3ProviderComponents["schemas"]["AccountExtension"];
+  export type AccountExtensionChild = V1Beta3ProviderComponents["schemas"]["AccountExtensionChild"];
+  export type UserPrefsExtension = V1Beta3ProviderComponents["schemas"]["UserPrefsExtension"];
+  export type GraphQLExtension = V1Beta3ProviderComponents["schemas"]["GraphQLExtension"];
+  export type CollaboratorExtension = V1Beta3ProviderComponents["schemas"]["CollaboratorExtension"];
+  export type ProviderHref = V1Beta3ProviderComponents["schemas"]["ProviderHref"];
+  export type ProviderRestrictedAccess = V1Beta3ProviderComponents["schemas"]["ProviderRestrictedAccess"];
+  export type MesheryUICapabilities = V1Beta3ProviderComponents["schemas"]["MesheryUICapabilities"];
+  export type NavigatorComponents = V1Beta3ProviderComponents["schemas"]["NavigatorComponents"];
+  export type HeaderComponents = V1Beta3ProviderComponents["schemas"]["HeaderComponents"];
+  export type AdapterComponents = V1Beta3ProviderComponents["schemas"]["AdapterComponents"];
+  export type ConfigurationComponents = V1Beta3ProviderComponents["schemas"]["ConfigurationComponents"];
+  export type MeshMapComponentSet = V1Beta3ProviderComponents["schemas"]["MeshMapComponentSet"];
+  export type DesignerComponents = V1Beta3ProviderComponents["schemas"]["DesignerComponents"];
 }

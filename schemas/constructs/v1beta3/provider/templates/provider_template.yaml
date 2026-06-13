@@ -1,0 +1,43 @@
+providerName: None
+providerType: local
+providerDescription:
+  - Default local provider. Use this provider if you do not want to connect to a Remote Provider.
+packageVersion: v0.3.14
+providerUrl: https://docs.meshery.io/concepts/architecture/provider
+extensions:
+  navigator: []
+  userPrefs: []
+  graphql: []
+  account: []
+  collaborator: []
+capabilities: []
+restrictedAccess:
+  isMesheryUiRestricted: false
+  allowedComponents:
+    navigator:
+      dashboard: true
+      performance: true
+      conformance: true
+      extensions: true
+      toggler: true
+      help: true
+      lifecycle:
+        istio: true
+        citrix: true
+        consul: true
+        cilium: true
+        appMesh: true
+        kuma: true
+        linkerd: true
+        nginx: true
+        nsm: true
+      configuration:
+        designs: true
+        applications: true
+        filters: true
+    header:
+      contextSwitcher: true
+      settings: true
+      notifications: true
+      profile: true
+redirects: {}
