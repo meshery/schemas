@@ -74,6 +74,38 @@ properties:
     type: string
     description: Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github)
     maxLength: 255
+  model:
+    $ref: ../../v1beta1/model/api.yml#/components/schemas/ModelDefinition
+    x-go-type: "*modelv1beta1.ModelDefinition"
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/v1beta1/model
+      name: modelv1beta1
+    x-order: 7
+    description: Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
+    x-oapi-codegen-extra-tags:
+      gorm: foreignKey:ModelID;references:ID
+      json: model
+      yaml: model
+  modelReference:
+    $ref: ../../v1beta1/model/api.yml#/components/schemas/ModelReference
+    x-go-type: modelv1beta1.ModelReference
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/v1beta1/model
+      name: modelv1beta1
+    x-order: 8
+    description: Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
+    x-oapi-codegen-extra-tags:
+      gorm: "-"
+  modelId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Foreign key to the model to which the component belongs. Populated by the ORM from the `model_id` column and suppressed on the JSON wire; consumers use the nested `model` object for wire-level access.
+    x-go-name: ModelID
+    x-oapi-codegen-extra-tags:
+      gorm: index:idx_connections_model_id,column:model_id
+      db: model_id
+      yaml: "-"
+      json: "-"
+
   metadata:
     x-oapi-codegen-extra-tags:
       db: metadata
@@ -84,6 +116,28 @@ properties:
     x-go-type-skip-optional-pointer: true
     type: object
     description: Additional connection metadata
+
+  credentialSchema:
+    x-oapi-codegen-extra-tags:
+      db: metadata
+    x-order: 9
+    x-go-type: core.Map
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+    x-go-type-skip-optional-pointer: true
+    type: object
+    description: Schema for the credential Associated with the connection
+
+  connectionSchema:
+    x-oapi-codegen-extra-tags:
+      db: metadata
+    x-order: 9
+    x-go-type: core.Map
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+    x-go-type-skip-optional-pointer: true
+    type: object
+    description: Schema for the connection
   status:
     x-oapi-codegen-extra-tags:
       db: status

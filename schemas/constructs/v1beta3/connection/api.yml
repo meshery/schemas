@@ -268,6 +268,148 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
+  /api/meshmodels/connections:
+    get:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - ConnectionDefinitions
+      operationId: listConnectionDefinitions
+      summary: List connection definitions
+      description: Returns a paginated list of connection definitions registered in the registry, optionally filtered by model or kind.
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - name: model
+          in: query
+          description: Filter by the name of the model the connection definition belongs to
+          required: false
+          schema:
+            type: string
+            maxLength: 255
+        - name: kind
+          in: query
+          description: Filter by connection kind (e.g., kubernetes, prometheus, grafana)
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              maxLength: 255
+      responses:
+        "200":
+          description: Paginated list of connection definitions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectionDefinitionPage"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+    post:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - ConnectionDefinitions
+      operationId: registerConnectionDefinition
+      summary: Register a connection definition
+      description: Register a new connection definition into the registry.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConnectionDefinition"
+      responses:
+        "201":
+          description: Connection definition registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectionDefinition"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/meshmodels/connections/{connectionDefinitionId}:
+    get:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - ConnectionDefinitions
+      operationId: getConnectionDefinition
+      summary: Get connection definition by ID
+      description: Returns a specific connection definition by its ID.
+      parameters:
+        - $ref: "#/components/parameters/connectionDefinitionId"
+      responses:
+        "200":
+          description: Connection definition details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectionDefinition"
+        "404":
+          $ref: "#/components/responses/404"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+    put:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - ConnectionDefinitions
+      operationId: updateConnectionDefinition
+      summary: Update a connection definition
+      description: Update an existing connection definition.
+      parameters:
+        - $ref: "#/components/parameters/connectionDefinitionId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConnectionDefinition"
+      responses:
+        "200":
+          description: Connection definition updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectionDefinition"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+    delete:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - ConnectionDefinitions
+      operationId: deleteConnectionDefinition
+      summary: Delete a connection definition
+      description: Delete a specific connection definition from the registry.
+      parameters:
+        - $ref: "#/components/parameters/connectionDefinitionId"
+      responses:
+        "204":
+          description: Connection definition deleted
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
 components:
   responses:
     400:
@@ -291,6 +433,15 @@ components:
       in: path
       required: true
       description: Connection ID
+      schema:
+        type: string
+        format: uuid
+
+    connectionDefinitionId:
+      name: connectionDefinitionId
+      in: path
+      required: true
+      description: Connection definition ID
       schema:
         type: string
         format: uuid
@@ -372,6 +523,79 @@ components:
   schemas:
     Connection:
       $ref: "./connection.yaml"
+
+    ConnectionDefinition:
+      description: A connection definition is an uninitialized connection, authored per-model (in a model's `connections/` folder) and registered into the registry alongside components and relationships. It conforms to the connection schema; the dynamic, kind-specific shape is carried in `metadata`. The `model` association scopes the definition to its owning model.
+      allOf:
+        - $ref: "./connection.yaml"
+        - type: object
+          properties:
+            type:
+              type: string
+              description: Connection Type (platform, telemetry, collaboration). Renamed to ConnectionType on the Go struct to avoid colliding with the registry Entity interface's Type() method; the wire and DB identifier remain `type`.
+              maxLength: 255
+              x-go-name: ConnectionType
+              x-oapi-codegen-extra-tags:
+                db: type
+                json: type
+                yaml: type
+            model:
+              $ref: ../../v1beta1/model/api.yml#/components/schemas/ModelDefinition
+              x-go-type: '*modelv1beta1.ModelDefinition'
+              x-go-type-import:
+                path: github.com/meshery/schemas/models/v1beta1/model
+                name: modelv1beta1
+              description: Reference to the registered model to which this connection definition belongs.
+              x-oapi-codegen-extra-tags:
+                gorm: foreignKey:ModelID;references:ID
+                json: model
+                yaml: model
+            modelId:
+              $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+              x-go-name: ModelID
+              description: Foreign key to the model to which the connection definition belongs. Populated by the ORM from the `model_id` column and suppressed on the JSON wire.
+              x-oapi-codegen-extra-tags:
+                gorm: index:idx_connection_definition_dbs_model_id,column:model_id
+                db: model_id
+                yaml: "-"
+                json: "-"
+
+    ConnectionDefinitionPage:
+      description: Represents a page of connection definitions with meta information about the total count
+      additionalProperties: false
+      type: object
+      required:
+        - connectionDefinitions
+        - totalCount
+        - page
+        - pageSize
+      properties:
+        connectionDefinitions:
+          type: array
+          description: List of connection definitions on this page
+          x-go-type: "[]*ConnectionDefinition"
+          items:
+            $ref: "#/components/schemas/ConnectionDefinition"
+          x-order: 1
+        totalCount:
+          type: integer
+          description: Total number of connection definitions on all pages
+          x-oapi-codegen-extra-tags:
+            json: totalCount
+          x-order: 2
+          minimum: 0
+        page:
+          type: integer
+          description: Current page number
+          x-order: 3
+          minimum: 0
+        pageSize:
+          type: integer
+          description: Number of elements per page
+          x-oapi-codegen-extra-tags:
+            json: pageSize
+          x-order: 4
+          minimum: 1
 
     ConnectionPage:
       description: Represents a page of connections with meta information about connections count
