@@ -55,6 +55,9 @@ properties:
   type:
     x-oapi-codegen-extra-tags:
       db: type
+      json: type
+      yaml: type
+    x-go-name: ConnectionType
     x-order: 6
     type: string
     description: Connection Type (platform, telemetry, collaboration)
@@ -101,7 +104,7 @@ properties:
     description: Foreign key to the model to which the component belongs. Populated by the ORM from the `model_id` column and suppressed on the JSON wire; consumers use the nested `model` object for wire-level access.
     x-go-name: ModelID
     x-oapi-codegen-extra-tags:
-      gorm: index:idx_connections_model_id,column:model_id
+      gorm: column:model_id
       db: model_id
       yaml: "-"
       json: "-"
@@ -138,6 +141,18 @@ properties:
     x-go-type-skip-optional-pointer: true
     type: object
     description: Schema for the connection
+  styles:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/ComponentStyles
+    x-oapi-codegen-extra-tags:
+      gorm: type:bytes;serializer:json
+      yaml: styles
+      json: styles
+    x-go-type: core.ComponentStyles
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-order: 17
+    description: Visualization styles for the connection, including svgColor and svgWhite used for UI representation.
   status:
     x-oapi-codegen-extra-tags:
       db: status
@@ -153,6 +168,18 @@ properties:
       - disconnected
       - deleted
       - not found
+  transitionMap:
+    type: object
+    description: Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status, along with a description of each transition.
+    additionalProperties:
+      type: array
+      items:
+        $ref: ./api.yml#/components/schemas/ConnectionStateTransition
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      gorm: type:bytes;serializer:json
+      json: "transitionMap,omitempty"
+    x-order: 18
   userId:
     x-go-name: UserID
     x-oapi-codegen-extra-tags:

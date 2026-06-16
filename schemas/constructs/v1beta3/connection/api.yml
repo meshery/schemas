@@ -526,39 +526,7 @@ components:
 
     ConnectionDefinition:
       description: A connection definition is an uninitialized connection, authored per-model (in a model's `connections/` folder) and registered into the registry alongside components and relationships. It conforms to the connection schema; the dynamic, kind-specific shape is carried in `metadata`. The `model` association scopes the definition to its owning model.
-      allOf:
-        - $ref: "./connection.yaml"
-        - type: object
-          properties:
-            type:
-              type: string
-              description: Connection Type (platform, telemetry, collaboration). Renamed to ConnectionType on the Go struct to avoid colliding with the registry Entity interface's Type() method; the wire and DB identifier remain `type`.
-              maxLength: 255
-              x-go-name: ConnectionType
-              x-oapi-codegen-extra-tags:
-                db: type
-                json: type
-                yaml: type
-            model:
-              $ref: ../../v1beta1/model/api.yml#/components/schemas/ModelDefinition
-              x-go-type: '*modelv1beta1.ModelDefinition'
-              x-go-type-import:
-                path: github.com/meshery/schemas/models/v1beta1/model
-                name: modelv1beta1
-              description: Reference to the registered model to which this connection definition belongs.
-              x-oapi-codegen-extra-tags:
-                gorm: foreignKey:ModelID;references:ID
-                json: model
-                yaml: model
-            modelId:
-              $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
-              x-go-name: ModelID
-              description: Foreign key to the model to which the connection definition belongs. Populated by the ORM from the `model_id` column and suppressed on the JSON wire.
-              x-oapi-codegen-extra-tags:
-                gorm: index:idx_connection_definition_dbs_model_id,column:model_id
-                db: model_id
-                yaml: "-"
-                json: "-"
+      x-go-type: "Connection"
 
     ConnectionDefinitionPage:
       description: Represents a page of connection definitions with meta information about the total count
@@ -657,6 +625,26 @@ components:
         - deleted
         - not found
 
+    ConnectionStateTransition:
+      type: object
+      additionalProperties: false
+      description: A single permissible state transition for a connection, describing the next reachable state and the meaning of that transition.
+      required:
+        - nextState
+      properties:
+        nextState:
+          $ref: "#/components/schemas/ConnectionStatusValue"
+          description: The connection state reachable from the current state.
+          x-go-name: NextState
+          x-order: 1
+        description:
+          type: string
+          description: Human-readable explanation of when or why this transition occurs.
+          maxLength: 1000
+          x-oapi-codegen-extra-tags:
+            json: "description,omitempty"
+          x-order: 2
+
     ConnectionPayload:
       type: object
       description: Payload for creating or updating a connection
@@ -711,6 +699,15 @@ components:
           x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
             json: "metadata"
+        styles:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/ComponentStyles
+          x-go-type: core.ComponentStyles
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
+          x-oapi-codegen-extra-tags:
+            json: "styles,omitempty"
+          description: Visualization styles for the connection, including svgColor and svgWhite used for UI representation.
         status:
           type: string
           description: Connection status
