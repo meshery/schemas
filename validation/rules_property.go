@@ -78,7 +78,7 @@ func checkRule33(filePath string, doc *openapi3.T, _ AuditOptions) []Violation {
 // --- Rules 36-41: Property constraint validation ---
 
 var (
-	idPropertyRE = regexp.MustCompile(`(?:^id$|_id$|Id$|ID$)`)
+	idPropertyRE  = regexp.MustCompile(`(?:^id$|_id$|Id$|ID$)`)
 	pageSizeNames = map[string]bool{"page_size": true, "pagesize": true, "pageSize": true}
 )
 
@@ -96,17 +96,22 @@ func checkPropertyConstraints(filePath string, doc *openapi3.T, opts AuditOption
 			if ref == nil || ref.Value == nil {
 				continue
 			}
-			walkSchemaConstraints(filePath, name, ref.Value, opts, &out)
+			walkSchemaConstraints(filePath, name, ref.Value, opts, &out, map[*openapi3.Schema]bool{})
 		}
 	}
 
 	return out
 }
 
-func walkSchemaConstraints(filePath, scope string, schema *openapi3.Schema, opts AuditOptions, out *[]Violation) {
-	if schema == nil {
+// onPath holds the schemas currently on the recursion stack so a cyclic $ref
+// in the resolved schema graph terminates instead of recursing until the
+// stack is exhausted. See visitFormatFile for the rationale.
+func walkSchemaConstraints(filePath, scope string, schema *openapi3.Schema, opts AuditOptions, out *[]Violation, onPath map[*openapi3.Schema]bool) {
+	if schema == nil || onPath[schema] {
 		return
 	}
+	onPath[schema] = true
+	defer delete(onPath, schema)
 	if schema.Properties != nil {
 		for propName, propRef := range schema.Properties {
 			if propRef == nil || propRef.Value == nil {
@@ -180,32 +185,32 @@ func walkSchemaConstraints(filePath, scope string, schema *openapi3.Schema, opts
 			}
 
 			// Recurse into nested properties.
-			walkSchemaConstraints(filePath, fullScope, p, opts, out)
+			walkSchemaConstraints(filePath, fullScope, p, opts, out, onPath)
 		}
 	}
 
 	// Recurse into combiners.
 	for i, sub := range schema.AllOf {
 		if sub != nil && sub.Value != nil {
-			walkSchemaConstraints(filePath, fmt.Sprintf("%s.allOf[%d]", scope, i), sub.Value, opts, out)
+			walkSchemaConstraints(filePath, fmt.Sprintf("%s.allOf[%d]", scope, i), sub.Value, opts, out, onPath)
 		}
 	}
 	for i, sub := range schema.OneOf {
 		if sub != nil && sub.Value != nil {
-			walkSchemaConstraints(filePath, fmt.Sprintf("%s.oneOf[%d]", scope, i), sub.Value, opts, out)
+			walkSchemaConstraints(filePath, fmt.Sprintf("%s.oneOf[%d]", scope, i), sub.Value, opts, out, onPath)
 		}
 	}
 	for i, sub := range schema.AnyOf {
 		if sub != nil && sub.Value != nil {
-			walkSchemaConstraints(filePath, fmt.Sprintf("%s.anyOf[%d]", scope, i), sub.Value, opts, out)
+			walkSchemaConstraints(filePath, fmt.Sprintf("%s.anyOf[%d]", scope, i), sub.Value, opts, out, onPath)
 		}
 	}
 	if schema.Items != nil && schema.Items.Value != nil {
-		walkSchemaConstraints(filePath, scope+".items", schema.Items.Value, opts, out)
+		walkSchemaConstraints(filePath, scope+".items", schema.Items.Value, opts, out, onPath)
 	}
 	// Recurse into additionalProperties schema (for map/object value types).
 	if schema.AdditionalProperties.Schema != nil && schema.AdditionalProperties.Schema.Value != nil {
-		walkSchemaConstraints(filePath, scope+".additionalProperties", schema.AdditionalProperties.Schema.Value, opts, out)
+		walkSchemaConstraints(filePath, scope+".additionalProperties", schema.AdditionalProperties.Schema.Value, opts, out, onPath)
 	}
 }
 
