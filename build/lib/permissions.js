@@ -80,6 +80,54 @@ function parsePermissions(csvContent, options = {}) {
     });
   }
 
+  // Duplicate-UUID guard (shrink-only). A key UUID is a permission's
+  // authorization identity: two distinct constants sharing one UUID means a
+  // grant of either silently grants both. Fail generation when a UUID maps to
+  // more than one constant name, unless the UUID is in the frozen allowlist
+  // below. The allowlist is SHRINK-ONLY — remove an entry once the source
+  // sheet assigns the colliding functions distinct UUIDs; never add a new one
+  // (fix new collisions in the sheet). Tracked in meshery/schemas#930.
+  const KNOWN_DUPLICATE_UUIDS = new Set([
+    // GitOps: "Snapshots" and "ArgoEvents" share one UUID; no downstream
+    // consumer anchors the keep-side, so the split is a sheet-owner decision.
+    "81287ea7-5e3f-480c-8b2e-211d62d08797",
+    // GitOps Pipeline: BitBucket/GitHub/GitLab share one UUID (sheet decision).
+    "9f236c99-b2ec-4474-9ec8-7c3f8a09e63e",
+    // Performance: Analysis/Nighthawk/Distributed Tests/Performance Profiles
+    // share one UUID (sheet decision).
+    "72066352-d09b-494a-b02e-846676bd7a0a",
+  ]);
+  const uuidToNames = new Map();
+  for (const p of permissions) {
+    const u = p.uuid.toLowerCase();
+    if (!uuidToNames.has(u)) uuidToNames.set(u, new Set());
+    uuidToNames.get(u).add(p.name);
+  }
+  const unexpectedDupes = [];
+  for (const [uuid, names] of uuidToNames) {
+    if (names.size > 1 && !KNOWN_DUPLICATE_UUIDS.has(uuid)) {
+      unexpectedDupes.push(`  ${uuid} -> ${[...names].join(", ")}`);
+    }
+  }
+  if (unexpectedDupes.length > 0) {
+    throw new Error(
+      "Duplicate permission UUID(s): one UUID maps to multiple permission " +
+        "constants. Each permission needs a unique UUID — assign distinct " +
+        "UUIDs in the source sheet (meshery/schemas#930):\n" +
+        unexpectedDupes.join("\n"),
+    );
+  }
+  const staleAllowlist = [...KNOWN_DUPLICATE_UUIDS].filter(
+    (u) => (uuidToNames.get(u)?.size ?? 0) <= 1,
+  );
+  if (staleAllowlist.length > 0) {
+    throw new Error(
+      "KNOWN_DUPLICATE_UUIDS is shrink-only: these entries no longer collide " +
+        "and must be removed from the allowlist:\n  " +
+        staleAllowlist.join("\n  "),
+    );
+  }
+
   return permissions;
 }
 
