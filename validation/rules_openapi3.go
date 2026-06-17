@@ -34,11 +34,12 @@ func checkRule42(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 	}
 	sev := classifyDesignIssue(opts)
 	var out []Violation
+	onPath := map[*openapi3.Schema]bool{}
 	for name, ref := range doc.Components.Schemas {
 		if ref == nil || ref.Value == nil {
 			continue
 		}
-		visitFormatFile(ref.Value, fmt.Sprintf("Schema %q", name), filePath, sev, &out)
+		visitFormatFile(ref.Value, fmt.Sprintf("Schema %q", name), filePath, sev, &out, onPath)
 	}
 	return out
 }
@@ -47,10 +48,19 @@ func checkRule42(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 // that declares `format: file`. The path argument is a human-readable
 // breadcrumb (e.g., `Schema "Foo".bar.items`) so the violation message
 // points the author at the exact offender.
-func visitFormatFile(schema *openapi3.Schema, path, filePath string, sev Severity, out *[]Violation) {
-	if schema == nil {
+//
+// onPath holds the schemas currently on the recursion stack. Resolved
+// OpenAPI schemas form a graph, not a tree: a cyclic $ref (e.g. a model that
+// references components that reference the model) yields a pointer cycle, so
+// without this guard the descent recurses until the stack is exhausted. We
+// skip a schema only when it is its own ancestor, which breaks cycles while
+// preserving identical traversal of acyclic shapes reached via multiple paths.
+func visitFormatFile(schema *openapi3.Schema, path, filePath string, sev Severity, out *[]Violation, onPath map[*openapi3.Schema]bool) {
+	if schema == nil || onPath[schema] {
 		return
 	}
+	onPath[schema] = true
+	defer delete(onPath, schema)
 	if schema.Format == "file" {
 		*out = append(*out, Violation{
 			File: filePath,
@@ -65,11 +75,11 @@ func visitFormatFile(schema *openapi3.Schema, path, filePath string, sev Severit
 	}
 	for propName, propRef := range schema.Properties {
 		if propRef != nil && propRef.Value != nil {
-			visitFormatFile(propRef.Value, fmt.Sprintf("%s.%s", path, propName), filePath, sev, out)
+			visitFormatFile(propRef.Value, fmt.Sprintf("%s.%s", path, propName), filePath, sev, out, onPath)
 		}
 	}
 	if schema.Items != nil && schema.Items.Value != nil {
-		visitFormatFile(schema.Items.Value, path+".items", filePath, sev, out)
+		visitFormatFile(schema.Items.Value, path+".items", filePath, sev, out, onPath)
 	}
 	for _, combiner := range []struct {
 		name string
@@ -77,7 +87,7 @@ func visitFormatFile(schema *openapi3.Schema, path, filePath string, sev Severit
 	}{{"allOf", schema.AllOf}, {"oneOf", schema.OneOf}, {"anyOf", schema.AnyOf}} {
 		for i, ref := range combiner.refs {
 			if ref != nil && ref.Value != nil {
-				visitFormatFile(ref.Value, fmt.Sprintf("%s.%s[%d]", path, combiner.name, i), filePath, sev, out)
+				visitFormatFile(ref.Value, fmt.Sprintf("%s.%s[%d]", path, combiner.name, i), filePath, sev, out, onPath)
 			}
 		}
 	}

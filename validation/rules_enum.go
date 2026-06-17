@@ -28,26 +28,32 @@ func checkRule8(filePath, relFile string, doc *openapi3.T, opts AuditOptions, ba
 	baselineEnums := collectEnumValuesByPath(baselineDoc)
 	var violations []Violation
 
+	onPath := map[*openapi3.Schema]bool{}
 	for schemaName, schemaRef := range doc.Components.Schemas {
 		if schemaRef == nil || schemaRef.Value == nil {
 			continue
 		}
 		// Use relFile (repo-relative) so that violations match advisory baseline keys.
 		visitEnumsInSchema(schemaRef.Value, fmt.Sprintf("Schema %q", schemaName),
-			baselineEnums, *sev, relFile, &violations)
+			baselineEnums, *sev, relFile, &violations, onPath)
 	}
 
 	return violations
 }
 
 // visitEnumsInSchema recursively walks a schema looking for enum values.
+// onPath holds the schemas currently on the recursion stack so a cyclic $ref
+// in the resolved schema graph terminates instead of recursing until the
+// stack is exhausted. See visitFormatFile for the rationale.
 func visitEnumsInSchema(schema *openapi3.Schema, path string,
 	baselineEnums map[string]map[string]bool, sev Severity,
-	filePath string, violations *[]Violation) {
+	filePath string, violations *[]Violation, onPath map[*openapi3.Schema]bool) {
 
-	if schema == nil {
+	if schema == nil || onPath[schema] {
 		return
 	}
+	onPath[schema] = true
+	defer delete(onPath, schema)
 
 	// Check x-enum-casing-exempt
 	if exempt, ok := schema.Extensions["x-enum-casing-exempt"].(bool); ok && exempt {
@@ -84,7 +90,7 @@ func visitEnumsInSchema(schema *openapi3.Schema, path string,
 			continue
 		}
 		visitEnumsInSchema(propRef.Value, fmt.Sprintf("%s.%s", path, propName),
-			baselineEnums, sev, filePath, violations)
+			baselineEnums, sev, filePath, violations, onPath)
 	}
 
 	// Recurse into allOf/oneOf/anyOf using the correct combiner name in the path.
@@ -101,14 +107,14 @@ func visitEnumsInSchema(schema *openapi3.Schema, path string,
 				continue
 			}
 			visitEnumsInSchema(ref.Value, fmt.Sprintf("%s.%s[%d]", path, combiner.name, i),
-				baselineEnums, sev, filePath, violations)
+				baselineEnums, sev, filePath, violations, onPath)
 		}
 	}
 
 	// Recurse into items.
 	if schema.Items != nil && schema.Items.Value != nil {
 		visitEnumsInSchema(schema.Items.Value, path+".items",
-			baselineEnums, sev, filePath, violations)
+			baselineEnums, sev, filePath, violations, onPath)
 	}
 }
 

@@ -15,7 +15,7 @@ func TestVisitEnumsInSchema_AllLowercaseNoViolation(t *testing.T) {
 	}
 	var violations []Violation
 	visitEnumsInSchema(schema, `Schema "Status"`, map[string]map[string]bool{},
-		SeverityAdvisory, "test.yaml", &violations)
+		SeverityAdvisory, "test.yaml", &violations, map[*openapi3.Schema]bool{})
 	if len(violations) != 0 {
 		t.Errorf("expected 0 violations for all-lowercase enum, got %d", len(violations))
 	}
@@ -27,7 +27,7 @@ func TestVisitEnumsInSchema_NonLowercaseNewValue(t *testing.T) {
 	}
 	var violations []Violation
 	visitEnumsInSchema(schema, `Schema "Status"`, map[string]map[string]bool{},
-		SeverityAdvisory, "test.yaml", &violations)
+		SeverityAdvisory, "test.yaml", &violations, map[*openapi3.Schema]bool{})
 	if len(violations) != 1 {
 		t.Errorf("expected 1 violation for non-lowercase new value, got %d", len(violations))
 	}
@@ -46,7 +46,7 @@ func TestVisitEnumsInSchema_BaselinedValueExempted(t *testing.T) {
 	}
 	var violations []Violation
 	visitEnumsInSchema(schema, `Schema "Status"`, baselineEnums,
-		SeverityAdvisory, "test.yaml", &violations)
+		SeverityAdvisory, "test.yaml", &violations, map[*openapi3.Schema]bool{})
 	if len(violations) != 0 {
 		t.Errorf("expected 0 violations when non-lowercase value is in baseline, got %d", len(violations))
 	}
@@ -61,7 +61,7 @@ func TestVisitEnumsInSchema_EnumCasingExempt(t *testing.T) {
 	}
 	var violations []Violation
 	visitEnumsInSchema(schema, `Schema "Name"`, map[string]map[string]bool{},
-		SeverityAdvisory, "test.yaml", &violations)
+		SeverityAdvisory, "test.yaml", &violations, map[*openapi3.Schema]bool{})
 	if len(violations) != 0 {
 		t.Errorf("expected 0 violations for x-enum-casing-exempt schema, got %d", len(violations))
 	}
@@ -81,7 +81,7 @@ func TestVisitEnumsInSchema_CombinerPaths(t *testing.T) {
 	}
 	var violations []Violation
 	visitEnumsInSchema(schema, `Schema "T"`, map[string]map[string]bool{},
-		SeverityAdvisory, "test.yaml", &violations)
+		SeverityAdvisory, "test.yaml", &violations, map[*openapi3.Schema]bool{})
 	if len(violations) != 3 {
 		t.Errorf("expected 3 violations (one per combiner), got %d", len(violations))
 	}
@@ -116,7 +116,7 @@ func TestVisitEnumsInSchema_PropertyRecurse(t *testing.T) {
 	}
 	var violations []Violation
 	visitEnumsInSchema(schema, `Schema "T"`, map[string]map[string]bool{},
-		SeverityAdvisory, "test.yaml", &violations)
+		SeverityAdvisory, "test.yaml", &violations, map[*openapi3.Schema]bool{})
 	if len(violations) != 1 {
 		t.Errorf("expected 1 violation from nested property enum, got %d", len(violations))
 	}
