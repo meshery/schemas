@@ -122,7 +122,7 @@ properties:
 
   credentialSchema:
     x-oapi-codegen-extra-tags:
-      db: metadata
+      db: credential_schema
     x-order: 9
     x-go-type: core.Map
     x-go-type-import:
@@ -133,7 +133,7 @@ properties:
 
   connectionSchema:
     x-oapi-codegen-extra-tags:
-      db: metadata
+      db: connection_schema
     x-order: 9
     x-go-type: core.Map
     x-go-type-import:

@@ -50,7 +50,7 @@ func (c *ConnectionDefinition) Create(db *database.Handler, hostID uuid.UUID) (u
 
 	mid, err := c.Model.Create(db, hostID)
 	if err != nil {
-		return uuid.UUID{}, err
+		return uuid.Nil, err
 	}
 
 	modelID := core.Uuid(mid)

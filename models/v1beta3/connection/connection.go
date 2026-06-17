@@ -69,10 +69,10 @@ type Connection struct {
 	ModelReference *modelv1beta1.ModelReference `gorm:"-" json:"modelReference,omitempty" yaml:"modelReference,omitempty"`
 
 	// ConnectionSchema Schema for the connection
-	ConnectionSchema core.Map `db:"metadata" json:"connectionSchema,omitempty" yaml:"connectionSchema,omitempty"`
+	ConnectionSchema core.Map `db:"connection_schema" json:"connectionSchema,omitempty" yaml:"connectionSchema,omitempty"`
 
 	// CredentialSchema Schema for the credential Associated with the connection
-	CredentialSchema core.Map `db:"metadata" json:"credentialSchema,omitempty" yaml:"credentialSchema,omitempty"`
+	CredentialSchema core.Map `db:"credential_schema" json:"credentialSchema,omitempty" yaml:"credentialSchema,omitempty"`
 
 	// Metadata Additional connection metadata
 	Metadata core.Map `db:"metadata" json:"metadata,omitempty" yaml:"metadata,omitempty"`
