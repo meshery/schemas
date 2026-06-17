@@ -11,7 +11,8 @@ package v1beta3
 // the Go import graph of the generated types in this package tree
 // (v1beta3/design.PatternFile.Components references v1beta2/component).
 const (
-	DesignSchemaVersion    = "designs.meshery.io/v1beta3"
-	ComponentSchemaVersion = "components.meshery.io/v1beta2"
-	ModelSchemaVersion     = "models.meshery.io/v1beta2"
+	DesignSchemaVersion     = "designs.meshery.io/v1beta3"
+	ComponentSchemaVersion  = "components.meshery.io/v1beta2"
+	ModelSchemaVersion      = "models.meshery.io/v1beta2"
+	ConnectionSchemaVersion = "connections.meshery.io/v1beta3"
 )
