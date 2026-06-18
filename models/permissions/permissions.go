@@ -5,7 +5,7 @@ package permissions
 import "github.com/gofrs/uuid"
 
 // Index ID used to generate this file
-const IndexID = "723d8ad72edce8ae7d2fff93925098157bcb2af2188d2621080c85516671ce87"
+const IndexID = "bd27d055e4e03465590fe03b3c10ab61dadbec9fe1fe43b128260ae673d55044"
 
 
 // PermissionKey represents a permission key identifier.
@@ -154,7 +154,7 @@ var (
 	CatalogManagementDeleteWasmFilter = PermissionKey(uuid.Must(uuid.FromString("9225d5a7-7255-49be-9233-daeabefae306")))
 
 	// CatalogManagementWasmFilterAndFilter - Import, Unpublish, Publish, Download, Edit, Clone, Delete, Details of WASM Filter
-	CatalogManagementWasmFilterAndFilter = PermissionKey(uuid.Must(uuid.FromString("9225d5a7-7255-49be-9233-daeabefae306")))
+	CatalogManagementWasmFilterAndFilter = PermissionKey(uuid.Must(uuid.FromString("61a6f8f6-75f0-4bf6-9b04-09062f5731cc")))
 
 	// CollaborationInviteAnyMesheryCloudUserOrAllMesheryUsers - Invite any Meshery Cloud user, or all Meshery users, to work with you on a public design that control – including making changes and releasing new versions.
 	CollaborationInviteAnyMesheryCloudUserOrAllMesheryUsers = PermissionKey(uuid.Must(uuid.FromString("ccc4bc8d-f484-42b3-8a62-2667284605c3")))
@@ -604,7 +604,7 @@ var (
 	KanvasResetComponentStyles = PermissionKey(uuid.Must(uuid.FromString("faa0cb66-af78-4a6f-84f0-3bfae7254276")))
 
 	// KanvasResizeComponents - A Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to reset a component to it's initial style.
-	KanvasResizeComponents = PermissionKey(uuid.Must(uuid.FromString("faa0cb66-af78-4a6f-84f0-3bfae7254276")))
+	KanvasResizeComponents = PermissionKey(uuid.Must(uuid.FromString("e542cb49-ba5a-43b7-bca2-bce4554ee54d")))
 
 	// KanvasDeleteShapes - Kanvas Designer allows users to draw shapes, lines, text, add custom styles, images and icons to represent the components and relationships of Kubernetes clusters as they see fit. This permission grants the user the ability to delete a shape from canvas.
 	KanvasDeleteShapes = PermissionKey(uuid.Must(uuid.FromString("436d24e5-4a0d-4298-b94d-394d6e489ec3")))
@@ -787,7 +787,7 @@ var (
 	KanvasCloneViews = PermissionKey(uuid.Must(uuid.FromString("258c7e18-9ac4-41d7-a637-7f12a7f24df7")))
 
 	// KanvasWebBasedTerminal - Direct terminal access to one ore more pods/containers simultaneously. Integrated experience.
-	KanvasWebBasedTerminal = PermissionKey(uuid.Must(uuid.FromString("4726da45-2108-409b-b94f-45bd1e199a78")))
+	KanvasWebBasedTerminal = PermissionKey(uuid.Must(uuid.FromString("48483d03-a41f-41c4-a016-b5756bfecde3")))
 
 	// KanvasViewInteractiveTerminal - View Interactive Terminal
 	KanvasViewInteractiveTerminal = PermissionKey(uuid.Must(uuid.FromString("4726da45-2108-409b-b94f-45bd1e199a78")))
@@ -1129,7 +1129,10 @@ var (
 	AcademyAccessTheAcademyConsole = PermissionKey(uuid.Must(uuid.FromString("045fad17-d2cc-46e8-bb10-f9ee026c799f")))
 
 	// AcademyAComprehensiveGuideToUsingTheInstructorConsoleLearnHowToTrackLearnerProgressAnalyzeTestPerformanceAndManageYourAcademySContentAndMetrics - No description available
-	AcademyAComprehensiveGuideToUsingTheInstructorConsoleLearnHowToTrackLearnerProgressAnalyzeTestPerformanceAndManageYourAcademySContentAndMetrics = PermissionKey(uuid.Must(uuid.FromString("045fad17-d2cc-46e8-bb10-f9ee026c799f")))
+	AcademyAComprehensiveGuideToUsingTheInstructorConsoleLearnHowToTrackLearnerProgressAnalyzeTestPerformanceAndManageYourAcademySContentAndMetrics = PermissionKey(uuid.Must(uuid.FromString("41f12d9a-c585-4c91-9cc2-8c878a84f1ef")))
+
+	// LearningPathManagementViewLearningPaths - View all learning paths
+	LearningPathManagementViewLearningPaths = PermissionKey(uuid.Must(uuid.FromString("7116c095-d7b4-4ab8-9d55-f33bf9d13ecd")))
 
 	// AcademyViewChallenges - View all challenges
 	AcademyViewChallenges = PermissionKey(uuid.Must(uuid.FromString("5996d6c9-4037-404c-af83-92a0895ff7f0")))
@@ -1207,7 +1210,7 @@ var (
 	ConfigurationManagementProprietaryListOfBestPracticesForIstio = PermissionKey(uuid.Must(uuid.FromString("46f00b76-06ae-4b5c-9df5-3311e9fc4823")))
 
 	// ConfigurationManagementVirtualservice - VirtualService
-	ConfigurationManagementVirtualservice = PermissionKey(uuid.Must(uuid.FromString("9a84a5d0-0a16-11ee-be56-0242ac120002")))
+	ConfigurationManagementVirtualservice = PermissionKey(uuid.Must(uuid.FromString("84e64b66-49d6-485d-b333-8194655195bc")))
 
 	// ConfigurationManagementDestinationrule - DestinationRule
 	ConfigurationManagementDestinationrule = PermissionKey(uuid.Must(uuid.FromString("12c5dbca-cdb4-4554-8a71-8c67c118071d")))
@@ -1337,5 +1340,20 @@ var (
 
 	// ChaosManagementAsDaemonsets - No description available
 	ChaosManagementAsDaemonsets = PermissionKey(uuid.Must(uuid.FromString("b73d71ec-f5b2-4d0b-83de-6e2dccff5041")))
+
+	// WorkspaceManagementViewProjects - View all of your projects
+	WorkspaceManagementViewProjects = PermissionKey(uuid.Must(uuid.FromString("141a5f3d-b5e2-4f36-8f83-df7f73744ee1")))
+
+	// IdentityAccessManagementAllOrgSelector - Ability to use all selector to filter view
+	IdentityAccessManagementAllOrgSelector = PermissionKey(uuid.Must(uuid.FromString("17447fb0-be46-1497-1366-c34e24920f22")))
+
+	// LifecycleManagementEditConnection - Reconfigure the existing connection or edit the connection information
+	LifecycleManagementEditConnection = PermissionKey(uuid.Must(uuid.FromString("5385852a-8cb7-498c-b3a6-9a0059c25017")))
+
+	// WorkspaceManagementConnectGoogleAccountToWorkspace - Connect Google Account to Workspace
+	WorkspaceManagementConnectGoogleAccountToWorkspace = PermissionKey(uuid.Must(uuid.FromString("69179641-6c41-40d8-87a0-81dd99bcb396")))
+
+	// SecurityManagementDeleteToken - Delete a Token
+	SecurityManagementDeleteToken = PermissionKey(uuid.Must(uuid.FromString("ddba5064-ac3c-470e-b405-d2a0e99db477")))
 
 )

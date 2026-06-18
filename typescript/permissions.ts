@@ -13,7 +13,7 @@ export type PermissionKey = string & { readonly __brand: 'PermissionKey' };
 /**
  * Permissions Index ID used for this generated file.
  */
-export const PERMISSIONS_INDEX_ID = "723d8ad72edce8ae7d2fff93925098157bcb2af2188d2621080c85516671ce87" as const;
+export const PERMISSIONS_INDEX_ID = "bd27d055e4e03465590fe03b3c10ab61dadbec9fe1fe43b128260ae673d55044" as const;
 
 /**
  * Creates a PermissionKey from a UUID string.
@@ -242,7 +242,7 @@ export const PermissionKeys = {
   /**
    * Import, Unpublish, Publish, Download, Edit, Clone, Delete, Details of WASM Filter
    */
-  CatalogManagementWasmFilterAndFilter: "9225d5a7-7255-49be-9233-daeabefae306" as PermissionKey,
+  CatalogManagementWasmFilterAndFilter: "61a6f8f6-75f0-4bf6-9b04-09062f5731cc" as PermissionKey,
 
   /**
    * Invite any Meshery Cloud user, or all Meshery users, to work with you on a public design that control – including making changes and releasing new versions.
@@ -992,7 +992,7 @@ export const PermissionKeys = {
   /**
    * A Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to reset a component to it's initial style.
    */
-  KanvasResizeComponents: "faa0cb66-af78-4a6f-84f0-3bfae7254276" as PermissionKey,
+  KanvasResizeComponents: "e542cb49-ba5a-43b7-bca2-bce4554ee54d" as PermissionKey,
 
   /**
    * Kanvas Designer allows users to draw shapes, lines, text, add custom styles, images and icons to represent the components and relationships of Kubernetes clusters as they see fit. This permission grants the user the ability to delete a shape from canvas.
@@ -1297,7 +1297,7 @@ export const PermissionKeys = {
   /**
    * Direct terminal access to one ore more pods/containers simultaneously. Integrated experience.
    */
-  KanvasWebBasedTerminal: "4726da45-2108-409b-b94f-45bd1e199a78" as PermissionKey,
+  KanvasWebBasedTerminal: "48483d03-a41f-41c4-a016-b5756bfecde3" as PermissionKey,
 
   /**
    * View Interactive Terminal
@@ -1867,7 +1867,12 @@ export const PermissionKeys = {
   /**
    * No description available
    */
-  AcademyAComprehensiveGuideToUsingTheInstructorConsoleLearnHowToTrackLearnerProgressAnalyzeTestPerformanceAndManageYourAcademySContentAndMetrics: "045fad17-d2cc-46e8-bb10-f9ee026c799f" as PermissionKey,
+  AcademyAComprehensiveGuideToUsingTheInstructorConsoleLearnHowToTrackLearnerProgressAnalyzeTestPerformanceAndManageYourAcademySContentAndMetrics: "41f12d9a-c585-4c91-9cc2-8c878a84f1ef" as PermissionKey,
+
+  /**
+   * View all learning paths
+   */
+  LearningPathManagementViewLearningPaths: "7116c095-d7b4-4ab8-9d55-f33bf9d13ecd" as PermissionKey,
 
   /**
    * View all challenges
@@ -1997,7 +2002,7 @@ export const PermissionKeys = {
   /**
    * VirtualService
    */
-  ConfigurationManagementVirtualservice: "9a84a5d0-0a16-11ee-be56-0242ac120002" as PermissionKey,
+  ConfigurationManagementVirtualservice: "84e64b66-49d6-485d-b333-8194655195bc" as PermissionKey,
 
   /**
    * DestinationRule
@@ -2212,7 +2217,32 @@ export const PermissionKeys = {
   /**
    * No description available
    */
-  ChaosManagementAsDaemonsets: "b73d71ec-f5b2-4d0b-83de-6e2dccff5041" as PermissionKey
+  ChaosManagementAsDaemonsets: "b73d71ec-f5b2-4d0b-83de-6e2dccff5041" as PermissionKey,
+
+  /**
+   * View all of your projects
+   */
+  WorkspaceManagementViewProjects: "141a5f3d-b5e2-4f36-8f83-df7f73744ee1" as PermissionKey,
+
+  /**
+   * Ability to use all selector to filter view
+   */
+  IdentityAccessManagementAllOrgSelector: "17447fb0-be46-1497-1366-c34e24920f22" as PermissionKey,
+
+  /**
+   * Reconfigure the existing connection or edit the connection information
+   */
+  LifecycleManagementEditConnection: "5385852a-8cb7-498c-b3a6-9a0059c25017" as PermissionKey,
+
+  /**
+   * Connect Google Account to Workspace
+   */
+  WorkspaceManagementConnectGoogleAccountToWorkspace: "69179641-6c41-40d8-87a0-81dd99bcb396" as PermissionKey,
+
+  /**
+   * Delete a Token
+   */
+  SecurityManagementDeleteToken: "ddba5064-ac3c-470e-b405-d2a0e99db477" as PermissionKey
 } as const;
 
 /**
