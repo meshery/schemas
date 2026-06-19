@@ -397,6 +397,33 @@ func checkRule24(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 					Severity:   classifyDesignIssue(opts),
 					RuleNumber: 24,
 				})
+				continue
+			}
+
+			flows := []*openapi3.OAuthFlow{
+				scheme.Flows.AuthorizationCode,
+				scheme.Flows.ClientCredentials,
+				scheme.Flows.Implicit,
+				scheme.Flows.Password,
+			}
+
+			for _, flow := range flows {
+				if flow == nil {
+					continue
+				}
+
+				if len(flow.Scopes) == 0 {
+					out = append(out, Violation{
+						File: filePath,
+						Message: fmt.Sprintf(
+							`OAuth2 security scheme %q must define at least one scope.`,
+							name,
+						),
+						Severity:   classifyDesignIssue(opts),
+						RuleNumber: 24,
+					})
+					break
+				}
 			}
 		}
 	}

@@ -887,6 +887,9 @@ func TestCheckRule24_ValidOAuth2(t *testing.T) {
 						Flows: &openapi3.OAuthFlows{
 							ClientCredentials: &openapi3.OAuthFlow{
 								TokenURL: "https://example.com/token",
+								Scopes: map[string]string{
+									"read": "Read access",
+								},
 							},
 						},
 					},
