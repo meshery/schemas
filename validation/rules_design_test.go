@@ -619,6 +619,8 @@ func TestCheckRule24_JWTSchemeMustUseHTTP(t *testing.T) {
 				"jwt": &openapi3.SecuritySchemeRef{
 					Value: &openapi3.SecurityScheme{
 						Type: "apiKey",
+						Name: "Authorization",
+						In:   "header",
 					},
 				},
 			},
@@ -642,6 +644,8 @@ func TestCheckRule24_BearerSchemeMustUseHTTP(t *testing.T) {
 				"bearer": &openapi3.SecuritySchemeRef{
 					Value: &openapi3.SecurityScheme{
 						Type: "apiKey",
+						Name: "Authorization",
+						In:   "header",
 					},
 				},
 			},
@@ -666,6 +670,308 @@ func TestCheckRule24_ValidJWTScheme(t *testing.T) {
 					Value: &openapi3.SecurityScheme{
 						Type:   "http",
 						Scheme: "bearer",
+					},
+				},
+			},
+		},
+	}
+
+	vs := checkRule24("api.yml", doc, AuditOptions{})
+
+	if len(vs) != 0 {
+		t.Fatalf("expected 0 violations, got %d", len(vs))
+	}
+}
+
+func TestCheckRule24_APIKeyMissingName(t *testing.T) {
+	doc := &openapi3.T{
+		OpenAPI: "3.0.0",
+		Info:    &openapi3.Info{Title: "Test", Version: "v1"},
+		Paths:   openapi3.NewPaths(),
+		Components: &openapi3.Components{
+			SecuritySchemes: openapi3.SecuritySchemes{
+				"apiKey": &openapi3.SecuritySchemeRef{
+					Value: &openapi3.SecurityScheme{
+						Type: "apiKey",
+						In:   "header",
+					},
+				},
+			},
+		},
+	}
+
+	vs := checkRule24("api.yml", doc, AuditOptions{})
+
+	if len(vs) != 1 {
+		t.Fatalf("expected 1 violation, got %d", len(vs))
+	}
+}
+
+func TestCheckRule24_APIKeyMissingIn(t *testing.T) {
+	doc := &openapi3.T{
+		OpenAPI: "3.0.0",
+		Info:    &openapi3.Info{Title: "Test", Version: "v1"},
+		Paths:   openapi3.NewPaths(),
+		Components: &openapi3.Components{
+			SecuritySchemes: openapi3.SecuritySchemes{
+				"apiKey": &openapi3.SecuritySchemeRef{
+					Value: &openapi3.SecurityScheme{
+						Type: "apiKey",
+						Name: "X-API-Key",
+					},
+				},
+			},
+		},
+	}
+
+	vs := checkRule24("api.yml", doc, AuditOptions{})
+
+	if len(vs) != 1 {
+		t.Fatalf("expected 1 violation, got %d", len(vs))
+	}
+}
+
+func TestCheckRule24_ValidAPIKeyScheme(t *testing.T) {
+	doc := &openapi3.T{
+		OpenAPI: "3.0.0",
+		Info:    &openapi3.Info{Title: "Test", Version: "v1"},
+		Paths:   openapi3.NewPaths(),
+		Components: &openapi3.Components{
+			SecuritySchemes: openapi3.SecuritySchemes{
+				"apiKey": &openapi3.SecuritySchemeRef{
+					Value: &openapi3.SecurityScheme{
+						Type: "apiKey",
+						In:   "header",
+						Name: "X-API-Key",
+					},
+				},
+			},
+		},
+	}
+
+	vs := checkRule24("api.yml", doc, AuditOptions{})
+
+	if len(vs) != 0 {
+		t.Fatalf("expected 0 violations, got %d", len(vs))
+	}
+}
+
+func TestCheckRule24_HTTPMissingScheme(t *testing.T) {
+	doc := &openapi3.T{
+		OpenAPI: "3.0.0",
+		Info:    &openapi3.Info{Title: "Test", Version: "v1"},
+		Paths:   openapi3.NewPaths(),
+		Components: &openapi3.Components{
+			SecuritySchemes: openapi3.SecuritySchemes{
+				"httpAuth": &openapi3.SecuritySchemeRef{
+					Value: &openapi3.SecurityScheme{
+						Type: "http",
+					},
+				},
+			},
+		},
+	}
+
+	vs := checkRule24("api.yml", doc, AuditOptions{})
+
+	if len(vs) != 1 {
+		t.Fatalf("expected 1 violation, got %d", len(vs))
+	}
+}
+
+func TestCheckRule24_HTTPInvalidScheme(t *testing.T) {
+	doc := &openapi3.T{
+		OpenAPI: "3.0.0",
+		Info:    &openapi3.Info{Title: "Test", Version: "v1"},
+		Paths:   openapi3.NewPaths(),
+		Components: &openapi3.Components{
+			SecuritySchemes: openapi3.SecuritySchemes{
+				"httpAuth": &openapi3.SecuritySchemeRef{
+					Value: &openapi3.SecurityScheme{
+						Type:   "http",
+						Scheme: "potato",
+					},
+				},
+			},
+		},
+	}
+
+	vs := checkRule24("api.yml", doc, AuditOptions{})
+
+	if len(vs) != 1 {
+		t.Fatalf("expected 1 violation, got %d", len(vs))
+	}
+}
+
+func TestCheckRule24_ValidHTTPBearer(t *testing.T) {
+	doc := &openapi3.T{
+		OpenAPI: "3.0.0",
+		Info:    &openapi3.Info{Title: "Test", Version: "v1"},
+		Paths:   openapi3.NewPaths(),
+		Components: &openapi3.Components{
+			SecuritySchemes: openapi3.SecuritySchemes{
+				"httpAuth": &openapi3.SecuritySchemeRef{
+					Value: &openapi3.SecurityScheme{
+						Type:   "http",
+						Scheme: "bearer",
+					},
+				},
+			},
+		},
+	}
+
+	vs := checkRule24("api.yml", doc, AuditOptions{})
+
+	if len(vs) != 0 {
+		t.Fatalf("expected 0 violations, got %d", len(vs))
+	}
+}
+
+func TestCheckRule24_ValidHTTPBasic(t *testing.T) {
+	doc := &openapi3.T{
+		OpenAPI: "3.0.0",
+		Info:    &openapi3.Info{Title: "Test", Version: "v1"},
+		Paths:   openapi3.NewPaths(),
+		Components: &openapi3.Components{
+			SecuritySchemes: openapi3.SecuritySchemes{
+				"httpAuth": &openapi3.SecuritySchemeRef{
+					Value: &openapi3.SecurityScheme{
+						Type:   "http",
+						Scheme: "basic",
+					},
+				},
+			},
+		},
+	}
+
+	vs := checkRule24("api.yml", doc, AuditOptions{})
+
+	if len(vs) != 0 {
+		t.Fatalf("expected 0 violations, got %d", len(vs))
+	}
+}
+
+func TestCheckRule24_OAuth2MissingFlows(t *testing.T) {
+	doc := &openapi3.T{
+		OpenAPI: "3.0.0",
+		Info:    &openapi3.Info{Title: "Test", Version: "v1"},
+		Paths:   openapi3.NewPaths(),
+		Components: &openapi3.Components{
+			SecuritySchemes: openapi3.SecuritySchemes{
+				"oauth2": &openapi3.SecuritySchemeRef{
+					Value: &openapi3.SecurityScheme{
+						Type: "oauth2",
+					},
+				},
+			},
+		},
+	}
+
+	vs := checkRule24("api.yml", doc, AuditOptions{})
+
+	if len(vs) != 1 {
+		t.Fatalf("expected 1 violation, got %d", len(vs))
+	}
+}
+
+func TestCheckRule24_ValidOAuth2(t *testing.T) {
+	doc := &openapi3.T{
+		OpenAPI: "3.0.0",
+		Info:    &openapi3.Info{Title: "Test", Version: "v1"},
+		Paths:   openapi3.NewPaths(),
+		Components: &openapi3.Components{
+			SecuritySchemes: openapi3.SecuritySchemes{
+				"oauth2": &openapi3.SecuritySchemeRef{
+					Value: &openapi3.SecurityScheme{
+						Type: "oauth2",
+						Flows: &openapi3.OAuthFlows{
+							ClientCredentials: &openapi3.OAuthFlow{
+								TokenURL: "https://example.com/token",
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	vs := checkRule24("api.yml", doc, AuditOptions{})
+
+	if len(vs) != 0 {
+		t.Fatalf("expected 0 violations, got %d", len(vs))
+	}
+}
+
+func TestCheckRule24_OAuth2EmptyFlows(t *testing.T) {
+	doc := &openapi3.T{
+		OpenAPI: "3.0.0",
+		Info:    &openapi3.Info{Title: "Test", Version: "v1"},
+		Paths:   openapi3.NewPaths(),
+		Components: &openapi3.Components{
+			SecuritySchemes: openapi3.SecuritySchemes{
+				"oauth2": &openapi3.SecuritySchemeRef{
+					Value: &openapi3.SecurityScheme{
+						Type:  "oauth2",
+						Flows: &openapi3.OAuthFlows{},
+					},
+				},
+			},
+		},
+	}
+
+	vs := checkRule24("api.yml", doc, AuditOptions{})
+
+	if len(vs) != 1 {
+		t.Fatalf("expected 1 violation, got %d", len(vs))
+	}
+}
+
+func TestCheckRule24_OAuth2FlowMissingScopes(t *testing.T) {
+	doc := &openapi3.T{
+		OpenAPI: "3.0.0",
+		Info:    &openapi3.Info{Title: "Test", Version: "v1"},
+		Paths:   openapi3.NewPaths(),
+		Components: &openapi3.Components{
+			SecuritySchemes: openapi3.SecuritySchemes{
+				"oauth2": &openapi3.SecuritySchemeRef{
+					Value: &openapi3.SecurityScheme{
+						Type: "oauth2",
+						Flows: &openapi3.OAuthFlows{
+							ClientCredentials: &openapi3.OAuthFlow{
+								TokenURL: "https://example.com/token",
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	vs := checkRule24("api.yml", doc, AuditOptions{})
+
+	if len(vs) != 1 {
+		t.Fatalf("expected 1 violation, got %d", len(vs))
+	}
+}
+
+func TestCheckRule24_ValidOAuth2Scopes(t *testing.T) {
+	doc := &openapi3.T{
+		OpenAPI: "3.0.0",
+		Info:    &openapi3.Info{Title: "Test", Version: "v1"},
+		Paths:   openapi3.NewPaths(),
+		Components: &openapi3.Components{
+			SecuritySchemes: openapi3.SecuritySchemes{
+				"oauth2": &openapi3.SecuritySchemeRef{
+					Value: &openapi3.SecurityScheme{
+						Type: "oauth2",
+						Flows: &openapi3.OAuthFlows{
+							ClientCredentials: &openapi3.OAuthFlow{
+								TokenURL: "https://example.com/token",
+								Scopes: map[string]string{
+									"read": "Read access",
+								},
+							},
+						},
 					},
 				},
 			},

@@ -310,8 +310,96 @@ func checkRule24(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 				RuleNumber: 24,
 			})
 		}
-	}
 
+		if scheme.Type == "apiKey" {
+			if scheme.Name == "" {
+				out = append(out, Violation{
+					File: filePath,
+					Message: fmt.Sprintf(
+						`Security scheme %q of type "apiKey" must define a "name".`,
+						name,
+					),
+					Severity:   classifyDesignIssue(opts),
+					RuleNumber: 24,
+				})
+			}
+
+			if scheme.In == "" {
+				out = append(out, Violation{
+					File: filePath,
+					Message: fmt.Sprintf(
+						`Security scheme %q of type "apiKey" must define an "in" value (header, query, or cookie).`,
+						name,
+					),
+					Severity:   classifyDesignIssue(opts),
+					RuleNumber: 24,
+				})
+			}
+		}
+
+		if scheme.Type == "http" {
+			validSchemes := map[string]bool{
+				"bearer": true,
+				"basic":  true,
+			}
+
+			if scheme.Scheme == "" {
+				out = append(out, Violation{
+					File: filePath,
+					Message: fmt.Sprintf(
+						`Security scheme %q of type "http" must define a scheme.`,
+						name,
+					),
+					Severity:   classifyDesignIssue(opts),
+					RuleNumber: 24,
+				})
+				continue
+			}
+
+			if !validSchemes[strings.ToLower(scheme.Scheme)] {
+				out = append(out, Violation{
+					File: filePath,
+					Message: fmt.Sprintf(
+						`Security scheme %q uses unsupported http scheme %q.`,
+						name,
+						scheme.Scheme,
+					),
+					Severity:   classifyDesignIssue(opts),
+					RuleNumber: 24,
+				})
+			}
+		}
+		if scheme.Type == "oauth2" {
+			if scheme.Flows == nil {
+				out = append(out, Violation{
+					File: filePath,
+					Message: fmt.Sprintf(
+						`Security scheme %q of type "oauth2" must define flows.`,
+						name,
+					),
+					Severity:   classifyDesignIssue(opts),
+					RuleNumber: 24,
+				})
+				continue
+			}
+
+			if scheme.Flows.AuthorizationCode == nil &&
+				scheme.Flows.ClientCredentials == nil &&
+				scheme.Flows.Implicit == nil &&
+				scheme.Flows.Password == nil {
+
+				out = append(out, Violation{
+					File: filePath,
+					Message: fmt.Sprintf(
+						`Security scheme %q of type "oauth2" must define at least one OAuth flow.`,
+						name,
+					),
+					Severity:   classifyDesignIssue(opts),
+					RuleNumber: 24,
+				})
+			}
+		}
+	}
 	return out
 }
 
