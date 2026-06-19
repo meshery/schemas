@@ -148,7 +148,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                         "required": [
                           "id",
                           "name",
-                          "userId",
+                          "owner",
                           "createdAt",
                           "updatedAt"
                         ],
@@ -180,13 +180,13 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                               "json": "name"
                             }
                           },
-                          "userId": {
+                          "owner": {
                             "description": "User ID of the profile owner.",
                             "x-order": 3,
-                            "x-go-name": "UserID",
+                            "x-go-name": "Owner",
                             "x-oapi-codegen-extra-tags": {
-                              "db": "user_id",
-                              "json": "userId"
+                              "db": "owner",
+                              "json": "owner"
                             },
                             "type": "string",
                             "format": "uuid",
@@ -500,11 +500,12 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                       "json": "name"
                     }
                   },
-                  "userId": {
+                  "owner": {
                     "description": "Owner user ID. When omitted, the server infers it from the authenticated user.",
-                    "x-go-name": "UserID",
+                    "x-go-name": "Owner",
                     "x-oapi-codegen-extra-tags": {
-                      "json": "userId,omitempty"
+                      "db": "owner",
+                      "json": "owner,omitempty"
                     },
                     "type": "string",
                     "format": "uuid",
@@ -671,7 +672,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                   "required": [
                     "id",
                     "name",
-                    "userId",
+                    "owner",
                     "createdAt",
                     "updatedAt"
                   ],
@@ -703,13 +704,13 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                         "json": "name"
                       }
                     },
-                    "userId": {
+                    "owner": {
                       "description": "User ID of the profile owner.",
                       "x-order": 3,
-                      "x-go-name": "UserID",
+                      "x-go-name": "Owner",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id",
-                        "json": "userId"
+                        "db": "owner",
+                        "json": "owner"
                       },
                       "type": "string",
                       "format": "uuid",
@@ -1016,7 +1017,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                   "required": [
                     "id",
                     "name",
-                    "userId",
+                    "owner",
                     "createdAt",
                     "updatedAt"
                   ],
@@ -1048,13 +1049,13 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                         "json": "name"
                       }
                     },
-                    "userId": {
+                    "owner": {
                       "description": "User ID of the profile owner.",
                       "x-order": 3,
-                      "x-go-name": "UserID",
+                      "x-go-name": "Owner",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id",
-                        "json": "userId"
+                        "db": "owner",
+                        "json": "owner"
                       },
                       "type": "string",
                       "format": "uuid",
@@ -1392,11 +1393,12 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                       "json": "name"
                     }
                   },
-                  "userId": {
+                  "owner": {
                     "description": "Owner user ID. When omitted, the server infers it from the authenticated user.",
-                    "x-go-name": "UserID",
+                    "x-go-name": "Owner",
                     "x-oapi-codegen-extra-tags": {
-                      "json": "userId,omitempty"
+                      "db": "owner",
+                      "json": "owner,omitempty"
                     },
                     "type": "string",
                     "format": "uuid",
@@ -1563,7 +1565,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                   "required": [
                     "id",
                     "name",
-                    "userId",
+                    "owner",
                     "createdAt",
                     "updatedAt"
                   ],
@@ -1595,13 +1597,13 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                         "json": "name"
                       }
                     },
-                    "userId": {
+                    "owner": {
                       "description": "User ID of the profile owner.",
                       "x-order": 3,
-                      "x-go-name": "UserID",
+                      "x-go-name": "Owner",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id",
-                        "json": "userId"
+                        "db": "owner",
+                        "json": "owner"
                       },
                       "type": "string",
                       "format": "uuid",
@@ -2161,7 +2163,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                               "json": "testStartTime,omitempty"
                             }
                           },
-                          "userId": {
+                          "owner": {
                             "type": "string",
                             "format": "uuid",
                             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -2169,10 +2171,10 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
                             },
-                            "x-go-name": "UserID",
+                            "x-go-name": "Owner",
                             "x-oapi-codegen-extra-tags": {
-                              "db": "user_id",
-                              "json": "userId,omitempty"
+                              "db": "owner",
+                              "json": "owner,omitempty"
                             }
                           },
                           "createdAt": {
@@ -2405,7 +2407,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                         "json": "testStartTime,omitempty"
                       }
                     },
-                    "userId": {
+                    "owner": {
                       "type": "string",
                       "format": "uuid",
                       "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -2413,10 +2415,10 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                       "x-go-type-import": {
                         "path": "github.com/gofrs/uuid"
                       },
-                      "x-go-name": "UserID",
+                      "x-go-name": "Owner",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id",
-                        "json": "userId,omitempty"
+                        "db": "owner",
+                        "json": "owner,omitempty"
                       }
                     },
                     "createdAt": {
@@ -2709,7 +2711,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                               "json": "testStartTime,omitempty"
                             }
                           },
-                          "userId": {
+                          "owner": {
                             "type": "string",
                             "format": "uuid",
                             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -2717,10 +2719,10 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
                             },
-                            "x-go-name": "UserID",
+                            "x-go-name": "Owner",
                             "x-oapi-codegen-extra-tags": {
-                              "db": "user_id",
-                              "json": "userId,omitempty"
+                              "db": "owner",
+                              "json": "owner,omitempty"
                             }
                           },
                           "createdAt": {
@@ -2944,7 +2946,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
         "required": [
           "id",
           "name",
-          "userId",
+          "owner",
           "createdAt",
           "updatedAt"
         ],
@@ -2976,13 +2978,13 @@ const PerformanceProfileSchema: Record<string, unknown> = {
               "json": "name"
             }
           },
-          "userId": {
+          "owner": {
             "description": "User ID of the profile owner.",
             "x-order": 3,
-            "x-go-name": "UserID",
+            "x-go-name": "Owner",
             "x-oapi-codegen-extra-tags": {
-              "db": "user_id",
-              "json": "userId"
+              "db": "owner",
+              "json": "owner"
             },
             "type": "string",
             "format": "uuid",
@@ -3242,11 +3244,12 @@ const PerformanceProfileSchema: Record<string, unknown> = {
               "json": "name"
             }
           },
-          "userId": {
+          "owner": {
             "description": "Owner user ID. When omitted, the server infers it from the authenticated user.",
-            "x-go-name": "UserID",
+            "x-go-name": "Owner",
             "x-oapi-codegen-extra-tags": {
-              "json": "userId,omitempty"
+              "db": "owner",
+              "json": "owner,omitempty"
             },
             "type": "string",
             "format": "uuid",
@@ -3447,7 +3450,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
               "required": [
                 "id",
                 "name",
-                "userId",
+                "owner",
                 "createdAt",
                 "updatedAt"
               ],
@@ -3479,13 +3482,13 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                     "json": "name"
                   }
                 },
-                "userId": {
+                "owner": {
                   "description": "User ID of the profile owner.",
                   "x-order": 3,
-                  "x-go-name": "UserID",
+                  "x-go-name": "Owner",
                   "x-oapi-codegen-extra-tags": {
-                    "db": "user_id",
-                    "json": "userId"
+                    "db": "owner",
+                    "json": "owner"
                   },
                   "type": "string",
                   "format": "uuid",
@@ -3820,7 +3823,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
               "json": "testStartTime,omitempty"
             }
           },
-          "userId": {
+          "owner": {
             "type": "string",
             "format": "uuid",
             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -3828,10 +3831,10 @@ const PerformanceProfileSchema: Record<string, unknown> = {
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
             },
-            "x-go-name": "UserID",
+            "x-go-name": "Owner",
             "x-oapi-codegen-extra-tags": {
-              "db": "user_id",
-              "json": "userId,omitempty"
+              "db": "owner",
+              "json": "owner,omitempty"
             }
           },
           "createdAt": {
@@ -4009,7 +4012,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                     "json": "testStartTime,omitempty"
                   }
                 },
-                "userId": {
+                "owner": {
                   "type": "string",
                   "format": "uuid",
                   "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -4017,10 +4020,10 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
                   },
-                  "x-go-name": "UserID",
+                  "x-go-name": "Owner",
                   "x-oapi-codegen-extra-tags": {
-                    "db": "user_id",
-                    "json": "userId,omitempty"
+                    "db": "owner",
+                    "json": "owner,omitempty"
                   }
                 },
                 "createdAt": {
@@ -4455,11 +4458,12 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                     "json": "name"
                   }
                 },
-                "userId": {
+                "owner": {
                   "description": "Owner user ID. When omitted, the server infers it from the authenticated user.",
-                  "x-go-name": "UserID",
+                  "x-go-name": "Owner",
                   "x-oapi-codegen-extra-tags": {
-                    "json": "userId,omitempty"
+                    "db": "owner",
+                    "json": "owner,omitempty"
                   },
                   "type": "string",
                   "format": "uuid",

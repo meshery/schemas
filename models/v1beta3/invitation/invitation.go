@@ -49,8 +49,8 @@ type Invitation struct {
 	// OrgId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	OrgID core.Uuid `db:"org_id" json:"orgId" yaml:"orgId"`
 
-	// OwnerId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	OwnerID core.Uuid `db:"owner_id" json:"ownerId" yaml:"ownerId"`
+	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	Owner core.Uuid `db:"owner" json:"owner" yaml:"owner"`
 
 	// Quota Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited.
 	Quota *int `json:"quota,omitempty" yaml:"quota,omitempty"`
@@ -91,8 +91,8 @@ type InvitationPayload struct {
 	// OrgID ID of the organization to which the user is invited.
 	OrgID openapi_types.UUID `db:"org_id" json:"orgId" yaml:"orgId"`
 
-	// OwnerId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	OwnerID *core.Uuid `db:"owner_id" json:"ownerId,omitempty" yaml:"ownerId,omitempty"`
+	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	Owner *core.Uuid `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
 
 	// Quota Quota for the invitation; limits the number of users that can accept it.
 	Quota *int `json:"quota,omitempty" yaml:"quota,omitempty"`

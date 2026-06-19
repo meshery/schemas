@@ -735,7 +735,7 @@ export interface components {
              * Format: uuid
              * @description User ID who owns this connection
              */
-            userId?: string;
+            owner?: string;
             /**
              * Format: date-time
              * @description Timestamp when the connection was created.
@@ -1391,7 +1391,7 @@ export interface components {
                  * Format: uuid
                  * @description User ID who owns this connection
                  */
-                userId?: string;
+                owner?: string;
                 /**
                  * Format: date-time
                  * @description Timestamp when the connection was created.
@@ -2474,7 +2474,7 @@ export interface operations {
                              * Format: uuid
                              * @description User ID who owns this connection
                              */
-                            userId?: string;
+                            owner?: string;
                             /**
                              * Format: date-time
                              * @description Timestamp when the connection was created.
@@ -3365,7 +3365,7 @@ export interface operations {
                          * Format: uuid
                          * @description User ID who owns this connection
                          */
-                        userId?: string;
+                        owner?: string;
                         /**
                          * Format: date-time
                          * @description Timestamp when the connection was created.
@@ -4054,7 +4054,7 @@ export interface operations {
                          * Format: uuid
                          * @description User ID who owns this connection
                          */
-                        userId?: string;
+                        owner?: string;
                         /**
                          * Format: date-time
                          * @description Timestamp when the connection was created.
@@ -4946,7 +4946,7 @@ export interface operations {
                          * Format: uuid
                          * @description User ID who owns this connection
                          */
-                        userId?: string;
+                        owner?: string;
                         /**
                          * Format: date-time
                          * @description Timestamp when the connection was created.

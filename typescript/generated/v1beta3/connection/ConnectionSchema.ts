@@ -2060,11 +2060,11 @@ const ConnectionSchema: Record<string, unknown> = {
                             },
                             "x-order": 18
                           },
-                          "userId": {
-                            "x-go-name": "UserID",
+                          "owner": {
+                            "x-go-name": "Owner",
                             "x-oapi-codegen-extra-tags": {
-                              "db": "user_id",
-                              "json": "userId"
+                              "db": "owner",
+                              "json": "owner"
                             },
                             "x-order": 11,
                             "description": "User ID who owns this connection",
@@ -4832,11 +4832,11 @@ const ConnectionSchema: Record<string, unknown> = {
                       },
                       "x-order": 18
                     },
-                    "userId": {
-                      "x-go-name": "UserID",
+                    "owner": {
+                      "x-go-name": "Owner",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id",
-                        "json": "userId"
+                        "db": "owner",
+                        "json": "owner"
                       },
                       "x-order": 11,
                       "description": "User ID who owns this connection",
@@ -7035,11 +7035,11 @@ const ConnectionSchema: Record<string, unknown> = {
                       },
                       "x-order": 18
                     },
-                    "userId": {
-                      "x-go-name": "UserID",
+                    "owner": {
+                      "x-go-name": "Owner",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id",
-                        "json": "userId"
+                        "db": "owner",
+                        "json": "owner"
                       },
                       "x-order": 11,
                       "description": "User ID who owns this connection",
@@ -9789,11 +9789,11 @@ const ConnectionSchema: Record<string, unknown> = {
                       },
                       "x-order": 18
                     },
-                    "userId": {
-                      "x-go-name": "UserID",
+                    "owner": {
+                      "x-go-name": "Owner",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id",
-                        "json": "userId"
+                        "db": "owner",
+                        "json": "owner"
                       },
                       "x-order": 11,
                       "description": "User ID who owns this connection",
@@ -12906,11 +12906,11 @@ const ConnectionSchema: Record<string, unknown> = {
             },
             "x-order": 18
           },
-          "userId": {
-            "x-go-name": "UserID",
+          "owner": {
+            "x-go-name": "Owner",
             "x-oapi-codegen-extra-tags": {
-              "db": "user_id",
-              "json": "userId"
+              "db": "owner",
+              "json": "owner"
             },
             "x-order": 11,
             "description": "User ID who owns this connection",
@@ -15110,11 +15110,11 @@ const ConnectionSchema: Record<string, unknown> = {
                   },
                   "x-order": 18
                 },
-                "userId": {
-                  "x-go-name": "UserID",
+                "owner": {
+                  "x-go-name": "Owner",
                   "x-oapi-codegen-extra-tags": {
-                    "db": "user_id",
-                    "json": "userId"
+                    "db": "owner",
+                    "json": "owner"
                   },
                   "x-order": 11,
                   "description": "User ID who owns this connection",

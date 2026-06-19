@@ -19,8 +19,8 @@ type PerformanceProfile struct {
 	// Name Human-readable name of the performance profile.
 	Name string `db:"name" json:"name" yaml:"name"`
 
-	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	UserID core.Uuid `db:"user_id" json:"userId" yaml:"userId"`
+	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	Owner core.Uuid `db:"owner" json:"owner" yaml:"owner"`
 
 	// Schedule A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	Schedule *core.Uuid `db:"schedule" json:"schedule,omitempty" yaml:"schedule,omitempty"`
@@ -112,6 +112,9 @@ type PerformanceProfilePayload struct {
 	// Name Human-readable name of the performance profile.
 	Name string `json:"name" yaml:"name"`
 
+	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	Owner *core.Uuid `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
+
 	// QPS Target queries-per-second rate for the load generator. Zero indicates the generator runs unthrottled.
 	QPS int `json:"qps,omitempty" yaml:"qps,omitempty"`
 
@@ -129,9 +132,6 @@ type PerformanceProfilePayload struct {
 
 	// ServiceMesh Service mesh under test for the profile (e.g. istio, linkerd, consul). Empty string when the profile is mesh-agnostic.
 	ServiceMesh string `json:"serviceMesh,omitempty" yaml:"serviceMesh,omitempty"`
-
-	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	UserID *core.Uuid `json:"userId,omitempty" yaml:"userId,omitempty"`
 }
 
 // PerformanceResult Load-test result captured for a Meshery performance profile.
@@ -147,6 +147,9 @@ type PerformanceResult struct {
 
 	// Name Human-readable name of the performance result.
 	Name string `db:"name" json:"name,omitempty" yaml:"name,omitempty"`
+
+	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	Owner *core.Uuid `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
 
 	// PerformanceProfile A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	PerformanceProfile *core.Uuid `db:"performance_profile" json:"performanceProfile,omitempty" yaml:"performanceProfile,omitempty"`
@@ -168,9 +171,6 @@ type PerformanceResult struct {
 
 	// UpdatedAt Timestamp when the resource was updated.
 	UpdatedAt core.UpdatedAt `db:"updated_at" json:"updatedAt,omitempty" yaml:"updatedAt,omitempty"`
-
-	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	UserID *core.Uuid `db:"user_id" json:"userId,omitempty" yaml:"userId,omitempty"`
 }
 
 // PerformanceResultPage Paginated list of performance results.

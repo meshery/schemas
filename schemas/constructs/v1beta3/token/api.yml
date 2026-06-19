@@ -130,7 +130,7 @@ paths:
       operationId: issueIndefiniteLifetimeToken
       description: Creates a non-expiring user token for provider admin use cases.
       parameters:
-      - $ref: '#/components/parameters/userIdQuery'
+      - $ref: '#/components/parameters/ownerQuery'
       - $ref: '#/components/parameters/providerQuery'
       responses:
         '200':
@@ -175,8 +175,8 @@ components:
       required: true
       schema:
         $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
-    userIdQuery:
-      name: userId
+    ownerQuery:
+      name: owner
       in: query
       description: UUID of the user to issue the indefinite token for.
       required: true

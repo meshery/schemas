@@ -98,7 +98,7 @@ const FilterSchema: Record<string, unknown> = {
             }
           },
           {
-            "name": "userId",
+            "name": "owner",
             "in": "query",
             "required": false,
             "description": "UUID of the owning user. Pass when fetching public/published\nfilters for a specific user (public-profile lookups).\n",
@@ -144,7 +144,7 @@ const FilterSchema: Record<string, unknown> = {
                         "required": [
                           "id",
                           "name",
-                          "userId",
+                          "owner",
                           "createdAt",
                           "updatedAt"
                         ],
@@ -166,10 +166,11 @@ const FilterSchema: Record<string, unknown> = {
                             "maxLength": 255,
                             "x-order": 2
                           },
-                          "userId": {
+                          "owner": {
                             "description": "Owning user ID.",
                             "x-oapi-codegen-extra-tags": {
-                              "db": "user_id"
+                              "db": "owner",
+                              "json": "owner"
                             },
                             "x-order": 3,
                             "type": "string",
@@ -574,7 +575,7 @@ const FilterSchema: Record<string, unknown> = {
                   "required": [
                     "id",
                     "name",
-                    "userId",
+                    "owner",
                     "createdAt",
                     "updatedAt"
                   ],
@@ -596,10 +597,11 @@ const FilterSchema: Record<string, unknown> = {
                       "maxLength": 255,
                       "x-order": 2
                     },
-                    "userId": {
+                    "owner": {
                       "description": "Owning user ID.",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id"
+                        "db": "owner",
+                        "json": "owner"
                       },
                       "x-order": 3,
                       "type": "string",
@@ -934,7 +936,7 @@ const FilterSchema: Record<string, unknown> = {
                   "required": [
                     "id",
                     "name",
-                    "userId",
+                    "owner",
                     "createdAt",
                     "updatedAt"
                   ],
@@ -956,10 +958,11 @@ const FilterSchema: Record<string, unknown> = {
                       "maxLength": 255,
                       "x-order": 2
                     },
-                    "userId": {
+                    "owner": {
                       "description": "Owning user ID.",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id"
+                        "db": "owner",
+                        "json": "owner"
                       },
                       "x-order": 3,
                       "type": "string",
@@ -1369,7 +1372,7 @@ const FilterSchema: Record<string, unknown> = {
                   "required": [
                     "id",
                     "name",
-                    "userId",
+                    "owner",
                     "createdAt",
                     "updatedAt"
                   ],
@@ -1391,10 +1394,11 @@ const FilterSchema: Record<string, unknown> = {
                       "maxLength": 255,
                       "x-order": 2
                     },
-                    "userId": {
+                    "owner": {
                       "description": "Owning user ID.",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id"
+                        "db": "owner",
+                        "json": "owner"
                       },
                       "x-order": 3,
                       "type": "string",
@@ -1731,7 +1735,7 @@ const FilterSchema: Record<string, unknown> = {
                   "required": [
                     "id",
                     "name",
-                    "userId",
+                    "owner",
                     "createdAt",
                     "updatedAt"
                   ],
@@ -1753,10 +1757,11 @@ const FilterSchema: Record<string, unknown> = {
                       "maxLength": 255,
                       "x-order": 2
                     },
-                    "userId": {
+                    "owner": {
                       "description": "Owning user ID.",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id"
+                        "db": "owner",
+                        "json": "owner"
                       },
                       "x-order": 3,
                       "type": "string",
@@ -2163,7 +2168,7 @@ const FilterSchema: Record<string, unknown> = {
         "required": [
           "id",
           "name",
-          "userId",
+          "owner",
           "createdAt",
           "updatedAt"
         ],
@@ -2185,10 +2190,11 @@ const FilterSchema: Record<string, unknown> = {
             "maxLength": 255,
             "x-order": 2
           },
-          "userId": {
+          "owner": {
             "description": "Owning user ID.",
             "x-oapi-codegen-extra-tags": {
-              "db": "user_id"
+              "db": "owner",
+              "json": "owner"
             },
             "x-order": 3,
             "type": "string",
@@ -2536,7 +2542,7 @@ const FilterSchema: Record<string, unknown> = {
               "required": [
                 "id",
                 "name",
-                "userId",
+                "owner",
                 "createdAt",
                 "updatedAt"
               ],
@@ -2558,10 +2564,11 @@ const FilterSchema: Record<string, unknown> = {
                   "maxLength": 255,
                   "x-order": 2
                 },
-                "userId": {
+                "owner": {
                   "description": "Owning user ID.",
                   "x-oapi-codegen-extra-tags": {
-                    "db": "user_id"
+                    "db": "owner",
+                    "json": "owner"
                   },
                   "x-order": 3,
                   "type": "string",

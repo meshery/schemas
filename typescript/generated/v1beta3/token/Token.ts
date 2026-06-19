@@ -87,7 +87,7 @@ export interface components {
              * Format: uuid
              * @description UUID of the user who owns the token.
              */
-            userId: string;
+            owner: string;
             /** @description Authentication provider associated with the token. */
             provider: string;
             /** @description Access token value. */
@@ -124,7 +124,7 @@ export interface components {
                  * Format: uuid
                  * @description UUID of the user who owns the token.
                  */
-                userId: string;
+                owner: string;
                 /** @description Authentication provider associated with the token. */
                 provider: string;
                 /** @description Access token value. */
@@ -200,7 +200,7 @@ export interface components {
         /** @description ID of the token to delete. */
         tokenIdQuery: string;
         /** @description UUID of the user to issue the indefinite token for. */
-        userIdQuery: string;
+        ownerQuery: string;
         /** @description Authentication provider to associate with the indefinite token. */
         providerQuery: string;
         /** @description Get responses by page */
@@ -262,7 +262,7 @@ export interface operations {
                              * Format: uuid
                              * @description UUID of the user who owns the token.
                              */
-                            userId: string;
+                            owner: string;
                             /** @description Authentication provider associated with the token. */
                             provider: string;
                             /** @description Access token value. */
@@ -347,7 +347,7 @@ export interface operations {
                              * Format: uuid
                              * @description UUID of the user who owns the token.
                              */
-                            userId: string;
+                            owner: string;
                             /** @description Authentication provider associated with the token. */
                             provider: string;
                             /** @description Access token value. */
@@ -439,7 +439,7 @@ export interface operations {
                              * Format: uuid
                              * @description UUID of the user who owns the token.
                              */
-                            userId: string;
+                            owner: string;
                             /** @description Authentication provider associated with the token. */
                             provider: string;
                             /** @description Access token value. */
@@ -529,7 +529,7 @@ export interface operations {
                          * Format: uuid
                          * @description UUID of the user who owns the token.
                          */
-                        userId: string;
+                        owner: string;
                         /** @description Authentication provider associated with the token. */
                         provider: string;
                         /** @description Access token value. */
@@ -588,7 +588,7 @@ export interface operations {
         parameters: {
             query: {
                 /** @description UUID of the user to issue the indefinite token for. */
-                userId: string;
+                owner: string;
                 /** @description Authentication provider to associate with the indefinite token. */
                 provider: string;
             };
@@ -616,7 +616,7 @@ export interface operations {
                              * Format: uuid
                              * @description UUID of the user who owns the token.
                              */
-                            userId: string;
+                            owner: string;
                             /** @description Authentication provider associated with the token. */
                             provider: string;
                             /** @description Access token value. */

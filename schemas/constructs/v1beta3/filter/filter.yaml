@@ -12,7 +12,7 @@ additionalProperties: false
 required:
   - id
   - name
-  - userId
+  - owner
   - createdAt
   - updatedAt
 properties:
@@ -26,11 +26,12 @@ properties:
     minLength: 1
     maxLength: 255
     x-order: 2
-  userId:
+  owner:
     $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
     description: Owning user ID.
     x-oapi-codegen-extra-tags:
-      db: user_id
+      db: owner
+      json: owner
     x-order: 3
   filterFile:
     type: string

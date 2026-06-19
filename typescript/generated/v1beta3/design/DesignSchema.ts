@@ -5240,7 +5240,7 @@ const DesignSchema: Record<string, unknown> = {
                         "required": [
                           "id",
                           "name",
-                          "userId",
+                          "owner",
                           "createdAt",
                           "updatedAt"
                         ],
@@ -5262,7 +5262,7 @@ const DesignSchema: Record<string, unknown> = {
                             "maxLength": 255,
                             "x-order": 2
                           },
-                          "userId": {
+                          "owner": {
                             "type": "string",
                             "format": "uuid",
                             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -5271,7 +5271,8 @@ const DesignSchema: Record<string, unknown> = {
                               "path": "github.com/gofrs/uuid"
                             },
                             "x-oapi-codegen-extra-tags": {
-                              "db": "user_id"
+                              "db": "owner",
+                              "json": "owner"
                             },
                             "x-order": 3
                           },
@@ -13970,7 +13971,7 @@ const DesignSchema: Record<string, unknown> = {
               "required": [
                 "id",
                 "name",
-                "userId",
+                "owner",
                 "createdAt",
                 "updatedAt"
               ],
@@ -13992,7 +13993,7 @@ const DesignSchema: Record<string, unknown> = {
                   "maxLength": 255,
                   "x-order": 2
                 },
-                "userId": {
+                "owner": {
                   "type": "string",
                   "format": "uuid",
                   "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -14001,7 +14002,8 @@ const DesignSchema: Record<string, unknown> = {
                     "path": "github.com/gofrs/uuid"
                   },
                   "x-oapi-codegen-extra-tags": {
-                    "db": "user_id"
+                    "db": "owner",
+                    "json": "owner"
                   },
                   "x-order": 3
                 },

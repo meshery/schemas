@@ -143,7 +143,7 @@ export interface components {
              * Format: uuid
              * @description Owning user ID.
              */
-            userId: string;
+            owner: string;
             /**
              * Format: byte
              * @description Raw filter source persisted as a byte array (`bytea` column
@@ -303,7 +303,7 @@ export interface components {
                  * Format: uuid
                  * @description Owning user ID.
                  */
-                userId: string;
+                owner: string;
                 /**
                  * Format: byte
                  * @description Raw filter source persisted as a byte array (`bytea` column
@@ -607,7 +607,7 @@ export interface operations {
                  * @description UUID of the owning user. Pass when fetching public/published
                  *     filters for a specific user (public-profile lookups).
                  */
-                userId?: string;
+                owner?: string;
             };
             header?: never;
             path?: never;
@@ -641,7 +641,7 @@ export interface operations {
                              * Format: uuid
                              * @description Owning user ID.
                              */
-                            userId: string;
+                            owner: string;
                             /**
                              * Format: byte
                              * @description Raw filter source persisted as a byte array (`bytea` column
@@ -849,7 +849,7 @@ export interface operations {
                          * Format: uuid
                          * @description Owning user ID.
                          */
-                        userId: string;
+                        owner: string;
                         /**
                          * Format: byte
                          * @description Raw filter source persisted as a byte array (`bytea` column
@@ -1037,7 +1037,7 @@ export interface operations {
                          * Format: uuid
                          * @description Owning user ID.
                          */
-                        userId: string;
+                        owner: string;
                         /**
                          * Format: byte
                          * @description Raw filter source persisted as a byte array (`bytea` column
@@ -1241,7 +1241,7 @@ export interface operations {
                          * Format: uuid
                          * @description Owning user ID.
                          */
-                        userId: string;
+                        owner: string;
                         /**
                          * Format: byte
                          * @description Raw filter source persisted as a byte array (`bytea` column
@@ -1433,7 +1433,7 @@ export interface operations {
                          * Format: uuid
                          * @description Owning user ID.
                          */
-                        userId: string;
+                        owner: string;
                         /**
                          * Format: byte
                          * @description Raw filter source persisted as a byte array (`bytea` column

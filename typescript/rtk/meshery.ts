@@ -4994,7 +4994,7 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
       }[];
     };
     /** User ID who owns this connection */
-    userId?: string;
+    owner?: string;
     /** Timestamp when the connection was created. */
     createdAt?: string;
     /** Timestamp when the connection was last updated. */
@@ -5545,7 +5545,7 @@ export type RegisterConnectionApiResponse = /** status 201 Connection registered
     }[];
   };
   /** User ID who owns this connection */
-  userId?: string;
+  owner?: string;
   /** Timestamp when the connection was created. */
   createdAt?: string;
   /** Timestamp when the connection was last updated. */
@@ -6237,7 +6237,7 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
     }[];
   };
   /** User ID who owns this connection */
-  userId?: string;
+  owner?: string;
   /** Timestamp when the connection was created. */
   createdAt?: string;
   /** Timestamp when the connection was last updated. */
@@ -6750,7 +6750,7 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated */ {
     }[];
   };
   /** User ID who owns this connection */
-  userId?: string;
+  owner?: string;
   /** Timestamp when the connection was created. */
   createdAt?: string;
   /** Timestamp when the connection was last updated. */
@@ -7258,7 +7258,7 @@ export type CreateEventApiResponse = unknown;
 export type CreateEventApiArg = {
   body: {
     /** UUID of the user associated with the event. */
-    userId?: string;
+    owner?: string;
     /** The category of the event. */
     category?: string;
     /** The action of the event. */
@@ -7320,7 +7320,7 @@ export type GetPerformanceProfilesApiResponse = /** status 200 Performance profi
     /** Human-readable name of the performance profile. */
     name: string;
     /** User ID of the profile owner. */
-    userId: string;
+    owner: string;
     /** Optional schedule ID associated with this performance profile. Null when the profile is not bound to a recurring schedule. */
     schedule?: string | null;
     /** Load generators (e.g. fortio, wrk2, nighthawk) to drive the profile's load test. */
@@ -7373,7 +7373,7 @@ export type UpsertPerformanceProfileApiResponse = /** status 200 Performance pro
   /** Human-readable name of the performance profile. */
   name: string;
   /** User ID of the profile owner. */
-  userId: string;
+  owner: string;
   /** Optional schedule ID associated with this performance profile. Null when the profile is not bound to a recurring schedule. */
   schedule?: string | null;
   /** Load generators (e.g. fortio, wrk2, nighthawk) to drive the profile's load test. */
@@ -7417,7 +7417,7 @@ export type UpsertPerformanceProfileApiArg = {
     /** Human-readable name of the performance profile. */
     name: string;
     /** Owner user ID. When omitted, the server infers it from the authenticated user. */
-    userId?: string;
+    owner?: string;
     /** Optional schedule ID associating the profile with a recurring run. */
     schedule?: string | null;
     /** Load generators (e.g. fortio, wrk2, nighthawk) to drive the profile's load test. */
@@ -7452,7 +7452,7 @@ export type GetPerformanceProfileApiResponse = /** status 200 Performance profil
   /** Human-readable name of the performance profile. */
   name: string;
   /** User ID of the profile owner. */
-  userId: string;
+  owner: string;
   /** Optional schedule ID associated with this performance profile. Null when the profile is not bound to a recurring schedule. */
   schedule?: string | null;
   /** Load generators (e.g. fortio, wrk2, nighthawk) to drive the profile's load test. */
@@ -7498,7 +7498,7 @@ export type UpdatePerformanceProfileApiResponse = /** status 200 Performance pro
   /** Human-readable name of the performance profile. */
   name: string;
   /** User ID of the profile owner. */
-  userId: string;
+  owner: string;
   /** Optional schedule ID associated with this performance profile. Null when the profile is not bound to a recurring schedule. */
   schedule?: string | null;
   /** Load generators (e.g. fortio, wrk2, nighthawk) to drive the profile's load test. */
@@ -7544,7 +7544,7 @@ export type UpdatePerformanceProfileApiArg = {
     /** Human-readable name of the performance profile. */
     name: string;
     /** Owner user ID. When omitted, the server infers it from the authenticated user. */
-    userId?: string;
+    owner?: string;
     /** Optional schedule ID associating the profile with a recurring run. */
     schedule?: string | null;
     /** Load generators (e.g. fortio, wrk2, nighthawk) to drive the profile's load test. */
@@ -7612,7 +7612,7 @@ export type GetPerformanceProfileResultsApiResponse = /** status 200 Performance
     /** Time when the load test started. */
     testStartTime?: string;
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    userId?: string;
+    owner?: string;
     /** Timestamp when the performance result was created. */
     createdAt?: string;
     /** Timestamp when the performance result was last updated. */
@@ -7665,7 +7665,7 @@ export type GetPerformanceResultsApiResponse = /** status 200 Performance result
     /** Time when the load test started. */
     testStartTime?: string;
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    userId?: string;
+    owner?: string;
     /** Timestamp when the performance result was created. */
     createdAt?: string;
     /** Timestamp when the performance result was last updated. */

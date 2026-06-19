@@ -57,8 +57,8 @@ type EventPayload struct {
 	// Description Description of the event.
 	Description *string `json:"description,omitempty" yaml:"description,omitempty"`
 
-	// UserID UUID of the user associated with the event.
-	UserID               *uuid.UUID             `json:"userId,omitempty" yaml:"userId,omitempty"`
+	// Owner UUID of the user associated with the event.
+	Owner                *uuid.UUID             `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
 	AdditionalProperties map[string]interface{} `json:"-" yaml:"-"`
 }
 
@@ -85,14 +85,14 @@ type EventResult struct {
 	// LastName The last name of the user associated with the event.
 	LastName *string `json:"lastName,omitempty" yaml:"lastName,omitempty"`
 
+	// Owner UUID of the user associated with the event.
+	Owner uuid.UUID `db:"owner" json:"owner" yaml:"owner"`
+
 	// Provider One of (x-oapi-codegen-extra-tags-cloud, github, google)
 	Provider core.Provider `json:"provider,omitempty" yaml:"provider,omitempty"`
 
 	// SystemId System identifier of the event source.
 	SystemId string `db:"system_id" json:"systemId" yaml:"systemId"`
-
-	// UserID UUID of the user associated with the event.
-	UserID uuid.UUID `db:"user_id" json:"userId" yaml:"userId"`
 }
 
 // EventSummary Per-user event summary entry.
@@ -229,12 +229,12 @@ func (a *EventPayload) UnmarshalJSON(b []byte) error {
 		delete(object, "description")
 	}
 
-	if raw, found := object["userId"]; found {
-		err = json.Unmarshal(raw, &a.UserID)
+	if raw, found := object["owner"]; found {
+		err = json.Unmarshal(raw, &a.Owner)
 		if err != nil {
-			return fmt.Errorf("error reading 'userId': %w", err)
+			return fmt.Errorf("error reading 'owner': %w", err)
 		}
-		delete(object, "userId")
+		delete(object, "owner")
 	}
 
 	if len(object) != 0 {
@@ -277,10 +277,10 @@ func (a EventPayload) MarshalJSON() ([]byte, error) {
 		}
 	}
 
-	if a.UserID != nil {
-		object["userId"], err = json.Marshal(a.UserID)
+	if a.Owner != nil {
+		object["owner"], err = json.Marshal(a.Owner)
 		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'userId': %w", err)
+			return nil, fmt.Errorf("error marshaling 'owner': %w", err)
 		}
 	}
 
