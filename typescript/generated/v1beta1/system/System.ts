@@ -4,169 +4,109 @@
  */
 
 export interface paths {
-  "/api/system/database": {
-    /** Returns a paginated summary of Meshery database tables and row counts. */
-    get: operations["getSystemDatabase"];
-  };
-  "/api/system/database/reset": {
-    /** Resets the Meshery server database. This is a destructive operation. */
-    delete: operations["resetSystemDatabase"];
-  };
-  "/api/system/version": {
-    /** Returns version metadata for the running Meshery service. */
-    get: operations["getSystemVersion"];
-  };
-  "/api/system/sync": {
-    /** Returns session bootstrap data for the authenticated user. */
-    get: operations["getSystemSync"];
-  };
+    "/api/system/database": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a summary of the Meshery server's database
+         * @description Returns a paginated summary of Meshery database tables and row counts.
+         */
+        get: operations["getSystemDatabase"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/system/database/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Reset the Meshery server's database
+         * @description Resets the Meshery server database. This is a destructive operation.
+         */
+        delete: operations["resetSystemDatabase"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/system/version": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get the running Meshery server's version metadata
+         * @description Returns version metadata for the running Meshery service.
+         */
+        get: operations["getSystemVersion"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/system/sync": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get initial session bootstrap data
+         * @description Returns session bootstrap data for the authenticated user.
+         */
+        get: operations["getSystemSync"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
-
+export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    /** @description Status message response. */
-    SystemMessageResponse: {
-      /** @description Human-readable status message. */
-      message: string;
-    };
-    /** @description Database table summary. */
-    SystemDatabaseTable: {
-      /** @description Name of the table. */
-      name: string;
-      /** @description SQLite object type (e.g. `table`). */
-      type: string;
-      /**
-       * Format: int64
-       * @description Number of rows currently in the table.
-       */
-      count: number;
-    };
-    /** @description Paginated summary of the Meshery server's embedded database. */
-    SystemDatabaseSummary: {
-      /** @description Zero-based page index of the returned table slice. */
-      page: number;
-      /** @description Number of tables included in this page. */
-      pageSize: number;
-      /** @description Total number of tables in the database matching the search filter. */
-      totalTables: number;
-      /** @description Aggregate row count across the tables returned in this page. */
-      recordCount: number;
-      /** @description Tables included in this page, with per-table row counts. */
-      tables: {
-        /** @description Name of the table. */
-        name: string;
-        /** @description SQLite object type (e.g. `table`). */
-        type: string;
-        /**
-         * Format: int64
-         * @description Number of rows currently in the table.
-         */
-        count: number;
-      }[];
-    };
-    /** @description Version metadata for a running Meshery service. */
-    SystemVersion: {
-      /** @description Meshery Cloud deployment version. */
-      version?: string;
-      /** @description Build identifier (typically the git tag of the running binary). */
-      build?: string;
-      /** @description Latest available Meshery release tag fetched from GitHub. */
-      latest?: string;
-      /** @description True when the running build is older than the latest available release. */
-      outdated?: boolean;
-      /** @description Git commit SHA of the running service. The wire field is `commitsha`. */
-      commitsha?: string;
-      /** @description Release channel of the running binary (e.g. `stable`, `edge`). */
-      releaseChannel?: string;
-    };
-    /** @description Kubernetes context tracked by Meshery. */
-    SystemSessionSyncK8sContext: {
-      /** @description Stable identifier for the Kubernetes context. */
-      id?: string;
-      /** @description Human-readable name of the Kubernetes context. */
-      name?: string;
-      /** @description True when Meshery has a usable kubeconfig for this context. */
-      clusterConfigured?: boolean;
-      /** @description API server URL for the Kubernetes context. */
-      server?: string;
-      /**
-       * Format: uuid
-       * @description Kubernetes server ID associated with this context.
-       */
-      clusterId?: string;
-      /**
-       * Format: date-time
-       * @description When the context was first registered with Meshery.
-       */
-      createdAt?: string;
-      /**
-       * Format: date-time
-       * @description When the context was last updated.
-       */
-      updatedAt?: string;
-    };
-    /** @description Session bootstrap payload for the authenticated user. */
-    SystemSessionSync: {
-      /** @description Kubernetes contexts currently tracked by the Meshery server. */
-      k8sConfig?: {
-        /** @description Stable identifier for the Kubernetes context. */
-        id?: string;
-        /** @description Human-readable name of the Kubernetes context. */
-        name?: string;
-        /** @description True when Meshery has a usable kubeconfig for this context. */
-        clusterConfigured?: boolean;
-        /** @description API server URL for the Kubernetes context. */
-        server?: string;
-        /**
-         * Format: uuid
-         * @description Kubernetes server ID associated with this context.
-         */
-        clusterId?: string;
-        /**
-         * Format: date-time
-         * @description When the context was first registered with Meshery.
-         */
-        createdAt?: string;
-        /**
-         * Format: date-time
-         * @description When the context was last updated.
-         */
-        updatedAt?: string;
-      }[];
-    } & { [key: string]: unknown };
-  };
-  responses: {
-    /** Expired JWT token used or insufficient privilege */
-    401: {
-      content: {
-        "text/plain": string;
-      };
-    };
-  };
-}
-
-export interface operations {
-  /** Returns a paginated summary of Meshery database tables and row counts. */
-  getSystemDatabase: {
-    parameters: {
-      query: {
-        /** Zero-based page index for the table list. */
-        page?: number;
-        /** Number of tables to include per page. */
-        pageSize?: number;
-        /** Substring filter applied to table names. */
-        search?: string;
-        /** Column to order the table list by. */
-        sort?: "name";
-        /** Sort direction for the `sort` column. */
-        order?: "asc" | "desc";
-      };
-    };
-    responses: {
-      /** Database summary */
-      200: {
-        content: {
-          "application/json": {
+    schemas: {
+        /** @description Status message response. */
+        SystemMessageResponse: {
+            /** @description Human-readable status message. */
+            message: string;
+        };
+        /** @description Database table summary. */
+        SystemDatabaseTable: {
+            /** @description Name of the table. */
+            name: string;
+            /** @description SQLite object type (e.g. `table`). */
+            type: string;
+            /**
+             * Format: int64
+             * @description Number of rows currently in the table.
+             */
+            count: number;
+        };
+        /** @description Paginated summary of the Meshery server's embedded database. */
+        SystemDatabaseSummary: {
             /** @description Zero-based page index of the returned table slice. */
             page: number;
             /** @description Number of tables included in this page. */
@@ -177,58 +117,19 @@ export interface operations {
             recordCount: number;
             /** @description Tables included in this page, with per-table row counts. */
             tables: {
-              /** @description Name of the table. */
-              name: string;
-              /** @description SQLite object type (e.g. `table`). */
-              type: string;
-              /**
-               * Format: int64
-               * @description Number of rows currently in the table.
-               */
-              count: number;
+                /** @description Name of the table. */
+                name: string;
+                /** @description SQLite object type (e.g. `table`). */
+                type: string;
+                /**
+                 * Format: int64
+                 * @description Number of rows currently in the table.
+                 */
+                count: number;
             }[];
-          };
         };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: unknown;
-    };
-  };
-  /** Resets the Meshery server database. This is a destructive operation. */
-  resetSystemDatabase: {
-    responses: {
-      /** Database reset */
-      200: {
-        content: {
-          "application/json": {
-            /** @description Human-readable status message. */
-            message: string;
-          };
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error during reset (archive, drop, migrate, or reseed). */
-      500: unknown;
-    };
-  };
-  /** Returns version metadata for the running Meshery service. */
-  getSystemVersion: {
-    responses: {
-      /** Server version metadata */
-      200: {
-        content: {
-          "application/json": {
+        /** @description Version metadata for a running Meshery service. */
+        SystemVersion: {
             /** @description Meshery Cloud deployment version. */
             version?: string;
             /** @description Build identifier (typically the git tag of the running binary). */
@@ -241,59 +142,293 @@ export interface operations {
             commitsha?: string;
             /** @description Release channel of the running binary (e.g. `stable`, `edge`). */
             releaseChannel?: string;
-          };
         };
-      };
-      /** Encoding error while serializing the version payload. */
-      500: unknown;
-    };
-  };
-  /** Returns session bootstrap data for the authenticated user. */
-  getSystemSync: {
-    responses: {
-      /** Session sync payload */
-      200: {
-        content: {
-          "application/json": {
+        /** @description Kubernetes context tracked by Meshery. */
+        SystemSessionSyncK8sContext: {
+            /** @description Stable identifier for the Kubernetes context. */
+            id?: string;
+            /** @description Human-readable name of the Kubernetes context. */
+            name?: string;
+            /** @description True when Meshery has a usable kubeconfig for this context. */
+            clusterConfigured?: boolean;
+            /** @description API server URL for the Kubernetes context. */
+            server?: string;
+            /**
+             * Format: uuid
+             * @description Kubernetes server ID associated with this context.
+             */
+            clusterId?: string;
+            /**
+             * Format: date-time
+             * @description When the context was first registered with Meshery.
+             */
+            createdAt?: string;
+            /**
+             * Format: date-time
+             * @description When the context was last updated.
+             */
+            updatedAt?: string;
+        };
+        /** @description Session bootstrap payload for the authenticated user. */
+        SystemSessionSync: {
             /** @description Kubernetes contexts currently tracked by the Meshery server. */
             k8sConfig?: {
-              /** @description Stable identifier for the Kubernetes context. */
-              id?: string;
-              /** @description Human-readable name of the Kubernetes context. */
-              name?: string;
-              /** @description True when Meshery has a usable kubeconfig for this context. */
-              clusterConfigured?: boolean;
-              /** @description API server URL for the Kubernetes context. */
-              server?: string;
-              /**
-               * Format: uuid
-               * @description Kubernetes server ID associated with this context.
-               */
-              clusterId?: string;
-              /**
-               * Format: date-time
-               * @description When the context was first registered with Meshery.
-               */
-              createdAt?: string;
-              /**
-               * Format: date-time
-               * @description When the context was last updated.
-               */
-              updatedAt?: string;
+                /** @description Stable identifier for the Kubernetes context. */
+                id?: string;
+                /** @description Human-readable name of the Kubernetes context. */
+                name?: string;
+                /** @description True when Meshery has a usable kubeconfig for this context. */
+                clusterConfigured?: boolean;
+                /** @description API server URL for the Kubernetes context. */
+                server?: string;
+                /**
+                 * Format: uuid
+                 * @description Kubernetes server ID associated with this context.
+                 */
+                clusterId?: string;
+                /**
+                 * Format: date-time
+                 * @description When the context was first registered with Meshery.
+                 */
+                createdAt?: string;
+                /**
+                 * Format: date-time
+                 * @description When the context was last updated.
+                 */
+                updatedAt?: string;
             }[];
-          } & { [key: string]: unknown };
+        } & {
+            [key: string]: unknown;
         };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Marshal error while serializing the session sync payload. */
-      500: unknown;
     };
-  };
+    responses: {
+        /** @description Expired JWT token used or insufficient privilege */
+        401: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+    };
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
-
-export interface external {}
+export type $defs = Record<string, never>;
+export interface operations {
+    getSystemDatabase: {
+        parameters: {
+            query?: {
+                /** @description Zero-based page index for the table list. */
+                page?: number;
+                /** @description Number of tables to include per page. */
+                pageSize?: number;
+                /** @description Substring filter applied to table names. */
+                search?: string;
+                /** @description Column to order the table list by. */
+                sort?: "name";
+                /** @description Sort direction for the `sort` column. */
+                order?: "asc" | "desc";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Database summary */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Zero-based page index of the returned table slice. */
+                        page: number;
+                        /** @description Number of tables included in this page. */
+                        pageSize: number;
+                        /** @description Total number of tables in the database matching the search filter. */
+                        totalTables: number;
+                        /** @description Aggregate row count across the tables returned in this page. */
+                        recordCount: number;
+                        /** @description Tables included in this page, with per-table row counts. */
+                        tables: {
+                            /** @description Name of the table. */
+                            name: string;
+                            /** @description SQLite object type (e.g. `table`). */
+                            type: string;
+                            /**
+                             * Format: int64
+                             * @description Number of rows currently in the table.
+                             */
+                            count: number;
+                        }[];
+                    };
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    resetSystemDatabase: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Database reset */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Human-readable status message. */
+                        message: string;
+                    };
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error during reset (archive, drop, migrate, or reseed). */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getSystemVersion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Server version metadata */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Meshery Cloud deployment version. */
+                        version?: string;
+                        /** @description Build identifier (typically the git tag of the running binary). */
+                        build?: string;
+                        /** @description Latest available Meshery release tag fetched from GitHub. */
+                        latest?: string;
+                        /** @description True when the running build is older than the latest available release. */
+                        outdated?: boolean;
+                        /** @description Git commit SHA of the running service. The wire field is `commitsha`. */
+                        commitsha?: string;
+                        /** @description Release channel of the running binary (e.g. `stable`, `edge`). */
+                        releaseChannel?: string;
+                    };
+                };
+            };
+            /** @description Encoding error while serializing the version payload. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getSystemSync: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Session sync payload */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Kubernetes contexts currently tracked by the Meshery server. */
+                        k8sConfig?: {
+                            /** @description Stable identifier for the Kubernetes context. */
+                            id?: string;
+                            /** @description Human-readable name of the Kubernetes context. */
+                            name?: string;
+                            /** @description True when Meshery has a usable kubeconfig for this context. */
+                            clusterConfigured?: boolean;
+                            /** @description API server URL for the Kubernetes context. */
+                            server?: string;
+                            /**
+                             * Format: uuid
+                             * @description Kubernetes server ID associated with this context.
+                             */
+                            clusterId?: string;
+                            /**
+                             * Format: date-time
+                             * @description When the context was first registered with Meshery.
+                             */
+                            createdAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description When the context was last updated.
+                             */
+                            updatedAt?: string;
+                        }[];
+                    } & {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Marshal error while serializing the session sync payload. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+}
