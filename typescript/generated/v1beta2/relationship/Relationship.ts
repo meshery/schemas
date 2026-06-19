@@ -3,641 +3,837 @@
  * Do not make direct changes to the file.
  */
 
-export type paths = Record<string, never>;
-export type webhooks = Record<string, never>;
+export interface paths {}
+
 export interface components {
-    schemas: {
-        /** @description Relationships define the nature of interaction between interconnected components in Meshery. The combination of relationship properties kind, type, and subtype characterize various genealogical relations among and between components. Relationships have selectors, selector sets, metadata, and optional parameters. Learn more at https://docs.meshery.io/concepts/logical/relationships. */
-        RelationshipDefinition: {
+  schemas: {
+    /** @description Relationships define the nature of interaction between interconnected components in Meshery. The combination of relationship properties kind, type, and subtype characterize various genealogical relations among and between components. Relationships have selectors, selector sets, metadata, and optional parameters. Learn more at https://docs.meshery.io/concepts/logical/relationships. */
+    RelationshipDefinition: {
+      /**
+       * Format: uuid
+       * @description Uniquely identifies the entity
+       */
+      id: string;
+      /**
+       * @description Specifies the version of the schema used for the relationship definition.
+       * @example [
+       *   "v1",
+       *   "v1alpha1",
+       *   "v2beta3",
+       *   "v1.custom-suffix",
+       *   "models.meshery.io/v1beta1",
+       *   "capability.meshery.io/v1alpha1"
+       * ]
+       */
+      schemaVersion: string;
+      /** @description Specifies the version of the relationship definition. */
+      version: string;
+      /**
+       * @description Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.
+       * @enum {string}
+       */
+      kind: "hierarchical" | "edge" | "sibling";
+      /** @description Classification of relationships. Used to group relationships similar in nature. */
+      type: string;
+      /** @description Most granular unit of relationship classification. The combination of Kind, Type and SubType together uniquely identify a Relationship. */
+      subType: string;
+      /**
+       * @description Status of the relationship.
+       * @enum {string}
+       */
+      status?: "enabled" | "ignored" | "deleted" | "approved" | "pending";
+      /** @description Capabilities associated with the relationship. */
+      capabilities?: {
+        /**
+         * @description Specifies the version of the schema to which the capability definition conforms.
+         * @example [
+         *   "v1",
+         *   "v1alpha1",
+         *   "v2beta3",
+         *   "v1.custom-suffix",
+         *   "models.meshery.io/v1beta1",
+         *   "capability.meshery.io/v1alpha1"
+         * ]
+         */
+        schemaVersion: string;
+        /** @description Version of the capability definition. */
+        version: string;
+        /** @description Name of the capability in human-readible format. */
+        displayName: string;
+        /** @description A written representation of the purpose and characteristics of the capability. */
+        description: string;
+        /** @description Top-level categorization of the capability */
+        kind: string;
+        /** @description Classification of capabilities. Used to group capabilities similar in nature. */
+        type: string;
+        /** @description Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
+        subType: string;
+        /** @description Key that backs the capability. */
+        key: string;
+        /** @description State of the entity in which the capability is applicable. */
+        entityState: ("declaration" | "instance")[];
+        /**
+         * @description Status of the capability
+         * @default enabled
+         * @enum {string}
+         */
+        status: "enabled" | "disabled";
+        /** @description Metadata contains additional information associated with the capability. Extension point. */
+        metadata?: { [key: string]: unknown };
+      }[];
+      /** @description Metadata contains additional information associated with the Relationship. */
+      metadata?: {
+        /** @description Characterization of the meaning of the relationship and its relevance to both Meshery and entities under management. */
+        description?: string;
+        /** @description Visualization styles for a relationship */
+        styles?: {
+          /** @description Primary color of the component used for UI representation. */
+          primaryColor: string;
+          /** @description Secondary color of the entity used for UI representation. */
+          secondaryColor?: string;
+          /** @description White SVG of the entity used for UI representation on dark background. */
+          svgWhite: string;
+          /** @description Colored SVG of the entity used for UI representation on light background. */
+          svgColor: string;
+          /** @description Complete SVG of the entity used for UI representation, often inclusive of background. */
+          svgComplete?: string;
+          /** @description The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+          color?: string;
+          /**
+           * Format: float
+           * @description The opacity of the label text, including its outline.
+           */
+          textOpacity?: number;
+          /** @description A comma-separated list of font names to use on the label text. */
+          fontFamily?: string;
+          /** @description The size of the label text. */
+          fontSize?: string;
+          /** @description A CSS font style to be applied to the label text. */
+          fontStyle?: string;
+          /** @description A CSS font weight to be applied to the label text. */
+          fontWeight?: string;
+          /**
+           * @description A transformation to apply to the label text
+           * @enum {string}
+           */
+          textTransform?: "none" | "uppercase" | "lowercase";
+          /**
+           * Format: float
+           * @description The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.See https://js.cytoscape.org/#style/visibility
+           */
+          opacity?: number;
+          /** @description An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+          zIndex?: number;
+          /** @description The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+          label?: string;
+          /** @description The animation to use for the edge. Can be like 'marching-ants' , 'blink' , 'moving-gradient',etc . */
+          edgeAnimation?: string;
+          /**
+           * @description The curving method used to separate two or more edges between two nodes; may be haystack (very fast, bundled straight edges for which loops and compounds are unsupported), straight (straight edges with all arrows supported), bezier (bundled curved edges), unbundled-bezier (curved edges for use with manual control points), segments (a series of straight lines), taxi (right-angled lines, hierarchically bundled). Note that haystack edges work best with ellipse, rectangle, or similar nodes. Smaller node shapes, like triangle, will not be as aesthetically pleasing. Also note that edge endpoint arrows are unsupported for haystack edges.
+           * @enum {string}
+           */
+          curveStyle?:
+            | "haystack"
+            | "straight"
+            | "bezier"
+            | "unbundled-bezier"
+            | "segments"
+            | "taxi";
+          /** @description The colour of the edge's line. Colours may be specified by name (e.g. red), hex (e.g. */
+          lineColor?: string;
+          /**
+           * @description The style of the edge's line.
+           * @enum {string}
+           */
+          lineStyle?: "solid" | "dotted" | "dashed";
+          /**
+           * @description The cap style of the edge's line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.
+           * @enum {string}
+           */
+          lineCap?: "butt" | "round" | "square";
+          /**
+           * Format: float
+           * @description The opacity of the edge's line and arrow. Useful if you wish to have a separate opacity for the edge label versus the edge line. Note that the opacity value of the edge element affects the effective opacity of its line and label subcomponents.
+           */
+          lineOpacity?: number;
+          /** @description The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g. */
+          targetArrowColor?: string;
+          /**
+           * @description The shape of the edge's source arrow
+           * @enum {string}
+           */
+          targetArrowShape?:
+            | "triangle"
+            | "triangle-tee"
+            | "circle-triangle"
+            | "triangle-cross"
+            | "triangle-backcurve"
+            | "vee"
+            | "tee"
+            | "square"
+            | "circle"
+            | "diamond"
+            | "chevron"
+            | "none";
+          /**
+           * @description The fill state of the edge's source arrow
+           * @enum {string}
+           */
+          targetArrowFill?: "filled" | "hollow";
+          /** @description The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g. */
+          midTargetArrowColor?: string;
+          /**
+           * @description The shape of the edge's source arrow
+           * @enum {string}
+           */
+          midTargetArrowShape?:
+            | "triangle"
+            | "triangle-tee"
+            | "circle-triangle"
+            | "triangle-cross"
+            | "triangle-backcurve"
+            | "vee"
+            | "tee"
+            | "square"
+            | "circle"
+            | "diamond"
+            | "chevron"
+            | "none";
+          /**
+           * @description The fill state of the edge's source arrow
+           * @enum {string}
+           */
+          midTargetArrowFill?: "filled" | "hollow";
+          /**
+           * Format: float
+           * @description Scaling for the arrow size.
+           */
+          arrowScale?: number;
+          /** @description The text to display for an edge's source label. Can give a path, e.g. data(id) will label with the elements id */
+          sourceLabel?: string;
+          /** @description The text to display for an edge's target label. Can give a path, e.g. data(id) will label with the elements id */
+          targetLabel?: string;
+        };
+        /** @description Indicates whether the relationship should be treated as a logical representation only */
+        isAnnotation?: boolean;
+      } & { [key: string]: unknown };
+      /** @description Model Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+      model: {
+        /**
+         * Format: uuid
+         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+         */
+        id: string;
+        /** @description The unique name for the model within the scope of a registrant. */
+        name: string;
+        /** @description Version of the model definition. */
+        version: string;
+        /** @description Human-readable name for the model. */
+        displayName: string;
+        /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+        model: {
+          /** @description Version of the model as defined by the registrant. */
+          version: string;
+        };
+        registrant: {
+          /** @description Kind of the registrant. */
+          kind: string;
+        };
+      };
+      /**
+       * Format: uuid
+       * @description Foreign key reference to the model
+       */
+      model_id?: string;
+      /** @description Optional. Assigns the policy to be used for the evaluation of the relationship. Deprecation Notice: In the future, this property is either to be removed or to it is to be an array of optional policy $refs. */
+      evaluationQuery?: string;
+      /** @description Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved. */
+      selectors?: {
+        /** @description Selectors used to define relationships which are allowed. */
+        allow: {
+          /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
+          from: {
             /**
              * Format: uuid
-             * @description Uniquely identifies the entity
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
-            id: string;
-            /**
-             * @description Specifies the version of the schema used for the relationship definition.
-             * @example [
-             *       "v1",
-             *       "v1alpha1",
-             *       "v2beta3",
-             *       "v1.custom-suffix",
-             *       "models.meshery.io/v1beta1",
-             *       "capability.meshery.io/v1alpha1"
-             *     ]
-             */
-            schemaVersion: string;
-            /** @description Specifies the version of the relationship definition. */
-            version: string;
-            /**
-             * @description Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.
-             * @enum {string}
-             */
-            kind: "hierarchical" | "edge" | "sibling";
-            /** @description Classification of relationships. Used to group relationships similar in nature. */
-            type: string;
-            /** @description Most granular unit of relationship classification. The combination of Kind, Type and SubType together uniquely identify a Relationship. */
-            subType: string;
-            /**
-             * @description Status of the relationship.
-             * @enum {string}
-             */
-            status?: "enabled" | "ignored" | "deleted" | "approved" | "pending";
-            /** @description Capabilities associated with the relationship. */
-            capabilities?: {
-                /**
-                 * @description Specifies the version of the schema to which the capability definition conforms.
-                 * @example [
-                 *       "v1",
-                 *       "v1alpha1",
-                 *       "v2beta3",
-                 *       "v1.custom-suffix",
-                 *       "models.meshery.io/v1beta1",
-                 *       "capability.meshery.io/v1alpha1"
-                 *     ]
-                 */
-                schemaVersion: string;
-                /** @description Version of the capability definition. */
-                version: string;
-                /** @description Name of the capability in human-readible format. */
-                displayName: string;
-                /** @description A written representation of the purpose and characteristics of the capability. */
-                description: string;
-                /** @description Top-level categorization of the capability */
-                kind: string | "action" | "mutate" | "view" | "interaction";
-                /** @description Classification of capabilities. Used to group capabilities similar in nature. */
-                type: string;
-                /** @description Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
-                subType: string;
-                /** @description Key that backs the capability. */
-                key: string;
-                /** @description State of the entity in which the capability is applicable. */
-                entityState: ("declaration" | "instance")[];
-                /**
-                 * @description Status of the capability
-                 * @default enabled
-                 * @enum {string}
-                 */
-                status: "enabled" | "disabled";
-                /** @description Metadata contains additional information associated with the capability. Extension point. */
-                metadata?: {
-                    [key: string]: unknown;
-                };
-            }[];
-            /** @description Metadata contains additional information associated with the Relationship. */
-            metadata?: {
-                /** @description Characterization of the meaning of the relationship and its relevance to both Meshery and entities under management. */
-                description?: string;
-                /** @description Visualization styles for a relationship */
-                styles?: {
-                    /** @description Primary color of the component used for UI representation. */
-                    primaryColor: string;
-                    /** @description Secondary color of the entity used for UI representation. */
-                    secondaryColor?: string;
-                    /** @description White SVG of the entity used for UI representation on dark background. */
-                    svgWhite: string;
-                    /** @description Colored SVG of the entity used for UI representation on light background. */
-                    svgColor: string;
-                    /** @description Complete SVG of the entity used for UI representation, often inclusive of background. */
-                    svgComplete?: string;
-                    /** @description The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
-                    color?: string;
-                    /**
-                     * Format: float
-                     * @description The opacity of the label text, including its outline.
-                     */
-                    textOpacity?: number;
-                    /** @description A comma-separated list of font names to use on the label text. */
-                    fontFamily?: string;
-                    /** @description The size of the label text. */
-                    fontSize?: string;
-                    /** @description A CSS font style to be applied to the label text. */
-                    fontStyle?: string;
-                    /** @description A CSS font weight to be applied to the label text. */
-                    fontWeight?: string;
-                    /**
-                     * @description A transformation to apply to the label text
-                     * @enum {string}
-                     */
-                    textTransform?: "none" | "uppercase" | "lowercase";
-                    /**
-                     * Format: float
-                     * @description The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.See https://js.cytoscape.org/#style/visibility
-                     */
-                    opacity?: number;
-                    /** @description An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
-                    zIndex?: number;
-                    /** @description The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
-                    label?: string;
-                    /** @description The animation to use for the edge. Can be like 'marching-ants' , 'blink' , 'moving-gradient',etc . */
-                    edgeAnimation?: string;
-                    /**
-                     * @description The curving method used to separate two or more edges between two nodes; may be haystack (very fast, bundled straight edges for which loops and compounds are unsupported), straight (straight edges with all arrows supported), bezier (bundled curved edges), unbundled-bezier (curved edges for use with manual control points), segments (a series of straight lines), taxi (right-angled lines, hierarchically bundled). Note that haystack edges work best with ellipse, rectangle, or similar nodes. Smaller node shapes, like triangle, will not be as aesthetically pleasing. Also note that edge endpoint arrows are unsupported for haystack edges.
-                     * @enum {string}
-                     */
-                    curveStyle?: "haystack" | "straight" | "bezier" | "unbundled-bezier" | "segments" | "taxi";
-                    /** @description The colour of the edge's line. Colours may be specified by name (e.g. red), hex (e.g. */
-                    lineColor?: string;
-                    /**
-                     * @description The style of the edge's line.
-                     * @enum {string}
-                     */
-                    lineStyle?: "solid" | "dotted" | "dashed";
-                    /**
-                     * @description The cap style of the edge's line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.
-                     * @enum {string}
-                     */
-                    lineCap?: "butt" | "round" | "square";
-                    /**
-                     * Format: float
-                     * @description The opacity of the edge's line and arrow. Useful if you wish to have a separate opacity for the edge label versus the edge line. Note that the opacity value of the edge element affects the effective opacity of its line and label subcomponents.
-                     */
-                    lineOpacity?: number;
-                    /** @description The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g. */
-                    targetArrowColor?: string;
-                    /**
-                     * @description The shape of the edge's source arrow
-                     * @enum {string}
-                     */
-                    targetArrowShape?: "triangle" | "triangle-tee" | "circle-triangle" | "triangle-cross" | "triangle-backcurve" | "vee" | "tee" | "square" | "circle" | "diamond" | "chevron" | "none";
-                    /**
-                     * @description The fill state of the edge's source arrow
-                     * @enum {string}
-                     */
-                    targetArrowFill?: "filled" | "hollow";
-                    /** @description The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g. */
-                    midTargetArrowColor?: string;
-                    /**
-                     * @description The shape of the edge's source arrow
-                     * @enum {string}
-                     */
-                    midTargetArrowShape?: "triangle" | "triangle-tee" | "circle-triangle" | "triangle-cross" | "triangle-backcurve" | "vee" | "tee" | "square" | "circle" | "diamond" | "chevron" | "none";
-                    /**
-                     * @description The fill state of the edge's source arrow
-                     * @enum {string}
-                     */
-                    midTargetArrowFill?: "filled" | "hollow";
-                    /**
-                     * Format: float
-                     * @description Scaling for the arrow size.
-                     */
-                    arrowScale?: number;
-                    /** @description The text to display for an edge's source label. Can give a path, e.g. data(id) will label with the elements id */
-                    sourceLabel?: string;
-                    /** @description The text to display for an edge's target label. Can give a path, e.g. data(id) will label with the elements id */
-                    targetLabel?: string;
-                };
-                /** @description Indicates whether the relationship should be treated as a logical representation only */
-                isAnnotation?: boolean;
-            } & {
-                [key: string]: unknown;
-            };
-            /** @description Model Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
-            model: {
+            id?: string;
+            /** @description Kind of the resource. */
+            kind?: string;
+            /** @description Match configuration for selector */
+            match?: {
+              /** @description The refs of the matchselector. */
+              refs?: string[][];
+              /** @description The from of the matchselector. */
+              from?: {
                 /**
                  * Format: uuid
                  * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
-                id: string;
+                id?: string;
+                /** @description Kind of the resource. */
+                kind: string;
+                /** @description JSON ref to value from where patch should be applied. */
+                mutatorRef?: string[][];
+                mutatedRef?: string[][];
+              }[];
+              /** @description The to of the matchselector. */
+              to?: {
                 /**
-                 * @description The unique name for the model within the scope of a registrant.
-                 * @example cert-manager
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
-                name: string;
-                /** @description Version of the model definition. */
-                version: string;
-                /**
-                 * @description Human-readable name for the model.
-                 * @example Cert Manager
-                 */
-                displayName: string;
-                /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
-                model: {
-                    /** @description Version of the model as defined by the registrant. */
-                    version: string;
-                };
-                registrant: {
-                    /** @description Kind of the registrant. */
-                    kind: string;
-                };
+                id?: string;
+                /** @description Kind of the resource. */
+                kind: string;
+                /** @description JSON ref to value from where patch should be applied. */
+                mutatorRef?: string[][];
+                mutatedRef?: string[][];
+              }[];
             };
+            /** @description Match strategy matrix for the selector */
+            matchStrategyMatrix?: string[][];
+            /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
+            model?: {
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              id: string;
+              /** @description The unique name for the model within the scope of a registrant. */
+              name: string;
+              /** @description Version of the model definition. */
+              version: string;
+              /** @description Human-readable name for the model. */
+              displayName: string;
+              /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+              model: {
+                /** @description Version of the model as defined by the registrant. */
+                version: string;
+              };
+              registrant: {
+                /** @description Kind of the registrant. */
+                kind: string;
+              };
+            };
+            /** @description Patch configuration for the selector */
+            patch?: {
+              /**
+               * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
+               *
+               * add: Inserts a value into an array or adds a member to an object.
+               * merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
+               * strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
+               * remove: Removes a value.
+               * copy: Copies a value from one location to another.
+               * move: Moves a value from one location to another.
+               * test: Tests that a value at the target location is equal to a specified value.
+               *
+               * @enum {string}
+               */
+              patchStrategy?:
+                | "merge"
+                | "strategic"
+                | "add"
+                | "remove"
+                | "copy"
+                | "move"
+                | "test";
+              /** @description JSON ref to value from where patch should be applied. */
+              mutatorRef?: string[][];
+              mutatedRef?: string[][];
+            };
+          }[];
+          /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
+          to: {
             /**
              * Format: uuid
-             * @description Foreign key reference to the model
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
-            model_id?: string;
-            /** @description Optional. Assigns the policy to be used for the evaluation of the relationship. Deprecation Notice: In the future, this property is either to be removed or to it is to be an array of optional policy $refs. */
-            evaluationQuery?: string;
-            /** @description Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved. */
-            selectors?: {
-                /** @description Selectors used to define relationships which are allowed. */
-                allow: {
-                    /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
-                    from: {
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        id?: string;
-                        /** @description Kind of the resource. */
-                        kind?: string;
-                        /** @description Match configuration for selector */
-                        match?: {
-                            /** @description The refs of the matchselector. */
-                            refs?: string[][];
-                            /** @description The from of the matchselector. */
-                            from?: {
-                                /**
-                                 * Format: uuid
-                                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                                 */
-                                id?: string;
-                                /** @description Kind of the resource. */
-                                kind: string;
-                                /** @description JSON ref to value from where patch should be applied. */
-                                mutatorRef?: string[][];
-                                mutatedRef?: string[][];
-                            }[];
-                            /** @description The to of the matchselector. */
-                            to?: {
-                                /**
-                                 * Format: uuid
-                                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                                 */
-                                id?: string;
-                                /** @description Kind of the resource. */
-                                kind: string;
-                                /** @description JSON ref to value from where patch should be applied. */
-                                mutatorRef?: string[][];
-                                mutatedRef?: string[][];
-                            }[];
-                        };
-                        /** @description Match strategy matrix for the selector */
-                        matchStrategyMatrix?: string[][];
-                        /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
-                        model?: {
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            id: string;
-                            /**
-                             * @description The unique name for the model within the scope of a registrant.
-                             * @example cert-manager
-                             */
-                            name: string;
-                            /** @description Version of the model definition. */
-                            version: string;
-                            /**
-                             * @description Human-readable name for the model.
-                             * @example Cert Manager
-                             */
-                            displayName: string;
-                            /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
-                            model: {
-                                /** @description Version of the model as defined by the registrant. */
-                                version: string;
-                            };
-                            registrant: {
-                                /** @description Kind of the registrant. */
-                                kind: string;
-                            };
-                        };
-                        /** @description Patch configuration for the selector */
-                        patch?: {
-                            /**
-                             * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
-                             *
-                             *     add: Inserts a value into an array or adds a member to an object.
-                             *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
-                             *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
-                             *     remove: Removes a value.
-                             *     copy: Copies a value from one location to another.
-                             *     move: Moves a value from one location to another.
-                             *     test: Tests that a value at the target location is equal to a specified value.
-                             * @enum {string}
-                             */
-                            patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-                            /** @description JSON ref to value from where patch should be applied. */
-                            mutatorRef?: string[][];
-                            mutatedRef?: string[][];
-                        };
-                    }[];
-                    /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
-                    to: {
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        id?: string;
-                        /** @description Kind of the resource. */
-                        kind?: string;
-                        /** @description Match configuration for selector */
-                        match?: {
-                            /** @description The refs of the matchselector. */
-                            refs?: string[][];
-                            /** @description The from of the matchselector. */
-                            from?: {
-                                /**
-                                 * Format: uuid
-                                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                                 */
-                                id?: string;
-                                /** @description Kind of the resource. */
-                                kind: string;
-                                /** @description JSON ref to value from where patch should be applied. */
-                                mutatorRef?: string[][];
-                                mutatedRef?: string[][];
-                            }[];
-                            /** @description The to of the matchselector. */
-                            to?: {
-                                /**
-                                 * Format: uuid
-                                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                                 */
-                                id?: string;
-                                /** @description Kind of the resource. */
-                                kind: string;
-                                /** @description JSON ref to value from where patch should be applied. */
-                                mutatorRef?: string[][];
-                                mutatedRef?: string[][];
-                            }[];
-                        };
-                        /** @description Match strategy matrix for the selector */
-                        matchStrategyMatrix?: string[][];
-                        /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
-                        model?: {
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            id: string;
-                            /**
-                             * @description The unique name for the model within the scope of a registrant.
-                             * @example cert-manager
-                             */
-                            name: string;
-                            /** @description Version of the model definition. */
-                            version: string;
-                            /**
-                             * @description Human-readable name for the model.
-                             * @example Cert Manager
-                             */
-                            displayName: string;
-                            /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
-                            model: {
-                                /** @description Version of the model as defined by the registrant. */
-                                version: string;
-                            };
-                            registrant: {
-                                /** @description Kind of the registrant. */
-                                kind: string;
-                            };
-                        };
-                        /** @description Patch configuration for the selector */
-                        patch?: {
-                            /**
-                             * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
-                             *
-                             *     add: Inserts a value into an array or adds a member to an object.
-                             *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
-                             *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
-                             *     remove: Removes a value.
-                             *     copy: Copies a value from one location to another.
-                             *     move: Moves a value from one location to another.
-                             *     test: Tests that a value at the target location is equal to a specified value.
-                             * @enum {string}
-                             */
-                            patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-                            /** @description JSON ref to value from where patch should be applied. */
-                            mutatorRef?: string[][];
-                            mutatedRef?: string[][];
-                        };
-                    }[];
-                };
-                /** @description Optional selectors used to define relationships which should not be created / is restricted. */
-                deny?: {
-                    /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
-                    from: {
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        id?: string;
-                        /** @description Kind of the resource. */
-                        kind?: string;
-                        /** @description Match configuration for selector */
-                        match?: {
-                            /** @description The refs of the matchselector. */
-                            refs?: string[][];
-                            /** @description The from of the matchselector. */
-                            from?: {
-                                /**
-                                 * Format: uuid
-                                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                                 */
-                                id?: string;
-                                /** @description Kind of the resource. */
-                                kind: string;
-                                /** @description JSON ref to value from where patch should be applied. */
-                                mutatorRef?: string[][];
-                                mutatedRef?: string[][];
-                            }[];
-                            /** @description The to of the matchselector. */
-                            to?: {
-                                /**
-                                 * Format: uuid
-                                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                                 */
-                                id?: string;
-                                /** @description Kind of the resource. */
-                                kind: string;
-                                /** @description JSON ref to value from where patch should be applied. */
-                                mutatorRef?: string[][];
-                                mutatedRef?: string[][];
-                            }[];
-                        };
-                        /** @description Match strategy matrix for the selector */
-                        matchStrategyMatrix?: string[][];
-                        /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
-                        model?: {
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            id: string;
-                            /**
-                             * @description The unique name for the model within the scope of a registrant.
-                             * @example cert-manager
-                             */
-                            name: string;
-                            /** @description Version of the model definition. */
-                            version: string;
-                            /**
-                             * @description Human-readable name for the model.
-                             * @example Cert Manager
-                             */
-                            displayName: string;
-                            /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
-                            model: {
-                                /** @description Version of the model as defined by the registrant. */
-                                version: string;
-                            };
-                            registrant: {
-                                /** @description Kind of the registrant. */
-                                kind: string;
-                            };
-                        };
-                        /** @description Patch configuration for the selector */
-                        patch?: {
-                            /**
-                             * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
-                             *
-                             *     add: Inserts a value into an array or adds a member to an object.
-                             *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
-                             *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
-                             *     remove: Removes a value.
-                             *     copy: Copies a value from one location to another.
-                             *     move: Moves a value from one location to another.
-                             *     test: Tests that a value at the target location is equal to a specified value.
-                             * @enum {string}
-                             */
-                            patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-                            /** @description JSON ref to value from where patch should be applied. */
-                            mutatorRef?: string[][];
-                            mutatedRef?: string[][];
-                        };
-                    }[];
-                    /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
-                    to: {
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        id?: string;
-                        /** @description Kind of the resource. */
-                        kind?: string;
-                        /** @description Match configuration for selector */
-                        match?: {
-                            /** @description The refs of the matchselector. */
-                            refs?: string[][];
-                            /** @description The from of the matchselector. */
-                            from?: {
-                                /**
-                                 * Format: uuid
-                                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                                 */
-                                id?: string;
-                                /** @description Kind of the resource. */
-                                kind: string;
-                                /** @description JSON ref to value from where patch should be applied. */
-                                mutatorRef?: string[][];
-                                mutatedRef?: string[][];
-                            }[];
-                            /** @description The to of the matchselector. */
-                            to?: {
-                                /**
-                                 * Format: uuid
-                                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                                 */
-                                id?: string;
-                                /** @description Kind of the resource. */
-                                kind: string;
-                                /** @description JSON ref to value from where patch should be applied. */
-                                mutatorRef?: string[][];
-                                mutatedRef?: string[][];
-                            }[];
-                        };
-                        /** @description Match strategy matrix for the selector */
-                        matchStrategyMatrix?: string[][];
-                        /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
-                        model?: {
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            id: string;
-                            /**
-                             * @description The unique name for the model within the scope of a registrant.
-                             * @example cert-manager
-                             */
-                            name: string;
-                            /** @description Version of the model definition. */
-                            version: string;
-                            /**
-                             * @description Human-readable name for the model.
-                             * @example Cert Manager
-                             */
-                            displayName: string;
-                            /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
-                            model: {
-                                /** @description Version of the model as defined by the registrant. */
-                                version: string;
-                            };
-                            registrant: {
-                                /** @description Kind of the registrant. */
-                                kind: string;
-                            };
-                        };
-                        /** @description Patch configuration for the selector */
-                        patch?: {
-                            /**
-                             * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
-                             *
-                             *     add: Inserts a value into an array or adds a member to an object.
-                             *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
-                             *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
-                             *     remove: Removes a value.
-                             *     copy: Copies a value from one location to another.
-                             *     move: Moves a value from one location to another.
-                             *     test: Tests that a value at the target location is equal to a specified value.
-                             * @enum {string}
-                             */
-                            patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-                            /** @description JSON ref to value from where patch should be applied. */
-                            mutatorRef?: string[][];
-                            mutatedRef?: string[][];
-                        };
-                    }[];
-                };
-            }[];
+            id?: string;
+            /** @description Kind of the resource. */
+            kind?: string;
+            /** @description Match configuration for selector */
+            match?: {
+              /** @description The refs of the matchselector. */
+              refs?: string[][];
+              /** @description The from of the matchselector. */
+              from?: {
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                id?: string;
+                /** @description Kind of the resource. */
+                kind: string;
+                /** @description JSON ref to value from where patch should be applied. */
+                mutatorRef?: string[][];
+                mutatedRef?: string[][];
+              }[];
+              /** @description The to of the matchselector. */
+              to?: {
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                id?: string;
+                /** @description Kind of the resource. */
+                kind: string;
+                /** @description JSON ref to value from where patch should be applied. */
+                mutatorRef?: string[][];
+                mutatedRef?: string[][];
+              }[];
+            };
+            /** @description Match strategy matrix for the selector */
+            matchStrategyMatrix?: string[][];
+            /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
+            model?: {
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              id: string;
+              /** @description The unique name for the model within the scope of a registrant. */
+              name: string;
+              /** @description Version of the model definition. */
+              version: string;
+              /** @description Human-readable name for the model. */
+              displayName: string;
+              /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+              model: {
+                /** @description Version of the model as defined by the registrant. */
+                version: string;
+              };
+              registrant: {
+                /** @description Kind of the registrant. */
+                kind: string;
+              };
+            };
+            /** @description Patch configuration for the selector */
+            patch?: {
+              /**
+               * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
+               *
+               * add: Inserts a value into an array or adds a member to an object.
+               * merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
+               * strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
+               * remove: Removes a value.
+               * copy: Copies a value from one location to another.
+               * move: Moves a value from one location to another.
+               * test: Tests that a value at the target location is equal to a specified value.
+               *
+               * @enum {string}
+               */
+              patchStrategy?:
+                | "merge"
+                | "strategic"
+                | "add"
+                | "remove"
+                | "copy"
+                | "move"
+                | "test";
+              /** @description JSON ref to value from where patch should be applied. */
+              mutatorRef?: string[][];
+              mutatedRef?: string[][];
+            };
+          }[];
         };
+        /** @description Optional selectors used to define relationships which should not be created / is restricted. */
+        deny?: {
+          /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
+          from: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            id?: string;
+            /** @description Kind of the resource. */
+            kind?: string;
+            /** @description Match configuration for selector */
+            match?: {
+              /** @description The refs of the matchselector. */
+              refs?: string[][];
+              /** @description The from of the matchselector. */
+              from?: {
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                id?: string;
+                /** @description Kind of the resource. */
+                kind: string;
+                /** @description JSON ref to value from where patch should be applied. */
+                mutatorRef?: string[][];
+                mutatedRef?: string[][];
+              }[];
+              /** @description The to of the matchselector. */
+              to?: {
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                id?: string;
+                /** @description Kind of the resource. */
+                kind: string;
+                /** @description JSON ref to value from where patch should be applied. */
+                mutatorRef?: string[][];
+                mutatedRef?: string[][];
+              }[];
+            };
+            /** @description Match strategy matrix for the selector */
+            matchStrategyMatrix?: string[][];
+            /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
+            model?: {
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              id: string;
+              /** @description The unique name for the model within the scope of a registrant. */
+              name: string;
+              /** @description Version of the model definition. */
+              version: string;
+              /** @description Human-readable name for the model. */
+              displayName: string;
+              /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+              model: {
+                /** @description Version of the model as defined by the registrant. */
+                version: string;
+              };
+              registrant: {
+                /** @description Kind of the registrant. */
+                kind: string;
+              };
+            };
+            /** @description Patch configuration for the selector */
+            patch?: {
+              /**
+               * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
+               *
+               * add: Inserts a value into an array or adds a member to an object.
+               * merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
+               * strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
+               * remove: Removes a value.
+               * copy: Copies a value from one location to another.
+               * move: Moves a value from one location to another.
+               * test: Tests that a value at the target location is equal to a specified value.
+               *
+               * @enum {string}
+               */
+              patchStrategy?:
+                | "merge"
+                | "strategic"
+                | "add"
+                | "remove"
+                | "copy"
+                | "move"
+                | "test";
+              /** @description JSON ref to value from where patch should be applied. */
+              mutatorRef?: string[][];
+              mutatedRef?: string[][];
+            };
+          }[];
+          /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
+          to: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            id?: string;
+            /** @description Kind of the resource. */
+            kind?: string;
+            /** @description Match configuration for selector */
+            match?: {
+              /** @description The refs of the matchselector. */
+              refs?: string[][];
+              /** @description The from of the matchselector. */
+              from?: {
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                id?: string;
+                /** @description Kind of the resource. */
+                kind: string;
+                /** @description JSON ref to value from where patch should be applied. */
+                mutatorRef?: string[][];
+                mutatedRef?: string[][];
+              }[];
+              /** @description The to of the matchselector. */
+              to?: {
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                id?: string;
+                /** @description Kind of the resource. */
+                kind: string;
+                /** @description JSON ref to value from where patch should be applied. */
+                mutatorRef?: string[][];
+                mutatedRef?: string[][];
+              }[];
+            };
+            /** @description Match strategy matrix for the selector */
+            matchStrategyMatrix?: string[][];
+            /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
+            model?: {
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              id: string;
+              /** @description The unique name for the model within the scope of a registrant. */
+              name: string;
+              /** @description Version of the model definition. */
+              version: string;
+              /** @description Human-readable name for the model. */
+              displayName: string;
+              /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+              model: {
+                /** @description Version of the model as defined by the registrant. */
+                version: string;
+              };
+              registrant: {
+                /** @description Kind of the registrant. */
+                kind: string;
+              };
+            };
+            /** @description Patch configuration for the selector */
+            patch?: {
+              /**
+               * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
+               *
+               * add: Inserts a value into an array or adds a member to an object.
+               * merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
+               * strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
+               * remove: Removes a value.
+               * copy: Copies a value from one location to another.
+               * move: Moves a value from one location to another.
+               * test: Tests that a value at the target location is equal to a specified value.
+               *
+               * @enum {string}
+               */
+              patchStrategy?:
+                | "merge"
+                | "strategic"
+                | "add"
+                | "remove"
+                | "copy"
+                | "move"
+                | "test";
+              /** @description JSON ref to value from where patch should be applied. */
+              mutatorRef?: string[][];
+              mutatedRef?: string[][];
+            };
+          }[];
+        };
+      }[];
+    };
+    /** @description JSON ref to value from where patch should be applied. */
+    MutatorRef: string[][];
+    MutatedRef: string[][];
+    /**
+     * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
+     *
+     * add: Inserts a value into an array or adds a member to an object.
+     * merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
+     * strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
+     * remove: Removes a value.
+     * copy: Copies a value from one location to another.
+     * move: Moves a value from one location to another.
+     * test: Tests that a value at the target location is equal to a specified value.
+     *
+     * @enum {string}
+     */
+    RelationshipDefinitionSelectorsPatchStrategy:
+      | "merge"
+      | "strategic"
+      | "add"
+      | "remove"
+      | "copy"
+      | "move"
+      | "test";
+    /** @description Patch configuration for the selector */
+    RelationshipDefinitionSelectorsPatch: {
+      /**
+       * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
+       *
+       * add: Inserts a value into an array or adds a member to an object.
+       * merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
+       * strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
+       * remove: Removes a value.
+       * copy: Copies a value from one location to another.
+       * move: Moves a value from one location to another.
+       * test: Tests that a value at the target location is equal to a specified value.
+       *
+       * @enum {string}
+       */
+      patchStrategy?:
+        | "merge"
+        | "strategic"
+        | "add"
+        | "remove"
+        | "copy"
+        | "move"
+        | "test";
+      /** @description JSON ref to value from where patch should be applied. */
+      mutatorRef?: string[][];
+      mutatedRef?: string[][];
+    };
+    /** @description Match selector item for binding between nodes */
+    MatchSelectorItem: {
+      /**
+       * Format: uuid
+       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+       */
+      id?: string;
+      /** @description Kind of the resource. */
+      kind: string;
+      /** @description JSON ref to value from where patch should be applied. */
+      mutatorRef?: string[][];
+      mutatedRef?: string[][];
+    };
+    /** @description Match configuration for selector */
+    MatchSelector: {
+      /** @description The refs of the matchselector. */
+      refs?: string[][];
+      /** @description The from of the matchselector. */
+      from?: {
+        /**
+         * Format: uuid
+         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+         */
+        id?: string;
+        /** @description Kind of the resource. */
+        kind: string;
         /** @description JSON ref to value from where patch should be applied. */
-        MutatorRef: string[][];
-        MutatedRef: string[][];
+        mutatorRef?: string[][];
+        mutatedRef?: string[][];
+      }[];
+      /** @description The to of the matchselector. */
+      to?: {
+        /**
+         * Format: uuid
+         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+         */
+        id?: string;
+        /** @description Kind of the resource. */
+        kind: string;
+        /** @description JSON ref to value from where patch should be applied. */
+        mutatorRef?: string[][];
+        mutatedRef?: string[][];
+      }[];
+    };
+    /** @description Optional fields that are a part of the selector. Absence of a field has an implied * meaning. */
+    SelectorItem: {
+      /**
+       * Format: uuid
+       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+       */
+      id?: string;
+      /** @description Kind of the resource. */
+      kind?: string;
+      /** @description Match configuration for selector */
+      match?: {
+        /** @description The refs of the matchselector. */
+        refs?: string[][];
+        /** @description The from of the matchselector. */
+        from?: {
+          /**
+           * Format: uuid
+           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+           */
+          id?: string;
+          /** @description Kind of the resource. */
+          kind: string;
+          /** @description JSON ref to value from where patch should be applied. */
+          mutatorRef?: string[][];
+          mutatedRef?: string[][];
+        }[];
+        /** @description The to of the matchselector. */
+        to?: {
+          /**
+           * Format: uuid
+           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+           */
+          id?: string;
+          /** @description Kind of the resource. */
+          kind: string;
+          /** @description JSON ref to value from where patch should be applied. */
+          mutatorRef?: string[][];
+          mutatedRef?: string[][];
+        }[];
+      };
+      /** @description Match strategy matrix for the selector */
+      matchStrategyMatrix?: string[][];
+      /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
+      model?: {
+        /**
+         * Format: uuid
+         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+         */
+        id: string;
+        /** @description The unique name for the model within the scope of a registrant. */
+        name: string;
+        /** @description Version of the model definition. */
+        version: string;
+        /** @description Human-readable name for the model. */
+        displayName: string;
+        /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+        model: {
+          /** @description Version of the model as defined by the registrant. */
+          version: string;
+        };
+        registrant: {
+          /** @description Kind of the registrant. */
+          kind: string;
+        };
+      };
+      /** @description Patch configuration for the selector */
+      patch?: {
         /**
          * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
          *
-         *     add: Inserts a value into an array or adds a member to an object.
-         *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
-         *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
-         *     remove: Removes a value.
-         *     copy: Copies a value from one location to another.
-         *     move: Moves a value from one location to another.
-         *     test: Tests that a value at the target location is equal to a specified value.
+         * add: Inserts a value into an array or adds a member to an object.
+         * merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
+         * strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
+         * remove: Removes a value.
+         * copy: Copies a value from one location to another.
+         * move: Moves a value from one location to another.
+         * test: Tests that a value at the target location is equal to a specified value.
+         *
          * @enum {string}
          */
-        RelationshipDefinitionSelectorsPatchStrategy: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-        /** @description Patch configuration for the selector */
-        RelationshipDefinitionSelectorsPatch: {
-            /**
-             * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
-             *
-             *     add: Inserts a value into an array or adds a member to an object.
-             *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
-             *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
-             *     remove: Removes a value.
-             *     copy: Copies a value from one location to another.
-             *     move: Moves a value from one location to another.
-             *     test: Tests that a value at the target location is equal to a specified value.
-             * @enum {string}
-             */
-            patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-            /** @description JSON ref to value from where patch should be applied. */
-            mutatorRef?: string[][];
-            mutatedRef?: string[][];
-        };
-        /** @description Match selector item for binding between nodes */
-        MatchSelectorItem: {
+        patchStrategy?:
+          | "merge"
+          | "strategic"
+          | "add"
+          | "remove"
+          | "copy"
+          | "move"
+          | "test";
+        /** @description JSON ref to value from where patch should be applied. */
+        mutatorRef?: string[][];
+        mutatedRef?: string[][];
+      };
+    };
+    /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
+    Selector: {
+      /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
+      from: {
+        /**
+         * Format: uuid
+         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+         */
+        id?: string;
+        /** @description Kind of the resource. */
+        kind?: string;
+        /** @description Match configuration for selector */
+        match?: {
+          /** @description The refs of the matchselector. */
+          refs?: string[][];
+          /** @description The from of the matchselector. */
+          from?: {
             /**
              * Format: uuid
              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -648,1318 +844,1291 @@ export interface components {
             /** @description JSON ref to value from where patch should be applied. */
             mutatorRef?: string[][];
             mutatedRef?: string[][];
-        };
-        /** @description Match configuration for selector */
-        MatchSelector: {
-            /** @description The refs of the matchselector. */
-            refs?: string[][];
-            /** @description The from of the matchselector. */
-            from?: {
-                /**
-                 * Format: uuid
-                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                 */
-                id?: string;
-                /** @description Kind of the resource. */
-                kind: string;
-                /** @description JSON ref to value from where patch should be applied. */
-                mutatorRef?: string[][];
-                mutatedRef?: string[][];
-            }[];
-            /** @description The to of the matchselector. */
-            to?: {
-                /**
-                 * Format: uuid
-                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                 */
-                id?: string;
-                /** @description Kind of the resource. */
-                kind: string;
-                /** @description JSON ref to value from where patch should be applied. */
-                mutatorRef?: string[][];
-                mutatedRef?: string[][];
-            }[];
-        };
-        /** @description Optional fields that are a part of the selector. Absence of a field has an implied * meaning. */
-        SelectorItem: {
+          }[];
+          /** @description The to of the matchselector. */
+          to?: {
             /**
              * Format: uuid
              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             id?: string;
             /** @description Kind of the resource. */
-            kind?: string;
-            /** @description Match configuration for selector */
-            match?: {
-                /** @description The refs of the matchselector. */
-                refs?: string[][];
-                /** @description The from of the matchselector. */
-                from?: {
-                    /**
-                     * Format: uuid
-                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                     */
-                    id?: string;
-                    /** @description Kind of the resource. */
-                    kind: string;
-                    /** @description JSON ref to value from where patch should be applied. */
-                    mutatorRef?: string[][];
-                    mutatedRef?: string[][];
-                }[];
-                /** @description The to of the matchselector. */
-                to?: {
-                    /**
-                     * Format: uuid
-                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                     */
-                    id?: string;
-                    /** @description Kind of the resource. */
-                    kind: string;
-                    /** @description JSON ref to value from where patch should be applied. */
-                    mutatorRef?: string[][];
-                    mutatedRef?: string[][];
-                }[];
-            };
-            /** @description Match strategy matrix for the selector */
-            matchStrategyMatrix?: string[][];
-            /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
-            model?: {
-                /**
-                 * Format: uuid
-                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                 */
-                id: string;
-                /**
-                 * @description The unique name for the model within the scope of a registrant.
-                 * @example cert-manager
-                 */
-                name: string;
-                /** @description Version of the model definition. */
-                version: string;
-                /**
-                 * @description Human-readable name for the model.
-                 * @example Cert Manager
-                 */
-                displayName: string;
-                /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
-                model: {
-                    /** @description Version of the model as defined by the registrant. */
-                    version: string;
-                };
-                registrant: {
-                    /** @description Kind of the registrant. */
-                    kind: string;
-                };
-            };
-            /** @description Patch configuration for the selector */
-            patch?: {
-                /**
-                 * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
-                 *
-                 *     add: Inserts a value into an array or adds a member to an object.
-                 *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
-                 *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
-                 *     remove: Removes a value.
-                 *     copy: Copies a value from one location to another.
-                 *     move: Moves a value from one location to another.
-                 *     test: Tests that a value at the target location is equal to a specified value.
-                 * @enum {string}
-                 */
-                patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-                /** @description JSON ref to value from where patch should be applied. */
-                mutatorRef?: string[][];
-                mutatedRef?: string[][];
-            };
+            kind: string;
+            /** @description JSON ref to value from where patch should be applied. */
+            mutatorRef?: string[][];
+            mutatedRef?: string[][];
+          }[];
         };
+        /** @description Match strategy matrix for the selector */
+        matchStrategyMatrix?: string[][];
+        /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
+        model?: {
+          /**
+           * Format: uuid
+           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+           */
+          id: string;
+          /** @description The unique name for the model within the scope of a registrant. */
+          name: string;
+          /** @description Version of the model definition. */
+          version: string;
+          /** @description Human-readable name for the model. */
+          displayName: string;
+          /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+          model: {
+            /** @description Version of the model as defined by the registrant. */
+            version: string;
+          };
+          registrant: {
+            /** @description Kind of the registrant. */
+            kind: string;
+          };
+        };
+        /** @description Patch configuration for the selector */
+        patch?: {
+          /**
+           * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
+           *
+           * add: Inserts a value into an array or adds a member to an object.
+           * merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
+           * strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
+           * remove: Removes a value.
+           * copy: Copies a value from one location to another.
+           * move: Moves a value from one location to another.
+           * test: Tests that a value at the target location is equal to a specified value.
+           *
+           * @enum {string}
+           */
+          patchStrategy?:
+            | "merge"
+            | "strategic"
+            | "add"
+            | "remove"
+            | "copy"
+            | "move"
+            | "test";
+          /** @description JSON ref to value from where patch should be applied. */
+          mutatorRef?: string[][];
+          mutatedRef?: string[][];
+        };
+      }[];
+      /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
+      to: {
+        /**
+         * Format: uuid
+         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+         */
+        id?: string;
+        /** @description Kind of the resource. */
+        kind?: string;
+        /** @description Match configuration for selector */
+        match?: {
+          /** @description The refs of the matchselector. */
+          refs?: string[][];
+          /** @description The from of the matchselector. */
+          from?: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            id?: string;
+            /** @description Kind of the resource. */
+            kind: string;
+            /** @description JSON ref to value from where patch should be applied. */
+            mutatorRef?: string[][];
+            mutatedRef?: string[][];
+          }[];
+          /** @description The to of the matchselector. */
+          to?: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            id?: string;
+            /** @description Kind of the resource. */
+            kind: string;
+            /** @description JSON ref to value from where patch should be applied. */
+            mutatorRef?: string[][];
+            mutatedRef?: string[][];
+          }[];
+        };
+        /** @description Match strategy matrix for the selector */
+        matchStrategyMatrix?: string[][];
+        /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
+        model?: {
+          /**
+           * Format: uuid
+           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+           */
+          id: string;
+          /** @description The unique name for the model within the scope of a registrant. */
+          name: string;
+          /** @description Version of the model definition. */
+          version: string;
+          /** @description Human-readable name for the model. */
+          displayName: string;
+          /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+          model: {
+            /** @description Version of the model as defined by the registrant. */
+            version: string;
+          };
+          registrant: {
+            /** @description Kind of the registrant. */
+            kind: string;
+          };
+        };
+        /** @description Patch configuration for the selector */
+        patch?: {
+          /**
+           * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
+           *
+           * add: Inserts a value into an array or adds a member to an object.
+           * merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
+           * strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
+           * remove: Removes a value.
+           * copy: Copies a value from one location to another.
+           * move: Moves a value from one location to another.
+           * test: Tests that a value at the target location is equal to a specified value.
+           *
+           * @enum {string}
+           */
+          patchStrategy?:
+            | "merge"
+            | "strategic"
+            | "add"
+            | "remove"
+            | "copy"
+            | "move"
+            | "test";
+          /** @description JSON ref to value from where patch should be applied. */
+          mutatorRef?: string[][];
+          mutatedRef?: string[][];
+        };
+      }[];
+    };
+    /** @description Optional selectors used to match Components. Absence of a selector means that it is applied to all Components. */
+    SelectorSetItem: {
+      /** @description Selectors used to define relationships which are allowed. */
+      allow: {
         /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
-        Selector: {
-            /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
-            from: {
-                /**
-                 * Format: uuid
-                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                 */
-                id?: string;
-                /** @description Kind of the resource. */
-                kind?: string;
-                /** @description Match configuration for selector */
-                match?: {
-                    /** @description The refs of the matchselector. */
-                    refs?: string[][];
-                    /** @description The from of the matchselector. */
-                    from?: {
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        id?: string;
-                        /** @description Kind of the resource. */
-                        kind: string;
-                        /** @description JSON ref to value from where patch should be applied. */
-                        mutatorRef?: string[][];
-                        mutatedRef?: string[][];
-                    }[];
-                    /** @description The to of the matchselector. */
-                    to?: {
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        id?: string;
-                        /** @description Kind of the resource. */
-                        kind: string;
-                        /** @description JSON ref to value from where patch should be applied. */
-                        mutatorRef?: string[][];
-                        mutatedRef?: string[][];
-                    }[];
-                };
-                /** @description Match strategy matrix for the selector */
-                matchStrategyMatrix?: string[][];
-                /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
-                model?: {
-                    /**
-                     * Format: uuid
-                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                     */
-                    id: string;
-                    /**
-                     * @description The unique name for the model within the scope of a registrant.
-                     * @example cert-manager
-                     */
-                    name: string;
-                    /** @description Version of the model definition. */
-                    version: string;
-                    /**
-                     * @description Human-readable name for the model.
-                     * @example Cert Manager
-                     */
-                    displayName: string;
-                    /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
-                    model: {
-                        /** @description Version of the model as defined by the registrant. */
-                        version: string;
-                    };
-                    registrant: {
-                        /** @description Kind of the registrant. */
-                        kind: string;
-                    };
-                };
-                /** @description Patch configuration for the selector */
-                patch?: {
-                    /**
-                     * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
-                     *
-                     *     add: Inserts a value into an array or adds a member to an object.
-                     *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
-                     *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
-                     *     remove: Removes a value.
-                     *     copy: Copies a value from one location to another.
-                     *     move: Moves a value from one location to another.
-                     *     test: Tests that a value at the target location is equal to a specified value.
-                     * @enum {string}
-                     */
-                    patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-                    /** @description JSON ref to value from where patch should be applied. */
-                    mutatorRef?: string[][];
-                    mutatedRef?: string[][];
-                };
+        from: {
+          /**
+           * Format: uuid
+           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+           */
+          id?: string;
+          /** @description Kind of the resource. */
+          kind?: string;
+          /** @description Match configuration for selector */
+          match?: {
+            /** @description The refs of the matchselector. */
+            refs?: string[][];
+            /** @description The from of the matchselector. */
+            from?: {
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              id?: string;
+              /** @description Kind of the resource. */
+              kind: string;
+              /** @description JSON ref to value from where patch should be applied. */
+              mutatorRef?: string[][];
+              mutatedRef?: string[][];
             }[];
-            /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
-            to: {
-                /**
-                 * Format: uuid
-                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                 */
-                id?: string;
-                /** @description Kind of the resource. */
-                kind?: string;
-                /** @description Match configuration for selector */
-                match?: {
-                    /** @description The refs of the matchselector. */
-                    refs?: string[][];
-                    /** @description The from of the matchselector. */
-                    from?: {
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        id?: string;
-                        /** @description Kind of the resource. */
-                        kind: string;
-                        /** @description JSON ref to value from where patch should be applied. */
-                        mutatorRef?: string[][];
-                        mutatedRef?: string[][];
-                    }[];
-                    /** @description The to of the matchselector. */
-                    to?: {
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        id?: string;
-                        /** @description Kind of the resource. */
-                        kind: string;
-                        /** @description JSON ref to value from where patch should be applied. */
-                        mutatorRef?: string[][];
-                        mutatedRef?: string[][];
-                    }[];
-                };
-                /** @description Match strategy matrix for the selector */
-                matchStrategyMatrix?: string[][];
-                /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
-                model?: {
-                    /**
-                     * Format: uuid
-                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                     */
-                    id: string;
-                    /**
-                     * @description The unique name for the model within the scope of a registrant.
-                     * @example cert-manager
-                     */
-                    name: string;
-                    /** @description Version of the model definition. */
-                    version: string;
-                    /**
-                     * @description Human-readable name for the model.
-                     * @example Cert Manager
-                     */
-                    displayName: string;
-                    /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
-                    model: {
-                        /** @description Version of the model as defined by the registrant. */
-                        version: string;
-                    };
-                    registrant: {
-                        /** @description Kind of the registrant. */
-                        kind: string;
-                    };
-                };
-                /** @description Patch configuration for the selector */
-                patch?: {
-                    /**
-                     * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
-                     *
-                     *     add: Inserts a value into an array or adds a member to an object.
-                     *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
-                     *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
-                     *     remove: Removes a value.
-                     *     copy: Copies a value from one location to another.
-                     *     move: Moves a value from one location to another.
-                     *     test: Tests that a value at the target location is equal to a specified value.
-                     * @enum {string}
-                     */
-                    patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-                    /** @description JSON ref to value from where patch should be applied. */
-                    mutatorRef?: string[][];
-                    mutatedRef?: string[][];
-                };
+            /** @description The to of the matchselector. */
+            to?: {
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              id?: string;
+              /** @description Kind of the resource. */
+              kind: string;
+              /** @description JSON ref to value from where patch should be applied. */
+              mutatorRef?: string[][];
+              mutatedRef?: string[][];
             }[];
-        };
-        /** @description Optional selectors used to match Components. Absence of a selector means that it is applied to all Components. */
-        SelectorSetItem: {
-            /** @description Selectors used to define relationships which are allowed. */
-            allow: {
-                /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
-                from: {
-                    /**
-                     * Format: uuid
-                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                     */
-                    id?: string;
-                    /** @description Kind of the resource. */
-                    kind?: string;
-                    /** @description Match configuration for selector */
-                    match?: {
-                        /** @description The refs of the matchselector. */
-                        refs?: string[][];
-                        /** @description The from of the matchselector. */
-                        from?: {
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            id?: string;
-                            /** @description Kind of the resource. */
-                            kind: string;
-                            /** @description JSON ref to value from where patch should be applied. */
-                            mutatorRef?: string[][];
-                            mutatedRef?: string[][];
-                        }[];
-                        /** @description The to of the matchselector. */
-                        to?: {
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            id?: string;
-                            /** @description Kind of the resource. */
-                            kind: string;
-                            /** @description JSON ref to value from where patch should be applied. */
-                            mutatorRef?: string[][];
-                            mutatedRef?: string[][];
-                        }[];
-                    };
-                    /** @description Match strategy matrix for the selector */
-                    matchStrategyMatrix?: string[][];
-                    /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
-                    model?: {
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        id: string;
-                        /**
-                         * @description The unique name for the model within the scope of a registrant.
-                         * @example cert-manager
-                         */
-                        name: string;
-                        /** @description Version of the model definition. */
-                        version: string;
-                        /**
-                         * @description Human-readable name for the model.
-                         * @example Cert Manager
-                         */
-                        displayName: string;
-                        /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
-                        model: {
-                            /** @description Version of the model as defined by the registrant. */
-                            version: string;
-                        };
-                        registrant: {
-                            /** @description Kind of the registrant. */
-                            kind: string;
-                        };
-                    };
-                    /** @description Patch configuration for the selector */
-                    patch?: {
-                        /**
-                         * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
-                         *
-                         *     add: Inserts a value into an array or adds a member to an object.
-                         *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
-                         *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
-                         *     remove: Removes a value.
-                         *     copy: Copies a value from one location to another.
-                         *     move: Moves a value from one location to another.
-                         *     test: Tests that a value at the target location is equal to a specified value.
-                         * @enum {string}
-                         */
-                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-                        /** @description JSON ref to value from where patch should be applied. */
-                        mutatorRef?: string[][];
-                        mutatedRef?: string[][];
-                    };
-                }[];
-                /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
-                to: {
-                    /**
-                     * Format: uuid
-                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                     */
-                    id?: string;
-                    /** @description Kind of the resource. */
-                    kind?: string;
-                    /** @description Match configuration for selector */
-                    match?: {
-                        /** @description The refs of the matchselector. */
-                        refs?: string[][];
-                        /** @description The from of the matchselector. */
-                        from?: {
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            id?: string;
-                            /** @description Kind of the resource. */
-                            kind: string;
-                            /** @description JSON ref to value from where patch should be applied. */
-                            mutatorRef?: string[][];
-                            mutatedRef?: string[][];
-                        }[];
-                        /** @description The to of the matchselector. */
-                        to?: {
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            id?: string;
-                            /** @description Kind of the resource. */
-                            kind: string;
-                            /** @description JSON ref to value from where patch should be applied. */
-                            mutatorRef?: string[][];
-                            mutatedRef?: string[][];
-                        }[];
-                    };
-                    /** @description Match strategy matrix for the selector */
-                    matchStrategyMatrix?: string[][];
-                    /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
-                    model?: {
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        id: string;
-                        /**
-                         * @description The unique name for the model within the scope of a registrant.
-                         * @example cert-manager
-                         */
-                        name: string;
-                        /** @description Version of the model definition. */
-                        version: string;
-                        /**
-                         * @description Human-readable name for the model.
-                         * @example Cert Manager
-                         */
-                        displayName: string;
-                        /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
-                        model: {
-                            /** @description Version of the model as defined by the registrant. */
-                            version: string;
-                        };
-                        registrant: {
-                            /** @description Kind of the registrant. */
-                            kind: string;
-                        };
-                    };
-                    /** @description Patch configuration for the selector */
-                    patch?: {
-                        /**
-                         * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
-                         *
-                         *     add: Inserts a value into an array or adds a member to an object.
-                         *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
-                         *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
-                         *     remove: Removes a value.
-                         *     copy: Copies a value from one location to another.
-                         *     move: Moves a value from one location to another.
-                         *     test: Tests that a value at the target location is equal to a specified value.
-                         * @enum {string}
-                         */
-                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-                        /** @description JSON ref to value from where patch should be applied. */
-                        mutatorRef?: string[][];
-                        mutatedRef?: string[][];
-                    };
-                }[];
+          };
+          /** @description Match strategy matrix for the selector */
+          matchStrategyMatrix?: string[][];
+          /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
+          model?: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            id: string;
+            /** @description The unique name for the model within the scope of a registrant. */
+            name: string;
+            /** @description Version of the model definition. */
+            version: string;
+            /** @description Human-readable name for the model. */
+            displayName: string;
+            /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+            model: {
+              /** @description Version of the model as defined by the registrant. */
+              version: string;
             };
-            /** @description Optional selectors used to define relationships which should not be created / is restricted. */
-            deny?: {
-                /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
-                from: {
-                    /**
-                     * Format: uuid
-                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                     */
-                    id?: string;
-                    /** @description Kind of the resource. */
-                    kind?: string;
-                    /** @description Match configuration for selector */
-                    match?: {
-                        /** @description The refs of the matchselector. */
-                        refs?: string[][];
-                        /** @description The from of the matchselector. */
-                        from?: {
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            id?: string;
-                            /** @description Kind of the resource. */
-                            kind: string;
-                            /** @description JSON ref to value from where patch should be applied. */
-                            mutatorRef?: string[][];
-                            mutatedRef?: string[][];
-                        }[];
-                        /** @description The to of the matchselector. */
-                        to?: {
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            id?: string;
-                            /** @description Kind of the resource. */
-                            kind: string;
-                            /** @description JSON ref to value from where patch should be applied. */
-                            mutatorRef?: string[][];
-                            mutatedRef?: string[][];
-                        }[];
-                    };
-                    /** @description Match strategy matrix for the selector */
-                    matchStrategyMatrix?: string[][];
-                    /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
-                    model?: {
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        id: string;
-                        /**
-                         * @description The unique name for the model within the scope of a registrant.
-                         * @example cert-manager
-                         */
-                        name: string;
-                        /** @description Version of the model definition. */
-                        version: string;
-                        /**
-                         * @description Human-readable name for the model.
-                         * @example Cert Manager
-                         */
-                        displayName: string;
-                        /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
-                        model: {
-                            /** @description Version of the model as defined by the registrant. */
-                            version: string;
-                        };
-                        registrant: {
-                            /** @description Kind of the registrant. */
-                            kind: string;
-                        };
-                    };
-                    /** @description Patch configuration for the selector */
-                    patch?: {
-                        /**
-                         * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
-                         *
-                         *     add: Inserts a value into an array or adds a member to an object.
-                         *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
-                         *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
-                         *     remove: Removes a value.
-                         *     copy: Copies a value from one location to another.
-                         *     move: Moves a value from one location to another.
-                         *     test: Tests that a value at the target location is equal to a specified value.
-                         * @enum {string}
-                         */
-                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-                        /** @description JSON ref to value from where patch should be applied. */
-                        mutatorRef?: string[][];
-                        mutatedRef?: string[][];
-                    };
-                }[];
-                /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
-                to: {
-                    /**
-                     * Format: uuid
-                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                     */
-                    id?: string;
-                    /** @description Kind of the resource. */
-                    kind?: string;
-                    /** @description Match configuration for selector */
-                    match?: {
-                        /** @description The refs of the matchselector. */
-                        refs?: string[][];
-                        /** @description The from of the matchselector. */
-                        from?: {
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            id?: string;
-                            /** @description Kind of the resource. */
-                            kind: string;
-                            /** @description JSON ref to value from where patch should be applied. */
-                            mutatorRef?: string[][];
-                            mutatedRef?: string[][];
-                        }[];
-                        /** @description The to of the matchselector. */
-                        to?: {
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            id?: string;
-                            /** @description Kind of the resource. */
-                            kind: string;
-                            /** @description JSON ref to value from where patch should be applied. */
-                            mutatorRef?: string[][];
-                            mutatedRef?: string[][];
-                        }[];
-                    };
-                    /** @description Match strategy matrix for the selector */
-                    matchStrategyMatrix?: string[][];
-                    /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
-                    model?: {
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        id: string;
-                        /**
-                         * @description The unique name for the model within the scope of a registrant.
-                         * @example cert-manager
-                         */
-                        name: string;
-                        /** @description Version of the model definition. */
-                        version: string;
-                        /**
-                         * @description Human-readable name for the model.
-                         * @example Cert Manager
-                         */
-                        displayName: string;
-                        /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
-                        model: {
-                            /** @description Version of the model as defined by the registrant. */
-                            version: string;
-                        };
-                        registrant: {
-                            /** @description Kind of the registrant. */
-                            kind: string;
-                        };
-                    };
-                    /** @description Patch configuration for the selector */
-                    patch?: {
-                        /**
-                         * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
-                         *
-                         *     add: Inserts a value into an array or adds a member to an object.
-                         *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
-                         *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
-                         *     remove: Removes a value.
-                         *     copy: Copies a value from one location to another.
-                         *     move: Moves a value from one location to another.
-                         *     test: Tests that a value at the target location is equal to a specified value.
-                         * @enum {string}
-                         */
-                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-                        /** @description JSON ref to value from where patch should be applied. */
-                        mutatorRef?: string[][];
-                        mutatedRef?: string[][];
-                    };
-                }[];
+            registrant: {
+              /** @description Kind of the registrant. */
+              kind: string;
             };
-        };
-        /** @description Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved. */
-        SelectorSet: {
-            /** @description Selectors used to define relationships which are allowed. */
-            allow: {
-                /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
-                from: {
-                    /**
-                     * Format: uuid
-                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                     */
-                    id?: string;
-                    /** @description Kind of the resource. */
-                    kind?: string;
-                    /** @description Match configuration for selector */
-                    match?: {
-                        /** @description The refs of the matchselector. */
-                        refs?: string[][];
-                        /** @description The from of the matchselector. */
-                        from?: {
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            id?: string;
-                            /** @description Kind of the resource. */
-                            kind: string;
-                            /** @description JSON ref to value from where patch should be applied. */
-                            mutatorRef?: string[][];
-                            mutatedRef?: string[][];
-                        }[];
-                        /** @description The to of the matchselector. */
-                        to?: {
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            id?: string;
-                            /** @description Kind of the resource. */
-                            kind: string;
-                            /** @description JSON ref to value from where patch should be applied. */
-                            mutatorRef?: string[][];
-                            mutatedRef?: string[][];
-                        }[];
-                    };
-                    /** @description Match strategy matrix for the selector */
-                    matchStrategyMatrix?: string[][];
-                    /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
-                    model?: {
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        id: string;
-                        /**
-                         * @description The unique name for the model within the scope of a registrant.
-                         * @example cert-manager
-                         */
-                        name: string;
-                        /** @description Version of the model definition. */
-                        version: string;
-                        /**
-                         * @description Human-readable name for the model.
-                         * @example Cert Manager
-                         */
-                        displayName: string;
-                        /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
-                        model: {
-                            /** @description Version of the model as defined by the registrant. */
-                            version: string;
-                        };
-                        registrant: {
-                            /** @description Kind of the registrant. */
-                            kind: string;
-                        };
-                    };
-                    /** @description Patch configuration for the selector */
-                    patch?: {
-                        /**
-                         * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
-                         *
-                         *     add: Inserts a value into an array or adds a member to an object.
-                         *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
-                         *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
-                         *     remove: Removes a value.
-                         *     copy: Copies a value from one location to another.
-                         *     move: Moves a value from one location to another.
-                         *     test: Tests that a value at the target location is equal to a specified value.
-                         * @enum {string}
-                         */
-                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-                        /** @description JSON ref to value from where patch should be applied. */
-                        mutatorRef?: string[][];
-                        mutatedRef?: string[][];
-                    };
-                }[];
-                /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
-                to: {
-                    /**
-                     * Format: uuid
-                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                     */
-                    id?: string;
-                    /** @description Kind of the resource. */
-                    kind?: string;
-                    /** @description Match configuration for selector */
-                    match?: {
-                        /** @description The refs of the matchselector. */
-                        refs?: string[][];
-                        /** @description The from of the matchselector. */
-                        from?: {
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            id?: string;
-                            /** @description Kind of the resource. */
-                            kind: string;
-                            /** @description JSON ref to value from where patch should be applied. */
-                            mutatorRef?: string[][];
-                            mutatedRef?: string[][];
-                        }[];
-                        /** @description The to of the matchselector. */
-                        to?: {
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            id?: string;
-                            /** @description Kind of the resource. */
-                            kind: string;
-                            /** @description JSON ref to value from where patch should be applied. */
-                            mutatorRef?: string[][];
-                            mutatedRef?: string[][];
-                        }[];
-                    };
-                    /** @description Match strategy matrix for the selector */
-                    matchStrategyMatrix?: string[][];
-                    /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
-                    model?: {
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        id: string;
-                        /**
-                         * @description The unique name for the model within the scope of a registrant.
-                         * @example cert-manager
-                         */
-                        name: string;
-                        /** @description Version of the model definition. */
-                        version: string;
-                        /**
-                         * @description Human-readable name for the model.
-                         * @example Cert Manager
-                         */
-                        displayName: string;
-                        /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
-                        model: {
-                            /** @description Version of the model as defined by the registrant. */
-                            version: string;
-                        };
-                        registrant: {
-                            /** @description Kind of the registrant. */
-                            kind: string;
-                        };
-                    };
-                    /** @description Patch configuration for the selector */
-                    patch?: {
-                        /**
-                         * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
-                         *
-                         *     add: Inserts a value into an array or adds a member to an object.
-                         *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
-                         *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
-                         *     remove: Removes a value.
-                         *     copy: Copies a value from one location to another.
-                         *     move: Moves a value from one location to another.
-                         *     test: Tests that a value at the target location is equal to a specified value.
-                         * @enum {string}
-                         */
-                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-                        /** @description JSON ref to value from where patch should be applied. */
-                        mutatorRef?: string[][];
-                        mutatedRef?: string[][];
-                    };
-                }[];
-            };
-            /** @description Optional selectors used to define relationships which should not be created / is restricted. */
-            deny?: {
-                /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
-                from: {
-                    /**
-                     * Format: uuid
-                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                     */
-                    id?: string;
-                    /** @description Kind of the resource. */
-                    kind?: string;
-                    /** @description Match configuration for selector */
-                    match?: {
-                        /** @description The refs of the matchselector. */
-                        refs?: string[][];
-                        /** @description The from of the matchselector. */
-                        from?: {
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            id?: string;
-                            /** @description Kind of the resource. */
-                            kind: string;
-                            /** @description JSON ref to value from where patch should be applied. */
-                            mutatorRef?: string[][];
-                            mutatedRef?: string[][];
-                        }[];
-                        /** @description The to of the matchselector. */
-                        to?: {
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            id?: string;
-                            /** @description Kind of the resource. */
-                            kind: string;
-                            /** @description JSON ref to value from where patch should be applied. */
-                            mutatorRef?: string[][];
-                            mutatedRef?: string[][];
-                        }[];
-                    };
-                    /** @description Match strategy matrix for the selector */
-                    matchStrategyMatrix?: string[][];
-                    /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
-                    model?: {
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        id: string;
-                        /**
-                         * @description The unique name for the model within the scope of a registrant.
-                         * @example cert-manager
-                         */
-                        name: string;
-                        /** @description Version of the model definition. */
-                        version: string;
-                        /**
-                         * @description Human-readable name for the model.
-                         * @example Cert Manager
-                         */
-                        displayName: string;
-                        /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
-                        model: {
-                            /** @description Version of the model as defined by the registrant. */
-                            version: string;
-                        };
-                        registrant: {
-                            /** @description Kind of the registrant. */
-                            kind: string;
-                        };
-                    };
-                    /** @description Patch configuration for the selector */
-                    patch?: {
-                        /**
-                         * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
-                         *
-                         *     add: Inserts a value into an array or adds a member to an object.
-                         *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
-                         *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
-                         *     remove: Removes a value.
-                         *     copy: Copies a value from one location to another.
-                         *     move: Moves a value from one location to another.
-                         *     test: Tests that a value at the target location is equal to a specified value.
-                         * @enum {string}
-                         */
-                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-                        /** @description JSON ref to value from where patch should be applied. */
-                        mutatorRef?: string[][];
-                        mutatedRef?: string[][];
-                    };
-                }[];
-                /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
-                to: {
-                    /**
-                     * Format: uuid
-                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                     */
-                    id?: string;
-                    /** @description Kind of the resource. */
-                    kind?: string;
-                    /** @description Match configuration for selector */
-                    match?: {
-                        /** @description The refs of the matchselector. */
-                        refs?: string[][];
-                        /** @description The from of the matchselector. */
-                        from?: {
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            id?: string;
-                            /** @description Kind of the resource. */
-                            kind: string;
-                            /** @description JSON ref to value from where patch should be applied. */
-                            mutatorRef?: string[][];
-                            mutatedRef?: string[][];
-                        }[];
-                        /** @description The to of the matchselector. */
-                        to?: {
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            id?: string;
-                            /** @description Kind of the resource. */
-                            kind: string;
-                            /** @description JSON ref to value from where patch should be applied. */
-                            mutatorRef?: string[][];
-                            mutatedRef?: string[][];
-                        }[];
-                    };
-                    /** @description Match strategy matrix for the selector */
-                    matchStrategyMatrix?: string[][];
-                    /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
-                    model?: {
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        id: string;
-                        /**
-                         * @description The unique name for the model within the scope of a registrant.
-                         * @example cert-manager
-                         */
-                        name: string;
-                        /** @description Version of the model definition. */
-                        version: string;
-                        /**
-                         * @description Human-readable name for the model.
-                         * @example Cert Manager
-                         */
-                        displayName: string;
-                        /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
-                        model: {
-                            /** @description Version of the model as defined by the registrant. */
-                            version: string;
-                        };
-                        registrant: {
-                            /** @description Kind of the registrant. */
-                            kind: string;
-                        };
-                    };
-                    /** @description Patch configuration for the selector */
-                    patch?: {
-                        /**
-                         * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
-                         *
-                         *     add: Inserts a value into an array or adds a member to an object.
-                         *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
-                         *     strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
-                         *     remove: Removes a value.
-                         *     copy: Copies a value from one location to another.
-                         *     move: Moves a value from one location to another.
-                         *     test: Tests that a value at the target location is equal to a specified value.
-                         * @enum {string}
-                         */
-                        patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-                        /** @description JSON ref to value from where patch should be applied. */
-                        mutatorRef?: string[][];
-                        mutatedRef?: string[][];
-                    };
-                }[];
-            };
+          };
+          /** @description Patch configuration for the selector */
+          patch?: {
+            /**
+             * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
+             *
+             * add: Inserts a value into an array or adds a member to an object.
+             * merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
+             * strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
+             * remove: Removes a value.
+             * copy: Copies a value from one location to another.
+             * move: Moves a value from one location to another.
+             * test: Tests that a value at the target location is equal to a specified value.
+             *
+             * @enum {string}
+             */
+            patchStrategy?:
+              | "merge"
+              | "strategic"
+              | "add"
+              | "remove"
+              | "copy"
+              | "move"
+              | "test";
+            /** @description JSON ref to value from where patch should be applied. */
+            mutatorRef?: string[][];
+            mutatedRef?: string[][];
+          };
         }[];
+        /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
+        to: {
+          /**
+           * Format: uuid
+           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+           */
+          id?: string;
+          /** @description Kind of the resource. */
+          kind?: string;
+          /** @description Match configuration for selector */
+          match?: {
+            /** @description The refs of the matchselector. */
+            refs?: string[][];
+            /** @description The from of the matchselector. */
+            from?: {
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              id?: string;
+              /** @description Kind of the resource. */
+              kind: string;
+              /** @description JSON ref to value from where patch should be applied. */
+              mutatorRef?: string[][];
+              mutatedRef?: string[][];
+            }[];
+            /** @description The to of the matchselector. */
+            to?: {
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              id?: string;
+              /** @description Kind of the resource. */
+              kind: string;
+              /** @description JSON ref to value from where patch should be applied. */
+              mutatorRef?: string[][];
+              mutatedRef?: string[][];
+            }[];
+          };
+          /** @description Match strategy matrix for the selector */
+          matchStrategyMatrix?: string[][];
+          /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
+          model?: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            id: string;
+            /** @description The unique name for the model within the scope of a registrant. */
+            name: string;
+            /** @description Version of the model definition. */
+            version: string;
+            /** @description Human-readable name for the model. */
+            displayName: string;
+            /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+            model: {
+              /** @description Version of the model as defined by the registrant. */
+              version: string;
+            };
+            registrant: {
+              /** @description Kind of the registrant. */
+              kind: string;
+            };
+          };
+          /** @description Patch configuration for the selector */
+          patch?: {
+            /**
+             * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
+             *
+             * add: Inserts a value into an array or adds a member to an object.
+             * merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
+             * strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
+             * remove: Removes a value.
+             * copy: Copies a value from one location to another.
+             * move: Moves a value from one location to another.
+             * test: Tests that a value at the target location is equal to a specified value.
+             *
+             * @enum {string}
+             */
+            patchStrategy?:
+              | "merge"
+              | "strategic"
+              | "add"
+              | "remove"
+              | "copy"
+              | "move"
+              | "test";
+            /** @description JSON ref to value from where patch should be applied. */
+            mutatorRef?: string[][];
+            mutatedRef?: string[][];
+          };
+        }[];
+      };
+      /** @description Optional selectors used to define relationships which should not be created / is restricted. */
+      deny?: {
+        /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
+        from: {
+          /**
+           * Format: uuid
+           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+           */
+          id?: string;
+          /** @description Kind of the resource. */
+          kind?: string;
+          /** @description Match configuration for selector */
+          match?: {
+            /** @description The refs of the matchselector. */
+            refs?: string[][];
+            /** @description The from of the matchselector. */
+            from?: {
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              id?: string;
+              /** @description Kind of the resource. */
+              kind: string;
+              /** @description JSON ref to value from where patch should be applied. */
+              mutatorRef?: string[][];
+              mutatedRef?: string[][];
+            }[];
+            /** @description The to of the matchselector. */
+            to?: {
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              id?: string;
+              /** @description Kind of the resource. */
+              kind: string;
+              /** @description JSON ref to value from where patch should be applied. */
+              mutatorRef?: string[][];
+              mutatedRef?: string[][];
+            }[];
+          };
+          /** @description Match strategy matrix for the selector */
+          matchStrategyMatrix?: string[][];
+          /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
+          model?: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            id: string;
+            /** @description The unique name for the model within the scope of a registrant. */
+            name: string;
+            /** @description Version of the model definition. */
+            version: string;
+            /** @description Human-readable name for the model. */
+            displayName: string;
+            /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+            model: {
+              /** @description Version of the model as defined by the registrant. */
+              version: string;
+            };
+            registrant: {
+              /** @description Kind of the registrant. */
+              kind: string;
+            };
+          };
+          /** @description Patch configuration for the selector */
+          patch?: {
+            /**
+             * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
+             *
+             * add: Inserts a value into an array or adds a member to an object.
+             * merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
+             * strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
+             * remove: Removes a value.
+             * copy: Copies a value from one location to another.
+             * move: Moves a value from one location to another.
+             * test: Tests that a value at the target location is equal to a specified value.
+             *
+             * @enum {string}
+             */
+            patchStrategy?:
+              | "merge"
+              | "strategic"
+              | "add"
+              | "remove"
+              | "copy"
+              | "move"
+              | "test";
+            /** @description JSON ref to value from where patch should be applied. */
+            mutatorRef?: string[][];
+            mutatedRef?: string[][];
+          };
+        }[];
+        /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
+        to: {
+          /**
+           * Format: uuid
+           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+           */
+          id?: string;
+          /** @description Kind of the resource. */
+          kind?: string;
+          /** @description Match configuration for selector */
+          match?: {
+            /** @description The refs of the matchselector. */
+            refs?: string[][];
+            /** @description The from of the matchselector. */
+            from?: {
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              id?: string;
+              /** @description Kind of the resource. */
+              kind: string;
+              /** @description JSON ref to value from where patch should be applied. */
+              mutatorRef?: string[][];
+              mutatedRef?: string[][];
+            }[];
+            /** @description The to of the matchselector. */
+            to?: {
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              id?: string;
+              /** @description Kind of the resource. */
+              kind: string;
+              /** @description JSON ref to value from where patch should be applied. */
+              mutatorRef?: string[][];
+              mutatedRef?: string[][];
+            }[];
+          };
+          /** @description Match strategy matrix for the selector */
+          matchStrategyMatrix?: string[][];
+          /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
+          model?: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            id: string;
+            /** @description The unique name for the model within the scope of a registrant. */
+            name: string;
+            /** @description Version of the model definition. */
+            version: string;
+            /** @description Human-readable name for the model. */
+            displayName: string;
+            /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+            model: {
+              /** @description Version of the model as defined by the registrant. */
+              version: string;
+            };
+            registrant: {
+              /** @description Kind of the registrant. */
+              kind: string;
+            };
+          };
+          /** @description Patch configuration for the selector */
+          patch?: {
+            /**
+             * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
+             *
+             * add: Inserts a value into an array or adds a member to an object.
+             * merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
+             * strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
+             * remove: Removes a value.
+             * copy: Copies a value from one location to another.
+             * move: Moves a value from one location to another.
+             * test: Tests that a value at the target location is equal to a specified value.
+             *
+             * @enum {string}
+             */
+            patchStrategy?:
+              | "merge"
+              | "strategic"
+              | "add"
+              | "remove"
+              | "copy"
+              | "move"
+              | "test";
+            /** @description JSON ref to value from where patch should be applied. */
+            mutatorRef?: string[][];
+            mutatedRef?: string[][];
+          };
+        }[];
+      };
+    };
+    /** @description Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved. */
+    SelectorSet: {
+      /** @description Selectors used to define relationships which are allowed. */
+      allow: {
+        /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
+        from: {
+          /**
+           * Format: uuid
+           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+           */
+          id?: string;
+          /** @description Kind of the resource. */
+          kind?: string;
+          /** @description Match configuration for selector */
+          match?: {
+            /** @description The refs of the matchselector. */
+            refs?: string[][];
+            /** @description The from of the matchselector. */
+            from?: {
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              id?: string;
+              /** @description Kind of the resource. */
+              kind: string;
+              /** @description JSON ref to value from where patch should be applied. */
+              mutatorRef?: string[][];
+              mutatedRef?: string[][];
+            }[];
+            /** @description The to of the matchselector. */
+            to?: {
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              id?: string;
+              /** @description Kind of the resource. */
+              kind: string;
+              /** @description JSON ref to value from where patch should be applied. */
+              mutatorRef?: string[][];
+              mutatedRef?: string[][];
+            }[];
+          };
+          /** @description Match strategy matrix for the selector */
+          matchStrategyMatrix?: string[][];
+          /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
+          model?: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            id: string;
+            /** @description The unique name for the model within the scope of a registrant. */
+            name: string;
+            /** @description Version of the model definition. */
+            version: string;
+            /** @description Human-readable name for the model. */
+            displayName: string;
+            /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+            model: {
+              /** @description Version of the model as defined by the registrant. */
+              version: string;
+            };
+            registrant: {
+              /** @description Kind of the registrant. */
+              kind: string;
+            };
+          };
+          /** @description Patch configuration for the selector */
+          patch?: {
+            /**
+             * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
+             *
+             * add: Inserts a value into an array or adds a member to an object.
+             * merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
+             * strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
+             * remove: Removes a value.
+             * copy: Copies a value from one location to another.
+             * move: Moves a value from one location to another.
+             * test: Tests that a value at the target location is equal to a specified value.
+             *
+             * @enum {string}
+             */
+            patchStrategy?:
+              | "merge"
+              | "strategic"
+              | "add"
+              | "remove"
+              | "copy"
+              | "move"
+              | "test";
+            /** @description JSON ref to value from where patch should be applied. */
+            mutatorRef?: string[][];
+            mutatedRef?: string[][];
+          };
+        }[];
+        /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
+        to: {
+          /**
+           * Format: uuid
+           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+           */
+          id?: string;
+          /** @description Kind of the resource. */
+          kind?: string;
+          /** @description Match configuration for selector */
+          match?: {
+            /** @description The refs of the matchselector. */
+            refs?: string[][];
+            /** @description The from of the matchselector. */
+            from?: {
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              id?: string;
+              /** @description Kind of the resource. */
+              kind: string;
+              /** @description JSON ref to value from where patch should be applied. */
+              mutatorRef?: string[][];
+              mutatedRef?: string[][];
+            }[];
+            /** @description The to of the matchselector. */
+            to?: {
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              id?: string;
+              /** @description Kind of the resource. */
+              kind: string;
+              /** @description JSON ref to value from where patch should be applied. */
+              mutatorRef?: string[][];
+              mutatedRef?: string[][];
+            }[];
+          };
+          /** @description Match strategy matrix for the selector */
+          matchStrategyMatrix?: string[][];
+          /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
+          model?: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            id: string;
+            /** @description The unique name for the model within the scope of a registrant. */
+            name: string;
+            /** @description Version of the model definition. */
+            version: string;
+            /** @description Human-readable name for the model. */
+            displayName: string;
+            /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+            model: {
+              /** @description Version of the model as defined by the registrant. */
+              version: string;
+            };
+            registrant: {
+              /** @description Kind of the registrant. */
+              kind: string;
+            };
+          };
+          /** @description Patch configuration for the selector */
+          patch?: {
+            /**
+             * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
+             *
+             * add: Inserts a value into an array or adds a member to an object.
+             * merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
+             * strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
+             * remove: Removes a value.
+             * copy: Copies a value from one location to another.
+             * move: Moves a value from one location to another.
+             * test: Tests that a value at the target location is equal to a specified value.
+             *
+             * @enum {string}
+             */
+            patchStrategy?:
+              | "merge"
+              | "strategic"
+              | "add"
+              | "remove"
+              | "copy"
+              | "move"
+              | "test";
+            /** @description JSON ref to value from where patch should be applied. */
+            mutatorRef?: string[][];
+            mutatedRef?: string[][];
+          };
+        }[];
+      };
+      /** @description Optional selectors used to define relationships which should not be created / is restricted. */
+      deny?: {
+        /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
+        from: {
+          /**
+           * Format: uuid
+           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+           */
+          id?: string;
+          /** @description Kind of the resource. */
+          kind?: string;
+          /** @description Match configuration for selector */
+          match?: {
+            /** @description The refs of the matchselector. */
+            refs?: string[][];
+            /** @description The from of the matchselector. */
+            from?: {
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              id?: string;
+              /** @description Kind of the resource. */
+              kind: string;
+              /** @description JSON ref to value from where patch should be applied. */
+              mutatorRef?: string[][];
+              mutatedRef?: string[][];
+            }[];
+            /** @description The to of the matchselector. */
+            to?: {
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              id?: string;
+              /** @description Kind of the resource. */
+              kind: string;
+              /** @description JSON ref to value from where patch should be applied. */
+              mutatorRef?: string[][];
+              mutatedRef?: string[][];
+            }[];
+          };
+          /** @description Match strategy matrix for the selector */
+          matchStrategyMatrix?: string[][];
+          /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
+          model?: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            id: string;
+            /** @description The unique name for the model within the scope of a registrant. */
+            name: string;
+            /** @description Version of the model definition. */
+            version: string;
+            /** @description Human-readable name for the model. */
+            displayName: string;
+            /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+            model: {
+              /** @description Version of the model as defined by the registrant. */
+              version: string;
+            };
+            registrant: {
+              /** @description Kind of the registrant. */
+              kind: string;
+            };
+          };
+          /** @description Patch configuration for the selector */
+          patch?: {
+            /**
+             * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
+             *
+             * add: Inserts a value into an array or adds a member to an object.
+             * merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
+             * strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
+             * remove: Removes a value.
+             * copy: Copies a value from one location to another.
+             * move: Moves a value from one location to another.
+             * test: Tests that a value at the target location is equal to a specified value.
+             *
+             * @enum {string}
+             */
+            patchStrategy?:
+              | "merge"
+              | "strategic"
+              | "add"
+              | "remove"
+              | "copy"
+              | "move"
+              | "test";
+            /** @description JSON ref to value from where patch should be applied. */
+            mutatorRef?: string[][];
+            mutatedRef?: string[][];
+          };
+        }[];
+        /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
+        to: {
+          /**
+           * Format: uuid
+           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+           */
+          id?: string;
+          /** @description Kind of the resource. */
+          kind?: string;
+          /** @description Match configuration for selector */
+          match?: {
+            /** @description The refs of the matchselector. */
+            refs?: string[][];
+            /** @description The from of the matchselector. */
+            from?: {
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              id?: string;
+              /** @description Kind of the resource. */
+              kind: string;
+              /** @description JSON ref to value from where patch should be applied. */
+              mutatorRef?: string[][];
+              mutatedRef?: string[][];
+            }[];
+            /** @description The to of the matchselector. */
+            to?: {
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              id?: string;
+              /** @description Kind of the resource. */
+              kind: string;
+              /** @description JSON ref to value from where patch should be applied. */
+              mutatorRef?: string[][];
+              mutatedRef?: string[][];
+            }[];
+          };
+          /** @description Match strategy matrix for the selector */
+          matchStrategyMatrix?: string[][];
+          /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
+          model?: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            id: string;
+            /** @description The unique name for the model within the scope of a registrant. */
+            name: string;
+            /** @description Version of the model definition. */
+            version: string;
+            /** @description Human-readable name for the model. */
+            displayName: string;
+            /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+            model: {
+              /** @description Version of the model as defined by the registrant. */
+              version: string;
+            };
+            registrant: {
+              /** @description Kind of the registrant. */
+              kind: string;
+            };
+          };
+          /** @description Patch configuration for the selector */
+          patch?: {
+            /**
+             * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
+             *
+             * add: Inserts a value into an array or adds a member to an object.
+             * merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
+             * strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
+             * remove: Removes a value.
+             * copy: Copies a value from one location to another.
+             * move: Moves a value from one location to another.
+             * test: Tests that a value at the target location is equal to a specified value.
+             *
+             * @enum {string}
+             */
+            patchStrategy?:
+              | "merge"
+              | "strategic"
+              | "add"
+              | "remove"
+              | "copy"
+              | "move"
+              | "test";
+            /** @description JSON ref to value from where patch should be applied. */
+            mutatorRef?: string[][];
+            mutatedRef?: string[][];
+          };
+        }[];
+      };
+    }[];
+    /**
+     * @description A transformation to apply to the label text
+     * @enum {string}
+     */
+    RelationshipDefinitionMetadataStylesTextTransform:
+      | "none"
+      | "uppercase"
+      | "lowercase";
+    /**
+     * @description The style of the edge's line.
+     * @enum {string}
+     */
+    RelationshipDefinitionMetadataStylesLineStyle:
+      | "solid"
+      | "dotted"
+      | "dashed";
+    /**
+     * @description The curving method used to separate two or more edges between two nodes; may be haystack (very fast, bundled straight edges for which loops and compounds are unsupported), straight (straight edges with all arrows supported), bezier (bundled curved edges), unbundled-bezier (curved edges for use with manual control points), segments (a series of straight lines), taxi (right-angled lines, hierarchically bundled). Note that haystack edges work best with ellipse, rectangle, or similar nodes. Smaller node shapes, like triangle, will not be as aesthetically pleasing. Also note that edge endpoint arrows are unsupported for haystack edges.
+     * @enum {string}
+     */
+    RelationshipDefinitionMetadataStylesCurveStyle:
+      | "haystack"
+      | "straight"
+      | "bezier"
+      | "unbundled-bezier"
+      | "segments"
+      | "taxi";
+    /**
+     * @description The cap style of the edge's line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.
+     * @enum {string}
+     */
+    RelationshipDefinitionMetadataStylesLineCap: "butt" | "round" | "square";
+    /**
+     * @description The shape of the edge's arrow
+     * @enum {string}
+     */
+    RelationshipDefinitionMetadataStylesArrowShape:
+      | "triangle"
+      | "triangle-tee"
+      | "circle-triangle"
+      | "triangle-cross"
+      | "triangle-backcurve"
+      | "vee"
+      | "tee"
+      | "square"
+      | "circle"
+      | "diamond"
+      | "chevron"
+      | "none";
+    /**
+     * @description The shape of the edge's source arrow
+     * @enum {string}
+     */
+    RelationshipDefinitionMetadataStylesMidTargetArrowShape:
+      | "triangle"
+      | "triangle-tee"
+      | "circle-triangle"
+      | "triangle-cross"
+      | "triangle-backcurve"
+      | "vee"
+      | "tee"
+      | "square"
+      | "circle"
+      | "diamond"
+      | "chevron"
+      | "none";
+    /**
+     * @description The fill state of the edge's source arrow
+     * @enum {string}
+     */
+    RelationshipDefinitionMetadataStylesMidTargetArrowFill: "filled" | "hollow";
+    /**
+     * @description The shape of the edge's source arrow
+     * @enum {string}
+     */
+    RelationshipDefinitionMetadataStylesTargetArrowShape:
+      | "triangle"
+      | "triangle-tee"
+      | "circle-triangle"
+      | "triangle-cross"
+      | "triangle-backcurve"
+      | "vee"
+      | "tee"
+      | "square"
+      | "circle"
+      | "diamond"
+      | "chevron"
+      | "none";
+    /**
+     * @description The fill state of the edge's source arrow
+     * @enum {string}
+     */
+    RelationshipDefinitionMetadataStylesTargetArrowFill: "filled" | "hollow";
+    /** @description Visualization styles for a relationship */
+    RelationshipDefinitionMetadataStyles: {
+      /** @description Primary color of the component used for UI representation. */
+      primaryColor: string;
+      /** @description Secondary color of the entity used for UI representation. */
+      secondaryColor?: string;
+      /** @description White SVG of the entity used for UI representation on dark background. */
+      svgWhite: string;
+      /** @description Colored SVG of the entity used for UI representation on light background. */
+      svgColor: string;
+      /** @description Complete SVG of the entity used for UI representation, often inclusive of background. */
+      svgComplete?: string;
+      /** @description The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+      color?: string;
+      /**
+       * Format: float
+       * @description The opacity of the label text, including its outline.
+       */
+      textOpacity?: number;
+      /** @description A comma-separated list of font names to use on the label text. */
+      fontFamily?: string;
+      /** @description The size of the label text. */
+      fontSize?: string;
+      /** @description A CSS font style to be applied to the label text. */
+      fontStyle?: string;
+      /** @description A CSS font weight to be applied to the label text. */
+      fontWeight?: string;
+      /**
+       * @description A transformation to apply to the label text
+       * @enum {string}
+       */
+      textTransform?: "none" | "uppercase" | "lowercase";
+      /**
+       * Format: float
+       * @description The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.See https://js.cytoscape.org/#style/visibility
+       */
+      opacity?: number;
+      /** @description An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+      zIndex?: number;
+      /** @description The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+      label?: string;
+      /** @description The animation to use for the edge. Can be like 'marching-ants' , 'blink' , 'moving-gradient',etc . */
+      edgeAnimation?: string;
+      /**
+       * @description The curving method used to separate two or more edges between two nodes; may be haystack (very fast, bundled straight edges for which loops and compounds are unsupported), straight (straight edges with all arrows supported), bezier (bundled curved edges), unbundled-bezier (curved edges for use with manual control points), segments (a series of straight lines), taxi (right-angled lines, hierarchically bundled). Note that haystack edges work best with ellipse, rectangle, or similar nodes. Smaller node shapes, like triangle, will not be as aesthetically pleasing. Also note that edge endpoint arrows are unsupported for haystack edges.
+       * @enum {string}
+       */
+      curveStyle?:
+        | "haystack"
+        | "straight"
+        | "bezier"
+        | "unbundled-bezier"
+        | "segments"
+        | "taxi";
+      /** @description The colour of the edge's line. Colours may be specified by name (e.g. red), hex (e.g. */
+      lineColor?: string;
+      /**
+       * @description The style of the edge's line.
+       * @enum {string}
+       */
+      lineStyle?: "solid" | "dotted" | "dashed";
+      /**
+       * @description The cap style of the edge's line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.
+       * @enum {string}
+       */
+      lineCap?: "butt" | "round" | "square";
+      /**
+       * Format: float
+       * @description The opacity of the edge's line and arrow. Useful if you wish to have a separate opacity for the edge label versus the edge line. Note that the opacity value of the edge element affects the effective opacity of its line and label subcomponents.
+       */
+      lineOpacity?: number;
+      /** @description The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g. */
+      targetArrowColor?: string;
+      /**
+       * @description The shape of the edge's source arrow
+       * @enum {string}
+       */
+      targetArrowShape?:
+        | "triangle"
+        | "triangle-tee"
+        | "circle-triangle"
+        | "triangle-cross"
+        | "triangle-backcurve"
+        | "vee"
+        | "tee"
+        | "square"
+        | "circle"
+        | "diamond"
+        | "chevron"
+        | "none";
+      /**
+       * @description The fill state of the edge's source arrow
+       * @enum {string}
+       */
+      targetArrowFill?: "filled" | "hollow";
+      /** @description The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g. */
+      midTargetArrowColor?: string;
+      /**
+       * @description The shape of the edge's source arrow
+       * @enum {string}
+       */
+      midTargetArrowShape?:
+        | "triangle"
+        | "triangle-tee"
+        | "circle-triangle"
+        | "triangle-cross"
+        | "triangle-backcurve"
+        | "vee"
+        | "tee"
+        | "square"
+        | "circle"
+        | "diamond"
+        | "chevron"
+        | "none";
+      /**
+       * @description The fill state of the edge's source arrow
+       * @enum {string}
+       */
+      midTargetArrowFill?: "filled" | "hollow";
+      /**
+       * Format: float
+       * @description Scaling for the arrow size.
+       */
+      arrowScale?: number;
+      /** @description The text to display for an edge's source label. Can give a path, e.g. data(id) will label with the elements id */
+      sourceLabel?: string;
+      /** @description The text to display for an edge's target label. Can give a path, e.g. data(id) will label with the elements id */
+      targetLabel?: string;
+    };
+    /** @description Metadata contains additional information associated with the Relationship. */
+    RelationshipMetadata: {
+      /** @description Characterization of the meaning of the relationship and its relevance to both Meshery and entities under management. */
+      description?: string;
+      /** @description Visualization styles for a relationship */
+      styles?: {
+        /** @description Primary color of the component used for UI representation. */
+        primaryColor: string;
+        /** @description Secondary color of the entity used for UI representation. */
+        secondaryColor?: string;
+        /** @description White SVG of the entity used for UI representation on dark background. */
+        svgWhite: string;
+        /** @description Colored SVG of the entity used for UI representation on light background. */
+        svgColor: string;
+        /** @description Complete SVG of the entity used for UI representation, often inclusive of background. */
+        svgComplete?: string;
+        /** @description The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+        color?: string;
+        /**
+         * Format: float
+         * @description The opacity of the label text, including its outline.
+         */
+        textOpacity?: number;
+        /** @description A comma-separated list of font names to use on the label text. */
+        fontFamily?: string;
+        /** @description The size of the label text. */
+        fontSize?: string;
+        /** @description A CSS font style to be applied to the label text. */
+        fontStyle?: string;
+        /** @description A CSS font weight to be applied to the label text. */
+        fontWeight?: string;
         /**
          * @description A transformation to apply to the label text
          * @enum {string}
          */
-        RelationshipDefinitionMetadataStylesTextTransform: "none" | "uppercase" | "lowercase";
+        textTransform?: "none" | "uppercase" | "lowercase";
         /**
-         * @description The style of the edge's line.
-         * @enum {string}
+         * Format: float
+         * @description The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.See https://js.cytoscape.org/#style/visibility
          */
-        RelationshipDefinitionMetadataStylesLineStyle: "solid" | "dotted" | "dashed";
+        opacity?: number;
+        /** @description An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+        zIndex?: number;
+        /** @description The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+        label?: string;
+        /** @description The animation to use for the edge. Can be like 'marching-ants' , 'blink' , 'moving-gradient',etc . */
+        edgeAnimation?: string;
         /**
          * @description The curving method used to separate two or more edges between two nodes; may be haystack (very fast, bundled straight edges for which loops and compounds are unsupported), straight (straight edges with all arrows supported), bezier (bundled curved edges), unbundled-bezier (curved edges for use with manual control points), segments (a series of straight lines), taxi (right-angled lines, hierarchically bundled). Note that haystack edges work best with ellipse, rectangle, or similar nodes. Smaller node shapes, like triangle, will not be as aesthetically pleasing. Also note that edge endpoint arrows are unsupported for haystack edges.
          * @enum {string}
          */
-        RelationshipDefinitionMetadataStylesCurveStyle: "haystack" | "straight" | "bezier" | "unbundled-bezier" | "segments" | "taxi";
+        curveStyle?:
+          | "haystack"
+          | "straight"
+          | "bezier"
+          | "unbundled-bezier"
+          | "segments"
+          | "taxi";
+        /** @description The colour of the edge's line. Colours may be specified by name (e.g. red), hex (e.g. */
+        lineColor?: string;
+        /**
+         * @description The style of the edge's line.
+         * @enum {string}
+         */
+        lineStyle?: "solid" | "dotted" | "dashed";
         /**
          * @description The cap style of the edge's line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.
          * @enum {string}
          */
-        RelationshipDefinitionMetadataStylesLineCap: "butt" | "round" | "square";
+        lineCap?: "butt" | "round" | "square";
         /**
-         * @description The shape of the edge's arrow
-         * @enum {string}
+         * Format: float
+         * @description The opacity of the edge's line and arrow. Useful if you wish to have a separate opacity for the edge label versus the edge line. Note that the opacity value of the edge element affects the effective opacity of its line and label subcomponents.
          */
-        RelationshipDefinitionMetadataStylesArrowShape: "triangle" | "triangle-tee" | "circle-triangle" | "triangle-cross" | "triangle-backcurve" | "vee" | "tee" | "square" | "circle" | "diamond" | "chevron" | "none";
-        /**
-         * @description The shape of the edge's source arrow
-         * @enum {string}
-         */
-        RelationshipDefinitionMetadataStylesMidTargetArrowShape: "triangle" | "triangle-tee" | "circle-triangle" | "triangle-cross" | "triangle-backcurve" | "vee" | "tee" | "square" | "circle" | "diamond" | "chevron" | "none";
-        /**
-         * @description The fill state of the edge's source arrow
-         * @enum {string}
-         */
-        RelationshipDefinitionMetadataStylesMidTargetArrowFill: "filled" | "hollow";
+        lineOpacity?: number;
+        /** @description The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g. */
+        targetArrowColor?: string;
         /**
          * @description The shape of the edge's source arrow
          * @enum {string}
          */
-        RelationshipDefinitionMetadataStylesTargetArrowShape: "triangle" | "triangle-tee" | "circle-triangle" | "triangle-cross" | "triangle-backcurve" | "vee" | "tee" | "square" | "circle" | "diamond" | "chevron" | "none";
+        targetArrowShape?:
+          | "triangle"
+          | "triangle-tee"
+          | "circle-triangle"
+          | "triangle-cross"
+          | "triangle-backcurve"
+          | "vee"
+          | "tee"
+          | "square"
+          | "circle"
+          | "diamond"
+          | "chevron"
+          | "none";
         /**
          * @description The fill state of the edge's source arrow
          * @enum {string}
          */
-        RelationshipDefinitionMetadataStylesTargetArrowFill: "filled" | "hollow";
-        /** @description Visualization styles for a relationship */
-        RelationshipDefinitionMetadataStyles: {
-            /** @description Primary color of the component used for UI representation. */
-            primaryColor: string;
-            /** @description Secondary color of the entity used for UI representation. */
-            secondaryColor?: string;
-            /** @description White SVG of the entity used for UI representation on dark background. */
-            svgWhite: string;
-            /** @description Colored SVG of the entity used for UI representation on light background. */
-            svgColor: string;
-            /** @description Complete SVG of the entity used for UI representation, often inclusive of background. */
-            svgComplete?: string;
-            /** @description The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
-            color?: string;
-            /**
-             * Format: float
-             * @description The opacity of the label text, including its outline.
-             */
-            textOpacity?: number;
-            /** @description A comma-separated list of font names to use on the label text. */
-            fontFamily?: string;
-            /** @description The size of the label text. */
-            fontSize?: string;
-            /** @description A CSS font style to be applied to the label text. */
-            fontStyle?: string;
-            /** @description A CSS font weight to be applied to the label text. */
-            fontWeight?: string;
-            /**
-             * @description A transformation to apply to the label text
-             * @enum {string}
-             */
-            textTransform?: "none" | "uppercase" | "lowercase";
-            /**
-             * Format: float
-             * @description The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.See https://js.cytoscape.org/#style/visibility
-             */
-            opacity?: number;
-            /** @description An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
-            zIndex?: number;
-            /** @description The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
-            label?: string;
-            /** @description The animation to use for the edge. Can be like 'marching-ants' , 'blink' , 'moving-gradient',etc . */
-            edgeAnimation?: string;
-            /**
-             * @description The curving method used to separate two or more edges between two nodes; may be haystack (very fast, bundled straight edges for which loops and compounds are unsupported), straight (straight edges with all arrows supported), bezier (bundled curved edges), unbundled-bezier (curved edges for use with manual control points), segments (a series of straight lines), taxi (right-angled lines, hierarchically bundled). Note that haystack edges work best with ellipse, rectangle, or similar nodes. Smaller node shapes, like triangle, will not be as aesthetically pleasing. Also note that edge endpoint arrows are unsupported for haystack edges.
-             * @enum {string}
-             */
-            curveStyle?: "haystack" | "straight" | "bezier" | "unbundled-bezier" | "segments" | "taxi";
-            /** @description The colour of the edge's line. Colours may be specified by name (e.g. red), hex (e.g. */
-            lineColor?: string;
-            /**
-             * @description The style of the edge's line.
-             * @enum {string}
-             */
-            lineStyle?: "solid" | "dotted" | "dashed";
-            /**
-             * @description The cap style of the edge's line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.
-             * @enum {string}
-             */
-            lineCap?: "butt" | "round" | "square";
-            /**
-             * Format: float
-             * @description The opacity of the edge's line and arrow. Useful if you wish to have a separate opacity for the edge label versus the edge line. Note that the opacity value of the edge element affects the effective opacity of its line and label subcomponents.
-             */
-            lineOpacity?: number;
-            /** @description The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g. */
-            targetArrowColor?: string;
-            /**
-             * @description The shape of the edge's source arrow
-             * @enum {string}
-             */
-            targetArrowShape?: "triangle" | "triangle-tee" | "circle-triangle" | "triangle-cross" | "triangle-backcurve" | "vee" | "tee" | "square" | "circle" | "diamond" | "chevron" | "none";
-            /**
-             * @description The fill state of the edge's source arrow
-             * @enum {string}
-             */
-            targetArrowFill?: "filled" | "hollow";
-            /** @description The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g. */
-            midTargetArrowColor?: string;
-            /**
-             * @description The shape of the edge's source arrow
-             * @enum {string}
-             */
-            midTargetArrowShape?: "triangle" | "triangle-tee" | "circle-triangle" | "triangle-cross" | "triangle-backcurve" | "vee" | "tee" | "square" | "circle" | "diamond" | "chevron" | "none";
-            /**
-             * @description The fill state of the edge's source arrow
-             * @enum {string}
-             */
-            midTargetArrowFill?: "filled" | "hollow";
-            /**
-             * Format: float
-             * @description Scaling for the arrow size.
-             */
-            arrowScale?: number;
-            /** @description The text to display for an edge's source label. Can give a path, e.g. data(id) will label with the elements id */
-            sourceLabel?: string;
-            /** @description The text to display for an edge's target label. Can give a path, e.g. data(id) will label with the elements id */
-            targetLabel?: string;
-        };
-        /** @description Metadata contains additional information associated with the Relationship. */
-        RelationshipMetadata: {
-            /** @description Characterization of the meaning of the relationship and its relevance to both Meshery and entities under management. */
-            description?: string;
-            /** @description Visualization styles for a relationship */
-            styles?: {
-                /** @description Primary color of the component used for UI representation. */
-                primaryColor: string;
-                /** @description Secondary color of the entity used for UI representation. */
-                secondaryColor?: string;
-                /** @description White SVG of the entity used for UI representation on dark background. */
-                svgWhite: string;
-                /** @description Colored SVG of the entity used for UI representation on light background. */
-                svgColor: string;
-                /** @description Complete SVG of the entity used for UI representation, often inclusive of background. */
-                svgComplete?: string;
-                /** @description The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
-                color?: string;
-                /**
-                 * Format: float
-                 * @description The opacity of the label text, including its outline.
-                 */
-                textOpacity?: number;
-                /** @description A comma-separated list of font names to use on the label text. */
-                fontFamily?: string;
-                /** @description The size of the label text. */
-                fontSize?: string;
-                /** @description A CSS font style to be applied to the label text. */
-                fontStyle?: string;
-                /** @description A CSS font weight to be applied to the label text. */
-                fontWeight?: string;
-                /**
-                 * @description A transformation to apply to the label text
-                 * @enum {string}
-                 */
-                textTransform?: "none" | "uppercase" | "lowercase";
-                /**
-                 * Format: float
-                 * @description The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.See https://js.cytoscape.org/#style/visibility
-                 */
-                opacity?: number;
-                /** @description An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
-                zIndex?: number;
-                /** @description The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
-                label?: string;
-                /** @description The animation to use for the edge. Can be like 'marching-ants' , 'blink' , 'moving-gradient',etc . */
-                edgeAnimation?: string;
-                /**
-                 * @description The curving method used to separate two or more edges between two nodes; may be haystack (very fast, bundled straight edges for which loops and compounds are unsupported), straight (straight edges with all arrows supported), bezier (bundled curved edges), unbundled-bezier (curved edges for use with manual control points), segments (a series of straight lines), taxi (right-angled lines, hierarchically bundled). Note that haystack edges work best with ellipse, rectangle, or similar nodes. Smaller node shapes, like triangle, will not be as aesthetically pleasing. Also note that edge endpoint arrows are unsupported for haystack edges.
-                 * @enum {string}
-                 */
-                curveStyle?: "haystack" | "straight" | "bezier" | "unbundled-bezier" | "segments" | "taxi";
-                /** @description The colour of the edge's line. Colours may be specified by name (e.g. red), hex (e.g. */
-                lineColor?: string;
-                /**
-                 * @description The style of the edge's line.
-                 * @enum {string}
-                 */
-                lineStyle?: "solid" | "dotted" | "dashed";
-                /**
-                 * @description The cap style of the edge's line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.
-                 * @enum {string}
-                 */
-                lineCap?: "butt" | "round" | "square";
-                /**
-                 * Format: float
-                 * @description The opacity of the edge's line and arrow. Useful if you wish to have a separate opacity for the edge label versus the edge line. Note that the opacity value of the edge element affects the effective opacity of its line and label subcomponents.
-                 */
-                lineOpacity?: number;
-                /** @description The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g. */
-                targetArrowColor?: string;
-                /**
-                 * @description The shape of the edge's source arrow
-                 * @enum {string}
-                 */
-                targetArrowShape?: "triangle" | "triangle-tee" | "circle-triangle" | "triangle-cross" | "triangle-backcurve" | "vee" | "tee" | "square" | "circle" | "diamond" | "chevron" | "none";
-                /**
-                 * @description The fill state of the edge's source arrow
-                 * @enum {string}
-                 */
-                targetArrowFill?: "filled" | "hollow";
-                /** @description The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g. */
-                midTargetArrowColor?: string;
-                /**
-                 * @description The shape of the edge's source arrow
-                 * @enum {string}
-                 */
-                midTargetArrowShape?: "triangle" | "triangle-tee" | "circle-triangle" | "triangle-cross" | "triangle-backcurve" | "vee" | "tee" | "square" | "circle" | "diamond" | "chevron" | "none";
-                /**
-                 * @description The fill state of the edge's source arrow
-                 * @enum {string}
-                 */
-                midTargetArrowFill?: "filled" | "hollow";
-                /**
-                 * Format: float
-                 * @description Scaling for the arrow size.
-                 */
-                arrowScale?: number;
-                /** @description The text to display for an edge's source label. Can give a path, e.g. data(id) will label with the elements id */
-                sourceLabel?: string;
-                /** @description The text to display for an edge's target label. Can give a path, e.g. data(id) will label with the elements id */
-                targetLabel?: string;
-            };
-            /** @description Indicates whether the relationship should be treated as a logical representation only */
-            isAnnotation?: boolean;
-        } & {
-            [key: string]: unknown;
-        };
-    };
-    responses: never;
-    parameters: never;
-    requestBodies: never;
-    headers: never;
-    pathItems: never;
+        targetArrowFill?: "filled" | "hollow";
+        /** @description The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g. */
+        midTargetArrowColor?: string;
+        /**
+         * @description The shape of the edge's source arrow
+         * @enum {string}
+         */
+        midTargetArrowShape?:
+          | "triangle"
+          | "triangle-tee"
+          | "circle-triangle"
+          | "triangle-cross"
+          | "triangle-backcurve"
+          | "vee"
+          | "tee"
+          | "square"
+          | "circle"
+          | "diamond"
+          | "chevron"
+          | "none";
+        /**
+         * @description The fill state of the edge's source arrow
+         * @enum {string}
+         */
+        midTargetArrowFill?: "filled" | "hollow";
+        /**
+         * Format: float
+         * @description Scaling for the arrow size.
+         */
+        arrowScale?: number;
+        /** @description The text to display for an edge's source label. Can give a path, e.g. data(id) will label with the elements id */
+        sourceLabel?: string;
+        /** @description The text to display for an edge's target label. Can give a path, e.g. data(id) will label with the elements id */
+        targetLabel?: string;
+      };
+      /** @description Indicates whether the relationship should be treated as a logical representation only */
+      isAnnotation?: boolean;
+    } & { [key: string]: unknown };
+  };
 }
-export type $defs = Record<string, never>;
-export type operations = Record<string, never>;
+
+export interface operations {}
+
+export interface external {}

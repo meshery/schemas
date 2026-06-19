@@ -1101,7 +1101,7 @@ const injectedRtkApi = api
             order: queryArg?.order,
             orgId: queryArg?.orgId,
             visibility: queryArg?.visibility,
-            userId: queryArg?.userId,
+            owner: queryArg?.owner,
           },
         }),
         providesTags: ["Filter_filters"],
@@ -1381,7 +1381,7 @@ const injectedRtkApi = api
         query: (queryArg) => ({
           url: `/api/identity/tokens/infinite`,
           params: {
-            userId: queryArg?.userId,
+            owner: queryArg?.owner,
             provider: queryArg?.provider,
           },
         }),
@@ -10146,7 +10146,7 @@ export type CreateEventApiResponse = unknown;
 export type CreateEventApiArg = {
   body: {
     /** UUID of the user associated with the event. */
-    userId?: string;
+    owner?: string;
     /** The category of the event. */
     category?: string;
     /** The action of the event. */
@@ -10402,7 +10402,7 @@ export type GetFiltersApiArg = {
   /** UUID of the owning user. Pass when fetching public/published
     filters for a specific user (public-profile lookups).
      */
-  userId?: string;
+  owner?: string;
 };
 export type UpsertFilterApiResponse = /** status 200 Filter saved */ {
   /** Server-generated filter ID. */
@@ -10867,7 +10867,7 @@ export type UpdateInvitationApiArg = {
     /** Existing invitation ID for updates; omit on create. */
     id?: string;
     /** ID of the user who created the invitation. */
-    ownerId?: string;
+    owner?: string;
     /** Indicates whether the invitation is a default invitation (open invite). */
     isDefault?: boolean;
     /** Name of the invitation. */
@@ -10969,7 +10969,7 @@ export type CreateInvitationApiArg = {
     /** Existing invitation ID for updates; omit on create. */
     id?: string;
     /** ID of the user who created the invitation. */
-    ownerId?: string;
+    owner?: string;
     /** Indicates whether the invitation is a default invitation (open invite). */
     isDefault?: boolean;
     /** Name of the invitation. */
@@ -11195,7 +11195,7 @@ export type UpsertPerformanceProfileApiArg = {
     /** Human-readable name of the performance profile. */
     name: string;
     /** Owner user ID. When omitted, the server infers it from the authenticated user. */
-    userId?: string;
+    owner?: string;
     /** Optional schedule ID associating the profile with a recurring run. */
     schedule?: string | null;
     /** Load generators (e.g. fortio, wrk2, nighthawk) to drive the profile's load test. */
@@ -11322,7 +11322,7 @@ export type UpdatePerformanceProfileApiArg = {
     /** Human-readable name of the performance profile. */
     name: string;
     /** Owner user ID. When omitted, the server infers it from the authenticated user. */
-    userId?: string;
+    owner?: string;
     /** Optional schedule ID associating the profile with a recurring run. */
     schedule?: string | null;
     /** Load generators (e.g. fortio, wrk2, nighthawk) to drive the profile's load test. */
@@ -11390,7 +11390,7 @@ export type GetPerformanceProfileResultsApiResponse = /** status 200 Performance
     /** Time when the load test started. */
     testStartTime?: string;
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    userId?: string;
+    owner?: string;
     /** Timestamp when the performance result was created. */
     createdAt?: string;
     /** Timestamp when the performance result was last updated. */
@@ -11435,7 +11435,7 @@ export type GetPerformanceProfileResultApiResponse = /** status 200 Performance 
   /** Time when the load test started. */
   testStartTime?: string;
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  userId?: string;
+  owner?: string;
   /** Timestamp when the performance result was created. */
   createdAt?: string;
   /** Timestamp when the performance result was last updated. */
@@ -11481,7 +11481,7 @@ export type GetPerformanceResultsApiResponse = /** status 200 Performance result
     /** Time when the load test started. */
     testStartTime?: string;
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    userId?: string;
+    owner?: string;
     /** Timestamp when the performance result was created. */
     createdAt?: string;
     /** Timestamp when the performance result was last updated. */
@@ -11903,7 +11903,7 @@ export type IssueIndefiniteLifetimeTokenApiResponse = /** status 200 Token gener
 };
 export type IssueIndefiniteLifetimeTokenApiArg = {
   /** UUID of the user to issue the indefinite token for. */
-  userId: string;
+  owner: string;
   /** Authentication provider to associate with the indefinite token. */
   provider: string;
 };

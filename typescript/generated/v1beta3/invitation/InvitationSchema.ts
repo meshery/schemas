@@ -410,12 +410,12 @@ const InvitationSchema: Record<string, unknown> = {
                       "path": "github.com/gofrs/uuid"
                     }
                   },
-                  "ownerId": {
+                  "owner": {
                     "description": "ID of the user who created the invitation.",
-                    "x-go-name": "OwnerID",
+                    "x-go-name": "Owner",
                     "x-oapi-codegen-extra-tags": {
-                      "db": "owner_id",
-                      "json": "ownerId,omitempty"
+                      "db": "owner",
+                      "json": "owner,omitempty"
                     },
                     "type": "string",
                     "format": "uuid",
@@ -1066,12 +1066,12 @@ const InvitationSchema: Record<string, unknown> = {
                       "path": "github.com/gofrs/uuid"
                     }
                   },
-                  "ownerId": {
+                  "owner": {
                     "description": "ID of the user who created the invitation.",
-                    "x-go-name": "OwnerID",
+                    "x-go-name": "Owner",
                     "x-oapi-codegen-extra-tags": {
-                      "db": "owner_id",
-                      "json": "ownerId,omitempty"
+                      "db": "owner",
+                      "json": "owner,omitempty"
                     },
                     "type": "string",
                     "format": "uuid",
@@ -2473,12 +2473,12 @@ const InvitationSchema: Record<string, unknown> = {
               "path": "github.com/gofrs/uuid"
             }
           },
-          "ownerId": {
+          "owner": {
             "description": "ID of the user who created the invitation.",
-            "x-go-name": "OwnerID",
+            "x-go-name": "Owner",
             "x-oapi-codegen-extra-tags": {
-              "db": "owner_id",
-              "json": "ownerId,omitempty"
+              "db": "owner",
+              "json": "owner,omitempty"
             },
             "type": "string",
             "format": "uuid",

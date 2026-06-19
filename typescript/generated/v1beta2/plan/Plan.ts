@@ -4,60 +4,116 @@
  */
 
 export interface paths {
-    "/api/entitlement/plans": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get all plans supported by the system */
-        get: operations["getPlans"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
+  "/api/entitlement/plans": {
+    get: operations["getPlans"];
+  };
 }
-export type webhooks = Record<string, never>;
+
 export interface components {
-    schemas: {
-        PlanPage: {
-            /** @description Current page number of the result set. */
-            page: number;
-            /** @description Number of items per page. */
-            page_size: number;
-            /** @description Total number of items available. */
-            total_count: number;
-            /** @description The plans of the planpage. */
-            plans: {
-                /**
-                 * Format: uuid
-                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                 */
-                id: string;
-                /**
-                 * @description Name of the plan
-                 * @enum {string}
-                 */
-                name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-                /** @enum {string} */
-                cadence: "none" | "monthly" | "annually";
-                /** @enum {string} */
-                unit: "user" | "free";
-                /** @description Minimum number of units required for the plan */
-                minimum_units: number;
-                /** @description Price per unit of the plan */
-                price_per_unit: number;
-                /** @enum {string} */
-                currency: "usd";
-            }[];
-        };
-        /** @description Plan entity schema. */
-        Plan: {
+  schemas: {
+    PlanPage: {
+      /** @description Current page number of the result set. */
+      page: number;
+      /** @description Number of items per page. */
+      page_size: number;
+      /** @description Total number of items available. */
+      total_count: number;
+      /** @description The plans of the planpage. */
+      plans: {
+        /**
+         * Format: uuid
+         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+         */
+        id: string;
+        /**
+         * @description Name of the plan
+         * @enum {string}
+         */
+        name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+        /** @enum {string} */
+        cadence: "none" | "monthly" | "annually";
+        /** @enum {string} */
+        unit: "user" | "free";
+        /** @description Minimum number of units required for the plan */
+        minimum_units: number;
+        /** @description Price per unit of the plan */
+        price_per_unit: number;
+        /** @enum {string} */
+        currency: "usd";
+      }[];
+    };
+    /** @description Plan entity schema. */
+    Plan: {
+      /**
+       * Format: uuid
+       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+       */
+      id: string;
+      /**
+       * @description Name of the plan
+       * @enum {string}
+       */
+      name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+      /** @enum {string} */
+      cadence: "none" | "monthly" | "annually";
+      /** @enum {string} */
+      unit: "user" | "free";
+      /** @description Minimum number of units required for the plan */
+      minimum_units: number;
+      /** @description Price per unit of the plan */
+      price_per_unit: number;
+      /** @enum {string} */
+      currency: "usd";
+    };
+    /**
+     * @description Name of the plan
+     * @enum {string}
+     */
+    PlanName: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+    /** @enum {string} */
+    PlanCadence: "none" | "monthly" | "annually";
+    /** @enum {string} */
+    PlanUnit: "user" | "free";
+    /** @enum {string} */
+    Currency: "usd";
+  };
+  responses: {
+    /** Invalid request body or request param */
+    400: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Expired JWT token used or insufficient privilege */
+    401: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Internal server error */
+    500: {
+      content: {
+        "text/plain": string;
+      };
+    };
+  };
+}
+
+export interface operations {
+  getPlans: {
+    parameters: {
+      query: {
+        /** Get responses by page */
+        page?: string;
+        /** Get responses by pagesize */
+        pagesize?: string;
+      };
+    };
+    responses: {
+      /** Plans response */
+      200: {
+        content: {
+          "application/json": {
             /**
              * Format: uuid
              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -78,126 +134,29 @@ export interface components {
             price_per_unit: number;
             /** @enum {string} */
             currency: "usd";
+          }[];
         };
-        /**
-         * @description Name of the plan
-         * @enum {string}
-         */
-        PlanName: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-        /** @enum {string} */
-        PlanCadence: "none" | "monthly" | "annually";
-        /** @enum {string} */
-        PlanUnit: "user" | "free";
-        /** @enum {string} */
-        Currency: "usd";
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
     };
-    responses: {
-        /** @description Invalid request body or request param */
-        400: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
-        };
-        /** @description Expired JWT token used or insufficient privilege */
-        401: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
-        };
-        /** @description Internal server error */
-        500: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
-        };
-    };
-    parameters: never;
-    requestBodies: never;
-    headers: never;
-    pathItems: never;
+  };
 }
-export type $defs = Record<string, never>;
-export interface operations {
-    getPlans: {
-        parameters: {
-            query?: {
-                /** @description Get responses by page */
-                page?: string;
-                /** @description Get responses by pagesize */
-                pagesize?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Plans response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        id: string;
-                        /**
-                         * @description Name of the plan
-                         * @enum {string}
-                         */
-                        name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-                        /** @enum {string} */
-                        cadence: "none" | "monthly" | "annually";
-                        /** @enum {string} */
-                        unit: "user" | "free";
-                        /** @description Minimum number of units required for the plan */
-                        minimum_units: number;
-                        /** @description Price per unit of the plan */
-                        price_per_unit: number;
-                        /** @enum {string} */
-                        currency: "usd";
-                    }[];
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-}
+
+export interface external {}

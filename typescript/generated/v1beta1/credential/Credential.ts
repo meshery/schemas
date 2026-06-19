@@ -4,64 +4,228 @@
  */
 
 export interface paths {
-    "/api/integrations/credentials": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get credentials
-         * @description Retrieves all credentials belonging to the authenticated user.
-         */
-        get: operations["getUserCredentials"];
-        /**
-         * Update credential
-         * @description Updates an existing credential for the authenticated user.
-         */
-        put: operations["updateUserCredential"];
-        /**
-         * Save credential
-         * @description Saves a new credential for the authenticated user.
-         */
-        post: operations["saveUserCredential"];
-        /**
-         * Delete credential
-         * @description Deletes a credential belonging to the authenticated user.
-         */
-        delete: operations["deleteUserCredential"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/integrations/credentials/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get credential by ID
-         * @description Retrieves a specific credential by its ID.
-         */
-        get: operations["getCredentialById"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
+  "/api/integrations/credentials": {
+    /** Retrieves all credentials belonging to the authenticated user. */
+    get: operations["getUserCredentials"];
+    /** Updates an existing credential for the authenticated user. */
+    put: operations["updateUserCredential"];
+    /** Saves a new credential for the authenticated user. */
+    post: operations["saveUserCredential"];
+    /** Deletes a credential belonging to the authenticated user. */
+    delete: operations["deleteUserCredential"];
+  };
+  "/api/integrations/credentials/{id}": {
+    /** Retrieves a specific credential by its ID. */
+    get: operations["getCredentialById"];
+  };
 }
-export type webhooks = Record<string, never>;
+
 export interface components {
-    schemas: {
-        /** @description Meshery Credentials store sensitive information such as API keys, tokens, and passwords used by connections to external systems. */
-        Credential: {
+  schemas: {
+    /** @description Meshery Credentials store sensitive information such as API keys, tokens, and passwords used by connections to external systems. */
+    Credential: {
+      /**
+       * Format: uuid
+       * @description Unique identifier for the credential.
+       */
+      id?: string;
+      /** @description Human-readable name for the credential. */
+      name: string;
+      /**
+       * Format: uuid
+       * @description UUID of the user who owns this credential.
+       */
+      user_id?: string;
+      /** @description Credential type (e.g. token, basic, AWS). */
+      type: string;
+      /** @description Key-value pairs containing the sensitive credential data. */
+      secret?: { [key: string]: unknown };
+      /**
+       * Format: date-time
+       * @description Timestamp when the resource was created.
+       */
+      created_at?: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the resource was updated.
+       */
+      updated_at?: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the credential was soft-deleted.
+       */
+      deleted_at?: string;
+    };
+    /** @description A paginated list of credentials. */
+    CredentialPage: {
+      /** @description The credentials of the credentialpage. */
+      credentials: {
+        /**
+         * Format: uuid
+         * @description Unique identifier for the credential.
+         */
+        id?: string;
+        /** @description Human-readable name for the credential. */
+        name: string;
+        /**
+         * Format: uuid
+         * @description UUID of the user who owns this credential.
+         */
+        user_id?: string;
+        /** @description Credential type (e.g. token, basic, AWS). */
+        type: string;
+        /** @description Key-value pairs containing the sensitive credential data. */
+        secret?: { [key: string]: unknown };
+        /**
+         * Format: date-time
+         * @description Timestamp when the resource was created.
+         */
+        created_at?: string;
+        /**
+         * Format: date-time
+         * @description Timestamp when the resource was updated.
+         */
+        updated_at?: string;
+        /**
+         * Format: date-time
+         * @description Timestamp when the credential was soft-deleted.
+         */
+        deleted_at?: string;
+      }[];
+      /** @description Total number of credentials across all pages. */
+      total_count: number;
+      /** @description Current page number (zero-based). */
+      page: number;
+      /** @description Number of credentials per page. */
+      page_size: number;
+    };
+  };
+  responses: {
+    /** Invalid request body or request param */
+    400: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Expired JWT token used or insufficient privilege */
+    401: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Result not found */
+    404: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Internal server error */
+    500: {
+      content: {
+        "text/plain": string;
+      };
+    };
+  };
+  parameters: {
+    /** @description Credential ID */
+    id: string;
+    /** @description Credential ID */
+    credentialId: string;
+    /** @description Get responses by page */
+    page: string;
+    /** @description Get responses by pagesize */
+    pagesize: string;
+    /** @description Get responses that match search param value */
+    search: string;
+    /** @description Get ordered responses */
+    order: string;
+  };
+}
+
+export interface operations {
+  /** Retrieves all credentials belonging to the authenticated user. */
+  getUserCredentials: {
+    parameters: {
+      query: {
+        /** Get responses by page */
+        page?: string;
+        /** Get responses by pagesize */
+        pagesize?: string;
+        /** Get responses that match search param value */
+        search?: string;
+        /** Get ordered responses */
+        order?: string;
+      };
+    };
+    responses: {
+      /** Credentials response */
+      200: {
+        content: {
+          "application/json": {
+            /** @description The credentials of the credentialpage. */
+            credentials: {
+              /**
+               * Format: uuid
+               * @description Unique identifier for the credential.
+               */
+              id?: string;
+              /** @description Human-readable name for the credential. */
+              name: string;
+              /**
+               * Format: uuid
+               * @description UUID of the user who owns this credential.
+               */
+              user_id?: string;
+              /** @description Credential type (e.g. token, basic, AWS). */
+              type: string;
+              /** @description Key-value pairs containing the sensitive credential data. */
+              secret?: { [key: string]: unknown };
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was created.
+               */
+              created_at?: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was updated.
+               */
+              updated_at?: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the credential was soft-deleted.
+               */
+              deleted_at?: string;
+            }[];
+            /** @description Total number of credentials across all pages. */
+            total_count: number;
+            /** @description Current page number (zero-based). */
+            page: number;
+            /** @description Number of credentials per page. */
+            page_size: number;
+          };
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  /** Updates an existing credential for the authenticated user. */
+  updateUserCredential: {
+    responses: {
+      /** Credential updated */
+      200: {
+        content: {
+          "application/json": {
             /**
              * Format: uuid
              * @description Unique identifier for the credential.
@@ -77,7 +241,7 @@ export interface components {
             /** @description Credential type (e.g. token, basic, AWS). */
             type: string;
             /** @description Key-value pairs containing the sensitive credential data. */
-            secret?: Record<string, never>;
+            secret?: { [key: string]: unknown };
             /**
              * Format: date-time
              * @description Timestamp when the resource was created.
@@ -93,573 +257,274 @@ export interface components {
              * @description Timestamp when the credential was soft-deleted.
              */
             deleted_at?: string;
+          };
         };
-        /** @description A paginated list of credentials. */
-        CredentialPage: {
-            /** @description The credentials of the credentialpage. */
-            credentials: {
-                /**
-                 * Format: uuid
-                 * @description Unique identifier for the credential.
-                 */
-                id?: string;
-                /** @description Human-readable name for the credential. */
-                name: string;
-                /**
-                 * Format: uuid
-                 * @description UUID of the user who owns this credential.
-                 */
-                user_id?: string;
-                /** @description Credential type (e.g. token, basic, AWS). */
-                type: string;
-                /** @description Key-value pairs containing the sensitive credential data. */
-                secret?: Record<string, never>;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the resource was created.
-                 */
-                created_at?: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the resource was updated.
-                 */
-                updated_at?: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the credential was soft-deleted.
-                 */
-                deleted_at?: string;
-            }[];
-            /** @description Total number of credentials across all pages. */
-            total_count: number;
-            /** @description Current page number (zero-based). */
-            page: number;
-            /** @description Number of credentials per page. */
-            page_size: number;
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
         };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /**
+           * Format: uuid
+           * @description Unique identifier for the credential.
+           */
+          id?: string;
+          /** @description Human-readable name for the credential. */
+          name: string;
+          /**
+           * Format: uuid
+           * @description UUID of the user who owns this credential.
+           */
+          user_id?: string;
+          /** @description Credential type (e.g. token, basic, AWS). */
+          type: string;
+          /** @description Key-value pairs containing the sensitive credential data. */
+          secret?: { [key: string]: unknown };
+          /**
+           * Format: date-time
+           * @description Timestamp when the resource was created.
+           */
+          created_at?: string;
+          /**
+           * Format: date-time
+           * @description Timestamp when the resource was updated.
+           */
+          updated_at?: string;
+          /**
+           * Format: date-time
+           * @description Timestamp when the credential was soft-deleted.
+           */
+          deleted_at?: string;
+        };
+      };
+    };
+  };
+  /** Saves a new credential for the authenticated user. */
+  saveUserCredential: {
+    responses: {
+      /** Credential saved */
+      201: {
+        content: {
+          "application/json": {
+            /**
+             * Format: uuid
+             * @description Unique identifier for the credential.
+             */
+            id?: string;
+            /** @description Human-readable name for the credential. */
+            name: string;
+            /**
+             * Format: uuid
+             * @description UUID of the user who owns this credential.
+             */
+            user_id?: string;
+            /** @description Credential type (e.g. token, basic, AWS). */
+            type: string;
+            /** @description Key-value pairs containing the sensitive credential data. */
+            secret?: { [key: string]: unknown };
+            /**
+             * Format: date-time
+             * @description Timestamp when the resource was created.
+             */
+            created_at?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the resource was updated.
+             */
+            updated_at?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the credential was soft-deleted.
+             */
+            deleted_at?: string;
+          };
+        };
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /**
+           * Format: uuid
+           * @description Unique identifier for the credential.
+           */
+          id?: string;
+          /** @description Human-readable name for the credential. */
+          name: string;
+          /**
+           * Format: uuid
+           * @description UUID of the user who owns this credential.
+           */
+          user_id?: string;
+          /** @description Credential type (e.g. token, basic, AWS). */
+          type: string;
+          /** @description Key-value pairs containing the sensitive credential data. */
+          secret?: { [key: string]: unknown };
+          /**
+           * Format: date-time
+           * @description Timestamp when the resource was created.
+           */
+          created_at?: string;
+          /**
+           * Format: date-time
+           * @description Timestamp when the resource was updated.
+           */
+          updated_at?: string;
+          /**
+           * Format: date-time
+           * @description Timestamp when the credential was soft-deleted.
+           */
+          deleted_at?: string;
+        };
+      };
+    };
+  };
+  /** Deletes a credential belonging to the authenticated user. */
+  deleteUserCredential: {
+    parameters: {
+      query: {
+        /** Credential ID */
+        credentialId: string;
+      };
     };
     responses: {
-        /** @description Invalid request body or request param */
-        400: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
+      /** Credential deleted */
+      204: never;
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
         };
-        /** @description Expired JWT token used or insufficient privilege */
-        401: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
         };
-        /** @description Result not found */
-        404: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
         };
-        /** @description Internal server error */
-        500: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
         };
+      };
     };
+  };
+  /** Retrieves a specific credential by its ID. */
+  getCredentialById: {
     parameters: {
-        /** @description Credential ID */
+      path: {
+        /** Credential ID */
         id: string;
-        /** @description Credential ID */
-        credentialId: string;
-        /** @description Get responses by page */
-        page: string;
-        /** @description Get responses by pagesize */
-        pagesize: string;
-        /** @description Get responses that match search param value */
-        search: string;
-        /** @description Get ordered responses */
-        order: string;
+      };
     };
-    requestBodies: never;
-    headers: never;
-    pathItems: never;
+    responses: {
+      /** Credential response */
+      200: {
+        content: {
+          "application/json": {
+            /**
+             * Format: uuid
+             * @description Unique identifier for the credential.
+             */
+            id?: string;
+            /** @description Human-readable name for the credential. */
+            name: string;
+            /**
+             * Format: uuid
+             * @description UUID of the user who owns this credential.
+             */
+            user_id?: string;
+            /** @description Credential type (e.g. token, basic, AWS). */
+            type: string;
+            /** @description Key-value pairs containing the sensitive credential data. */
+            secret?: { [key: string]: unknown };
+            /**
+             * Format: date-time
+             * @description Timestamp when the resource was created.
+             */
+            created_at?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the resource was updated.
+             */
+            updated_at?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the credential was soft-deleted.
+             */
+            deleted_at?: string;
+          };
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
 }
-export type $defs = Record<string, never>;
-export interface operations {
-    getUserCredentials: {
-        parameters: {
-            query?: {
-                /** @description Get responses by page */
-                page?: string;
-                /** @description Get responses by pagesize */
-                pagesize?: string;
-                /** @description Get responses that match search param value */
-                search?: string;
-                /** @description Get ordered responses */
-                order?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Credentials response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @description The credentials of the credentialpage. */
-                        credentials: {
-                            /**
-                             * Format: uuid
-                             * @description Unique identifier for the credential.
-                             */
-                            id?: string;
-                            /** @description Human-readable name for the credential. */
-                            name: string;
-                            /**
-                             * Format: uuid
-                             * @description UUID of the user who owns this credential.
-                             */
-                            user_id?: string;
-                            /** @description Credential type (e.g. token, basic, AWS). */
-                            type: string;
-                            /** @description Key-value pairs containing the sensitive credential data. */
-                            secret?: Record<string, never>;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the resource was created.
-                             */
-                            created_at?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the resource was updated.
-                             */
-                            updated_at?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the credential was soft-deleted.
-                             */
-                            deleted_at?: string;
-                        }[];
-                        /** @description Total number of credentials across all pages. */
-                        total_count: number;
-                        /** @description Current page number (zero-based). */
-                        page: number;
-                        /** @description Number of credentials per page. */
-                        page_size: number;
-                    };
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    updateUserCredential: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    /**
-                     * Format: uuid
-                     * @description Unique identifier for the credential.
-                     */
-                    id?: string;
-                    /** @description Human-readable name for the credential. */
-                    name: string;
-                    /**
-                     * Format: uuid
-                     * @description UUID of the user who owns this credential.
-                     */
-                    user_id?: string;
-                    /** @description Credential type (e.g. token, basic, AWS). */
-                    type: string;
-                    /** @description Key-value pairs containing the sensitive credential data. */
-                    secret?: Record<string, never>;
-                    /**
-                     * Format: date-time
-                     * @description Timestamp when the resource was created.
-                     */
-                    created_at?: string;
-                    /**
-                     * Format: date-time
-                     * @description Timestamp when the resource was updated.
-                     */
-                    updated_at?: string;
-                    /**
-                     * Format: date-time
-                     * @description Timestamp when the credential was soft-deleted.
-                     */
-                    deleted_at?: string;
-                };
-            };
-        };
-        responses: {
-            /** @description Credential updated */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * Format: uuid
-                         * @description Unique identifier for the credential.
-                         */
-                        id?: string;
-                        /** @description Human-readable name for the credential. */
-                        name: string;
-                        /**
-                         * Format: uuid
-                         * @description UUID of the user who owns this credential.
-                         */
-                        user_id?: string;
-                        /** @description Credential type (e.g. token, basic, AWS). */
-                        type: string;
-                        /** @description Key-value pairs containing the sensitive credential data. */
-                        secret?: Record<string, never>;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the resource was created.
-                         */
-                        created_at?: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the resource was updated.
-                         */
-                        updated_at?: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the credential was soft-deleted.
-                         */
-                        deleted_at?: string;
-                    };
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    saveUserCredential: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    /**
-                     * Format: uuid
-                     * @description Unique identifier for the credential.
-                     */
-                    id?: string;
-                    /** @description Human-readable name for the credential. */
-                    name: string;
-                    /**
-                     * Format: uuid
-                     * @description UUID of the user who owns this credential.
-                     */
-                    user_id?: string;
-                    /** @description Credential type (e.g. token, basic, AWS). */
-                    type: string;
-                    /** @description Key-value pairs containing the sensitive credential data. */
-                    secret?: Record<string, never>;
-                    /**
-                     * Format: date-time
-                     * @description Timestamp when the resource was created.
-                     */
-                    created_at?: string;
-                    /**
-                     * Format: date-time
-                     * @description Timestamp when the resource was updated.
-                     */
-                    updated_at?: string;
-                    /**
-                     * Format: date-time
-                     * @description Timestamp when the credential was soft-deleted.
-                     */
-                    deleted_at?: string;
-                };
-            };
-        };
-        responses: {
-            /** @description Credential saved */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * Format: uuid
-                         * @description Unique identifier for the credential.
-                         */
-                        id?: string;
-                        /** @description Human-readable name for the credential. */
-                        name: string;
-                        /**
-                         * Format: uuid
-                         * @description UUID of the user who owns this credential.
-                         */
-                        user_id?: string;
-                        /** @description Credential type (e.g. token, basic, AWS). */
-                        type: string;
-                        /** @description Key-value pairs containing the sensitive credential data. */
-                        secret?: Record<string, never>;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the resource was created.
-                         */
-                        created_at?: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the resource was updated.
-                         */
-                        updated_at?: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the credential was soft-deleted.
-                         */
-                        deleted_at?: string;
-                    };
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    deleteUserCredential: {
-        parameters: {
-            query: {
-                /** @description Credential ID */
-                credentialId: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Credential deleted */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    getCredentialById: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Credential ID */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Credential response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * Format: uuid
-                         * @description Unique identifier for the credential.
-                         */
-                        id?: string;
-                        /** @description Human-readable name for the credential. */
-                        name: string;
-                        /**
-                         * Format: uuid
-                         * @description UUID of the user who owns this credential.
-                         */
-                        user_id?: string;
-                        /** @description Credential type (e.g. token, basic, AWS). */
-                        type: string;
-                        /** @description Key-value pairs containing the sensitive credential data. */
-                        secret?: Record<string, never>;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the resource was created.
-                         */
-                        created_at?: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the resource was updated.
-                         */
-                        updated_at?: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the credential was soft-deleted.
-                         */
-                        deleted_at?: string;
-                    };
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-}
+
+export interface external {}

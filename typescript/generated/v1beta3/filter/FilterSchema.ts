@@ -98,7 +98,7 @@ const FilterSchema: Record<string, unknown> = {
             }
           },
           {
-            "name": "userId",
+            "name": "owner",
             "in": "query",
             "required": false,
             "description": "UUID of the owning user. Pass when fetching public/published\nfilters for a specific user (public-profile lookups).\n",

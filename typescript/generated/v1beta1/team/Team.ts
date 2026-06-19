@@ -4,125 +4,342 @@
  */
 
 export interface paths {
-    "/api/identity/orgs/{orgId}/teams": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get all teams for an organization
-         * @description Gets all teams within an organization
-         */
-        get: operations["getTeams"];
-        put?: never;
-        /**
-         * Create a team
-         * @description Creates a new team within an organization
-         */
-        post: operations["createTeam"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/identity/orgs/{orgId}/teams/{teamId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get a team by ID
-         * @description Gets a team by its ID
-         */
-        get: operations["getTeamById"];
-        /**
-         * Update a team
-         * @description Updates a team's information
-         */
-        put: operations["updateTeam"];
-        post?: never;
-        /**
-         * Delete a team
-         * @description Deletes a team by its ID
-         */
-        delete: operations["deleteTeam"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/identity/teams/{teamId}/users": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get all users in a team
-         * @description Gets all users that belong to a team
-         */
-        get: operations["getTeamUsers"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/identity/orgs/{orgId}/teams/{teamId}/users/{userId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Add a user to a team
-         * @description Assigns a user to a team
-         */
-        post: operations["addUserToTeam"];
-        /**
-         * Remove a user from a team
-         * @description Unassigns a user from a team
-         */
-        delete: operations["removeUserFromTeam"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/identity/orgs/{orgId}/teams/{teamId}/users": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get users that are not in a team */
-        get: operations["listUsersNotInTeam"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
+  "/api/identity/orgs/{orgId}/teams": {
+    /** Gets all teams within an organization */
+    get: operations["getTeams"];
+    /** Creates a new team within an organization */
+    post: operations["createTeam"];
+  };
+  "/api/identity/orgs/{orgId}/teams/{teamId}": {
+    /** Gets a team by its ID */
+    get: operations["getTeamById"];
+    /** Updates a team's information */
+    put: operations["updateTeam"];
+    /** Deletes a team by its ID */
+    delete: operations["deleteTeam"];
+  };
+  "/api/identity/teams/{teamId}/users": {
+    /** Gets all users that belong to a team */
+    get: operations["getTeamUsers"];
+  };
+  "/api/identity/orgs/{orgId}/teams/{teamId}/users/{userId}": {
+    /** Assigns a user to a team */
+    post: operations["addUserToTeam"];
+    /** Unassigns a user from a team */
+    delete: operations["removeUserFromTeam"];
+  };
+  "/api/identity/orgs/{orgId}/teams/{teamId}/users": {
+    get: operations["listUsersNotInTeam"];
+  };
 }
-export type webhooks = Record<string, never>;
+
 export interface components {
-    schemas: {
-        /** @description A Team is a group of one or more users. Teams are often used as a grouping mechanism for assigning permissions, whether in the context of an organization, a workspace, or some other domain within Meshery. Learn more at https://docs.meshery.io/concepts/logical/teams */
-        Team: {
+  schemas: {
+    /** @description A Team is a group of one or more users. Teams are often used as a grouping mechanism for assigning permissions, whether in the context of an organization, a workspace, or some other domain within Meshery. Learn more at https://docs.meshery.io/concepts/logical/teams */
+    Team: {
+      /**
+       * Format: uuid
+       * @description Team ID
+       */
+      id: string;
+      /** @description Team name */
+      name: string;
+      /** @description Team description */
+      description?: string;
+      /**
+       * Format: uuid
+       * @description User ID of the owner of the team
+       */
+      owner?: string;
+      /** @description Additional metadata for the team */
+      metadata?: { [key: string]: unknown };
+      /** Format: date-time */
+      created_at?: string;
+      /** Format: date-time */
+      updated_at?: string;
+      /**
+       * Format: date-time
+       * @description SQL null Timestamp to handle null values of time.
+       */
+      deleted_at?: string;
+    };
+    /** @description Payload for creating a new team */
+    TeamPayload: {
+      /** @description Team name. Provide a meaningful name that represents this team. */
+      name: string;
+      /** @description A detailed description of the team's purpose and responsibilities. */
+      description?: string;
+    };
+    /** @description Payload for updating an existing team */
+    TeamUpdatePayload: {
+      /** @description Updated team name */
+      name?: string;
+      /** @description Updated team description */
+      description?: string;
+    };
+    /** @description Paginated list of teams */
+    TeamPage: {
+      page?: number;
+      page_size?: number;
+      total_count?: number;
+      /** @description The teams of the teampage. */
+      teams?: {
+        /**
+         * Format: uuid
+         * @description Team ID
+         */
+        id: string;
+        /** @description Team name */
+        name: string;
+        /** @description Team description */
+        description?: string;
+        /**
+         * Format: uuid
+         * @description User ID of the owner of the team
+         */
+        owner?: string;
+        /** @description Additional metadata for the team */
+        metadata?: { [key: string]: unknown };
+        /** Format: date-time */
+        created_at?: string;
+        /** Format: date-time */
+        updated_at?: string;
+        /**
+         * Format: date-time
+         * @description SQL null Timestamp to handle null values of time.
+         */
+        deleted_at?: string;
+      }[];
+    };
+    /** @description Mapping between teams and users */
+    TeamsUsersMapping: {
+      /** Format: uuid */
+      id?: string;
+      /** Format: uuid */
+      team_id?: string;
+      /** @description user's email or username */
+      user_id?: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the resource was created.
+       */
+      created_at?: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the resource was updated.
+       */
+      updated_at?: string;
+      /**
+       * Format: date-time
+       * @description SQL null Timestamp to handle null values of time.
+       */
+      deleted_at?: string;
+    };
+    /** @description Paginated list of team-user mappings */
+    TeamsUsersMappingPage: {
+      page?: number;
+      page_size?: number;
+      total_count?: number;
+      /** @description The teams users mapping of the teamsusersmappingpage. */
+      teamsUsersMapping?: {
+        /** Format: uuid */
+        id?: string;
+        /** Format: uuid */
+        team_id?: string;
+        /** @description user's email or username */
+        user_id?: string;
+        /**
+         * Format: date-time
+         * @description Timestamp when the resource was created.
+         */
+        created_at?: string;
+        /**
+         * Format: date-time
+         * @description Timestamp when the resource was updated.
+         */
+        updated_at?: string;
+        /**
+         * Format: date-time
+         * @description SQL null Timestamp to handle null values of time.
+         */
+        deleted_at?: string;
+      }[];
+    };
+    TeamMember: { [key: string]: unknown };
+    TeamMembersPage: {
+      /** @description Current page number of the result set. */
+      page?: number;
+      /** @description Number of items per page. */
+      page_size?: number;
+      /** @description Total number of items available. */
+      total_count?: number;
+      /** @description The data of the teammemberspage. */
+      data?: { [key: string]: unknown }[];
+    };
+  };
+  responses: {
+    /** ok */
+    200: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Invalid request body or request param */
+    400: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Expired JWT token used or insufficient privilege */
+    401: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Result not found */
+    404: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Internal server error */
+    500: {
+      content: {
+        "text/plain": string;
+      };
+    };
+  };
+  parameters: {
+    /** @description Team ID */
+    teamId: string;
+    /** @description Organization ID */
+    orgId: string;
+    /** @description Get responses that match search param value */
+    search: string;
+    /** @description Get ordered responses */
+    order: string;
+    /** @description Get responses by page */
+    page: string;
+    /** @description Get responses by pagesize */
+    pagesize: string;
+  };
+  requestBodies: {
+    /** Body for creating a team */
+    teamPayload: {
+      content: {
+        "application/json": {
+          /** @description Team name. Provide a meaningful name that represents this team. */
+          name: string;
+          /** @description A detailed description of the team's purpose and responsibilities. */
+          description?: string;
+        };
+      };
+    };
+    /** Body for updating a team */
+    teamUpdatePayload: {
+      content: {
+        "application/json": {
+          /** @description Updated team name */
+          name?: string;
+          /** @description Updated team description */
+          description?: string;
+        };
+      };
+    };
+  };
+}
+
+export interface operations {
+  /** Gets all teams within an organization */
+  getTeams: {
+    parameters: {
+      path: {
+        /** Organization ID */
+        orgId: string;
+      };
+      query: {
+        /** Get responses that match search param value */
+        search?: string;
+        /** Get ordered responses */
+        order?: string;
+        /** Get responses by page */
+        page?: string;
+        /** Get responses by pagesize */
+        pagesize?: string;
+      };
+    };
+    responses: {
+      /** Teams */
+      200: {
+        content: {
+          "application/json": {
+            page?: number;
+            page_size?: number;
+            total_count?: number;
+            /** @description The teams of the teampage. */
+            teams?: {
+              /**
+               * Format: uuid
+               * @description Team ID
+               */
+              id: string;
+              /** @description Team name */
+              name: string;
+              /** @description Team description */
+              description?: string;
+              /**
+               * Format: uuid
+               * @description User ID of the owner of the team
+               */
+              owner?: string;
+              /** @description Additional metadata for the team */
+              metadata?: { [key: string]: unknown };
+              /** Format: date-time */
+              created_at?: string;
+              /** Format: date-time */
+              updated_at?: string;
+              /**
+               * Format: date-time
+               * @description SQL null Timestamp to handle null values of time.
+               */
+              deleted_at?: string;
+            }[];
+          };
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  /** Creates a new team within an organization */
+  createTeam: {
+    parameters: {
+      path: {
+        /** Organization ID */
+        orgId: string;
+      };
+    };
+    responses: {
+      /** Created team */
+      201: {
+        content: {
+          "application/json": {
             /**
              * Format: uuid
              * @description Team ID
@@ -138,7 +355,7 @@ export interface components {
              */
             owner?: string;
             /** @description Additional metadata for the team */
-            metadata?: Record<string, never>;
+            metadata?: { [key: string]: unknown };
             /** Format: date-time */
             created_at?: string;
             /** Format: date-time */
@@ -148,57 +365,330 @@ export interface components {
              * @description SQL null Timestamp to handle null values of time.
              */
             deleted_at?: string;
+          };
         };
-        /** @description Payload for creating a new team */
-        TeamPayload: {
-            /** @description Team name. Provide a meaningful name that represents this team. */
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+    /** Body for creating a team */
+    requestBody: {
+      content: {
+        "application/json": {
+          /** @description Team name. Provide a meaningful name that represents this team. */
+          name: string;
+          /** @description A detailed description of the team's purpose and responsibilities. */
+          description?: string;
+        };
+      };
+    };
+  };
+  /** Gets a team by its ID */
+  getTeamById: {
+    parameters: {
+      path: {
+        /** Organization ID */
+        orgId: string;
+        /** Team ID */
+        teamId: string;
+      };
+    };
+    responses: {
+      /** Team */
+      200: {
+        content: {
+          "application/json": {
+            /**
+             * Format: uuid
+             * @description Team ID
+             */
+            id: string;
+            /** @description Team name */
             name: string;
-            /** @description A detailed description of the team's purpose and responsibilities. */
+            /** @description Team description */
             description?: string;
+            /**
+             * Format: uuid
+             * @description User ID of the owner of the team
+             */
+            owner?: string;
+            /** @description Additional metadata for the team */
+            metadata?: { [key: string]: unknown };
+            /** Format: date-time */
+            created_at?: string;
+            /** Format: date-time */
+            updated_at?: string;
+            /**
+             * Format: date-time
+             * @description SQL null Timestamp to handle null values of time.
+             */
+            deleted_at?: string;
+          };
         };
-        /** @description Payload for updating an existing team */
-        TeamUpdatePayload: {
-            /** @description Updated team name */
-            name?: string;
-            /** @description Updated team description */
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  /** Updates a team's information */
+  updateTeam: {
+    parameters: {
+      path: {
+        /** Organization ID */
+        orgId: string;
+        /** Team ID */
+        teamId: string;
+      };
+    };
+    responses: {
+      /** Updated team */
+      200: {
+        content: {
+          "application/json": {
+            /**
+             * Format: uuid
+             * @description Team ID
+             */
+            id: string;
+            /** @description Team name */
+            name: string;
+            /** @description Team description */
             description?: string;
+            /**
+             * Format: uuid
+             * @description User ID of the owner of the team
+             */
+            owner?: string;
+            /** @description Additional metadata for the team */
+            metadata?: { [key: string]: unknown };
+            /** Format: date-time */
+            created_at?: string;
+            /** Format: date-time */
+            updated_at?: string;
+            /**
+             * Format: date-time
+             * @description SQL null Timestamp to handle null values of time.
+             */
+            deleted_at?: string;
+          };
         };
-        /** @description Paginated list of teams */
-        TeamPage: {
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+    /** Body for updating a team */
+    requestBody: {
+      content: {
+        "application/json": {
+          /** @description Updated team name */
+          name?: string;
+          /** @description Updated team description */
+          description?: string;
+        };
+      };
+    };
+  };
+  /** Deletes a team by its ID */
+  deleteTeam: {
+    parameters: {
+      path: {
+        /** Organization ID */
+        orgId: string;
+        /** Team ID */
+        teamId: string;
+      };
+    };
+    responses: {
+      /** Team deleted */
+      204: never;
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  /** Gets all users that belong to a team */
+  getTeamUsers: {
+    parameters: {
+      path: {
+        /** Team ID */
+        teamId: string;
+      };
+      query: {
+        /** Get responses that match search param value */
+        search?: string;
+        /** Get ordered responses */
+        order?: string;
+        /** Get responses by page */
+        page?: string;
+        /** Get responses by pagesize */
+        pagesize?: string;
+      };
+    };
+    responses: {
+      /** Team users mapping */
+      200: {
+        content: {
+          "application/json": {
             page?: number;
             page_size?: number;
             total_count?: number;
-            /** @description The teams of the teampage. */
-            teams?: {
-                /**
-                 * Format: uuid
-                 * @description Team ID
-                 */
-                id: string;
-                /** @description Team name */
-                name: string;
-                /** @description Team description */
-                description?: string;
-                /**
-                 * Format: uuid
-                 * @description User ID of the owner of the team
-                 */
-                owner?: string;
-                /** @description Additional metadata for the team */
-                metadata?: Record<string, never>;
-                /** Format: date-time */
-                created_at?: string;
-                /** Format: date-time */
-                updated_at?: string;
-                /**
-                 * Format: date-time
-                 * @description SQL null Timestamp to handle null values of time.
-                 */
-                deleted_at?: string;
+            /** @description The teams users mapping of the teamsusersmappingpage. */
+            teamsUsersMapping?: {
+              /** Format: uuid */
+              id?: string;
+              /** Format: uuid */
+              team_id?: string;
+              /** @description user's email or username */
+              user_id?: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was created.
+               */
+              created_at?: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was updated.
+               */
+              updated_at?: string;
+              /**
+               * Format: date-time
+               * @description SQL null Timestamp to handle null values of time.
+               */
+              deleted_at?: string;
             }[];
+          };
         };
-        /** @description Mapping between teams and users */
-        TeamsUsersMapping: {
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  /** Assigns a user to a team */
+  addUserToTeam: {
+    parameters: {
+      path: {
+        /** Organization ID */
+        orgId: string;
+        /** Team ID */
+        teamId: string;
+        /** User ID */
+        userId: string;
+      };
+    };
+    responses: {
+      /** User added to team */
+      201: {
+        content: {
+          "application/json": {
             /** Format: uuid */
             id?: string;
             /** Format: uuid */
@@ -220,41 +710,100 @@ export interface components {
              * @description SQL null Timestamp to handle null values of time.
              */
             deleted_at?: string;
+          };
         };
-        /** @description Paginated list of team-user mappings */
-        TeamsUsersMappingPage: {
-            page?: number;
-            page_size?: number;
-            total_count?: number;
-            /** @description The teams users mapping of the teamsusersmappingpage. */
-            teamsUsersMapping?: {
-                /** Format: uuid */
-                id?: string;
-                /** Format: uuid */
-                team_id?: string;
-                /** @description user's email or username */
-                user_id?: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the resource was created.
-                 */
-                created_at?: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the resource was updated.
-                 */
-                updated_at?: string;
-                /**
-                 * Format: date-time
-                 * @description SQL null Timestamp to handle null values of time.
-                 */
-                deleted_at?: string;
-            }[];
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
         };
-        TeamMember: {
-            [key: string]: unknown;
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
         };
-        TeamMembersPage: {
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  /** Unassigns a user from a team */
+  removeUserFromTeam: {
+    parameters: {
+      path: {
+        /** Organization ID */
+        orgId: string;
+        /** Team ID */
+        teamId: string;
+        /** User ID */
+        userId: string;
+      };
+    };
+    responses: {
+      /** User removed from team */
+      204: never;
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  listUsersNotInTeam: {
+    parameters: {
+      path: {
+        /** Organization ID */
+        orgId: string;
+        /** Team ID */
+        teamId: string;
+      };
+      query: {
+        /** Get responses that match search param value */
+        search?: string;
+        /** Get ordered responses */
+        order?: string;
+        /** Get responses by page */
+        page?: string;
+        /** Get responses by pagesize */
+        pagesize?: string;
+      };
+    };
+    responses: {
+      /** Users not currently in the team */
+      200: {
+        content: {
+          "application/json": {
             /** @description Current page number of the result set. */
             page?: number;
             /** @description Number of items per page. */
@@ -262,851 +811,36 @@ export interface components {
             /** @description Total number of items available. */
             total_count?: number;
             /** @description The data of the teammemberspage. */
-            data?: {
-                [key: string]: unknown;
-            }[];
+            data?: { [key: string]: unknown }[];
+          };
         };
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
     };
-    responses: {
-        /** @description ok */
-        200: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
-        };
-        /** @description Invalid request body or request param */
-        400: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
-        };
-        /** @description Expired JWT token used or insufficient privilege */
-        401: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
-        };
-        /** @description Result not found */
-        404: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
-        };
-        /** @description Internal server error */
-        500: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
-        };
-    };
-    parameters: {
-        /** @description Team ID */
-        teamId: string;
-        /** @description Organization ID */
-        orgId: string;
-        /** @description Get responses that match search param value */
-        search: string;
-        /** @description Get ordered responses */
-        order: string;
-        /** @description Get responses by page */
-        page: string;
-        /** @description Get responses by pagesize */
-        pagesize: string;
-    };
-    requestBodies: {
-        /** @description Body for creating a team */
-        teamPayload: {
-            content: {
-                "application/json": {
-                    /** @description Team name. Provide a meaningful name that represents this team. */
-                    name: string;
-                    /** @description A detailed description of the team's purpose and responsibilities. */
-                    description?: string;
-                };
-            };
-        };
-        /** @description Body for updating a team */
-        teamUpdatePayload: {
-            content: {
-                "application/json": {
-                    /** @description Updated team name */
-                    name?: string;
-                    /** @description Updated team description */
-                    description?: string;
-                };
-            };
-        };
-    };
-    headers: never;
-    pathItems: never;
+  };
 }
-export type $defs = Record<string, never>;
-export interface operations {
-    getTeams: {
-        parameters: {
-            query?: {
-                /** @description Get responses that match search param value */
-                search?: string;
-                /** @description Get ordered responses */
-                order?: string;
-                /** @description Get responses by page */
-                page?: string;
-                /** @description Get responses by pagesize */
-                pagesize?: string;
-            };
-            header?: never;
-            path: {
-                /** @description Organization ID */
-                orgId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Teams */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        page?: number;
-                        page_size?: number;
-                        total_count?: number;
-                        /** @description The teams of the teampage. */
-                        teams?: {
-                            /**
-                             * Format: uuid
-                             * @description Team ID
-                             */
-                            id: string;
-                            /** @description Team name */
-                            name: string;
-                            /** @description Team description */
-                            description?: string;
-                            /**
-                             * Format: uuid
-                             * @description User ID of the owner of the team
-                             */
-                            owner?: string;
-                            /** @description Additional metadata for the team */
-                            metadata?: Record<string, never>;
-                            /** Format: date-time */
-                            created_at?: string;
-                            /** Format: date-time */
-                            updated_at?: string;
-                            /**
-                             * Format: date-time
-                             * @description SQL null Timestamp to handle null values of time.
-                             */
-                            deleted_at?: string;
-                        }[];
-                    };
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    createTeam: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Organization ID */
-                orgId: string;
-            };
-            cookie?: never;
-        };
-        /** @description Body for creating a team */
-        requestBody: {
-            content: {
-                "application/json": {
-                    /** @description Team name. Provide a meaningful name that represents this team. */
-                    name: string;
-                    /** @description A detailed description of the team's purpose and responsibilities. */
-                    description?: string;
-                };
-            };
-        };
-        responses: {
-            /** @description Created team */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * Format: uuid
-                         * @description Team ID
-                         */
-                        id: string;
-                        /** @description Team name */
-                        name: string;
-                        /** @description Team description */
-                        description?: string;
-                        /**
-                         * Format: uuid
-                         * @description User ID of the owner of the team
-                         */
-                        owner?: string;
-                        /** @description Additional metadata for the team */
-                        metadata?: Record<string, never>;
-                        /** Format: date-time */
-                        created_at?: string;
-                        /** Format: date-time */
-                        updated_at?: string;
-                        /**
-                         * Format: date-time
-                         * @description SQL null Timestamp to handle null values of time.
-                         */
-                        deleted_at?: string;
-                    };
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    getTeamById: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Organization ID */
-                orgId: string;
-                /** @description Team ID */
-                teamId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Team */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * Format: uuid
-                         * @description Team ID
-                         */
-                        id: string;
-                        /** @description Team name */
-                        name: string;
-                        /** @description Team description */
-                        description?: string;
-                        /**
-                         * Format: uuid
-                         * @description User ID of the owner of the team
-                         */
-                        owner?: string;
-                        /** @description Additional metadata for the team */
-                        metadata?: Record<string, never>;
-                        /** Format: date-time */
-                        created_at?: string;
-                        /** Format: date-time */
-                        updated_at?: string;
-                        /**
-                         * Format: date-time
-                         * @description SQL null Timestamp to handle null values of time.
-                         */
-                        deleted_at?: string;
-                    };
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    updateTeam: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Organization ID */
-                orgId: string;
-                /** @description Team ID */
-                teamId: string;
-            };
-            cookie?: never;
-        };
-        /** @description Body for updating a team */
-        requestBody: {
-            content: {
-                "application/json": {
-                    /** @description Updated team name */
-                    name?: string;
-                    /** @description Updated team description */
-                    description?: string;
-                };
-            };
-        };
-        responses: {
-            /** @description Updated team */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * Format: uuid
-                         * @description Team ID
-                         */
-                        id: string;
-                        /** @description Team name */
-                        name: string;
-                        /** @description Team description */
-                        description?: string;
-                        /**
-                         * Format: uuid
-                         * @description User ID of the owner of the team
-                         */
-                        owner?: string;
-                        /** @description Additional metadata for the team */
-                        metadata?: Record<string, never>;
-                        /** Format: date-time */
-                        created_at?: string;
-                        /** Format: date-time */
-                        updated_at?: string;
-                        /**
-                         * Format: date-time
-                         * @description SQL null Timestamp to handle null values of time.
-                         */
-                        deleted_at?: string;
-                    };
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    deleteTeam: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Organization ID */
-                orgId: string;
-                /** @description Team ID */
-                teamId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Team deleted */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    getTeamUsers: {
-        parameters: {
-            query?: {
-                /** @description Get responses that match search param value */
-                search?: string;
-                /** @description Get ordered responses */
-                order?: string;
-                /** @description Get responses by page */
-                page?: string;
-                /** @description Get responses by pagesize */
-                pagesize?: string;
-            };
-            header?: never;
-            path: {
-                /** @description Team ID */
-                teamId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Team users mapping */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        page?: number;
-                        page_size?: number;
-                        total_count?: number;
-                        /** @description The teams users mapping of the teamsusersmappingpage. */
-                        teamsUsersMapping?: {
-                            /** Format: uuid */
-                            id?: string;
-                            /** Format: uuid */
-                            team_id?: string;
-                            /** @description user's email or username */
-                            user_id?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the resource was created.
-                             */
-                            created_at?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the resource was updated.
-                             */
-                            updated_at?: string;
-                            /**
-                             * Format: date-time
-                             * @description SQL null Timestamp to handle null values of time.
-                             */
-                            deleted_at?: string;
-                        }[];
-                    };
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    addUserToTeam: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Organization ID */
-                orgId: string;
-                /** @description Team ID */
-                teamId: string;
-                /** @description User ID */
-                userId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description User added to team */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Format: uuid */
-                        id?: string;
-                        /** Format: uuid */
-                        team_id?: string;
-                        /** @description user's email or username */
-                        user_id?: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the resource was created.
-                         */
-                        created_at?: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the resource was updated.
-                         */
-                        updated_at?: string;
-                        /**
-                         * Format: date-time
-                         * @description SQL null Timestamp to handle null values of time.
-                         */
-                        deleted_at?: string;
-                    };
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    removeUserFromTeam: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Organization ID */
-                orgId: string;
-                /** @description Team ID */
-                teamId: string;
-                /** @description User ID */
-                userId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description User removed from team */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    listUsersNotInTeam: {
-        parameters: {
-            query?: {
-                /** @description Get responses that match search param value */
-                search?: string;
-                /** @description Get ordered responses */
-                order?: string;
-                /** @description Get responses by page */
-                page?: string;
-                /** @description Get responses by pagesize */
-                pagesize?: string;
-            };
-            header?: never;
-            path: {
-                /** @description Organization ID */
-                orgId: string;
-                /** @description Team ID */
-                teamId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Users not currently in the team */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @description Current page number of the result set. */
-                        page?: number;
-                        /** @description Number of items per page. */
-                        page_size?: number;
-                        /** @description Total number of items available. */
-                        total_count?: number;
-                        /** @description The data of the teammemberspage. */
-                        data?: {
-                            [key: string]: unknown;
-                        }[];
-                    };
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-}
+
+export interface external {}
