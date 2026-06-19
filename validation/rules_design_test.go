@@ -988,6 +988,31 @@ func TestCheckRule24_ValidOAuth2Scopes(t *testing.T) {
 	}
 }
 
+func TestCheckRule24_APIKeyInvalidIn(t *testing.T) {
+	doc := &openapi3.T{
+		OpenAPI: "3.0.0",
+		Info:    &openapi3.Info{Title: "Test", Version: "v1"},
+		Paths:   openapi3.NewPaths(),
+		Components: &openapi3.Components{
+			SecuritySchemes: openapi3.SecuritySchemes{
+				"apiKey": &openapi3.SecuritySchemeRef{
+					Value: &openapi3.SecurityScheme{
+						Type: "apiKey",
+						Name: "X-API-Key",
+						In:   "foo",
+					},
+				},
+			},
+		},
+	}
+
+	vs := checkRule24("api.yml", doc, AuditOptions{})
+
+	if len(vs) != 1 {
+		t.Fatalf("expected 1 violation, got %d", len(vs))
+	}
+}
+
 // ---------------------------------------------------------------------------
 // Rule 28: Response codes match method semantics
 // ---------------------------------------------------------------------------

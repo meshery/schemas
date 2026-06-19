@@ -271,7 +271,7 @@ func checkRule23(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 	return out
 }
 
-// --- Rule 24: api.yml must declare a security scheme ---
+// --- Rule 24: validate security scheme declarations and configuration ---
 
 func checkRule24(filePath string, doc *openapi3.T, opts AuditOptions) []Violation {
 	if doc == nil || doc.Paths == nil {
@@ -324,11 +324,17 @@ func checkRule24(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 				})
 			}
 
-			if scheme.In == "" {
+			validLocations := map[string]bool{
+				"header": true,
+				"query":  true,
+				"cookie": true,
+			}
+
+			if !validLocations[scheme.In] {
 				out = append(out, Violation{
 					File: filePath,
 					Message: fmt.Sprintf(
-						`Security scheme %q of type "apiKey" must define an "in" value (header, query, or cookie).`,
+						`Security scheme %q of type "apiKey" must define a valid "in" value (header, query, or cookie).`,
 						name,
 					),
 					Severity:   classifyDesignIssue(opts),
@@ -338,6 +344,9 @@ func checkRule24(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 		}
 
 		if scheme.Type == "http" {
+			// Current schemas only use bearer authentication.
+			// kin-openapi also supports basic, negotiate, and digest.
+			// Extend this allowlist if additional HTTP auth schemes are introduced.
 			validSchemes := map[string]bool{
 				"bearer": true,
 				"basic":  true,
