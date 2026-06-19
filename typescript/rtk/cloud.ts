@@ -4947,7 +4947,7 @@ export type UpdateAcademyCurriculaByIdApiResponse = /** status 200 updated the c
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     id: string;
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    ownerId: string;
+    owner: string;
     /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
     isDefault?: boolean;
     /** Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
@@ -5162,7 +5162,7 @@ export type GetAcademyCurriculaByIdApiResponse = /** status 200 A single curricu
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     id: string;
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    ownerId: string;
+    owner: string;
     /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
     isDefault?: boolean;
     /** Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
@@ -6485,7 +6485,7 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
       }[];
     };
     /** User ID who owns this connection */
-    userId?: string;
+    owner?: string;
     /** Timestamp when the connection was created. */
     createdAt?: string;
     /** Timestamp when the connection was last updated. */
@@ -7036,7 +7036,7 @@ export type RegisterConnectionApiResponse = /** status 201 Connection registered
     }[];
   };
   /** User ID who owns this connection */
-  userId?: string;
+  owner?: string;
   /** Timestamp when the connection was created. */
   createdAt?: string;
   /** Timestamp when the connection was last updated. */
@@ -7728,7 +7728,7 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
     }[];
   };
   /** User ID who owns this connection */
-  userId?: string;
+  owner?: string;
   /** Timestamp when the connection was created. */
   createdAt?: string;
   /** Timestamp when the connection was last updated. */
@@ -8241,7 +8241,7 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated */ {
     }[];
   };
   /** User ID who owns this connection */
-  userId?: string;
+  owner?: string;
   /** Timestamp when the connection was created. */
   createdAt?: string;
   /** Timestamp when the connection was last updated. */
@@ -9764,7 +9764,7 @@ export type GetCatalogContentApiResponse = /** status 200 Catalog content page *
     /** Human-readable filter name; required, used for catalog listings. */
     name: string;
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    userId: string;
+    owner: string;
     /** Raw filter source persisted as a byte array (`bytea` column
         `filter_file`). Wire form is base64 per OpenAPI `format: byte`.
          */
@@ -10204,7 +10204,7 @@ export type GetEventsOfWorkspaceApiResponse = /** status 200 Workspace events */
   /** The events returned on the current page. */
   data?: {
     /** UUID of the user associated with the event. */
-    userId: string;
+    owner: string;
     /** System identifier of the event source. */
     systemId?: string;
     /** The category of the event. */
@@ -10256,7 +10256,7 @@ export type GetEventsApiResponse = /** status 200 Events page */ {
   /** The events returned on the current page. */
   data?: {
     /** UUID of the user associated with the event. */
-    userId: string;
+    owner: string;
     /** System identifier of the event source. */
     systemId?: string;
     /** The category of the event. */
@@ -10339,7 +10339,7 @@ export type GetFiltersApiResponse = /** status 200 Filters response */ {
     /** Human-readable filter name; required, used for catalog listings. */
     name: string;
     /** Owning user ID. */
-    userId: string;
+    owner: string;
     /** Raw filter source persisted as a byte array (`bytea` column
         `filter_file`). Wire form is base64 per OpenAPI `format: byte`.
          */
@@ -10410,7 +10410,7 @@ export type UpsertFilterApiResponse = /** status 200 Filter saved */ {
   /** Human-readable filter name; required, used for catalog listings. */
   name: string;
   /** Owning user ID. */
-  userId: string;
+  owner: string;
   /** Raw filter source persisted as a byte array (`bytea` column
     `filter_file`). Wire form is base64 per OpenAPI `format: byte`.
      */
@@ -10551,7 +10551,7 @@ export type GetFilterApiResponse = /** status 200 Filter response */ {
   /** Human-readable filter name; required, used for catalog listings. */
   name: string;
   /** Owning user ID. */
-  userId: string;
+  owner: string;
   /** Raw filter source persisted as a byte array (`bytea` column
     `filter_file`). Wire form is base64 per OpenAPI `format: byte`.
      */
@@ -10607,7 +10607,7 @@ export type UpdateFilterApiResponse = /** status 200 Filter updated */ {
   /** Human-readable filter name; required, used for catalog listings. */
   name: string;
   /** Owning user ID. */
-  userId: string;
+  owner: string;
   /** Raw filter source persisted as a byte array (`bytea` column
     `filter_file`). Wire form is base64 per OpenAPI `format: byte`.
      */
@@ -10722,7 +10722,7 @@ export type CloneFilterApiResponse = /** status 200 Filter cloned */ {
   /** Human-readable filter name; required, used for catalog listings. */
   name: string;
   /** Owning user ID. */
-  userId: string;
+  owner: string;
   /** Raw filter source persisted as a byte array (`bytea` column
     `filter_file`). Wire form is base64 per OpenAPI `format: byte`.
      */
@@ -10787,7 +10787,7 @@ export type GetInvitationApiResponse = /** status 200 Invitation fetched */ {
   /** Unique identifier for the invitation, also used as the invitation code. */
   id: string;
   /** ID of the user who created the invitation. Tracks who created the invitation for auditing purposes. */
-  ownerId: string;
+  owner: string;
   /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
   isDefault?: boolean;
   /** Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
@@ -10830,7 +10830,7 @@ export type UpdateInvitationApiResponse = /** status 200 Invitation updated */ {
   /** Unique identifier for the invitation, also used as the invitation code. */
   id: string;
   /** ID of the user who created the invitation. Tracks who created the invitation for auditing purposes. */
-  ownerId: string;
+  owner: string;
   /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
   isDefault?: boolean;
   /** Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
@@ -10896,7 +10896,7 @@ export type GetInvitationsApiResponse = /** status 200 Invitations page */ {
     /** Unique identifier for the invitation, also used as the invitation code. */
     id: string;
     /** ID of the user who created the invitation. Tracks who created the invitation for auditing purposes. */
-    ownerId: string;
+    owner: string;
     /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
     isDefault?: boolean;
     /** Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
@@ -10934,7 +10934,7 @@ export type CreateInvitationApiResponse = /** status 201 Invitation created */ {
   /** Unique identifier for the invitation, also used as the invitation code. */
   id: string;
   /** ID of the user who created the invitation. Tracks who created the invitation for auditing purposes. */
-  ownerId: string;
+  owner: string;
   /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
   isDefault?: boolean;
   /** Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
@@ -10996,7 +10996,7 @@ export type AcceptInvitationApiResponse = /** status 200 Invitation accepted */ 
   /** Unique identifier for the invitation, also used as the invitation code. */
   id: string;
   /** ID of the user who created the invitation. Tracks who created the invitation for auditing purposes. */
-  ownerId: string;
+  owner: string;
   /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
   isDefault?: boolean;
   /** Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
@@ -11098,7 +11098,7 @@ export type GetPerformanceProfilesApiResponse = /** status 200 Performance profi
     /** Human-readable name of the performance profile. */
     name: string;
     /** User ID of the profile owner. */
-    userId: string;
+    owner: string;
     /** Optional schedule ID associated with this performance profile. Null when the profile is not bound to a recurring schedule. */
     schedule?: string | null;
     /** Load generators (e.g. fortio, wrk2, nighthawk) to drive the profile's load test. */
@@ -11151,7 +11151,7 @@ export type UpsertPerformanceProfileApiResponse = /** status 200 Performance pro
   /** Human-readable name of the performance profile. */
   name: string;
   /** User ID of the profile owner. */
-  userId: string;
+  owner: string;
   /** Optional schedule ID associated with this performance profile. Null when the profile is not bound to a recurring schedule. */
   schedule?: string | null;
   /** Load generators (e.g. fortio, wrk2, nighthawk) to drive the profile's load test. */
@@ -11230,7 +11230,7 @@ export type GetPerformanceProfileApiResponse = /** status 200 Performance profil
   /** Human-readable name of the performance profile. */
   name: string;
   /** User ID of the profile owner. */
-  userId: string;
+  owner: string;
   /** Optional schedule ID associated with this performance profile. Null when the profile is not bound to a recurring schedule. */
   schedule?: string | null;
   /** Load generators (e.g. fortio, wrk2, nighthawk) to drive the profile's load test. */
@@ -11276,7 +11276,7 @@ export type UpdatePerformanceProfileApiResponse = /** status 200 Performance pro
   /** Human-readable name of the performance profile. */
   name: string;
   /** User ID of the profile owner. */
-  userId: string;
+  owner: string;
   /** Optional schedule ID associated with this performance profile. Null when the profile is not bound to a recurring schedule. */
   schedule?: string | null;
   /** Load generators (e.g. fortio, wrk2, nighthawk) to drive the profile's load test. */
@@ -11735,7 +11735,7 @@ export type GetUserTokensApiResponse = /** status 200 Tokens response */ {
     /** Unique identifier for the token. */
     id: string;
     /** UUID of the user who owns the token. */
-    userId: string;
+    owner: string;
     /** Authentication provider associated with the token. */
     provider: string;
     /** Access token value. */
@@ -11778,7 +11778,7 @@ export type GenerateTokenApiResponse = /** status 201 Token generated */ {
     /** Unique identifier for the token. */
     id: string;
     /** UUID of the user who owns the token. */
-    userId: string;
+    owner: string;
     /** Authentication provider associated with the token. */
     provider: string;
     /** Access token value. */
@@ -11815,7 +11815,7 @@ export type DeleteUserTokenApiResponse = /** status 200 Token deleted */ {
     /** Unique identifier for the token. */
     id: string;
     /** UUID of the user who owns the token. */
-    userId: string;
+    owner: string;
     /** Authentication provider associated with the token. */
     provider: string;
     /** Access token value. */
@@ -11848,7 +11848,7 @@ export type GetUserTokensByIdApiResponse = /** status 200 Token response */ {
   /** Unique identifier for the token. */
   id: string;
   /** UUID of the user who owns the token. */
-  userId: string;
+  owner: string;
   /** Authentication provider associated with the token. */
   provider: string;
   /** Access token value. */
@@ -11876,7 +11876,7 @@ export type IssueIndefiniteLifetimeTokenApiResponse = /** status 200 Token gener
     /** Unique identifier for the token. */
     id: string;
     /** UUID of the user who owns the token. */
-    userId: string;
+    owner: string;
     /** Authentication provider associated with the token. */
     provider: string;
     /** Access token value. */

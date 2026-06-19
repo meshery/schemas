@@ -4,218 +4,356 @@
  */
 
 export interface paths {
-    "/api/identity/orgs": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Read organizations
-         * @description Returns organizations for the current user.
-         */
-        get: operations["getOrgs"];
-        put?: never;
-        /**
-         * Create an organization
-         * @description Creates a new organization.
-         */
-        post: operations["createOrg"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/identity/orgs/by-domain": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get organization by domain */
-        get: operations["getOrgByDomain"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/identity/orgs/{orgId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Read an organization
-         * @description Returns the organization in the single-item page wrapper currently emitted by meshery-cloud.
-         */
-        get: operations["getOrg"];
-        /**
-         * Update an organization
-         * @description Updates the organization.
-         */
-        put: operations["updateOrg"];
-        post?: never;
-        /**
-         * Delete an organization
-         * @description Deletes the organization.
-         */
-        delete: operations["deleteOrg"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/identity/orgs/{orgId}/preferences": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get organization preferences
-         * @description Returns preferences for the specified organization.
-         */
-        get: operations["getOrgPreferences"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/identity/orgs/{orgId}/teams/{teamId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Add team to organization or soft delete team
-         * @description Adds a team to an organization. If request body contains action=delete, tombstones a team by setting its deletedAt timestamp. The team's organization mapping remains intact.
-         */
-        post: operations["addTeamToOrg"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/identity/orgs/{orgId}/teams/{teamId}/remove": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Remove team from organization
-         * @description Removes (unassigns) a team from an organization.
-         */
-        post: operations["removeTeamFromOrg"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/identity/orgs/{orgId}/users/{userId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Add user to organization */
-        post: operations["addUserToOrg"];
-        /** Remove user from organization */
-        delete: operations["deleteUserFromOrg"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
+  "/api/identity/orgs": {
+    /** Returns organizations for the current user. */
+    get: operations["getOrgs"];
+    /** Creates a new organization. */
+    post: operations["createOrg"];
+  };
+  "/api/identity/orgs/by-domain": {
+    get: operations["getOrgByDomain"];
+  };
+  "/api/identity/orgs/{orgId}": {
+    /** Returns the organization in the single-item page wrapper currently emitted by meshery-cloud. */
+    get: operations["getOrg"];
+    /** Updates the organization. */
+    put: operations["updateOrg"];
+    /** Deletes the organization. */
+    delete: operations["deleteOrg"];
+  };
+  "/api/identity/orgs/{orgId}/preferences": {
+    /** Returns preferences for the specified organization. */
+    get: operations["getOrgPreferences"];
+  };
+  "/api/identity/orgs/{orgId}/teams/{teamId}": {
+    /** Adds a team to an organization. If request body contains action=delete, tombstones a team by setting its deletedAt timestamp. The team's organization mapping remains intact. */
+    post: operations["addTeamToOrg"];
+  };
+  "/api/identity/orgs/{orgId}/teams/{teamId}/remove": {
+    /** Removes (unassigns) a team from an organization. */
+    post: operations["removeTeamFromOrg"];
+  };
+  "/api/identity/orgs/{orgId}/users/{userId}": {
+    post: operations["addUserToOrg"];
+    delete: operations["deleteUserFromOrg"];
+  };
 }
-export type webhooks = Record<string, never>;
+
 export interface components {
-    schemas: {
-        /**
-         * Format: uuid
-         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-         */
-        UUID: string;
-        /** Format: date-time */
-        NullableTime: string;
-        /** Format: date-time */
-        Time: string;
-        Text: string;
-        MapObject: {
-            [key: string]: string;
-        };
-        /** @description Optional action payload for POST on /api/identity/orgs/{orgId}/teams/{teamId}. */
-        OrgTeamActionPayload: {
-            /**
-             * @description Internal action to perform on the team resource.
-             * @enum {string}
-             */
-            action?: "delete";
+  schemas: {
+    /**
+     * Format: uuid
+     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+     */
+    UUID: string;
+    /** Format: date-time */
+    NullableTime: string;
+    /** Format: date-time */
+    Time: string;
+    Text: string;
+    MapObject: { [key: string]: string };
+    /** @description Optional action payload for POST on /api/identity/orgs/{orgId}/teams/{teamId}. */
+    OrgTeamActionPayload: {
+      /**
+       * @description Internal action to perform on the team resource.
+       * @enum {string}
+       */
+      action?: "delete";
+    };
+    /** @description Image asset anchored to a named location within an organization theme. */
+    Location: {
+      /** @description SVG markup for the asset. */
+      svg: string;
+      /** @description Named location of the asset (e.g. header, footer). */
+      location: string;
+    };
+    /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
+    Logo: {
+      /** @description Image asset anchored to a named location within an organization theme. */
+      desktopView: {
+        /** @description SVG markup for the asset. */
+        svg: string;
+        /** @description Named location of the asset (e.g. header, footer). */
+        location: string;
+      };
+      /** @description Image asset anchored to a named location within an organization theme. */
+      mobileView: {
+        /** @description SVG markup for the asset. */
+        svg: string;
+        /** @description Named location of the asset (e.g. header, footer). */
+        location: string;
+      };
+      /** @description Image asset anchored to a named location within an organization theme. */
+      darkDesktopView: {
+        /** @description SVG markup for the asset. */
+        svg: string;
+        /** @description Named location of the asset (e.g. header, footer). */
+        location: string;
+      };
+      /** @description Image asset anchored to a named location within an organization theme. */
+      darkMobileView: {
+        /** @description SVG markup for the asset. */
+        svg: string;
+        /** @description Named location of the asset (e.g. header, footer). */
+        location: string;
+      };
+    };
+    /** @description UI theme configured for an organization. */
+    Theme: {
+      /**
+       * Format: uuid
+       * @description Theme identifier.
+       */
+      id: string;
+      /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
+      logo: {
+        /** @description Image asset anchored to a named location within an organization theme. */
+        desktopView: {
+          /** @description SVG markup for the asset. */
+          svg: string;
+          /** @description Named location of the asset (e.g. header, footer). */
+          location: string;
         };
         /** @description Image asset anchored to a named location within an organization theme. */
-        Location: {
+        mobileView: {
+          /** @description SVG markup for the asset. */
+          svg: string;
+          /** @description Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+        /** @description Image asset anchored to a named location within an organization theme. */
+        darkDesktopView: {
+          /** @description SVG markup for the asset. */
+          svg: string;
+          /** @description Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+        /** @description Image asset anchored to a named location within an organization theme. */
+        darkMobileView: {
+          /** @description SVG markup for the asset. */
+          svg: string;
+          /** @description Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+      };
+      /** @description Arbitrary theme variables keyed by name. */
+      vars?: { [key: string]: unknown };
+    };
+    /** @description Preferences specific to dashboard behavior. */
+    DashboardPrefs: { [key: string]: unknown };
+    /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+    Links: {
+      /**
+       * Format: uri
+       * @description URL of the organization's Terms of Service page.
+       */
+      termsOfService?: string;
+      /**
+       * Format: uri
+       * @description URL of the organization's Privacy Policy page.
+       */
+      privacy?: string;
+      /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+      support?: { [key: string]: string };
+    };
+    /** @description Organization-level user experience preferences. */
+    Preferences: {
+      /** @description UI theme configured for an organization. */
+      theme: {
+        /**
+         * Format: uuid
+         * @description Theme identifier.
+         */
+        id: string;
+        /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
+        logo: {
+          /** @description Image asset anchored to a named location within an organization theme. */
+          desktopView: {
             /** @description SVG markup for the asset. */
             svg: string;
             /** @description Named location of the asset (e.g. header, footer). */
             location: string;
+          };
+          /** @description Image asset anchored to a named location within an organization theme. */
+          mobileView: {
+            /** @description SVG markup for the asset. */
+            svg: string;
+            /** @description Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
+          /** @description Image asset anchored to a named location within an organization theme. */
+          darkDesktopView: {
+            /** @description SVG markup for the asset. */
+            svg: string;
+            /** @description Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
+          /** @description Image asset anchored to a named location within an organization theme. */
+          darkMobileView: {
+            /** @description SVG markup for the asset. */
+            svg: string;
+            /** @description Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
         };
-        /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
-        Logo: {
+        /** @description Arbitrary theme variables keyed by name. */
+        vars?: { [key: string]: unknown };
+      };
+      /** @description Preferences specific to dashboard behavior. */
+      dashboard: { [key: string]: unknown };
+      /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+      links?: {
+        /**
+         * Format: uri
+         * @description URL of the organization's Terms of Service page.
+         */
+        termsOfService?: string;
+        /**
+         * Format: uri
+         * @description URL of the organization's Privacy Policy page.
+         */
+        privacy?: string;
+        /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+        support?: { [key: string]: string };
+      };
+      /**
+       * @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
+       * @default true
+       */
+      showAuthCarousel?: boolean;
+    };
+    /** @description Free-form metadata associated with an organization, including preferences. */
+    OrgMetadata: {
+      /** @description Organization-level user experience preferences. */
+      preferences: {
+        /** @description UI theme configured for an organization. */
+        theme: {
+          /**
+           * Format: uuid
+           * @description Theme identifier.
+           */
+          id: string;
+          /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
+          logo: {
             /** @description Image asset anchored to a named location within an organization theme. */
             desktopView: {
-                /** @description SVG markup for the asset. */
-                svg: string;
-                /** @description Named location of the asset (e.g. header, footer). */
-                location: string;
+              /** @description SVG markup for the asset. */
+              svg: string;
+              /** @description Named location of the asset (e.g. header, footer). */
+              location: string;
             };
             /** @description Image asset anchored to a named location within an organization theme. */
             mobileView: {
-                /** @description SVG markup for the asset. */
-                svg: string;
-                /** @description Named location of the asset (e.g. header, footer). */
-                location: string;
+              /** @description SVG markup for the asset. */
+              svg: string;
+              /** @description Named location of the asset (e.g. header, footer). */
+              location: string;
             };
             /** @description Image asset anchored to a named location within an organization theme. */
             darkDesktopView: {
-                /** @description SVG markup for the asset. */
-                svg: string;
-                /** @description Named location of the asset (e.g. header, footer). */
-                location: string;
+              /** @description SVG markup for the asset. */
+              svg: string;
+              /** @description Named location of the asset (e.g. header, footer). */
+              location: string;
             };
             /** @description Image asset anchored to a named location within an organization theme. */
             darkMobileView: {
-                /** @description SVG markup for the asset. */
-                svg: string;
-                /** @description Named location of the asset (e.g. header, footer). */
-                location: string;
+              /** @description SVG markup for the asset. */
+              svg: string;
+              /** @description Named location of the asset (e.g. header, footer). */
+              location: string;
             };
+          };
+          /** @description Arbitrary theme variables keyed by name. */
+          vars?: { [key: string]: unknown };
         };
-        /** @description UI theme configured for an organization. */
-        Theme: {
+        /** @description Preferences specific to dashboard behavior. */
+        dashboard: { [key: string]: unknown };
+        /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+        links?: {
+          /**
+           * Format: uri
+           * @description URL of the organization's Terms of Service page.
+           */
+          termsOfService?: string;
+          /**
+           * Format: uri
+           * @description URL of the organization's Privacy Policy page.
+           */
+          privacy?: string;
+          /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+          support?: { [key: string]: string };
+        };
+        /**
+         * @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
+         * @default true
+         */
+        showAuthCarousel?: boolean;
+      };
+    };
+    /** @description An organization in Meshery Cloud. Organizations are the top-level tenancy boundary and own teams, workspaces, environments, designs, and other resources. Learn more at https://docs.meshery.io/concepts/logical/organizations */
+    Organization: {
+      /**
+       * Format: uuid
+       * @description Organization ID.
+       */
+      id: string;
+      /** @description Name of the organization. */
+      name: string;
+      /** @description Country of the organization. */
+      country: string;
+      /** @description Region of the organization. */
+      region: string;
+      /** @description Description of the organization. */
+      description: string;
+      /**
+       * Format: uuid
+       * @description Owner user ID of the organization.
+       */
+      owner: string;
+      /** @description Free-form metadata associated with the organization, including preferences. */
+      metadata: { [key: string]: unknown };
+      /** @description Domain of the organization. */
+      domain?: string | null;
+      /**
+       * Format: date-time
+       * @description Timestamp when the organization was created.
+       */
+      createdAt: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the organization was last updated.
+       */
+      updatedAt: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the organization was soft-deleted. Null while the organization is active.
+       */
+      deletedAt?: string;
+    };
+    /** @description Organization listing record used in list and get responses. */
+    AvailableOrganization: {
+      /**
+       * Format: uuid
+       * @description Organization ID.
+       */
+      id?: string;
+      /** @description Name of the organization. */
+      name?: string;
+      /** @description Description of the organization. */
+      description?: string;
+      /** @description Country of the organization. */
+      country?: string;
+      /** @description Region of the organization. */
+      region?: string;
+      /** @description Display name of the organization owner. */
+      owner?: string;
+      /** @description Free-form metadata associated with an organization, including preferences. */
+      metadata?: {
+        /** @description Organization-level user experience preferences. */
+        preferences: {
+          /** @description UI theme configured for an organization. */
+          theme: {
             /**
              * Format: uuid
              * @description Theme identifier.
@@ -223,46 +361,42 @@ export interface components {
             id: string;
             /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
             logo: {
-                /** @description Image asset anchored to a named location within an organization theme. */
-                desktopView: {
-                    /** @description SVG markup for the asset. */
-                    svg: string;
-                    /** @description Named location of the asset (e.g. header, footer). */
-                    location: string;
-                };
-                /** @description Image asset anchored to a named location within an organization theme. */
-                mobileView: {
-                    /** @description SVG markup for the asset. */
-                    svg: string;
-                    /** @description Named location of the asset (e.g. header, footer). */
-                    location: string;
-                };
-                /** @description Image asset anchored to a named location within an organization theme. */
-                darkDesktopView: {
-                    /** @description SVG markup for the asset. */
-                    svg: string;
-                    /** @description Named location of the asset (e.g. header, footer). */
-                    location: string;
-                };
-                /** @description Image asset anchored to a named location within an organization theme. */
-                darkMobileView: {
-                    /** @description SVG markup for the asset. */
-                    svg: string;
-                    /** @description Named location of the asset (e.g. header, footer). */
-                    location: string;
-                };
+              /** @description Image asset anchored to a named location within an organization theme. */
+              desktopView: {
+                /** @description SVG markup for the asset. */
+                svg: string;
+                /** @description Named location of the asset (e.g. header, footer). */
+                location: string;
+              };
+              /** @description Image asset anchored to a named location within an organization theme. */
+              mobileView: {
+                /** @description SVG markup for the asset. */
+                svg: string;
+                /** @description Named location of the asset (e.g. header, footer). */
+                location: string;
+              };
+              /** @description Image asset anchored to a named location within an organization theme. */
+              darkDesktopView: {
+                /** @description SVG markup for the asset. */
+                svg: string;
+                /** @description Named location of the asset (e.g. header, footer). */
+                location: string;
+              };
+              /** @description Image asset anchored to a named location within an organization theme. */
+              darkMobileView: {
+                /** @description SVG markup for the asset. */
+                svg: string;
+                /** @description Named location of the asset (e.g. header, footer). */
+                location: string;
+              };
             };
             /** @description Arbitrary theme variables keyed by name. */
-            vars?: {
-                [key: string]: unknown;
-            };
-        };
-        /** @description Preferences specific to dashboard behavior. */
-        DashboardPrefs: {
-            [key: string]: unknown;
-        };
-        /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
-        Links: {
+            vars?: { [key: string]: unknown };
+          };
+          /** @description Preferences specific to dashboard behavior. */
+          dashboard: { [key: string]: unknown };
+          /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+          links?: {
             /**
              * Format: uri
              * @description URL of the organization's Terms of Service page.
@@ -274,88 +408,661 @@ export interface components {
              */
             privacy?: string;
             /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
-            support?: {
-                [key: string]: string;
-            };
+            support?: { [key: string]: string };
+          };
+          /**
+           * @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
+           * @default true
+           */
+          showAuthCarousel?: boolean;
         };
-        /** @description Organization-level user experience preferences. */
-        Preferences: {
+      };
+      /**
+       * Format: date-time
+       * @description Timestamp when the organization was created.
+       */
+      createdAt?: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the organization was last updated.
+       */
+      updatedAt?: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the organization was soft-deleted.
+       */
+      deletedAt?: string;
+    };
+    /** @description Paginated list of organizations. */
+    OrganizationsPage: {
+      /** @description Zero-based page index returned in this response. */
+      page?: number;
+      /** @description Maximum number of items returned on each page. */
+      pageSize?: number;
+      /** @description Total number of items across all pages. */
+      totalCount?: number;
+      /** @description Organizations in this page. */
+      organizations?: {
+        /**
+         * Format: uuid
+         * @description Organization ID.
+         */
+        id?: string;
+        /** @description Name of the organization. */
+        name?: string;
+        /** @description Description of the organization. */
+        description?: string;
+        /** @description Country of the organization. */
+        country?: string;
+        /** @description Region of the organization. */
+        region?: string;
+        /** @description Display name of the organization owner. */
+        owner?: string;
+        /** @description Free-form metadata associated with an organization, including preferences. */
+        metadata?: {
+          /** @description Organization-level user experience preferences. */
+          preferences: {
             /** @description UI theme configured for an organization. */
             theme: {
-                /**
-                 * Format: uuid
-                 * @description Theme identifier.
-                 */
-                id: string;
-                /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
-                logo: {
-                    /** @description Image asset anchored to a named location within an organization theme. */
-                    desktopView: {
-                        /** @description SVG markup for the asset. */
-                        svg: string;
-                        /** @description Named location of the asset (e.g. header, footer). */
-                        location: string;
-                    };
-                    /** @description Image asset anchored to a named location within an organization theme. */
-                    mobileView: {
-                        /** @description SVG markup for the asset. */
-                        svg: string;
-                        /** @description Named location of the asset (e.g. header, footer). */
-                        location: string;
-                    };
-                    /** @description Image asset anchored to a named location within an organization theme. */
-                    darkDesktopView: {
-                        /** @description SVG markup for the asset. */
-                        svg: string;
-                        /** @description Named location of the asset (e.g. header, footer). */
-                        location: string;
-                    };
-                    /** @description Image asset anchored to a named location within an organization theme. */
-                    darkMobileView: {
-                        /** @description SVG markup for the asset. */
-                        svg: string;
-                        /** @description Named location of the asset (e.g. header, footer). */
-                        location: string;
-                    };
+              /**
+               * Format: uuid
+               * @description Theme identifier.
+               */
+              id: string;
+              /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
+              logo: {
+                /** @description Image asset anchored to a named location within an organization theme. */
+                desktopView: {
+                  /** @description SVG markup for the asset. */
+                  svg: string;
+                  /** @description Named location of the asset (e.g. header, footer). */
+                  location: string;
                 };
-                /** @description Arbitrary theme variables keyed by name. */
-                vars?: {
-                    [key: string]: unknown;
+                /** @description Image asset anchored to a named location within an organization theme. */
+                mobileView: {
+                  /** @description SVG markup for the asset. */
+                  svg: string;
+                  /** @description Named location of the asset (e.g. header, footer). */
+                  location: string;
                 };
+                /** @description Image asset anchored to a named location within an organization theme. */
+                darkDesktopView: {
+                  /** @description SVG markup for the asset. */
+                  svg: string;
+                  /** @description Named location of the asset (e.g. header, footer). */
+                  location: string;
+                };
+                /** @description Image asset anchored to a named location within an organization theme. */
+                darkMobileView: {
+                  /** @description SVG markup for the asset. */
+                  svg: string;
+                  /** @description Named location of the asset (e.g. header, footer). */
+                  location: string;
+                };
+              };
+              /** @description Arbitrary theme variables keyed by name. */
+              vars?: { [key: string]: unknown };
             };
             /** @description Preferences specific to dashboard behavior. */
-            dashboard: {
-                [key: string]: unknown;
-            };
+            dashboard: { [key: string]: unknown };
             /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
             links?: {
-                /**
-                 * Format: uri
-                 * @description URL of the organization's Terms of Service page.
-                 */
-                termsOfService?: string;
-                /**
-                 * Format: uri
-                 * @description URL of the organization's Privacy Policy page.
-                 */
-                privacy?: string;
-                /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
-                support?: {
-                    [key: string]: string;
-                };
+              /**
+               * Format: uri
+               * @description URL of the organization's Terms of Service page.
+               */
+              termsOfService?: string;
+              /**
+               * Format: uri
+               * @description URL of the organization's Privacy Policy page.
+               */
+              privacy?: string;
+              /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+              support?: { [key: string]: string };
             };
             /**
              * @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
              * @default true
              */
-            showAuthCarousel: boolean;
+            showAuthCarousel?: boolean;
+          };
         };
+        /**
+         * Format: date-time
+         * @description Timestamp when the organization was created.
+         */
+        createdAt?: string;
+        /**
+         * Format: date-time
+         * @description Timestamp when the organization was last updated.
+         */
+        updatedAt?: string;
+        /**
+         * Format: date-time
+         * @description Timestamp when the organization was soft-deleted.
+         */
+        deletedAt?: string;
+      }[];
+    };
+    /** @description Single-organization wrapper used by current meshery-cloud organization handlers. */
+    OrganizationPage: {
+      /** @description Zero-based page index returned in this response. */
+      page?: number;
+      /** @description Maximum number of items returned on each page. */
+      pageSize?: number;
+      /** @description Total number of items across all pages. */
+      totalCount?: number;
+      /** @description Organizations returned in this single-item page wrapper. */
+      organizations?: {
+        /**
+         * Format: uuid
+         * @description Organization ID.
+         */
+        id?: string;
+        /** @description Name of the organization. */
+        name?: string;
+        /** @description Description of the organization. */
+        description?: string;
+        /** @description Country of the organization. */
+        country?: string;
+        /** @description Region of the organization. */
+        region?: string;
+        /** @description Display name of the organization owner. */
+        owner?: string;
         /** @description Free-form metadata associated with an organization, including preferences. */
-        OrgMetadata: {
-            /** @description Organization-level user experience preferences. */
-            preferences: {
-                /** @description UI theme configured for an organization. */
-                theme: {
+        metadata?: {
+          /** @description Organization-level user experience preferences. */
+          preferences: {
+            /** @description UI theme configured for an organization. */
+            theme: {
+              /**
+               * Format: uuid
+               * @description Theme identifier.
+               */
+              id: string;
+              /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
+              logo: {
+                /** @description Image asset anchored to a named location within an organization theme. */
+                desktopView: {
+                  /** @description SVG markup for the asset. */
+                  svg: string;
+                  /** @description Named location of the asset (e.g. header, footer). */
+                  location: string;
+                };
+                /** @description Image asset anchored to a named location within an organization theme. */
+                mobileView: {
+                  /** @description SVG markup for the asset. */
+                  svg: string;
+                  /** @description Named location of the asset (e.g. header, footer). */
+                  location: string;
+                };
+                /** @description Image asset anchored to a named location within an organization theme. */
+                darkDesktopView: {
+                  /** @description SVG markup for the asset. */
+                  svg: string;
+                  /** @description Named location of the asset (e.g. header, footer). */
+                  location: string;
+                };
+                /** @description Image asset anchored to a named location within an organization theme. */
+                darkMobileView: {
+                  /** @description SVG markup for the asset. */
+                  svg: string;
+                  /** @description Named location of the asset (e.g. header, footer). */
+                  location: string;
+                };
+              };
+              /** @description Arbitrary theme variables keyed by name. */
+              vars?: { [key: string]: unknown };
+            };
+            /** @description Preferences specific to dashboard behavior. */
+            dashboard: { [key: string]: unknown };
+            /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+            links?: {
+              /**
+               * Format: uri
+               * @description URL of the organization's Terms of Service page.
+               */
+              termsOfService?: string;
+              /**
+               * Format: uri
+               * @description URL of the organization's Privacy Policy page.
+               */
+              privacy?: string;
+              /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+              support?: { [key: string]: string };
+            };
+            /**
+             * @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
+             * @default true
+             */
+            showAuthCarousel?: boolean;
+          };
+        };
+        /**
+         * Format: date-time
+         * @description Timestamp when the organization was created.
+         */
+        createdAt?: string;
+        /**
+         * Format: date-time
+         * @description Timestamp when the organization was last updated.
+         */
+        updatedAt?: string;
+        /**
+         * Format: date-time
+         * @description Timestamp when the organization was soft-deleted.
+         */
+        deletedAt?: string;
+      }[];
+    };
+    /** @description Payload for creating or updating an organization. Contains only client-settable fields. */
+    OrganizationPayload: {
+      /** @description Name of the organization. */
+      name?: string;
+      /** @description Country of the organization. */
+      country?: string;
+      /** @description Region of the organization. */
+      region?: string;
+      /** @description Description of the organization. */
+      description?: string;
+      /** @description Indicates whether organization members should be notified of this update. */
+      notifyOrgUpdate?: boolean;
+      /** @description Organization-level user experience preferences. */
+      preferences?: {
+        /** @description UI theme configured for an organization. */
+        theme: {
+          /**
+           * Format: uuid
+           * @description Theme identifier.
+           */
+          id: string;
+          /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
+          logo: {
+            /** @description Image asset anchored to a named location within an organization theme. */
+            desktopView: {
+              /** @description SVG markup for the asset. */
+              svg: string;
+              /** @description Named location of the asset (e.g. header, footer). */
+              location: string;
+            };
+            /** @description Image asset anchored to a named location within an organization theme. */
+            mobileView: {
+              /** @description SVG markup for the asset. */
+              svg: string;
+              /** @description Named location of the asset (e.g. header, footer). */
+              location: string;
+            };
+            /** @description Image asset anchored to a named location within an organization theme. */
+            darkDesktopView: {
+              /** @description SVG markup for the asset. */
+              svg: string;
+              /** @description Named location of the asset (e.g. header, footer). */
+              location: string;
+            };
+            /** @description Image asset anchored to a named location within an organization theme. */
+            darkMobileView: {
+              /** @description SVG markup for the asset. */
+              svg: string;
+              /** @description Named location of the asset (e.g. header, footer). */
+              location: string;
+            };
+          };
+          /** @description Arbitrary theme variables keyed by name. */
+          vars?: { [key: string]: unknown };
+        };
+        /** @description Preferences specific to dashboard behavior. */
+        dashboard: { [key: string]: unknown };
+        /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+        links?: {
+          /**
+           * Format: uri
+           * @description URL of the organization's Terms of Service page.
+           */
+          termsOfService?: string;
+          /**
+           * Format: uri
+           * @description URL of the organization's Privacy Policy page.
+           */
+          privacy?: string;
+          /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+          support?: { [key: string]: string };
+        };
+        /**
+         * @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
+         * @default true
+         */
+        showAuthCarousel?: boolean;
+      };
+    };
+    /** @description Team listing record used in team listings associated with an organization. */
+    AvailableTeam: {
+      /**
+       * Format: uuid
+       * @description Team ID.
+       */
+      id?: string;
+      /** @description Name of the team. */
+      name?: string;
+      /** @description Description of the team. */
+      description?: string;
+      /** @description Display name of the team owner. */
+      owner?: string;
+      /** @description Free-form team metadata. */
+      metadata?: { [key: string]: string };
+      /**
+       * Format: date-time
+       * @description Timestamp when the team was created.
+       */
+      createdAt?: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the team was last updated.
+       */
+      updatedAt?: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the team was soft-deleted.
+       */
+      deletedAt?: string;
+    };
+    /** @description Paginated list of teams. */
+    TeamsPage: {
+      /** @description Zero-based page index returned in this response. */
+      page?: number;
+      /** @description Maximum number of items returned on each page. */
+      pageSize?: number;
+      /** @description Total number of items across all pages. */
+      totalCount?: number;
+      /** @description Teams in this page. */
+      teams?: {
+        /**
+         * Format: uuid
+         * @description Team ID.
+         */
+        id?: string;
+        /** @description Name of the team. */
+        name?: string;
+        /** @description Description of the team. */
+        description?: string;
+        /** @description Display name of the team owner. */
+        owner?: string;
+        /** @description Free-form team metadata. */
+        metadata?: { [key: string]: string };
+        /**
+         * Format: date-time
+         * @description Timestamp when the team was created.
+         */
+        createdAt?: string;
+        /**
+         * Format: date-time
+         * @description Timestamp when the team was last updated.
+         */
+        updatedAt?: string;
+        /**
+         * Format: date-time
+         * @description Timestamp when the team was soft-deleted.
+         */
+        deletedAt?: string;
+      }[];
+    };
+    /** @description Junction record linking a team to an organization. */
+    TeamsOrganizationsMapping: {
+      /**
+       * Format: uuid
+       * @description Mapping record ID.
+       */
+      id?: string;
+      /**
+       * Format: uuid
+       * @description Organization ID for this mapping.
+       */
+      orgId?: string;
+      /**
+       * Format: uuid
+       * @description Team ID for this mapping.
+       */
+      teamId?: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the mapping was created.
+       */
+      createdAt?: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the mapping was last updated.
+       */
+      updatedAt?: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the mapping was soft-deleted.
+       */
+      deletedAt?: string;
+    };
+    /** @description Paginated list of team-organization mappings. */
+    TeamsOrganizationsMappingPage: {
+      /** @description Zero-based page index returned in this response. */
+      page?: number;
+      /** @description Maximum number of items returned on each page. */
+      pageSize?: number;
+      /** @description Total number of items across all pages. */
+      totalCount?: number;
+      /** @description Team-organization mapping entries. */
+      teamsOrganizationsMapping?: {
+        /**
+         * Format: uuid
+         * @description Mapping record ID.
+         */
+        id?: string;
+        /**
+         * Format: uuid
+         * @description Organization ID for this mapping.
+         */
+        orgId?: string;
+        /**
+         * Format: uuid
+         * @description Team ID for this mapping.
+         */
+        teamId?: string;
+        /**
+         * Format: date-time
+         * @description Timestamp when the mapping was created.
+         */
+        createdAt?: string;
+        /**
+         * Format: date-time
+         * @description Timestamp when the mapping was last updated.
+         */
+        updatedAt?: string;
+        /**
+         * Format: date-time
+         * @description Timestamp when the mapping was soft-deleted.
+         */
+        deletedAt?: string;
+      }[];
+    };
+  };
+  responses: {
+    /** Invalid request body or request param */
+    400: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Expired JWT token used or insufficient privilege */
+    401: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Result not found */
+    404: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Internal server error */
+    500: {
+      content: {
+        "text/plain": string;
+      };
+    };
+  };
+  parameters: {
+    /** @description Organization ID. */
+    orgId: string;
+    /** @description User ID. */
+    userId: string;
+    /** @description Team ID. */
+    teamId: string;
+    /** @description Zero-based index of the result page to return. */
+    page: number;
+    /** @description Maximum number of items returned on each page. */
+    pageSize: number;
+    /** @description Get responses that match search param value */
+    search: string;
+    /** @description Get ordered responses */
+    order: string;
+    /** @description Get all possible entries */
+    all: boolean;
+  };
+  requestBodies: {
+    /** Body for creating or updating an organization */
+    organizationPayload: {
+      content: {
+        "application/json": {
+          /** @description Name of the organization. */
+          name?: string;
+          /** @description Country of the organization. */
+          country?: string;
+          /** @description Region of the organization. */
+          region?: string;
+          /** @description Description of the organization. */
+          description?: string;
+          /** @description Indicates whether organization members should be notified of this update. */
+          notifyOrgUpdate?: boolean;
+          /** @description Organization-level user experience preferences. */
+          preferences?: {
+            /** @description UI theme configured for an organization. */
+            theme: {
+              /**
+               * Format: uuid
+               * @description Theme identifier.
+               */
+              id: string;
+              /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
+              logo: {
+                /** @description Image asset anchored to a named location within an organization theme. */
+                desktopView: {
+                  /** @description SVG markup for the asset. */
+                  svg: string;
+                  /** @description Named location of the asset (e.g. header, footer). */
+                  location: string;
+                };
+                /** @description Image asset anchored to a named location within an organization theme. */
+                mobileView: {
+                  /** @description SVG markup for the asset. */
+                  svg: string;
+                  /** @description Named location of the asset (e.g. header, footer). */
+                  location: string;
+                };
+                /** @description Image asset anchored to a named location within an organization theme. */
+                darkDesktopView: {
+                  /** @description SVG markup for the asset. */
+                  svg: string;
+                  /** @description Named location of the asset (e.g. header, footer). */
+                  location: string;
+                };
+                /** @description Image asset anchored to a named location within an organization theme. */
+                darkMobileView: {
+                  /** @description SVG markup for the asset. */
+                  svg: string;
+                  /** @description Named location of the asset (e.g. header, footer). */
+                  location: string;
+                };
+              };
+              /** @description Arbitrary theme variables keyed by name. */
+              vars?: { [key: string]: unknown };
+            };
+            /** @description Preferences specific to dashboard behavior. */
+            dashboard: { [key: string]: unknown };
+            /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+            links?: {
+              /**
+               * Format: uri
+               * @description URL of the organization's Terms of Service page.
+               */
+              termsOfService?: string;
+              /**
+               * Format: uri
+               * @description URL of the organization's Privacy Policy page.
+               */
+              privacy?: string;
+              /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+              support?: { [key: string]: string };
+            };
+            /**
+             * @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
+             * @default true
+             */
+            showAuthCarousel?: boolean;
+          };
+        };
+      };
+    };
+  };
+}
+
+export interface operations {
+  /** Returns organizations for the current user. */
+  getOrgs: {
+    parameters: {
+      query: {
+        /** Zero-based index of the result page to return. */
+        page?: number;
+        /** Maximum number of items returned on each page. */
+        pageSize?: number;
+        /** Get responses that match search param value */
+        search?: string;
+        /** Get ordered responses */
+        order?: string;
+        /** Get all possible entries */
+        all?: boolean;
+      };
+    };
+    responses: {
+      /** Organizations response */
+      200: {
+        content: {
+          "application/json": {
+            /** @description Zero-based page index returned in this response. */
+            page?: number;
+            /** @description Maximum number of items returned on each page. */
+            pageSize?: number;
+            /** @description Total number of items across all pages. */
+            totalCount?: number;
+            /** @description Organizations in this page. */
+            organizations?: {
+              /**
+               * Format: uuid
+               * @description Organization ID.
+               */
+              id?: string;
+              /** @description Name of the organization. */
+              name?: string;
+              /** @description Description of the organization. */
+              description?: string;
+              /** @description Country of the organization. */
+              country?: string;
+              /** @description Region of the organization. */
+              region?: string;
+              /** @description Display name of the organization owner. */
+              owner?: string;
+              /** @description Free-form metadata associated with an organization, including preferences. */
+              metadata?: {
+                /** @description Organization-level user experience preferences. */
+                preferences: {
+                  /** @description UI theme configured for an organization. */
+                  theme: {
                     /**
                      * Format: uuid
                      * @description Theme identifier.
@@ -363,46 +1070,42 @@ export interface components {
                     id: string;
                     /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
                     logo: {
-                        /** @description Image asset anchored to a named location within an organization theme. */
-                        desktopView: {
-                            /** @description SVG markup for the asset. */
-                            svg: string;
-                            /** @description Named location of the asset (e.g. header, footer). */
-                            location: string;
-                        };
-                        /** @description Image asset anchored to a named location within an organization theme. */
-                        mobileView: {
-                            /** @description SVG markup for the asset. */
-                            svg: string;
-                            /** @description Named location of the asset (e.g. header, footer). */
-                            location: string;
-                        };
-                        /** @description Image asset anchored to a named location within an organization theme. */
-                        darkDesktopView: {
-                            /** @description SVG markup for the asset. */
-                            svg: string;
-                            /** @description Named location of the asset (e.g. header, footer). */
-                            location: string;
-                        };
-                        /** @description Image asset anchored to a named location within an organization theme. */
-                        darkMobileView: {
-                            /** @description SVG markup for the asset. */
-                            svg: string;
-                            /** @description Named location of the asset (e.g. header, footer). */
-                            location: string;
-                        };
+                      /** @description Image asset anchored to a named location within an organization theme. */
+                      desktopView: {
+                        /** @description SVG markup for the asset. */
+                        svg: string;
+                        /** @description Named location of the asset (e.g. header, footer). */
+                        location: string;
+                      };
+                      /** @description Image asset anchored to a named location within an organization theme. */
+                      mobileView: {
+                        /** @description SVG markup for the asset. */
+                        svg: string;
+                        /** @description Named location of the asset (e.g. header, footer). */
+                        location: string;
+                      };
+                      /** @description Image asset anchored to a named location within an organization theme. */
+                      darkDesktopView: {
+                        /** @description SVG markup for the asset. */
+                        svg: string;
+                        /** @description Named location of the asset (e.g. header, footer). */
+                        location: string;
+                      };
+                      /** @description Image asset anchored to a named location within an organization theme. */
+                      darkMobileView: {
+                        /** @description SVG markup for the asset. */
+                        svg: string;
+                        /** @description Named location of the asset (e.g. header, footer). */
+                        location: string;
+                      };
                     };
                     /** @description Arbitrary theme variables keyed by name. */
-                    vars?: {
-                        [key: string]: unknown;
-                    };
-                };
-                /** @description Preferences specific to dashboard behavior. */
-                dashboard: {
-                    [key: string]: unknown;
-                };
-                /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
-                links?: {
+                    vars?: { [key: string]: unknown };
+                  };
+                  /** @description Preferences specific to dashboard behavior. */
+                  dashboard: { [key: string]: unknown };
+                  /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+                  links?: {
                     /**
                      * Format: uri
                      * @description URL of the organization's Terms of Service page.
@@ -414,19 +1117,283 @@ export interface components {
                      */
                     privacy?: string;
                     /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
-                    support?: {
-                        [key: string]: string;
-                    };
+                    support?: { [key: string]: string };
+                  };
+                  /**
+                   * @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
+                   * @default true
+                   */
+                  showAuthCarousel?: boolean;
                 };
-                /**
-                 * @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
-                 * @default true
-                 */
-                showAuthCarousel: boolean;
-            };
+              };
+              /**
+               * Format: date-time
+               * @description Timestamp when the organization was created.
+               */
+              createdAt?: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the organization was last updated.
+               */
+              updatedAt?: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the organization was soft-deleted.
+               */
+              deletedAt?: string;
+            }[];
+          };
         };
-        /** @description An organization in Meshery Cloud. Organizations are the top-level tenancy boundary and own teams, workspaces, environments, designs, and other resources. Learn more at https://docs.meshery.io/concepts/logical/organizations */
-        Organization: {
+      };
+      /** No content */
+      204: never;
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  /** Creates a new organization. */
+  createOrg: {
+    responses: {
+      /** Single-organization page response */
+      201: {
+        content: {
+          "application/json": {
+            /** @description Zero-based page index returned in this response. */
+            page?: number;
+            /** @description Maximum number of items returned on each page. */
+            pageSize?: number;
+            /** @description Total number of items across all pages. */
+            totalCount?: number;
+            /** @description Organizations returned in this single-item page wrapper. */
+            organizations?: {
+              /**
+               * Format: uuid
+               * @description Organization ID.
+               */
+              id?: string;
+              /** @description Name of the organization. */
+              name?: string;
+              /** @description Description of the organization. */
+              description?: string;
+              /** @description Country of the organization. */
+              country?: string;
+              /** @description Region of the organization. */
+              region?: string;
+              /** @description Display name of the organization owner. */
+              owner?: string;
+              /** @description Free-form metadata associated with an organization, including preferences. */
+              metadata?: {
+                /** @description Organization-level user experience preferences. */
+                preferences: {
+                  /** @description UI theme configured for an organization. */
+                  theme: {
+                    /**
+                     * Format: uuid
+                     * @description Theme identifier.
+                     */
+                    id: string;
+                    /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
+                    logo: {
+                      /** @description Image asset anchored to a named location within an organization theme. */
+                      desktopView: {
+                        /** @description SVG markup for the asset. */
+                        svg: string;
+                        /** @description Named location of the asset (e.g. header, footer). */
+                        location: string;
+                      };
+                      /** @description Image asset anchored to a named location within an organization theme. */
+                      mobileView: {
+                        /** @description SVG markup for the asset. */
+                        svg: string;
+                        /** @description Named location of the asset (e.g. header, footer). */
+                        location: string;
+                      };
+                      /** @description Image asset anchored to a named location within an organization theme. */
+                      darkDesktopView: {
+                        /** @description SVG markup for the asset. */
+                        svg: string;
+                        /** @description Named location of the asset (e.g. header, footer). */
+                        location: string;
+                      };
+                      /** @description Image asset anchored to a named location within an organization theme. */
+                      darkMobileView: {
+                        /** @description SVG markup for the asset. */
+                        svg: string;
+                        /** @description Named location of the asset (e.g. header, footer). */
+                        location: string;
+                      };
+                    };
+                    /** @description Arbitrary theme variables keyed by name. */
+                    vars?: { [key: string]: unknown };
+                  };
+                  /** @description Preferences specific to dashboard behavior. */
+                  dashboard: { [key: string]: unknown };
+                  /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+                  links?: {
+                    /**
+                     * Format: uri
+                     * @description URL of the organization's Terms of Service page.
+                     */
+                    termsOfService?: string;
+                    /**
+                     * Format: uri
+                     * @description URL of the organization's Privacy Policy page.
+                     */
+                    privacy?: string;
+                    /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+                    support?: { [key: string]: string };
+                  };
+                  /**
+                   * @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
+                   * @default true
+                   */
+                  showAuthCarousel?: boolean;
+                };
+              };
+              /**
+               * Format: date-time
+               * @description Timestamp when the organization was created.
+               */
+              createdAt?: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the organization was last updated.
+               */
+              updatedAt?: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the organization was soft-deleted.
+               */
+              deletedAt?: string;
+            }[];
+          };
+        };
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+    /** Body for creating or updating an organization */
+    requestBody: {
+      content: {
+        "application/json": {
+          /** @description Name of the organization. */
+          name?: string;
+          /** @description Country of the organization. */
+          country?: string;
+          /** @description Region of the organization. */
+          region?: string;
+          /** @description Description of the organization. */
+          description?: string;
+          /** @description Indicates whether organization members should be notified of this update. */
+          notifyOrgUpdate?: boolean;
+          /** @description Organization-level user experience preferences. */
+          preferences?: {
+            /** @description UI theme configured for an organization. */
+            theme: {
+              /**
+               * Format: uuid
+               * @description Theme identifier.
+               */
+              id: string;
+              /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
+              logo: {
+                /** @description Image asset anchored to a named location within an organization theme. */
+                desktopView: {
+                  /** @description SVG markup for the asset. */
+                  svg: string;
+                  /** @description Named location of the asset (e.g. header, footer). */
+                  location: string;
+                };
+                /** @description Image asset anchored to a named location within an organization theme. */
+                mobileView: {
+                  /** @description SVG markup for the asset. */
+                  svg: string;
+                  /** @description Named location of the asset (e.g. header, footer). */
+                  location: string;
+                };
+                /** @description Image asset anchored to a named location within an organization theme. */
+                darkDesktopView: {
+                  /** @description SVG markup for the asset. */
+                  svg: string;
+                  /** @description Named location of the asset (e.g. header, footer). */
+                  location: string;
+                };
+                /** @description Image asset anchored to a named location within an organization theme. */
+                darkMobileView: {
+                  /** @description SVG markup for the asset. */
+                  svg: string;
+                  /** @description Named location of the asset (e.g. header, footer). */
+                  location: string;
+                };
+              };
+              /** @description Arbitrary theme variables keyed by name. */
+              vars?: { [key: string]: unknown };
+            };
+            /** @description Preferences specific to dashboard behavior. */
+            dashboard: { [key: string]: unknown };
+            /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+            links?: {
+              /**
+               * Format: uri
+               * @description URL of the organization's Terms of Service page.
+               */
+              termsOfService?: string;
+              /**
+               * Format: uri
+               * @description URL of the organization's Privacy Policy page.
+               */
+              privacy?: string;
+              /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+              support?: { [key: string]: string };
+            };
+            /**
+             * @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
+             * @default true
+             */
+            showAuthCarousel?: boolean;
+          };
+        };
+      };
+    };
+  };
+  getOrgByDomain: {
+    parameters: {
+      query: {
+        /** Domain name of the organization to look up. */
+        domain: string;
+      };
+    };
+    responses: {
+      /** Organization response */
+      200: {
+        content: {
+          "application/json": {
             /**
              * Format: uuid
              * @description Organization ID.
@@ -446,7 +1413,7 @@ export interface components {
              */
             owner: string;
             /** @description Free-form metadata associated with the organization, including preferences. */
-            metadata: Record<string, never>;
+            metadata: { [key: string]: unknown };
             /** @description Domain of the organization. */
             domain?: string | null;
             /**
@@ -464,234 +1431,34 @@ export interface components {
              * @description Timestamp when the organization was soft-deleted. Null while the organization is active.
              */
             deletedAt?: string;
+          };
         };
-        /** @description Organization listing record used in list and get responses. */
-        AvailableOrganization: {
-            /**
-             * Format: uuid
-             * @description Organization ID.
-             */
-            id?: string;
-            /** @description Name of the organization. */
-            name?: string;
-            /** @description Description of the organization. */
-            description?: string;
-            /** @description Country of the organization. */
-            country?: string;
-            /** @description Region of the organization. */
-            region?: string;
-            /** @description Display name of the organization owner. */
-            owner?: string;
-            /** @description Free-form metadata associated with an organization, including preferences. */
-            metadata?: {
-                /** @description Organization-level user experience preferences. */
-                preferences: {
-                    /** @description UI theme configured for an organization. */
-                    theme: {
-                        /**
-                         * Format: uuid
-                         * @description Theme identifier.
-                         */
-                        id: string;
-                        /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
-                        logo: {
-                            /** @description Image asset anchored to a named location within an organization theme. */
-                            desktopView: {
-                                /** @description SVG markup for the asset. */
-                                svg: string;
-                                /** @description Named location of the asset (e.g. header, footer). */
-                                location: string;
-                            };
-                            /** @description Image asset anchored to a named location within an organization theme. */
-                            mobileView: {
-                                /** @description SVG markup for the asset. */
-                                svg: string;
-                                /** @description Named location of the asset (e.g. header, footer). */
-                                location: string;
-                            };
-                            /** @description Image asset anchored to a named location within an organization theme. */
-                            darkDesktopView: {
-                                /** @description SVG markup for the asset. */
-                                svg: string;
-                                /** @description Named location of the asset (e.g. header, footer). */
-                                location: string;
-                            };
-                            /** @description Image asset anchored to a named location within an organization theme. */
-                            darkMobileView: {
-                                /** @description SVG markup for the asset. */
-                                svg: string;
-                                /** @description Named location of the asset (e.g. header, footer). */
-                                location: string;
-                            };
-                        };
-                        /** @description Arbitrary theme variables keyed by name. */
-                        vars?: {
-                            [key: string]: unknown;
-                        };
-                    };
-                    /** @description Preferences specific to dashboard behavior. */
-                    dashboard: {
-                        [key: string]: unknown;
-                    };
-                    /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
-                    links?: {
-                        /**
-                         * Format: uri
-                         * @description URL of the organization's Terms of Service page.
-                         */
-                        termsOfService?: string;
-                        /**
-                         * Format: uri
-                         * @description URL of the organization's Privacy Policy page.
-                         */
-                        privacy?: string;
-                        /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
-                        support?: {
-                            [key: string]: string;
-                        };
-                    };
-                    /**
-                     * @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
-                     * @default true
-                     */
-                    showAuthCarousel: boolean;
-                };
-            };
-            /**
-             * Format: date-time
-             * @description Timestamp when the organization was created.
-             */
-            createdAt?: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the organization was last updated.
-             */
-            updatedAt?: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the organization was soft-deleted.
-             */
-            deletedAt?: string;
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
         };
-        /** @description Paginated list of organizations. */
-        OrganizationsPage: {
-            /** @description Zero-based page index returned in this response. */
-            page?: number;
-            /** @description Maximum number of items returned on each page. */
-            pageSize?: number;
-            /** @description Total number of items across all pages. */
-            totalCount?: number;
-            /** @description Organizations in this page. */
-            organizations?: {
-                /**
-                 * Format: uuid
-                 * @description Organization ID.
-                 */
-                id?: string;
-                /** @description Name of the organization. */
-                name?: string;
-                /** @description Description of the organization. */
-                description?: string;
-                /** @description Country of the organization. */
-                country?: string;
-                /** @description Region of the organization. */
-                region?: string;
-                /** @description Display name of the organization owner. */
-                owner?: string;
-                /** @description Free-form metadata associated with an organization, including preferences. */
-                metadata?: {
-                    /** @description Organization-level user experience preferences. */
-                    preferences: {
-                        /** @description UI theme configured for an organization. */
-                        theme: {
-                            /**
-                             * Format: uuid
-                             * @description Theme identifier.
-                             */
-                            id: string;
-                            /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
-                            logo: {
-                                /** @description Image asset anchored to a named location within an organization theme. */
-                                desktopView: {
-                                    /** @description SVG markup for the asset. */
-                                    svg: string;
-                                    /** @description Named location of the asset (e.g. header, footer). */
-                                    location: string;
-                                };
-                                /** @description Image asset anchored to a named location within an organization theme. */
-                                mobileView: {
-                                    /** @description SVG markup for the asset. */
-                                    svg: string;
-                                    /** @description Named location of the asset (e.g. header, footer). */
-                                    location: string;
-                                };
-                                /** @description Image asset anchored to a named location within an organization theme. */
-                                darkDesktopView: {
-                                    /** @description SVG markup for the asset. */
-                                    svg: string;
-                                    /** @description Named location of the asset (e.g. header, footer). */
-                                    location: string;
-                                };
-                                /** @description Image asset anchored to a named location within an organization theme. */
-                                darkMobileView: {
-                                    /** @description SVG markup for the asset. */
-                                    svg: string;
-                                    /** @description Named location of the asset (e.g. header, footer). */
-                                    location: string;
-                                };
-                            };
-                            /** @description Arbitrary theme variables keyed by name. */
-                            vars?: {
-                                [key: string]: unknown;
-                            };
-                        };
-                        /** @description Preferences specific to dashboard behavior. */
-                        dashboard: {
-                            [key: string]: unknown;
-                        };
-                        /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
-                        links?: {
-                            /**
-                             * Format: uri
-                             * @description URL of the organization's Terms of Service page.
-                             */
-                            termsOfService?: string;
-                            /**
-                             * Format: uri
-                             * @description URL of the organization's Privacy Policy page.
-                             */
-                            privacy?: string;
-                            /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
-                            support?: {
-                                [key: string]: string;
-                            };
-                        };
-                        /**
-                         * @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
-                         * @default true
-                         */
-                        showAuthCarousel: boolean;
-                    };
-                };
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the organization was created.
-                 */
-                createdAt?: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the organization was last updated.
-                 */
-                updatedAt?: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the organization was soft-deleted.
-                 */
-                deletedAt?: string;
-            }[];
-        };
-        /** @description Single-organization wrapper used by current meshery-cloud organization handlers. */
-        OrganizationPage: {
+      };
+      /** Organization not found */
+      404: unknown;
+      /** Internal server error */
+      500: unknown;
+    };
+  };
+  /** Returns the organization in the single-item page wrapper currently emitted by meshery-cloud. */
+  getOrg: {
+    parameters: {
+      path: {
+        /** Organization ID. */
+        orgId: string;
+      };
+    };
+    responses: {
+      /** Single-organization page response */
+      200: {
+        content: {
+          "application/json": {
             /** @description Zero-based page index returned in this response. */
             page?: number;
             /** @description Maximum number of items returned on each page. */
@@ -700,129 +1467,27 @@ export interface components {
             totalCount?: number;
             /** @description Organizations returned in this single-item page wrapper. */
             organizations?: {
-                /**
-                 * Format: uuid
-                 * @description Organization ID.
-                 */
-                id?: string;
-                /** @description Name of the organization. */
-                name?: string;
-                /** @description Description of the organization. */
-                description?: string;
-                /** @description Country of the organization. */
-                country?: string;
-                /** @description Region of the organization. */
-                region?: string;
-                /** @description Display name of the organization owner. */
-                owner?: string;
-                /** @description Free-form metadata associated with an organization, including preferences. */
-                metadata?: {
-                    /** @description Organization-level user experience preferences. */
-                    preferences: {
-                        /** @description UI theme configured for an organization. */
-                        theme: {
-                            /**
-                             * Format: uuid
-                             * @description Theme identifier.
-                             */
-                            id: string;
-                            /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
-                            logo: {
-                                /** @description Image asset anchored to a named location within an organization theme. */
-                                desktopView: {
-                                    /** @description SVG markup for the asset. */
-                                    svg: string;
-                                    /** @description Named location of the asset (e.g. header, footer). */
-                                    location: string;
-                                };
-                                /** @description Image asset anchored to a named location within an organization theme. */
-                                mobileView: {
-                                    /** @description SVG markup for the asset. */
-                                    svg: string;
-                                    /** @description Named location of the asset (e.g. header, footer). */
-                                    location: string;
-                                };
-                                /** @description Image asset anchored to a named location within an organization theme. */
-                                darkDesktopView: {
-                                    /** @description SVG markup for the asset. */
-                                    svg: string;
-                                    /** @description Named location of the asset (e.g. header, footer). */
-                                    location: string;
-                                };
-                                /** @description Image asset anchored to a named location within an organization theme. */
-                                darkMobileView: {
-                                    /** @description SVG markup for the asset. */
-                                    svg: string;
-                                    /** @description Named location of the asset (e.g. header, footer). */
-                                    location: string;
-                                };
-                            };
-                            /** @description Arbitrary theme variables keyed by name. */
-                            vars?: {
-                                [key: string]: unknown;
-                            };
-                        };
-                        /** @description Preferences specific to dashboard behavior. */
-                        dashboard: {
-                            [key: string]: unknown;
-                        };
-                        /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
-                        links?: {
-                            /**
-                             * Format: uri
-                             * @description URL of the organization's Terms of Service page.
-                             */
-                            termsOfService?: string;
-                            /**
-                             * Format: uri
-                             * @description URL of the organization's Privacy Policy page.
-                             */
-                            privacy?: string;
-                            /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
-                            support?: {
-                                [key: string]: string;
-                            };
-                        };
-                        /**
-                         * @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
-                         * @default true
-                         */
-                        showAuthCarousel: boolean;
-                    };
-                };
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the organization was created.
-                 */
-                createdAt?: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the organization was last updated.
-                 */
-                updatedAt?: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the organization was soft-deleted.
-                 */
-                deletedAt?: string;
-            }[];
-        };
-        /** @description Payload for creating or updating an organization. Contains only client-settable fields. */
-        OrganizationPayload: {
-            /** @description Name of the organization. */
-            name?: string;
-            /** @description Country of the organization. */
-            country?: string;
-            /** @description Region of the organization. */
-            region?: string;
-            /** @description Description of the organization. */
-            description?: string;
-            /** @description Indicates whether organization members should be notified of this update. */
-            notifyOrgUpdate?: boolean;
-            /** @description Organization-level user experience preferences. */
-            preferences?: {
-                /** @description UI theme configured for an organization. */
-                theme: {
+              /**
+               * Format: uuid
+               * @description Organization ID.
+               */
+              id?: string;
+              /** @description Name of the organization. */
+              name?: string;
+              /** @description Description of the organization. */
+              description?: string;
+              /** @description Country of the organization. */
+              country?: string;
+              /** @description Region of the organization. */
+              region?: string;
+              /** @description Display name of the organization owner. */
+              owner?: string;
+              /** @description Free-form metadata associated with an organization, including preferences. */
+              metadata?: {
+                /** @description Organization-level user experience preferences. */
+                preferences: {
+                  /** @description UI theme configured for an organization. */
+                  theme: {
                     /**
                      * Format: uuid
                      * @description Theme identifier.
@@ -830,46 +1495,42 @@ export interface components {
                     id: string;
                     /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
                     logo: {
-                        /** @description Image asset anchored to a named location within an organization theme. */
-                        desktopView: {
-                            /** @description SVG markup for the asset. */
-                            svg: string;
-                            /** @description Named location of the asset (e.g. header, footer). */
-                            location: string;
-                        };
-                        /** @description Image asset anchored to a named location within an organization theme. */
-                        mobileView: {
-                            /** @description SVG markup for the asset. */
-                            svg: string;
-                            /** @description Named location of the asset (e.g. header, footer). */
-                            location: string;
-                        };
-                        /** @description Image asset anchored to a named location within an organization theme. */
-                        darkDesktopView: {
-                            /** @description SVG markup for the asset. */
-                            svg: string;
-                            /** @description Named location of the asset (e.g. header, footer). */
-                            location: string;
-                        };
-                        /** @description Image asset anchored to a named location within an organization theme. */
-                        darkMobileView: {
-                            /** @description SVG markup for the asset. */
-                            svg: string;
-                            /** @description Named location of the asset (e.g. header, footer). */
-                            location: string;
-                        };
+                      /** @description Image asset anchored to a named location within an organization theme. */
+                      desktopView: {
+                        /** @description SVG markup for the asset. */
+                        svg: string;
+                        /** @description Named location of the asset (e.g. header, footer). */
+                        location: string;
+                      };
+                      /** @description Image asset anchored to a named location within an organization theme. */
+                      mobileView: {
+                        /** @description SVG markup for the asset. */
+                        svg: string;
+                        /** @description Named location of the asset (e.g. header, footer). */
+                        location: string;
+                      };
+                      /** @description Image asset anchored to a named location within an organization theme. */
+                      darkDesktopView: {
+                        /** @description SVG markup for the asset. */
+                        svg: string;
+                        /** @description Named location of the asset (e.g. header, footer). */
+                        location: string;
+                      };
+                      /** @description Image asset anchored to a named location within an organization theme. */
+                      darkMobileView: {
+                        /** @description SVG markup for the asset. */
+                        svg: string;
+                        /** @description Named location of the asset (e.g. header, footer). */
+                        location: string;
+                      };
                     };
                     /** @description Arbitrary theme variables keyed by name. */
-                    vars?: {
-                        [key: string]: unknown;
-                    };
-                };
-                /** @description Preferences specific to dashboard behavior. */
-                dashboard: {
-                    [key: string]: unknown;
-                };
-                /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
-                links?: {
+                    vars?: { [key: string]: unknown };
+                  };
+                  /** @description Preferences specific to dashboard behavior. */
+                  dashboard: { [key: string]: unknown };
+                  /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+                  links?: {
                     /**
                      * Format: uri
                      * @description URL of the organization's Terms of Service page.
@@ -881,127 +1542,559 @@ export interface components {
                      */
                     privacy?: string;
                     /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
-                    support?: {
-                        [key: string]: string;
-                    };
+                    support?: { [key: string]: string };
+                  };
+                  /**
+                   * @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
+                   * @default true
+                   */
+                  showAuthCarousel?: boolean;
                 };
-                /**
-                 * @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
-                 * @default true
-                 */
-                showAuthCarousel: boolean;
-            };
+              };
+              /**
+               * Format: date-time
+               * @description Timestamp when the organization was created.
+               */
+              createdAt?: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the organization was last updated.
+               */
+              updatedAt?: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the organization was soft-deleted.
+               */
+              deletedAt?: string;
+            }[];
+          };
         };
-        /** @description Team listing record used in team listings associated with an organization. */
-        AvailableTeam: {
-            /**
-             * Format: uuid
-             * @description Team ID.
-             */
-            id?: string;
-            /** @description Name of the team. */
-            name?: string;
-            /** @description Description of the team. */
-            description?: string;
-            /** @description Display name of the team owner. */
-            owner?: string;
-            /** @description Free-form team metadata. */
-            metadata?: {
-                [key: string]: string;
-            };
-            /**
-             * Format: date-time
-             * @description Timestamp when the team was created.
-             */
-            createdAt?: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the team was last updated.
-             */
-            updatedAt?: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the team was soft-deleted.
-             */
-            deletedAt?: string;
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
         };
-        /** @description Paginated list of teams. */
-        TeamsPage: {
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  /** Updates the organization. */
+  updateOrg: {
+    parameters: {
+      path: {
+        /** Organization ID. */
+        orgId: string;
+      };
+    };
+    responses: {
+      /** Single-organization page response for the updated organization */
+      200: {
+        content: {
+          "application/json": {
             /** @description Zero-based page index returned in this response. */
             page?: number;
             /** @description Maximum number of items returned on each page. */
             pageSize?: number;
             /** @description Total number of items across all pages. */
             totalCount?: number;
-            /** @description Teams in this page. */
-            teams?: {
+            /** @description Organizations returned in this single-item page wrapper. */
+            organizations?: {
+              /**
+               * Format: uuid
+               * @description Organization ID.
+               */
+              id?: string;
+              /** @description Name of the organization. */
+              name?: string;
+              /** @description Description of the organization. */
+              description?: string;
+              /** @description Country of the organization. */
+              country?: string;
+              /** @description Region of the organization. */
+              region?: string;
+              /** @description Display name of the organization owner. */
+              owner?: string;
+              /** @description Free-form metadata associated with an organization, including preferences. */
+              metadata?: {
+                /** @description Organization-level user experience preferences. */
+                preferences: {
+                  /** @description UI theme configured for an organization. */
+                  theme: {
+                    /**
+                     * Format: uuid
+                     * @description Theme identifier.
+                     */
+                    id: string;
+                    /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
+                    logo: {
+                      /** @description Image asset anchored to a named location within an organization theme. */
+                      desktopView: {
+                        /** @description SVG markup for the asset. */
+                        svg: string;
+                        /** @description Named location of the asset (e.g. header, footer). */
+                        location: string;
+                      };
+                      /** @description Image asset anchored to a named location within an organization theme. */
+                      mobileView: {
+                        /** @description SVG markup for the asset. */
+                        svg: string;
+                        /** @description Named location of the asset (e.g. header, footer). */
+                        location: string;
+                      };
+                      /** @description Image asset anchored to a named location within an organization theme. */
+                      darkDesktopView: {
+                        /** @description SVG markup for the asset. */
+                        svg: string;
+                        /** @description Named location of the asset (e.g. header, footer). */
+                        location: string;
+                      };
+                      /** @description Image asset anchored to a named location within an organization theme. */
+                      darkMobileView: {
+                        /** @description SVG markup for the asset. */
+                        svg: string;
+                        /** @description Named location of the asset (e.g. header, footer). */
+                        location: string;
+                      };
+                    };
+                    /** @description Arbitrary theme variables keyed by name. */
+                    vars?: { [key: string]: unknown };
+                  };
+                  /** @description Preferences specific to dashboard behavior. */
+                  dashboard: { [key: string]: unknown };
+                  /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+                  links?: {
+                    /**
+                     * Format: uri
+                     * @description URL of the organization's Terms of Service page.
+                     */
+                    termsOfService?: string;
+                    /**
+                     * Format: uri
+                     * @description URL of the organization's Privacy Policy page.
+                     */
+                    privacy?: string;
+                    /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+                    support?: { [key: string]: string };
+                  };
+                  /**
+                   * @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
+                   * @default true
+                   */
+                  showAuthCarousel?: boolean;
+                };
+              };
+              /**
+               * Format: date-time
+               * @description Timestamp when the organization was created.
+               */
+              createdAt?: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the organization was last updated.
+               */
+              updatedAt?: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the organization was soft-deleted.
+               */
+              deletedAt?: string;
+            }[];
+          };
+        };
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+    /** Body for creating or updating an organization */
+    requestBody: {
+      content: {
+        "application/json": {
+          /** @description Name of the organization. */
+          name?: string;
+          /** @description Country of the organization. */
+          country?: string;
+          /** @description Region of the organization. */
+          region?: string;
+          /** @description Description of the organization. */
+          description?: string;
+          /** @description Indicates whether organization members should be notified of this update. */
+          notifyOrgUpdate?: boolean;
+          /** @description Organization-level user experience preferences. */
+          preferences?: {
+            /** @description UI theme configured for an organization. */
+            theme: {
+              /**
+               * Format: uuid
+               * @description Theme identifier.
+               */
+              id: string;
+              /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
+              logo: {
+                /** @description Image asset anchored to a named location within an organization theme. */
+                desktopView: {
+                  /** @description SVG markup for the asset. */
+                  svg: string;
+                  /** @description Named location of the asset (e.g. header, footer). */
+                  location: string;
+                };
+                /** @description Image asset anchored to a named location within an organization theme. */
+                mobileView: {
+                  /** @description SVG markup for the asset. */
+                  svg: string;
+                  /** @description Named location of the asset (e.g. header, footer). */
+                  location: string;
+                };
+                /** @description Image asset anchored to a named location within an organization theme. */
+                darkDesktopView: {
+                  /** @description SVG markup for the asset. */
+                  svg: string;
+                  /** @description Named location of the asset (e.g. header, footer). */
+                  location: string;
+                };
+                /** @description Image asset anchored to a named location within an organization theme. */
+                darkMobileView: {
+                  /** @description SVG markup for the asset. */
+                  svg: string;
+                  /** @description Named location of the asset (e.g. header, footer). */
+                  location: string;
+                };
+              };
+              /** @description Arbitrary theme variables keyed by name. */
+              vars?: { [key: string]: unknown };
+            };
+            /** @description Preferences specific to dashboard behavior. */
+            dashboard: { [key: string]: unknown };
+            /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+            links?: {
+              /**
+               * Format: uri
+               * @description URL of the organization's Terms of Service page.
+               */
+              termsOfService?: string;
+              /**
+               * Format: uri
+               * @description URL of the organization's Privacy Policy page.
+               */
+              privacy?: string;
+              /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+              support?: { [key: string]: string };
+            };
+            /**
+             * @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
+             * @default true
+             */
+            showAuthCarousel?: boolean;
+          };
+        };
+      };
+    };
+  };
+  /** Deletes the organization. */
+  deleteOrg: {
+    parameters: {
+      path: {
+        /** Organization ID. */
+        orgId: string;
+      };
+    };
+    responses: {
+      /** Organization deleted */
+      204: never;
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  /** Returns preferences for the specified organization. */
+  getOrgPreferences: {
+    parameters: {
+      path: {
+        /** Organization ID. */
+        orgId: string;
+      };
+    };
+    responses: {
+      /** Organization metadata, including preferences */
+      200: {
+        content: {
+          "application/json": {
+            /** @description Organization-level user experience preferences. */
+            preferences: {
+              /** @description UI theme configured for an organization. */
+              theme: {
                 /**
                  * Format: uuid
-                 * @description Team ID.
+                 * @description Theme identifier.
                  */
-                id?: string;
-                /** @description Name of the team. */
-                name?: string;
-                /** @description Description of the team. */
-                description?: string;
-                /** @description Display name of the team owner. */
-                owner?: string;
-                /** @description Free-form team metadata. */
-                metadata?: {
-                    [key: string]: string;
+                id: string;
+                /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
+                logo: {
+                  /** @description Image asset anchored to a named location within an organization theme. */
+                  desktopView: {
+                    /** @description SVG markup for the asset. */
+                    svg: string;
+                    /** @description Named location of the asset (e.g. header, footer). */
+                    location: string;
+                  };
+                  /** @description Image asset anchored to a named location within an organization theme. */
+                  mobileView: {
+                    /** @description SVG markup for the asset. */
+                    svg: string;
+                    /** @description Named location of the asset (e.g. header, footer). */
+                    location: string;
+                  };
+                  /** @description Image asset anchored to a named location within an organization theme. */
+                  darkDesktopView: {
+                    /** @description SVG markup for the asset. */
+                    svg: string;
+                    /** @description Named location of the asset (e.g. header, footer). */
+                    location: string;
+                  };
+                  /** @description Image asset anchored to a named location within an organization theme. */
+                  darkMobileView: {
+                    /** @description SVG markup for the asset. */
+                    svg: string;
+                    /** @description Named location of the asset (e.g. header, footer). */
+                    location: string;
+                  };
                 };
+                /** @description Arbitrary theme variables keyed by name. */
+                vars?: { [key: string]: unknown };
+              };
+              /** @description Preferences specific to dashboard behavior. */
+              dashboard: { [key: string]: unknown };
+              /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
+              links?: {
                 /**
-                 * Format: date-time
-                 * @description Timestamp when the team was created.
+                 * Format: uri
+                 * @description URL of the organization's Terms of Service page.
                  */
-                createdAt?: string;
+                termsOfService?: string;
                 /**
-                 * Format: date-time
-                 * @description Timestamp when the team was last updated.
+                 * Format: uri
+                 * @description URL of the organization's Privacy Policy page.
                  */
-                updatedAt?: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the team was soft-deleted.
-                 */
-                deletedAt?: string;
-            }[];
+                privacy?: string;
+                /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
+                support?: { [key: string]: string };
+              };
+              /**
+               * @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
+               * @default true
+               */
+              showAuthCarousel?: boolean;
+            };
+          };
         };
-        /** @description Junction record linking a team to an organization. */
-        TeamsOrganizationsMapping: {
-            /**
-             * Format: uuid
-             * @description Mapping record ID.
-             */
-            id?: string;
-            /**
-             * Format: uuid
-             * @description Organization ID for this mapping.
-             */
-            orgId?: string;
-            /**
-             * Format: uuid
-             * @description Team ID for this mapping.
-             */
-            teamId?: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the mapping was created.
-             */
-            createdAt?: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the mapping was last updated.
-             */
-            updatedAt?: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the mapping was soft-deleted.
-             */
-            deletedAt?: string;
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
         };
-        /** @description Paginated list of team-organization mappings. */
-        TeamsOrganizationsMappingPage: {
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  /** Adds a team to an organization. If request body contains action=delete, tombstones a team by setting its deletedAt timestamp. The team's organization mapping remains intact. */
+  addTeamToOrg: {
+    parameters: {
+      path: {
+        /** Organization ID. */
+        orgId: string;
+        /** Team ID. */
+        teamId: string;
+      };
+    };
+    responses: {
+      /** Team added to organization or team tombstoned */
+      201: {
+        content: {
+          "application/json":
+            | {
+                /** @description Zero-based page index returned in this response. */
+                page?: number;
+                /** @description Maximum number of items returned on each page. */
+                pageSize?: number;
+                /** @description Total number of items across all pages. */
+                totalCount?: number;
+                /** @description Team-organization mapping entries. */
+                teamsOrganizationsMapping?: {
+                  /**
+                   * Format: uuid
+                   * @description Mapping record ID.
+                   */
+                  id?: string;
+                  /**
+                   * Format: uuid
+                   * @description Organization ID for this mapping.
+                   */
+                  orgId?: string;
+                  /**
+                   * Format: uuid
+                   * @description Team ID for this mapping.
+                   */
+                  teamId?: string;
+                  /**
+                   * Format: date-time
+                   * @description Timestamp when the mapping was created.
+                   */
+                  createdAt?: string;
+                  /**
+                   * Format: date-time
+                   * @description Timestamp when the mapping was last updated.
+                   */
+                  updatedAt?: string;
+                  /**
+                   * Format: date-time
+                   * @description Timestamp when the mapping was soft-deleted.
+                   */
+                  deletedAt?: string;
+                }[];
+              }
+            | {
+                /** @description Zero-based page index returned in this response. */
+                page?: number;
+                /** @description Maximum number of items returned on each page. */
+                pageSize?: number;
+                /** @description Total number of items across all pages. */
+                totalCount?: number;
+                /** @description Teams in this page. */
+                teams?: {
+                  /**
+                   * Format: uuid
+                   * @description Team ID.
+                   */
+                  id?: string;
+                  /** @description Name of the team. */
+                  name?: string;
+                  /** @description Description of the team. */
+                  description?: string;
+                  /** @description Display name of the team owner. */
+                  owner?: string;
+                  /** @description Free-form team metadata. */
+                  metadata?: { [key: string]: string };
+                  /**
+                   * Format: date-time
+                   * @description Timestamp when the team was created.
+                   */
+                  createdAt?: string;
+                  /**
+                   * Format: date-time
+                   * @description Timestamp when the team was last updated.
+                   */
+                  updatedAt?: string;
+                  /**
+                   * Format: date-time
+                   * @description Timestamp when the team was soft-deleted.
+                   */
+                  deletedAt?: string;
+                }[];
+              };
+        };
+      };
+      /** Bad request */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Not found */
+      404: unknown;
+      /** Internal server error */
+      500: unknown;
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /**
+           * @description Internal action to perform on the team resource.
+           * @enum {string}
+           */
+          action?: "delete";
+        };
+      };
+    };
+  };
+  /** Removes (unassigns) a team from an organization. */
+  removeTeamFromOrg: {
+    parameters: {
+      path: {
+        /** Organization ID. */
+        orgId: string;
+        /** Team ID. */
+        teamId: string;
+      };
+    };
+    responses: {
+      /** Team removed from organization */
+      200: {
+        content: {
+          "application/json": {
             /** @description Zero-based page index returned in this response. */
             page?: number;
             /** @description Maximum number of items returned on each page. */
@@ -1010,1642 +2103,108 @@ export interface components {
             totalCount?: number;
             /** @description Team-organization mapping entries. */
             teamsOrganizationsMapping?: {
-                /**
-                 * Format: uuid
-                 * @description Mapping record ID.
-                 */
-                id?: string;
-                /**
-                 * Format: uuid
-                 * @description Organization ID for this mapping.
-                 */
-                orgId?: string;
-                /**
-                 * Format: uuid
-                 * @description Team ID for this mapping.
-                 */
-                teamId?: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the mapping was created.
-                 */
-                createdAt?: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the mapping was last updated.
-                 */
-                updatedAt?: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the mapping was soft-deleted.
-                 */
-                deletedAt?: string;
+              /**
+               * Format: uuid
+               * @description Mapping record ID.
+               */
+              id?: string;
+              /**
+               * Format: uuid
+               * @description Organization ID for this mapping.
+               */
+              orgId?: string;
+              /**
+               * Format: uuid
+               * @description Team ID for this mapping.
+               */
+              teamId?: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the mapping was created.
+               */
+              createdAt?: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the mapping was last updated.
+               */
+              updatedAt?: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the mapping was soft-deleted.
+               */
+              deletedAt?: string;
             }[];
+          };
         };
+      };
+      /** Bad request */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Not found */
+      404: unknown;
+      /** Internal server error */
+      500: unknown;
+    };
+  };
+  addUserToOrg: {
+    parameters: {
+      path: {
+        /** Organization ID. */
+        orgId: string;
+        /** User ID. */
+        userId: string;
+      };
     };
     responses: {
-        /** @description Invalid request body or request param */
-        400: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
+      /** User added to organization */
+      201: {
+        content: {
+          "application/json": { [key: string]: unknown };
         };
-        /** @description Expired JWT token used or insufficient privilege */
-        401: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
         };
-        /** @description Result not found */
-        404: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
+      };
+      /** Unauthorized */
+      401: unknown;
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
         };
-        /** @description Internal server error */
-        500: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
-        };
+      };
+      /** Internal server error */
+      500: unknown;
     };
+  };
+  deleteUserFromOrg: {
     parameters: {
-        /** @description Organization ID. */
+      path: {
+        /** Organization ID. */
         orgId: string;
-        /** @description User ID. */
+        /** User ID. */
         userId: string;
-        /** @description Team ID. */
-        teamId: string;
-        /** @description Zero-based index of the result page to return. */
-        page: number;
-        /** @description Maximum number of items returned on each page. */
-        pageSize: number;
-        /** @description Get responses that match search param value */
-        search: string;
-        /** @description Get ordered responses */
-        order: string;
-        /** @description Get all possible entries */
-        all: boolean;
+      };
     };
-    requestBodies: {
-        /** @description Body for creating or updating an organization */
-        organizationPayload: {
-            content: {
-                "application/json": {
-                    /** @description Name of the organization. */
-                    name?: string;
-                    /** @description Country of the organization. */
-                    country?: string;
-                    /** @description Region of the organization. */
-                    region?: string;
-                    /** @description Description of the organization. */
-                    description?: string;
-                    /** @description Indicates whether organization members should be notified of this update. */
-                    notifyOrgUpdate?: boolean;
-                    /** @description Organization-level user experience preferences. */
-                    preferences?: {
-                        /** @description UI theme configured for an organization. */
-                        theme: {
-                            /**
-                             * Format: uuid
-                             * @description Theme identifier.
-                             */
-                            id: string;
-                            /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
-                            logo: {
-                                /** @description Image asset anchored to a named location within an organization theme. */
-                                desktopView: {
-                                    /** @description SVG markup for the asset. */
-                                    svg: string;
-                                    /** @description Named location of the asset (e.g. header, footer). */
-                                    location: string;
-                                };
-                                /** @description Image asset anchored to a named location within an organization theme. */
-                                mobileView: {
-                                    /** @description SVG markup for the asset. */
-                                    svg: string;
-                                    /** @description Named location of the asset (e.g. header, footer). */
-                                    location: string;
-                                };
-                                /** @description Image asset anchored to a named location within an organization theme. */
-                                darkDesktopView: {
-                                    /** @description SVG markup for the asset. */
-                                    svg: string;
-                                    /** @description Named location of the asset (e.g. header, footer). */
-                                    location: string;
-                                };
-                                /** @description Image asset anchored to a named location within an organization theme. */
-                                darkMobileView: {
-                                    /** @description SVG markup for the asset. */
-                                    svg: string;
-                                    /** @description Named location of the asset (e.g. header, footer). */
-                                    location: string;
-                                };
-                            };
-                            /** @description Arbitrary theme variables keyed by name. */
-                            vars?: {
-                                [key: string]: unknown;
-                            };
-                        };
-                        /** @description Preferences specific to dashboard behavior. */
-                        dashboard: {
-                            [key: string]: unknown;
-                        };
-                        /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
-                        links?: {
-                            /**
-                             * Format: uri
-                             * @description URL of the organization's Terms of Service page.
-                             */
-                            termsOfService?: string;
-                            /**
-                             * Format: uri
-                             * @description URL of the organization's Privacy Policy page.
-                             */
-                            privacy?: string;
-                            /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
-                            support?: {
-                                [key: string]: string;
-                            };
-                        };
-                        /**
-                         * @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
-                         * @default true
-                         */
-                        showAuthCarousel?: boolean;
-                    };
-                };
-            };
+    responses: {
+      /** User removed from organization */
+      204: never;
+      /** Unauthorized */
+      401: unknown;
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
         };
+      };
+      /** Internal server error */
+      500: unknown;
     };
-    headers: never;
-    pathItems: never;
+  };
 }
-export type $defs = Record<string, never>;
-export interface operations {
-    getOrgs: {
-        parameters: {
-            query?: {
-                /** @description Zero-based index of the result page to return. */
-                page?: number;
-                /** @description Maximum number of items returned on each page. */
-                pageSize?: number;
-                /** @description Get responses that match search param value */
-                search?: string;
-                /** @description Get ordered responses */
-                order?: string;
-                /** @description Get all possible entries */
-                all?: boolean;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Organizations response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @description Zero-based page index returned in this response. */
-                        page?: number;
-                        /** @description Maximum number of items returned on each page. */
-                        pageSize?: number;
-                        /** @description Total number of items across all pages. */
-                        totalCount?: number;
-                        /** @description Organizations in this page. */
-                        organizations?: {
-                            /**
-                             * Format: uuid
-                             * @description Organization ID.
-                             */
-                            id?: string;
-                            /** @description Name of the organization. */
-                            name?: string;
-                            /** @description Description of the organization. */
-                            description?: string;
-                            /** @description Country of the organization. */
-                            country?: string;
-                            /** @description Region of the organization. */
-                            region?: string;
-                            /** @description Display name of the organization owner. */
-                            owner?: string;
-                            /** @description Free-form metadata associated with an organization, including preferences. */
-                            metadata?: {
-                                /** @description Organization-level user experience preferences. */
-                                preferences: {
-                                    /** @description UI theme configured for an organization. */
-                                    theme: {
-                                        /**
-                                         * Format: uuid
-                                         * @description Theme identifier.
-                                         */
-                                        id: string;
-                                        /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
-                                        logo: {
-                                            /** @description Image asset anchored to a named location within an organization theme. */
-                                            desktopView: {
-                                                /** @description SVG markup for the asset. */
-                                                svg: string;
-                                                /** @description Named location of the asset (e.g. header, footer). */
-                                                location: string;
-                                            };
-                                            /** @description Image asset anchored to a named location within an organization theme. */
-                                            mobileView: {
-                                                /** @description SVG markup for the asset. */
-                                                svg: string;
-                                                /** @description Named location of the asset (e.g. header, footer). */
-                                                location: string;
-                                            };
-                                            /** @description Image asset anchored to a named location within an organization theme. */
-                                            darkDesktopView: {
-                                                /** @description SVG markup for the asset. */
-                                                svg: string;
-                                                /** @description Named location of the asset (e.g. header, footer). */
-                                                location: string;
-                                            };
-                                            /** @description Image asset anchored to a named location within an organization theme. */
-                                            darkMobileView: {
-                                                /** @description SVG markup for the asset. */
-                                                svg: string;
-                                                /** @description Named location of the asset (e.g. header, footer). */
-                                                location: string;
-                                            };
-                                        };
-                                        /** @description Arbitrary theme variables keyed by name. */
-                                        vars?: {
-                                            [key: string]: unknown;
-                                        };
-                                    };
-                                    /** @description Preferences specific to dashboard behavior. */
-                                    dashboard: {
-                                        [key: string]: unknown;
-                                    };
-                                    /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
-                                    links?: {
-                                        /**
-                                         * Format: uri
-                                         * @description URL of the organization's Terms of Service page.
-                                         */
-                                        termsOfService?: string;
-                                        /**
-                                         * Format: uri
-                                         * @description URL of the organization's Privacy Policy page.
-                                         */
-                                        privacy?: string;
-                                        /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
-                                        support?: {
-                                            [key: string]: string;
-                                        };
-                                    };
-                                    /**
-                                     * @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
-                                     * @default true
-                                     */
-                                    showAuthCarousel: boolean;
-                                };
-                            };
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the organization was created.
-                             */
-                            createdAt?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the organization was last updated.
-                             */
-                            updatedAt?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the organization was soft-deleted.
-                             */
-                            deletedAt?: string;
-                        }[];
-                    };
-                };
-            };
-            /** @description No content */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    createOrg: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description Body for creating or updating an organization */
-        requestBody: {
-            content: {
-                "application/json": {
-                    /** @description Name of the organization. */
-                    name?: string;
-                    /** @description Country of the organization. */
-                    country?: string;
-                    /** @description Region of the organization. */
-                    region?: string;
-                    /** @description Description of the organization. */
-                    description?: string;
-                    /** @description Indicates whether organization members should be notified of this update. */
-                    notifyOrgUpdate?: boolean;
-                    /** @description Organization-level user experience preferences. */
-                    preferences?: {
-                        /** @description UI theme configured for an organization. */
-                        theme: {
-                            /**
-                             * Format: uuid
-                             * @description Theme identifier.
-                             */
-                            id: string;
-                            /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
-                            logo: {
-                                /** @description Image asset anchored to a named location within an organization theme. */
-                                desktopView: {
-                                    /** @description SVG markup for the asset. */
-                                    svg: string;
-                                    /** @description Named location of the asset (e.g. header, footer). */
-                                    location: string;
-                                };
-                                /** @description Image asset anchored to a named location within an organization theme. */
-                                mobileView: {
-                                    /** @description SVG markup for the asset. */
-                                    svg: string;
-                                    /** @description Named location of the asset (e.g. header, footer). */
-                                    location: string;
-                                };
-                                /** @description Image asset anchored to a named location within an organization theme. */
-                                darkDesktopView: {
-                                    /** @description SVG markup for the asset. */
-                                    svg: string;
-                                    /** @description Named location of the asset (e.g. header, footer). */
-                                    location: string;
-                                };
-                                /** @description Image asset anchored to a named location within an organization theme. */
-                                darkMobileView: {
-                                    /** @description SVG markup for the asset. */
-                                    svg: string;
-                                    /** @description Named location of the asset (e.g. header, footer). */
-                                    location: string;
-                                };
-                            };
-                            /** @description Arbitrary theme variables keyed by name. */
-                            vars?: {
-                                [key: string]: unknown;
-                            };
-                        };
-                        /** @description Preferences specific to dashboard behavior. */
-                        dashboard: {
-                            [key: string]: unknown;
-                        };
-                        /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
-                        links?: {
-                            /**
-                             * Format: uri
-                             * @description URL of the organization's Terms of Service page.
-                             */
-                            termsOfService?: string;
-                            /**
-                             * Format: uri
-                             * @description URL of the organization's Privacy Policy page.
-                             */
-                            privacy?: string;
-                            /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
-                            support?: {
-                                [key: string]: string;
-                            };
-                        };
-                        /**
-                         * @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
-                         * @default true
-                         */
-                        showAuthCarousel?: boolean;
-                    };
-                };
-            };
-        };
-        responses: {
-            /** @description Single-organization page response */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @description Zero-based page index returned in this response. */
-                        page?: number;
-                        /** @description Maximum number of items returned on each page. */
-                        pageSize?: number;
-                        /** @description Total number of items across all pages. */
-                        totalCount?: number;
-                        /** @description Organizations returned in this single-item page wrapper. */
-                        organizations?: {
-                            /**
-                             * Format: uuid
-                             * @description Organization ID.
-                             */
-                            id?: string;
-                            /** @description Name of the organization. */
-                            name?: string;
-                            /** @description Description of the organization. */
-                            description?: string;
-                            /** @description Country of the organization. */
-                            country?: string;
-                            /** @description Region of the organization. */
-                            region?: string;
-                            /** @description Display name of the organization owner. */
-                            owner?: string;
-                            /** @description Free-form metadata associated with an organization, including preferences. */
-                            metadata?: {
-                                /** @description Organization-level user experience preferences. */
-                                preferences: {
-                                    /** @description UI theme configured for an organization. */
-                                    theme: {
-                                        /**
-                                         * Format: uuid
-                                         * @description Theme identifier.
-                                         */
-                                        id: string;
-                                        /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
-                                        logo: {
-                                            /** @description Image asset anchored to a named location within an organization theme. */
-                                            desktopView: {
-                                                /** @description SVG markup for the asset. */
-                                                svg: string;
-                                                /** @description Named location of the asset (e.g. header, footer). */
-                                                location: string;
-                                            };
-                                            /** @description Image asset anchored to a named location within an organization theme. */
-                                            mobileView: {
-                                                /** @description SVG markup for the asset. */
-                                                svg: string;
-                                                /** @description Named location of the asset (e.g. header, footer). */
-                                                location: string;
-                                            };
-                                            /** @description Image asset anchored to a named location within an organization theme. */
-                                            darkDesktopView: {
-                                                /** @description SVG markup for the asset. */
-                                                svg: string;
-                                                /** @description Named location of the asset (e.g. header, footer). */
-                                                location: string;
-                                            };
-                                            /** @description Image asset anchored to a named location within an organization theme. */
-                                            darkMobileView: {
-                                                /** @description SVG markup for the asset. */
-                                                svg: string;
-                                                /** @description Named location of the asset (e.g. header, footer). */
-                                                location: string;
-                                            };
-                                        };
-                                        /** @description Arbitrary theme variables keyed by name. */
-                                        vars?: {
-                                            [key: string]: unknown;
-                                        };
-                                    };
-                                    /** @description Preferences specific to dashboard behavior. */
-                                    dashboard: {
-                                        [key: string]: unknown;
-                                    };
-                                    /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
-                                    links?: {
-                                        /**
-                                         * Format: uri
-                                         * @description URL of the organization's Terms of Service page.
-                                         */
-                                        termsOfService?: string;
-                                        /**
-                                         * Format: uri
-                                         * @description URL of the organization's Privacy Policy page.
-                                         */
-                                        privacy?: string;
-                                        /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
-                                        support?: {
-                                            [key: string]: string;
-                                        };
-                                    };
-                                    /**
-                                     * @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
-                                     * @default true
-                                     */
-                                    showAuthCarousel: boolean;
-                                };
-                            };
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the organization was created.
-                             */
-                            createdAt?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the organization was last updated.
-                             */
-                            updatedAt?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the organization was soft-deleted.
-                             */
-                            deletedAt?: string;
-                        }[];
-                    };
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    getOrgByDomain: {
-        parameters: {
-            query: {
-                /** @description Domain name of the organization to look up. */
-                domain: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Organization response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * Format: uuid
-                         * @description Organization ID.
-                         */
-                        id: string;
-                        /** @description Name of the organization. */
-                        name: string;
-                        /** @description Country of the organization. */
-                        country: string;
-                        /** @description Region of the organization. */
-                        region: string;
-                        /** @description Description of the organization. */
-                        description: string;
-                        /**
-                         * Format: uuid
-                         * @description Owner user ID of the organization.
-                         */
-                        owner: string;
-                        /** @description Free-form metadata associated with the organization, including preferences. */
-                        metadata: Record<string, never>;
-                        /** @description Domain of the organization. */
-                        domain?: string | null;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the organization was created.
-                         */
-                        createdAt: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the organization was last updated.
-                         */
-                        updatedAt: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the organization was soft-deleted. Null while the organization is active.
-                         */
-                        deletedAt?: string;
-                    };
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Organization not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getOrg: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Organization ID. */
-                orgId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Single-organization page response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @description Zero-based page index returned in this response. */
-                        page?: number;
-                        /** @description Maximum number of items returned on each page. */
-                        pageSize?: number;
-                        /** @description Total number of items across all pages. */
-                        totalCount?: number;
-                        /** @description Organizations returned in this single-item page wrapper. */
-                        organizations?: {
-                            /**
-                             * Format: uuid
-                             * @description Organization ID.
-                             */
-                            id?: string;
-                            /** @description Name of the organization. */
-                            name?: string;
-                            /** @description Description of the organization. */
-                            description?: string;
-                            /** @description Country of the organization. */
-                            country?: string;
-                            /** @description Region of the organization. */
-                            region?: string;
-                            /** @description Display name of the organization owner. */
-                            owner?: string;
-                            /** @description Free-form metadata associated with an organization, including preferences. */
-                            metadata?: {
-                                /** @description Organization-level user experience preferences. */
-                                preferences: {
-                                    /** @description UI theme configured for an organization. */
-                                    theme: {
-                                        /**
-                                         * Format: uuid
-                                         * @description Theme identifier.
-                                         */
-                                        id: string;
-                                        /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
-                                        logo: {
-                                            /** @description Image asset anchored to a named location within an organization theme. */
-                                            desktopView: {
-                                                /** @description SVG markup for the asset. */
-                                                svg: string;
-                                                /** @description Named location of the asset (e.g. header, footer). */
-                                                location: string;
-                                            };
-                                            /** @description Image asset anchored to a named location within an organization theme. */
-                                            mobileView: {
-                                                /** @description SVG markup for the asset. */
-                                                svg: string;
-                                                /** @description Named location of the asset (e.g. header, footer). */
-                                                location: string;
-                                            };
-                                            /** @description Image asset anchored to a named location within an organization theme. */
-                                            darkDesktopView: {
-                                                /** @description SVG markup for the asset. */
-                                                svg: string;
-                                                /** @description Named location of the asset (e.g. header, footer). */
-                                                location: string;
-                                            };
-                                            /** @description Image asset anchored to a named location within an organization theme. */
-                                            darkMobileView: {
-                                                /** @description SVG markup for the asset. */
-                                                svg: string;
-                                                /** @description Named location of the asset (e.g. header, footer). */
-                                                location: string;
-                                            };
-                                        };
-                                        /** @description Arbitrary theme variables keyed by name. */
-                                        vars?: {
-                                            [key: string]: unknown;
-                                        };
-                                    };
-                                    /** @description Preferences specific to dashboard behavior. */
-                                    dashboard: {
-                                        [key: string]: unknown;
-                                    };
-                                    /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
-                                    links?: {
-                                        /**
-                                         * Format: uri
-                                         * @description URL of the organization's Terms of Service page.
-                                         */
-                                        termsOfService?: string;
-                                        /**
-                                         * Format: uri
-                                         * @description URL of the organization's Privacy Policy page.
-                                         */
-                                        privacy?: string;
-                                        /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
-                                        support?: {
-                                            [key: string]: string;
-                                        };
-                                    };
-                                    /**
-                                     * @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
-                                     * @default true
-                                     */
-                                    showAuthCarousel: boolean;
-                                };
-                            };
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the organization was created.
-                             */
-                            createdAt?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the organization was last updated.
-                             */
-                            updatedAt?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the organization was soft-deleted.
-                             */
-                            deletedAt?: string;
-                        }[];
-                    };
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    updateOrg: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Organization ID. */
-                orgId: string;
-            };
-            cookie?: never;
-        };
-        /** @description Body for creating or updating an organization */
-        requestBody: {
-            content: {
-                "application/json": {
-                    /** @description Name of the organization. */
-                    name?: string;
-                    /** @description Country of the organization. */
-                    country?: string;
-                    /** @description Region of the organization. */
-                    region?: string;
-                    /** @description Description of the organization. */
-                    description?: string;
-                    /** @description Indicates whether organization members should be notified of this update. */
-                    notifyOrgUpdate?: boolean;
-                    /** @description Organization-level user experience preferences. */
-                    preferences?: {
-                        /** @description UI theme configured for an organization. */
-                        theme: {
-                            /**
-                             * Format: uuid
-                             * @description Theme identifier.
-                             */
-                            id: string;
-                            /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
-                            logo: {
-                                /** @description Image asset anchored to a named location within an organization theme. */
-                                desktopView: {
-                                    /** @description SVG markup for the asset. */
-                                    svg: string;
-                                    /** @description Named location of the asset (e.g. header, footer). */
-                                    location: string;
-                                };
-                                /** @description Image asset anchored to a named location within an organization theme. */
-                                mobileView: {
-                                    /** @description SVG markup for the asset. */
-                                    svg: string;
-                                    /** @description Named location of the asset (e.g. header, footer). */
-                                    location: string;
-                                };
-                                /** @description Image asset anchored to a named location within an organization theme. */
-                                darkDesktopView: {
-                                    /** @description SVG markup for the asset. */
-                                    svg: string;
-                                    /** @description Named location of the asset (e.g. header, footer). */
-                                    location: string;
-                                };
-                                /** @description Image asset anchored to a named location within an organization theme. */
-                                darkMobileView: {
-                                    /** @description SVG markup for the asset. */
-                                    svg: string;
-                                    /** @description Named location of the asset (e.g. header, footer). */
-                                    location: string;
-                                };
-                            };
-                            /** @description Arbitrary theme variables keyed by name. */
-                            vars?: {
-                                [key: string]: unknown;
-                            };
-                        };
-                        /** @description Preferences specific to dashboard behavior. */
-                        dashboard: {
-                            [key: string]: unknown;
-                        };
-                        /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
-                        links?: {
-                            /**
-                             * Format: uri
-                             * @description URL of the organization's Terms of Service page.
-                             */
-                            termsOfService?: string;
-                            /**
-                             * Format: uri
-                             * @description URL of the organization's Privacy Policy page.
-                             */
-                            privacy?: string;
-                            /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
-                            support?: {
-                                [key: string]: string;
-                            };
-                        };
-                        /**
-                         * @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
-                         * @default true
-                         */
-                        showAuthCarousel?: boolean;
-                    };
-                };
-            };
-        };
-        responses: {
-            /** @description Single-organization page response for the updated organization */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @description Zero-based page index returned in this response. */
-                        page?: number;
-                        /** @description Maximum number of items returned on each page. */
-                        pageSize?: number;
-                        /** @description Total number of items across all pages. */
-                        totalCount?: number;
-                        /** @description Organizations returned in this single-item page wrapper. */
-                        organizations?: {
-                            /**
-                             * Format: uuid
-                             * @description Organization ID.
-                             */
-                            id?: string;
-                            /** @description Name of the organization. */
-                            name?: string;
-                            /** @description Description of the organization. */
-                            description?: string;
-                            /** @description Country of the organization. */
-                            country?: string;
-                            /** @description Region of the organization. */
-                            region?: string;
-                            /** @description Display name of the organization owner. */
-                            owner?: string;
-                            /** @description Free-form metadata associated with an organization, including preferences. */
-                            metadata?: {
-                                /** @description Organization-level user experience preferences. */
-                                preferences: {
-                                    /** @description UI theme configured for an organization. */
-                                    theme: {
-                                        /**
-                                         * Format: uuid
-                                         * @description Theme identifier.
-                                         */
-                                        id: string;
-                                        /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
-                                        logo: {
-                                            /** @description Image asset anchored to a named location within an organization theme. */
-                                            desktopView: {
-                                                /** @description SVG markup for the asset. */
-                                                svg: string;
-                                                /** @description Named location of the asset (e.g. header, footer). */
-                                                location: string;
-                                            };
-                                            /** @description Image asset anchored to a named location within an organization theme. */
-                                            mobileView: {
-                                                /** @description SVG markup for the asset. */
-                                                svg: string;
-                                                /** @description Named location of the asset (e.g. header, footer). */
-                                                location: string;
-                                            };
-                                            /** @description Image asset anchored to a named location within an organization theme. */
-                                            darkDesktopView: {
-                                                /** @description SVG markup for the asset. */
-                                                svg: string;
-                                                /** @description Named location of the asset (e.g. header, footer). */
-                                                location: string;
-                                            };
-                                            /** @description Image asset anchored to a named location within an organization theme. */
-                                            darkMobileView: {
-                                                /** @description SVG markup for the asset. */
-                                                svg: string;
-                                                /** @description Named location of the asset (e.g. header, footer). */
-                                                location: string;
-                                            };
-                                        };
-                                        /** @description Arbitrary theme variables keyed by name. */
-                                        vars?: {
-                                            [key: string]: unknown;
-                                        };
-                                    };
-                                    /** @description Preferences specific to dashboard behavior. */
-                                    dashboard: {
-                                        [key: string]: unknown;
-                                    };
-                                    /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
-                                    links?: {
-                                        /**
-                                         * Format: uri
-                                         * @description URL of the organization's Terms of Service page.
-                                         */
-                                        termsOfService?: string;
-                                        /**
-                                         * Format: uri
-                                         * @description URL of the organization's Privacy Policy page.
-                                         */
-                                        privacy?: string;
-                                        /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
-                                        support?: {
-                                            [key: string]: string;
-                                        };
-                                    };
-                                    /**
-                                     * @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
-                                     * @default true
-                                     */
-                                    showAuthCarousel: boolean;
-                                };
-                            };
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the organization was created.
-                             */
-                            createdAt?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the organization was last updated.
-                             */
-                            updatedAt?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the organization was soft-deleted.
-                             */
-                            deletedAt?: string;
-                        }[];
-                    };
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    deleteOrg: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Organization ID. */
-                orgId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Organization deleted */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    getOrgPreferences: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Organization ID. */
-                orgId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Organization metadata, including preferences */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @description Organization-level user experience preferences. */
-                        preferences: {
-                            /** @description UI theme configured for an organization. */
-                            theme: {
-                                /**
-                                 * Format: uuid
-                                 * @description Theme identifier.
-                                 */
-                                id: string;
-                                /** @description Themed logo assets used across light and dark, desktop and mobile presentations. */
-                                logo: {
-                                    /** @description Image asset anchored to a named location within an organization theme. */
-                                    desktopView: {
-                                        /** @description SVG markup for the asset. */
-                                        svg: string;
-                                        /** @description Named location of the asset (e.g. header, footer). */
-                                        location: string;
-                                    };
-                                    /** @description Image asset anchored to a named location within an organization theme. */
-                                    mobileView: {
-                                        /** @description SVG markup for the asset. */
-                                        svg: string;
-                                        /** @description Named location of the asset (e.g. header, footer). */
-                                        location: string;
-                                    };
-                                    /** @description Image asset anchored to a named location within an organization theme. */
-                                    darkDesktopView: {
-                                        /** @description SVG markup for the asset. */
-                                        svg: string;
-                                        /** @description Named location of the asset (e.g. header, footer). */
-                                        location: string;
-                                    };
-                                    /** @description Image asset anchored to a named location within an organization theme. */
-                                    darkMobileView: {
-                                        /** @description SVG markup for the asset. */
-                                        svg: string;
-                                        /** @description Named location of the asset (e.g. header, footer). */
-                                        location: string;
-                                    };
-                                };
-                                /** @description Arbitrary theme variables keyed by name. */
-                                vars?: {
-                                    [key: string]: unknown;
-                                };
-                            };
-                            /** @description Preferences specific to dashboard behavior. */
-                            dashboard: {
-                                [key: string]: unknown;
-                            };
-                            /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
-                            links?: {
-                                /**
-                                 * Format: uri
-                                 * @description URL of the organization's Terms of Service page.
-                                 */
-                                termsOfService?: string;
-                                /**
-                                 * Format: uri
-                                 * @description URL of the organization's Privacy Policy page.
-                                 */
-                                privacy?: string;
-                                /** @description Open-ended set of named support contacts/links rendered on the auth and error pages, keyed by display name with a value that is a URL, a mailto:/tel: link, or free text. For example a "slack" entry pointing at https://slack.meshery.io, a "discussion forum" entry, or a "support desk" entry holding a phone number. */
-                                support?: {
-                                    [key: string]: string;
-                                };
-                            };
-                            /**
-                             * @description Whether the feature carousel renders on the organization's auth pages. Unset is treated as true (shown); set false to hide it.
-                             * @default true
-                             */
-                            showAuthCarousel: boolean;
-                        };
-                    };
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    addTeamToOrg: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Organization ID. */
-                orgId: string;
-                /** @description Team ID. */
-                teamId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/json": {
-                    /**
-                     * @description Internal action to perform on the team resource.
-                     * @enum {string}
-                     */
-                    action?: "delete";
-                };
-            };
-        };
-        responses: {
-            /** @description Team added to organization or team tombstoned */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @description Zero-based page index returned in this response. */
-                        page?: number;
-                        /** @description Maximum number of items returned on each page. */
-                        pageSize?: number;
-                        /** @description Total number of items across all pages. */
-                        totalCount?: number;
-                        /** @description Team-organization mapping entries. */
-                        teamsOrganizationsMapping?: {
-                            /**
-                             * Format: uuid
-                             * @description Mapping record ID.
-                             */
-                            id?: string;
-                            /**
-                             * Format: uuid
-                             * @description Organization ID for this mapping.
-                             */
-                            orgId?: string;
-                            /**
-                             * Format: uuid
-                             * @description Team ID for this mapping.
-                             */
-                            teamId?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the mapping was created.
-                             */
-                            createdAt?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the mapping was last updated.
-                             */
-                            updatedAt?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the mapping was soft-deleted.
-                             */
-                            deletedAt?: string;
-                        }[];
-                    } | {
-                        /** @description Zero-based page index returned in this response. */
-                        page?: number;
-                        /** @description Maximum number of items returned on each page. */
-                        pageSize?: number;
-                        /** @description Total number of items across all pages. */
-                        totalCount?: number;
-                        /** @description Teams in this page. */
-                        teams?: {
-                            /**
-                             * Format: uuid
-                             * @description Team ID.
-                             */
-                            id?: string;
-                            /** @description Name of the team. */
-                            name?: string;
-                            /** @description Description of the team. */
-                            description?: string;
-                            /** @description Display name of the team owner. */
-                            owner?: string;
-                            /** @description Free-form team metadata. */
-                            metadata?: {
-                                [key: string]: string;
-                            };
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the team was created.
-                             */
-                            createdAt?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the team was last updated.
-                             */
-                            updatedAt?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the team was soft-deleted.
-                             */
-                            deletedAt?: string;
-                        }[];
-                    };
-                };
-            };
-            /** @description Bad request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Unauthorized */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    removeTeamFromOrg: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Organization ID. */
-                orgId: string;
-                /** @description Team ID. */
-                teamId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Team removed from organization */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @description Zero-based page index returned in this response. */
-                        page?: number;
-                        /** @description Maximum number of items returned on each page. */
-                        pageSize?: number;
-                        /** @description Total number of items across all pages. */
-                        totalCount?: number;
-                        /** @description Team-organization mapping entries. */
-                        teamsOrganizationsMapping?: {
-                            /**
-                             * Format: uuid
-                             * @description Mapping record ID.
-                             */
-                            id?: string;
-                            /**
-                             * Format: uuid
-                             * @description Organization ID for this mapping.
-                             */
-                            orgId?: string;
-                            /**
-                             * Format: uuid
-                             * @description Team ID for this mapping.
-                             */
-                            teamId?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the mapping was created.
-                             */
-                            createdAt?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the mapping was last updated.
-                             */
-                            updatedAt?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the mapping was soft-deleted.
-                             */
-                            deletedAt?: string;
-                        }[];
-                    };
-                };
-            };
-            /** @description Bad request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Unauthorized */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    addUserToOrg: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Organization ID. */
-                orgId: string;
-                /** @description User ID. */
-                userId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description User added to organization */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Unauthorized */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    deleteUserFromOrg: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Organization ID. */
-                orgId: string;
-                /** @description User ID. */
-                userId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description User removed from organization */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Unauthorized */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-}
+
+export interface external {}

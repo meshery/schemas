@@ -4,2395 +4,726 @@
  */
 
 export interface paths {
-    "/api/academy/Curricula/registered": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+  "/api/academy/Curricula/registered": {
+    /** Returns a list of academy content registered by the user with optional filtering. */
+    get: operations["getMyAcademyCurricula"];
+  };
+  "/api/academy/curricula": {
+    /** Creates a new academy curricula with the provided details. */
+    post: operations["createAcademyCurricula"];
+  };
+  "/api/academy/Curricula": {
+    /** Returns a list of academy content with optional filtering. */
+    get: operations["getAcademyCurricula"];
+  };
+  "/api/academy/{type}/{orgId}/{slug}": {
+    /** Returns a learning path identified by type, orgId, and slug. */
+    get: {
+      parameters: {
+        path: {
+          type: string;
+          orgId: string;
+          slug: string;
         };
-        /**
-         * Get academy content
-         * @description Returns a list of academy content registered by the user with optional filtering.
-         */
-        get: operations["getMyAcademyCurricula"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/academy/curricula": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Create a new academy curricula
-         * @description Creates a new academy curricula with the provided details.
-         */
-        post: operations["createAcademyCurricula"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/academy/Curricula": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get academy content
-         * @description Returns a list of academy content with optional filtering.
-         */
-        get: operations["getAcademyCurricula"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/academy/{type}/{orgId}/{slug}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get a single learning path
-         * @description Returns a learning path identified by type, orgId, and slug.
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    type: string;
-                    orgId: string;
-                    slug: string;
+      };
+      responses: {
+        /** A single academy content */
+        200: {
+          content: {
+            "application/json": {
+              /**
+               * @description Id of the Curricula
+               * @example 923458-3490394-934893
+               */
+              id: string;
+              /** @enum {string} */
+              type: "learning-path" | "challenge" | "certification";
+              /**
+               * @description Organization ID that owns this learning path
+               * @example meshery
+               */
+              orgId: string;
+              /**
+               * @description Visibility of the Curricula
+               * @enum {string}
+               */
+              visibility: "public" | "private";
+              /**
+               * @description Status of the Curricula
+               * @example ready
+               * @enum {string}
+               */
+              status: "ready" | "archived" | "not_ready";
+              /**
+               * @description slug of the Curricula
+               * @example intro-kubernetes-course
+               */
+              slug: string;
+              /**
+               * @description Level of the Curricula
+               * @enum {string}
+               */
+              level: "beginner" | "intermediate" | "advanced";
+              /**
+               * Format: uuid
+               * @description ID of the badge to be awarded on completion of this curricula
+               */
+              badge_id?: string;
+              /** @description ID of the invite associated with this Curricula */
+              inviteId?: string;
+              /** @description ID of the workspace to which this Curricula belongs */
+              workspace_id?: string;
+              /** @description When the Curricula item was created */
+              createdAt: string;
+              /** @description When the Curricula was last updated */
+              updatedAt: string;
+              deletedAt: string;
+              /** @description Additional metadata about the Curricula */
+              metadata: {
+                /**
+                 * @description Title of the learning path
+                 * @example Mastering Kubernetes for Engineers
+                 */
+                title: string;
+                /**
+                 * @description Short description of the curricula
+                 * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
+                 */
+                description: string;
+                /**
+                 * @description Detailed description of the curricula
+                 * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
+                 */
+                detailedDescription?: string;
+                /**
+                 * Format: uri
+                 * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+                 * @example kubernetes-icon.svg
+                 */
+                banner?: string | null;
+                /**
+                 * Format: uri
+                 * @description Canonical URL for the learning path
+                 * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
+                 */
+                permalink: string;
+                certificate?: {
+                  /**
+                   * @description Unique identifier for the certificate
+                   * @example 1234567890abcdef
+                   */
+                  id: string;
+                  /**
+                   * Format: uuid
+                   * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                   */
+                  orgId: string;
+                  /**
+                   * @description ID of the recipient (user) who received the certificate
+                   * @example 1234567890abcdef
+                   */
+                  recipientId: string;
+                  /**
+                   * @description Name of the recipient (user) who received the certificate
+                   * @example John Doe
+                   */
+                  recipientName: string;
+                  /**
+                   * @description Title of the certificate
+                   * @example Kubernetes Expert Certification
+                   */
+                  title: string;
+                  /**
+                   * @description Description of the certificate
+                   * @example Awarded for successfully completing the Kubernetes Expert course
+                   */
+                  description: string;
+                  /** @description List of issuing authorities for the certificate */
+                  issuingAuthorities: ({
+                    /**
+                     * @description Name of the issuing authority
+                     * @example Cloud Native Foundation
+                     */
+                    name: string;
+                    /**
+                     * @description Role of the issuing authority
+                     * @example COO
+                     */
+                    role?: string;
+                    /**
+                     * Format: uri
+                     * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
+                     * @example http://localhost:9876/signatures/cloud-native-foundation.png
+                     */
+                    signatureUrl?: string;
+                  } & {
+                    url: unknown;
+                  })[];
+                  /**
+                   * Format: date-time
+                   * @description Date when the certificate was issued
+                   * @example 2023-10-01T12:00:00Z
+                   */
+                  issuedDate: string;
+                  /**
+                   * Format: date-time
+                   * @description Date when the certificate expires (optional)
+                   * @example 2025-10-01T12:00:00Z
+                   */
+                  expirationDate?: string;
+                  /**
+                   * @description Number of months after which the certificate expires
+                   * @example 24
+                   */
+                  expiresIn?: number;
                 };
-                cookie?: never;
+                /** @description List of children items in the top-level curricula */
+                children?: {
+                  /**
+                   * @description Unique identifier for the course
+                   * @example 1234567890abcdef
+                   */
+                  id: string;
+                  /**
+                   * @description Title of the course
+                   * @example Kubernetes Basics
+                   */
+                  title: string;
+                  /**
+                   * Format: uri
+                   * @description URL to the course content
+                   * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
+                   */
+                  permalink: string;
+                  /**
+                   * @description Course description
+                   * @example Learn the basics of Kubernetes
+                   */
+                  description: string;
+                  /**
+                   * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
+                   * @example eg 1 , 2
+                   */
+                  weight?: number;
+                  /**
+                   * Format: uri
+                   * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+                   * @example kubernetes-icon.svg
+                   */
+                  banner?: string | null;
+                  /**
+                   * @description Type of the content (e.g., learning-path, challenge, certification)
+                   * @enum {string}
+                   */
+                  type?: "learning-path" | "challenge" | "certification";
+                  /** @description List of child nodes (sub-courses or modules) */
+                  children?: { [key: string]: unknown }[];
+                }[];
+              } & { [key: string]: unknown };
             };
-            requestBody?: never;
-            responses: {
-                /** @description A single academy content */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /**
-                             * @description Id of the Curricula
-                             * @example 923458-3490394-934893
-                             */
-                            id: string;
-                            /** @enum {string} */
-                            type: "learning-path" | "challenge" | "certification";
-                            /**
-                             * @description Organization ID that owns this learning path
-                             * @example meshery
-                             */
-                            orgId: string;
-                            /**
-                             * @description Visibility of the Curricula
-                             * @enum {string}
-                             */
-                            visibility: "public" | "private";
-                            /**
-                             * @description Status of the Curricula
-                             * @example ready
-                             * @enum {string}
-                             */
-                            status: "ready" | "archived" | "not_ready";
-                            /**
-                             * @description slug of the Curricula
-                             * @example intro-kubernetes-course
-                             */
-                            slug: string;
-                            /**
-                             * @description Level of the Curricula
-                             * @enum {string}
-                             */
-                            level: "beginner" | "intermediate" | "advanced";
-                            /**
-                             * Format: uuid
-                             * @description ID of the badge to be awarded on completion of this curricula
-                             */
-                            badge_id?: string;
-                            /** @description ID of the invite associated with this Curricula */
-                            inviteId?: string;
-                            /** @description ID of the workspace to which this Curricula belongs */
-                            workspace_id?: string;
-                            /** @description When the Curricula item was created */
-                            createdAt: string;
-                            /** @description When the Curricula was last updated */
-                            updatedAt: string;
-                            deletedAt: string;
-                            /** @description Additional metadata about the Curricula */
-                            metadata: {
-                                [key: string]: unknown;
-                            } & {
-                                /**
-                                 * @description Title of the learning path
-                                 * @example Mastering Kubernetes for Engineers
-                                 */
-                                title: string;
-                                /**
-                                 * @description Short description of the curricula
-                                 * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
-                                 */
-                                description: string;
-                                /**
-                                 * @description Detailed description of the curricula
-                                 * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
-                                 */
-                                detailedDescription?: string;
-                                /**
-                                 * Format: uri
-                                 * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-                                 * @example kubernetes-icon.svg
-                                 */
-                                banner?: string | null;
-                                /**
-                                 * Format: uri
-                                 * @description Canonical URL for the learning path
-                                 * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
-                                 */
-                                permalink: string;
-                                certificate?: {
-                                    /**
-                                     * @description Unique identifier for the certificate
-                                     * @example 1234567890abcdef
-                                     */
-                                    id: string;
-                                    /**
-                                     * Format: uuid
-                                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                                     */
-                                    orgId: string;
-                                    /**
-                                     * @description ID of the recipient (user) who received the certificate
-                                     * @example 1234567890abcdef
-                                     */
-                                    recipientId: string;
-                                    /**
-                                     * @description Name of the recipient (user) who received the certificate
-                                     * @example John Doe
-                                     */
-                                    recipientName: string;
-                                    /**
-                                     * @description Title of the certificate
-                                     * @example Kubernetes Expert Certification
-                                     */
-                                    title: string;
-                                    /**
-                                     * @description Description of the certificate
-                                     * @example Awarded for successfully completing the Kubernetes Expert course
-                                     */
-                                    description: string;
-                                    /** @description List of issuing authorities for the certificate */
-                                    issuingAuthorities: {
-                                        /**
-                                         * @description Name of the issuing authority
-                                         * @example Cloud Native Foundation
-                                         */
-                                        name: string;
-                                        /**
-                                         * @description Role of the issuing authority
-                                         * @example COO
-                                         */
-                                        role?: string;
-                                        /**
-                                         * Format: uri
-                                         * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
-                                         * @example http://localhost:9876/signatures/cloud-native-foundation.png
-                                         */
-                                        signatureUrl?: string;
-                                    }[];
-                                    /**
-                                     * Format: date-time
-                                     * @description Date when the certificate was issued
-                                     * @example 2023-10-01T12:00:00Z
-                                     */
-                                    issuedDate: string;
-                                    /**
-                                     * Format: date-time
-                                     * @description Date when the certificate expires (optional)
-                                     * @example 2025-10-01T12:00:00Z
-                                     */
-                                    expirationDate?: string;
-                                    /**
-                                     * @description Number of months after which the certificate expires
-                                     * @example 24
-                                     */
-                                    expiresIn?: number;
-                                };
-                                /** @description List of children items in the top-level curricula */
-                                children?: {
-                                    /**
-                                     * @description Unique identifier for the course
-                                     * @example 1234567890abcdef
-                                     */
-                                    id: string;
-                                    /**
-                                     * @description Title of the course
-                                     * @example Kubernetes Basics
-                                     */
-                                    title: string;
-                                    /**
-                                     * Format: uri
-                                     * @description URL to the course content
-                                     * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
-                                     */
-                                    permalink: string;
-                                    /**
-                                     * @description Course description
-                                     * @example Learn the basics of Kubernetes
-                                     */
-                                    description: string;
-                                    /**
-                                     * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
-                                     * @example eg 1 , 2
-                                     */
-                                    weight?: number;
-                                    /**
-                                     * Format: uri
-                                     * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-                                     * @example kubernetes-icon.svg
-                                     */
-                                    banner?: string | null;
-                                    /**
-                                     * @description Type of the content (e.g., learning-path, challenge, certification)
-                                     * @enum {string}
-                                     */
-                                    type?: "learning-path" | "challenge" | "certification";
-                                    /** @description List of child nodes (sub-courses or modules) */
-                                    children?: Record<string, never>[];
-                                }[];
-                            };
-                        };
-                    };
-                };
-                /** @description Invalid request parameters */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Expired JWT token used or insufficient privilege */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": string;
-                    };
-                };
-                /** @description Result not found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": string;
-                    };
-                };
-                /** @description Server error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
+          };
+        };
+        /** Invalid request parameters */
+        400: unknown;
+        /** Expired JWT token used or insufficient privilege */
+        401: {
+          content: {
+            "text/plain": string;
+          };
+        };
+        /** Result not found */
+        404: {
+          content: {
+            "text/plain": string;
+          };
+        };
+        /** Server error */
+        500: unknown;
+      };
+    };
+  };
+  "/api/academy/register": {
+    post: operations["registerToAcademyContent"];
+  };
+  "/api/academy/curricula/registrations/{id}/withdraw": {
+    post: operations["withdrawFromAcademyContent"];
+  };
+  "/api/academy/curricula/{id}": {
+    /** Returns a single academy curricula identified by its ID. */
+    get: operations["getAcademyCurriculaById"];
+    /** Updates the details of an existing academy curricula identified by its ID. */
+    put: operations["updateAcademyCurriculaById"];
+    /** Deletes an existing academy curricula identified by its ID. */
+    delete: operations["deleteAcademyCurriculaById"];
+  };
+  "/api/academy/registrations/{contentId}": {
+    /** Returns registration data for a specific content item, optionally filtered by status. */
+    get: {
+      parameters: {
+        path: {
+          /** The ID of the content to retrieve registration data for */
+          contentId: string;
+        };
+        query: {
+          /** Filter registrations by status (e.g., registered, completed) */
+          status?: string;
+        };
+      };
+      responses: {
+        /** Registration data for the specified content */
+        200: {
+          content: {
+            "application/json": {
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              id: string;
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              org_id: string;
+              /** @description ID of the course content */
+              content_id: string;
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              user_id: string;
+              /**
+               * @description Status of the user's course registration
+               * @enum {string}
+               */
+              status: "registered" | "completed" | "failed" | "withdrawn";
+              /**
+               * Format: date-time
+               * @description When the registration was updated
+               */
+              updated_at: string;
+              /**
+               * Format: date-time
+               * @description When the registration was created
+               */
+              created_at: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was deleted.
+               */
+              deleted_at?: string;
+              /** @description Issued certificate for completing the curricula under registration */
+              certificate: {
+                /**
+                 * @description Unique identifier for the certificate
+                 * @example 1234567890abcdef
+                 */
+                id: string;
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                orgId: string;
+                /**
+                 * @description ID of the recipient (user) who received the certificate
+                 * @example 1234567890abcdef
+                 */
+                recipientId: string;
+                /**
+                 * @description Name of the recipient (user) who received the certificate
+                 * @example John Doe
+                 */
+                recipientName: string;
+                /**
+                 * @description Title of the certificate
+                 * @example Kubernetes Expert Certification
+                 */
+                title: string;
+                /**
+                 * @description Description of the certificate
+                 * @example Awarded for successfully completing the Kubernetes Expert course
+                 */
+                description: string;
+                /** @description List of issuing authorities for the certificate */
+                issuingAuthorities: ({
+                  /**
+                   * @description Name of the issuing authority
+                   * @example Cloud Native Foundation
+                   */
+                  name: string;
+                  /**
+                   * @description Role of the issuing authority
+                   * @example COO
+                   */
+                  role?: string;
+                  /**
+                   * Format: uri
+                   * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
+                   * @example http://localhost:9876/signatures/cloud-native-foundation.png
+                   */
+                  signatureUrl?: string;
+                } & {
+                  url: unknown;
+                })[];
+                /**
+                 * Format: date-time
+                 * @description Date when the certificate was issued
+                 * @example 2023-10-01T12:00:00Z
+                 */
+                issuedDate: string;
+                /**
+                 * Format: date-time
+                 * @description Date when the certificate expires (optional)
+                 * @example 2025-10-01T12:00:00Z
+                 */
+                expirationDate?: string;
+                /**
+                 * @description Number of months after which the certificate expires
+                 * @example 24
+                 */
+                expiresIn?: number;
+              };
+              /** @description Additional metadata about the registration */
+              metadata: { [key: string]: unknown };
+            } & {
+              test_submissions: unknown;
             };
+          };
         };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+        /** Invalid request parameters */
+        400: unknown;
+        /** Expired JWT token used or insufficient privilege */
+        401: {
+          content: {
+            "text/plain": string;
+          };
+        };
+        /** Content not found */
+        404: unknown;
+        /** Server error */
+        500: unknown;
+      };
     };
-    "/api/academy/register": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Register a user to academy content */
-        post: operations["registerToAcademyContent"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/academy/curricula/registrations/{id}/withdraw": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Withdraw a user from academy content */
-        post: operations["withdrawFromAcademyContent"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/academy/curricula/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get a single academy curricula by ID
-         * @description Returns a single academy curricula identified by its ID.
-         */
-        get: operations["getAcademyCurriculaById"];
-        /**
-         * Update an existing academy curricula by ID
-         * @description Updates the details of an existing academy curricula identified by its ID.
-         */
-        put: operations["updateAcademyCurriculaById"];
-        post?: never;
-        /**
-         * Delete an academy curricula by ID
-         * @description Deletes an existing academy curricula identified by its ID.
-         */
-        delete: operations["deleteAcademyCurriculaById"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/academy/registrations/{contentId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get registration information for academy content
-         * @description Returns registration data for a specific content item, optionally filtered by status.
-         */
-        get: {
-            parameters: {
-                query?: {
-                    /** @description Filter registrations by status (e.g., registered, completed) */
-                    status?: string;
-                };
-                header?: never;
-                path: {
-                    /** @description The ID of the content to retrieve registration data for */
-                    contentId: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Registration data for the specified content */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            id: string;
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            org_id: string;
-                            /** @description ID of the course content */
-                            content_id: string;
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            user_id: string;
-                            /**
-                             * @description Status of the user's course registration
-                             * @enum {string}
-                             */
-                            status: "registered" | "completed" | "failed" | "withdrawn";
-                            /**
-                             * Format: date-time
-                             * @description When the registration was updated
-                             */
-                            updated_at: string;
-                            /**
-                             * Format: date-time
-                             * @description When the registration was created
-                             */
-                            created_at: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the resource was deleted.
-                             */
-                            deleted_at?: string;
-                            /** @description Issued certificate for completing the curricula under registration */
-                            certificate: {
-                                /**
-                                 * @description Unique identifier for the certificate
-                                 * @example 1234567890abcdef
-                                 */
-                                id: string;
-                                /**
-                                 * Format: uuid
-                                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                                 */
-                                orgId: string;
-                                /**
-                                 * @description ID of the recipient (user) who received the certificate
-                                 * @example 1234567890abcdef
-                                 */
-                                recipientId: string;
-                                /**
-                                 * @description Name of the recipient (user) who received the certificate
-                                 * @example John Doe
-                                 */
-                                recipientName: string;
-                                /**
-                                 * @description Title of the certificate
-                                 * @example Kubernetes Expert Certification
-                                 */
-                                title: string;
-                                /**
-                                 * @description Description of the certificate
-                                 * @example Awarded for successfully completing the Kubernetes Expert course
-                                 */
-                                description: string;
-                                /** @description List of issuing authorities for the certificate */
-                                issuingAuthorities: {
-                                    /**
-                                     * @description Name of the issuing authority
-                                     * @example Cloud Native Foundation
-                                     */
-                                    name: string;
-                                    /**
-                                     * @description Role of the issuing authority
-                                     * @example COO
-                                     */
-                                    role?: string;
-                                    /**
-                                     * Format: uri
-                                     * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
-                                     * @example http://localhost:9876/signatures/cloud-native-foundation.png
-                                     */
-                                    signatureUrl?: string;
-                                }[];
-                                /**
-                                 * Format: date-time
-                                 * @description Date when the certificate was issued
-                                 * @example 2023-10-01T12:00:00Z
-                                 */
-                                issuedDate: string;
-                                /**
-                                 * Format: date-time
-                                 * @description Date when the certificate expires (optional)
-                                 * @example 2025-10-01T12:00:00Z
-                                 */
-                                expirationDate?: string;
-                                /**
-                                 * @description Number of months after which the certificate expires
-                                 * @example 24
-                                 */
-                                expiresIn?: number;
-                            };
-                            /** @description Additional metadata about the registration */
-                            metadata: {
-                                [key: string]: unknown;
-                            };
-                        };
-                    };
-                };
-                /** @description Invalid request parameters */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Expired JWT token used or insufficient privilege */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": string;
-                    };
-                };
-                /** @description Content not found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Server error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/academy/registrations/{registrationId}/progress-tracker/update-current-item": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Update the current item in the progress tracker */
-        post: operations["updateCurrentItemInProgressTracker"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/academy/registrations/tests": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get test metadata
-         * @description Returns metadata for test identified by its absolute path.
-         */
-        get: operations["getTestByAbsPath"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/academy/registrations/test-sessions/start": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Start a Test by ID
-         * @description Starts a new test session for the quiz identified by its ID.
-         */
-        post: operations["startTestById"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/academy/registrations/{id}/test-sessions": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get all tests for a registration
-         * @description Returns all tests associated with a specific registration ID for a user.
-         */
-        get: operations["getAllTestSessionsForRegistration"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/academy/registrations/test-sessions/submit": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Submit a quiz for evaluation */
-        post: operations["submitQuiz"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/academy/admin/summary": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get academy content summary
-         * @description Returns a summary of all academy content with  metrics.
-         */
-        get: operations["getAcademyAdminSummary"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/academy/admin/registrations": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get academy registrations
-         * @description Returns a list of academy registrations with user, curricula, and pagination details.
-         */
-        get: operations["getAcademyAdminRegistrations"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/academy/certificates/{certificateId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get a certificate by ID
-         * @description Returns a certificate identified by its ID.
-         */
-        get: operations["getCertificateById"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
+  };
+  "/api/academy/registrations/{registrationId}/progress-tracker/update-current-item": {
+    post: operations["updateCurrentItemInProgressTracker"];
+  };
+  "/api/academy/registrations/tests": {
+    /** Returns metadata for test identified by its absolute path. */
+    get: operations["getTestByAbsPath"];
+  };
+  "/api/academy/registrations/test-sessions/start": {
+    /** Starts a new test session for the quiz identified by its ID. */
+    post: operations["startTestById"];
+  };
+  "/api/academy/registrations/{id}/test-sessions": {
+    /** Returns all tests associated with a specific registration ID for a user. */
+    get: operations["getAllTestSessionsForRegistration"];
+  };
+  "/api/academy/registrations/test-sessions/submit": {
+    post: operations["submitQuiz"];
+  };
+  "/api/academy/admin/summary": {
+    /** Returns a summary of all academy content with  metrics. */
+    get: operations["getAcademyAdminSummary"];
+  };
+  "/api/academy/admin/registrations": {
+    /** Returns a list of academy registrations with user, curricula, and pagination details. */
+    get: operations["getAcademyAdminRegistrations"];
+  };
+  "/api/academy/certificates/{certificateId}": {
+    /** Returns a certificate identified by its ID. */
+    get: operations["getCertificateById"];
+  };
 }
-export type webhooks = Record<string, never>;
+
 export interface components {
-    schemas: {
+  schemas: {
+    /**
+     * @description Organization ID that owns this learning path
+     * @example meshery
+     */
+    AcademyCurriculaOrgId: string;
+    /** @description ID of the badge to be awarded on completion of this curricula */
+    AcademyCurriculaBadgeId: string;
+    /** @description ID of the invite associated with this Curricula */
+    AcademyCurriculaInviteId: string;
+    /** @description ID of the workspace to which this Curricula belongs */
+    AcademyCurriculaWorkspaceId: string;
+    /** @description When the Curricula item was created */
+    AcademyCurriculaCreatedAt: string;
+    /** @description When the Curricula was last updated */
+    AcademyCurriculaUpdatedAt: string;
+    AcademyCurriculaDeletedAt: string;
+    /** @description Additional metadata about the Curricula */
+    AcademyCurriculaMetadata: {
+      /**
+       * @description Title of the learning path
+       * @example Mastering Kubernetes for Engineers
+       */
+      title: string;
+      /**
+       * @description Short description of the curricula
+       * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
+       */
+      description: string;
+      /**
+       * @description Detailed description of the curricula
+       * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
+       */
+      detailedDescription?: string;
+      /**
+       * Format: uri
+       * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+       * @example kubernetes-icon.svg
+       */
+      banner?: string | null;
+      /**
+       * Format: uri
+       * @description Canonical URL for the learning path
+       * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
+       */
+      permalink: string;
+      certificate?: {
         /**
-         * @description Organization ID that owns this learning path
-         * @example meshery
+         * @description Unique identifier for the certificate
+         * @example 1234567890abcdef
          */
-        AcademyCurriculaOrgId: string;
-        /** @description ID of the badge to be awarded on completion of this curricula */
-        AcademyCurriculaBadgeId: string;
-        /** @description ID of the invite associated with this Curricula */
-        AcademyCurriculaInviteId: string;
-        /** @description ID of the workspace to which this Curricula belongs */
-        AcademyCurriculaWorkspaceId: string;
-        /** @description When the Curricula item was created */
-        AcademyCurriculaCreatedAt: string;
-        /** @description When the Curricula was last updated */
-        AcademyCurriculaUpdatedAt: string;
-        AcademyCurriculaDeletedAt: string;
-        /** @description Additional metadata about the Curricula */
-        AcademyCurriculaMetadata: {
-            [key: string]: unknown;
+        id: string;
+        /**
+         * Format: uuid
+         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+         */
+        orgId: string;
+        /**
+         * @description ID of the recipient (user) who received the certificate
+         * @example 1234567890abcdef
+         */
+        recipientId: string;
+        /**
+         * @description Name of the recipient (user) who received the certificate
+         * @example John Doe
+         */
+        recipientName: string;
+        /**
+         * @description Title of the certificate
+         * @example Kubernetes Expert Certification
+         */
+        title: string;
+        /**
+         * @description Description of the certificate
+         * @example Awarded for successfully completing the Kubernetes Expert course
+         */
+        description: string;
+        /** @description List of issuing authorities for the certificate */
+        issuingAuthorities: ({
+          /**
+           * @description Name of the issuing authority
+           * @example Cloud Native Foundation
+           */
+          name: string;
+          /**
+           * @description Role of the issuing authority
+           * @example COO
+           */
+          role?: string;
+          /**
+           * Format: uri
+           * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
+           * @example http://localhost:9876/signatures/cloud-native-foundation.png
+           */
+          signatureUrl?: string;
         } & {
-            /**
-             * @description Title of the learning path
-             * @example Mastering Kubernetes for Engineers
-             */
-            title: string;
-            /**
-             * @description Short description of the curricula
-             * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
-             */
-            description: string;
-            /**
-             * @description Detailed description of the curricula
-             * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
-             */
-            detailedDescription?: string;
-            /**
-             * Format: uri
-             * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-             * @example kubernetes-icon.svg
-             */
-            banner?: string | null;
-            /**
-             * Format: uri
-             * @description Canonical URL for the learning path
-             * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
-             */
-            permalink: string;
-            certificate?: {
-                /**
-                 * @description Unique identifier for the certificate
-                 * @example 1234567890abcdef
-                 */
-                id: string;
-                /**
-                 * Format: uuid
-                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                 */
-                orgId: string;
-                /**
-                 * @description ID of the recipient (user) who received the certificate
-                 * @example 1234567890abcdef
-                 */
-                recipientId: string;
-                /**
-                 * @description Name of the recipient (user) who received the certificate
-                 * @example John Doe
-                 */
-                recipientName: string;
-                /**
-                 * @description Title of the certificate
-                 * @example Kubernetes Expert Certification
-                 */
-                title: string;
-                /**
-                 * @description Description of the certificate
-                 * @example Awarded for successfully completing the Kubernetes Expert course
-                 */
-                description: string;
-                /** @description List of issuing authorities for the certificate */
-                issuingAuthorities: {
-                    /**
-                     * @description Name of the issuing authority
-                     * @example Cloud Native Foundation
-                     */
-                    name: string;
-                    /**
-                     * @description Role of the issuing authority
-                     * @example COO
-                     */
-                    role?: string;
-                    /**
-                     * Format: uri
-                     * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
-                     * @example http://localhost:9876/signatures/cloud-native-foundation.png
-                     */
-                    signatureUrl?: string;
-                }[];
-                /**
-                 * Format: date-time
-                 * @description Date when the certificate was issued
-                 * @example 2023-10-01T12:00:00Z
-                 */
-                issuedDate: string;
-                /**
-                 * Format: date-time
-                 * @description Date when the certificate expires (optional)
-                 * @example 2025-10-01T12:00:00Z
-                 */
-                expirationDate?: string;
-                /**
-                 * @description Number of months after which the certificate expires
-                 * @example 24
-                 */
-                expiresIn?: number;
-            };
-            /** @description List of children items in the top-level curricula */
-            children?: {
-                /**
-                 * @description Unique identifier for the course
-                 * @example 1234567890abcdef
-                 */
-                id: string;
-                /**
-                 * @description Title of the course
-                 * @example Kubernetes Basics
-                 */
-                title: string;
-                /**
-                 * Format: uri
-                 * @description URL to the course content
-                 * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
-                 */
-                permalink: string;
-                /**
-                 * @description Course description
-                 * @example Learn the basics of Kubernetes
-                 */
-                description: string;
-                /**
-                 * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
-                 * @example eg 1 , 2
-                 */
-                weight?: number;
-                /**
-                 * Format: uri
-                 * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-                 * @example kubernetes-icon.svg
-                 */
-                banner?: string | null;
-                /**
-                 * @description Type of the content (e.g., learning-path, challenge, certification)
-                 * @enum {string}
-                 */
-                type?: "learning-path" | "challenge" | "certification";
-                /** @description List of child nodes (sub-courses or modules) */
-                children?: Record<string, never>[];
-            }[];
-        };
-        /** @description Expiry time for curricula access */
-        AcademyCurriculaAccessExpiresAt: string;
-        RegisterToAcademyContentRequest: {
-            /** @description ID of the academy content to register for */
-            contentId: string;
-            /** @enum {string} */
-            contentType?: "learning-path" | "challenge" | "certification";
-        };
-        /** @enum {string} */
-        ContentType: "learning-path" | "challenge" | "certification";
-        /** @enum {string} */
-        Visibility: "public" | "private";
-        /** @enum {string} */
-        Level: "beginner" | "intermediate" | "advanced";
-        /** @enum {string} */
-        Status: "ready" | "archived" | "not_ready";
-        AcademyCurricula: {
-            /**
-             * @description Id of the Curricula
-             * @example 923458-3490394-934893
-             */
-            id: string;
-            /** @enum {string} */
-            type: "learning-path" | "challenge" | "certification";
-            /**
-             * @description Organization ID that owns this learning path
-             * @example meshery
-             */
-            orgId: string;
-            /**
-             * @description Visibility of the Curricula
-             * @enum {string}
-             */
-            visibility: "public" | "private";
-            /**
-             * @description Status of the Curricula
-             * @example ready
-             * @enum {string}
-             */
-            status: "ready" | "archived" | "not_ready";
-            /**
-             * @description slug of the Curricula
-             * @example intro-kubernetes-course
-             */
-            slug: string;
-            /**
-             * @description Level of the Curricula
-             * @enum {string}
-             */
-            level: "beginner" | "intermediate" | "advanced";
-            /**
-             * Format: uuid
-             * @description ID of the badge to be awarded on completion of this curricula
-             */
-            badge_id?: string;
-            /** @description ID of the invite associated with this Curricula */
-            inviteId?: string;
-            /** @description ID of the workspace to which this Curricula belongs */
-            workspace_id?: string;
-            /** @description When the Curricula item was created */
-            createdAt: string;
-            /** @description When the Curricula was last updated */
-            updatedAt: string;
-            deletedAt: string;
-            /** @description Additional metadata about the Curricula */
-            metadata: {
-                [key: string]: unknown;
-            } & {
-                /**
-                 * @description Title of the learning path
-                 * @example Mastering Kubernetes for Engineers
-                 */
-                title: string;
-                /**
-                 * @description Short description of the curricula
-                 * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
-                 */
-                description: string;
-                /**
-                 * @description Detailed description of the curricula
-                 * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
-                 */
-                detailedDescription?: string;
-                /**
-                 * Format: uri
-                 * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-                 * @example kubernetes-icon.svg
-                 */
-                banner?: string | null;
-                /**
-                 * Format: uri
-                 * @description Canonical URL for the learning path
-                 * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
-                 */
-                permalink: string;
-                certificate?: {
-                    /**
-                     * @description Unique identifier for the certificate
-                     * @example 1234567890abcdef
-                     */
-                    id: string;
-                    /**
-                     * Format: uuid
-                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                     */
-                    orgId: string;
-                    /**
-                     * @description ID of the recipient (user) who received the certificate
-                     * @example 1234567890abcdef
-                     */
-                    recipientId: string;
-                    /**
-                     * @description Name of the recipient (user) who received the certificate
-                     * @example John Doe
-                     */
-                    recipientName: string;
-                    /**
-                     * @description Title of the certificate
-                     * @example Kubernetes Expert Certification
-                     */
-                    title: string;
-                    /**
-                     * @description Description of the certificate
-                     * @example Awarded for successfully completing the Kubernetes Expert course
-                     */
-                    description: string;
-                    /** @description List of issuing authorities for the certificate */
-                    issuingAuthorities: {
-                        /**
-                         * @description Name of the issuing authority
-                         * @example Cloud Native Foundation
-                         */
-                        name: string;
-                        /**
-                         * @description Role of the issuing authority
-                         * @example COO
-                         */
-                        role?: string;
-                        /**
-                         * Format: uri
-                         * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
-                         * @example http://localhost:9876/signatures/cloud-native-foundation.png
-                         */
-                        signatureUrl?: string;
-                    }[];
-                    /**
-                     * Format: date-time
-                     * @description Date when the certificate was issued
-                     * @example 2023-10-01T12:00:00Z
-                     */
-                    issuedDate: string;
-                    /**
-                     * Format: date-time
-                     * @description Date when the certificate expires (optional)
-                     * @example 2025-10-01T12:00:00Z
-                     */
-                    expirationDate?: string;
-                    /**
-                     * @description Number of months after which the certificate expires
-                     * @example 24
-                     */
-                    expiresIn?: number;
-                };
-                /** @description List of children items in the top-level curricula */
-                children?: {
-                    /**
-                     * @description Unique identifier for the course
-                     * @example 1234567890abcdef
-                     */
-                    id: string;
-                    /**
-                     * @description Title of the course
-                     * @example Kubernetes Basics
-                     */
-                    title: string;
-                    /**
-                     * Format: uri
-                     * @description URL to the course content
-                     * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
-                     */
-                    permalink: string;
-                    /**
-                     * @description Course description
-                     * @example Learn the basics of Kubernetes
-                     */
-                    description: string;
-                    /**
-                     * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
-                     * @example eg 1 , 2
-                     */
-                    weight?: number;
-                    /**
-                     * Format: uri
-                     * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-                     * @example kubernetes-icon.svg
-                     */
-                    banner?: string | null;
-                    /**
-                     * @description Type of the content (e.g., learning-path, challenge, certification)
-                     * @enum {string}
-                     */
-                    type?: "learning-path" | "challenge" | "certification";
-                    /** @description List of child nodes (sub-courses or modules) */
-                    children?: Record<string, never>[];
-                }[];
-            };
-        };
-        SingleAcademyCurriculaResponse: {
-            /**
-             * @description Id of the Curricula
-             * @example 923458-3490394-934893
-             */
-            id: string;
-            /** @enum {string} */
-            type: "learning-path" | "challenge" | "certification";
-            /**
-             * @description Organization ID that owns this learning path
-             * @example meshery
-             */
-            orgId: string;
-            /**
-             * @description Visibility of the Curricula
-             * @enum {string}
-             */
-            visibility: "public" | "private";
-            /**
-             * @description Status of the Curricula
-             * @example ready
-             * @enum {string}
-             */
-            status: "ready" | "archived" | "not_ready";
-            /**
-             * @description slug of the Curricula
-             * @example intro-kubernetes-course
-             */
-            slug: string;
-            /**
-             * @description Level of the Curricula
-             * @enum {string}
-             */
-            level: "beginner" | "intermediate" | "advanced";
-            /**
-             * Format: uuid
-             * @description ID of the badge to be awarded on completion of this curricula
-             */
-            badge_id?: string;
-            /** @description ID of the invite associated with this Curricula */
-            inviteId?: string;
-            /** @description ID of the workspace to which this Curricula belongs */
-            workspace_id?: string;
-            /** @description When the Curricula item was created */
-            createdAt: string;
-            /** @description When the Curricula was last updated */
-            updatedAt: string;
-            deletedAt: string;
-            /** @description Additional metadata about the Curricula */
-            metadata: {
-                [key: string]: unknown;
-            } & {
-                /**
-                 * @description Title of the learning path
-                 * @example Mastering Kubernetes for Engineers
-                 */
-                title: string;
-                /**
-                 * @description Short description of the curricula
-                 * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
-                 */
-                description: string;
-                /**
-                 * @description Detailed description of the curricula
-                 * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
-                 */
-                detailedDescription?: string;
-                /**
-                 * Format: uri
-                 * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-                 * @example kubernetes-icon.svg
-                 */
-                banner?: string | null;
-                /**
-                 * Format: uri
-                 * @description Canonical URL for the learning path
-                 * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
-                 */
-                permalink: string;
-                certificate?: {
-                    /**
-                     * @description Unique identifier for the certificate
-                     * @example 1234567890abcdef
-                     */
-                    id: string;
-                    /**
-                     * Format: uuid
-                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                     */
-                    orgId: string;
-                    /**
-                     * @description ID of the recipient (user) who received the certificate
-                     * @example 1234567890abcdef
-                     */
-                    recipientId: string;
-                    /**
-                     * @description Name of the recipient (user) who received the certificate
-                     * @example John Doe
-                     */
-                    recipientName: string;
-                    /**
-                     * @description Title of the certificate
-                     * @example Kubernetes Expert Certification
-                     */
-                    title: string;
-                    /**
-                     * @description Description of the certificate
-                     * @example Awarded for successfully completing the Kubernetes Expert course
-                     */
-                    description: string;
-                    /** @description List of issuing authorities for the certificate */
-                    issuingAuthorities: {
-                        /**
-                         * @description Name of the issuing authority
-                         * @example Cloud Native Foundation
-                         */
-                        name: string;
-                        /**
-                         * @description Role of the issuing authority
-                         * @example COO
-                         */
-                        role?: string;
-                        /**
-                         * Format: uri
-                         * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
-                         * @example http://localhost:9876/signatures/cloud-native-foundation.png
-                         */
-                        signatureUrl?: string;
-                    }[];
-                    /**
-                     * Format: date-time
-                     * @description Date when the certificate was issued
-                     * @example 2023-10-01T12:00:00Z
-                     */
-                    issuedDate: string;
-                    /**
-                     * Format: date-time
-                     * @description Date when the certificate expires (optional)
-                     * @example 2025-10-01T12:00:00Z
-                     */
-                    expirationDate?: string;
-                    /**
-                     * @description Number of months after which the certificate expires
-                     * @example 24
-                     */
-                    expiresIn?: number;
-                };
-                /** @description List of children items in the top-level curricula */
-                children?: {
-                    /**
-                     * @description Unique identifier for the course
-                     * @example 1234567890abcdef
-                     */
-                    id: string;
-                    /**
-                     * @description Title of the course
-                     * @example Kubernetes Basics
-                     */
-                    title: string;
-                    /**
-                     * Format: uri
-                     * @description URL to the course content
-                     * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
-                     */
-                    permalink: string;
-                    /**
-                     * @description Course description
-                     * @example Learn the basics of Kubernetes
-                     */
-                    description: string;
-                    /**
-                     * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
-                     * @example eg 1 , 2
-                     */
-                    weight?: number;
-                    /**
-                     * Format: uri
-                     * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-                     * @example kubernetes-icon.svg
-                     */
-                    banner?: string | null;
-                    /**
-                     * @description Type of the content (e.g., learning-path, challenge, certification)
-                     * @enum {string}
-                     */
-                    type?: "learning-path" | "challenge" | "certification";
-                    /** @description List of child nodes (sub-courses or modules) */
-                    children?: Record<string, never>[];
-                }[];
-            };
-        } & {
-            registration_count: number;
-            invitation?: {
-                /**
-                 * Format: uuid
-                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                 */
-                id: string;
-                /**
-                 * Format: uuid
-                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                 */
-                owner_id: string;
-                /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
-                is_default?: boolean;
-                /** @description Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
-                name: string;
-                /** @description Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
-                description: string;
-                emails: string[];
-                /** @description ID of the organization to which the user is invited */
-                org_id: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire
-                 */
-                expires_at?: string;
-                /** @description Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
-                quota?: number;
-                /** @description List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
-                accepted_by: string[];
-                roles: string[];
-                teams: string[];
-                /**
-                 * @description Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later.
-                 * @enum {string}
-                 */
-                status: "enabled" | "disabled";
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the invitation was created
-                 */
-                created_at: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the invitation was last updated
-                 */
-                updated_at: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the invitation was deleted, if applicable
-                 */
-                deleted_at: string;
-            };
-        };
-        CreateAcademyCurriculaRequest: {
-            /**
-             * @description Type of the curricula
-             * @enum {string}
-             */
-            type: "learning-path" | "challenge" | "certification";
-            /**
-             * @description Title of the curricula
-             * @example Introduction to Kubernetes
-             */
-            title: string;
-            /**
-             * @description Organization ID that owns this learning path
-             * @example meshery
-             */
-            orgId: string;
-            /** @description ID of the workspace to which this Curricula belongs */
-            workspace_id: string;
-            /**
-             * Format: uuid
-             * @description ID of the badge to be awarded on completion of this curricula
-             */
-            badge_id?: string;
-            /**
-             * Format: uuid
-             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-             */
-            team_id: string;
-            /** @description Expiry time for curricula access */
-            access_expires_at?: string;
-            /**
-             * @description Current access status of the curricula
-             * @enum {string}
-             */
-            access_status: "enabled" | "disabled";
-            /** @description Additional metadata about the Curricula */
-            metadata: {
-                [key: string]: unknown;
-            } & {
-                /**
-                 * @description Title of the learning path
-                 * @example Mastering Kubernetes for Engineers
-                 */
-                title: string;
-                /**
-                 * @description Short description of the curricula
-                 * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
-                 */
-                description: string;
-                /**
-                 * @description Detailed description of the curricula
-                 * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
-                 */
-                detailedDescription?: string;
-                /**
-                 * Format: uri
-                 * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-                 * @example kubernetes-icon.svg
-                 */
-                banner?: string | null;
-                /**
-                 * Format: uri
-                 * @description Canonical URL for the learning path
-                 * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
-                 */
-                permalink: string;
-                certificate?: {
-                    /**
-                     * @description Unique identifier for the certificate
-                     * @example 1234567890abcdef
-                     */
-                    id: string;
-                    /**
-                     * Format: uuid
-                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                     */
-                    orgId: string;
-                    /**
-                     * @description ID of the recipient (user) who received the certificate
-                     * @example 1234567890abcdef
-                     */
-                    recipientId: string;
-                    /**
-                     * @description Name of the recipient (user) who received the certificate
-                     * @example John Doe
-                     */
-                    recipientName: string;
-                    /**
-                     * @description Title of the certificate
-                     * @example Kubernetes Expert Certification
-                     */
-                    title: string;
-                    /**
-                     * @description Description of the certificate
-                     * @example Awarded for successfully completing the Kubernetes Expert course
-                     */
-                    description: string;
-                    /** @description List of issuing authorities for the certificate */
-                    issuingAuthorities: {
-                        /**
-                         * @description Name of the issuing authority
-                         * @example Cloud Native Foundation
-                         */
-                        name: string;
-                        /**
-                         * @description Role of the issuing authority
-                         * @example COO
-                         */
-                        role?: string;
-                        /**
-                         * Format: uri
-                         * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
-                         * @example http://localhost:9876/signatures/cloud-native-foundation.png
-                         */
-                        signatureUrl?: string;
-                    }[];
-                    /**
-                     * Format: date-time
-                     * @description Date when the certificate was issued
-                     * @example 2023-10-01T12:00:00Z
-                     */
-                    issuedDate: string;
-                    /**
-                     * Format: date-time
-                     * @description Date when the certificate expires (optional)
-                     * @example 2025-10-01T12:00:00Z
-                     */
-                    expirationDate?: string;
-                    /**
-                     * @description Number of months after which the certificate expires
-                     * @example 24
-                     */
-                    expiresIn?: number;
-                };
-                /** @description List of children items in the top-level curricula */
-                children?: {
-                    /**
-                     * @description Unique identifier for the course
-                     * @example 1234567890abcdef
-                     */
-                    id: string;
-                    /**
-                     * @description Title of the course
-                     * @example Kubernetes Basics
-                     */
-                    title: string;
-                    /**
-                     * Format: uri
-                     * @description URL to the course content
-                     * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
-                     */
-                    permalink: string;
-                    /**
-                     * @description Course description
-                     * @example Learn the basics of Kubernetes
-                     */
-                    description: string;
-                    /**
-                     * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
-                     * @example eg 1 , 2
-                     */
-                    weight?: number;
-                    /**
-                     * Format: uri
-                     * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-                     * @example kubernetes-icon.svg
-                     */
-                    banner?: string | null;
-                    /**
-                     * @description Type of the content (e.g., learning-path, challenge, certification)
-                     * @enum {string}
-                     */
-                    type?: "learning-path" | "challenge" | "certification";
-                    /** @description List of child nodes (sub-courses or modules) */
-                    children?: Record<string, never>[];
-                }[];
-            };
-        };
-        AcademyCurriculaWithMetrics: {
-            /**
-             * @description Id of the Curricula
-             * @example 923458-3490394-934893
-             */
-            id: string;
-            /** @enum {string} */
-            type: "learning-path" | "challenge" | "certification";
-            /**
-             * @description Organization ID that owns this learning path
-             * @example meshery
-             */
-            orgId: string;
-            /**
-             * @description Visibility of the Curricula
-             * @enum {string}
-             */
-            visibility: "public" | "private";
-            /**
-             * @description Status of the Curricula
-             * @example ready
-             * @enum {string}
-             */
-            status: "ready" | "archived" | "not_ready";
-            /**
-             * @description slug of the Curricula
-             * @example intro-kubernetes-course
-             */
-            slug: string;
-            /**
-             * @description Level of the Curricula
-             * @enum {string}
-             */
-            level: "beginner" | "intermediate" | "advanced";
-            /**
-             * Format: uuid
-             * @description ID of the badge to be awarded on completion of this curricula
-             */
-            badge_id?: string;
-            /** @description ID of the invite associated with this Curricula */
-            inviteId?: string;
-            /** @description ID of the workspace to which this Curricula belongs */
-            workspace_id?: string;
-            /** @description When the Curricula item was created */
-            createdAt: string;
-            /** @description When the Curricula was last updated */
-            updatedAt: string;
-            deletedAt: string;
-            /** @description Additional metadata about the Curricula */
-            metadata: {
-                [key: string]: unknown;
-            } & {
-                /**
-                 * @description Title of the learning path
-                 * @example Mastering Kubernetes for Engineers
-                 */
-                title: string;
-                /**
-                 * @description Short description of the curricula
-                 * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
-                 */
-                description: string;
-                /**
-                 * @description Detailed description of the curricula
-                 * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
-                 */
-                detailedDescription?: string;
-                /**
-                 * Format: uri
-                 * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-                 * @example kubernetes-icon.svg
-                 */
-                banner?: string | null;
-                /**
-                 * Format: uri
-                 * @description Canonical URL for the learning path
-                 * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
-                 */
-                permalink: string;
-                certificate?: {
-                    /**
-                     * @description Unique identifier for the certificate
-                     * @example 1234567890abcdef
-                     */
-                    id: string;
-                    /**
-                     * Format: uuid
-                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                     */
-                    orgId: string;
-                    /**
-                     * @description ID of the recipient (user) who received the certificate
-                     * @example 1234567890abcdef
-                     */
-                    recipientId: string;
-                    /**
-                     * @description Name of the recipient (user) who received the certificate
-                     * @example John Doe
-                     */
-                    recipientName: string;
-                    /**
-                     * @description Title of the certificate
-                     * @example Kubernetes Expert Certification
-                     */
-                    title: string;
-                    /**
-                     * @description Description of the certificate
-                     * @example Awarded for successfully completing the Kubernetes Expert course
-                     */
-                    description: string;
-                    /** @description List of issuing authorities for the certificate */
-                    issuingAuthorities: {
-                        /**
-                         * @description Name of the issuing authority
-                         * @example Cloud Native Foundation
-                         */
-                        name: string;
-                        /**
-                         * @description Role of the issuing authority
-                         * @example COO
-                         */
-                        role?: string;
-                        /**
-                         * Format: uri
-                         * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
-                         * @example http://localhost:9876/signatures/cloud-native-foundation.png
-                         */
-                        signatureUrl?: string;
-                    }[];
-                    /**
-                     * Format: date-time
-                     * @description Date when the certificate was issued
-                     * @example 2023-10-01T12:00:00Z
-                     */
-                    issuedDate: string;
-                    /**
-                     * Format: date-time
-                     * @description Date when the certificate expires (optional)
-                     * @example 2025-10-01T12:00:00Z
-                     */
-                    expirationDate?: string;
-                    /**
-                     * @description Number of months after which the certificate expires
-                     * @example 24
-                     */
-                    expiresIn?: number;
-                };
-                /** @description List of children items in the top-level curricula */
-                children?: {
-                    /**
-                     * @description Unique identifier for the course
-                     * @example 1234567890abcdef
-                     */
-                    id: string;
-                    /**
-                     * @description Title of the course
-                     * @example Kubernetes Basics
-                     */
-                    title: string;
-                    /**
-                     * Format: uri
-                     * @description URL to the course content
-                     * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
-                     */
-                    permalink: string;
-                    /**
-                     * @description Course description
-                     * @example Learn the basics of Kubernetes
-                     */
-                    description: string;
-                    /**
-                     * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
-                     * @example eg 1 , 2
-                     */
-                    weight?: number;
-                    /**
-                     * Format: uri
-                     * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-                     * @example kubernetes-icon.svg
-                     */
-                    banner?: string | null;
-                    /**
-                     * @description Type of the content (e.g., learning-path, challenge, certification)
-                     * @enum {string}
-                     */
-                    type?: "learning-path" | "challenge" | "certification";
-                    /** @description List of child nodes (sub-courses or modules) */
-                    children?: Record<string, never>[];
-                }[];
-            };
-        } & {
-            registration_count: number;
-        };
-        AcademyCurriculaListResponse: {
-            /**
-             * @description Total number of Curricula
-             * @example 7
-             */
-            total: number;
-            data: {
-                /**
-                 * @description Id of the Curricula
-                 * @example 923458-3490394-934893
-                 */
-                id: string;
-                /** @enum {string} */
-                type: "learning-path" | "challenge" | "certification";
-                /**
-                 * @description Organization ID that owns this learning path
-                 * @example meshery
-                 */
-                orgId: string;
-                /**
-                 * @description Visibility of the Curricula
-                 * @enum {string}
-                 */
-                visibility: "public" | "private";
-                /**
-                 * @description Status of the Curricula
-                 * @example ready
-                 * @enum {string}
-                 */
-                status: "ready" | "archived" | "not_ready";
-                /**
-                 * @description slug of the Curricula
-                 * @example intro-kubernetes-course
-                 */
-                slug: string;
-                /**
-                 * @description Level of the Curricula
-                 * @enum {string}
-                 */
-                level: "beginner" | "intermediate" | "advanced";
-                /**
-                 * Format: uuid
-                 * @description ID of the badge to be awarded on completion of this curricula
-                 */
-                badge_id?: string;
-                /** @description ID of the invite associated with this Curricula */
-                inviteId?: string;
-                /** @description ID of the workspace to which this Curricula belongs */
-                workspace_id?: string;
-                /** @description When the Curricula item was created */
-                createdAt: string;
-                /** @description When the Curricula was last updated */
-                updatedAt: string;
-                deletedAt: string;
-                /** @description Additional metadata about the Curricula */
-                metadata: {
-                    [key: string]: unknown;
-                } & {
-                    /**
-                     * @description Title of the learning path
-                     * @example Mastering Kubernetes for Engineers
-                     */
-                    title: string;
-                    /**
-                     * @description Short description of the curricula
-                     * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
-                     */
-                    description: string;
-                    /**
-                     * @description Detailed description of the curricula
-                     * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
-                     */
-                    detailedDescription?: string;
-                    /**
-                     * Format: uri
-                     * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-                     * @example kubernetes-icon.svg
-                     */
-                    banner?: string | null;
-                    /**
-                     * Format: uri
-                     * @description Canonical URL for the learning path
-                     * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
-                     */
-                    permalink: string;
-                    certificate?: {
-                        /**
-                         * @description Unique identifier for the certificate
-                         * @example 1234567890abcdef
-                         */
-                        id: string;
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        orgId: string;
-                        /**
-                         * @description ID of the recipient (user) who received the certificate
-                         * @example 1234567890abcdef
-                         */
-                        recipientId: string;
-                        /**
-                         * @description Name of the recipient (user) who received the certificate
-                         * @example John Doe
-                         */
-                        recipientName: string;
-                        /**
-                         * @description Title of the certificate
-                         * @example Kubernetes Expert Certification
-                         */
-                        title: string;
-                        /**
-                         * @description Description of the certificate
-                         * @example Awarded for successfully completing the Kubernetes Expert course
-                         */
-                        description: string;
-                        /** @description List of issuing authorities for the certificate */
-                        issuingAuthorities: {
-                            /**
-                             * @description Name of the issuing authority
-                             * @example Cloud Native Foundation
-                             */
-                            name: string;
-                            /**
-                             * @description Role of the issuing authority
-                             * @example COO
-                             */
-                            role?: string;
-                            /**
-                             * Format: uri
-                             * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
-                             * @example http://localhost:9876/signatures/cloud-native-foundation.png
-                             */
-                            signatureUrl?: string;
-                        }[];
-                        /**
-                         * Format: date-time
-                         * @description Date when the certificate was issued
-                         * @example 2023-10-01T12:00:00Z
-                         */
-                        issuedDate: string;
-                        /**
-                         * Format: date-time
-                         * @description Date when the certificate expires (optional)
-                         * @example 2025-10-01T12:00:00Z
-                         */
-                        expirationDate?: string;
-                        /**
-                         * @description Number of months after which the certificate expires
-                         * @example 24
-                         */
-                        expiresIn?: number;
-                    };
-                    /** @description List of children items in the top-level curricula */
-                    children?: {
-                        /**
-                         * @description Unique identifier for the course
-                         * @example 1234567890abcdef
-                         */
-                        id: string;
-                        /**
-                         * @description Title of the course
-                         * @example Kubernetes Basics
-                         */
-                        title: string;
-                        /**
-                         * Format: uri
-                         * @description URL to the course content
-                         * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
-                         */
-                        permalink: string;
-                        /**
-                         * @description Course description
-                         * @example Learn the basics of Kubernetes
-                         */
-                        description: string;
-                        /**
-                         * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
-                         * @example eg 1 , 2
-                         */
-                        weight?: number;
-                        /**
-                         * Format: uri
-                         * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-                         * @example kubernetes-icon.svg
-                         */
-                        banner?: string | null;
-                        /**
-                         * @description Type of the content (e.g., learning-path, challenge, certification)
-                         * @enum {string}
-                         */
-                        type?: "learning-path" | "challenge" | "certification";
-                        /** @description List of child nodes (sub-courses or modules) */
-                        children?: Record<string, never>[];
-                    }[];
-                };
-            }[];
-        };
-        AcademyCurriculaWithMetricsListResponse: {
-            /**
-             * @description Total number of Curricula
-             * @example 7
-             */
-            total: number;
-            data: ({
-                /**
-                 * @description Id of the Curricula
-                 * @example 923458-3490394-934893
-                 */
-                id: string;
-                /** @enum {string} */
-                type: "learning-path" | "challenge" | "certification";
-                /**
-                 * @description Organization ID that owns this learning path
-                 * @example meshery
-                 */
-                orgId: string;
-                /**
-                 * @description Visibility of the Curricula
-                 * @enum {string}
-                 */
-                visibility: "public" | "private";
-                /**
-                 * @description Status of the Curricula
-                 * @example ready
-                 * @enum {string}
-                 */
-                status: "ready" | "archived" | "not_ready";
-                /**
-                 * @description slug of the Curricula
-                 * @example intro-kubernetes-course
-                 */
-                slug: string;
-                /**
-                 * @description Level of the Curricula
-                 * @enum {string}
-                 */
-                level: "beginner" | "intermediate" | "advanced";
-                /**
-                 * Format: uuid
-                 * @description ID of the badge to be awarded on completion of this curricula
-                 */
-                badge_id?: string;
-                /** @description ID of the invite associated with this Curricula */
-                inviteId?: string;
-                /** @description ID of the workspace to which this Curricula belongs */
-                workspace_id?: string;
-                /** @description When the Curricula item was created */
-                createdAt: string;
-                /** @description When the Curricula was last updated */
-                updatedAt: string;
-                deletedAt: string;
-                /** @description Additional metadata about the Curricula */
-                metadata: {
-                    [key: string]: unknown;
-                } & {
-                    /**
-                     * @description Title of the learning path
-                     * @example Mastering Kubernetes for Engineers
-                     */
-                    title: string;
-                    /**
-                     * @description Short description of the curricula
-                     * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
-                     */
-                    description: string;
-                    /**
-                     * @description Detailed description of the curricula
-                     * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
-                     */
-                    detailedDescription?: string;
-                    /**
-                     * Format: uri
-                     * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-                     * @example kubernetes-icon.svg
-                     */
-                    banner?: string | null;
-                    /**
-                     * Format: uri
-                     * @description Canonical URL for the learning path
-                     * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
-                     */
-                    permalink: string;
-                    certificate?: {
-                        /**
-                         * @description Unique identifier for the certificate
-                         * @example 1234567890abcdef
-                         */
-                        id: string;
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        orgId: string;
-                        /**
-                         * @description ID of the recipient (user) who received the certificate
-                         * @example 1234567890abcdef
-                         */
-                        recipientId: string;
-                        /**
-                         * @description Name of the recipient (user) who received the certificate
-                         * @example John Doe
-                         */
-                        recipientName: string;
-                        /**
-                         * @description Title of the certificate
-                         * @example Kubernetes Expert Certification
-                         */
-                        title: string;
-                        /**
-                         * @description Description of the certificate
-                         * @example Awarded for successfully completing the Kubernetes Expert course
-                         */
-                        description: string;
-                        /** @description List of issuing authorities for the certificate */
-                        issuingAuthorities: {
-                            /**
-                             * @description Name of the issuing authority
-                             * @example Cloud Native Foundation
-                             */
-                            name: string;
-                            /**
-                             * @description Role of the issuing authority
-                             * @example COO
-                             */
-                            role?: string;
-                            /**
-                             * Format: uri
-                             * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
-                             * @example http://localhost:9876/signatures/cloud-native-foundation.png
-                             */
-                            signatureUrl?: string;
-                        }[];
-                        /**
-                         * Format: date-time
-                         * @description Date when the certificate was issued
-                         * @example 2023-10-01T12:00:00Z
-                         */
-                        issuedDate: string;
-                        /**
-                         * Format: date-time
-                         * @description Date when the certificate expires (optional)
-                         * @example 2025-10-01T12:00:00Z
-                         */
-                        expirationDate?: string;
-                        /**
-                         * @description Number of months after which the certificate expires
-                         * @example 24
-                         */
-                        expiresIn?: number;
-                    };
-                    /** @description List of children items in the top-level curricula */
-                    children?: {
-                        /**
-                         * @description Unique identifier for the course
-                         * @example 1234567890abcdef
-                         */
-                        id: string;
-                        /**
-                         * @description Title of the course
-                         * @example Kubernetes Basics
-                         */
-                        title: string;
-                        /**
-                         * Format: uri
-                         * @description URL to the course content
-                         * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
-                         */
-                        permalink: string;
-                        /**
-                         * @description Course description
-                         * @example Learn the basics of Kubernetes
-                         */
-                        description: string;
-                        /**
-                         * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
-                         * @example eg 1 , 2
-                         */
-                        weight?: number;
-                        /**
-                         * Format: uri
-                         * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-                         * @example kubernetes-icon.svg
-                         */
-                        banner?: string | null;
-                        /**
-                         * @description Type of the content (e.g., learning-path, challenge, certification)
-                         * @enum {string}
-                         */
-                        type?: "learning-path" | "challenge" | "certification";
-                        /** @description List of child nodes (sub-courses or modules) */
-                        children?: Record<string, never>[];
-                    }[];
-                };
-            } & {
-                registration_count: number;
-            })[];
-        };
-        ChallengeMetadata: {
-            /**
-             * @description Title of the learning path
-             * @example Mastering Kubernetes for Engineers
-             */
-            title: string;
-            /**
-             * @description Short description of the curricula
-             * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
-             */
-            description: string;
-            /**
-             * @description Detailed description of the curricula
-             * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
-             */
-            detailedDescription?: string;
-            /**
-             * Format: uri
-             * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-             * @example kubernetes-icon.svg
-             */
-            banner?: string | null;
-            /**
-             * Format: uri
-             * @description Canonical URL for the learning path
-             * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
-             */
-            permalink: string;
-            certificate?: {
-                /**
-                 * @description Unique identifier for the certificate
-                 * @example 1234567890abcdef
-                 */
-                id: string;
-                /**
-                 * Format: uuid
-                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                 */
-                orgId: string;
-                /**
-                 * @description ID of the recipient (user) who received the certificate
-                 * @example 1234567890abcdef
-                 */
-                recipientId: string;
-                /**
-                 * @description Name of the recipient (user) who received the certificate
-                 * @example John Doe
-                 */
-                recipientName: string;
-                /**
-                 * @description Title of the certificate
-                 * @example Kubernetes Expert Certification
-                 */
-                title: string;
-                /**
-                 * @description Description of the certificate
-                 * @example Awarded for successfully completing the Kubernetes Expert course
-                 */
-                description: string;
-                /** @description List of issuing authorities for the certificate */
-                issuingAuthorities: {
-                    /**
-                     * @description Name of the issuing authority
-                     * @example Cloud Native Foundation
-                     */
-                    name: string;
-                    /**
-                     * @description Role of the issuing authority
-                     * @example COO
-                     */
-                    role?: string;
-                    /**
-                     * Format: uri
-                     * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
-                     * @example http://localhost:9876/signatures/cloud-native-foundation.png
-                     */
-                    signatureUrl?: string;
-                }[];
-                /**
-                 * Format: date-time
-                 * @description Date when the certificate was issued
-                 * @example 2023-10-01T12:00:00Z
-                 */
-                issuedDate: string;
-                /**
-                 * Format: date-time
-                 * @description Date when the certificate expires (optional)
-                 * @example 2025-10-01T12:00:00Z
-                 */
-                expirationDate?: string;
-                /**
-                 * @description Number of months after which the certificate expires
-                 * @example 24
-                 */
-                expiresIn?: number;
-            };
-            /** @description List of children items in the top-level curricula */
-            children?: {
-                /**
-                 * @description Unique identifier for the course
-                 * @example 1234567890abcdef
-                 */
-                id: string;
-                /**
-                 * @description Title of the course
-                 * @example Kubernetes Basics
-                 */
-                title: string;
-                /**
-                 * Format: uri
-                 * @description URL to the course content
-                 * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
-                 */
-                permalink: string;
-                /**
-                 * @description Course description
-                 * @example Learn the basics of Kubernetes
-                 */
-                description: string;
-                /**
-                 * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
-                 * @example eg 1 , 2
-                 */
-                weight?: number;
-                /**
-                 * Format: uri
-                 * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-                 * @example kubernetes-icon.svg
-                 */
-                banner?: string | null;
-                /**
-                 * @description Type of the content (e.g., learning-path, challenge, certification)
-                 * @enum {string}
-                 */
-                type?: "learning-path" | "challenge" | "certification";
-                /** @description List of child nodes (sub-courses or modules) */
-                children?: Record<string, never>[];
-            }[];
-        };
-        LearningPathMetadata: {
-            /**
-             * @description Title of the learning path
-             * @example Mastering Kubernetes for Engineers
-             */
-            title: string;
-            /**
-             * @description Short description of the curricula
-             * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
-             */
-            description: string;
-            /**
-             * @description Detailed description of the curricula
-             * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
-             */
-            detailedDescription?: string;
-            /**
-             * Format: uri
-             * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-             * @example kubernetes-icon.svg
-             */
-            banner?: string | null;
-            /**
-             * Format: uri
-             * @description Canonical URL for the learning path
-             * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
-             */
-            permalink: string;
-            certificate?: {
-                /**
-                 * @description Unique identifier for the certificate
-                 * @example 1234567890abcdef
-                 */
-                id: string;
-                /**
-                 * Format: uuid
-                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                 */
-                orgId: string;
-                /**
-                 * @description ID of the recipient (user) who received the certificate
-                 * @example 1234567890abcdef
-                 */
-                recipientId: string;
-                /**
-                 * @description Name of the recipient (user) who received the certificate
-                 * @example John Doe
-                 */
-                recipientName: string;
-                /**
-                 * @description Title of the certificate
-                 * @example Kubernetes Expert Certification
-                 */
-                title: string;
-                /**
-                 * @description Description of the certificate
-                 * @example Awarded for successfully completing the Kubernetes Expert course
-                 */
-                description: string;
-                /** @description List of issuing authorities for the certificate */
-                issuingAuthorities: {
-                    /**
-                     * @description Name of the issuing authority
-                     * @example Cloud Native Foundation
-                     */
-                    name: string;
-                    /**
-                     * @description Role of the issuing authority
-                     * @example COO
-                     */
-                    role?: string;
-                    /**
-                     * Format: uri
-                     * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
-                     * @example http://localhost:9876/signatures/cloud-native-foundation.png
-                     */
-                    signatureUrl?: string;
-                }[];
-                /**
-                 * Format: date-time
-                 * @description Date when the certificate was issued
-                 * @example 2023-10-01T12:00:00Z
-                 */
-                issuedDate: string;
-                /**
-                 * Format: date-time
-                 * @description Date when the certificate expires (optional)
-                 * @example 2025-10-01T12:00:00Z
-                 */
-                expirationDate?: string;
-                /**
-                 * @description Number of months after which the certificate expires
-                 * @example 24
-                 */
-                expiresIn?: number;
-            };
-            /** @description List of children items in the top-level curricula */
-            children?: {
-                /**
-                 * @description Unique identifier for the course
-                 * @example 1234567890abcdef
-                 */
-                id: string;
-                /**
-                 * @description Title of the course
-                 * @example Kubernetes Basics
-                 */
-                title: string;
-                /**
-                 * Format: uri
-                 * @description URL to the course content
-                 * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
-                 */
-                permalink: string;
-                /**
-                 * @description Course description
-                 * @example Learn the basics of Kubernetes
-                 */
-                description: string;
-                /**
-                 * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
-                 * @example eg 1 , 2
-                 */
-                weight?: number;
-                /**
-                 * Format: uri
-                 * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-                 * @example kubernetes-icon.svg
-                 */
-                banner?: string | null;
-                /**
-                 * @description Type of the content (e.g., learning-path, challenge, certification)
-                 * @enum {string}
-                 */
-                type?: "learning-path" | "challenge" | "certification";
-                /** @description List of child nodes (sub-courses or modules) */
-                children?: Record<string, never>[];
-            }[];
-        };
-        CertificateIssuingAuthority: {
+          url: unknown;
+        })[];
+        /**
+         * Format: date-time
+         * @description Date when the certificate was issued
+         * @example 2023-10-01T12:00:00Z
+         */
+        issuedDate: string;
+        /**
+         * Format: date-time
+         * @description Date when the certificate expires (optional)
+         * @example 2025-10-01T12:00:00Z
+         */
+        expirationDate?: string;
+        /**
+         * @description Number of months after which the certificate expires
+         * @example 24
+         */
+        expiresIn?: number;
+      };
+      /** @description List of children items in the top-level curricula */
+      children?: {
+        /**
+         * @description Unique identifier for the course
+         * @example 1234567890abcdef
+         */
+        id: string;
+        /**
+         * @description Title of the course
+         * @example Kubernetes Basics
+         */
+        title: string;
+        /**
+         * Format: uri
+         * @description URL to the course content
+         * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
+         */
+        permalink: string;
+        /**
+         * @description Course description
+         * @example Learn the basics of Kubernetes
+         */
+        description: string;
+        /**
+         * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
+         * @example eg 1 , 2
+         */
+        weight?: number;
+        /**
+         * Format: uri
+         * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+         * @example kubernetes-icon.svg
+         */
+        banner?: string | null;
+        /**
+         * @description Type of the content (e.g., learning-path, challenge, certification)
+         * @enum {string}
+         */
+        type?: "learning-path" | "challenge" | "certification";
+        /** @description List of child nodes (sub-courses or modules) */
+        children?: { [key: string]: unknown }[];
+      }[];
+    } & { [key: string]: unknown };
+    /** @description Expiry time for curricula access */
+    AcademyCurriculaAccessExpiresAt: string;
+    RegisterToAcademyContentRequest: {
+      /** @description ID of the academy content to register for */
+      contentId: string;
+      /** @enum {string} */
+      contentType?: "learning-path" | "challenge" | "certification";
+    } & {
+      user_id: unknown;
+    };
+    /** @enum {string} */
+    ContentType: "learning-path" | "challenge" | "certification";
+    /** @enum {string} */
+    Visibility: "public" | "private";
+    /** @enum {string} */
+    Level: "beginner" | "intermediate" | "advanced";
+    /** @enum {string} */
+    Status: "ready" | "archived" | "not_ready";
+    AcademyCurricula: {
+      /**
+       * @description Id of the Curricula
+       * @example 923458-3490394-934893
+       */
+      id: string;
+      /** @enum {string} */
+      type: "learning-path" | "challenge" | "certification";
+      /**
+       * @description Organization ID that owns this learning path
+       * @example meshery
+       */
+      orgId: string;
+      /**
+       * @description Visibility of the Curricula
+       * @enum {string}
+       */
+      visibility: "public" | "private";
+      /**
+       * @description Status of the Curricula
+       * @example ready
+       * @enum {string}
+       */
+      status: "ready" | "archived" | "not_ready";
+      /**
+       * @description slug of the Curricula
+       * @example intro-kubernetes-course
+       */
+      slug: string;
+      /**
+       * @description Level of the Curricula
+       * @enum {string}
+       */
+      level: "beginner" | "intermediate" | "advanced";
+      /**
+       * Format: uuid
+       * @description ID of the badge to be awarded on completion of this curricula
+       */
+      badge_id?: string;
+      /** @description ID of the invite associated with this Curricula */
+      inviteId?: string;
+      /** @description ID of the workspace to which this Curricula belongs */
+      workspace_id?: string;
+      /** @description When the Curricula item was created */
+      createdAt: string;
+      /** @description When the Curricula was last updated */
+      updatedAt: string;
+      deletedAt: string;
+      /** @description Additional metadata about the Curricula */
+      metadata: {
+        /**
+         * @description Title of the learning path
+         * @example Mastering Kubernetes for Engineers
+         */
+        title: string;
+        /**
+         * @description Short description of the curricula
+         * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
+         */
+        description: string;
+        /**
+         * @description Detailed description of the curricula
+         * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
+         */
+        detailedDescription?: string;
+        /**
+         * Format: uri
+         * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+         * @example kubernetes-icon.svg
+         */
+        banner?: string | null;
+        /**
+         * Format: uri
+         * @description Canonical URL for the learning path
+         * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
+         */
+        permalink: string;
+        certificate?: {
+          /**
+           * @description Unique identifier for the certificate
+           * @example 1234567890abcdef
+           */
+          id: string;
+          /**
+           * Format: uuid
+           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+           */
+          orgId: string;
+          /**
+           * @description ID of the recipient (user) who received the certificate
+           * @example 1234567890abcdef
+           */
+          recipientId: string;
+          /**
+           * @description Name of the recipient (user) who received the certificate
+           * @example John Doe
+           */
+          recipientName: string;
+          /**
+           * @description Title of the certificate
+           * @example Kubernetes Expert Certification
+           */
+          title: string;
+          /**
+           * @description Description of the certificate
+           * @example Awarded for successfully completing the Kubernetes Expert course
+           */
+          description: string;
+          /** @description List of issuing authorities for the certificate */
+          issuingAuthorities: ({
             /**
              * @description Name of the issuing authority
              * @example Cloud Native Foundation
@@ -2409,8 +740,771 @@ export interface components {
              * @example http://localhost:9876/signatures/cloud-native-foundation.png
              */
             signatureUrl?: string;
+          } & {
+            url: unknown;
+          })[];
+          /**
+           * Format: date-time
+           * @description Date when the certificate was issued
+           * @example 2023-10-01T12:00:00Z
+           */
+          issuedDate: string;
+          /**
+           * Format: date-time
+           * @description Date when the certificate expires (optional)
+           * @example 2025-10-01T12:00:00Z
+           */
+          expirationDate?: string;
+          /**
+           * @description Number of months after which the certificate expires
+           * @example 24
+           */
+          expiresIn?: number;
         };
-        Certificate: {
+        /** @description List of children items in the top-level curricula */
+        children?: {
+          /**
+           * @description Unique identifier for the course
+           * @example 1234567890abcdef
+           */
+          id: string;
+          /**
+           * @description Title of the course
+           * @example Kubernetes Basics
+           */
+          title: string;
+          /**
+           * Format: uri
+           * @description URL to the course content
+           * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
+           */
+          permalink: string;
+          /**
+           * @description Course description
+           * @example Learn the basics of Kubernetes
+           */
+          description: string;
+          /**
+           * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
+           * @example eg 1 , 2
+           */
+          weight?: number;
+          /**
+           * Format: uri
+           * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+           * @example kubernetes-icon.svg
+           */
+          banner?: string | null;
+          /**
+           * @description Type of the content (e.g., learning-path, challenge, certification)
+           * @enum {string}
+           */
+          type?: "learning-path" | "challenge" | "certification";
+          /** @description List of child nodes (sub-courses or modules) */
+          children?: { [key: string]: unknown }[];
+        }[];
+      } & { [key: string]: unknown };
+    };
+    SingleAcademyCurriculaResponse: {
+      /**
+       * @description Id of the Curricula
+       * @example 923458-3490394-934893
+       */
+      id: string;
+      /** @enum {string} */
+      type: "learning-path" | "challenge" | "certification";
+      /**
+       * @description Organization ID that owns this learning path
+       * @example meshery
+       */
+      orgId: string;
+      /**
+       * @description Visibility of the Curricula
+       * @enum {string}
+       */
+      visibility: "public" | "private";
+      /**
+       * @description Status of the Curricula
+       * @example ready
+       * @enum {string}
+       */
+      status: "ready" | "archived" | "not_ready";
+      /**
+       * @description slug of the Curricula
+       * @example intro-kubernetes-course
+       */
+      slug: string;
+      /**
+       * @description Level of the Curricula
+       * @enum {string}
+       */
+      level: "beginner" | "intermediate" | "advanced";
+      /**
+       * Format: uuid
+       * @description ID of the badge to be awarded on completion of this curricula
+       */
+      badge_id?: string;
+      /** @description ID of the invite associated with this Curricula */
+      inviteId?: string;
+      /** @description ID of the workspace to which this Curricula belongs */
+      workspace_id?: string;
+      /** @description When the Curricula item was created */
+      createdAt: string;
+      /** @description When the Curricula was last updated */
+      updatedAt: string;
+      deletedAt: string;
+      /** @description Additional metadata about the Curricula */
+      metadata: {
+        /**
+         * @description Title of the learning path
+         * @example Mastering Kubernetes for Engineers
+         */
+        title: string;
+        /**
+         * @description Short description of the curricula
+         * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
+         */
+        description: string;
+        /**
+         * @description Detailed description of the curricula
+         * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
+         */
+        detailedDescription?: string;
+        /**
+         * Format: uri
+         * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+         * @example kubernetes-icon.svg
+         */
+        banner?: string | null;
+        /**
+         * Format: uri
+         * @description Canonical URL for the learning path
+         * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
+         */
+        permalink: string;
+        certificate?: {
+          /**
+           * @description Unique identifier for the certificate
+           * @example 1234567890abcdef
+           */
+          id: string;
+          /**
+           * Format: uuid
+           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+           */
+          orgId: string;
+          /**
+           * @description ID of the recipient (user) who received the certificate
+           * @example 1234567890abcdef
+           */
+          recipientId: string;
+          /**
+           * @description Name of the recipient (user) who received the certificate
+           * @example John Doe
+           */
+          recipientName: string;
+          /**
+           * @description Title of the certificate
+           * @example Kubernetes Expert Certification
+           */
+          title: string;
+          /**
+           * @description Description of the certificate
+           * @example Awarded for successfully completing the Kubernetes Expert course
+           */
+          description: string;
+          /** @description List of issuing authorities for the certificate */
+          issuingAuthorities: ({
+            /**
+             * @description Name of the issuing authority
+             * @example Cloud Native Foundation
+             */
+            name: string;
+            /**
+             * @description Role of the issuing authority
+             * @example COO
+             */
+            role?: string;
+            /**
+             * Format: uri
+             * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
+             * @example http://localhost:9876/signatures/cloud-native-foundation.png
+             */
+            signatureUrl?: string;
+          } & {
+            url: unknown;
+          })[];
+          /**
+           * Format: date-time
+           * @description Date when the certificate was issued
+           * @example 2023-10-01T12:00:00Z
+           */
+          issuedDate: string;
+          /**
+           * Format: date-time
+           * @description Date when the certificate expires (optional)
+           * @example 2025-10-01T12:00:00Z
+           */
+          expirationDate?: string;
+          /**
+           * @description Number of months after which the certificate expires
+           * @example 24
+           */
+          expiresIn?: number;
+        };
+        /** @description List of children items in the top-level curricula */
+        children?: {
+          /**
+           * @description Unique identifier for the course
+           * @example 1234567890abcdef
+           */
+          id: string;
+          /**
+           * @description Title of the course
+           * @example Kubernetes Basics
+           */
+          title: string;
+          /**
+           * Format: uri
+           * @description URL to the course content
+           * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
+           */
+          permalink: string;
+          /**
+           * @description Course description
+           * @example Learn the basics of Kubernetes
+           */
+          description: string;
+          /**
+           * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
+           * @example eg 1 , 2
+           */
+          weight?: number;
+          /**
+           * Format: uri
+           * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+           * @example kubernetes-icon.svg
+           */
+          banner?: string | null;
+          /**
+           * @description Type of the content (e.g., learning-path, challenge, certification)
+           * @enum {string}
+           */
+          type?: "learning-path" | "challenge" | "certification";
+          /** @description List of child nodes (sub-courses or modules) */
+          children?: { [key: string]: unknown }[];
+        }[];
+      } & { [key: string]: unknown };
+    } & {
+      registration_count: number;
+      invitation?: {
+        /**
+         * Format: uuid
+         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+         */
+        id: string;
+        /**
+         * Format: uuid
+         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+         */
+        owner_id: string;
+        /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
+        is_default?: boolean;
+        /** @description Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
+        name: string;
+        /** @description Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
+        description: string;
+        emails: string[];
+        /** @description ID of the organization to which the user is invited */
+        org_id: string;
+        /**
+         * Format: date-time
+         * @description Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire
+         */
+        expires_at?: string;
+        /** @description Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
+        quota?: number;
+        /** @description List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
+        accepted_by: string[];
+        roles: string[];
+        teams: string[];
+        /**
+         * @description Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later.
+         * @enum {string}
+         */
+        status: "enabled" | "disabled";
+        /**
+         * Format: date-time
+         * @description Timestamp when the invitation was created
+         */
+        created_at: string;
+        /**
+         * Format: date-time
+         * @description Timestamp when the invitation was last updated
+         */
+        updated_at: string;
+        /**
+         * Format: date-time
+         * @description Timestamp when the invitation was deleted, if applicable
+         */
+        deleted_at: string;
+      };
+    };
+    CreateAcademyCurriculaRequest: {
+      /**
+       * @description Type of the curricula
+       * @enum {string}
+       */
+      type: "learning-path" | "challenge" | "certification";
+      /**
+       * @description Title of the curricula
+       * @example Introduction to Kubernetes
+       */
+      title: string;
+      /**
+       * @description Organization ID that owns this learning path
+       * @example meshery
+       */
+      orgId: string;
+      /** @description ID of the workspace to which this Curricula belongs */
+      workspace_id: string;
+      /**
+       * Format: uuid
+       * @description ID of the badge to be awarded on completion of this curricula
+       */
+      badge_id?: string;
+      /**
+       * Format: uuid
+       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+       */
+      team_id: string;
+      /** @description Expiry time for curricula access */
+      access_expires_at?: string;
+      /**
+       * @description Current access status of the curricula
+       * @enum {string}
+       */
+      access_status: "enabled" | "disabled";
+      /** @description Additional metadata about the Curricula */
+      metadata: {
+        /**
+         * @description Title of the learning path
+         * @example Mastering Kubernetes for Engineers
+         */
+        title: string;
+        /**
+         * @description Short description of the curricula
+         * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
+         */
+        description: string;
+        /**
+         * @description Detailed description of the curricula
+         * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
+         */
+        detailedDescription?: string;
+        /**
+         * Format: uri
+         * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+         * @example kubernetes-icon.svg
+         */
+        banner?: string | null;
+        /**
+         * Format: uri
+         * @description Canonical URL for the learning path
+         * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
+         */
+        permalink: string;
+        certificate?: {
+          /**
+           * @description Unique identifier for the certificate
+           * @example 1234567890abcdef
+           */
+          id: string;
+          /**
+           * Format: uuid
+           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+           */
+          orgId: string;
+          /**
+           * @description ID of the recipient (user) who received the certificate
+           * @example 1234567890abcdef
+           */
+          recipientId: string;
+          /**
+           * @description Name of the recipient (user) who received the certificate
+           * @example John Doe
+           */
+          recipientName: string;
+          /**
+           * @description Title of the certificate
+           * @example Kubernetes Expert Certification
+           */
+          title: string;
+          /**
+           * @description Description of the certificate
+           * @example Awarded for successfully completing the Kubernetes Expert course
+           */
+          description: string;
+          /** @description List of issuing authorities for the certificate */
+          issuingAuthorities: ({
+            /**
+             * @description Name of the issuing authority
+             * @example Cloud Native Foundation
+             */
+            name: string;
+            /**
+             * @description Role of the issuing authority
+             * @example COO
+             */
+            role?: string;
+            /**
+             * Format: uri
+             * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
+             * @example http://localhost:9876/signatures/cloud-native-foundation.png
+             */
+            signatureUrl?: string;
+          } & {
+            url: unknown;
+          })[];
+          /**
+           * Format: date-time
+           * @description Date when the certificate was issued
+           * @example 2023-10-01T12:00:00Z
+           */
+          issuedDate: string;
+          /**
+           * Format: date-time
+           * @description Date when the certificate expires (optional)
+           * @example 2025-10-01T12:00:00Z
+           */
+          expirationDate?: string;
+          /**
+           * @description Number of months after which the certificate expires
+           * @example 24
+           */
+          expiresIn?: number;
+        };
+        /** @description List of children items in the top-level curricula */
+        children?: {
+          /**
+           * @description Unique identifier for the course
+           * @example 1234567890abcdef
+           */
+          id: string;
+          /**
+           * @description Title of the course
+           * @example Kubernetes Basics
+           */
+          title: string;
+          /**
+           * Format: uri
+           * @description URL to the course content
+           * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
+           */
+          permalink: string;
+          /**
+           * @description Course description
+           * @example Learn the basics of Kubernetes
+           */
+          description: string;
+          /**
+           * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
+           * @example eg 1 , 2
+           */
+          weight?: number;
+          /**
+           * Format: uri
+           * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+           * @example kubernetes-icon.svg
+           */
+          banner?: string | null;
+          /**
+           * @description Type of the content (e.g., learning-path, challenge, certification)
+           * @enum {string}
+           */
+          type?: "learning-path" | "challenge" | "certification";
+          /** @description List of child nodes (sub-courses or modules) */
+          children?: { [key: string]: unknown }[];
+        }[];
+      } & { [key: string]: unknown };
+    };
+    AcademyCurriculaWithMetrics: {
+      /**
+       * @description Id of the Curricula
+       * @example 923458-3490394-934893
+       */
+      id: string;
+      /** @enum {string} */
+      type: "learning-path" | "challenge" | "certification";
+      /**
+       * @description Organization ID that owns this learning path
+       * @example meshery
+       */
+      orgId: string;
+      /**
+       * @description Visibility of the Curricula
+       * @enum {string}
+       */
+      visibility: "public" | "private";
+      /**
+       * @description Status of the Curricula
+       * @example ready
+       * @enum {string}
+       */
+      status: "ready" | "archived" | "not_ready";
+      /**
+       * @description slug of the Curricula
+       * @example intro-kubernetes-course
+       */
+      slug: string;
+      /**
+       * @description Level of the Curricula
+       * @enum {string}
+       */
+      level: "beginner" | "intermediate" | "advanced";
+      /**
+       * Format: uuid
+       * @description ID of the badge to be awarded on completion of this curricula
+       */
+      badge_id?: string;
+      /** @description ID of the invite associated with this Curricula */
+      inviteId?: string;
+      /** @description ID of the workspace to which this Curricula belongs */
+      workspace_id?: string;
+      /** @description When the Curricula item was created */
+      createdAt: string;
+      /** @description When the Curricula was last updated */
+      updatedAt: string;
+      deletedAt: string;
+      /** @description Additional metadata about the Curricula */
+      metadata: {
+        /**
+         * @description Title of the learning path
+         * @example Mastering Kubernetes for Engineers
+         */
+        title: string;
+        /**
+         * @description Short description of the curricula
+         * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
+         */
+        description: string;
+        /**
+         * @description Detailed description of the curricula
+         * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
+         */
+        detailedDescription?: string;
+        /**
+         * Format: uri
+         * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+         * @example kubernetes-icon.svg
+         */
+        banner?: string | null;
+        /**
+         * Format: uri
+         * @description Canonical URL for the learning path
+         * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
+         */
+        permalink: string;
+        certificate?: {
+          /**
+           * @description Unique identifier for the certificate
+           * @example 1234567890abcdef
+           */
+          id: string;
+          /**
+           * Format: uuid
+           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+           */
+          orgId: string;
+          /**
+           * @description ID of the recipient (user) who received the certificate
+           * @example 1234567890abcdef
+           */
+          recipientId: string;
+          /**
+           * @description Name of the recipient (user) who received the certificate
+           * @example John Doe
+           */
+          recipientName: string;
+          /**
+           * @description Title of the certificate
+           * @example Kubernetes Expert Certification
+           */
+          title: string;
+          /**
+           * @description Description of the certificate
+           * @example Awarded for successfully completing the Kubernetes Expert course
+           */
+          description: string;
+          /** @description List of issuing authorities for the certificate */
+          issuingAuthorities: ({
+            /**
+             * @description Name of the issuing authority
+             * @example Cloud Native Foundation
+             */
+            name: string;
+            /**
+             * @description Role of the issuing authority
+             * @example COO
+             */
+            role?: string;
+            /**
+             * Format: uri
+             * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
+             * @example http://localhost:9876/signatures/cloud-native-foundation.png
+             */
+            signatureUrl?: string;
+          } & {
+            url: unknown;
+          })[];
+          /**
+           * Format: date-time
+           * @description Date when the certificate was issued
+           * @example 2023-10-01T12:00:00Z
+           */
+          issuedDate: string;
+          /**
+           * Format: date-time
+           * @description Date when the certificate expires (optional)
+           * @example 2025-10-01T12:00:00Z
+           */
+          expirationDate?: string;
+          /**
+           * @description Number of months after which the certificate expires
+           * @example 24
+           */
+          expiresIn?: number;
+        };
+        /** @description List of children items in the top-level curricula */
+        children?: {
+          /**
+           * @description Unique identifier for the course
+           * @example 1234567890abcdef
+           */
+          id: string;
+          /**
+           * @description Title of the course
+           * @example Kubernetes Basics
+           */
+          title: string;
+          /**
+           * Format: uri
+           * @description URL to the course content
+           * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
+           */
+          permalink: string;
+          /**
+           * @description Course description
+           * @example Learn the basics of Kubernetes
+           */
+          description: string;
+          /**
+           * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
+           * @example eg 1 , 2
+           */
+          weight?: number;
+          /**
+           * Format: uri
+           * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+           * @example kubernetes-icon.svg
+           */
+          banner?: string | null;
+          /**
+           * @description Type of the content (e.g., learning-path, challenge, certification)
+           * @enum {string}
+           */
+          type?: "learning-path" | "challenge" | "certification";
+          /** @description List of child nodes (sub-courses or modules) */
+          children?: { [key: string]: unknown }[];
+        }[];
+      } & { [key: string]: unknown };
+    } & {
+      registration_count: number;
+    };
+    AcademyCurriculaListResponse: {
+      /**
+       * @description Total number of Curricula
+       * @example 7
+       */
+      total: number;
+      data: {
+        /**
+         * @description Id of the Curricula
+         * @example 923458-3490394-934893
+         */
+        id: string;
+        /** @enum {string} */
+        type: "learning-path" | "challenge" | "certification";
+        /**
+         * @description Organization ID that owns this learning path
+         * @example meshery
+         */
+        orgId: string;
+        /**
+         * @description Visibility of the Curricula
+         * @enum {string}
+         */
+        visibility: "public" | "private";
+        /**
+         * @description Status of the Curricula
+         * @example ready
+         * @enum {string}
+         */
+        status: "ready" | "archived" | "not_ready";
+        /**
+         * @description slug of the Curricula
+         * @example intro-kubernetes-course
+         */
+        slug: string;
+        /**
+         * @description Level of the Curricula
+         * @enum {string}
+         */
+        level: "beginner" | "intermediate" | "advanced";
+        /**
+         * Format: uuid
+         * @description ID of the badge to be awarded on completion of this curricula
+         */
+        badge_id?: string;
+        /** @description ID of the invite associated with this Curricula */
+        inviteId?: string;
+        /** @description ID of the workspace to which this Curricula belongs */
+        workspace_id?: string;
+        /** @description When the Curricula item was created */
+        createdAt: string;
+        /** @description When the Curricula was last updated */
+        updatedAt: string;
+        deletedAt: string;
+        /** @description Additional metadata about the Curricula */
+        metadata: {
+          /**
+           * @description Title of the learning path
+           * @example Mastering Kubernetes for Engineers
+           */
+          title: string;
+          /**
+           * @description Short description of the curricula
+           * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
+           */
+          description: string;
+          /**
+           * @description Detailed description of the curricula
+           * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
+           */
+          detailedDescription?: string;
+          /**
+           * Format: uri
+           * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+           * @example kubernetes-icon.svg
+           */
+          banner?: string | null;
+          /**
+           * Format: uri
+           * @description Canonical URL for the learning path
+           * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
+           */
+          permalink: string;
+          certificate?: {
             /**
              * @description Unique identifier for the certificate
              * @example 1234567890abcdef
@@ -2442,24 +1536,26 @@ export interface components {
              */
             description: string;
             /** @description List of issuing authorities for the certificate */
-            issuingAuthorities: {
-                /**
-                 * @description Name of the issuing authority
-                 * @example Cloud Native Foundation
-                 */
-                name: string;
-                /**
-                 * @description Role of the issuing authority
-                 * @example COO
-                 */
-                role?: string;
-                /**
-                 * Format: uri
-                 * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
-                 * @example http://localhost:9876/signatures/cloud-native-foundation.png
-                 */
-                signatureUrl?: string;
-            }[];
+            issuingAuthorities: ({
+              /**
+               * @description Name of the issuing authority
+               * @example Cloud Native Foundation
+               */
+              name: string;
+              /**
+               * @description Role of the issuing authority
+               * @example COO
+               */
+              role?: string;
+              /**
+               * Format: uri
+               * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
+               * @example http://localhost:9876/signatures/cloud-native-foundation.png
+               */
+              signatureUrl?: string;
+            } & {
+              url: unknown;
+            })[];
             /**
              * Format: date-time
              * @description Date when the certificate was issued
@@ -2477,23 +1573,35 @@ export interface components {
              * @example 24
              */
             expiresIn?: number;
-        };
-        CurriculaMetadata: {
+          };
+          /** @description List of children items in the top-level curricula */
+          children?: {
             /**
-             * @description Title of the learning path
-             * @example Mastering Kubernetes for Engineers
+             * @description Unique identifier for the course
+             * @example 1234567890abcdef
+             */
+            id: string;
+            /**
+             * @description Title of the course
+             * @example Kubernetes Basics
              */
             title: string;
             /**
-             * @description Short description of the curricula
-             * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
+             * Format: uri
+             * @description URL to the course content
+             * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
+             */
+            permalink: string;
+            /**
+             * @description Course description
+             * @example Learn the basics of Kubernetes
              */
             description: string;
             /**
-             * @description Detailed description of the curricula
-             * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
+             * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
+             * @example eg 1 , 2
              */
-            detailedDescription?: string;
+            weight?: number;
             /**
              * Format: uri
              * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
@@ -2501,12 +1609,2348 @@ export interface components {
              */
             banner?: string | null;
             /**
+             * @description Type of the content (e.g., learning-path, challenge, certification)
+             * @enum {string}
+             */
+            type?: "learning-path" | "challenge" | "certification";
+            /** @description List of child nodes (sub-courses or modules) */
+            children?: { [key: string]: unknown }[];
+          }[];
+        } & { [key: string]: unknown };
+      }[];
+    };
+    AcademyCurriculaWithMetricsListResponse: {
+      /**
+       * @description Total number of Curricula
+       * @example 7
+       */
+      total: number;
+      data: ({
+        /**
+         * @description Id of the Curricula
+         * @example 923458-3490394-934893
+         */
+        id: string;
+        /** @enum {string} */
+        type: "learning-path" | "challenge" | "certification";
+        /**
+         * @description Organization ID that owns this learning path
+         * @example meshery
+         */
+        orgId: string;
+        /**
+         * @description Visibility of the Curricula
+         * @enum {string}
+         */
+        visibility: "public" | "private";
+        /**
+         * @description Status of the Curricula
+         * @example ready
+         * @enum {string}
+         */
+        status: "ready" | "archived" | "not_ready";
+        /**
+         * @description slug of the Curricula
+         * @example intro-kubernetes-course
+         */
+        slug: string;
+        /**
+         * @description Level of the Curricula
+         * @enum {string}
+         */
+        level: "beginner" | "intermediate" | "advanced";
+        /**
+         * Format: uuid
+         * @description ID of the badge to be awarded on completion of this curricula
+         */
+        badge_id?: string;
+        /** @description ID of the invite associated with this Curricula */
+        inviteId?: string;
+        /** @description ID of the workspace to which this Curricula belongs */
+        workspace_id?: string;
+        /** @description When the Curricula item was created */
+        createdAt: string;
+        /** @description When the Curricula was last updated */
+        updatedAt: string;
+        deletedAt: string;
+        /** @description Additional metadata about the Curricula */
+        metadata: {
+          /**
+           * @description Title of the learning path
+           * @example Mastering Kubernetes for Engineers
+           */
+          title: string;
+          /**
+           * @description Short description of the curricula
+           * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
+           */
+          description: string;
+          /**
+           * @description Detailed description of the curricula
+           * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
+           */
+          detailedDescription?: string;
+          /**
+           * Format: uri
+           * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+           * @example kubernetes-icon.svg
+           */
+          banner?: string | null;
+          /**
+           * Format: uri
+           * @description Canonical URL for the learning path
+           * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
+           */
+          permalink: string;
+          certificate?: {
+            /**
+             * @description Unique identifier for the certificate
+             * @example 1234567890abcdef
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            orgId: string;
+            /**
+             * @description ID of the recipient (user) who received the certificate
+             * @example 1234567890abcdef
+             */
+            recipientId: string;
+            /**
+             * @description Name of the recipient (user) who received the certificate
+             * @example John Doe
+             */
+            recipientName: string;
+            /**
+             * @description Title of the certificate
+             * @example Kubernetes Expert Certification
+             */
+            title: string;
+            /**
+             * @description Description of the certificate
+             * @example Awarded for successfully completing the Kubernetes Expert course
+             */
+            description: string;
+            /** @description List of issuing authorities for the certificate */
+            issuingAuthorities: ({
+              /**
+               * @description Name of the issuing authority
+               * @example Cloud Native Foundation
+               */
+              name: string;
+              /**
+               * @description Role of the issuing authority
+               * @example COO
+               */
+              role?: string;
+              /**
+               * Format: uri
+               * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
+               * @example http://localhost:9876/signatures/cloud-native-foundation.png
+               */
+              signatureUrl?: string;
+            } & {
+              url: unknown;
+            })[];
+            /**
+             * Format: date-time
+             * @description Date when the certificate was issued
+             * @example 2023-10-01T12:00:00Z
+             */
+            issuedDate: string;
+            /**
+             * Format: date-time
+             * @description Date when the certificate expires (optional)
+             * @example 2025-10-01T12:00:00Z
+             */
+            expirationDate?: string;
+            /**
+             * @description Number of months after which the certificate expires
+             * @example 24
+             */
+            expiresIn?: number;
+          };
+          /** @description List of children items in the top-level curricula */
+          children?: {
+            /**
+             * @description Unique identifier for the course
+             * @example 1234567890abcdef
+             */
+            id: string;
+            /**
+             * @description Title of the course
+             * @example Kubernetes Basics
+             */
+            title: string;
+            /**
              * Format: uri
-             * @description Canonical URL for the learning path
-             * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
+             * @description URL to the course content
+             * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
              */
             permalink: string;
-            certificate?: {
+            /**
+             * @description Course description
+             * @example Learn the basics of Kubernetes
+             */
+            description: string;
+            /**
+             * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
+             * @example eg 1 , 2
+             */
+            weight?: number;
+            /**
+             * Format: uri
+             * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+             * @example kubernetes-icon.svg
+             */
+            banner?: string | null;
+            /**
+             * @description Type of the content (e.g., learning-path, challenge, certification)
+             * @enum {string}
+             */
+            type?: "learning-path" | "challenge" | "certification";
+            /** @description List of child nodes (sub-courses or modules) */
+            children?: { [key: string]: unknown }[];
+          }[];
+        } & { [key: string]: unknown };
+      } & {
+        registration_count: number;
+      })[];
+    };
+    ChallengeMetadata: {
+      /**
+       * @description Title of the learning path
+       * @example Mastering Kubernetes for Engineers
+       */
+      title: string;
+      /**
+       * @description Short description of the curricula
+       * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
+       */
+      description: string;
+      /**
+       * @description Detailed description of the curricula
+       * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
+       */
+      detailedDescription?: string;
+      /**
+       * Format: uri
+       * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+       * @example kubernetes-icon.svg
+       */
+      banner?: string | null;
+      /**
+       * Format: uri
+       * @description Canonical URL for the learning path
+       * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
+       */
+      permalink: string;
+      certificate?: {
+        /**
+         * @description Unique identifier for the certificate
+         * @example 1234567890abcdef
+         */
+        id: string;
+        /**
+         * Format: uuid
+         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+         */
+        orgId: string;
+        /**
+         * @description ID of the recipient (user) who received the certificate
+         * @example 1234567890abcdef
+         */
+        recipientId: string;
+        /**
+         * @description Name of the recipient (user) who received the certificate
+         * @example John Doe
+         */
+        recipientName: string;
+        /**
+         * @description Title of the certificate
+         * @example Kubernetes Expert Certification
+         */
+        title: string;
+        /**
+         * @description Description of the certificate
+         * @example Awarded for successfully completing the Kubernetes Expert course
+         */
+        description: string;
+        /** @description List of issuing authorities for the certificate */
+        issuingAuthorities: ({
+          /**
+           * @description Name of the issuing authority
+           * @example Cloud Native Foundation
+           */
+          name: string;
+          /**
+           * @description Role of the issuing authority
+           * @example COO
+           */
+          role?: string;
+          /**
+           * Format: uri
+           * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
+           * @example http://localhost:9876/signatures/cloud-native-foundation.png
+           */
+          signatureUrl?: string;
+        } & {
+          url: unknown;
+        })[];
+        /**
+         * Format: date-time
+         * @description Date when the certificate was issued
+         * @example 2023-10-01T12:00:00Z
+         */
+        issuedDate: string;
+        /**
+         * Format: date-time
+         * @description Date when the certificate expires (optional)
+         * @example 2025-10-01T12:00:00Z
+         */
+        expirationDate?: string;
+        /**
+         * @description Number of months after which the certificate expires
+         * @example 24
+         */
+        expiresIn?: number;
+      };
+      /** @description List of children items in the top-level curricula */
+      children?: {
+        /**
+         * @description Unique identifier for the course
+         * @example 1234567890abcdef
+         */
+        id: string;
+        /**
+         * @description Title of the course
+         * @example Kubernetes Basics
+         */
+        title: string;
+        /**
+         * Format: uri
+         * @description URL to the course content
+         * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
+         */
+        permalink: string;
+        /**
+         * @description Course description
+         * @example Learn the basics of Kubernetes
+         */
+        description: string;
+        /**
+         * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
+         * @example eg 1 , 2
+         */
+        weight?: number;
+        /**
+         * Format: uri
+         * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+         * @example kubernetes-icon.svg
+         */
+        banner?: string | null;
+        /**
+         * @description Type of the content (e.g., learning-path, challenge, certification)
+         * @enum {string}
+         */
+        type?: "learning-path" | "challenge" | "certification";
+        /** @description List of child nodes (sub-courses or modules) */
+        children?: { [key: string]: unknown }[];
+      }[];
+    };
+    LearningPathMetadata: {
+      /**
+       * @description Title of the learning path
+       * @example Mastering Kubernetes for Engineers
+       */
+      title: string;
+      /**
+       * @description Short description of the curricula
+       * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
+       */
+      description: string;
+      /**
+       * @description Detailed description of the curricula
+       * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
+       */
+      detailedDescription?: string;
+      /**
+       * Format: uri
+       * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+       * @example kubernetes-icon.svg
+       */
+      banner?: string | null;
+      /**
+       * Format: uri
+       * @description Canonical URL for the learning path
+       * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
+       */
+      permalink: string;
+      certificate?: {
+        /**
+         * @description Unique identifier for the certificate
+         * @example 1234567890abcdef
+         */
+        id: string;
+        /**
+         * Format: uuid
+         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+         */
+        orgId: string;
+        /**
+         * @description ID of the recipient (user) who received the certificate
+         * @example 1234567890abcdef
+         */
+        recipientId: string;
+        /**
+         * @description Name of the recipient (user) who received the certificate
+         * @example John Doe
+         */
+        recipientName: string;
+        /**
+         * @description Title of the certificate
+         * @example Kubernetes Expert Certification
+         */
+        title: string;
+        /**
+         * @description Description of the certificate
+         * @example Awarded for successfully completing the Kubernetes Expert course
+         */
+        description: string;
+        /** @description List of issuing authorities for the certificate */
+        issuingAuthorities: ({
+          /**
+           * @description Name of the issuing authority
+           * @example Cloud Native Foundation
+           */
+          name: string;
+          /**
+           * @description Role of the issuing authority
+           * @example COO
+           */
+          role?: string;
+          /**
+           * Format: uri
+           * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
+           * @example http://localhost:9876/signatures/cloud-native-foundation.png
+           */
+          signatureUrl?: string;
+        } & {
+          url: unknown;
+        })[];
+        /**
+         * Format: date-time
+         * @description Date when the certificate was issued
+         * @example 2023-10-01T12:00:00Z
+         */
+        issuedDate: string;
+        /**
+         * Format: date-time
+         * @description Date when the certificate expires (optional)
+         * @example 2025-10-01T12:00:00Z
+         */
+        expirationDate?: string;
+        /**
+         * @description Number of months after which the certificate expires
+         * @example 24
+         */
+        expiresIn?: number;
+      };
+      /** @description List of children items in the top-level curricula */
+      children?: {
+        /**
+         * @description Unique identifier for the course
+         * @example 1234567890abcdef
+         */
+        id: string;
+        /**
+         * @description Title of the course
+         * @example Kubernetes Basics
+         */
+        title: string;
+        /**
+         * Format: uri
+         * @description URL to the course content
+         * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
+         */
+        permalink: string;
+        /**
+         * @description Course description
+         * @example Learn the basics of Kubernetes
+         */
+        description: string;
+        /**
+         * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
+         * @example eg 1 , 2
+         */
+        weight?: number;
+        /**
+         * Format: uri
+         * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+         * @example kubernetes-icon.svg
+         */
+        banner?: string | null;
+        /**
+         * @description Type of the content (e.g., learning-path, challenge, certification)
+         * @enum {string}
+         */
+        type?: "learning-path" | "challenge" | "certification";
+        /** @description List of child nodes (sub-courses or modules) */
+        children?: { [key: string]: unknown }[];
+      }[];
+    };
+    CertificateIssuingAuthority: {
+      /**
+       * @description Name of the issuing authority
+       * @example Cloud Native Foundation
+       */
+      name: string;
+      /**
+       * @description Role of the issuing authority
+       * @example COO
+       */
+      role?: string;
+      /**
+       * Format: uri
+       * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
+       * @example http://localhost:9876/signatures/cloud-native-foundation.png
+       */
+      signatureUrl?: string;
+    } & {
+      url: unknown;
+    };
+    Certificate: {
+      /**
+       * @description Unique identifier for the certificate
+       * @example 1234567890abcdef
+       */
+      id: string;
+      /**
+       * Format: uuid
+       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+       */
+      orgId: string;
+      /**
+       * @description ID of the recipient (user) who received the certificate
+       * @example 1234567890abcdef
+       */
+      recipientId: string;
+      /**
+       * @description Name of the recipient (user) who received the certificate
+       * @example John Doe
+       */
+      recipientName: string;
+      /**
+       * @description Title of the certificate
+       * @example Kubernetes Expert Certification
+       */
+      title: string;
+      /**
+       * @description Description of the certificate
+       * @example Awarded for successfully completing the Kubernetes Expert course
+       */
+      description: string;
+      /** @description List of issuing authorities for the certificate */
+      issuingAuthorities: ({
+        /**
+         * @description Name of the issuing authority
+         * @example Cloud Native Foundation
+         */
+        name: string;
+        /**
+         * @description Role of the issuing authority
+         * @example COO
+         */
+        role?: string;
+        /**
+         * Format: uri
+         * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
+         * @example http://localhost:9876/signatures/cloud-native-foundation.png
+         */
+        signatureUrl?: string;
+      } & {
+        url: unknown;
+      })[];
+      /**
+       * Format: date-time
+       * @description Date when the certificate was issued
+       * @example 2023-10-01T12:00:00Z
+       */
+      issuedDate: string;
+      /**
+       * Format: date-time
+       * @description Date when the certificate expires (optional)
+       * @example 2025-10-01T12:00:00Z
+       */
+      expirationDate?: string;
+      /**
+       * @description Number of months after which the certificate expires
+       * @example 24
+       */
+      expiresIn?: number;
+    };
+    CurriculaMetadata: {
+      /**
+       * @description Title of the learning path
+       * @example Mastering Kubernetes for Engineers
+       */
+      title: string;
+      /**
+       * @description Short description of the curricula
+       * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
+       */
+      description: string;
+      /**
+       * @description Detailed description of the curricula
+       * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
+       */
+      detailedDescription?: string;
+      /**
+       * Format: uri
+       * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+       * @example kubernetes-icon.svg
+       */
+      banner?: string | null;
+      /**
+       * Format: uri
+       * @description Canonical URL for the learning path
+       * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
+       */
+      permalink: string;
+      certificate?: {
+        /**
+         * @description Unique identifier for the certificate
+         * @example 1234567890abcdef
+         */
+        id: string;
+        /**
+         * Format: uuid
+         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+         */
+        orgId: string;
+        /**
+         * @description ID of the recipient (user) who received the certificate
+         * @example 1234567890abcdef
+         */
+        recipientId: string;
+        /**
+         * @description Name of the recipient (user) who received the certificate
+         * @example John Doe
+         */
+        recipientName: string;
+        /**
+         * @description Title of the certificate
+         * @example Kubernetes Expert Certification
+         */
+        title: string;
+        /**
+         * @description Description of the certificate
+         * @example Awarded for successfully completing the Kubernetes Expert course
+         */
+        description: string;
+        /** @description List of issuing authorities for the certificate */
+        issuingAuthorities: ({
+          /**
+           * @description Name of the issuing authority
+           * @example Cloud Native Foundation
+           */
+          name: string;
+          /**
+           * @description Role of the issuing authority
+           * @example COO
+           */
+          role?: string;
+          /**
+           * Format: uri
+           * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
+           * @example http://localhost:9876/signatures/cloud-native-foundation.png
+           */
+          signatureUrl?: string;
+        } & {
+          url: unknown;
+        })[];
+        /**
+         * Format: date-time
+         * @description Date when the certificate was issued
+         * @example 2023-10-01T12:00:00Z
+         */
+        issuedDate: string;
+        /**
+         * Format: date-time
+         * @description Date when the certificate expires (optional)
+         * @example 2025-10-01T12:00:00Z
+         */
+        expirationDate?: string;
+        /**
+         * @description Number of months after which the certificate expires
+         * @example 24
+         */
+        expiresIn?: number;
+      };
+      /** @description List of children items in the top-level curricula */
+      children?: {
+        /**
+         * @description Unique identifier for the course
+         * @example 1234567890abcdef
+         */
+        id: string;
+        /**
+         * @description Title of the course
+         * @example Kubernetes Basics
+         */
+        title: string;
+        /**
+         * Format: uri
+         * @description URL to the course content
+         * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
+         */
+        permalink: string;
+        /**
+         * @description Course description
+         * @example Learn the basics of Kubernetes
+         */
+        description: string;
+        /**
+         * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
+         * @example eg 1 , 2
+         */
+        weight?: number;
+        /**
+         * Format: uri
+         * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+         * @example kubernetes-icon.svg
+         */
+        banner?: string | null;
+        /**
+         * @description Type of the content (e.g., learning-path, challenge, certification)
+         * @enum {string}
+         */
+        type?: "learning-path" | "challenge" | "certification";
+        /** @description List of child nodes (sub-courses or modules) */
+        children?: { [key: string]: unknown }[];
+      }[];
+    };
+    /**
+     * @description Status of the user's course registration
+     * @enum {string}
+     */
+    AcademyRegistrationStatus:
+      | "registered"
+      | "completed"
+      | "failed"
+      | "withdrawn";
+    AcademyRegistration: {
+      /**
+       * Format: uuid
+       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+       */
+      id: string;
+      /**
+       * Format: uuid
+       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+       */
+      org_id: string;
+      /** @description ID of the course content */
+      content_id: string;
+      /**
+       * Format: uuid
+       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+       */
+      user_id: string;
+      /**
+       * @description Status of the user's course registration
+       * @enum {string}
+       */
+      status: "registered" | "completed" | "failed" | "withdrawn";
+      /**
+       * Format: date-time
+       * @description When the registration was updated
+       */
+      updated_at: string;
+      /**
+       * Format: date-time
+       * @description When the registration was created
+       */
+      created_at: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the resource was deleted.
+       */
+      deleted_at?: string;
+      /** @description Issued certificate for completing the curricula under registration */
+      certificate: {
+        /**
+         * @description Unique identifier for the certificate
+         * @example 1234567890abcdef
+         */
+        id: string;
+        /**
+         * Format: uuid
+         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+         */
+        orgId: string;
+        /**
+         * @description ID of the recipient (user) who received the certificate
+         * @example 1234567890abcdef
+         */
+        recipientId: string;
+        /**
+         * @description Name of the recipient (user) who received the certificate
+         * @example John Doe
+         */
+        recipientName: string;
+        /**
+         * @description Title of the certificate
+         * @example Kubernetes Expert Certification
+         */
+        title: string;
+        /**
+         * @description Description of the certificate
+         * @example Awarded for successfully completing the Kubernetes Expert course
+         */
+        description: string;
+        /** @description List of issuing authorities for the certificate */
+        issuingAuthorities: ({
+          /**
+           * @description Name of the issuing authority
+           * @example Cloud Native Foundation
+           */
+          name: string;
+          /**
+           * @description Role of the issuing authority
+           * @example COO
+           */
+          role?: string;
+          /**
+           * Format: uri
+           * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
+           * @example http://localhost:9876/signatures/cloud-native-foundation.png
+           */
+          signatureUrl?: string;
+        } & {
+          url: unknown;
+        })[];
+        /**
+         * Format: date-time
+         * @description Date when the certificate was issued
+         * @example 2023-10-01T12:00:00Z
+         */
+        issuedDate: string;
+        /**
+         * Format: date-time
+         * @description Date when the certificate expires (optional)
+         * @example 2025-10-01T12:00:00Z
+         */
+        expirationDate?: string;
+        /**
+         * @description Number of months after which the certificate expires
+         * @example 24
+         */
+        expiresIn?: number;
+      };
+      /** @description Additional metadata about the registration */
+      metadata: { [key: string]: unknown };
+    } & {
+      test_submissions: unknown;
+    };
+    /** @description Test submissions made by the user (map of test IDs to Submissions) */
+    AllTestSubmissionsForCurricula: {
+      [key: string]: {
+        score: number;
+        passed: boolean;
+        /** Format: float */
+        percentage_scored: number;
+        total_marks: number;
+        /** Format: float */
+        pass_percentage: number;
+        correct_submissions: { [key: string]: boolean };
+        quiz: {
+          id: string;
+          /**
+           * @description Organization ID that owns this quiz
+           * @example meshery
+           */
+          org_id: string;
+          /**
+           * @description Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
+           * @example true
+           */
+          final: boolean;
+          title: string;
+          description: string;
+          slug: string;
+          relPermalink: string;
+          permalink: string;
+          type: string;
+          section: string;
+          layout: string;
+          /** Format: date */
+          date: string;
+          /** Format: date */
+          lastmod: string;
+          draft: boolean;
+          file_path: string;
+          /** Format: float */
+          pass_percentage: number;
+          /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
+          time_limit: string;
+          /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
+          max_attempts: number;
+          questions: {
+            id: string;
+            text: string;
+            /** @enum {string} */
+            type:
+              | "multiple-answers"
+              | "single-answer"
+              | "short-answer"
+              | "essay";
+            marks: number;
+            multipleAnswers?: boolean;
+            options: {
+              id: string;
+              text: string;
+              isCorrect: boolean;
+            }[];
+            correctAnswer: string;
+          }[];
+          total_questions: number;
+          total_questions_in_bank: number;
+          total_question_sets: number;
+          total_marks: number;
+          prerequisites: {
+            id: string;
+            title: string;
+            relPermalink: string;
+            type: string;
+          }[];
+          parent?: {
+            id: string;
+            title: string;
+            relPermalink: string;
+            type: string;
+          };
+          next_page: {
+            id: string;
+            title: string;
+            relPermalink: string;
+            type: string;
+          };
+        };
+        /** Format: date-time */
+        attempted_at: string;
+        attempts: number;
+      }[];
+    };
+    /** @description Test submissions made by the user (array of QuizEvaluationResult) */
+    TestSubmissions: {
+      score: number;
+      passed: boolean;
+      /** Format: float */
+      percentage_scored: number;
+      total_marks: number;
+      /** Format: float */
+      pass_percentage: number;
+      correct_submissions: { [key: string]: boolean };
+      quiz: {
+        id: string;
+        /**
+         * @description Organization ID that owns this quiz
+         * @example meshery
+         */
+        org_id: string;
+        /**
+         * @description Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
+         * @example true
+         */
+        final: boolean;
+        title: string;
+        description: string;
+        slug: string;
+        relPermalink: string;
+        permalink: string;
+        type: string;
+        section: string;
+        layout: string;
+        /** Format: date */
+        date: string;
+        /** Format: date */
+        lastmod: string;
+        draft: boolean;
+        file_path: string;
+        /** Format: float */
+        pass_percentage: number;
+        /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
+        time_limit: string;
+        /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
+        max_attempts: number;
+        questions: {
+          id: string;
+          text: string;
+          /** @enum {string} */
+          type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
+          marks: number;
+          multipleAnswers?: boolean;
+          options: {
+            id: string;
+            text: string;
+            isCorrect: boolean;
+          }[];
+          correctAnswer: string;
+        }[];
+        total_questions: number;
+        total_questions_in_bank: number;
+        total_question_sets: number;
+        total_marks: number;
+        prerequisites: {
+          id: string;
+          title: string;
+          relPermalink: string;
+          type: string;
+        }[];
+        parent?: {
+          id: string;
+          title: string;
+          relPermalink: string;
+          type: string;
+        };
+        next_page: {
+          id: string;
+          title: string;
+          relPermalink: string;
+          type: string;
+        };
+      };
+      /** Format: date-time */
+      attempted_at: string;
+      attempts: number;
+    }[];
+    ChildNode: {
+      /**
+       * @description Unique identifier for the course
+       * @example 1234567890abcdef
+       */
+      id: string;
+      /**
+       * @description Title of the course
+       * @example Kubernetes Basics
+       */
+      title: string;
+      /**
+       * Format: uri
+       * @description URL to the course content
+       * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
+       */
+      permalink: string;
+      /**
+       * @description Course description
+       * @example Learn the basics of Kubernetes
+       */
+      description: string;
+      /**
+       * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
+       * @example eg 1 , 2
+       */
+      weight?: number;
+      /**
+       * Format: uri
+       * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+       * @example kubernetes-icon.svg
+       */
+      banner?: string | null;
+      /**
+       * @description Type of the content (e.g., learning-path, challenge, certification)
+       * @enum {string}
+       */
+      type?: "learning-path" | "challenge" | "certification";
+      /** @description List of child nodes (sub-courses or modules) */
+      children?: { [key: string]: unknown }[];
+    };
+    AcademyRegistrationsListResponse: {
+      /**
+       * @description Total number of learning paths
+       * @example 7
+       */
+      total: number;
+      data: ({
+        /**
+         * Format: uuid
+         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+         */
+        id: string;
+        /**
+         * Format: uuid
+         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+         */
+        org_id: string;
+        /** @description ID of the course content */
+        content_id: string;
+        /**
+         * Format: uuid
+         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+         */
+        user_id: string;
+        /**
+         * @description Status of the user's course registration
+         * @enum {string}
+         */
+        status: "registered" | "completed" | "failed" | "withdrawn";
+        /**
+         * Format: date-time
+         * @description When the registration was updated
+         */
+        updated_at: string;
+        /**
+         * Format: date-time
+         * @description When the registration was created
+         */
+        created_at: string;
+        /**
+         * Format: date-time
+         * @description Timestamp when the resource was deleted.
+         */
+        deleted_at?: string;
+        /** @description Issued certificate for completing the curricula under registration */
+        certificate: {
+          /**
+           * @description Unique identifier for the certificate
+           * @example 1234567890abcdef
+           */
+          id: string;
+          /**
+           * Format: uuid
+           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+           */
+          orgId: string;
+          /**
+           * @description ID of the recipient (user) who received the certificate
+           * @example 1234567890abcdef
+           */
+          recipientId: string;
+          /**
+           * @description Name of the recipient (user) who received the certificate
+           * @example John Doe
+           */
+          recipientName: string;
+          /**
+           * @description Title of the certificate
+           * @example Kubernetes Expert Certification
+           */
+          title: string;
+          /**
+           * @description Description of the certificate
+           * @example Awarded for successfully completing the Kubernetes Expert course
+           */
+          description: string;
+          /** @description List of issuing authorities for the certificate */
+          issuingAuthorities: ({
+            /**
+             * @description Name of the issuing authority
+             * @example Cloud Native Foundation
+             */
+            name: string;
+            /**
+             * @description Role of the issuing authority
+             * @example COO
+             */
+            role?: string;
+            /**
+             * Format: uri
+             * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
+             * @example http://localhost:9876/signatures/cloud-native-foundation.png
+             */
+            signatureUrl?: string;
+          } & {
+            url: unknown;
+          })[];
+          /**
+           * Format: date-time
+           * @description Date when the certificate was issued
+           * @example 2023-10-01T12:00:00Z
+           */
+          issuedDate: string;
+          /**
+           * Format: date-time
+           * @description Date when the certificate expires (optional)
+           * @example 2025-10-01T12:00:00Z
+           */
+          expirationDate?: string;
+          /**
+           * @description Number of months after which the certificate expires
+           * @example 24
+           */
+          expiresIn?: number;
+        };
+        /** @description Additional metadata about the registration */
+        metadata: { [key: string]: unknown };
+      } & {
+        test_submissions: unknown;
+      })[];
+    };
+    CurriculaCurrentItemData: {
+      id: string;
+      /** Format: date-time */
+      lastOpened: string;
+      /** @enum {string} */
+      contentType: "learning-path" | "challenge" | "certification";
+    };
+    CurriculaProgressTracker: {
+      currentItem: {
+        [key: string]: {
+          id: string;
+          /** Format: date-time */
+          lastOpened: string;
+          /** @enum {string} */
+          contentType: "learning-path" | "challenge" | "certification";
+        };
+      };
+      grades: {
+        [key: string]: {
+          score: number;
+          passed: boolean;
+          /** Format: float */
+          percentage_scored: number;
+          total_marks: number;
+          /** Format: float */
+          pass_percentage: number;
+          correct_submissions: { [key: string]: boolean };
+          quiz: {
+            id: string;
+            /**
+             * @description Organization ID that owns this quiz
+             * @example meshery
+             */
+            org_id: string;
+            /**
+             * @description Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
+             * @example true
+             */
+            final: boolean;
+            title: string;
+            description: string;
+            slug: string;
+            relPermalink: string;
+            permalink: string;
+            type: string;
+            section: string;
+            layout: string;
+            /** Format: date */
+            date: string;
+            /** Format: date */
+            lastmod: string;
+            draft: boolean;
+            file_path: string;
+            /** Format: float */
+            pass_percentage: number;
+            /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
+            time_limit: string;
+            /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
+            max_attempts: number;
+            questions: {
+              id: string;
+              text: string;
+              /** @enum {string} */
+              type:
+                | "multiple-answers"
+                | "single-answer"
+                | "short-answer"
+                | "essay";
+              marks: number;
+              multipleAnswers?: boolean;
+              options: {
+                id: string;
+                text: string;
+                isCorrect: boolean;
+              }[];
+              correctAnswer: string;
+            }[];
+            total_questions: number;
+            total_questions_in_bank: number;
+            total_question_sets: number;
+            total_marks: number;
+            prerequisites: {
+              id: string;
+              title: string;
+              relPermalink: string;
+              type: string;
+            }[];
+            parent?: {
+              id: string;
+              title: string;
+              relPermalink: string;
+              type: string;
+            };
+            next_page: {
+              id: string;
+              title: string;
+              relPermalink: string;
+              type: string;
+            };
+          };
+          /** Format: date-time */
+          attempted_at: string;
+          attempts: number;
+        };
+      };
+      /** @description Total time spent in seconds */
+      timeSpent: number;
+      /** @description Items that have been completed (map of item IDs to item data) */
+      completedItems: {
+        [key: string]: {
+          /**
+           * Format: date-time
+           * @description Timestamp when the item was completed
+           */
+          completedAt: string;
+          itemData: {
+            id: string;
+            title: string;
+            relPermalink: string;
+            type: string;
+          };
+        };
+      };
+      /** Format: date-time */
+      completed: string;
+    };
+    ProgressItemCompleted: {
+      /**
+       * Format: date-time
+       * @description Timestamp when the item was completed
+       */
+      completedAt: string;
+      itemData: {
+        id: string;
+        title: string;
+        relPermalink: string;
+        type: string;
+      };
+    };
+    UpdateCurrentItemRequest: {
+      /** @enum {string} */
+      contentType: "learning-path" | "challenge" | "certification";
+      itemData: {
+        id: string;
+        /** Format: date-time */
+        lastOpened: string;
+        /** @enum {string} */
+        contentType: "learning-path" | "challenge" | "certification";
+      };
+    };
+    ErrorResponse: {
+      error?: string;
+      details?: string;
+    };
+    Quiz: {
+      id: string;
+      /**
+       * @description Organization ID that owns this quiz
+       * @example meshery
+       */
+      org_id: string;
+      /**
+       * @description Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
+       * @example true
+       */
+      final: boolean;
+      title: string;
+      description: string;
+      slug: string;
+      relPermalink: string;
+      permalink: string;
+      type: string;
+      section: string;
+      layout: string;
+      /** Format: date */
+      date: string;
+      /** Format: date */
+      lastmod: string;
+      draft: boolean;
+      file_path: string;
+      /** Format: float */
+      pass_percentage: number;
+      /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
+      time_limit: string;
+      /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
+      max_attempts: number;
+      questions: {
+        id: string;
+        text: string;
+        /** @enum {string} */
+        type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
+        marks: number;
+        multipleAnswers?: boolean;
+        options: {
+          id: string;
+          text: string;
+          isCorrect: boolean;
+        }[];
+        correctAnswer: string;
+      }[];
+      total_questions: number;
+      total_questions_in_bank: number;
+      total_question_sets: number;
+      total_marks: number;
+      prerequisites: {
+        id: string;
+        title: string;
+        relPermalink: string;
+        type: string;
+      }[];
+      parent?: {
+        id: string;
+        title: string;
+        relPermalink: string;
+        type: string;
+      };
+      next_page: {
+        id: string;
+        title: string;
+        relPermalink: string;
+        type: string;
+      };
+    };
+    Parent: {
+      id: string;
+      title: string;
+      relPermalink: string;
+      type: string;
+    };
+    /** @enum {string} */
+    QuestionType:
+      | "multiple-answers"
+      | "single-answer"
+      | "short-answer"
+      | "essay";
+    Question: {
+      id: string;
+      text: string;
+      /** @enum {string} */
+      type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
+      marks: number;
+      multipleAnswers?: boolean;
+      options: {
+        id: string;
+        text: string;
+        isCorrect: boolean;
+      }[];
+      correctAnswer: string;
+    };
+    QuestionOption: {
+      id: string;
+      text: string;
+      isCorrect: boolean;
+    };
+    StartTestRequest: {
+      testAbsPath: string;
+      registrationId: string;
+    };
+    QuizSubmission: {
+      /**
+       * Format: uuid
+       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+       */
+      testSessionId: string;
+      quizAbsPath: string;
+      registrationId: string;
+      user_id: string;
+      answers: {
+        questionId: string;
+        selectedOptionId: { [key: string]: boolean };
+        answerText: string;
+      }[];
+    };
+    SubmittedAnswer: {
+      questionId: string;
+      selectedOptionId: { [key: string]: boolean };
+      answerText: string;
+    };
+    /** @enum {string} */
+    TestSubmissionStatus: "not-attempted" | "failed" | "passed";
+    TestSubmission: {
+      /**
+       * Format: uuid
+       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+       */
+      id: string;
+      /**
+       * Format: uuid
+       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+       */
+      registration_id: string;
+      test_abs_path: string;
+      /**
+       * Format: uuid
+       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+       */
+      user_id: string;
+      /**
+       * Format: date-time
+       * @description When the submission was created or started
+       */
+      created_at: string;
+      /**
+       * Format: date-time
+       * @description When the submission was last updated
+       */
+      updated_at?: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the resource was deleted.
+       */
+      deleted_at?: string;
+      /** Format: date-time */
+      submitted_at?: string;
+      submission_data?: {
+        /**
+         * Format: uuid
+         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+         */
+        testSessionId: string;
+        quizAbsPath: string;
+        registrationId: string;
+        user_id: string;
+        answers: {
+          questionId: string;
+          selectedOptionId: { [key: string]: boolean };
+          answerText: string;
+        }[];
+      };
+      /**
+       * Format: date-time
+       * @description Expiry time for the test submission ( based on the time limit of the test )
+       */
+      expires_at?: string;
+      /** @enum {string} */
+      status: "not-attempted" | "failed" | "passed";
+      result?: {
+        score: number;
+        passed: boolean;
+        /** Format: float */
+        percentage_scored: number;
+        total_marks: number;
+        /** Format: float */
+        pass_percentage: number;
+        correct_submissions: { [key: string]: boolean };
+        quiz: {
+          id: string;
+          /**
+           * @description Organization ID that owns this quiz
+           * @example meshery
+           */
+          org_id: string;
+          /**
+           * @description Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
+           * @example true
+           */
+          final: boolean;
+          title: string;
+          description: string;
+          slug: string;
+          relPermalink: string;
+          permalink: string;
+          type: string;
+          section: string;
+          layout: string;
+          /** Format: date */
+          date: string;
+          /** Format: date */
+          lastmod: string;
+          draft: boolean;
+          file_path: string;
+          /** Format: float */
+          pass_percentage: number;
+          /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
+          time_limit: string;
+          /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
+          max_attempts: number;
+          questions: {
+            id: string;
+            text: string;
+            /** @enum {string} */
+            type:
+              | "multiple-answers"
+              | "single-answer"
+              | "short-answer"
+              | "essay";
+            marks: number;
+            multipleAnswers?: boolean;
+            options: {
+              id: string;
+              text: string;
+              isCorrect: boolean;
+            }[];
+            correctAnswer: string;
+          }[];
+          total_questions: number;
+          total_questions_in_bank: number;
+          total_question_sets: number;
+          total_marks: number;
+          prerequisites: {
+            id: string;
+            title: string;
+            relPermalink: string;
+            type: string;
+          }[];
+          parent?: {
+            id: string;
+            title: string;
+            relPermalink: string;
+            type: string;
+          };
+          next_page: {
+            id: string;
+            title: string;
+            relPermalink: string;
+            type: string;
+          };
+        };
+        /** Format: date-time */
+        attempted_at: string;
+        attempts: number;
+      };
+      test: {
+        id: string;
+        /**
+         * @description Organization ID that owns this quiz
+         * @example meshery
+         */
+        org_id: string;
+        /**
+         * @description Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
+         * @example true
+         */
+        final: boolean;
+        title: string;
+        description: string;
+        slug: string;
+        relPermalink: string;
+        permalink: string;
+        type: string;
+        section: string;
+        layout: string;
+        /** Format: date */
+        date: string;
+        /** Format: date */
+        lastmod: string;
+        draft: boolean;
+        file_path: string;
+        /** Format: float */
+        pass_percentage: number;
+        /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
+        time_limit: string;
+        /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
+        max_attempts: number;
+        questions: {
+          id: string;
+          text: string;
+          /** @enum {string} */
+          type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
+          marks: number;
+          multipleAnswers?: boolean;
+          options: {
+            id: string;
+            text: string;
+            isCorrect: boolean;
+          }[];
+          correctAnswer: string;
+        }[];
+        total_questions: number;
+        total_questions_in_bank: number;
+        total_question_sets: number;
+        total_marks: number;
+        prerequisites: {
+          id: string;
+          title: string;
+          relPermalink: string;
+          type: string;
+        }[];
+        parent?: {
+          id: string;
+          title: string;
+          relPermalink: string;
+          type: string;
+        };
+        next_page: {
+          id: string;
+          title: string;
+          relPermalink: string;
+          type: string;
+        };
+      };
+    };
+    QuizEvaluationResult: {
+      score: number;
+      passed: boolean;
+      /** Format: float */
+      percentage_scored: number;
+      total_marks: number;
+      /** Format: float */
+      pass_percentage: number;
+      correct_submissions: { [key: string]: boolean };
+      quiz: {
+        id: string;
+        /**
+         * @description Organization ID that owns this quiz
+         * @example meshery
+         */
+        org_id: string;
+        /**
+         * @description Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
+         * @example true
+         */
+        final: boolean;
+        title: string;
+        description: string;
+        slug: string;
+        relPermalink: string;
+        permalink: string;
+        type: string;
+        section: string;
+        layout: string;
+        /** Format: date */
+        date: string;
+        /** Format: date */
+        lastmod: string;
+        draft: boolean;
+        file_path: string;
+        /** Format: float */
+        pass_percentage: number;
+        /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
+        time_limit: string;
+        /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
+        max_attempts: number;
+        questions: {
+          id: string;
+          text: string;
+          /** @enum {string} */
+          type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
+          marks: number;
+          multipleAnswers?: boolean;
+          options: {
+            id: string;
+            text: string;
+            isCorrect: boolean;
+          }[];
+          correctAnswer: string;
+        }[];
+        total_questions: number;
+        total_questions_in_bank: number;
+        total_question_sets: number;
+        total_marks: number;
+        prerequisites: {
+          id: string;
+          title: string;
+          relPermalink: string;
+          type: string;
+        }[];
+        parent?: {
+          id: string;
+          title: string;
+          relPermalink: string;
+          type: string;
+        };
+        next_page: {
+          id: string;
+          title: string;
+          relPermalink: string;
+          type: string;
+        };
+      };
+      /** Format: date-time */
+      attempted_at: string;
+      attempts: number;
+    };
+    UserRegistration: {
+      /** @description Title of the curricula */
+      curricula_title: string;
+      /**
+       * @description Type of the curricula
+       * @enum {string}
+       */
+      curricula_type: "learning-path" | "challenge" | "certification";
+      /** @description Permalink of the curricula */
+      curricula_permalink: string;
+      /**
+       * Format: uuid
+       * @description Unique ID of the registration
+       */
+      registration_id: string;
+      /**
+       * @description Registration status
+       * @enum {string}
+       */
+      status: "registered" | "completed" | "failed" | "withdrawn";
+      /**
+       * Format: date-time
+       * @description When the registration was created
+       */
+      created_at?: string;
+      /**
+       * Format: uuid
+       * @description ID of the user
+       */
+      user_id: string;
+      /** @description First name of the user */
+      user_first_name: string;
+      /** @description Last name of the user */
+      user_last_name: string;
+      /**
+       * Format: email
+       * @description Email of the user
+       */
+      user_email: string;
+      /**
+       * Format: uri
+       * @description Avatar URL of the user
+       */
+      user_avatar_url: string;
+      /**
+       * Format: int64
+       * @description Total count for pagination
+       */
+      total_count: number;
+    };
+    CurriculaRegistrationsFilter: {
+      pagesize: number;
+      page: number;
+      content_type: string[];
+      status: string[];
+    };
+    CurriculaRegistrationsResponse: {
+      data: {
+        /** @description Title of the curricula */
+        curricula_title: string;
+        /**
+         * @description Type of the curricula
+         * @enum {string}
+         */
+        curricula_type: "learning-path" | "challenge" | "certification";
+        /** @description Permalink of the curricula */
+        curricula_permalink: string;
+        /**
+         * Format: uuid
+         * @description Unique ID of the registration
+         */
+        registration_id: string;
+        /**
+         * @description Registration status
+         * @enum {string}
+         */
+        status: "registered" | "completed" | "failed" | "withdrawn";
+        /**
+         * Format: date-time
+         * @description When the registration was created
+         */
+        created_at?: string;
+        /**
+         * Format: uuid
+         * @description ID of the user
+         */
+        user_id: string;
+        /** @description First name of the user */
+        user_first_name: string;
+        /** @description Last name of the user */
+        user_last_name: string;
+        /**
+         * Format: email
+         * @description Email of the user
+         */
+        user_email: string;
+        /**
+         * Format: uri
+         * @description Avatar URL of the user
+         */
+        user_avatar_url: string;
+        /**
+         * Format: int64
+         * @description Total count for pagination
+         */
+        total_count: number;
+      }[];
+      /** Format: int64 */
+      total_count: number;
+      page_size: number;
+      page: number;
+    };
+    UpdateCurrentItemProgressResponse: {
+      message?: string;
+      progressTracker?: {
+        currentItem: {
+          [key: string]: {
+            id: string;
+            /** Format: date-time */
+            lastOpened: string;
+            /** @enum {string} */
+            contentType: "learning-path" | "challenge" | "certification";
+          };
+        };
+        grades: {
+          [key: string]: {
+            score: number;
+            passed: boolean;
+            /** Format: float */
+            percentage_scored: number;
+            total_marks: number;
+            /** Format: float */
+            pass_percentage: number;
+            correct_submissions: { [key: string]: boolean };
+            quiz: {
+              id: string;
+              /**
+               * @description Organization ID that owns this quiz
+               * @example meshery
+               */
+              org_id: string;
+              /**
+               * @description Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
+               * @example true
+               */
+              final: boolean;
+              title: string;
+              description: string;
+              slug: string;
+              relPermalink: string;
+              permalink: string;
+              type: string;
+              section: string;
+              layout: string;
+              /** Format: date */
+              date: string;
+              /** Format: date */
+              lastmod: string;
+              draft: boolean;
+              file_path: string;
+              /** Format: float */
+              pass_percentage: number;
+              /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
+              time_limit: string;
+              /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
+              max_attempts: number;
+              questions: {
+                id: string;
+                text: string;
+                /** @enum {string} */
+                type:
+                  | "multiple-answers"
+                  | "single-answer"
+                  | "short-answer"
+                  | "essay";
+                marks: number;
+                multipleAnswers?: boolean;
+                options: {
+                  id: string;
+                  text: string;
+                  isCorrect: boolean;
+                }[];
+                correctAnswer: string;
+              }[];
+              total_questions: number;
+              total_questions_in_bank: number;
+              total_question_sets: number;
+              total_marks: number;
+              prerequisites: {
+                id: string;
+                title: string;
+                relPermalink: string;
+                type: string;
+              }[];
+              parent?: {
+                id: string;
+                title: string;
+                relPermalink: string;
+                type: string;
+              };
+              next_page: {
+                id: string;
+                title: string;
+                relPermalink: string;
+                type: string;
+              };
+            };
+            /** Format: date-time */
+            attempted_at: string;
+            attempts: number;
+          };
+        };
+        /** @description Total time spent in seconds */
+        timeSpent: number;
+        /** @description Items that have been completed (map of item IDs to item data) */
+        completedItems: {
+          [key: string]: {
+            /**
+             * Format: date-time
+             * @description Timestamp when the item was completed
+             */
+            completedAt: string;
+            itemData: {
+              id: string;
+              title: string;
+              relPermalink: string;
+              type: string;
+            };
+          };
+        };
+        /** Format: date-time */
+        completed: string;
+      };
+      registrationId?: string;
+      /** @enum {string} */
+      contentType?: "learning-path" | "challenge" | "certification";
+      itemData?: {
+        id: string;
+        /** Format: date-time */
+        lastOpened: string;
+        /** @enum {string} */
+        contentType: "learning-path" | "challenge" | "certification";
+      };
+    };
+  };
+  responses: {
+    /** Invalid request body or request param */
+    400: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Expired JWT token used or insufficient privilege */
+    401: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Result not found */
+    404: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Internal server error */
+    500: {
+      content: {
+        "text/plain": string;
+      };
+    };
+  };
+  parameters: {
+    /** @description The ID of the curricula */
+    id: string;
+  };
+}
+
+export interface operations {
+  /** Returns a list of academy content registered by the user with optional filtering. */
+  getMyAcademyCurricula: {
+    parameters: {
+      query: {
+        /** Filter content by content types */
+        contentType?: string[];
+        /** Filter content by organization IDs */
+        orgId?: string[];
+      };
+    };
+    responses: {
+      /** A list of content with total count */
+      200: {
+        content: {
+          "application/json": {
+            /**
+             * @description Total number of Curricula
+             * @example 7
+             */
+            total: number;
+            data: {
+              /**
+               * @description Id of the Curricula
+               * @example 923458-3490394-934893
+               */
+              id: string;
+              /** @enum {string} */
+              type: "learning-path" | "challenge" | "certification";
+              /**
+               * @description Organization ID that owns this learning path
+               * @example meshery
+               */
+              orgId: string;
+              /**
+               * @description Visibility of the Curricula
+               * @enum {string}
+               */
+              visibility: "public" | "private";
+              /**
+               * @description Status of the Curricula
+               * @example ready
+               * @enum {string}
+               */
+              status: "ready" | "archived" | "not_ready";
+              /**
+               * @description slug of the Curricula
+               * @example intro-kubernetes-course
+               */
+              slug: string;
+              /**
+               * @description Level of the Curricula
+               * @enum {string}
+               */
+              level: "beginner" | "intermediate" | "advanced";
+              /**
+               * Format: uuid
+               * @description ID of the badge to be awarded on completion of this curricula
+               */
+              badge_id?: string;
+              /** @description ID of the invite associated with this Curricula */
+              inviteId?: string;
+              /** @description ID of the workspace to which this Curricula belongs */
+              workspace_id?: string;
+              /** @description When the Curricula item was created */
+              createdAt: string;
+              /** @description When the Curricula was last updated */
+              updatedAt: string;
+              deletedAt: string;
+              /** @description Additional metadata about the Curricula */
+              metadata: {
+                /**
+                 * @description Title of the learning path
+                 * @example Mastering Kubernetes for Engineers
+                 */
+                title: string;
+                /**
+                 * @description Short description of the curricula
+                 * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
+                 */
+                description: string;
+                /**
+                 * @description Detailed description of the curricula
+                 * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
+                 */
+                detailedDescription?: string;
+                /**
+                 * Format: uri
+                 * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+                 * @example kubernetes-icon.svg
+                 */
+                banner?: string | null;
+                /**
+                 * Format: uri
+                 * @description Canonical URL for the learning path
+                 * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
+                 */
+                permalink: string;
+                certificate?: {
+                  /**
+                   * @description Unique identifier for the certificate
+                   * @example 1234567890abcdef
+                   */
+                  id: string;
+                  /**
+                   * Format: uuid
+                   * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                   */
+                  orgId: string;
+                  /**
+                   * @description ID of the recipient (user) who received the certificate
+                   * @example 1234567890abcdef
+                   */
+                  recipientId: string;
+                  /**
+                   * @description Name of the recipient (user) who received the certificate
+                   * @example John Doe
+                   */
+                  recipientName: string;
+                  /**
+                   * @description Title of the certificate
+                   * @example Kubernetes Expert Certification
+                   */
+                  title: string;
+                  /**
+                   * @description Description of the certificate
+                   * @example Awarded for successfully completing the Kubernetes Expert course
+                   */
+                  description: string;
+                  /** @description List of issuing authorities for the certificate */
+                  issuingAuthorities: ({
+                    /**
+                     * @description Name of the issuing authority
+                     * @example Cloud Native Foundation
+                     */
+                    name: string;
+                    /**
+                     * @description Role of the issuing authority
+                     * @example COO
+                     */
+                    role?: string;
+                    /**
+                     * Format: uri
+                     * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
+                     * @example http://localhost:9876/signatures/cloud-native-foundation.png
+                     */
+                    signatureUrl?: string;
+                  } & {
+                    url: unknown;
+                  })[];
+                  /**
+                   * Format: date-time
+                   * @description Date when the certificate was issued
+                   * @example 2023-10-01T12:00:00Z
+                   */
+                  issuedDate: string;
+                  /**
+                   * Format: date-time
+                   * @description Date when the certificate expires (optional)
+                   * @example 2025-10-01T12:00:00Z
+                   */
+                  expirationDate?: string;
+                  /**
+                   * @description Number of months after which the certificate expires
+                   * @example 24
+                   */
+                  expiresIn?: number;
+                };
+                /** @description List of children items in the top-level curricula */
+                children?: {
+                  /**
+                   * @description Unique identifier for the course
+                   * @example 1234567890abcdef
+                   */
+                  id: string;
+                  /**
+                   * @description Title of the course
+                   * @example Kubernetes Basics
+                   */
+                  title: string;
+                  /**
+                   * Format: uri
+                   * @description URL to the course content
+                   * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
+                   */
+                  permalink: string;
+                  /**
+                   * @description Course description
+                   * @example Learn the basics of Kubernetes
+                   */
+                  description: string;
+                  /**
+                   * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
+                   * @example eg 1 , 2
+                   */
+                  weight?: number;
+                  /**
+                   * Format: uri
+                   * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+                   * @example kubernetes-icon.svg
+                   */
+                  banner?: string | null;
+                  /**
+                   * @description Type of the content (e.g., learning-path, challenge, certification)
+                   * @enum {string}
+                   */
+                  type?: "learning-path" | "challenge" | "certification";
+                  /** @description List of child nodes (sub-courses or modules) */
+                  children?: { [key: string]: unknown }[];
+                }[];
+              } & { [key: string]: unknown };
+            }[];
+          };
+        };
+      };
+      /** Invalid request parameters */
+      400: unknown;
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Server error */
+      500: unknown;
+    };
+  };
+  /** Creates a new academy curricula with the provided details. */
+  createAcademyCurricula: {
+    responses: {
+      /** created the curricula */
+      201: {
+        content: {
+          "application/json": {
+            /**
+             * @description Id of the Curricula
+             * @example 923458-3490394-934893
+             */
+            id: string;
+            /** @enum {string} */
+            type: "learning-path" | "challenge" | "certification";
+            /**
+             * @description Organization ID that owns this learning path
+             * @example meshery
+             */
+            orgId: string;
+            /**
+             * @description Visibility of the Curricula
+             * @enum {string}
+             */
+            visibility: "public" | "private";
+            /**
+             * @description Status of the Curricula
+             * @example ready
+             * @enum {string}
+             */
+            status: "ready" | "archived" | "not_ready";
+            /**
+             * @description slug of the Curricula
+             * @example intro-kubernetes-course
+             */
+            slug: string;
+            /**
+             * @description Level of the Curricula
+             * @enum {string}
+             */
+            level: "beginner" | "intermediate" | "advanced";
+            /**
+             * Format: uuid
+             * @description ID of the badge to be awarded on completion of this curricula
+             */
+            badge_id?: string;
+            /** @description ID of the invite associated with this Curricula */
+            inviteId?: string;
+            /** @description ID of the workspace to which this Curricula belongs */
+            workspace_id?: string;
+            /** @description When the Curricula item was created */
+            createdAt: string;
+            /** @description When the Curricula was last updated */
+            updatedAt: string;
+            deletedAt: string;
+            /** @description Additional metadata about the Curricula */
+            metadata: {
+              /**
+               * @description Title of the learning path
+               * @example Mastering Kubernetes for Engineers
+               */
+              title: string;
+              /**
+               * @description Short description of the curricula
+               * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
+               */
+              description: string;
+              /**
+               * @description Detailed description of the curricula
+               * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
+               */
+              detailedDescription?: string;
+              /**
+               * Format: uri
+               * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+               * @example kubernetes-icon.svg
+               */
+              banner?: string | null;
+              /**
+               * Format: uri
+               * @description Canonical URL for the learning path
+               * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
+               */
+              permalink: string;
+              certificate?: {
                 /**
                  * @description Unique identifier for the certificate
                  * @example 1234567890abcdef
@@ -2538,24 +3982,26 @@ export interface components {
                  */
                 description: string;
                 /** @description List of issuing authorities for the certificate */
-                issuingAuthorities: {
-                    /**
-                     * @description Name of the issuing authority
-                     * @example Cloud Native Foundation
-                     */
-                    name: string;
-                    /**
-                     * @description Role of the issuing authority
-                     * @example COO
-                     */
-                    role?: string;
-                    /**
-                     * Format: uri
-                     * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
-                     * @example http://localhost:9876/signatures/cloud-native-foundation.png
-                     */
-                    signatureUrl?: string;
-                }[];
+                issuingAuthorities: ({
+                  /**
+                   * @description Name of the issuing authority
+                   * @example Cloud Native Foundation
+                   */
+                  name: string;
+                  /**
+                   * @description Role of the issuing authority
+                   * @example COO
+                   */
+                  role?: string;
+                  /**
+                   * Format: uri
+                   * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
+                   * @example http://localhost:9876/signatures/cloud-native-foundation.png
+                   */
+                  signatureUrl?: string;
+                } & {
+                  url: unknown;
+                })[];
                 /**
                  * Format: date-time
                  * @description Date when the certificate was issued
@@ -2573,9 +4019,9 @@ export interface components {
                  * @example 24
                  */
                 expiresIn?: number;
-            };
-            /** @description List of children items in the top-level curricula */
-            children?: {
+              };
+              /** @description List of children items in the top-level curricula */
+              children?: {
                 /**
                  * @description Unique identifier for the course
                  * @example 1234567890abcdef
@@ -2614,15 +4060,458 @@ export interface components {
                  */
                 type?: "learning-path" | "challenge" | "certification";
                 /** @description List of child nodes (sub-courses or modules) */
-                children?: Record<string, never>[];
-            }[];
+                children?: { [key: string]: unknown }[];
+              }[];
+            } & { [key: string]: unknown };
+          };
         };
-        /**
-         * @description Status of the user's course registration
-         * @enum {string}
-         */
-        AcademyRegistrationStatus: "registered" | "completed" | "failed" | "withdrawn";
-        AcademyRegistration: {
+      };
+      /** Invalid request parameters */
+      400: unknown;
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Server error */
+      500: unknown;
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /**
+           * @description Type of the curricula
+           * @enum {string}
+           */
+          type: "learning-path" | "challenge" | "certification";
+          /**
+           * @description Title of the curricula
+           * @example Introduction to Kubernetes
+           */
+          title: string;
+          /**
+           * @description Organization ID that owns this learning path
+           * @example meshery
+           */
+          orgId: string;
+          /** @description ID of the workspace to which this Curricula belongs */
+          workspace_id: string;
+          /**
+           * Format: uuid
+           * @description ID of the badge to be awarded on completion of this curricula
+           */
+          badge_id?: string;
+          /**
+           * Format: uuid
+           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+           */
+          team_id: string;
+          /** @description Expiry time for curricula access */
+          access_expires_at?: string;
+          /**
+           * @description Current access status of the curricula
+           * @enum {string}
+           */
+          access_status: "enabled" | "disabled";
+          /** @description Additional metadata about the Curricula */
+          metadata: {
+            /**
+             * @description Title of the learning path
+             * @example Mastering Kubernetes for Engineers
+             */
+            title: string;
+            /**
+             * @description Short description of the curricula
+             * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
+             */
+            description: string;
+            /**
+             * @description Detailed description of the curricula
+             * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
+             */
+            detailedDescription?: string;
+            /**
+             * Format: uri
+             * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+             * @example kubernetes-icon.svg
+             */
+            banner?: string | null;
+            /**
+             * Format: uri
+             * @description Canonical URL for the learning path
+             * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
+             */
+            permalink: string;
+            certificate?: {
+              /**
+               * @description Unique identifier for the certificate
+               * @example 1234567890abcdef
+               */
+              id: string;
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              orgId: string;
+              /**
+               * @description ID of the recipient (user) who received the certificate
+               * @example 1234567890abcdef
+               */
+              recipientId: string;
+              /**
+               * @description Name of the recipient (user) who received the certificate
+               * @example John Doe
+               */
+              recipientName: string;
+              /**
+               * @description Title of the certificate
+               * @example Kubernetes Expert Certification
+               */
+              title: string;
+              /**
+               * @description Description of the certificate
+               * @example Awarded for successfully completing the Kubernetes Expert course
+               */
+              description: string;
+              /** @description List of issuing authorities for the certificate */
+              issuingAuthorities: ({
+                /**
+                 * @description Name of the issuing authority
+                 * @example Cloud Native Foundation
+                 */
+                name: string;
+                /**
+                 * @description Role of the issuing authority
+                 * @example COO
+                 */
+                role?: string;
+                /**
+                 * Format: uri
+                 * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
+                 * @example http://localhost:9876/signatures/cloud-native-foundation.png
+                 */
+                signatureUrl?: string;
+              } & {
+                url: unknown;
+              })[];
+              /**
+               * Format: date-time
+               * @description Date when the certificate was issued
+               * @example 2023-10-01T12:00:00Z
+               */
+              issuedDate: string;
+              /**
+               * Format: date-time
+               * @description Date when the certificate expires (optional)
+               * @example 2025-10-01T12:00:00Z
+               */
+              expirationDate?: string;
+              /**
+               * @description Number of months after which the certificate expires
+               * @example 24
+               */
+              expiresIn?: number;
+            };
+            /** @description List of children items in the top-level curricula */
+            children?: {
+              /**
+               * @description Unique identifier for the course
+               * @example 1234567890abcdef
+               */
+              id: string;
+              /**
+               * @description Title of the course
+               * @example Kubernetes Basics
+               */
+              title: string;
+              /**
+               * Format: uri
+               * @description URL to the course content
+               * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
+               */
+              permalink: string;
+              /**
+               * @description Course description
+               * @example Learn the basics of Kubernetes
+               */
+              description: string;
+              /**
+               * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
+               * @example eg 1 , 2
+               */
+              weight?: number;
+              /**
+               * Format: uri
+               * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+               * @example kubernetes-icon.svg
+               */
+              banner?: string | null;
+              /**
+               * @description Type of the content (e.g., learning-path, challenge, certification)
+               * @enum {string}
+               */
+              type?: "learning-path" | "challenge" | "certification";
+              /** @description List of child nodes (sub-courses or modules) */
+              children?: { [key: string]: unknown }[];
+            }[];
+          } & { [key: string]: unknown };
+        };
+      };
+    };
+  };
+  /** Returns a list of academy content with optional filtering. */
+  getAcademyCurricula: {
+    parameters: {
+      query: {
+        /** Filter content by content types */
+        contentType?: string[];
+        /** Filter content by visibility (public/private) */
+        visibility?: string[];
+        /** Filter content by difficulty level */
+        level?: string[];
+        /** Filter content by organization IDs */
+        orgId?: string[];
+        /** Filter content by categories */
+        category?: string[];
+        /** Filter by registration status */
+        status?: string[];
+        /** Search content by title */
+        search?: string;
+        /** Sort results by a specific field (e.g., title, createdAt) */
+        sort?: string;
+        /** Order of sorting (asc or desc) */
+        order?: "asc" | "desc";
+        /** Number of results per page */
+        pagesize?: number;
+        /** Page number */
+        page?: number;
+      };
+    };
+    responses: {
+      /** A list of content with total count */
+      200: {
+        content: {
+          "application/json": {
+            /**
+             * @description Total number of Curricula
+             * @example 7
+             */
+            total: number;
+            data: ({
+              /**
+               * @description Id of the Curricula
+               * @example 923458-3490394-934893
+               */
+              id: string;
+              /** @enum {string} */
+              type: "learning-path" | "challenge" | "certification";
+              /**
+               * @description Organization ID that owns this learning path
+               * @example meshery
+               */
+              orgId: string;
+              /**
+               * @description Visibility of the Curricula
+               * @enum {string}
+               */
+              visibility: "public" | "private";
+              /**
+               * @description Status of the Curricula
+               * @example ready
+               * @enum {string}
+               */
+              status: "ready" | "archived" | "not_ready";
+              /**
+               * @description slug of the Curricula
+               * @example intro-kubernetes-course
+               */
+              slug: string;
+              /**
+               * @description Level of the Curricula
+               * @enum {string}
+               */
+              level: "beginner" | "intermediate" | "advanced";
+              /**
+               * Format: uuid
+               * @description ID of the badge to be awarded on completion of this curricula
+               */
+              badge_id?: string;
+              /** @description ID of the invite associated with this Curricula */
+              inviteId?: string;
+              /** @description ID of the workspace to which this Curricula belongs */
+              workspace_id?: string;
+              /** @description When the Curricula item was created */
+              createdAt: string;
+              /** @description When the Curricula was last updated */
+              updatedAt: string;
+              deletedAt: string;
+              /** @description Additional metadata about the Curricula */
+              metadata: {
+                /**
+                 * @description Title of the learning path
+                 * @example Mastering Kubernetes for Engineers
+                 */
+                title: string;
+                /**
+                 * @description Short description of the curricula
+                 * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
+                 */
+                description: string;
+                /**
+                 * @description Detailed description of the curricula
+                 * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
+                 */
+                detailedDescription?: string;
+                /**
+                 * Format: uri
+                 * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+                 * @example kubernetes-icon.svg
+                 */
+                banner?: string | null;
+                /**
+                 * Format: uri
+                 * @description Canonical URL for the learning path
+                 * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
+                 */
+                permalink: string;
+                certificate?: {
+                  /**
+                   * @description Unique identifier for the certificate
+                   * @example 1234567890abcdef
+                   */
+                  id: string;
+                  /**
+                   * Format: uuid
+                   * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                   */
+                  orgId: string;
+                  /**
+                   * @description ID of the recipient (user) who received the certificate
+                   * @example 1234567890abcdef
+                   */
+                  recipientId: string;
+                  /**
+                   * @description Name of the recipient (user) who received the certificate
+                   * @example John Doe
+                   */
+                  recipientName: string;
+                  /**
+                   * @description Title of the certificate
+                   * @example Kubernetes Expert Certification
+                   */
+                  title: string;
+                  /**
+                   * @description Description of the certificate
+                   * @example Awarded for successfully completing the Kubernetes Expert course
+                   */
+                  description: string;
+                  /** @description List of issuing authorities for the certificate */
+                  issuingAuthorities: ({
+                    /**
+                     * @description Name of the issuing authority
+                     * @example Cloud Native Foundation
+                     */
+                    name: string;
+                    /**
+                     * @description Role of the issuing authority
+                     * @example COO
+                     */
+                    role?: string;
+                    /**
+                     * Format: uri
+                     * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
+                     * @example http://localhost:9876/signatures/cloud-native-foundation.png
+                     */
+                    signatureUrl?: string;
+                  } & {
+                    url: unknown;
+                  })[];
+                  /**
+                   * Format: date-time
+                   * @description Date when the certificate was issued
+                   * @example 2023-10-01T12:00:00Z
+                   */
+                  issuedDate: string;
+                  /**
+                   * Format: date-time
+                   * @description Date when the certificate expires (optional)
+                   * @example 2025-10-01T12:00:00Z
+                   */
+                  expirationDate?: string;
+                  /**
+                   * @description Number of months after which the certificate expires
+                   * @example 24
+                   */
+                  expiresIn?: number;
+                };
+                /** @description List of children items in the top-level curricula */
+                children?: {
+                  /**
+                   * @description Unique identifier for the course
+                   * @example 1234567890abcdef
+                   */
+                  id: string;
+                  /**
+                   * @description Title of the course
+                   * @example Kubernetes Basics
+                   */
+                  title: string;
+                  /**
+                   * Format: uri
+                   * @description URL to the course content
+                   * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
+                   */
+                  permalink: string;
+                  /**
+                   * @description Course description
+                   * @example Learn the basics of Kubernetes
+                   */
+                  description: string;
+                  /**
+                   * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
+                   * @example eg 1 , 2
+                   */
+                  weight?: number;
+                  /**
+                   * Format: uri
+                   * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+                   * @example kubernetes-icon.svg
+                   */
+                  banner?: string | null;
+                  /**
+                   * @description Type of the content (e.g., learning-path, challenge, certification)
+                   * @enum {string}
+                   */
+                  type?: "learning-path" | "challenge" | "certification";
+                  /** @description List of child nodes (sub-courses or modules) */
+                  children?: { [key: string]: unknown }[];
+                }[];
+              } & { [key: string]: unknown };
+            } & {
+              registration_count: number;
+            })[];
+          };
+        };
+      };
+      /** Invalid request parameters */
+      400: unknown;
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Server error */
+      500: unknown;
+    };
+  };
+  registerToAcademyContent: {
+    responses: {
+      /** registered content */
+      201: {
+        content: {
+          "application/json": {
             /**
              * Format: uuid
              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -2662,6 +4551,341 @@ export interface components {
             deleted_at?: string;
             /** @description Issued certificate for completing the curricula under registration */
             certificate: {
+              /**
+               * @description Unique identifier for the certificate
+               * @example 1234567890abcdef
+               */
+              id: string;
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              orgId: string;
+              /**
+               * @description ID of the recipient (user) who received the certificate
+               * @example 1234567890abcdef
+               */
+              recipientId: string;
+              /**
+               * @description Name of the recipient (user) who received the certificate
+               * @example John Doe
+               */
+              recipientName: string;
+              /**
+               * @description Title of the certificate
+               * @example Kubernetes Expert Certification
+               */
+              title: string;
+              /**
+               * @description Description of the certificate
+               * @example Awarded for successfully completing the Kubernetes Expert course
+               */
+              description: string;
+              /** @description List of issuing authorities for the certificate */
+              issuingAuthorities: ({
+                /**
+                 * @description Name of the issuing authority
+                 * @example Cloud Native Foundation
+                 */
+                name: string;
+                /**
+                 * @description Role of the issuing authority
+                 * @example COO
+                 */
+                role?: string;
+                /**
+                 * Format: uri
+                 * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
+                 * @example http://localhost:9876/signatures/cloud-native-foundation.png
+                 */
+                signatureUrl?: string;
+              } & {
+                url: unknown;
+              })[];
+              /**
+               * Format: date-time
+               * @description Date when the certificate was issued
+               * @example 2023-10-01T12:00:00Z
+               */
+              issuedDate: string;
+              /**
+               * Format: date-time
+               * @description Date when the certificate expires (optional)
+               * @example 2025-10-01T12:00:00Z
+               */
+              expirationDate?: string;
+              /**
+               * @description Number of months after which the certificate expires
+               * @example 24
+               */
+              expiresIn?: number;
+            };
+            /** @description Additional metadata about the registration */
+            metadata: { [key: string]: unknown };
+          } & {
+            test_submissions: unknown;
+          };
+        };
+      };
+      /** Invalid request parameters */
+      400: unknown;
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Server error */
+      500: unknown;
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /** @description ID of the academy content to register for */
+          contentId: string;
+          /** @enum {string} */
+          contentType?: "learning-path" | "challenge" | "certification";
+        } & {
+          user_id: unknown;
+        };
+      };
+    };
+  };
+  withdrawFromAcademyContent: {
+    parameters: {
+      path: {
+        /** The ID of the curricula */
+        id: string;
+      };
+    };
+    responses: {
+      /** registered content */
+      200: {
+        content: {
+          "application/json": {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            org_id: string;
+            /** @description ID of the course content */
+            content_id: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            user_id: string;
+            /**
+             * @description Status of the user's course registration
+             * @enum {string}
+             */
+            status: "registered" | "completed" | "failed" | "withdrawn";
+            /**
+             * Format: date-time
+             * @description When the registration was updated
+             */
+            updated_at: string;
+            /**
+             * Format: date-time
+             * @description When the registration was created
+             */
+            created_at: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the resource was deleted.
+             */
+            deleted_at?: string;
+            /** @description Issued certificate for completing the curricula under registration */
+            certificate: {
+              /**
+               * @description Unique identifier for the certificate
+               * @example 1234567890abcdef
+               */
+              id: string;
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              orgId: string;
+              /**
+               * @description ID of the recipient (user) who received the certificate
+               * @example 1234567890abcdef
+               */
+              recipientId: string;
+              /**
+               * @description Name of the recipient (user) who received the certificate
+               * @example John Doe
+               */
+              recipientName: string;
+              /**
+               * @description Title of the certificate
+               * @example Kubernetes Expert Certification
+               */
+              title: string;
+              /**
+               * @description Description of the certificate
+               * @example Awarded for successfully completing the Kubernetes Expert course
+               */
+              description: string;
+              /** @description List of issuing authorities for the certificate */
+              issuingAuthorities: ({
+                /**
+                 * @description Name of the issuing authority
+                 * @example Cloud Native Foundation
+                 */
+                name: string;
+                /**
+                 * @description Role of the issuing authority
+                 * @example COO
+                 */
+                role?: string;
+                /**
+                 * Format: uri
+                 * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
+                 * @example http://localhost:9876/signatures/cloud-native-foundation.png
+                 */
+                signatureUrl?: string;
+              } & {
+                url: unknown;
+              })[];
+              /**
+               * Format: date-time
+               * @description Date when the certificate was issued
+               * @example 2023-10-01T12:00:00Z
+               */
+              issuedDate: string;
+              /**
+               * Format: date-time
+               * @description Date when the certificate expires (optional)
+               * @example 2025-10-01T12:00:00Z
+               */
+              expirationDate?: string;
+              /**
+               * @description Number of months after which the certificate expires
+               * @example 24
+               */
+              expiresIn?: number;
+            };
+            /** @description Additional metadata about the registration */
+            metadata: { [key: string]: unknown };
+          } & {
+            test_submissions: unknown;
+          };
+        };
+      };
+      /** Invalid request parameters */
+      400: unknown;
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Server error */
+      500: unknown;
+    };
+  };
+  /** Returns a single academy curricula identified by its ID. */
+  getAcademyCurriculaById: {
+    parameters: {
+      path: {
+        /** The ID of the curricula */
+        id: string;
+      };
+    };
+    responses: {
+      /** A single curricula */
+      200: {
+        content: {
+          "application/json": {
+            /**
+             * @description Id of the Curricula
+             * @example 923458-3490394-934893
+             */
+            id: string;
+            /** @enum {string} */
+            type: "learning-path" | "challenge" | "certification";
+            /**
+             * @description Organization ID that owns this learning path
+             * @example meshery
+             */
+            orgId: string;
+            /**
+             * @description Visibility of the Curricula
+             * @enum {string}
+             */
+            visibility: "public" | "private";
+            /**
+             * @description Status of the Curricula
+             * @example ready
+             * @enum {string}
+             */
+            status: "ready" | "archived" | "not_ready";
+            /**
+             * @description slug of the Curricula
+             * @example intro-kubernetes-course
+             */
+            slug: string;
+            /**
+             * @description Level of the Curricula
+             * @enum {string}
+             */
+            level: "beginner" | "intermediate" | "advanced";
+            /**
+             * Format: uuid
+             * @description ID of the badge to be awarded on completion of this curricula
+             */
+            badge_id?: string;
+            /** @description ID of the invite associated with this Curricula */
+            inviteId?: string;
+            /** @description ID of the workspace to which this Curricula belongs */
+            workspace_id?: string;
+            /** @description When the Curricula item was created */
+            createdAt: string;
+            /** @description When the Curricula was last updated */
+            updatedAt: string;
+            deletedAt: string;
+            /** @description Additional metadata about the Curricula */
+            metadata: {
+              /**
+               * @description Title of the learning path
+               * @example Mastering Kubernetes for Engineers
+               */
+              title: string;
+              /**
+               * @description Short description of the curricula
+               * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
+               */
+              description: string;
+              /**
+               * @description Detailed description of the curricula
+               * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
+               */
+              detailedDescription?: string;
+              /**
+               * Format: uri
+               * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+               * @example kubernetes-icon.svg
+               */
+              banner?: string | null;
+              /**
+               * Format: uri
+               * @description Canonical URL for the learning path
+               * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
+               */
+              permalink: string;
+              certificate?: {
                 /**
                  * @description Unique identifier for the certificate
                  * @example 1234567890abcdef
@@ -2693,24 +4917,26 @@ export interface components {
                  */
                 description: string;
                 /** @description List of issuing authorities for the certificate */
-                issuingAuthorities: {
-                    /**
-                     * @description Name of the issuing authority
-                     * @example Cloud Native Foundation
-                     */
-                    name: string;
-                    /**
-                     * @description Role of the issuing authority
-                     * @example COO
-                     */
-                    role?: string;
-                    /**
-                     * Format: uri
-                     * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
-                     * @example http://localhost:9876/signatures/cloud-native-foundation.png
-                     */
-                    signatureUrl?: string;
-                }[];
+                issuingAuthorities: ({
+                  /**
+                   * @description Name of the issuing authority
+                   * @example Cloud Native Foundation
+                   */
+                  name: string;
+                  /**
+                   * @description Role of the issuing authority
+                   * @example COO
+                   */
+                  role?: string;
+                  /**
+                   * Format: uri
+                   * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
+                   * @example http://localhost:9876/signatures/cloud-native-foundation.png
+                   */
+                  signatureUrl?: string;
+                } & {
+                  url: unknown;
+                })[];
                 /**
                  * Format: date-time
                  * @description Date when the certificate was issued
@@ -2728,26 +4954,635 @@ export interface components {
                  * @example 24
                  */
                 expiresIn?: number;
+              };
+              /** @description List of children items in the top-level curricula */
+              children?: {
+                /**
+                 * @description Unique identifier for the course
+                 * @example 1234567890abcdef
+                 */
+                id: string;
+                /**
+                 * @description Title of the course
+                 * @example Kubernetes Basics
+                 */
+                title: string;
+                /**
+                 * Format: uri
+                 * @description URL to the course content
+                 * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
+                 */
+                permalink: string;
+                /**
+                 * @description Course description
+                 * @example Learn the basics of Kubernetes
+                 */
+                description: string;
+                /**
+                 * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
+                 * @example eg 1 , 2
+                 */
+                weight?: number;
+                /**
+                 * Format: uri
+                 * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+                 * @example kubernetes-icon.svg
+                 */
+                banner?: string | null;
+                /**
+                 * @description Type of the content (e.g., learning-path, challenge, certification)
+                 * @enum {string}
+                 */
+                type?: "learning-path" | "challenge" | "certification";
+                /** @description List of child nodes (sub-courses or modules) */
+                children?: { [key: string]: unknown }[];
+              }[];
+            } & { [key: string]: unknown };
+          } & {
+            registration_count: number;
+            invitation?: {
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              id: string;
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              owner_id: string;
+              /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
+              is_default?: boolean;
+              /** @description Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
+              name: string;
+              /** @description Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
+              description: string;
+              emails: string[];
+              /** @description ID of the organization to which the user is invited */
+              org_id: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire
+               */
+              expires_at?: string;
+              /** @description Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
+              quota?: number;
+              /** @description List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
+              accepted_by: string[];
+              roles: string[];
+              teams: string[];
+              /**
+               * @description Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later.
+               * @enum {string}
+               */
+              status: "enabled" | "disabled";
+              /**
+               * Format: date-time
+               * @description Timestamp when the invitation was created
+               */
+              created_at: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the invitation was last updated
+               */
+              updated_at: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the invitation was deleted, if applicable
+               */
+              deleted_at: string;
             };
-            /** @description Additional metadata about the registration */
-            metadata: {
-                [key: string]: unknown;
-            };
+          };
         };
-        /** @description Test submissions made by the user (map of test IDs to Submissions) */
-        AllTestSubmissionsForCurricula: {
-            [key: string]: {
-                score: number;
-                passed: boolean;
-                /** Format: float */
-                percentage_scored: number;
-                total_marks: number;
-                /** Format: float */
-                pass_percentage: number;
-                correct_submissions: {
-                    [key: string]: boolean;
+      };
+      /** Invalid request parameters */
+      400: unknown;
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Curricula not found */
+      404: unknown;
+      /** Server error */
+      500: unknown;
+    };
+  };
+  /** Updates the details of an existing academy curricula identified by its ID. */
+  updateAcademyCurriculaById: {
+    parameters: {
+      path: {
+        /** The ID of the curricula */
+        id: string;
+      };
+    };
+    responses: {
+      /** updated the curricula */
+      200: {
+        content: {
+          "application/json": {
+            /**
+             * @description Id of the Curricula
+             * @example 923458-3490394-934893
+             */
+            id: string;
+            /** @enum {string} */
+            type: "learning-path" | "challenge" | "certification";
+            /**
+             * @description Organization ID that owns this learning path
+             * @example meshery
+             */
+            orgId: string;
+            /**
+             * @description Visibility of the Curricula
+             * @enum {string}
+             */
+            visibility: "public" | "private";
+            /**
+             * @description Status of the Curricula
+             * @example ready
+             * @enum {string}
+             */
+            status: "ready" | "archived" | "not_ready";
+            /**
+             * @description slug of the Curricula
+             * @example intro-kubernetes-course
+             */
+            slug: string;
+            /**
+             * @description Level of the Curricula
+             * @enum {string}
+             */
+            level: "beginner" | "intermediate" | "advanced";
+            /**
+             * Format: uuid
+             * @description ID of the badge to be awarded on completion of this curricula
+             */
+            badge_id?: string;
+            /** @description ID of the invite associated with this Curricula */
+            inviteId?: string;
+            /** @description ID of the workspace to which this Curricula belongs */
+            workspace_id?: string;
+            /** @description When the Curricula item was created */
+            createdAt: string;
+            /** @description When the Curricula was last updated */
+            updatedAt: string;
+            deletedAt: string;
+            /** @description Additional metadata about the Curricula */
+            metadata: {
+              /**
+               * @description Title of the learning path
+               * @example Mastering Kubernetes for Engineers
+               */
+              title: string;
+              /**
+               * @description Short description of the curricula
+               * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
+               */
+              description: string;
+              /**
+               * @description Detailed description of the curricula
+               * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
+               */
+              detailedDescription?: string;
+              /**
+               * Format: uri
+               * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+               * @example kubernetes-icon.svg
+               */
+              banner?: string | null;
+              /**
+               * Format: uri
+               * @description Canonical URL for the learning path
+               * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
+               */
+              permalink: string;
+              certificate?: {
+                /**
+                 * @description Unique identifier for the certificate
+                 * @example 1234567890abcdef
+                 */
+                id: string;
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                orgId: string;
+                /**
+                 * @description ID of the recipient (user) who received the certificate
+                 * @example 1234567890abcdef
+                 */
+                recipientId: string;
+                /**
+                 * @description Name of the recipient (user) who received the certificate
+                 * @example John Doe
+                 */
+                recipientName: string;
+                /**
+                 * @description Title of the certificate
+                 * @example Kubernetes Expert Certification
+                 */
+                title: string;
+                /**
+                 * @description Description of the certificate
+                 * @example Awarded for successfully completing the Kubernetes Expert course
+                 */
+                description: string;
+                /** @description List of issuing authorities for the certificate */
+                issuingAuthorities: ({
+                  /**
+                   * @description Name of the issuing authority
+                   * @example Cloud Native Foundation
+                   */
+                  name: string;
+                  /**
+                   * @description Role of the issuing authority
+                   * @example COO
+                   */
+                  role?: string;
+                  /**
+                   * Format: uri
+                   * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
+                   * @example http://localhost:9876/signatures/cloud-native-foundation.png
+                   */
+                  signatureUrl?: string;
+                } & {
+                  url: unknown;
+                })[];
+                /**
+                 * Format: date-time
+                 * @description Date when the certificate was issued
+                 * @example 2023-10-01T12:00:00Z
+                 */
+                issuedDate: string;
+                /**
+                 * Format: date-time
+                 * @description Date when the certificate expires (optional)
+                 * @example 2025-10-01T12:00:00Z
+                 */
+                expirationDate?: string;
+                /**
+                 * @description Number of months after which the certificate expires
+                 * @example 24
+                 */
+                expiresIn?: number;
+              };
+              /** @description List of children items in the top-level curricula */
+              children?: {
+                /**
+                 * @description Unique identifier for the course
+                 * @example 1234567890abcdef
+                 */
+                id: string;
+                /**
+                 * @description Title of the course
+                 * @example Kubernetes Basics
+                 */
+                title: string;
+                /**
+                 * Format: uri
+                 * @description URL to the course content
+                 * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
+                 */
+                permalink: string;
+                /**
+                 * @description Course description
+                 * @example Learn the basics of Kubernetes
+                 */
+                description: string;
+                /**
+                 * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
+                 * @example eg 1 , 2
+                 */
+                weight?: number;
+                /**
+                 * Format: uri
+                 * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+                 * @example kubernetes-icon.svg
+                 */
+                banner?: string | null;
+                /**
+                 * @description Type of the content (e.g., learning-path, challenge, certification)
+                 * @enum {string}
+                 */
+                type?: "learning-path" | "challenge" | "certification";
+                /** @description List of child nodes (sub-courses or modules) */
+                children?: { [key: string]: unknown }[];
+              }[];
+            } & { [key: string]: unknown };
+          } & {
+            registration_count: number;
+            invitation?: {
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              id: string;
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              owner_id: string;
+              /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
+              is_default?: boolean;
+              /** @description Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
+              name: string;
+              /** @description Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
+              description: string;
+              emails: string[];
+              /** @description ID of the organization to which the user is invited */
+              org_id: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire
+               */
+              expires_at?: string;
+              /** @description Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
+              quota?: number;
+              /** @description List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
+              accepted_by: string[];
+              roles: string[];
+              teams: string[];
+              /**
+               * @description Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later.
+               * @enum {string}
+               */
+              status: "enabled" | "disabled";
+              /**
+               * Format: date-time
+               * @description Timestamp when the invitation was created
+               */
+              created_at: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the invitation was last updated
+               */
+              updated_at: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the invitation was deleted, if applicable
+               */
+              deleted_at: string;
+            };
+          };
+        };
+      };
+      /** Invalid request parameters */
+      400: unknown;
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Curricula not found */
+      404: unknown;
+      /** Server error */
+      500: unknown;
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /**
+           * @description Type of the curricula
+           * @enum {string}
+           */
+          type: "learning-path" | "challenge" | "certification";
+          /**
+           * @description Title of the curricula
+           * @example Introduction to Kubernetes
+           */
+          title: string;
+          /**
+           * @description Organization ID that owns this learning path
+           * @example meshery
+           */
+          orgId: string;
+          /** @description ID of the workspace to which this Curricula belongs */
+          workspace_id: string;
+          /**
+           * Format: uuid
+           * @description ID of the badge to be awarded on completion of this curricula
+           */
+          badge_id?: string;
+          /**
+           * Format: uuid
+           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+           */
+          team_id: string;
+          /** @description Expiry time for curricula access */
+          access_expires_at?: string;
+          /**
+           * @description Current access status of the curricula
+           * @enum {string}
+           */
+          access_status: "enabled" | "disabled";
+          /** @description Additional metadata about the Curricula */
+          metadata: {
+            /**
+             * @description Title of the learning path
+             * @example Mastering Kubernetes for Engineers
+             */
+            title: string;
+            /**
+             * @description Short description of the curricula
+             * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
+             */
+            description: string;
+            /**
+             * @description Detailed description of the curricula
+             * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
+             */
+            detailedDescription?: string;
+            /**
+             * Format: uri
+             * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+             * @example kubernetes-icon.svg
+             */
+            banner?: string | null;
+            /**
+             * Format: uri
+             * @description Canonical URL for the learning path
+             * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
+             */
+            permalink: string;
+            certificate?: {
+              /**
+               * @description Unique identifier for the certificate
+               * @example 1234567890abcdef
+               */
+              id: string;
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              orgId: string;
+              /**
+               * @description ID of the recipient (user) who received the certificate
+               * @example 1234567890abcdef
+               */
+              recipientId: string;
+              /**
+               * @description Name of the recipient (user) who received the certificate
+               * @example John Doe
+               */
+              recipientName: string;
+              /**
+               * @description Title of the certificate
+               * @example Kubernetes Expert Certification
+               */
+              title: string;
+              /**
+               * @description Description of the certificate
+               * @example Awarded for successfully completing the Kubernetes Expert course
+               */
+              description: string;
+              /** @description List of issuing authorities for the certificate */
+              issuingAuthorities: ({
+                /**
+                 * @description Name of the issuing authority
+                 * @example Cloud Native Foundation
+                 */
+                name: string;
+                /**
+                 * @description Role of the issuing authority
+                 * @example COO
+                 */
+                role?: string;
+                /**
+                 * Format: uri
+                 * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
+                 * @example http://localhost:9876/signatures/cloud-native-foundation.png
+                 */
+                signatureUrl?: string;
+              } & {
+                url: unknown;
+              })[];
+              /**
+               * Format: date-time
+               * @description Date when the certificate was issued
+               * @example 2023-10-01T12:00:00Z
+               */
+              issuedDate: string;
+              /**
+               * Format: date-time
+               * @description Date when the certificate expires (optional)
+               * @example 2025-10-01T12:00:00Z
+               */
+              expirationDate?: string;
+              /**
+               * @description Number of months after which the certificate expires
+               * @example 24
+               */
+              expiresIn?: number;
+            };
+            /** @description List of children items in the top-level curricula */
+            children?: {
+              /**
+               * @description Unique identifier for the course
+               * @example 1234567890abcdef
+               */
+              id: string;
+              /**
+               * @description Title of the course
+               * @example Kubernetes Basics
+               */
+              title: string;
+              /**
+               * Format: uri
+               * @description URL to the course content
+               * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
+               */
+              permalink: string;
+              /**
+               * @description Course description
+               * @example Learn the basics of Kubernetes
+               */
+              description: string;
+              /**
+               * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
+               * @example eg 1 , 2
+               */
+              weight?: number;
+              /**
+               * Format: uri
+               * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+               * @example kubernetes-icon.svg
+               */
+              banner?: string | null;
+              /**
+               * @description Type of the content (e.g., learning-path, challenge, certification)
+               * @enum {string}
+               */
+              type?: "learning-path" | "challenge" | "certification";
+              /** @description List of child nodes (sub-courses or modules) */
+              children?: { [key: string]: unknown }[];
+            }[];
+          } & { [key: string]: unknown };
+        };
+      };
+    };
+  };
+  /** Deletes an existing academy curricula identified by its ID. */
+  deleteAcademyCurriculaById: {
+    parameters: {
+      path: {
+        /** The ID of the curricula */
+        id: string;
+      };
+    };
+    responses: {
+      /** Curricula deleted */
+      204: never;
+      /** Invalid request parameters */
+      400: unknown;
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Curricula not found */
+      404: unknown;
+      /** Server error */
+      500: unknown;
+    };
+  };
+  updateCurrentItemInProgressTracker: {
+    parameters: {
+      path: {
+        /** The ID of the registration */
+        registrationId: string;
+      };
+    };
+    responses: {
+      /** Progress tracker updated */
+      200: {
+        content: {
+          "application/json": {
+            message?: string;
+            progressTracker?: {
+              currentItem: {
+                [key: string]: {
+                  id: string;
+                  /** Format: date-time */
+                  lastOpened: string;
+                  /** @enum {string} */
+                  contentType: "learning-path" | "challenge" | "certification";
                 };
-                quiz: {
+              };
+              grades: {
+                [key: string]: {
+                  score: number;
+                  passed: boolean;
+                  /** Format: float */
+                  percentage_scored: number;
+                  total_marks: number;
+                  /** Format: float */
+                  pass_percentage: number;
+                  correct_submissions: { [key: string]: boolean };
+                  quiz: {
                     id: string;
                     /**
                      * @description Organization ID that owns this quiz
@@ -2780,445 +5615,145 @@ export interface components {
                     /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
                     max_attempts: number;
                     questions: {
+                      id: string;
+                      text: string;
+                      /** @enum {string} */
+                      type:
+                        | "multiple-answers"
+                        | "single-answer"
+                        | "short-answer"
+                        | "essay";
+                      marks: number;
+                      multipleAnswers?: boolean;
+                      options: {
                         id: string;
                         text: string;
-                        /** @enum {string} */
-                        type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
-                        marks: number;
-                        multipleAnswers?: boolean;
-                        options: {
-                            id: string;
-                            text: string;
-                            isCorrect: boolean;
-                        }[];
-                        correctAnswer: string;
+                        isCorrect: boolean;
+                      }[];
+                      correctAnswer: string;
                     }[];
                     total_questions: number;
                     total_questions_in_bank: number;
                     total_question_sets: number;
                     total_marks: number;
                     prerequisites: {
-                        id: string;
-                        title: string;
-                        relPermalink: string;
-                        type: string;
+                      id: string;
+                      title: string;
+                      relPermalink: string;
+                      type: string;
                     }[];
                     parent?: {
-                        id: string;
-                        title: string;
-                        relPermalink: string;
-                        type: string;
+                      id: string;
+                      title: string;
+                      relPermalink: string;
+                      type: string;
                     };
                     next_page: {
-                        id: string;
-                        title: string;
-                        relPermalink: string;
-                        type: string;
+                      id: string;
+                      title: string;
+                      relPermalink: string;
+                      type: string;
                     };
+                  };
+                  /** Format: date-time */
+                  attempted_at: string;
+                  attempts: number;
                 };
-                /** Format: date-time */
-                attempted_at: string;
-                attempts: number;
-            }[];
-        };
-        /** @description Test submissions made by the user (array of QuizEvaluationResult) */
-        TestSubmissions: {
-            score: number;
-            passed: boolean;
-            /** Format: float */
-            percentage_scored: number;
-            total_marks: number;
-            /** Format: float */
-            pass_percentage: number;
-            correct_submissions: {
-                [key: string]: boolean;
+              };
+              /** @description Total time spent in seconds */
+              timeSpent: number;
+              /** @description Items that have been completed (map of item IDs to item data) */
+              completedItems: {
+                [key: string]: {
+                  /**
+                   * Format: date-time
+                   * @description Timestamp when the item was completed
+                   */
+                  completedAt: string;
+                  itemData: {
+                    id: string;
+                    title: string;
+                    relPermalink: string;
+                    type: string;
+                  };
+                };
+              };
+              /** Format: date-time */
+              completed: string;
             };
-            quiz: {
-                id: string;
-                /**
-                 * @description Organization ID that owns this quiz
-                 * @example meshery
-                 */
-                org_id: string;
-                /**
-                 * @description Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
-                 * @example true
-                 */
-                final: boolean;
-                title: string;
-                description: string;
-                slug: string;
-                relPermalink: string;
-                permalink: string;
-                type: string;
-                section: string;
-                layout: string;
-                /** Format: date */
-                date: string;
-                /** Format: date */
-                lastmod: string;
-                draft: boolean;
-                file_path: string;
-                /** Format: float */
-                pass_percentage: number;
-                /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-                time_limit: string;
-                /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
-                max_attempts: number;
-                questions: {
-                    id: string;
-                    text: string;
-                    /** @enum {string} */
-                    type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
-                    marks: number;
-                    multipleAnswers?: boolean;
-                    options: {
-                        id: string;
-                        text: string;
-                        isCorrect: boolean;
-                    }[];
-                    correctAnswer: string;
-                }[];
-                total_questions: number;
-                total_questions_in_bank: number;
-                total_question_sets: number;
-                total_marks: number;
-                prerequisites: {
-                    id: string;
-                    title: string;
-                    relPermalink: string;
-                    type: string;
-                }[];
-                parent?: {
-                    id: string;
-                    title: string;
-                    relPermalink: string;
-                    type: string;
-                };
-                next_page: {
-                    id: string;
-                    title: string;
-                    relPermalink: string;
-                    type: string;
-                };
+            registrationId?: string;
+            /** @enum {string} */
+            contentType?: "learning-path" | "challenge" | "certification";
+            itemData?: {
+              id: string;
+              /** Format: date-time */
+              lastOpened: string;
+              /** @enum {string} */
+              contentType: "learning-path" | "challenge" | "certification";
             };
-            /** Format: date-time */
-            attempted_at: string;
-            attempts: number;
-        }[];
-        ChildNode: {
-            /**
-             * @description Unique identifier for the course
-             * @example 1234567890abcdef
-             */
-            id: string;
-            /**
-             * @description Title of the course
-             * @example Kubernetes Basics
-             */
-            title: string;
-            /**
-             * Format: uri
-             * @description URL to the course content
-             * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
-             */
-            permalink: string;
-            /**
-             * @description Course description
-             * @example Learn the basics of Kubernetes
-             */
-            description: string;
-            /**
-             * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
-             * @example eg 1 , 2
-             */
-            weight?: number;
-            /**
-             * Format: uri
-             * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-             * @example kubernetes-icon.svg
-             */
-            banner?: string | null;
-            /**
-             * @description Type of the content (e.g., learning-path, challenge, certification)
-             * @enum {string}
-             */
-            type?: "learning-path" | "challenge" | "certification";
-            /** @description List of child nodes (sub-courses or modules) */
-            children?: Record<string, never>[];
+          };
         };
-        AcademyRegistrationsListResponse: {
-            /**
-             * @description Total number of learning paths
-             * @example 7
-             */
-            total: number;
-            data: {
-                /**
-                 * Format: uuid
-                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                 */
-                id: string;
-                /**
-                 * Format: uuid
-                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                 */
-                org_id: string;
-                /** @description ID of the course content */
-                content_id: string;
-                /**
-                 * Format: uuid
-                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                 */
-                user_id: string;
-                /**
-                 * @description Status of the user's course registration
-                 * @enum {string}
-                 */
-                status: "registered" | "completed" | "failed" | "withdrawn";
-                /**
-                 * Format: date-time
-                 * @description When the registration was updated
-                 */
-                updated_at: string;
-                /**
-                 * Format: date-time
-                 * @description When the registration was created
-                 */
-                created_at: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the resource was deleted.
-                 */
-                deleted_at?: string;
-                /** @description Issued certificate for completing the curricula under registration */
-                certificate: {
-                    /**
-                     * @description Unique identifier for the certificate
-                     * @example 1234567890abcdef
-                     */
-                    id: string;
-                    /**
-                     * Format: uuid
-                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                     */
-                    orgId: string;
-                    /**
-                     * @description ID of the recipient (user) who received the certificate
-                     * @example 1234567890abcdef
-                     */
-                    recipientId: string;
-                    /**
-                     * @description Name of the recipient (user) who received the certificate
-                     * @example John Doe
-                     */
-                    recipientName: string;
-                    /**
-                     * @description Title of the certificate
-                     * @example Kubernetes Expert Certification
-                     */
-                    title: string;
-                    /**
-                     * @description Description of the certificate
-                     * @example Awarded for successfully completing the Kubernetes Expert course
-                     */
-                    description: string;
-                    /** @description List of issuing authorities for the certificate */
-                    issuingAuthorities: {
-                        /**
-                         * @description Name of the issuing authority
-                         * @example Cloud Native Foundation
-                         */
-                        name: string;
-                        /**
-                         * @description Role of the issuing authority
-                         * @example COO
-                         */
-                        role?: string;
-                        /**
-                         * Format: uri
-                         * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
-                         * @example http://localhost:9876/signatures/cloud-native-foundation.png
-                         */
-                        signatureUrl?: string;
-                    }[];
-                    /**
-                     * Format: date-time
-                     * @description Date when the certificate was issued
-                     * @example 2023-10-01T12:00:00Z
-                     */
-                    issuedDate: string;
-                    /**
-                     * Format: date-time
-                     * @description Date when the certificate expires (optional)
-                     * @example 2025-10-01T12:00:00Z
-                     */
-                    expirationDate?: string;
-                    /**
-                     * @description Number of months after which the certificate expires
-                     * @example 24
-                     */
-                    expiresIn?: number;
-                };
-                /** @description Additional metadata about the registration */
-                metadata: {
-                    [key: string]: unknown;
-                };
-            }[];
+      };
+      /** Bad request */
+      400: {
+        content: {
+          "application/json": {
+            error?: string;
+            details?: string;
+          };
         };
-        CurriculaCurrentItemData: {
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Server error */
+      500: {
+        content: {
+          "application/json": {
+            error?: string;
+            details?: string;
+          };
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /** @enum {string} */
+          contentType: "learning-path" | "challenge" | "certification";
+          itemData: {
             id: string;
             /** Format: date-time */
             lastOpened: string;
             /** @enum {string} */
             contentType: "learning-path" | "challenge" | "certification";
+          };
         };
-        CurriculaProgressTracker: {
-            currentItem: {
-                [key: string]: {
-                    id: string;
-                    /** Format: date-time */
-                    lastOpened: string;
-                    /** @enum {string} */
-                    contentType: "learning-path" | "challenge" | "certification";
-                };
-            };
-            grades: {
-                [key: string]: {
-                    score: number;
-                    passed: boolean;
-                    /** Format: float */
-                    percentage_scored: number;
-                    total_marks: number;
-                    /** Format: float */
-                    pass_percentage: number;
-                    correct_submissions: {
-                        [key: string]: boolean;
-                    };
-                    quiz: {
-                        id: string;
-                        /**
-                         * @description Organization ID that owns this quiz
-                         * @example meshery
-                         */
-                        org_id: string;
-                        /**
-                         * @description Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
-                         * @example true
-                         */
-                        final: boolean;
-                        title: string;
-                        description: string;
-                        slug: string;
-                        relPermalink: string;
-                        permalink: string;
-                        type: string;
-                        section: string;
-                        layout: string;
-                        /** Format: date */
-                        date: string;
-                        /** Format: date */
-                        lastmod: string;
-                        draft: boolean;
-                        file_path: string;
-                        /** Format: float */
-                        pass_percentage: number;
-                        /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-                        time_limit: string;
-                        /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
-                        max_attempts: number;
-                        questions: {
-                            id: string;
-                            text: string;
-                            /** @enum {string} */
-                            type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
-                            marks: number;
-                            multipleAnswers?: boolean;
-                            options: {
-                                id: string;
-                                text: string;
-                                isCorrect: boolean;
-                            }[];
-                            correctAnswer: string;
-                        }[];
-                        total_questions: number;
-                        total_questions_in_bank: number;
-                        total_question_sets: number;
-                        total_marks: number;
-                        prerequisites: {
-                            id: string;
-                            title: string;
-                            relPermalink: string;
-                            type: string;
-                        }[];
-                        parent?: {
-                            id: string;
-                            title: string;
-                            relPermalink: string;
-                            type: string;
-                        };
-                        next_page: {
-                            id: string;
-                            title: string;
-                            relPermalink: string;
-                            type: string;
-                        };
-                    };
-                    /** Format: date-time */
-                    attempted_at: string;
-                    attempts: number;
-                };
-            };
-            /** @description Total time spent in seconds */
-            timeSpent: number;
-            /** @description Items that have been completed (map of item IDs to item data) */
-            completedItems: {
-                [key: string]: {
-                    /**
-                     * Format: date-time
-                     * @description Timestamp when the item was completed
-                     */
-                    completedAt: string;
-                    itemData: {
-                        id: string;
-                        title: string;
-                        relPermalink: string;
-                        type: string;
-                    };
-                };
-            };
-            /** Format: date-time */
-            completed: string;
-        };
-        ProgressItemCompleted: {
-            /**
-             * Format: date-time
-             * @description Timestamp when the item was completed
-             */
-            completedAt: string;
-            itemData: {
-                id: string;
-                title: string;
-                relPermalink: string;
-                type: string;
-            };
-        };
-        UpdateCurrentItemRequest: {
-            /** @enum {string} */
-            contentType: "learning-path" | "challenge" | "certification";
-            itemData: {
-                id: string;
-                /** Format: date-time */
-                lastOpened: string;
-                /** @enum {string} */
-                contentType: "learning-path" | "challenge" | "certification";
-            };
-        };
-        ErrorResponse: {
-            error?: string;
-            details?: string;
-        };
-        Quiz: {
+      };
+    };
+  };
+  /** Returns metadata for test identified by its absolute path. */
+  getTestByAbsPath: {
+    parameters: {
+      query: {
+        /** The absolute path of the test to retrieve */
+        absPath: string;
+      };
+    };
+    responses: {
+      /** A single test */
+      200: {
+        content: {
+          "application/json": {
             id: string;
             /**
              * @description Organization ID that owns this quiz
@@ -3251,312 +5786,186 @@ export interface components {
             /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
             max_attempts: number;
             questions: {
+              id: string;
+              text: string;
+              /** @enum {string} */
+              type:
+                | "multiple-answers"
+                | "single-answer"
+                | "short-answer"
+                | "essay";
+              marks: number;
+              multipleAnswers?: boolean;
+              options: {
                 id: string;
                 text: string;
-                /** @enum {string} */
-                type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
-                marks: number;
-                multipleAnswers?: boolean;
-                options: {
-                    id: string;
-                    text: string;
-                    isCorrect: boolean;
-                }[];
-                correctAnswer: string;
+                isCorrect: boolean;
+              }[];
+              correctAnswer: string;
             }[];
             total_questions: number;
             total_questions_in_bank: number;
             total_question_sets: number;
             total_marks: number;
             prerequisites: {
-                id: string;
-                title: string;
-                relPermalink: string;
-                type: string;
+              id: string;
+              title: string;
+              relPermalink: string;
+              type: string;
             }[];
             parent?: {
-                id: string;
-                title: string;
-                relPermalink: string;
-                type: string;
+              id: string;
+              title: string;
+              relPermalink: string;
+              type: string;
             };
             next_page: {
-                id: string;
-                title: string;
-                relPermalink: string;
-                type: string;
+              id: string;
+              title: string;
+              relPermalink: string;
+              type: string;
             };
+          };
         };
-        Parent: {
+      };
+      /** Invalid request parameters */
+      400: unknown;
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Quiz not found */
+      404: unknown;
+      /** Server error */
+      500: unknown;
+    };
+  };
+  /** Starts a new test session for the quiz identified by its ID. */
+  startTestById: {
+    responses: {
+      /** A single test */
+      200: {
+        content: {
+          "application/json": {
             id: string;
+            /**
+             * @description Organization ID that owns this quiz
+             * @example meshery
+             */
+            org_id: string;
+            /**
+             * @description Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
+             * @example true
+             */
+            final: boolean;
             title: string;
+            description: string;
+            slug: string;
             relPermalink: string;
+            permalink: string;
             type: string;
-        };
-        /** @enum {string} */
-        QuestionType: "multiple-answers" | "single-answer" | "short-answer" | "essay";
-        Question: {
-            id: string;
-            text: string;
-            /** @enum {string} */
-            type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
-            marks: number;
-            multipleAnswers?: boolean;
-            options: {
+            section: string;
+            layout: string;
+            /** Format: date */
+            date: string;
+            /** Format: date */
+            lastmod: string;
+            draft: boolean;
+            file_path: string;
+            /** Format: float */
+            pass_percentage: number;
+            /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
+            time_limit: string;
+            /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
+            max_attempts: number;
+            questions: {
+              id: string;
+              text: string;
+              /** @enum {string} */
+              type:
+                | "multiple-answers"
+                | "single-answer"
+                | "short-answer"
+                | "essay";
+              marks: number;
+              multipleAnswers?: boolean;
+              options: {
                 id: string;
                 text: string;
                 isCorrect: boolean;
+              }[];
+              correctAnswer: string;
             }[];
-            correctAnswer: string;
-        };
-        QuestionOption: {
-            id: string;
-            text: string;
-            isCorrect: boolean;
-        };
-        StartTestRequest: {
-            testAbsPath: string;
-            registrationId: string;
-        };
-        QuizSubmission: {
-            /**
-             * Format: uuid
-             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-             */
-            testSessionId: string;
-            quizAbsPath: string;
-            registrationId: string;
-            user_id: string;
-            answers: {
-                questionId: string;
-                selectedOptionId: {
-                    [key: string]: boolean;
-                };
-                answerText: string;
+            total_questions: number;
+            total_questions_in_bank: number;
+            total_question_sets: number;
+            total_marks: number;
+            prerequisites: {
+              id: string;
+              title: string;
+              relPermalink: string;
+              type: string;
             }[];
+            parent?: {
+              id: string;
+              title: string;
+              relPermalink: string;
+              type: string;
+            };
+            next_page: {
+              id: string;
+              title: string;
+              relPermalink: string;
+              type: string;
+            };
+          };
         };
-        SubmittedAnswer: {
-            questionId: string;
-            selectedOptionId: {
-                [key: string]: boolean;
-            };
-            answerText: string;
+      };
+      /** Invalid request parameters */
+      400: unknown;
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
         };
-        /** @enum {string} */
-        TestSubmissionStatus: "not-attempted" | "failed" | "passed";
-        TestSubmission: {
-            /**
-             * Format: uuid
-             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-             */
-            id: string;
-            /**
-             * Format: uuid
-             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-             */
-            registration_id: string;
-            test_abs_path: string;
-            /**
-             * Format: uuid
-             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-             */
-            user_id: string;
-            /**
-             * Format: date-time
-             * @description When the submission was created or started
-             */
-            created_at: string;
-            /**
-             * Format: date-time
-             * @description When the submission was last updated
-             */
-            updated_at?: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the resource was deleted.
-             */
-            deleted_at?: string;
-            /** Format: date-time */
-            submitted_at?: string;
-            submission_data?: {
-                /**
-                 * Format: uuid
-                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                 */
-                testSessionId: string;
-                quizAbsPath: string;
-                registrationId: string;
-                user_id: string;
-                answers: {
-                    questionId: string;
-                    selectedOptionId: {
-                        [key: string]: boolean;
-                    };
-                    answerText: string;
-                }[];
-            };
-            /**
-             * Format: date-time
-             * @description Expiry time for the test submission ( based on the time limit of the test )
-             */
-            expires_at?: string;
-            /** @enum {string} */
-            status: "not-attempted" | "failed" | "passed";
-            result?: {
-                score: number;
-                passed: boolean;
-                /** Format: float */
-                percentage_scored: number;
-                total_marks: number;
-                /** Format: float */
-                pass_percentage: number;
-                correct_submissions: {
-                    [key: string]: boolean;
-                };
-                quiz: {
-                    id: string;
-                    /**
-                     * @description Organization ID that owns this quiz
-                     * @example meshery
-                     */
-                    org_id: string;
-                    /**
-                     * @description Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
-                     * @example true
-                     */
-                    final: boolean;
-                    title: string;
-                    description: string;
-                    slug: string;
-                    relPermalink: string;
-                    permalink: string;
-                    type: string;
-                    section: string;
-                    layout: string;
-                    /** Format: date */
-                    date: string;
-                    /** Format: date */
-                    lastmod: string;
-                    draft: boolean;
-                    file_path: string;
-                    /** Format: float */
-                    pass_percentage: number;
-                    /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-                    time_limit: string;
-                    /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
-                    max_attempts: number;
-                    questions: {
-                        id: string;
-                        text: string;
-                        /** @enum {string} */
-                        type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
-                        marks: number;
-                        multipleAnswers?: boolean;
-                        options: {
-                            id: string;
-                            text: string;
-                            isCorrect: boolean;
-                        }[];
-                        correctAnswer: string;
-                    }[];
-                    total_questions: number;
-                    total_questions_in_bank: number;
-                    total_question_sets: number;
-                    total_marks: number;
-                    prerequisites: {
-                        id: string;
-                        title: string;
-                        relPermalink: string;
-                        type: string;
-                    }[];
-                    parent?: {
-                        id: string;
-                        title: string;
-                        relPermalink: string;
-                        type: string;
-                    };
-                    next_page: {
-                        id: string;
-                        title: string;
-                        relPermalink: string;
-                        type: string;
-                    };
-                };
-                /** Format: date-time */
-                attempted_at: string;
-                attempts: number;
-            };
-            test: {
-                id: string;
-                /**
-                 * @description Organization ID that owns this quiz
-                 * @example meshery
-                 */
-                org_id: string;
-                /**
-                 * @description Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
-                 * @example true
-                 */
-                final: boolean;
-                title: string;
-                description: string;
-                slug: string;
-                relPermalink: string;
-                permalink: string;
-                type: string;
-                section: string;
-                layout: string;
-                /** Format: date */
-                date: string;
-                /** Format: date */
-                lastmod: string;
-                draft: boolean;
-                file_path: string;
-                /** Format: float */
-                pass_percentage: number;
-                /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-                time_limit: string;
-                /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
-                max_attempts: number;
-                questions: {
-                    id: string;
-                    text: string;
-                    /** @enum {string} */
-                    type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
-                    marks: number;
-                    multipleAnswers?: boolean;
-                    options: {
-                        id: string;
-                        text: string;
-                        isCorrect: boolean;
-                    }[];
-                    correctAnswer: string;
-                }[];
-                total_questions: number;
-                total_questions_in_bank: number;
-                total_question_sets: number;
-                total_marks: number;
-                prerequisites: {
-                    id: string;
-                    title: string;
-                    relPermalink: string;
-                    type: string;
-                }[];
-                parent?: {
-                    id: string;
-                    title: string;
-                    relPermalink: string;
-                    type: string;
-                };
-                next_page: {
-                    id: string;
-                    title: string;
-                    relPermalink: string;
-                    type: string;
-                };
-            };
+      };
+      /** Quiz not found */
+      404: unknown;
+      /** Server error */
+      500: unknown;
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          testAbsPath: string;
+          registrationId: string;
         };
-        QuizEvaluationResult: {
+      };
+    };
+  };
+  /** Returns all tests associated with a specific registration ID for a user. */
+  getAllTestSessionsForRegistration: {
+    parameters: {
+      path: {
+        /** The ID of the registration to retrieve tests for */
+        id: string;
+      };
+      query: {
+        /** Get responses by page */
+        page?: string;
+        /** Get responses by pagesize */
+        pagesize?: string;
+        /** Filter tests by absolute path */
+        testAbsPath?: string;
+      };
+    };
+    responses: {
+      /** A list of tests for the specified registration */
+      200: {
+        content: {
+          "application/json": {
             score: number;
             passed: boolean;
             /** Format: float */
@@ -3564,3473 +5973,445 @@ export interface components {
             total_marks: number;
             /** Format: float */
             pass_percentage: number;
-            correct_submissions: {
-                [key: string]: boolean;
-            };
+            correct_submissions: { [key: string]: boolean };
             quiz: {
+              id: string;
+              /**
+               * @description Organization ID that owns this quiz
+               * @example meshery
+               */
+              org_id: string;
+              /**
+               * @description Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
+               * @example true
+               */
+              final: boolean;
+              title: string;
+              description: string;
+              slug: string;
+              relPermalink: string;
+              permalink: string;
+              type: string;
+              section: string;
+              layout: string;
+              /** Format: date */
+              date: string;
+              /** Format: date */
+              lastmod: string;
+              draft: boolean;
+              file_path: string;
+              /** Format: float */
+              pass_percentage: number;
+              /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
+              time_limit: string;
+              /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
+              max_attempts: number;
+              questions: {
                 id: string;
-                /**
-                 * @description Organization ID that owns this quiz
-                 * @example meshery
-                 */
-                org_id: string;
-                /**
-                 * @description Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
-                 * @example true
-                 */
-                final: boolean;
+                text: string;
+                /** @enum {string} */
+                type:
+                  | "multiple-answers"
+                  | "single-answer"
+                  | "short-answer"
+                  | "essay";
+                marks: number;
+                multipleAnswers?: boolean;
+                options: {
+                  id: string;
+                  text: string;
+                  isCorrect: boolean;
+                }[];
+                correctAnswer: string;
+              }[];
+              total_questions: number;
+              total_questions_in_bank: number;
+              total_question_sets: number;
+              total_marks: number;
+              prerequisites: {
+                id: string;
                 title: string;
-                description: string;
-                slug: string;
                 relPermalink: string;
-                permalink: string;
                 type: string;
-                section: string;
-                layout: string;
-                /** Format: date */
-                date: string;
-                /** Format: date */
-                lastmod: string;
-                draft: boolean;
-                file_path: string;
-                /** Format: float */
-                pass_percentage: number;
-                /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-                time_limit: string;
-                /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
-                max_attempts: number;
-                questions: {
-                    id: string;
-                    text: string;
-                    /** @enum {string} */
-                    type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
-                    marks: number;
-                    multipleAnswers?: boolean;
-                    options: {
-                        id: string;
-                        text: string;
-                        isCorrect: boolean;
-                    }[];
-                    correctAnswer: string;
-                }[];
-                total_questions: number;
-                total_questions_in_bank: number;
-                total_question_sets: number;
-                total_marks: number;
-                prerequisites: {
-                    id: string;
-                    title: string;
-                    relPermalink: string;
-                    type: string;
-                }[];
-                parent?: {
-                    id: string;
-                    title: string;
-                    relPermalink: string;
-                    type: string;
-                };
-                next_page: {
-                    id: string;
-                    title: string;
-                    relPermalink: string;
-                    type: string;
-                };
+              }[];
+              parent?: {
+                id: string;
+                title: string;
+                relPermalink: string;
+                type: string;
+              };
+              next_page: {
+                id: string;
+                title: string;
+                relPermalink: string;
+                type: string;
+              };
             };
             /** Format: date-time */
             attempted_at: string;
             attempts: number;
+          }[][];
         };
-        UserRegistration: {
-            /** @description Title of the curricula */
-            curricula_title: string;
-            /**
-             * @description Type of the curricula
-             * @enum {string}
-             */
-            curricula_type: "learning-path" | "challenge" | "certification";
-            /** @description Permalink of the curricula */
-            curricula_permalink: string;
-            /**
-             * Format: uuid
-             * @description Unique ID of the registration
-             */
-            registration_id: string;
-            /**
-             * @description Registration status
-             * @enum {string}
-             */
-            status: "registered" | "completed" | "failed" | "withdrawn";
-            /**
-             * Format: date-time
-             * @description When the registration was created
-             */
-            created_at?: string;
-            /**
-             * Format: uuid
-             * @description ID of the user
-             */
-            user_id: string;
-            /** @description First name of the user */
-            user_first_name: string;
-            /** @description Last name of the user */
-            user_last_name: string;
-            /**
-             * Format: email
-             * @description Email of the user
-             */
-            user_email: string;
-            /**
-             * Format: uri
-             * @description Avatar URL of the user
-             */
-            user_avatar_url: string;
-            /**
-             * Format: int64
-             * @description Total count for pagination
-             */
-            total_count: number;
+      };
+      /** Invalid request parameters */
+      400: unknown;
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
         };
-        CurriculaRegistrationsFilter: {
-            pagesize: number;
-            page: number;
-            content_type: string[];
-            status: string[];
+      };
+      /** Registration not found */
+      404: unknown;
+      /** Server error */
+      500: unknown;
+    };
+  };
+  submitQuiz: {
+    responses: {
+      /** Progress tracker updated */
+      200: {
+        content: {
+          "application/json": {
+            score: number;
+            passed: boolean;
+            /** Format: float */
+            percentage_scored: number;
+            total_marks: number;
+            /** Format: float */
+            pass_percentage: number;
+            correct_submissions: { [key: string]: boolean };
+            quiz: {
+              id: string;
+              /**
+               * @description Organization ID that owns this quiz
+               * @example meshery
+               */
+              org_id: string;
+              /**
+               * @description Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
+               * @example true
+               */
+              final: boolean;
+              title: string;
+              description: string;
+              slug: string;
+              relPermalink: string;
+              permalink: string;
+              type: string;
+              section: string;
+              layout: string;
+              /** Format: date */
+              date: string;
+              /** Format: date */
+              lastmod: string;
+              draft: boolean;
+              file_path: string;
+              /** Format: float */
+              pass_percentage: number;
+              /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
+              time_limit: string;
+              /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
+              max_attempts: number;
+              questions: {
+                id: string;
+                text: string;
+                /** @enum {string} */
+                type:
+                  | "multiple-answers"
+                  | "single-answer"
+                  | "short-answer"
+                  | "essay";
+                marks: number;
+                multipleAnswers?: boolean;
+                options: {
+                  id: string;
+                  text: string;
+                  isCorrect: boolean;
+                }[];
+                correctAnswer: string;
+              }[];
+              total_questions: number;
+              total_questions_in_bank: number;
+              total_question_sets: number;
+              total_marks: number;
+              prerequisites: {
+                id: string;
+                title: string;
+                relPermalink: string;
+                type: string;
+              }[];
+              parent?: {
+                id: string;
+                title: string;
+                relPermalink: string;
+                type: string;
+              };
+              next_page: {
+                id: string;
+                title: string;
+                relPermalink: string;
+                type: string;
+              };
+            };
+            /** Format: date-time */
+            attempted_at: string;
+            attempts: number;
+          };
         };
-        CurriculaRegistrationsResponse: {
+      };
+      /** Bad request */
+      400: {
+        content: {
+          "application/json": {
+            error?: string;
+            details?: string;
+          };
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Server error */
+      500: {
+        content: {
+          "application/json": {
+            error?: string;
+            details?: string;
+          };
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /**
+           * Format: uuid
+           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+           */
+          testSessionId: string;
+          quizAbsPath: string;
+          registrationId: string;
+          user_id: string;
+          answers: {
+            questionId: string;
+            selectedOptionId: { [key: string]: boolean };
+            answerText: string;
+          }[];
+        };
+      };
+    };
+  };
+  /** Returns a summary of all academy content with  metrics. */
+  getAcademyAdminSummary: {
+    responses: {
+      /** A list of content with total count and registration metrics */
+      200: {
+        content: {
+          "application/json": { [key: string]: unknown };
+        };
+      };
+      /** Invalid request parameters */
+      400: unknown;
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Server error */
+      500: unknown;
+    };
+  };
+  /** Returns a list of academy registrations with user, curricula, and pagination details. */
+  getAcademyAdminRegistrations: {
+    parameters: {
+      query: {
+        /** Number of results per page */
+        pagesize?: number;
+        /** Page number */
+        page?: number;
+        /** Filter by content types */
+        contentType?: string[];
+        /** Filter by registration status */
+        status?: string[];
+      };
+    };
+    responses: {
+      /** List of registrations with pagination info */
+      200: {
+        content: {
+          "application/json": {
             data: {
-                /** @description Title of the curricula */
-                curricula_title: string;
-                /**
-                 * @description Type of the curricula
-                 * @enum {string}
-                 */
-                curricula_type: "learning-path" | "challenge" | "certification";
-                /** @description Permalink of the curricula */
-                curricula_permalink: string;
-                /**
-                 * Format: uuid
-                 * @description Unique ID of the registration
-                 */
-                registration_id: string;
-                /**
-                 * @description Registration status
-                 * @enum {string}
-                 */
-                status: "registered" | "completed" | "failed" | "withdrawn";
-                /**
-                 * Format: date-time
-                 * @description When the registration was created
-                 */
-                created_at?: string;
-                /**
-                 * Format: uuid
-                 * @description ID of the user
-                 */
-                user_id: string;
-                /** @description First name of the user */
-                user_first_name: string;
-                /** @description Last name of the user */
-                user_last_name: string;
-                /**
-                 * Format: email
-                 * @description Email of the user
-                 */
-                user_email: string;
-                /**
-                 * Format: uri
-                 * @description Avatar URL of the user
-                 */
-                user_avatar_url: string;
-                /**
-                 * Format: int64
-                 * @description Total count for pagination
-                 */
-                total_count: number;
+              /** @description Title of the curricula */
+              curricula_title: string;
+              /**
+               * @description Type of the curricula
+               * @enum {string}
+               */
+              curricula_type: "learning-path" | "challenge" | "certification";
+              /** @description Permalink of the curricula */
+              curricula_permalink: string;
+              /**
+               * Format: uuid
+               * @description Unique ID of the registration
+               */
+              registration_id: string;
+              /**
+               * @description Registration status
+               * @enum {string}
+               */
+              status: "registered" | "completed" | "failed" | "withdrawn";
+              /**
+               * Format: date-time
+               * @description When the registration was created
+               */
+              created_at?: string;
+              /**
+               * Format: uuid
+               * @description ID of the user
+               */
+              user_id: string;
+              /** @description First name of the user */
+              user_first_name: string;
+              /** @description Last name of the user */
+              user_last_name: string;
+              /**
+               * Format: email
+               * @description Email of the user
+               */
+              user_email: string;
+              /**
+               * Format: uri
+               * @description Avatar URL of the user
+               */
+              user_avatar_url: string;
+              /**
+               * Format: int64
+               * @description Total count for pagination
+               */
+              total_count: number;
             }[];
             /** Format: int64 */
             total_count: number;
             page_size: number;
             page: number;
+          };
         };
-        UpdateCurrentItemProgressResponse: {
-            message?: string;
-            progressTracker?: {
-                currentItem: {
-                    [key: string]: {
-                        id: string;
-                        /** Format: date-time */
-                        lastOpened: string;
-                        /** @enum {string} */
-                        contentType: "learning-path" | "challenge" | "certification";
-                    };
-                };
-                grades: {
-                    [key: string]: {
-                        score: number;
-                        passed: boolean;
-                        /** Format: float */
-                        percentage_scored: number;
-                        total_marks: number;
-                        /** Format: float */
-                        pass_percentage: number;
-                        correct_submissions: {
-                            [key: string]: boolean;
-                        };
-                        quiz: {
-                            id: string;
-                            /**
-                             * @description Organization ID that owns this quiz
-                             * @example meshery
-                             */
-                            org_id: string;
-                            /**
-                             * @description Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
-                             * @example true
-                             */
-                            final: boolean;
-                            title: string;
-                            description: string;
-                            slug: string;
-                            relPermalink: string;
-                            permalink: string;
-                            type: string;
-                            section: string;
-                            layout: string;
-                            /** Format: date */
-                            date: string;
-                            /** Format: date */
-                            lastmod: string;
-                            draft: boolean;
-                            file_path: string;
-                            /** Format: float */
-                            pass_percentage: number;
-                            /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-                            time_limit: string;
-                            /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
-                            max_attempts: number;
-                            questions: {
-                                id: string;
-                                text: string;
-                                /** @enum {string} */
-                                type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
-                                marks: number;
-                                multipleAnswers?: boolean;
-                                options: {
-                                    id: string;
-                                    text: string;
-                                    isCorrect: boolean;
-                                }[];
-                                correctAnswer: string;
-                            }[];
-                            total_questions: number;
-                            total_questions_in_bank: number;
-                            total_question_sets: number;
-                            total_marks: number;
-                            prerequisites: {
-                                id: string;
-                                title: string;
-                                relPermalink: string;
-                                type: string;
-                            }[];
-                            parent?: {
-                                id: string;
-                                title: string;
-                                relPermalink: string;
-                                type: string;
-                            };
-                            next_page: {
-                                id: string;
-                                title: string;
-                                relPermalink: string;
-                                type: string;
-                            };
-                        };
-                        /** Format: date-time */
-                        attempted_at: string;
-                        attempts: number;
-                    };
-                };
-                /** @description Total time spent in seconds */
-                timeSpent: number;
-                /** @description Items that have been completed (map of item IDs to item data) */
-                completedItems: {
-                    [key: string]: {
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the item was completed
-                         */
-                        completedAt: string;
-                        itemData: {
-                            id: string;
-                            title: string;
-                            relPermalink: string;
-                            type: string;
-                        };
-                    };
-                };
-                /** Format: date-time */
-                completed: string;
-            };
-            registrationId?: string;
-            /** @enum {string} */
-            contentType?: "learning-path" | "challenge" | "certification";
-            itemData?: {
-                id: string;
-                /** Format: date-time */
-                lastOpened: string;
-                /** @enum {string} */
-                contentType: "learning-path" | "challenge" | "certification";
-            };
+      };
+      /** Invalid request parameters */
+      400: unknown;
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
         };
+      };
+      /** Server error */
+      500: unknown;
+    };
+  };
+  /** Returns a certificate identified by its ID. */
+  getCertificateById: {
+    parameters: {
+      path: {
+        /** The ID of the certificate to retrieve */
+        certificateId: string;
+      };
     };
     responses: {
-        /** @description Invalid request body or request param */
-        400: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
+      /** A single certificate */
+      200: {
+        content: {
+          "application/json": {
+            /**
+             * @description Unique identifier for the certificate
+             * @example 1234567890abcdef
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            orgId: string;
+            /**
+             * @description ID of the recipient (user) who received the certificate
+             * @example 1234567890abcdef
+             */
+            recipientId: string;
+            /**
+             * @description Name of the recipient (user) who received the certificate
+             * @example John Doe
+             */
+            recipientName: string;
+            /**
+             * @description Title of the certificate
+             * @example Kubernetes Expert Certification
+             */
+            title: string;
+            /**
+             * @description Description of the certificate
+             * @example Awarded for successfully completing the Kubernetes Expert course
+             */
+            description: string;
+            /** @description List of issuing authorities for the certificate */
+            issuingAuthorities: ({
+              /**
+               * @description Name of the issuing authority
+               * @example Cloud Native Foundation
+               */
+              name: string;
+              /**
+               * @description Role of the issuing authority
+               * @example COO
+               */
+              role?: string;
+              /**
+               * Format: uri
+               * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
+               * @example http://localhost:9876/signatures/cloud-native-foundation.png
+               */
+              signatureUrl?: string;
+            } & {
+              url: unknown;
+            })[];
+            /**
+             * Format: date-time
+             * @description Date when the certificate was issued
+             * @example 2023-10-01T12:00:00Z
+             */
+            issuedDate: string;
+            /**
+             * Format: date-time
+             * @description Date when the certificate expires (optional)
+             * @example 2025-10-01T12:00:00Z
+             */
+            expirationDate?: string;
+            /**
+             * @description Number of months after which the certificate expires
+             * @example 24
+             */
+            expiresIn?: number;
+          };
         };
-        /** @description Expired JWT token used or insufficient privilege */
-        401: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
+      };
+      /** Invalid request parameters */
+      400: unknown;
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
         };
-        /** @description Result not found */
-        404: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
-        };
-        /** @description Internal server error */
-        500: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
-        };
+      };
+      /** Certificate not found */
+      404: unknown;
+      /** Server error */
+      500: unknown;
     };
-    parameters: {
-        /** @description The ID of the curricula */
-        id: string;
-    };
-    requestBodies: never;
-    headers: never;
-    pathItems: never;
+  };
 }
-export type $defs = Record<string, never>;
-export interface operations {
-    getMyAcademyCurricula: {
-        parameters: {
-            query?: {
-                /** @description Filter content by content types */
-                contentType?: string[];
-                /** @description Filter content by organization IDs */
-                orgId?: string[];
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description A list of content with total count */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * @description Total number of Curricula
-                         * @example 7
-                         */
-                        total: number;
-                        data: {
-                            /**
-                             * @description Id of the Curricula
-                             * @example 923458-3490394-934893
-                             */
-                            id: string;
-                            /** @enum {string} */
-                            type: "learning-path" | "challenge" | "certification";
-                            /**
-                             * @description Organization ID that owns this learning path
-                             * @example meshery
-                             */
-                            orgId: string;
-                            /**
-                             * @description Visibility of the Curricula
-                             * @enum {string}
-                             */
-                            visibility: "public" | "private";
-                            /**
-                             * @description Status of the Curricula
-                             * @example ready
-                             * @enum {string}
-                             */
-                            status: "ready" | "archived" | "not_ready";
-                            /**
-                             * @description slug of the Curricula
-                             * @example intro-kubernetes-course
-                             */
-                            slug: string;
-                            /**
-                             * @description Level of the Curricula
-                             * @enum {string}
-                             */
-                            level: "beginner" | "intermediate" | "advanced";
-                            /**
-                             * Format: uuid
-                             * @description ID of the badge to be awarded on completion of this curricula
-                             */
-                            badge_id?: string;
-                            /** @description ID of the invite associated with this Curricula */
-                            inviteId?: string;
-                            /** @description ID of the workspace to which this Curricula belongs */
-                            workspace_id?: string;
-                            /** @description When the Curricula item was created */
-                            createdAt: string;
-                            /** @description When the Curricula was last updated */
-                            updatedAt: string;
-                            deletedAt: string;
-                            /** @description Additional metadata about the Curricula */
-                            metadata: {
-                                [key: string]: unknown;
-                            } & {
-                                /**
-                                 * @description Title of the learning path
-                                 * @example Mastering Kubernetes for Engineers
-                                 */
-                                title: string;
-                                /**
-                                 * @description Short description of the curricula
-                                 * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
-                                 */
-                                description: string;
-                                /**
-                                 * @description Detailed description of the curricula
-                                 * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
-                                 */
-                                detailedDescription?: string;
-                                /**
-                                 * Format: uri
-                                 * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-                                 * @example kubernetes-icon.svg
-                                 */
-                                banner?: string | null;
-                                /**
-                                 * Format: uri
-                                 * @description Canonical URL for the learning path
-                                 * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
-                                 */
-                                permalink: string;
-                                certificate?: {
-                                    /**
-                                     * @description Unique identifier for the certificate
-                                     * @example 1234567890abcdef
-                                     */
-                                    id: string;
-                                    /**
-                                     * Format: uuid
-                                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                                     */
-                                    orgId: string;
-                                    /**
-                                     * @description ID of the recipient (user) who received the certificate
-                                     * @example 1234567890abcdef
-                                     */
-                                    recipientId: string;
-                                    /**
-                                     * @description Name of the recipient (user) who received the certificate
-                                     * @example John Doe
-                                     */
-                                    recipientName: string;
-                                    /**
-                                     * @description Title of the certificate
-                                     * @example Kubernetes Expert Certification
-                                     */
-                                    title: string;
-                                    /**
-                                     * @description Description of the certificate
-                                     * @example Awarded for successfully completing the Kubernetes Expert course
-                                     */
-                                    description: string;
-                                    /** @description List of issuing authorities for the certificate */
-                                    issuingAuthorities: {
-                                        /**
-                                         * @description Name of the issuing authority
-                                         * @example Cloud Native Foundation
-                                         */
-                                        name: string;
-                                        /**
-                                         * @description Role of the issuing authority
-                                         * @example COO
-                                         */
-                                        role?: string;
-                                        /**
-                                         * Format: uri
-                                         * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
-                                         * @example http://localhost:9876/signatures/cloud-native-foundation.png
-                                         */
-                                        signatureUrl?: string;
-                                    }[];
-                                    /**
-                                     * Format: date-time
-                                     * @description Date when the certificate was issued
-                                     * @example 2023-10-01T12:00:00Z
-                                     */
-                                    issuedDate: string;
-                                    /**
-                                     * Format: date-time
-                                     * @description Date when the certificate expires (optional)
-                                     * @example 2025-10-01T12:00:00Z
-                                     */
-                                    expirationDate?: string;
-                                    /**
-                                     * @description Number of months after which the certificate expires
-                                     * @example 24
-                                     */
-                                    expiresIn?: number;
-                                };
-                                /** @description List of children items in the top-level curricula */
-                                children?: {
-                                    /**
-                                     * @description Unique identifier for the course
-                                     * @example 1234567890abcdef
-                                     */
-                                    id: string;
-                                    /**
-                                     * @description Title of the course
-                                     * @example Kubernetes Basics
-                                     */
-                                    title: string;
-                                    /**
-                                     * Format: uri
-                                     * @description URL to the course content
-                                     * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
-                                     */
-                                    permalink: string;
-                                    /**
-                                     * @description Course description
-                                     * @example Learn the basics of Kubernetes
-                                     */
-                                    description: string;
-                                    /**
-                                     * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
-                                     * @example eg 1 , 2
-                                     */
-                                    weight?: number;
-                                    /**
-                                     * Format: uri
-                                     * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-                                     * @example kubernetes-icon.svg
-                                     */
-                                    banner?: string | null;
-                                    /**
-                                     * @description Type of the content (e.g., learning-path, challenge, certification)
-                                     * @enum {string}
-                                     */
-                                    type?: "learning-path" | "challenge" | "certification";
-                                    /** @description List of child nodes (sub-courses or modules) */
-                                    children?: Record<string, never>[];
-                                }[];
-                            };
-                        }[];
-                    };
-                };
-            };
-            /** @description Invalid request parameters */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    createAcademyCurricula: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    /**
-                     * @description Type of the curricula
-                     * @enum {string}
-                     */
-                    type: "learning-path" | "challenge" | "certification";
-                    /**
-                     * @description Title of the curricula
-                     * @example Introduction to Kubernetes
-                     */
-                    title: string;
-                    /**
-                     * @description Organization ID that owns this learning path
-                     * @example meshery
-                     */
-                    orgId: string;
-                    /** @description ID of the workspace to which this Curricula belongs */
-                    workspace_id: string;
-                    /**
-                     * Format: uuid
-                     * @description ID of the badge to be awarded on completion of this curricula
-                     */
-                    badge_id?: string;
-                    /**
-                     * Format: uuid
-                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                     */
-                    team_id: string;
-                    /** @description Expiry time for curricula access */
-                    access_expires_at?: string;
-                    /**
-                     * @description Current access status of the curricula
-                     * @enum {string}
-                     */
-                    access_status: "enabled" | "disabled";
-                    /** @description Additional metadata about the Curricula */
-                    metadata: {
-                        [key: string]: unknown;
-                    } & {
-                        /**
-                         * @description Title of the learning path
-                         * @example Mastering Kubernetes for Engineers
-                         */
-                        title: string;
-                        /**
-                         * @description Short description of the curricula
-                         * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
-                         */
-                        description: string;
-                        /**
-                         * @description Detailed description of the curricula
-                         * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
-                         */
-                        detailedDescription?: string;
-                        /**
-                         * Format: uri
-                         * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-                         * @example kubernetes-icon.svg
-                         */
-                        banner?: string | null;
-                        /**
-                         * Format: uri
-                         * @description Canonical URL for the learning path
-                         * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
-                         */
-                        permalink: string;
-                        certificate?: {
-                            /**
-                             * @description Unique identifier for the certificate
-                             * @example 1234567890abcdef
-                             */
-                            id: string;
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            orgId: string;
-                            /**
-                             * @description ID of the recipient (user) who received the certificate
-                             * @example 1234567890abcdef
-                             */
-                            recipientId: string;
-                            /**
-                             * @description Name of the recipient (user) who received the certificate
-                             * @example John Doe
-                             */
-                            recipientName: string;
-                            /**
-                             * @description Title of the certificate
-                             * @example Kubernetes Expert Certification
-                             */
-                            title: string;
-                            /**
-                             * @description Description of the certificate
-                             * @example Awarded for successfully completing the Kubernetes Expert course
-                             */
-                            description: string;
-                            /** @description List of issuing authorities for the certificate */
-                            issuingAuthorities: {
-                                /**
-                                 * @description Name of the issuing authority
-                                 * @example Cloud Native Foundation
-                                 */
-                                name: string;
-                                /**
-                                 * @description Role of the issuing authority
-                                 * @example COO
-                                 */
-                                role?: string;
-                                /**
-                                 * Format: uri
-                                 * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
-                                 * @example http://localhost:9876/signatures/cloud-native-foundation.png
-                                 */
-                                signatureUrl?: string;
-                            }[];
-                            /**
-                             * Format: date-time
-                             * @description Date when the certificate was issued
-                             * @example 2023-10-01T12:00:00Z
-                             */
-                            issuedDate: string;
-                            /**
-                             * Format: date-time
-                             * @description Date when the certificate expires (optional)
-                             * @example 2025-10-01T12:00:00Z
-                             */
-                            expirationDate?: string;
-                            /**
-                             * @description Number of months after which the certificate expires
-                             * @example 24
-                             */
-                            expiresIn?: number;
-                        };
-                        /** @description List of children items in the top-level curricula */
-                        children?: {
-                            /**
-                             * @description Unique identifier for the course
-                             * @example 1234567890abcdef
-                             */
-                            id: string;
-                            /**
-                             * @description Title of the course
-                             * @example Kubernetes Basics
-                             */
-                            title: string;
-                            /**
-                             * Format: uri
-                             * @description URL to the course content
-                             * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
-                             */
-                            permalink: string;
-                            /**
-                             * @description Course description
-                             * @example Learn the basics of Kubernetes
-                             */
-                            description: string;
-                            /**
-                             * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
-                             * @example eg 1 , 2
-                             */
-                            weight?: number;
-                            /**
-                             * Format: uri
-                             * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-                             * @example kubernetes-icon.svg
-                             */
-                            banner?: string | null;
-                            /**
-                             * @description Type of the content (e.g., learning-path, challenge, certification)
-                             * @enum {string}
-                             */
-                            type?: "learning-path" | "challenge" | "certification";
-                            /** @description List of child nodes (sub-courses or modules) */
-                            children?: Record<string, never>[];
-                        }[];
-                    };
-                };
-            };
-        };
-        responses: {
-            /** @description created the curricula */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * @description Id of the Curricula
-                         * @example 923458-3490394-934893
-                         */
-                        id: string;
-                        /** @enum {string} */
-                        type: "learning-path" | "challenge" | "certification";
-                        /**
-                         * @description Organization ID that owns this learning path
-                         * @example meshery
-                         */
-                        orgId: string;
-                        /**
-                         * @description Visibility of the Curricula
-                         * @enum {string}
-                         */
-                        visibility: "public" | "private";
-                        /**
-                         * @description Status of the Curricula
-                         * @example ready
-                         * @enum {string}
-                         */
-                        status: "ready" | "archived" | "not_ready";
-                        /**
-                         * @description slug of the Curricula
-                         * @example intro-kubernetes-course
-                         */
-                        slug: string;
-                        /**
-                         * @description Level of the Curricula
-                         * @enum {string}
-                         */
-                        level: "beginner" | "intermediate" | "advanced";
-                        /**
-                         * Format: uuid
-                         * @description ID of the badge to be awarded on completion of this curricula
-                         */
-                        badge_id?: string;
-                        /** @description ID of the invite associated with this Curricula */
-                        inviteId?: string;
-                        /** @description ID of the workspace to which this Curricula belongs */
-                        workspace_id?: string;
-                        /** @description When the Curricula item was created */
-                        createdAt: string;
-                        /** @description When the Curricula was last updated */
-                        updatedAt: string;
-                        deletedAt: string;
-                        /** @description Additional metadata about the Curricula */
-                        metadata: {
-                            [key: string]: unknown;
-                        } & {
-                            /**
-                             * @description Title of the learning path
-                             * @example Mastering Kubernetes for Engineers
-                             */
-                            title: string;
-                            /**
-                             * @description Short description of the curricula
-                             * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
-                             */
-                            description: string;
-                            /**
-                             * @description Detailed description of the curricula
-                             * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
-                             */
-                            detailedDescription?: string;
-                            /**
-                             * Format: uri
-                             * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-                             * @example kubernetes-icon.svg
-                             */
-                            banner?: string | null;
-                            /**
-                             * Format: uri
-                             * @description Canonical URL for the learning path
-                             * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
-                             */
-                            permalink: string;
-                            certificate?: {
-                                /**
-                                 * @description Unique identifier for the certificate
-                                 * @example 1234567890abcdef
-                                 */
-                                id: string;
-                                /**
-                                 * Format: uuid
-                                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                                 */
-                                orgId: string;
-                                /**
-                                 * @description ID of the recipient (user) who received the certificate
-                                 * @example 1234567890abcdef
-                                 */
-                                recipientId: string;
-                                /**
-                                 * @description Name of the recipient (user) who received the certificate
-                                 * @example John Doe
-                                 */
-                                recipientName: string;
-                                /**
-                                 * @description Title of the certificate
-                                 * @example Kubernetes Expert Certification
-                                 */
-                                title: string;
-                                /**
-                                 * @description Description of the certificate
-                                 * @example Awarded for successfully completing the Kubernetes Expert course
-                                 */
-                                description: string;
-                                /** @description List of issuing authorities for the certificate */
-                                issuingAuthorities: {
-                                    /**
-                                     * @description Name of the issuing authority
-                                     * @example Cloud Native Foundation
-                                     */
-                                    name: string;
-                                    /**
-                                     * @description Role of the issuing authority
-                                     * @example COO
-                                     */
-                                    role?: string;
-                                    /**
-                                     * Format: uri
-                                     * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
-                                     * @example http://localhost:9876/signatures/cloud-native-foundation.png
-                                     */
-                                    signatureUrl?: string;
-                                }[];
-                                /**
-                                 * Format: date-time
-                                 * @description Date when the certificate was issued
-                                 * @example 2023-10-01T12:00:00Z
-                                 */
-                                issuedDate: string;
-                                /**
-                                 * Format: date-time
-                                 * @description Date when the certificate expires (optional)
-                                 * @example 2025-10-01T12:00:00Z
-                                 */
-                                expirationDate?: string;
-                                /**
-                                 * @description Number of months after which the certificate expires
-                                 * @example 24
-                                 */
-                                expiresIn?: number;
-                            };
-                            /** @description List of children items in the top-level curricula */
-                            children?: {
-                                /**
-                                 * @description Unique identifier for the course
-                                 * @example 1234567890abcdef
-                                 */
-                                id: string;
-                                /**
-                                 * @description Title of the course
-                                 * @example Kubernetes Basics
-                                 */
-                                title: string;
-                                /**
-                                 * Format: uri
-                                 * @description URL to the course content
-                                 * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
-                                 */
-                                permalink: string;
-                                /**
-                                 * @description Course description
-                                 * @example Learn the basics of Kubernetes
-                                 */
-                                description: string;
-                                /**
-                                 * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
-                                 * @example eg 1 , 2
-                                 */
-                                weight?: number;
-                                /**
-                                 * Format: uri
-                                 * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-                                 * @example kubernetes-icon.svg
-                                 */
-                                banner?: string | null;
-                                /**
-                                 * @description Type of the content (e.g., learning-path, challenge, certification)
-                                 * @enum {string}
-                                 */
-                                type?: "learning-path" | "challenge" | "certification";
-                                /** @description List of child nodes (sub-courses or modules) */
-                                children?: Record<string, never>[];
-                            }[];
-                        };
-                    };
-                };
-            };
-            /** @description Invalid request parameters */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getAcademyCurricula: {
-        parameters: {
-            query?: {
-                /** @description Filter content by content types */
-                contentType?: string[];
-                /** @description Filter content by visibility (public/private) */
-                visibility?: string[];
-                /** @description Filter content by difficulty level */
-                level?: string[];
-                /** @description Filter content by organization IDs */
-                orgId?: string[];
-                /** @description Filter content by categories */
-                category?: string[];
-                /** @description Filter by registration status */
-                status?: string[];
-                /** @description Search content by title */
-                search?: string;
-                /** @description Sort results by a specific field (e.g., title, createdAt) */
-                sort?: string;
-                /** @description Order of sorting (asc or desc) */
-                order?: "asc" | "desc";
-                /** @description Number of results per page */
-                pagesize?: number;
-                /** @description Page number */
-                page?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description A list of content with total count */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * @description Total number of Curricula
-                         * @example 7
-                         */
-                        total: number;
-                        data: ({
-                            /**
-                             * @description Id of the Curricula
-                             * @example 923458-3490394-934893
-                             */
-                            id: string;
-                            /** @enum {string} */
-                            type: "learning-path" | "challenge" | "certification";
-                            /**
-                             * @description Organization ID that owns this learning path
-                             * @example meshery
-                             */
-                            orgId: string;
-                            /**
-                             * @description Visibility of the Curricula
-                             * @enum {string}
-                             */
-                            visibility: "public" | "private";
-                            /**
-                             * @description Status of the Curricula
-                             * @example ready
-                             * @enum {string}
-                             */
-                            status: "ready" | "archived" | "not_ready";
-                            /**
-                             * @description slug of the Curricula
-                             * @example intro-kubernetes-course
-                             */
-                            slug: string;
-                            /**
-                             * @description Level of the Curricula
-                             * @enum {string}
-                             */
-                            level: "beginner" | "intermediate" | "advanced";
-                            /**
-                             * Format: uuid
-                             * @description ID of the badge to be awarded on completion of this curricula
-                             */
-                            badge_id?: string;
-                            /** @description ID of the invite associated with this Curricula */
-                            inviteId?: string;
-                            /** @description ID of the workspace to which this Curricula belongs */
-                            workspace_id?: string;
-                            /** @description When the Curricula item was created */
-                            createdAt: string;
-                            /** @description When the Curricula was last updated */
-                            updatedAt: string;
-                            deletedAt: string;
-                            /** @description Additional metadata about the Curricula */
-                            metadata: {
-                                [key: string]: unknown;
-                            } & {
-                                /**
-                                 * @description Title of the learning path
-                                 * @example Mastering Kubernetes for Engineers
-                                 */
-                                title: string;
-                                /**
-                                 * @description Short description of the curricula
-                                 * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
-                                 */
-                                description: string;
-                                /**
-                                 * @description Detailed description of the curricula
-                                 * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
-                                 */
-                                detailedDescription?: string;
-                                /**
-                                 * Format: uri
-                                 * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-                                 * @example kubernetes-icon.svg
-                                 */
-                                banner?: string | null;
-                                /**
-                                 * Format: uri
-                                 * @description Canonical URL for the learning path
-                                 * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
-                                 */
-                                permalink: string;
-                                certificate?: {
-                                    /**
-                                     * @description Unique identifier for the certificate
-                                     * @example 1234567890abcdef
-                                     */
-                                    id: string;
-                                    /**
-                                     * Format: uuid
-                                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                                     */
-                                    orgId: string;
-                                    /**
-                                     * @description ID of the recipient (user) who received the certificate
-                                     * @example 1234567890abcdef
-                                     */
-                                    recipientId: string;
-                                    /**
-                                     * @description Name of the recipient (user) who received the certificate
-                                     * @example John Doe
-                                     */
-                                    recipientName: string;
-                                    /**
-                                     * @description Title of the certificate
-                                     * @example Kubernetes Expert Certification
-                                     */
-                                    title: string;
-                                    /**
-                                     * @description Description of the certificate
-                                     * @example Awarded for successfully completing the Kubernetes Expert course
-                                     */
-                                    description: string;
-                                    /** @description List of issuing authorities for the certificate */
-                                    issuingAuthorities: {
-                                        /**
-                                         * @description Name of the issuing authority
-                                         * @example Cloud Native Foundation
-                                         */
-                                        name: string;
-                                        /**
-                                         * @description Role of the issuing authority
-                                         * @example COO
-                                         */
-                                        role?: string;
-                                        /**
-                                         * Format: uri
-                                         * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
-                                         * @example http://localhost:9876/signatures/cloud-native-foundation.png
-                                         */
-                                        signatureUrl?: string;
-                                    }[];
-                                    /**
-                                     * Format: date-time
-                                     * @description Date when the certificate was issued
-                                     * @example 2023-10-01T12:00:00Z
-                                     */
-                                    issuedDate: string;
-                                    /**
-                                     * Format: date-time
-                                     * @description Date when the certificate expires (optional)
-                                     * @example 2025-10-01T12:00:00Z
-                                     */
-                                    expirationDate?: string;
-                                    /**
-                                     * @description Number of months after which the certificate expires
-                                     * @example 24
-                                     */
-                                    expiresIn?: number;
-                                };
-                                /** @description List of children items in the top-level curricula */
-                                children?: {
-                                    /**
-                                     * @description Unique identifier for the course
-                                     * @example 1234567890abcdef
-                                     */
-                                    id: string;
-                                    /**
-                                     * @description Title of the course
-                                     * @example Kubernetes Basics
-                                     */
-                                    title: string;
-                                    /**
-                                     * Format: uri
-                                     * @description URL to the course content
-                                     * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
-                                     */
-                                    permalink: string;
-                                    /**
-                                     * @description Course description
-                                     * @example Learn the basics of Kubernetes
-                                     */
-                                    description: string;
-                                    /**
-                                     * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
-                                     * @example eg 1 , 2
-                                     */
-                                    weight?: number;
-                                    /**
-                                     * Format: uri
-                                     * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-                                     * @example kubernetes-icon.svg
-                                     */
-                                    banner?: string | null;
-                                    /**
-                                     * @description Type of the content (e.g., learning-path, challenge, certification)
-                                     * @enum {string}
-                                     */
-                                    type?: "learning-path" | "challenge" | "certification";
-                                    /** @description List of child nodes (sub-courses or modules) */
-                                    children?: Record<string, never>[];
-                                }[];
-                            };
-                        } & {
-                            registration_count: number;
-                        })[];
-                    };
-                };
-            };
-            /** @description Invalid request parameters */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    registerToAcademyContent: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    /** @description ID of the academy content to register for */
-                    contentId: string;
-                    /** @enum {string} */
-                    contentType?: "learning-path" | "challenge" | "certification";
-                };
-            };
-        };
-        responses: {
-            /** @description registered content */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        id: string;
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        org_id: string;
-                        /** @description ID of the course content */
-                        content_id: string;
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        user_id: string;
-                        /**
-                         * @description Status of the user's course registration
-                         * @enum {string}
-                         */
-                        status: "registered" | "completed" | "failed" | "withdrawn";
-                        /**
-                         * Format: date-time
-                         * @description When the registration was updated
-                         */
-                        updated_at: string;
-                        /**
-                         * Format: date-time
-                         * @description When the registration was created
-                         */
-                        created_at: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the resource was deleted.
-                         */
-                        deleted_at?: string;
-                        /** @description Issued certificate for completing the curricula under registration */
-                        certificate: {
-                            /**
-                             * @description Unique identifier for the certificate
-                             * @example 1234567890abcdef
-                             */
-                            id: string;
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            orgId: string;
-                            /**
-                             * @description ID of the recipient (user) who received the certificate
-                             * @example 1234567890abcdef
-                             */
-                            recipientId: string;
-                            /**
-                             * @description Name of the recipient (user) who received the certificate
-                             * @example John Doe
-                             */
-                            recipientName: string;
-                            /**
-                             * @description Title of the certificate
-                             * @example Kubernetes Expert Certification
-                             */
-                            title: string;
-                            /**
-                             * @description Description of the certificate
-                             * @example Awarded for successfully completing the Kubernetes Expert course
-                             */
-                            description: string;
-                            /** @description List of issuing authorities for the certificate */
-                            issuingAuthorities: {
-                                /**
-                                 * @description Name of the issuing authority
-                                 * @example Cloud Native Foundation
-                                 */
-                                name: string;
-                                /**
-                                 * @description Role of the issuing authority
-                                 * @example COO
-                                 */
-                                role?: string;
-                                /**
-                                 * Format: uri
-                                 * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
-                                 * @example http://localhost:9876/signatures/cloud-native-foundation.png
-                                 */
-                                signatureUrl?: string;
-                            }[];
-                            /**
-                             * Format: date-time
-                             * @description Date when the certificate was issued
-                             * @example 2023-10-01T12:00:00Z
-                             */
-                            issuedDate: string;
-                            /**
-                             * Format: date-time
-                             * @description Date when the certificate expires (optional)
-                             * @example 2025-10-01T12:00:00Z
-                             */
-                            expirationDate?: string;
-                            /**
-                             * @description Number of months after which the certificate expires
-                             * @example 24
-                             */
-                            expiresIn?: number;
-                        };
-                        /** @description Additional metadata about the registration */
-                        metadata: {
-                            [key: string]: unknown;
-                        };
-                    };
-                };
-            };
-            /** @description Invalid request parameters */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    withdrawFromAcademyContent: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The ID of the curricula */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description registered content */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        id: string;
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        org_id: string;
-                        /** @description ID of the course content */
-                        content_id: string;
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        user_id: string;
-                        /**
-                         * @description Status of the user's course registration
-                         * @enum {string}
-                         */
-                        status: "registered" | "completed" | "failed" | "withdrawn";
-                        /**
-                         * Format: date-time
-                         * @description When the registration was updated
-                         */
-                        updated_at: string;
-                        /**
-                         * Format: date-time
-                         * @description When the registration was created
-                         */
-                        created_at: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the resource was deleted.
-                         */
-                        deleted_at?: string;
-                        /** @description Issued certificate for completing the curricula under registration */
-                        certificate: {
-                            /**
-                             * @description Unique identifier for the certificate
-                             * @example 1234567890abcdef
-                             */
-                            id: string;
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            orgId: string;
-                            /**
-                             * @description ID of the recipient (user) who received the certificate
-                             * @example 1234567890abcdef
-                             */
-                            recipientId: string;
-                            /**
-                             * @description Name of the recipient (user) who received the certificate
-                             * @example John Doe
-                             */
-                            recipientName: string;
-                            /**
-                             * @description Title of the certificate
-                             * @example Kubernetes Expert Certification
-                             */
-                            title: string;
-                            /**
-                             * @description Description of the certificate
-                             * @example Awarded for successfully completing the Kubernetes Expert course
-                             */
-                            description: string;
-                            /** @description List of issuing authorities for the certificate */
-                            issuingAuthorities: {
-                                /**
-                                 * @description Name of the issuing authority
-                                 * @example Cloud Native Foundation
-                                 */
-                                name: string;
-                                /**
-                                 * @description Role of the issuing authority
-                                 * @example COO
-                                 */
-                                role?: string;
-                                /**
-                                 * Format: uri
-                                 * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
-                                 * @example http://localhost:9876/signatures/cloud-native-foundation.png
-                                 */
-                                signatureUrl?: string;
-                            }[];
-                            /**
-                             * Format: date-time
-                             * @description Date when the certificate was issued
-                             * @example 2023-10-01T12:00:00Z
-                             */
-                            issuedDate: string;
-                            /**
-                             * Format: date-time
-                             * @description Date when the certificate expires (optional)
-                             * @example 2025-10-01T12:00:00Z
-                             */
-                            expirationDate?: string;
-                            /**
-                             * @description Number of months after which the certificate expires
-                             * @example 24
-                             */
-                            expiresIn?: number;
-                        };
-                        /** @description Additional metadata about the registration */
-                        metadata: {
-                            [key: string]: unknown;
-                        };
-                    };
-                };
-            };
-            /** @description Invalid request parameters */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getAcademyCurriculaById: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The ID of the curricula */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description A single curricula */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * @description Id of the Curricula
-                         * @example 923458-3490394-934893
-                         */
-                        id: string;
-                        /** @enum {string} */
-                        type: "learning-path" | "challenge" | "certification";
-                        /**
-                         * @description Organization ID that owns this learning path
-                         * @example meshery
-                         */
-                        orgId: string;
-                        /**
-                         * @description Visibility of the Curricula
-                         * @enum {string}
-                         */
-                        visibility: "public" | "private";
-                        /**
-                         * @description Status of the Curricula
-                         * @example ready
-                         * @enum {string}
-                         */
-                        status: "ready" | "archived" | "not_ready";
-                        /**
-                         * @description slug of the Curricula
-                         * @example intro-kubernetes-course
-                         */
-                        slug: string;
-                        /**
-                         * @description Level of the Curricula
-                         * @enum {string}
-                         */
-                        level: "beginner" | "intermediate" | "advanced";
-                        /**
-                         * Format: uuid
-                         * @description ID of the badge to be awarded on completion of this curricula
-                         */
-                        badge_id?: string;
-                        /** @description ID of the invite associated with this Curricula */
-                        inviteId?: string;
-                        /** @description ID of the workspace to which this Curricula belongs */
-                        workspace_id?: string;
-                        /** @description When the Curricula item was created */
-                        createdAt: string;
-                        /** @description When the Curricula was last updated */
-                        updatedAt: string;
-                        deletedAt: string;
-                        /** @description Additional metadata about the Curricula */
-                        metadata: {
-                            [key: string]: unknown;
-                        } & {
-                            /**
-                             * @description Title of the learning path
-                             * @example Mastering Kubernetes for Engineers
-                             */
-                            title: string;
-                            /**
-                             * @description Short description of the curricula
-                             * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
-                             */
-                            description: string;
-                            /**
-                             * @description Detailed description of the curricula
-                             * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
-                             */
-                            detailedDescription?: string;
-                            /**
-                             * Format: uri
-                             * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-                             * @example kubernetes-icon.svg
-                             */
-                            banner?: string | null;
-                            /**
-                             * Format: uri
-                             * @description Canonical URL for the learning path
-                             * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
-                             */
-                            permalink: string;
-                            certificate?: {
-                                /**
-                                 * @description Unique identifier for the certificate
-                                 * @example 1234567890abcdef
-                                 */
-                                id: string;
-                                /**
-                                 * Format: uuid
-                                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                                 */
-                                orgId: string;
-                                /**
-                                 * @description ID of the recipient (user) who received the certificate
-                                 * @example 1234567890abcdef
-                                 */
-                                recipientId: string;
-                                /**
-                                 * @description Name of the recipient (user) who received the certificate
-                                 * @example John Doe
-                                 */
-                                recipientName: string;
-                                /**
-                                 * @description Title of the certificate
-                                 * @example Kubernetes Expert Certification
-                                 */
-                                title: string;
-                                /**
-                                 * @description Description of the certificate
-                                 * @example Awarded for successfully completing the Kubernetes Expert course
-                                 */
-                                description: string;
-                                /** @description List of issuing authorities for the certificate */
-                                issuingAuthorities: {
-                                    /**
-                                     * @description Name of the issuing authority
-                                     * @example Cloud Native Foundation
-                                     */
-                                    name: string;
-                                    /**
-                                     * @description Role of the issuing authority
-                                     * @example COO
-                                     */
-                                    role?: string;
-                                    /**
-                                     * Format: uri
-                                     * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
-                                     * @example http://localhost:9876/signatures/cloud-native-foundation.png
-                                     */
-                                    signatureUrl?: string;
-                                }[];
-                                /**
-                                 * Format: date-time
-                                 * @description Date when the certificate was issued
-                                 * @example 2023-10-01T12:00:00Z
-                                 */
-                                issuedDate: string;
-                                /**
-                                 * Format: date-time
-                                 * @description Date when the certificate expires (optional)
-                                 * @example 2025-10-01T12:00:00Z
-                                 */
-                                expirationDate?: string;
-                                /**
-                                 * @description Number of months after which the certificate expires
-                                 * @example 24
-                                 */
-                                expiresIn?: number;
-                            };
-                            /** @description List of children items in the top-level curricula */
-                            children?: {
-                                /**
-                                 * @description Unique identifier for the course
-                                 * @example 1234567890abcdef
-                                 */
-                                id: string;
-                                /**
-                                 * @description Title of the course
-                                 * @example Kubernetes Basics
-                                 */
-                                title: string;
-                                /**
-                                 * Format: uri
-                                 * @description URL to the course content
-                                 * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
-                                 */
-                                permalink: string;
-                                /**
-                                 * @description Course description
-                                 * @example Learn the basics of Kubernetes
-                                 */
-                                description: string;
-                                /**
-                                 * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
-                                 * @example eg 1 , 2
-                                 */
-                                weight?: number;
-                                /**
-                                 * Format: uri
-                                 * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-                                 * @example kubernetes-icon.svg
-                                 */
-                                banner?: string | null;
-                                /**
-                                 * @description Type of the content (e.g., learning-path, challenge, certification)
-                                 * @enum {string}
-                                 */
-                                type?: "learning-path" | "challenge" | "certification";
-                                /** @description List of child nodes (sub-courses or modules) */
-                                children?: Record<string, never>[];
-                            }[];
-                        };
-                    } & {
-                        registration_count: number;
-                        invitation?: {
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            id: string;
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            owner_id: string;
-                            /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
-                            is_default?: boolean;
-                            /** @description Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
-                            name: string;
-                            /** @description Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
-                            description: string;
-                            emails: string[];
-                            /** @description ID of the organization to which the user is invited */
-                            org_id: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire
-                             */
-                            expires_at?: string;
-                            /** @description Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
-                            quota?: number;
-                            /** @description List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
-                            accepted_by: string[];
-                            roles: string[];
-                            teams: string[];
-                            /**
-                             * @description Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later.
-                             * @enum {string}
-                             */
-                            status: "enabled" | "disabled";
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the invitation was created
-                             */
-                            created_at: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the invitation was last updated
-                             */
-                            updated_at: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the invitation was deleted, if applicable
-                             */
-                            deleted_at: string;
-                        };
-                    };
-                };
-            };
-            /** @description Invalid request parameters */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Curricula not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    updateAcademyCurriculaById: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The ID of the curricula */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    /**
-                     * @description Type of the curricula
-                     * @enum {string}
-                     */
-                    type: "learning-path" | "challenge" | "certification";
-                    /**
-                     * @description Title of the curricula
-                     * @example Introduction to Kubernetes
-                     */
-                    title: string;
-                    /**
-                     * @description Organization ID that owns this learning path
-                     * @example meshery
-                     */
-                    orgId: string;
-                    /** @description ID of the workspace to which this Curricula belongs */
-                    workspace_id: string;
-                    /**
-                     * Format: uuid
-                     * @description ID of the badge to be awarded on completion of this curricula
-                     */
-                    badge_id?: string;
-                    /**
-                     * Format: uuid
-                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                     */
-                    team_id: string;
-                    /** @description Expiry time for curricula access */
-                    access_expires_at?: string;
-                    /**
-                     * @description Current access status of the curricula
-                     * @enum {string}
-                     */
-                    access_status: "enabled" | "disabled";
-                    /** @description Additional metadata about the Curricula */
-                    metadata: {
-                        [key: string]: unknown;
-                    } & {
-                        /**
-                         * @description Title of the learning path
-                         * @example Mastering Kubernetes for Engineers
-                         */
-                        title: string;
-                        /**
-                         * @description Short description of the curricula
-                         * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
-                         */
-                        description: string;
-                        /**
-                         * @description Detailed description of the curricula
-                         * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
-                         */
-                        detailedDescription?: string;
-                        /**
-                         * Format: uri
-                         * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-                         * @example kubernetes-icon.svg
-                         */
-                        banner?: string | null;
-                        /**
-                         * Format: uri
-                         * @description Canonical URL for the learning path
-                         * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
-                         */
-                        permalink: string;
-                        certificate?: {
-                            /**
-                             * @description Unique identifier for the certificate
-                             * @example 1234567890abcdef
-                             */
-                            id: string;
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            orgId: string;
-                            /**
-                             * @description ID of the recipient (user) who received the certificate
-                             * @example 1234567890abcdef
-                             */
-                            recipientId: string;
-                            /**
-                             * @description Name of the recipient (user) who received the certificate
-                             * @example John Doe
-                             */
-                            recipientName: string;
-                            /**
-                             * @description Title of the certificate
-                             * @example Kubernetes Expert Certification
-                             */
-                            title: string;
-                            /**
-                             * @description Description of the certificate
-                             * @example Awarded for successfully completing the Kubernetes Expert course
-                             */
-                            description: string;
-                            /** @description List of issuing authorities for the certificate */
-                            issuingAuthorities: {
-                                /**
-                                 * @description Name of the issuing authority
-                                 * @example Cloud Native Foundation
-                                 */
-                                name: string;
-                                /**
-                                 * @description Role of the issuing authority
-                                 * @example COO
-                                 */
-                                role?: string;
-                                /**
-                                 * Format: uri
-                                 * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
-                                 * @example http://localhost:9876/signatures/cloud-native-foundation.png
-                                 */
-                                signatureUrl?: string;
-                            }[];
-                            /**
-                             * Format: date-time
-                             * @description Date when the certificate was issued
-                             * @example 2023-10-01T12:00:00Z
-                             */
-                            issuedDate: string;
-                            /**
-                             * Format: date-time
-                             * @description Date when the certificate expires (optional)
-                             * @example 2025-10-01T12:00:00Z
-                             */
-                            expirationDate?: string;
-                            /**
-                             * @description Number of months after which the certificate expires
-                             * @example 24
-                             */
-                            expiresIn?: number;
-                        };
-                        /** @description List of children items in the top-level curricula */
-                        children?: {
-                            /**
-                             * @description Unique identifier for the course
-                             * @example 1234567890abcdef
-                             */
-                            id: string;
-                            /**
-                             * @description Title of the course
-                             * @example Kubernetes Basics
-                             */
-                            title: string;
-                            /**
-                             * Format: uri
-                             * @description URL to the course content
-                             * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
-                             */
-                            permalink: string;
-                            /**
-                             * @description Course description
-                             * @example Learn the basics of Kubernetes
-                             */
-                            description: string;
-                            /**
-                             * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
-                             * @example eg 1 , 2
-                             */
-                            weight?: number;
-                            /**
-                             * Format: uri
-                             * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-                             * @example kubernetes-icon.svg
-                             */
-                            banner?: string | null;
-                            /**
-                             * @description Type of the content (e.g., learning-path, challenge, certification)
-                             * @enum {string}
-                             */
-                            type?: "learning-path" | "challenge" | "certification";
-                            /** @description List of child nodes (sub-courses or modules) */
-                            children?: Record<string, never>[];
-                        }[];
-                    };
-                };
-            };
-        };
-        responses: {
-            /** @description updated the curricula */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * @description Id of the Curricula
-                         * @example 923458-3490394-934893
-                         */
-                        id: string;
-                        /** @enum {string} */
-                        type: "learning-path" | "challenge" | "certification";
-                        /**
-                         * @description Organization ID that owns this learning path
-                         * @example meshery
-                         */
-                        orgId: string;
-                        /**
-                         * @description Visibility of the Curricula
-                         * @enum {string}
-                         */
-                        visibility: "public" | "private";
-                        /**
-                         * @description Status of the Curricula
-                         * @example ready
-                         * @enum {string}
-                         */
-                        status: "ready" | "archived" | "not_ready";
-                        /**
-                         * @description slug of the Curricula
-                         * @example intro-kubernetes-course
-                         */
-                        slug: string;
-                        /**
-                         * @description Level of the Curricula
-                         * @enum {string}
-                         */
-                        level: "beginner" | "intermediate" | "advanced";
-                        /**
-                         * Format: uuid
-                         * @description ID of the badge to be awarded on completion of this curricula
-                         */
-                        badge_id?: string;
-                        /** @description ID of the invite associated with this Curricula */
-                        inviteId?: string;
-                        /** @description ID of the workspace to which this Curricula belongs */
-                        workspace_id?: string;
-                        /** @description When the Curricula item was created */
-                        createdAt: string;
-                        /** @description When the Curricula was last updated */
-                        updatedAt: string;
-                        deletedAt: string;
-                        /** @description Additional metadata about the Curricula */
-                        metadata: {
-                            [key: string]: unknown;
-                        } & {
-                            /**
-                             * @description Title of the learning path
-                             * @example Mastering Kubernetes for Engineers
-                             */
-                            title: string;
-                            /**
-                             * @description Short description of the curricula
-                             * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
-                             */
-                            description: string;
-                            /**
-                             * @description Detailed description of the curricula
-                             * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
-                             */
-                            detailedDescription?: string;
-                            /**
-                             * Format: uri
-                             * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-                             * @example kubernetes-icon.svg
-                             */
-                            banner?: string | null;
-                            /**
-                             * Format: uri
-                             * @description Canonical URL for the learning path
-                             * @example http://localhost:9876/academy/learning-paths/meshery/mastering-kubernetes-for-engineers/
-                             */
-                            permalink: string;
-                            certificate?: {
-                                /**
-                                 * @description Unique identifier for the certificate
-                                 * @example 1234567890abcdef
-                                 */
-                                id: string;
-                                /**
-                                 * Format: uuid
-                                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                                 */
-                                orgId: string;
-                                /**
-                                 * @description ID of the recipient (user) who received the certificate
-                                 * @example 1234567890abcdef
-                                 */
-                                recipientId: string;
-                                /**
-                                 * @description Name of the recipient (user) who received the certificate
-                                 * @example John Doe
-                                 */
-                                recipientName: string;
-                                /**
-                                 * @description Title of the certificate
-                                 * @example Kubernetes Expert Certification
-                                 */
-                                title: string;
-                                /**
-                                 * @description Description of the certificate
-                                 * @example Awarded for successfully completing the Kubernetes Expert course
-                                 */
-                                description: string;
-                                /** @description List of issuing authorities for the certificate */
-                                issuingAuthorities: {
-                                    /**
-                                     * @description Name of the issuing authority
-                                     * @example Cloud Native Foundation
-                                     */
-                                    name: string;
-                                    /**
-                                     * @description Role of the issuing authority
-                                     * @example COO
-                                     */
-                                    role?: string;
-                                    /**
-                                     * Format: uri
-                                     * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
-                                     * @example http://localhost:9876/signatures/cloud-native-foundation.png
-                                     */
-                                    signatureUrl?: string;
-                                }[];
-                                /**
-                                 * Format: date-time
-                                 * @description Date when the certificate was issued
-                                 * @example 2023-10-01T12:00:00Z
-                                 */
-                                issuedDate: string;
-                                /**
-                                 * Format: date-time
-                                 * @description Date when the certificate expires (optional)
-                                 * @example 2025-10-01T12:00:00Z
-                                 */
-                                expirationDate?: string;
-                                /**
-                                 * @description Number of months after which the certificate expires
-                                 * @example 24
-                                 */
-                                expiresIn?: number;
-                            };
-                            /** @description List of children items in the top-level curricula */
-                            children?: {
-                                /**
-                                 * @description Unique identifier for the course
-                                 * @example 1234567890abcdef
-                                 */
-                                id: string;
-                                /**
-                                 * @description Title of the course
-                                 * @example Kubernetes Basics
-                                 */
-                                title: string;
-                                /**
-                                 * Format: uri
-                                 * @description URL to the course content
-                                 * @example http://localhost:9876/academy/learning-paths/meshery/intro-kubernetes-course/kubernetes/
-                                 */
-                                permalink: string;
-                                /**
-                                 * @description Course description
-                                 * @example Learn the basics of Kubernetes
-                                 */
-                                description: string;
-                                /**
-                                 * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
-                                 * @example eg 1 , 2
-                                 */
-                                weight?: number;
-                                /**
-                                 * Format: uri
-                                 * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-                                 * @example kubernetes-icon.svg
-                                 */
-                                banner?: string | null;
-                                /**
-                                 * @description Type of the content (e.g., learning-path, challenge, certification)
-                                 * @enum {string}
-                                 */
-                                type?: "learning-path" | "challenge" | "certification";
-                                /** @description List of child nodes (sub-courses or modules) */
-                                children?: Record<string, never>[];
-                            }[];
-                        };
-                    } & {
-                        registration_count: number;
-                        invitation?: {
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            id: string;
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            owner_id: string;
-                            /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
-                            is_default?: boolean;
-                            /** @description Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
-                            name: string;
-                            /** @description Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
-                            description: string;
-                            emails: string[];
-                            /** @description ID of the organization to which the user is invited */
-                            org_id: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire
-                             */
-                            expires_at?: string;
-                            /** @description Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
-                            quota?: number;
-                            /** @description List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
-                            accepted_by: string[];
-                            roles: string[];
-                            teams: string[];
-                            /**
-                             * @description Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later.
-                             * @enum {string}
-                             */
-                            status: "enabled" | "disabled";
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the invitation was created
-                             */
-                            created_at: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the invitation was last updated
-                             */
-                            updated_at: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the invitation was deleted, if applicable
-                             */
-                            deleted_at: string;
-                        };
-                    };
-                };
-            };
-            /** @description Invalid request parameters */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Curricula not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    deleteAcademyCurriculaById: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The ID of the curricula */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Curricula deleted */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Invalid request parameters */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Curricula not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    updateCurrentItemInProgressTracker: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The ID of the registration */
-                registrationId: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    /** @enum {string} */
-                    contentType: "learning-path" | "challenge" | "certification";
-                    itemData: {
-                        id: string;
-                        /** Format: date-time */
-                        lastOpened: string;
-                        /** @enum {string} */
-                        contentType: "learning-path" | "challenge" | "certification";
-                    };
-                };
-            };
-        };
-        responses: {
-            /** @description Progress tracker updated */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        message?: string;
-                        progressTracker?: {
-                            currentItem: {
-                                [key: string]: {
-                                    id: string;
-                                    /** Format: date-time */
-                                    lastOpened: string;
-                                    /** @enum {string} */
-                                    contentType: "learning-path" | "challenge" | "certification";
-                                };
-                            };
-                            grades: {
-                                [key: string]: {
-                                    score: number;
-                                    passed: boolean;
-                                    /** Format: float */
-                                    percentage_scored: number;
-                                    total_marks: number;
-                                    /** Format: float */
-                                    pass_percentage: number;
-                                    correct_submissions: {
-                                        [key: string]: boolean;
-                                    };
-                                    quiz: {
-                                        id: string;
-                                        /**
-                                         * @description Organization ID that owns this quiz
-                                         * @example meshery
-                                         */
-                                        org_id: string;
-                                        /**
-                                         * @description Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
-                                         * @example true
-                                         */
-                                        final: boolean;
-                                        title: string;
-                                        description: string;
-                                        slug: string;
-                                        relPermalink: string;
-                                        permalink: string;
-                                        type: string;
-                                        section: string;
-                                        layout: string;
-                                        /** Format: date */
-                                        date: string;
-                                        /** Format: date */
-                                        lastmod: string;
-                                        draft: boolean;
-                                        file_path: string;
-                                        /** Format: float */
-                                        pass_percentage: number;
-                                        /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-                                        time_limit: string;
-                                        /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
-                                        max_attempts: number;
-                                        questions: {
-                                            id: string;
-                                            text: string;
-                                            /** @enum {string} */
-                                            type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
-                                            marks: number;
-                                            multipleAnswers?: boolean;
-                                            options: {
-                                                id: string;
-                                                text: string;
-                                                isCorrect: boolean;
-                                            }[];
-                                            correctAnswer: string;
-                                        }[];
-                                        total_questions: number;
-                                        total_questions_in_bank: number;
-                                        total_question_sets: number;
-                                        total_marks: number;
-                                        prerequisites: {
-                                            id: string;
-                                            title: string;
-                                            relPermalink: string;
-                                            type: string;
-                                        }[];
-                                        parent?: {
-                                            id: string;
-                                            title: string;
-                                            relPermalink: string;
-                                            type: string;
-                                        };
-                                        next_page: {
-                                            id: string;
-                                            title: string;
-                                            relPermalink: string;
-                                            type: string;
-                                        };
-                                    };
-                                    /** Format: date-time */
-                                    attempted_at: string;
-                                    attempts: number;
-                                };
-                            };
-                            /** @description Total time spent in seconds */
-                            timeSpent: number;
-                            /** @description Items that have been completed (map of item IDs to item data) */
-                            completedItems: {
-                                [key: string]: {
-                                    /**
-                                     * Format: date-time
-                                     * @description Timestamp when the item was completed
-                                     */
-                                    completedAt: string;
-                                    itemData: {
-                                        id: string;
-                                        title: string;
-                                        relPermalink: string;
-                                        type: string;
-                                    };
-                                };
-                            };
-                            /** Format: date-time */
-                            completed: string;
-                        };
-                        registrationId?: string;
-                        /** @enum {string} */
-                        contentType?: "learning-path" | "challenge" | "certification";
-                        itemData?: {
-                            id: string;
-                            /** Format: date-time */
-                            lastOpened: string;
-                            /** @enum {string} */
-                            contentType: "learning-path" | "challenge" | "certification";
-                        };
-                    };
-                };
-            };
-            /** @description Bad request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        error?: string;
-                        details?: string;
-                    };
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        error?: string;
-                        details?: string;
-                    };
-                };
-            };
-        };
-    };
-    getTestByAbsPath: {
-        parameters: {
-            query: {
-                /** @description The absolute path of the test to retrieve */
-                absPath: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description A single test */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        id: string;
-                        /**
-                         * @description Organization ID that owns this quiz
-                         * @example meshery
-                         */
-                        org_id: string;
-                        /**
-                         * @description Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
-                         * @example true
-                         */
-                        final: boolean;
-                        title: string;
-                        description: string;
-                        slug: string;
-                        relPermalink: string;
-                        permalink: string;
-                        type: string;
-                        section: string;
-                        layout: string;
-                        /** Format: date */
-                        date: string;
-                        /** Format: date */
-                        lastmod: string;
-                        draft: boolean;
-                        file_path: string;
-                        /** Format: float */
-                        pass_percentage: number;
-                        /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-                        time_limit: string;
-                        /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
-                        max_attempts: number;
-                        questions: {
-                            id: string;
-                            text: string;
-                            /** @enum {string} */
-                            type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
-                            marks: number;
-                            multipleAnswers?: boolean;
-                            options: {
-                                id: string;
-                                text: string;
-                                isCorrect: boolean;
-                            }[];
-                            correctAnswer: string;
-                        }[];
-                        total_questions: number;
-                        total_questions_in_bank: number;
-                        total_question_sets: number;
-                        total_marks: number;
-                        prerequisites: {
-                            id: string;
-                            title: string;
-                            relPermalink: string;
-                            type: string;
-                        }[];
-                        parent?: {
-                            id: string;
-                            title: string;
-                            relPermalink: string;
-                            type: string;
-                        };
-                        next_page: {
-                            id: string;
-                            title: string;
-                            relPermalink: string;
-                            type: string;
-                        };
-                    };
-                };
-            };
-            /** @description Invalid request parameters */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Quiz not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    startTestById: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    testAbsPath: string;
-                    registrationId: string;
-                };
-            };
-        };
-        responses: {
-            /** @description A single test */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        id: string;
-                        /**
-                         * @description Organization ID that owns this quiz
-                         * @example meshery
-                         */
-                        org_id: string;
-                        /**
-                         * @description Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
-                         * @example true
-                         */
-                        final: boolean;
-                        title: string;
-                        description: string;
-                        slug: string;
-                        relPermalink: string;
-                        permalink: string;
-                        type: string;
-                        section: string;
-                        layout: string;
-                        /** Format: date */
-                        date: string;
-                        /** Format: date */
-                        lastmod: string;
-                        draft: boolean;
-                        file_path: string;
-                        /** Format: float */
-                        pass_percentage: number;
-                        /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-                        time_limit: string;
-                        /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
-                        max_attempts: number;
-                        questions: {
-                            id: string;
-                            text: string;
-                            /** @enum {string} */
-                            type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
-                            marks: number;
-                            multipleAnswers?: boolean;
-                            options: {
-                                id: string;
-                                text: string;
-                                isCorrect: boolean;
-                            }[];
-                            correctAnswer: string;
-                        }[];
-                        total_questions: number;
-                        total_questions_in_bank: number;
-                        total_question_sets: number;
-                        total_marks: number;
-                        prerequisites: {
-                            id: string;
-                            title: string;
-                            relPermalink: string;
-                            type: string;
-                        }[];
-                        parent?: {
-                            id: string;
-                            title: string;
-                            relPermalink: string;
-                            type: string;
-                        };
-                        next_page: {
-                            id: string;
-                            title: string;
-                            relPermalink: string;
-                            type: string;
-                        };
-                    };
-                };
-            };
-            /** @description Invalid request parameters */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Quiz not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getAllTestSessionsForRegistration: {
-        parameters: {
-            query?: {
-                /** @description Get responses by page */
-                page?: string;
-                /** @description Get responses by pagesize */
-                pagesize?: string;
-                /** @description Filter tests by absolute path */
-                testAbsPath?: string;
-            };
-            header?: never;
-            path: {
-                /** @description The ID of the registration to retrieve tests for */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description A list of tests for the specified registration */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        score: number;
-                        passed: boolean;
-                        /** Format: float */
-                        percentage_scored: number;
-                        total_marks: number;
-                        /** Format: float */
-                        pass_percentage: number;
-                        correct_submissions: {
-                            [key: string]: boolean;
-                        };
-                        quiz: {
-                            id: string;
-                            /**
-                             * @description Organization ID that owns this quiz
-                             * @example meshery
-                             */
-                            org_id: string;
-                            /**
-                             * @description Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
-                             * @example true
-                             */
-                            final: boolean;
-                            title: string;
-                            description: string;
-                            slug: string;
-                            relPermalink: string;
-                            permalink: string;
-                            type: string;
-                            section: string;
-                            layout: string;
-                            /** Format: date */
-                            date: string;
-                            /** Format: date */
-                            lastmod: string;
-                            draft: boolean;
-                            file_path: string;
-                            /** Format: float */
-                            pass_percentage: number;
-                            /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-                            time_limit: string;
-                            /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
-                            max_attempts: number;
-                            questions: {
-                                id: string;
-                                text: string;
-                                /** @enum {string} */
-                                type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
-                                marks: number;
-                                multipleAnswers?: boolean;
-                                options: {
-                                    id: string;
-                                    text: string;
-                                    isCorrect: boolean;
-                                }[];
-                                correctAnswer: string;
-                            }[];
-                            total_questions: number;
-                            total_questions_in_bank: number;
-                            total_question_sets: number;
-                            total_marks: number;
-                            prerequisites: {
-                                id: string;
-                                title: string;
-                                relPermalink: string;
-                                type: string;
-                            }[];
-                            parent?: {
-                                id: string;
-                                title: string;
-                                relPermalink: string;
-                                type: string;
-                            };
-                            next_page: {
-                                id: string;
-                                title: string;
-                                relPermalink: string;
-                                type: string;
-                            };
-                        };
-                        /** Format: date-time */
-                        attempted_at: string;
-                        attempts: number;
-                    }[][];
-                };
-            };
-            /** @description Invalid request parameters */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Registration not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    submitQuiz: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    /**
-                     * Format: uuid
-                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                     */
-                    testSessionId: string;
-                    quizAbsPath: string;
-                    registrationId: string;
-                    user_id: string;
-                    answers: {
-                        questionId: string;
-                        selectedOptionId: {
-                            [key: string]: boolean;
-                        };
-                        answerText: string;
-                    }[];
-                };
-            };
-        };
-        responses: {
-            /** @description Progress tracker updated */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        score: number;
-                        passed: boolean;
-                        /** Format: float */
-                        percentage_scored: number;
-                        total_marks: number;
-                        /** Format: float */
-                        pass_percentage: number;
-                        correct_submissions: {
-                            [key: string]: boolean;
-                        };
-                        quiz: {
-                            id: string;
-                            /**
-                             * @description Organization ID that owns this quiz
-                             * @example meshery
-                             */
-                            org_id: string;
-                            /**
-                             * @description Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
-                             * @example true
-                             */
-                            final: boolean;
-                            title: string;
-                            description: string;
-                            slug: string;
-                            relPermalink: string;
-                            permalink: string;
-                            type: string;
-                            section: string;
-                            layout: string;
-                            /** Format: date */
-                            date: string;
-                            /** Format: date */
-                            lastmod: string;
-                            draft: boolean;
-                            file_path: string;
-                            /** Format: float */
-                            pass_percentage: number;
-                            /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-                            time_limit: string;
-                            /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
-                            max_attempts: number;
-                            questions: {
-                                id: string;
-                                text: string;
-                                /** @enum {string} */
-                                type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
-                                marks: number;
-                                multipleAnswers?: boolean;
-                                options: {
-                                    id: string;
-                                    text: string;
-                                    isCorrect: boolean;
-                                }[];
-                                correctAnswer: string;
-                            }[];
-                            total_questions: number;
-                            total_questions_in_bank: number;
-                            total_question_sets: number;
-                            total_marks: number;
-                            prerequisites: {
-                                id: string;
-                                title: string;
-                                relPermalink: string;
-                                type: string;
-                            }[];
-                            parent?: {
-                                id: string;
-                                title: string;
-                                relPermalink: string;
-                                type: string;
-                            };
-                            next_page: {
-                                id: string;
-                                title: string;
-                                relPermalink: string;
-                                type: string;
-                            };
-                        };
-                        /** Format: date-time */
-                        attempted_at: string;
-                        attempts: number;
-                    };
-                };
-            };
-            /** @description Bad request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        error?: string;
-                        details?: string;
-                    };
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        error?: string;
-                        details?: string;
-                    };
-                };
-            };
-        };
-    };
-    getAcademyAdminSummary: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description A list of content with total count and registration metrics */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": Record<string, never>;
-                };
-            };
-            /** @description Invalid request parameters */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getAcademyAdminRegistrations: {
-        parameters: {
-            query?: {
-                /** @description Number of results per page */
-                pagesize?: number;
-                /** @description Page number */
-                page?: number;
-                /** @description Filter by content types */
-                contentType?: string[];
-                /** @description Filter by registration status */
-                status?: string[];
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description List of registrations with pagination info */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        data: {
-                            /** @description Title of the curricula */
-                            curricula_title: string;
-                            /**
-                             * @description Type of the curricula
-                             * @enum {string}
-                             */
-                            curricula_type: "learning-path" | "challenge" | "certification";
-                            /** @description Permalink of the curricula */
-                            curricula_permalink: string;
-                            /**
-                             * Format: uuid
-                             * @description Unique ID of the registration
-                             */
-                            registration_id: string;
-                            /**
-                             * @description Registration status
-                             * @enum {string}
-                             */
-                            status: "registered" | "completed" | "failed" | "withdrawn";
-                            /**
-                             * Format: date-time
-                             * @description When the registration was created
-                             */
-                            created_at?: string;
-                            /**
-                             * Format: uuid
-                             * @description ID of the user
-                             */
-                            user_id: string;
-                            /** @description First name of the user */
-                            user_first_name: string;
-                            /** @description Last name of the user */
-                            user_last_name: string;
-                            /**
-                             * Format: email
-                             * @description Email of the user
-                             */
-                            user_email: string;
-                            /**
-                             * Format: uri
-                             * @description Avatar URL of the user
-                             */
-                            user_avatar_url: string;
-                            /**
-                             * Format: int64
-                             * @description Total count for pagination
-                             */
-                            total_count: number;
-                        }[];
-                        /** Format: int64 */
-                        total_count: number;
-                        page_size: number;
-                        page: number;
-                    };
-                };
-            };
-            /** @description Invalid request parameters */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getCertificateById: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The ID of the certificate to retrieve */
-                certificateId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description A single certificate */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * @description Unique identifier for the certificate
-                         * @example 1234567890abcdef
-                         */
-                        id: string;
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        orgId: string;
-                        /**
-                         * @description ID of the recipient (user) who received the certificate
-                         * @example 1234567890abcdef
-                         */
-                        recipientId: string;
-                        /**
-                         * @description Name of the recipient (user) who received the certificate
-                         * @example John Doe
-                         */
-                        recipientName: string;
-                        /**
-                         * @description Title of the certificate
-                         * @example Kubernetes Expert Certification
-                         */
-                        title: string;
-                        /**
-                         * @description Description of the certificate
-                         * @example Awarded for successfully completing the Kubernetes Expert course
-                         */
-                        description: string;
-                        /** @description List of issuing authorities for the certificate */
-                        issuingAuthorities: {
-                            /**
-                             * @description Name of the issuing authority
-                             * @example Cloud Native Foundation
-                             */
-                            name: string;
-                            /**
-                             * @description Role of the issuing authority
-                             * @example COO
-                             */
-                            role?: string;
-                            /**
-                             * Format: uri
-                             * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
-                             * @example http://localhost:9876/signatures/cloud-native-foundation.png
-                             */
-                            signatureUrl?: string;
-                        }[];
-                        /**
-                         * Format: date-time
-                         * @description Date when the certificate was issued
-                         * @example 2023-10-01T12:00:00Z
-                         */
-                        issuedDate: string;
-                        /**
-                         * Format: date-time
-                         * @description Date when the certificate expires (optional)
-                         * @example 2025-10-01T12:00:00Z
-                         */
-                        expirationDate?: string;
-                        /**
-                         * @description Number of months after which the certificate expires
-                         * @example 24
-                         */
-                        expiresIn?: number;
-                    };
-                };
-            };
-            /** @description Invalid request parameters */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Certificate not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-}
+
+export interface external {}

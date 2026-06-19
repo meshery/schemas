@@ -4,134 +4,667 @@
  */
 
 export interface paths {
-    "/api/content/filters": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get filters
-         * @description Returns a paginated list of filters accessible to the user.
-         */
-        get: operations["getFilters"];
-        put?: never;
-        /**
-         * Save filter
-         * @description Creates or updates a Meshery filter.
-         */
-        post: operations["upsertFilter"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/content/filters/delete": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Bulk delete filters
-         * @description Deletes multiple filters by ID. Modeled as a `POST .../delete`
-         *     sub-resource because REST clients and proxies may strip request
-         *     bodies on `DELETE`.
-         */
-        post: operations["deleteFilters"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/content/filters/{filterId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get filter by ID */
-        get: operations["getFilter"];
-        /**
-         * Update filter by ID
-         * @description Updates the filter at the supplied ID with the provided payload.
-         *     Provided as a canonical-CRUD complement to the upsert `POST
-         *     /api/content/filters` form so consumers that prefer explicit
-         *     update semantics can address the resource directly.
-         */
-        put: operations["updateFilter"];
-        post?: never;
-        /** Delete filter by ID */
-        delete: operations["deleteFilter"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/content/filters/clone/{filterId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Clone filter
-         * @description Creates a copy of an existing filter.
-         */
-        post: operations["cloneFilter"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/content/filters/download/{filterId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Download filter file
-         * @description Downloads the raw filter body associated with the supplied
-         *     filter ID. The server streams the bytes verbatim with
-         *     `Content-Type: application/wasm` and a
-         *     `Content-Disposition: attachment` header naming the filter.
-         */
-        get: operations["getFilterFile"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
+  "/api/content/filters": {
+    /** Returns a paginated list of filters accessible to the user. */
+    get: operations["getFilters"];
+    /** Creates or updates a Meshery filter. */
+    post: operations["upsertFilter"];
+  };
+  "/api/content/filters/delete": {
+    /**
+     * Deletes multiple filters by ID. Modeled as a `POST .../delete`
+     * sub-resource because REST clients and proxies may strip request
+     * bodies on `DELETE`.
+     */
+    post: operations["deleteFilters"];
+  };
+  "/api/content/filters/{filterId}": {
+    get: operations["getFilter"];
+    /**
+     * Updates the filter at the supplied ID with the provided payload.
+     * Provided as a canonical-CRUD complement to the upsert `POST
+     * /api/content/filters` form so consumers that prefer explicit
+     * update semantics can address the resource directly.
+     */
+    put: operations["updateFilter"];
+    delete: operations["deleteFilter"];
+  };
+  "/api/content/filters/clone/{filterId}": {
+    /** Creates a copy of an existing filter. */
+    post: operations["cloneFilter"];
+  };
+  "/api/content/filters/download/{filterId}": {
+    /**
+     * Downloads the raw filter body associated with the supplied
+     * filter ID. The server streams the bytes verbatim with
+     * `Content-Type: application/wasm` and a
+     * `Content-Disposition: attachment` header naming the filter.
+     */
+    get: operations["getFilterFile"];
+  };
 }
-export type webhooks = Record<string, never>;
+
 export interface components {
-    schemas: {
+  schemas: {
+    /**
+     * Filter Schema
+     * @description Server-returned Meshery filter resource as persisted by meshery-cloud
+     * (`meshery_filters` table) and consumed by meshery's
+     * `models.MesheryFilter`. Filters carry an opaque body (`filterFile`) plus
+     * catalog and visibility metadata, and follow the same content-resource
+     * shape as designs minus the catalog engagement counters (the
+     * `meshery_filters` table has no `view_count` / `download_count` columns).
+     */
+    MesheryFilter: {
+      /**
+       * Format: uuid
+       * @description Server-generated filter ID.
+       */
+      id: string;
+      /** @description Human-readable filter name; required, used for catalog listings. */
+      name: string;
+      /**
+       * Format: uuid
+       * @description Owning user ID.
+       */
+      owner: string;
+      /**
+       * Format: byte
+       * @description Raw filter source persisted as a byte array (`bytea` column
+       * `filter_file`). Wire form is base64 per OpenAPI `format: byte`.
+       */
+      filterFile?: string;
+      /**
+       * @description Filter resource discriminator describing the filter body's source
+       * format (e.g. WASM module identifier or external resource path).
+       * Stored in the `filter_resource` text column.
+       */
+      filterResource?: string;
+      /** @description Optional structured location metadata (branch, host, path, ...). */
+      location?: { [key: string]: string };
+      /**
+       * @description Visibility scope (private, public, published).
+       * @enum {string}
+       */
+      visibility?: "private" | "public" | "published";
+      /** @description Catalog metadata attached to the filter when published. */
+      catalogData?: {
+        /** @description Tracks the specific content version that has been made available in the Catalog. */
+        publishedVersion?: string;
+        /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+        class?: string;
         /**
-         * Filter Schema
-         * @description Server-returned Meshery filter resource as persisted by meshery-cloud
-         *     (`meshery_filters` table) and consumed by meshery's
-         *     `models.MesheryFilter`. Filters carry an opaque body (`filterFile`) plus
-         *     catalog and visibility metadata, and follow the same content-resource
-         *     shape as designs minus the catalog engagement counters (the
-         *     `meshery_filters` table has no `view_count` / `download_count` columns).
+         * Model
+         * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
          */
-        MesheryFilter: {
+        compatibility: "kubernetes"[];
+        /**
+         * Caveats and Considerations
+         * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
+         */
+        patternCaveats: string;
+        /**
+         * Description
+         * @description Purpose of the design along with its intended and unintended uses.
+         */
+        patternInfo: string;
+        /**
+         * Type
+         * @description Categorization of the type of design or operational flow depicted in this design.
+         * @default Deployment
+         * @enum {string}
+         */
+        type:
+          | "Deployment"
+          | "Observability"
+          | "Resiliency"
+          | "Scaling"
+          | "Security"
+          | "Traffic-management"
+          | "Troubleshooting"
+          | "Workloads";
+        /** @description Contains reference to the dark and light mode snapshots of the design. */
+        snapshotURL?: string[];
+      };
+      /**
+       * Format: date-time
+       * @description Timestamp of filter creation.
+       */
+      createdAt: string;
+      /**
+       * Format: date-time
+       * @description Timestamp of last filter modification.
+       */
+      updatedAt: string;
+    };
+    /**
+     * @description Payload for creating or updating a filter via
+     * `POST /api/content/filters` or
+     * `PUT /api/content/filters/{filterId}`. Contains only
+     * client-settable fields; server-generated `createdAt` /
+     * `updatedAt` and the owning `userId` (which the server derives
+     * from the authenticated session) are intentionally excluded.
+     */
+    MesheryFilterPayload: {
+      /**
+       * Format: uuid
+       * @description Existing filter ID for updates; omit on create. Wrapped in
+       * an `allOf` so we can attach the `json:"id,omitempty"` tag
+       * for upsert ergonomics without recursing into the underlying
+       * UUID definition.
+       */
+      id?: string;
+      /** @description Human-readable filter name. */
+      name: string;
+      /**
+       * Format: byte
+       * @description Raw filter source as base64-encoded bytes (`format: byte`).
+       * Optional on update — the server preserves the existing body
+       * when omitted.
+       */
+      filterFile?: string;
+      /**
+       * @description Filter resource discriminator describing the body's source
+       * format (e.g. WASM module identifier or external resource
+       * path).
+       */
+      filterResource?: string;
+      /** @description Optional structured location metadata. */
+      location?: { [key: string]: string };
+      /**
+       * @description Requested visibility scope. The server may downgrade a
+       * requested `published` value to `private` for callers that
+       * do not own the filter.
+       *
+       * @enum {string}
+       */
+      visibility?: "private" | "public" | "published";
+      /** @description Catalog metadata to attach when publishing. */
+      catalogData?: {
+        /** @description Tracks the specific content version that has been made available in the Catalog. */
+        publishedVersion?: string;
+        /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+        class?: string;
+        /**
+         * Model
+         * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
+         */
+        compatibility: "kubernetes"[];
+        /**
+         * Caveats and Considerations
+         * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
+         */
+        patternCaveats: string;
+        /**
+         * Description
+         * @description Purpose of the design along with its intended and unintended uses.
+         */
+        patternInfo: string;
+        /**
+         * Type
+         * @description Categorization of the type of design or operational flow depicted in this design.
+         * @default Deployment
+         * @enum {string}
+         */
+        type:
+          | "Deployment"
+          | "Observability"
+          | "Resiliency"
+          | "Scaling"
+          | "Security"
+          | "Traffic-management"
+          | "Troubleshooting"
+          | "Workloads";
+        /** @description Contains reference to the dark and light mode snapshots of the design. */
+        snapshotURL?: string[];
+      };
+    };
+    /** @description Paginated collection of filters. */
+    MesheryFilterPage: {
+      /** @description Current page number of the result set. */
+      page?: number;
+      /** @description Number of items per page. */
+      pageSize?: number;
+      /** @description Total number of items available. */
+      totalCount?: number;
+      /** @description Filters included on this page of results. */
+      filters?: {
+        /**
+         * Format: uuid
+         * @description Server-generated filter ID.
+         */
+        id: string;
+        /** @description Human-readable filter name; required, used for catalog listings. */
+        name: string;
+        /**
+         * Format: uuid
+         * @description Owning user ID.
+         */
+        owner: string;
+        /**
+         * Format: byte
+         * @description Raw filter source persisted as a byte array (`bytea` column
+         * `filter_file`). Wire form is base64 per OpenAPI `format: byte`.
+         */
+        filterFile?: string;
+        /**
+         * @description Filter resource discriminator describing the filter body's source
+         * format (e.g. WASM module identifier or external resource path).
+         * Stored in the `filter_resource` text column.
+         */
+        filterResource?: string;
+        /** @description Optional structured location metadata (branch, host, path, ...). */
+        location?: { [key: string]: string };
+        /**
+         * @description Visibility scope (private, public, published).
+         * @enum {string}
+         */
+        visibility?: "private" | "public" | "published";
+        /** @description Catalog metadata attached to the filter when published. */
+        catalogData?: {
+          /** @description Tracks the specific content version that has been made available in the Catalog. */
+          publishedVersion?: string;
+          /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+          class?: string;
+          /**
+           * Model
+           * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
+           */
+          compatibility: "kubernetes"[];
+          /**
+           * Caveats and Considerations
+           * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
+           */
+          patternCaveats: string;
+          /**
+           * Description
+           * @description Purpose of the design along with its intended and unintended uses.
+           */
+          patternInfo: string;
+          /**
+           * Type
+           * @description Categorization of the type of design or operational flow depicted in this design.
+           * @default Deployment
+           * @enum {string}
+           */
+          type:
+            | "Deployment"
+            | "Observability"
+            | "Resiliency"
+            | "Scaling"
+            | "Security"
+            | "Traffic-management"
+            | "Troubleshooting"
+            | "Workloads";
+          /** @description Contains reference to the dark and light mode snapshots of the design. */
+          snapshotURL?: string[];
+        };
+        /**
+         * Format: date-time
+         * @description Timestamp of filter creation.
+         */
+        createdAt: string;
+        /**
+         * Format: date-time
+         * @description Timestamp of last filter modification.
+         */
+        updatedAt: string;
+      }[];
+    };
+    /** @description Reference to a filter for bulk deletion by ID. */
+    DeleteFilterModel: {
+      /**
+       * Format: uuid
+       * @description Filter ID targeted for deletion.
+       */
+      id?: string;
+      /**
+       * @description Human-readable filter name (informational only; the server
+       * matches on `id`).
+       */
+      name?: string;
+    };
+    /** @description Payload for bulk deleting filters by ID. */
+    MesheryFilterDeleteRequestBody: {
+      /** @description Filters targeted for deletion. */
+      filters: {
+        /**
+         * Format: uuid
+         * @description Filter ID targeted for deletion.
+         */
+        id?: string;
+        /**
+         * @description Human-readable filter name (informational only; the server
+         * matches on `id`).
+         */
+        name?: string;
+      }[];
+    };
+    /**
+     * @description Payload for `POST /api/content/filters/clone/{filterId}`. The
+     * only client-settable field is the optional name applied to the
+     * cloned filter; the server derives ownership and visibility from
+     * the request context.
+     */
+    MesheryFilterCloneRequestBody: {
+      /**
+       * @description Optional name to apply to the cloned filter. Defaults to a
+       * server-generated derivative of the source filter's name.
+       */
+      name?: string;
+    };
+    /**
+     * @description Payload for upserting a filter via `POST /api/content/filters`.
+     * Mirrors meshery-cloud's `MesheryFilterRequestBody` and
+     * meshery's `MesheryFilterRequestBody` — the wrapper carries an
+     * optional source URL/path plus a `save` toggle and an embedded
+     * `filterData` payload. Wire form for the embedded payload field
+     * is canonical camelCase (`filterData`); legacy snake_case
+     * (`filter_data`) is accepted by the existing handlers for the
+     * deprecation window but new clients MUST emit `filterData`.
+     */
+    MesheryFilterRequestBody: {
+      /**
+       * Format: uri
+       * @description Optional source URL the filter was fetched from.
+       */
+      url?: string;
+      /** @description Optional source path the filter was loaded from. */
+      path?: string;
+      /**
+       * @description When true, persist the filter in addition to parsing it.
+       * When false, the server returns the parsed payload without
+       * committing it to the database.
+       */
+      save?: boolean;
+      /** @description Filter body to persist. */
+      filterData?: {
+        /**
+         * Format: uuid
+         * @description Existing filter ID for updates; omit on create. Wrapped in
+         * an `allOf` so we can attach the `json:"id,omitempty"` tag
+         * for upsert ergonomics without recursing into the underlying
+         * UUID definition.
+         */
+        id?: string;
+        /** @description Human-readable filter name. */
+        name: string;
+        /**
+         * Format: byte
+         * @description Raw filter source as base64-encoded bytes (`format: byte`).
+         * Optional on update — the server preserves the existing body
+         * when omitted.
+         */
+        filterFile?: string;
+        /**
+         * @description Filter resource discriminator describing the body's source
+         * format (e.g. WASM module identifier or external resource
+         * path).
+         */
+        filterResource?: string;
+        /** @description Optional structured location metadata. */
+        location?: { [key: string]: string };
+        /**
+         * @description Requested visibility scope. The server may downgrade a
+         * requested `published` value to `private` for callers that
+         * do not own the filter.
+         *
+         * @enum {string}
+         */
+        visibility?: "private" | "public" | "published";
+        /** @description Catalog metadata to attach when publishing. */
+        catalogData?: {
+          /** @description Tracks the specific content version that has been made available in the Catalog. */
+          publishedVersion?: string;
+          /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+          class?: string;
+          /**
+           * Model
+           * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
+           */
+          compatibility: "kubernetes"[];
+          /**
+           * Caveats and Considerations
+           * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
+           */
+          patternCaveats: string;
+          /**
+           * Description
+           * @description Purpose of the design along with its intended and unintended uses.
+           */
+          patternInfo: string;
+          /**
+           * Type
+           * @description Categorization of the type of design or operational flow depicted in this design.
+           * @default Deployment
+           * @enum {string}
+           */
+          type:
+            | "Deployment"
+            | "Observability"
+            | "Resiliency"
+            | "Scaling"
+            | "Security"
+            | "Traffic-management"
+            | "Troubleshooting"
+            | "Workloads";
+          /** @description Contains reference to the dark and light mode snapshots of the design. */
+          snapshotURL?: string[];
+        };
+      };
+      /**
+       * @description Optional opaque configuration string passed through to the
+       * underlying filter runtime. Persisted only on the local
+       * meshery `MesheryFilterPayload` shape; meshery-cloud
+       * currently ignores the field, but it is documented here so
+       * the canonical contract is single-sourced.
+       */
+      config?: string;
+    };
+    /** @description Flat canonical representation of the filter import form that combines the UI-level uploadType discriminator with the union of properties from MesheryFilterPayload (filterFile, filterResource). This schema is the authoritative source for the canonical RJSF form schema at schemas/constructs/v1beta3/filter/forms/import.json. The server receives a MesheryFilterPayload; this form schema captures the superset of user-facing fields (including the UI-only uploadType discriminator) so the form schema can be validated as a subset of this canonical type. */
+    MesheryFilterImportFormPayload: {
+      /** @description Human-readable filter name. */
+      name: string;
+      /**
+       * Upload method
+       * @description UI-level discriminator that controls which import variant the form submits. "File Upload" maps to a base64-encoded filterFile body; "URL Upload" maps to a filterResource path/URL.
+       *
+       * @enum {string}
+       */
+      uploadType: "File Upload" | "URL Upload";
+      /**
+       * Format: byte
+       * @description Raw filter source as base64-encoded bytes. Required when uploadType is "File Upload".
+       */
+      filterFile?: string;
+      /** @description Filter resource discriminator describing the body's source format (e.g. WASM module identifier or external resource path). Required when uploadType is "URL Upload". */
+      filterResource?: string;
+    };
+  };
+  responses: {
+    /** Invalid request body or request param */
+    400: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Expired JWT token used or insufficient privilege */
+    401: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Result not found */
+    404: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Internal server error */
+    500: {
+      content: {
+        "text/plain": string;
+      };
+    };
+  };
+  parameters: {
+    /** @description Filter ID */
+    filterId: string;
+    /** @description Get responses by page */
+    page: string;
+    /** @description Number of items per page (canonical camelCase form). */
+    pageSize: number;
+    /** @description Get responses that match search param value */
+    search: string;
+    /** @description Get ordered responses */
+    order: string;
+    /** @description User's organization ID */
+    orgIdQuery: string;
+  };
+}
+
+export interface operations {
+  /** Returns a paginated list of filters accessible to the user. */
+  getFilters: {
+    parameters: {
+      query: {
+        /** Get responses by page */
+        page?: string;
+        /** Number of items per page (canonical camelCase form). */
+        pageSize?: number;
+        /** Get responses that match search param value */
+        search?: string;
+        /** Get ordered responses */
+        order?: string;
+        /** User's organization ID */
+        orgId?: string;
+        /** Filter by visibility (public, private, published). May be repeated. */
+        visibility?: string[];
+        /**
+         * UUID of the owning user. Pass when fetching public/published
+         * filters for a specific user (public-profile lookups).
+         */
+        userId?: string;
+      };
+    };
+    responses: {
+      /** Filters response */
+      200: {
+        content: {
+          "application/json": {
+            /** @description Current page number of the result set. */
+            page?: number;
+            /** @description Number of items per page. */
+            pageSize?: number;
+            /** @description Total number of items available. */
+            totalCount?: number;
+            /** @description Filters included on this page of results. */
+            filters?: {
+              /**
+               * Format: uuid
+               * @description Server-generated filter ID.
+               */
+              id: string;
+              /** @description Human-readable filter name; required, used for catalog listings. */
+              name: string;
+              /**
+               * Format: uuid
+               * @description Owning user ID.
+               */
+              owner: string;
+              /**
+               * Format: byte
+               * @description Raw filter source persisted as a byte array (`bytea` column
+               * `filter_file`). Wire form is base64 per OpenAPI `format: byte`.
+               */
+              filterFile?: string;
+              /**
+               * @description Filter resource discriminator describing the filter body's source
+               * format (e.g. WASM module identifier or external resource path).
+               * Stored in the `filter_resource` text column.
+               */
+              filterResource?: string;
+              /** @description Optional structured location metadata (branch, host, path, ...). */
+              location?: { [key: string]: string };
+              /**
+               * @description Visibility scope (private, public, published).
+               * @enum {string}
+               */
+              visibility?: "private" | "public" | "published";
+              /** @description Catalog metadata attached to the filter when published. */
+              catalogData?: {
+                /** @description Tracks the specific content version that has been made available in the Catalog. */
+                publishedVersion?: string;
+                /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+                class?: string;
+                /**
+                 * Model
+                 * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
+                 */
+                compatibility: "kubernetes"[];
+                /**
+                 * Caveats and Considerations
+                 * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
+                 */
+                patternCaveats: string;
+                /**
+                 * Description
+                 * @description Purpose of the design along with its intended and unintended uses.
+                 */
+                patternInfo: string;
+                /**
+                 * Type
+                 * @description Categorization of the type of design or operational flow depicted in this design.
+                 * @default Deployment
+                 * @enum {string}
+                 */
+                type:
+                  | "Deployment"
+                  | "Observability"
+                  | "Resiliency"
+                  | "Scaling"
+                  | "Security"
+                  | "Traffic-management"
+                  | "Troubleshooting"
+                  | "Workloads";
+                /** @description Contains reference to the dark and light mode snapshots of the design. */
+                snapshotURL?: string[];
+              };
+              /**
+               * Format: date-time
+               * @description Timestamp of filter creation.
+               */
+              createdAt: string;
+              /**
+               * Format: date-time
+               * @description Timestamp of last filter modification.
+               */
+              updatedAt: string;
+            }[];
+          };
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  /** Creates or updates a Meshery filter. */
+  upsertFilter: {
+    responses: {
+      /** Filter saved */
+      200: {
+        content: {
+          "application/json": {
             /**
              * Format: uuid
              * @description Server-generated filter ID.
@@ -143,23 +676,21 @@ export interface components {
              * Format: uuid
              * @description Owning user ID.
              */
-            userId: string;
+            owner: string;
             /**
              * Format: byte
              * @description Raw filter source persisted as a byte array (`bytea` column
-             *     `filter_file`). Wire form is base64 per OpenAPI `format: byte`.
+             * `filter_file`). Wire form is base64 per OpenAPI `format: byte`.
              */
             filterFile?: string;
             /**
              * @description Filter resource discriminator describing the filter body's source
-             *     format (e.g. WASM module identifier or external resource path).
-             *     Stored in the `filter_resource` text column.
+             * format (e.g. WASM module identifier or external resource path).
+             * Stored in the `filter_resource` text column.
              */
             filterResource?: string;
             /** @description Optional structured location metadata (branch, host, path, ...). */
-            location?: {
-                [key: string]: string;
-            };
+            location?: { [key: string]: string };
             /**
              * @description Visibility scope (private, public, published).
              * @enum {string}
@@ -167,34 +698,42 @@ export interface components {
             visibility?: "private" | "public" | "published";
             /** @description Catalog metadata attached to the filter when published. */
             catalogData?: {
-                /** @description Tracks the specific content version that has been made available in the Catalog. */
-                publishedVersion?: string;
-                /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                class?: string & ("official" | "verified" | "reference architecture");
-                /**
-                 * Model
-                 * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
-                 */
-                compatibility: "kubernetes"[];
-                /**
-                 * Caveats and Considerations
-                 * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
-                 */
-                patternCaveats: string;
-                /**
-                 * Description
-                 * @description Purpose of the design along with its intended and unintended uses.
-                 */
-                patternInfo: string;
-                /**
-                 * Type
-                 * @description Categorization of the type of design or operational flow depicted in this design.
-                 * @default Deployment
-                 * @enum {string}
-                 */
-                type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
-                /** @description Contains reference to the dark and light mode snapshots of the design. */
-                snapshotURL?: string[];
+              /** @description Tracks the specific content version that has been made available in the Catalog. */
+              publishedVersion?: string;
+              /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+              class?: string;
+              /**
+               * Model
+               * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
+               */
+              compatibility: "kubernetes"[];
+              /**
+               * Caveats and Considerations
+               * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
+               */
+              patternCaveats: string;
+              /**
+               * Description
+               * @description Purpose of the design along with its intended and unintended uses.
+               */
+              patternInfo: string;
+              /**
+               * Type
+               * @description Categorization of the type of design or operational flow depicted in this design.
+               * @default Deployment
+               * @enum {string}
+               */
+              type:
+                | "Deployment"
+                | "Observability"
+                | "Resiliency"
+                | "Scaling"
+                | "Security"
+                | "Traffic-management"
+                | "Troubleshooting"
+                | "Workloads";
+              /** @description Contains reference to the dark and light mode snapshots of the design. */
+              snapshotURL?: string[];
             };
             /**
              * Format: date-time
@@ -206,22 +745,52 @@ export interface components {
              * @description Timestamp of last filter modification.
              */
             updatedAt: string;
+          };
         };
-        /**
-         * @description Payload for creating or updating a filter via
-         *     `POST /api/content/filters` or
-         *     `PUT /api/content/filters/{filterId}`. Contains only
-         *     client-settable fields; server-generated `createdAt` /
-         *     `updatedAt` and the owning `userId` (which the server derives
-         *     from the authenticated session) are intentionally excluded.
-         */
-        MesheryFilterPayload: {
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /**
+           * Format: uri
+           * @description Optional source URL the filter was fetched from.
+           */
+          url?: string;
+          /** @description Optional source path the filter was loaded from. */
+          path?: string;
+          /**
+           * @description When true, persist the filter in addition to parsing it.
+           * When false, the server returns the parsed payload without
+           * committing it to the database.
+           */
+          save?: boolean;
+          /** @description Filter body to persist. */
+          filterData?: {
             /**
              * Format: uuid
              * @description Existing filter ID for updates; omit on create. Wrapped in
-             *     an `allOf` so we can attach the `json:"id,omitempty"` tag
-             *     for upsert ergonomics without recursing into the underlying
-             *     UUID definition.
+             * an `allOf` so we can attach the `json:"id,omitempty"` tag
+             * for upsert ergonomics without recursing into the underlying
+             * UUID definition.
              */
             id?: string;
             /** @description Human-readable filter name. */
@@ -229,147 +798,111 @@ export interface components {
             /**
              * Format: byte
              * @description Raw filter source as base64-encoded bytes (`format: byte`).
-             *     Optional on update — the server preserves the existing body
-             *     when omitted.
+             * Optional on update — the server preserves the existing body
+             * when omitted.
              */
             filterFile?: string;
             /**
              * @description Filter resource discriminator describing the body's source
-             *     format (e.g. WASM module identifier or external resource
-             *     path).
+             * format (e.g. WASM module identifier or external resource
+             * path).
              */
             filterResource?: string;
             /** @description Optional structured location metadata. */
-            location?: {
-                [key: string]: string;
-            };
+            location?: { [key: string]: string };
             /**
              * @description Requested visibility scope. The server may downgrade a
-             *     requested `published` value to `private` for callers that
-             *     do not own the filter.
+             * requested `published` value to `private` for callers that
+             * do not own the filter.
+             *
              * @enum {string}
              */
             visibility?: "private" | "public" | "published";
             /** @description Catalog metadata to attach when publishing. */
             catalogData?: {
-                /** @description Tracks the specific content version that has been made available in the Catalog. */
-                publishedVersion?: string;
-                /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                class?: string & ("official" | "verified" | "reference architecture");
-                /**
-                 * Model
-                 * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
-                 */
-                compatibility: "kubernetes"[];
-                /**
-                 * Caveats and Considerations
-                 * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
-                 */
-                patternCaveats: string;
-                /**
-                 * Description
-                 * @description Purpose of the design along with its intended and unintended uses.
-                 */
-                patternInfo: string;
-                /**
-                 * Type
-                 * @description Categorization of the type of design or operational flow depicted in this design.
-                 * @default Deployment
-                 * @enum {string}
-                 */
-                type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
-                /** @description Contains reference to the dark and light mode snapshots of the design. */
-                snapshotURL?: string[];
+              /** @description Tracks the specific content version that has been made available in the Catalog. */
+              publishedVersion?: string;
+              /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+              class?: string;
+              /**
+               * Model
+               * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
+               */
+              compatibility: "kubernetes"[];
+              /**
+               * Caveats and Considerations
+               * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
+               */
+              patternCaveats: string;
+              /**
+               * Description
+               * @description Purpose of the design along with its intended and unintended uses.
+               */
+              patternInfo: string;
+              /**
+               * Type
+               * @description Categorization of the type of design or operational flow depicted in this design.
+               * @default Deployment
+               * @enum {string}
+               */
+              type:
+                | "Deployment"
+                | "Observability"
+                | "Resiliency"
+                | "Scaling"
+                | "Security"
+                | "Traffic-management"
+                | "Troubleshooting"
+                | "Workloads";
+              /** @description Contains reference to the dark and light mode snapshots of the design. */
+              snapshotURL?: string[];
             };
+          };
+          /**
+           * @description Optional opaque configuration string passed through to the
+           * underlying filter runtime. Persisted only on the local
+           * meshery `MesheryFilterPayload` shape; meshery-cloud
+           * currently ignores the field, but it is documented here so
+           * the canonical contract is single-sourced.
+           */
+          config?: string;
         };
-        /** @description Paginated collection of filters. */
-        MesheryFilterPage: {
-            /** @description Current page number of the result set. */
-            page?: number;
-            /** @description Number of items per page. */
-            pageSize?: number;
-            /** @description Total number of items available. */
-            totalCount?: number;
-            /** @description Filters included on this page of results. */
-            filters?: {
-                /**
-                 * Format: uuid
-                 * @description Server-generated filter ID.
-                 */
-                id: string;
-                /** @description Human-readable filter name; required, used for catalog listings. */
-                name: string;
-                /**
-                 * Format: uuid
-                 * @description Owning user ID.
-                 */
-                userId: string;
-                /**
-                 * Format: byte
-                 * @description Raw filter source persisted as a byte array (`bytea` column
-                 *     `filter_file`). Wire form is base64 per OpenAPI `format: byte`.
-                 */
-                filterFile?: string;
-                /**
-                 * @description Filter resource discriminator describing the filter body's source
-                 *     format (e.g. WASM module identifier or external resource path).
-                 *     Stored in the `filter_resource` text column.
-                 */
-                filterResource?: string;
-                /** @description Optional structured location metadata (branch, host, path, ...). */
-                location?: {
-                    [key: string]: string;
-                };
-                /**
-                 * @description Visibility scope (private, public, published).
-                 * @enum {string}
-                 */
-                visibility?: "private" | "public" | "published";
-                /** @description Catalog metadata attached to the filter when published. */
-                catalogData?: {
-                    /** @description Tracks the specific content version that has been made available in the Catalog. */
-                    publishedVersion?: string;
-                    /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                    class?: string & ("official" | "verified" | "reference architecture");
-                    /**
-                     * Model
-                     * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
-                     */
-                    compatibility: "kubernetes"[];
-                    /**
-                     * Caveats and Considerations
-                     * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
-                     */
-                    patternCaveats: string;
-                    /**
-                     * Description
-                     * @description Purpose of the design along with its intended and unintended uses.
-                     */
-                    patternInfo: string;
-                    /**
-                     * Type
-                     * @description Categorization of the type of design or operational flow depicted in this design.
-                     * @default Deployment
-                     * @enum {string}
-                     */
-                    type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
-                    /** @description Contains reference to the dark and light mode snapshots of the design. */
-                    snapshotURL?: string[];
-                };
-                /**
-                 * Format: date-time
-                 * @description Timestamp of filter creation.
-                 */
-                createdAt: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp of last filter modification.
-                 */
-                updatedAt: string;
-            }[];
+      };
+    };
+  };
+  /**
+   * Deletes multiple filters by ID. Modeled as a `POST .../delete`
+   * sub-resource because REST clients and proxies may strip request
+   * bodies on `DELETE`.
+   */
+  deleteFilters: {
+    responses: {
+      /** Filters deleted */
+      200: unknown;
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
         };
-        /** @description Reference to a filter for bulk deletion by ID. */
-        DeleteFilterModel: {
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /** @description Filters targeted for deletion. */
+          filters: {
             /**
              * Format: uuid
              * @description Filter ID targeted for deletion.
@@ -377,1214 +910,543 @@ export interface components {
             id?: string;
             /**
              * @description Human-readable filter name (informational only; the server
-             *     matches on `id`).
+             * matches on `id`).
              */
             name?: string;
+          }[];
         };
-        /** @description Payload for bulk deleting filters by ID. */
-        MesheryFilterDeleteRequestBody: {
-            /** @description Filters targeted for deletion. */
-            filters: {
-                /**
-                 * Format: uuid
-                 * @description Filter ID targeted for deletion.
-                 */
-                id?: string;
-                /**
-                 * @description Human-readable filter name (informational only; the server
-                 *     matches on `id`).
-                 */
-                name?: string;
-            }[];
-        };
-        /**
-         * @description Payload for `POST /api/content/filters/clone/{filterId}`. The
-         *     only client-settable field is the optional name applied to the
-         *     cloned filter; the server derives ownership and visibility from
-         *     the request context.
-         */
-        MesheryFilterCloneRequestBody: {
-            /**
-             * @description Optional name to apply to the cloned filter. Defaults to a
-             *     server-generated derivative of the source filter's name.
-             */
-            name?: string;
-        };
-        /**
-         * @description Payload for upserting a filter via `POST /api/content/filters`.
-         *     Mirrors meshery-cloud's `MesheryFilterRequestBody` and
-         *     meshery's `MesheryFilterRequestBody` — the wrapper carries an
-         *     optional source URL/path plus a `save` toggle and an embedded
-         *     `filterData` payload. Wire form for the embedded payload field
-         *     is canonical camelCase (`filterData`); legacy snake_case
-         *     (`filter_data`) is accepted by the existing handlers for the
-         *     deprecation window but new clients MUST emit `filterData`.
-         */
-        MesheryFilterRequestBody: {
-            /**
-             * Format: uri
-             * @description Optional source URL the filter was fetched from.
-             */
-            url?: string;
-            /** @description Optional source path the filter was loaded from. */
-            path?: string;
-            /**
-             * @description When true, persist the filter in addition to parsing it.
-             *     When false, the server returns the parsed payload without
-             *     committing it to the database.
-             */
-            save?: boolean;
-            /** @description Filter body to persist. */
-            filterData?: {
-                /**
-                 * Format: uuid
-                 * @description Existing filter ID for updates; omit on create. Wrapped in
-                 *     an `allOf` so we can attach the `json:"id,omitempty"` tag
-                 *     for upsert ergonomics without recursing into the underlying
-                 *     UUID definition.
-                 */
-                id?: string;
-                /** @description Human-readable filter name. */
-                name: string;
-                /**
-                 * Format: byte
-                 * @description Raw filter source as base64-encoded bytes (`format: byte`).
-                 *     Optional on update — the server preserves the existing body
-                 *     when omitted.
-                 */
-                filterFile?: string;
-                /**
-                 * @description Filter resource discriminator describing the body's source
-                 *     format (e.g. WASM module identifier or external resource
-                 *     path).
-                 */
-                filterResource?: string;
-                /** @description Optional structured location metadata. */
-                location?: {
-                    [key: string]: string;
-                };
-                /**
-                 * @description Requested visibility scope. The server may downgrade a
-                 *     requested `published` value to `private` for callers that
-                 *     do not own the filter.
-                 * @enum {string}
-                 */
-                visibility?: "private" | "public" | "published";
-                /** @description Catalog metadata to attach when publishing. */
-                catalogData?: {
-                    /** @description Tracks the specific content version that has been made available in the Catalog. */
-                    publishedVersion?: string;
-                    /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                    class?: string & ("official" | "verified" | "reference architecture");
-                    /**
-                     * Model
-                     * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
-                     */
-                    compatibility: "kubernetes"[];
-                    /**
-                     * Caveats and Considerations
-                     * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
-                     */
-                    patternCaveats: string;
-                    /**
-                     * Description
-                     * @description Purpose of the design along with its intended and unintended uses.
-                     */
-                    patternInfo: string;
-                    /**
-                     * Type
-                     * @description Categorization of the type of design or operational flow depicted in this design.
-                     * @default Deployment
-                     * @enum {string}
-                     */
-                    type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
-                    /** @description Contains reference to the dark and light mode snapshots of the design. */
-                    snapshotURL?: string[];
-                };
-            };
-            /**
-             * @description Optional opaque configuration string passed through to the
-             *     underlying filter runtime. Persisted only on the local
-             *     meshery `MesheryFilterPayload` shape; meshery-cloud
-             *     currently ignores the field, but it is documented here so
-             *     the canonical contract is single-sourced.
-             */
-            config?: string;
-        };
-        /** @description Flat canonical representation of the filter import form that combines the UI-level uploadType discriminator with the union of properties from MesheryFilterPayload (filterFile, filterResource). This schema is the authoritative source for the canonical RJSF form schema at schemas/constructs/v1beta3/filter/forms/import.json. The server receives a MesheryFilterPayload; this form schema captures the superset of user-facing fields (including the UI-only uploadType discriminator) so the form schema can be validated as a subset of this canonical type. */
-        MesheryFilterImportFormPayload: {
-            /** @description Human-readable filter name. */
-            name: string;
-            /**
-             * Upload method
-             * @description UI-level discriminator that controls which import variant the form submits. "File Upload" maps to a base64-encoded filterFile body; "URL Upload" maps to a filterResource path/URL.
-             * @enum {string}
-             */
-            uploadType: "File Upload" | "URL Upload";
-            /**
-             * Format: byte
-             * @description Raw filter source as base64-encoded bytes. Required when uploadType is "File Upload".
-             */
-            filterFile?: string;
-            /** @description Filter resource discriminator describing the body's source format (e.g. WASM module identifier or external resource path). Required when uploadType is "URL Upload". */
-            filterResource?: string;
-        };
+      };
+    };
+  };
+  getFilter: {
+    parameters: {
+      path: {
+        /** Filter ID */
+        filterId: string;
+      };
     };
     responses: {
-        /** @description Invalid request body or request param */
-        400: {
-            headers: {
-                [name: string]: unknown;
+      /** Filter response */
+      200: {
+        content: {
+          "application/json": {
+            /**
+             * Format: uuid
+             * @description Server-generated filter ID.
+             */
+            id: string;
+            /** @description Human-readable filter name; required, used for catalog listings. */
+            name: string;
+            /**
+             * Format: uuid
+             * @description Owning user ID.
+             */
+            owner: string;
+            /**
+             * Format: byte
+             * @description Raw filter source persisted as a byte array (`bytea` column
+             * `filter_file`). Wire form is base64 per OpenAPI `format: byte`.
+             */
+            filterFile?: string;
+            /**
+             * @description Filter resource discriminator describing the filter body's source
+             * format (e.g. WASM module identifier or external resource path).
+             * Stored in the `filter_resource` text column.
+             */
+            filterResource?: string;
+            /** @description Optional structured location metadata (branch, host, path, ...). */
+            location?: { [key: string]: string };
+            /**
+             * @description Visibility scope (private, public, published).
+             * @enum {string}
+             */
+            visibility?: "private" | "public" | "published";
+            /** @description Catalog metadata attached to the filter when published. */
+            catalogData?: {
+              /** @description Tracks the specific content version that has been made available in the Catalog. */
+              publishedVersion?: string;
+              /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+              class?: string;
+              /**
+               * Model
+               * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
+               */
+              compatibility: "kubernetes"[];
+              /**
+               * Caveats and Considerations
+               * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
+               */
+              patternCaveats: string;
+              /**
+               * Description
+               * @description Purpose of the design along with its intended and unintended uses.
+               */
+              patternInfo: string;
+              /**
+               * Type
+               * @description Categorization of the type of design or operational flow depicted in this design.
+               * @default Deployment
+               * @enum {string}
+               */
+              type:
+                | "Deployment"
+                | "Observability"
+                | "Resiliency"
+                | "Scaling"
+                | "Security"
+                | "Traffic-management"
+                | "Troubleshooting"
+                | "Workloads";
+              /** @description Contains reference to the dark and light mode snapshots of the design. */
+              snapshotURL?: string[];
             };
-            content: {
-                "text/plain": string;
-            };
+            /**
+             * Format: date-time
+             * @description Timestamp of filter creation.
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description Timestamp of last filter modification.
+             */
+            updatedAt: string;
+          };
         };
-        /** @description Expired JWT token used or insufficient privilege */
-        401: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
         };
-        /** @description Result not found */
-        404: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
         };
-        /** @description Internal server error */
-        500: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
         };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
     };
+  };
+  /**
+   * Updates the filter at the supplied ID with the provided payload.
+   * Provided as a canonical-CRUD complement to the upsert `POST
+   * /api/content/filters` form so consumers that prefer explicit
+   * update semantics can address the resource directly.
+   */
+  updateFilter: {
     parameters: {
-        /** @description Filter ID */
+      path: {
+        /** Filter ID */
         filterId: string;
-        /** @description Get responses by page */
-        page: string;
-        /** @description Number of items per page (canonical camelCase form). */
-        pageSize: number;
-        /** @description Get responses that match search param value */
-        search: string;
-        /** @description Get ordered responses */
-        order: string;
-        /** @description User's organization ID */
-        orgIdQuery: string;
+      };
     };
-    requestBodies: never;
-    headers: never;
-    pathItems: never;
+    responses: {
+      /** Filter updated */
+      200: {
+        content: {
+          "application/json": {
+            /**
+             * Format: uuid
+             * @description Server-generated filter ID.
+             */
+            id: string;
+            /** @description Human-readable filter name; required, used for catalog listings. */
+            name: string;
+            /**
+             * Format: uuid
+             * @description Owning user ID.
+             */
+            owner: string;
+            /**
+             * Format: byte
+             * @description Raw filter source persisted as a byte array (`bytea` column
+             * `filter_file`). Wire form is base64 per OpenAPI `format: byte`.
+             */
+            filterFile?: string;
+            /**
+             * @description Filter resource discriminator describing the filter body's source
+             * format (e.g. WASM module identifier or external resource path).
+             * Stored in the `filter_resource` text column.
+             */
+            filterResource?: string;
+            /** @description Optional structured location metadata (branch, host, path, ...). */
+            location?: { [key: string]: string };
+            /**
+             * @description Visibility scope (private, public, published).
+             * @enum {string}
+             */
+            visibility?: "private" | "public" | "published";
+            /** @description Catalog metadata attached to the filter when published. */
+            catalogData?: {
+              /** @description Tracks the specific content version that has been made available in the Catalog. */
+              publishedVersion?: string;
+              /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+              class?: string;
+              /**
+               * Model
+               * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
+               */
+              compatibility: "kubernetes"[];
+              /**
+               * Caveats and Considerations
+               * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
+               */
+              patternCaveats: string;
+              /**
+               * Description
+               * @description Purpose of the design along with its intended and unintended uses.
+               */
+              patternInfo: string;
+              /**
+               * Type
+               * @description Categorization of the type of design or operational flow depicted in this design.
+               * @default Deployment
+               * @enum {string}
+               */
+              type:
+                | "Deployment"
+                | "Observability"
+                | "Resiliency"
+                | "Scaling"
+                | "Security"
+                | "Traffic-management"
+                | "Troubleshooting"
+                | "Workloads";
+              /** @description Contains reference to the dark and light mode snapshots of the design. */
+              snapshotURL?: string[];
+            };
+            /**
+             * Format: date-time
+             * @description Timestamp of filter creation.
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description Timestamp of last filter modification.
+             */
+            updatedAt: string;
+          };
+        };
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /**
+           * Format: uuid
+           * @description Existing filter ID for updates; omit on create. Wrapped in
+           * an `allOf` so we can attach the `json:"id,omitempty"` tag
+           * for upsert ergonomics without recursing into the underlying
+           * UUID definition.
+           */
+          id?: string;
+          /** @description Human-readable filter name. */
+          name: string;
+          /**
+           * Format: byte
+           * @description Raw filter source as base64-encoded bytes (`format: byte`).
+           * Optional on update — the server preserves the existing body
+           * when omitted.
+           */
+          filterFile?: string;
+          /**
+           * @description Filter resource discriminator describing the body's source
+           * format (e.g. WASM module identifier or external resource
+           * path).
+           */
+          filterResource?: string;
+          /** @description Optional structured location metadata. */
+          location?: { [key: string]: string };
+          /**
+           * @description Requested visibility scope. The server may downgrade a
+           * requested `published` value to `private` for callers that
+           * do not own the filter.
+           *
+           * @enum {string}
+           */
+          visibility?: "private" | "public" | "published";
+          /** @description Catalog metadata to attach when publishing. */
+          catalogData?: {
+            /** @description Tracks the specific content version that has been made available in the Catalog. */
+            publishedVersion?: string;
+            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+            class?: string;
+            /**
+             * Model
+             * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
+             */
+            compatibility: "kubernetes"[];
+            /**
+             * Caveats and Considerations
+             * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
+             */
+            patternCaveats: string;
+            /**
+             * Description
+             * @description Purpose of the design along with its intended and unintended uses.
+             */
+            patternInfo: string;
+            /**
+             * Type
+             * @description Categorization of the type of design or operational flow depicted in this design.
+             * @default Deployment
+             * @enum {string}
+             */
+            type:
+              | "Deployment"
+              | "Observability"
+              | "Resiliency"
+              | "Scaling"
+              | "Security"
+              | "Traffic-management"
+              | "Troubleshooting"
+              | "Workloads";
+            /** @description Contains reference to the dark and light mode snapshots of the design. */
+            snapshotURL?: string[];
+          };
+        };
+      };
+    };
+  };
+  deleteFilter: {
+    parameters: {
+      path: {
+        /** Filter ID */
+        filterId: string;
+      };
+    };
+    responses: {
+      /** Filter deleted */
+      204: never;
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  /** Creates a copy of an existing filter. */
+  cloneFilter: {
+    parameters: {
+      path: {
+        /** Filter ID */
+        filterId: string;
+      };
+    };
+    responses: {
+      /** Filter cloned */
+      200: {
+        content: {
+          "application/json": {
+            /**
+             * Format: uuid
+             * @description Server-generated filter ID.
+             */
+            id: string;
+            /** @description Human-readable filter name; required, used for catalog listings. */
+            name: string;
+            /**
+             * Format: uuid
+             * @description Owning user ID.
+             */
+            owner: string;
+            /**
+             * Format: byte
+             * @description Raw filter source persisted as a byte array (`bytea` column
+             * `filter_file`). Wire form is base64 per OpenAPI `format: byte`.
+             */
+            filterFile?: string;
+            /**
+             * @description Filter resource discriminator describing the filter body's source
+             * format (e.g. WASM module identifier or external resource path).
+             * Stored in the `filter_resource` text column.
+             */
+            filterResource?: string;
+            /** @description Optional structured location metadata (branch, host, path, ...). */
+            location?: { [key: string]: string };
+            /**
+             * @description Visibility scope (private, public, published).
+             * @enum {string}
+             */
+            visibility?: "private" | "public" | "published";
+            /** @description Catalog metadata attached to the filter when published. */
+            catalogData?: {
+              /** @description Tracks the specific content version that has been made available in the Catalog. */
+              publishedVersion?: string;
+              /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+              class?: string;
+              /**
+               * Model
+               * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
+               */
+              compatibility: "kubernetes"[];
+              /**
+               * Caveats and Considerations
+               * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
+               */
+              patternCaveats: string;
+              /**
+               * Description
+               * @description Purpose of the design along with its intended and unintended uses.
+               */
+              patternInfo: string;
+              /**
+               * Type
+               * @description Categorization of the type of design or operational flow depicted in this design.
+               * @default Deployment
+               * @enum {string}
+               */
+              type:
+                | "Deployment"
+                | "Observability"
+                | "Resiliency"
+                | "Scaling"
+                | "Security"
+                | "Traffic-management"
+                | "Troubleshooting"
+                | "Workloads";
+              /** @description Contains reference to the dark and light mode snapshots of the design. */
+              snapshotURL?: string[];
+            };
+            /**
+             * Format: date-time
+             * @description Timestamp of filter creation.
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description Timestamp of last filter modification.
+             */
+            updatedAt: string;
+          };
+        };
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /**
+           * @description Optional name to apply to the cloned filter. Defaults to a
+           * server-generated derivative of the source filter's name.
+           */
+          name?: string;
+        };
+      };
+    };
+  };
+  /**
+   * Downloads the raw filter body associated with the supplied
+   * filter ID. The server streams the bytes verbatim with
+   * `Content-Type: application/wasm` and a
+   * `Content-Disposition: attachment` header naming the filter.
+   */
+  getFilterFile: {
+    parameters: {
+      path: {
+        /** Filter ID */
+        filterId: string;
+      };
+    };
+    responses: {
+      /** Filter file content */
+      200: {
+        content: {
+          "application/wasm": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
 }
-export type $defs = Record<string, never>;
-export interface operations {
-    getFilters: {
-        parameters: {
-            query?: {
-                /** @description Get responses by page */
-                page?: string;
-                /** @description Number of items per page (canonical camelCase form). */
-                pageSize?: number;
-                /** @description Get responses that match search param value */
-                search?: string;
-                /** @description Get ordered responses */
-                order?: string;
-                /** @description User's organization ID */
-                orgId?: string;
-                /** @description Filter by visibility (public, private, published). May be repeated. */
-                visibility?: string[];
-                /**
-                 * @description UUID of the owning user. Pass when fetching public/published
-                 *     filters for a specific user (public-profile lookups).
-                 */
-                userId?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Filters response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @description Current page number of the result set. */
-                        page?: number;
-                        /** @description Number of items per page. */
-                        pageSize?: number;
-                        /** @description Total number of items available. */
-                        totalCount?: number;
-                        /** @description Filters included on this page of results. */
-                        filters?: {
-                            /**
-                             * Format: uuid
-                             * @description Server-generated filter ID.
-                             */
-                            id: string;
-                            /** @description Human-readable filter name; required, used for catalog listings. */
-                            name: string;
-                            /**
-                             * Format: uuid
-                             * @description Owning user ID.
-                             */
-                            userId: string;
-                            /**
-                             * Format: byte
-                             * @description Raw filter source persisted as a byte array (`bytea` column
-                             *     `filter_file`). Wire form is base64 per OpenAPI `format: byte`.
-                             */
-                            filterFile?: string;
-                            /**
-                             * @description Filter resource discriminator describing the filter body's source
-                             *     format (e.g. WASM module identifier or external resource path).
-                             *     Stored in the `filter_resource` text column.
-                             */
-                            filterResource?: string;
-                            /** @description Optional structured location metadata (branch, host, path, ...). */
-                            location?: {
-                                [key: string]: string;
-                            };
-                            /**
-                             * @description Visibility scope (private, public, published).
-                             * @enum {string}
-                             */
-                            visibility?: "private" | "public" | "published";
-                            /** @description Catalog metadata attached to the filter when published. */
-                            catalogData?: {
-                                /** @description Tracks the specific content version that has been made available in the Catalog. */
-                                publishedVersion?: string;
-                                /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                                class?: string & ("official" | "verified" | "reference architecture");
-                                /**
-                                 * Model
-                                 * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
-                                 */
-                                compatibility: "kubernetes"[];
-                                /**
-                                 * Caveats and Considerations
-                                 * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
-                                 */
-                                patternCaveats: string;
-                                /**
-                                 * Description
-                                 * @description Purpose of the design along with its intended and unintended uses.
-                                 */
-                                patternInfo: string;
-                                /**
-                                 * Type
-                                 * @description Categorization of the type of design or operational flow depicted in this design.
-                                 * @default Deployment
-                                 * @enum {string}
-                                 */
-                                type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
-                                /** @description Contains reference to the dark and light mode snapshots of the design. */
-                                snapshotURL?: string[];
-                            };
-                            /**
-                             * Format: date-time
-                             * @description Timestamp of filter creation.
-                             */
-                            createdAt: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp of last filter modification.
-                             */
-                            updatedAt: string;
-                        }[];
-                    };
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    upsertFilter: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    /**
-                     * Format: uri
-                     * @description Optional source URL the filter was fetched from.
-                     */
-                    url?: string;
-                    /** @description Optional source path the filter was loaded from. */
-                    path?: string;
-                    /**
-                     * @description When true, persist the filter in addition to parsing it.
-                     *     When false, the server returns the parsed payload without
-                     *     committing it to the database.
-                     */
-                    save?: boolean;
-                    /** @description Filter body to persist. */
-                    filterData?: {
-                        /**
-                         * Format: uuid
-                         * @description Existing filter ID for updates; omit on create. Wrapped in
-                         *     an `allOf` so we can attach the `json:"id,omitempty"` tag
-                         *     for upsert ergonomics without recursing into the underlying
-                         *     UUID definition.
-                         */
-                        id?: string;
-                        /** @description Human-readable filter name. */
-                        name: string;
-                        /**
-                         * Format: byte
-                         * @description Raw filter source as base64-encoded bytes (`format: byte`).
-                         *     Optional on update — the server preserves the existing body
-                         *     when omitted.
-                         */
-                        filterFile?: string;
-                        /**
-                         * @description Filter resource discriminator describing the body's source
-                         *     format (e.g. WASM module identifier or external resource
-                         *     path).
-                         */
-                        filterResource?: string;
-                        /** @description Optional structured location metadata. */
-                        location?: {
-                            [key: string]: string;
-                        };
-                        /**
-                         * @description Requested visibility scope. The server may downgrade a
-                         *     requested `published` value to `private` for callers that
-                         *     do not own the filter.
-                         * @enum {string}
-                         */
-                        visibility?: "private" | "public" | "published";
-                        /** @description Catalog metadata to attach when publishing. */
-                        catalogData?: {
-                            /** @description Tracks the specific content version that has been made available in the Catalog. */
-                            publishedVersion?: string;
-                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                            class?: string & ("official" | "verified" | "reference architecture");
-                            /**
-                             * Model
-                             * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
-                             */
-                            compatibility: "kubernetes"[];
-                            /**
-                             * Caveats and Considerations
-                             * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
-                             */
-                            patternCaveats: string;
-                            /**
-                             * Description
-                             * @description Purpose of the design along with its intended and unintended uses.
-                             */
-                            patternInfo: string;
-                            /**
-                             * Type
-                             * @description Categorization of the type of design or operational flow depicted in this design.
-                             * @default Deployment
-                             * @enum {string}
-                             */
-                            type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
-                            /** @description Contains reference to the dark and light mode snapshots of the design. */
-                            snapshotURL?: string[];
-                        };
-                    };
-                    /**
-                     * @description Optional opaque configuration string passed through to the
-                     *     underlying filter runtime. Persisted only on the local
-                     *     meshery `MesheryFilterPayload` shape; meshery-cloud
-                     *     currently ignores the field, but it is documented here so
-                     *     the canonical contract is single-sourced.
-                     */
-                    config?: string;
-                };
-            };
-        };
-        responses: {
-            /** @description Filter saved */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * Format: uuid
-                         * @description Server-generated filter ID.
-                         */
-                        id: string;
-                        /** @description Human-readable filter name; required, used for catalog listings. */
-                        name: string;
-                        /**
-                         * Format: uuid
-                         * @description Owning user ID.
-                         */
-                        userId: string;
-                        /**
-                         * Format: byte
-                         * @description Raw filter source persisted as a byte array (`bytea` column
-                         *     `filter_file`). Wire form is base64 per OpenAPI `format: byte`.
-                         */
-                        filterFile?: string;
-                        /**
-                         * @description Filter resource discriminator describing the filter body's source
-                         *     format (e.g. WASM module identifier or external resource path).
-                         *     Stored in the `filter_resource` text column.
-                         */
-                        filterResource?: string;
-                        /** @description Optional structured location metadata (branch, host, path, ...). */
-                        location?: {
-                            [key: string]: string;
-                        };
-                        /**
-                         * @description Visibility scope (private, public, published).
-                         * @enum {string}
-                         */
-                        visibility?: "private" | "public" | "published";
-                        /** @description Catalog metadata attached to the filter when published. */
-                        catalogData?: {
-                            /** @description Tracks the specific content version that has been made available in the Catalog. */
-                            publishedVersion?: string;
-                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                            class?: string & ("official" | "verified" | "reference architecture");
-                            /**
-                             * Model
-                             * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
-                             */
-                            compatibility: "kubernetes"[];
-                            /**
-                             * Caveats and Considerations
-                             * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
-                             */
-                            patternCaveats: string;
-                            /**
-                             * Description
-                             * @description Purpose of the design along with its intended and unintended uses.
-                             */
-                            patternInfo: string;
-                            /**
-                             * Type
-                             * @description Categorization of the type of design or operational flow depicted in this design.
-                             * @default Deployment
-                             * @enum {string}
-                             */
-                            type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
-                            /** @description Contains reference to the dark and light mode snapshots of the design. */
-                            snapshotURL?: string[];
-                        };
-                        /**
-                         * Format: date-time
-                         * @description Timestamp of filter creation.
-                         */
-                        createdAt: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp of last filter modification.
-                         */
-                        updatedAt: string;
-                    };
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    deleteFilters: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    /** @description Filters targeted for deletion. */
-                    filters: {
-                        /**
-                         * Format: uuid
-                         * @description Filter ID targeted for deletion.
-                         */
-                        id?: string;
-                        /**
-                         * @description Human-readable filter name (informational only; the server
-                         *     matches on `id`).
-                         */
-                        name?: string;
-                    }[];
-                };
-            };
-        };
-        responses: {
-            /** @description Filters deleted */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    getFilter: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Filter ID */
-                filterId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Filter response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * Format: uuid
-                         * @description Server-generated filter ID.
-                         */
-                        id: string;
-                        /** @description Human-readable filter name; required, used for catalog listings. */
-                        name: string;
-                        /**
-                         * Format: uuid
-                         * @description Owning user ID.
-                         */
-                        userId: string;
-                        /**
-                         * Format: byte
-                         * @description Raw filter source persisted as a byte array (`bytea` column
-                         *     `filter_file`). Wire form is base64 per OpenAPI `format: byte`.
-                         */
-                        filterFile?: string;
-                        /**
-                         * @description Filter resource discriminator describing the filter body's source
-                         *     format (e.g. WASM module identifier or external resource path).
-                         *     Stored in the `filter_resource` text column.
-                         */
-                        filterResource?: string;
-                        /** @description Optional structured location metadata (branch, host, path, ...). */
-                        location?: {
-                            [key: string]: string;
-                        };
-                        /**
-                         * @description Visibility scope (private, public, published).
-                         * @enum {string}
-                         */
-                        visibility?: "private" | "public" | "published";
-                        /** @description Catalog metadata attached to the filter when published. */
-                        catalogData?: {
-                            /** @description Tracks the specific content version that has been made available in the Catalog. */
-                            publishedVersion?: string;
-                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                            class?: string & ("official" | "verified" | "reference architecture");
-                            /**
-                             * Model
-                             * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
-                             */
-                            compatibility: "kubernetes"[];
-                            /**
-                             * Caveats and Considerations
-                             * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
-                             */
-                            patternCaveats: string;
-                            /**
-                             * Description
-                             * @description Purpose of the design along with its intended and unintended uses.
-                             */
-                            patternInfo: string;
-                            /**
-                             * Type
-                             * @description Categorization of the type of design or operational flow depicted in this design.
-                             * @default Deployment
-                             * @enum {string}
-                             */
-                            type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
-                            /** @description Contains reference to the dark and light mode snapshots of the design. */
-                            snapshotURL?: string[];
-                        };
-                        /**
-                         * Format: date-time
-                         * @description Timestamp of filter creation.
-                         */
-                        createdAt: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp of last filter modification.
-                         */
-                        updatedAt: string;
-                    };
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    updateFilter: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Filter ID */
-                filterId: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    /**
-                     * Format: uuid
-                     * @description Existing filter ID for updates; omit on create. Wrapped in
-                     *     an `allOf` so we can attach the `json:"id,omitempty"` tag
-                     *     for upsert ergonomics without recursing into the underlying
-                     *     UUID definition.
-                     */
-                    id?: string;
-                    /** @description Human-readable filter name. */
-                    name: string;
-                    /**
-                     * Format: byte
-                     * @description Raw filter source as base64-encoded bytes (`format: byte`).
-                     *     Optional on update — the server preserves the existing body
-                     *     when omitted.
-                     */
-                    filterFile?: string;
-                    /**
-                     * @description Filter resource discriminator describing the body's source
-                     *     format (e.g. WASM module identifier or external resource
-                     *     path).
-                     */
-                    filterResource?: string;
-                    /** @description Optional structured location metadata. */
-                    location?: {
-                        [key: string]: string;
-                    };
-                    /**
-                     * @description Requested visibility scope. The server may downgrade a
-                     *     requested `published` value to `private` for callers that
-                     *     do not own the filter.
-                     * @enum {string}
-                     */
-                    visibility?: "private" | "public" | "published";
-                    /** @description Catalog metadata to attach when publishing. */
-                    catalogData?: {
-                        /** @description Tracks the specific content version that has been made available in the Catalog. */
-                        publishedVersion?: string;
-                        /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                        class?: string & ("official" | "verified" | "reference architecture");
-                        /**
-                         * Model
-                         * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
-                         */
-                        compatibility: "kubernetes"[];
-                        /**
-                         * Caveats and Considerations
-                         * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
-                         */
-                        patternCaveats: string;
-                        /**
-                         * Description
-                         * @description Purpose of the design along with its intended and unintended uses.
-                         */
-                        patternInfo: string;
-                        /**
-                         * Type
-                         * @description Categorization of the type of design or operational flow depicted in this design.
-                         * @default Deployment
-                         * @enum {string}
-                         */
-                        type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
-                        /** @description Contains reference to the dark and light mode snapshots of the design. */
-                        snapshotURL?: string[];
-                    };
-                };
-            };
-        };
-        responses: {
-            /** @description Filter updated */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * Format: uuid
-                         * @description Server-generated filter ID.
-                         */
-                        id: string;
-                        /** @description Human-readable filter name; required, used for catalog listings. */
-                        name: string;
-                        /**
-                         * Format: uuid
-                         * @description Owning user ID.
-                         */
-                        userId: string;
-                        /**
-                         * Format: byte
-                         * @description Raw filter source persisted as a byte array (`bytea` column
-                         *     `filter_file`). Wire form is base64 per OpenAPI `format: byte`.
-                         */
-                        filterFile?: string;
-                        /**
-                         * @description Filter resource discriminator describing the filter body's source
-                         *     format (e.g. WASM module identifier or external resource path).
-                         *     Stored in the `filter_resource` text column.
-                         */
-                        filterResource?: string;
-                        /** @description Optional structured location metadata (branch, host, path, ...). */
-                        location?: {
-                            [key: string]: string;
-                        };
-                        /**
-                         * @description Visibility scope (private, public, published).
-                         * @enum {string}
-                         */
-                        visibility?: "private" | "public" | "published";
-                        /** @description Catalog metadata attached to the filter when published. */
-                        catalogData?: {
-                            /** @description Tracks the specific content version that has been made available in the Catalog. */
-                            publishedVersion?: string;
-                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                            class?: string & ("official" | "verified" | "reference architecture");
-                            /**
-                             * Model
-                             * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
-                             */
-                            compatibility: "kubernetes"[];
-                            /**
-                             * Caveats and Considerations
-                             * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
-                             */
-                            patternCaveats: string;
-                            /**
-                             * Description
-                             * @description Purpose of the design along with its intended and unintended uses.
-                             */
-                            patternInfo: string;
-                            /**
-                             * Type
-                             * @description Categorization of the type of design or operational flow depicted in this design.
-                             * @default Deployment
-                             * @enum {string}
-                             */
-                            type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
-                            /** @description Contains reference to the dark and light mode snapshots of the design. */
-                            snapshotURL?: string[];
-                        };
-                        /**
-                         * Format: date-time
-                         * @description Timestamp of filter creation.
-                         */
-                        createdAt: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp of last filter modification.
-                         */
-                        updatedAt: string;
-                    };
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    deleteFilter: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Filter ID */
-                filterId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Filter deleted */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    cloneFilter: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Filter ID */
-                filterId: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    /**
-                     * @description Optional name to apply to the cloned filter. Defaults to a
-                     *     server-generated derivative of the source filter's name.
-                     */
-                    name?: string;
-                };
-            };
-        };
-        responses: {
-            /** @description Filter cloned */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * Format: uuid
-                         * @description Server-generated filter ID.
-                         */
-                        id: string;
-                        /** @description Human-readable filter name; required, used for catalog listings. */
-                        name: string;
-                        /**
-                         * Format: uuid
-                         * @description Owning user ID.
-                         */
-                        userId: string;
-                        /**
-                         * Format: byte
-                         * @description Raw filter source persisted as a byte array (`bytea` column
-                         *     `filter_file`). Wire form is base64 per OpenAPI `format: byte`.
-                         */
-                        filterFile?: string;
-                        /**
-                         * @description Filter resource discriminator describing the filter body's source
-                         *     format (e.g. WASM module identifier or external resource path).
-                         *     Stored in the `filter_resource` text column.
-                         */
-                        filterResource?: string;
-                        /** @description Optional structured location metadata (branch, host, path, ...). */
-                        location?: {
-                            [key: string]: string;
-                        };
-                        /**
-                         * @description Visibility scope (private, public, published).
-                         * @enum {string}
-                         */
-                        visibility?: "private" | "public" | "published";
-                        /** @description Catalog metadata attached to the filter when published. */
-                        catalogData?: {
-                            /** @description Tracks the specific content version that has been made available in the Catalog. */
-                            publishedVersion?: string;
-                            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-                            class?: string & ("official" | "verified" | "reference architecture");
-                            /**
-                             * Model
-                             * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
-                             */
-                            compatibility: "kubernetes"[];
-                            /**
-                             * Caveats and Considerations
-                             * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
-                             */
-                            patternCaveats: string;
-                            /**
-                             * Description
-                             * @description Purpose of the design along with its intended and unintended uses.
-                             */
-                            patternInfo: string;
-                            /**
-                             * Type
-                             * @description Categorization of the type of design or operational flow depicted in this design.
-                             * @default Deployment
-                             * @enum {string}
-                             */
-                            type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
-                            /** @description Contains reference to the dark and light mode snapshots of the design. */
-                            snapshotURL?: string[];
-                        };
-                        /**
-                         * Format: date-time
-                         * @description Timestamp of filter creation.
-                         */
-                        createdAt: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp of last filter modification.
-                         */
-                        updatedAt: string;
-                    };
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    getFilterFile: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Filter ID */
-                filterId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Filter file content */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/wasm": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-}
+
+export interface external {}

@@ -4058,7 +4058,7 @@ const AcademySchema: Record<string, unknown> = {
                           "description": "Invitation entity schema.",
                           "required": [
                             "id",
-                            "ownerId",
+                            "owner",
                             "name",
                             "description",
                             "orgId",
@@ -4086,7 +4086,7 @@ const AcademySchema: Record<string, unknown> = {
                                 "json": "id"
                               }
                             },
-                            "ownerId": {
+                            "owner": {
                               "type": "string",
                               "format": "uuid",
                               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -4094,10 +4094,10 @@ const AcademySchema: Record<string, unknown> = {
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
                               },
-                              "x-go-name": "OwnerID",
+                              "x-go-name": "Owner",
                               "x-oapi-codegen-extra-tags": {
-                                "db": "owner_id",
-                                "json": "ownerId"
+                                "db": "owner",
+                                "json": "owner"
                               }
                             },
                             "isDefault": {
@@ -4813,7 +4813,7 @@ const AcademySchema: Record<string, unknown> = {
                           "description": "Invitation entity schema.",
                           "required": [
                             "id",
-                            "ownerId",
+                            "owner",
                             "name",
                             "description",
                             "orgId",
@@ -4841,7 +4841,7 @@ const AcademySchema: Record<string, unknown> = {
                                 "json": "id"
                               }
                             },
-                            "ownerId": {
+                            "owner": {
                               "type": "string",
                               "format": "uuid",
                               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -4849,10 +4849,10 @@ const AcademySchema: Record<string, unknown> = {
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
                               },
-                              "x-go-name": "OwnerID",
+                              "x-go-name": "Owner",
                               "x-oapi-codegen-extra-tags": {
-                                "db": "owner_id",
-                                "json": "ownerId"
+                                "db": "owner",
+                                "json": "owner"
                               }
                             },
                             "isDefault": {
@@ -9758,7 +9758,7 @@ const AcademySchema: Record<string, unknown> = {
                 "description": "Invitation entity schema.",
                 "required": [
                   "id",
-                  "ownerId",
+                  "owner",
                   "name",
                   "description",
                   "orgId",
@@ -9786,7 +9786,7 @@ const AcademySchema: Record<string, unknown> = {
                       "json": "id"
                     }
                   },
-                  "ownerId": {
+                  "owner": {
                     "type": "string",
                     "format": "uuid",
                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -9794,10 +9794,10 @@ const AcademySchema: Record<string, unknown> = {
                     "x-go-type-import": {
                       "path": "github.com/gofrs/uuid"
                     },
-                    "x-go-name": "OwnerID",
+                    "x-go-name": "Owner",
                     "x-oapi-codegen-extra-tags": {
-                      "db": "owner_id",
-                      "json": "ownerId"
+                      "db": "owner",
+                      "json": "owner"
                     }
                   },
                   "isDefault": {

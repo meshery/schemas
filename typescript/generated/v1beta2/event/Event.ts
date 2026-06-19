@@ -4,487 +4,148 @@
  */
 
 export interface paths {
-    "/events/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+  "/events/{id}": {
+    delete: {
+      parameters: {
+        path: {
+          /** ID of the event to delete */
+          id: string;
         };
-        get?: never;
-        put?: never;
-        post?: never;
-        /** Delete a single event */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description ID of the event to delete */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Event deleted */
-                204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Invalid request body or request param */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": string;
-                    };
-                };
-                /** @description Expired JWT token used or insufficient privilege */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": string;
-                    };
-                };
-                /** @description Result not found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": string;
-                    };
-                };
-                /** @description Internal server error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": string;
-                    };
-                };
-            };
+      };
+      responses: {
+        /** Event deleted */
+        204: never;
+        /** Invalid request body or request param */
+        400: {
+          content: {
+            "text/plain": string;
+          };
         };
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+        /** Expired JWT token used or insufficient privilege */
+        401: {
+          content: {
+            "text/plain": string;
+          };
+        };
+        /** Result not found */
+        404: {
+          content: {
+            "text/plain": string;
+          };
+        };
+        /** Internal server error */
+        500: {
+          content: {
+            "text/plain": string;
+          };
+        };
+      };
     };
-    "/events": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+  };
+  "/events": {
+    post: {
+      responses: {
+        /** Event created */
+        201: unknown;
+        /** Invalid request body or request param */
+        400: {
+          content: {
+            "text/plain": string;
+          };
         };
-        get?: never;
-        put?: never;
-        /** Create a new event */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": Record<string, never>;
-                };
-            };
-            responses: {
-                /** @description Event created */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Invalid request body or request param */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": string;
-                    };
-                };
-                /** @description Expired JWT token used or insufficient privilege */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": string;
-                    };
-                };
-                /** @description Internal server error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": string;
-                    };
-                };
-            };
+        /** Expired JWT token used or insufficient privilege */
+        401: {
+          content: {
+            "text/plain": string;
+          };
         };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+        /** Internal server error */
+        500: {
+          content: {
+            "text/plain": string;
+          };
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": { [key: string]: unknown };
+        };
+      };
     };
-    "/events/delete": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Bulk delete events */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
+  };
+  "/events/delete": {
+    post: {
+      responses: {
+        /** event deleted */
+        200: {
+          content: {
+            "application/json": {
+              deleted?: string[];
             };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        /** @description The ids of the bulkdeleterequest. */
-                        ids: string[];
-                    };
-                };
-            };
-            responses: {
-                /** @description event deleted */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            deleted?: string[];
-                        };
-                    };
-                };
-                /** @description Invalid request body or request param */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": string;
-                    };
-                };
-                /** @description Expired JWT token used or insufficient privilege */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": string;
-                    };
-                };
-                /** @description Internal server error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": string;
-                    };
-                };
-            };
+          };
         };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/events/status": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+        /** Invalid request body or request param */
+        400: {
+          content: {
+            "text/plain": string;
+          };
         };
-        get?: never;
-        /** Bulk update event status */
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        /** @description The ids of the bulkupdatestatusrequest. */
-                        ids: string[];
-                        /**
-                         * @description Current status of the resource.
-                         * @example failed
-                         */
-                        status: string;
-                    };
-                };
-            };
-            responses: {
-                /** @description Events updated */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            updated?: string[];
-                        };
-                    };
-                };
-                /** @description Invalid request body or request param */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": string;
-                    };
-                };
-                /** @description Expired JWT token used or insufficient privilege */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": string;
-                    };
-                };
-                /** @description Internal server error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": string;
-                    };
-                };
-            };
+        /** Expired JWT token used or insufficient privilege */
+        401: {
+          content: {
+            "text/plain": string;
+          };
         };
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/events/{id}/status": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+        /** Internal server error */
+        500: {
+          content: {
+            "text/plain": string;
+          };
         };
-        get?: never;
-        /** Update status of a single event */
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description ID of the event */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        /**
-                         * @description Current status of the resource.
-                         * @example completed
-                         */
-                        status: string;
-                    };
-                };
-            };
-            responses: {
-                /** @description Event status updated */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            message?: string;
-                            /** Format: uuid */
-                            event_id?: string;
-                            status?: string;
-                        };
-                    };
-                };
-                /** @description Invalid request body or request param */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": string;
-                    };
-                };
-                /** @description Expired JWT token used or insufficient privilege */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": string;
-                    };
-                };
-                /** @description Result not found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": string;
-                    };
-                };
-                /** @description Internal server error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": string;
-                    };
-                };
-            };
-        };
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/workspaces/{workspaceId}/events": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get workspace events
-         * @description Gets events for a workspace.
-         */
-        get: operations["getEventsOfWorkspace"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/events": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get events aggregate summary */
-        get: operations["getEventsAggregate"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/events/list": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get events list */
-        get: operations["getEvents"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/events/summary": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get event summary by user */
-        get: operations["getEventSummaryByUser"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/events/types": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get event types */
-        get: operations["getEventTypes"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-}
-export type webhooks = Record<string, never>;
-export interface components {
-    schemas: {
-        UpdateEventStatusRequest: {
-            /**
-             * @description Current status of the resource.
-             * @example completed
-             */
-            status: string;
-        };
-        BulkDeleteRequest: {
+      };
+      requestBody: {
+        content: {
+          "application/json": {
             /** @description The ids of the bulkdeleterequest. */
             ids: string[];
+          };
         };
-        BulkUpdateStatusRequest: {
+      };
+    };
+  };
+  "/events/status": {
+    put: {
+      responses: {
+        /** Events updated */
+        200: {
+          content: {
+            "application/json": {
+              updated?: string[];
+            };
+          };
+        };
+        /** Invalid request body or request param */
+        400: {
+          content: {
+            "text/plain": string;
+          };
+        };
+        /** Expired JWT token used or insufficient privilege */
+        401: {
+          content: {
+            "text/plain": string;
+          };
+        };
+        /** Internal server error */
+        500: {
+          content: {
+            "text/plain": string;
+          };
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": {
             /** @description The ids of the bulkupdatestatusrequest. */
             ids: string[];
             /**
@@ -492,80 +153,426 @@ export interface components {
              * @example failed
              */
             status: string;
+          };
         };
-        /** @description EventResult entity schema. */
-        EventResult: {
-            /** Format: uuid */
-            user_id: string;
-            /** Format: uuid */
-            system_id?: string;
-            /** @description The category of the event. */
-            category: string;
-            /** @description The action of the event. */
-            action: string;
-            /** @description Description of the event. */
-            description?: string;
-            /** @description The first name of the event. */
-            firstName?: string;
-            /** @description The last name of the event. */
-            lastName?: string;
-            /**
-             * Format: email
-             * @description email
-             */
-            email?: string;
-            /** @description One of (x-oapi-codegen-extra-tags-cloud, github, google) */
-            provider?: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the resource was created.
-             */
-            created_at?: string;
+      };
+    };
+  };
+  "/events/{id}/status": {
+    put: {
+      parameters: {
+        path: {
+          /** ID of the event */
+          id: string;
         };
-        EventsPage: {
+      };
+      responses: {
+        /** Event status updated */
+        200: {
+          content: {
+            "application/json": {
+              message?: string;
+              /** Format: uuid */
+              event_id?: string;
+              status?: string;
+            };
+          };
+        };
+        /** Invalid request body or request param */
+        400: {
+          content: {
+            "text/plain": string;
+          };
+        };
+        /** Expired JWT token used or insufficient privilege */
+        401: {
+          content: {
+            "text/plain": string;
+          };
+        };
+        /** Result not found */
+        404: {
+          content: {
+            "text/plain": string;
+          };
+        };
+        /** Internal server error */
+        500: {
+          content: {
+            "text/plain": string;
+          };
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": {
+            /**
+             * @description Current status of the resource.
+             * @example completed
+             */
+            status: string;
+          };
+        };
+      };
+    };
+  };
+  "/api/workspaces/{workspaceId}/events": {
+    /** Gets events for a workspace. */
+    get: operations["getEventsOfWorkspace"];
+  };
+  "/api/events": {
+    get: operations["getEventsAggregate"];
+  };
+  "/api/events/list": {
+    get: operations["getEvents"];
+  };
+  "/api/events/summary": {
+    get: operations["getEventSummaryByUser"];
+  };
+  "/api/events/types": {
+    get: operations["getEventTypes"];
+  };
+}
+
+export interface components {
+  schemas: {
+    UpdateEventStatusRequest: {
+      /**
+       * @description Current status of the resource.
+       * @example completed
+       */
+      status: string;
+    };
+    BulkDeleteRequest: {
+      /** @description The ids of the bulkdeleterequest. */
+      ids: string[];
+    };
+    BulkUpdateStatusRequest: {
+      /** @description The ids of the bulkupdatestatusrequest. */
+      ids: string[];
+      /**
+       * @description Current status of the resource.
+       * @example failed
+       */
+      status: string;
+    };
+    /** @description EventResult entity schema. */
+    EventResult: {
+      /** Format: uuid */
+      user_id: string;
+      /** Format: uuid */
+      system_id?: string;
+      /** @description The category of the event. */
+      category: string;
+      /** @description The action of the event. */
+      action: string;
+      /** @description Description of the event. */
+      description?: string;
+      /** @description The first name of the event. */
+      firstName?: string;
+      /** @description The last name of the event. */
+      lastName?: string;
+      /**
+       * Format: email
+       * @description email
+       */
+      email?: string;
+      /** @description One of (x-oapi-codegen-extra-tags-cloud, github, google) */
+      provider?: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the resource was created.
+       */
+      created_at?: string;
+    };
+    EventsPage: {
+      page?: number;
+      page_size?: number;
+      total_count?: number;
+      /** @description The data of the eventspage. */
+      data?: {
+        /** Format: uuid */
+        user_id: string;
+        /** Format: uuid */
+        system_id?: string;
+        /** @description The category of the event. */
+        category: string;
+        /** @description The action of the event. */
+        action: string;
+        /** @description Description of the event. */
+        description?: string;
+        /** @description The first name of the event. */
+        firstName?: string;
+        /** @description The last name of the event. */
+        lastName?: string;
+        /**
+         * Format: email
+         * @description email
+         */
+        email?: string;
+        /** @description One of (x-oapi-codegen-extra-tags-cloud, github, google) */
+        provider?: string;
+        /**
+         * Format: date-time
+         * @description Timestamp when the resource was created.
+         */
+        created_at?: string;
+      }[];
+    };
+    EventsAggregate: {
+      /** @description The audit of the eventsaggregate. */
+      audit?: number;
+    } & { [key: string]: unknown };
+    EventSummary: { [key: string]: unknown };
+    EventSummaryPage: {
+      /** @description Current page number of the result set. */
+      page?: number;
+      /** @description Number of items per page. */
+      page_size?: number;
+      /** @description Total number of items available. */
+      total_count?: number;
+      /** @description The data of the eventsummarypage. */
+      data?: { [key: string]: unknown }[];
+    };
+    EventType: {
+      /** @description The category of the eventtype. */
+      category?: string;
+      /** @description The action of the eventtype. */
+      action?: string;
+    };
+    ErrorResponse: {
+      /** @description The error of the errorresponse. */
+      error?: string;
+    };
+  };
+  responses: {
+    /** Invalid request body or request param */
+    400: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Expired JWT token used or insufficient privilege */
+    401: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Result not found */
+    404: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Internal server error */
+    500: {
+      content: {
+        "text/plain": string;
+      };
+    };
+  };
+  parameters: {
+    /** @description Workspace ID */
+    workspaceId: string;
+    /** @description Get responses by page */
+    page: string;
+    /** @description Get responses by pagesize */
+    pagesize: string;
+    /** @description Get responses that match search param value */
+    search: string;
+    /** @description Get ordered responses */
+    order: string;
+    cumulative: boolean;
+    /** @description Get filtered reponses */
+    filter: string;
+    /** @description Get filtered reponses */
+    eventsFilter: string;
+  };
+}
+
+export interface operations {
+  /** Gets events for a workspace. */
+  getEventsOfWorkspace: {
+    parameters: {
+      path: {
+        /** Workspace ID */
+        workspaceId: string;
+      };
+      query: {
+        /** Get responses by page */
+        page?: string;
+        /** Get responses by pagesize */
+        pagesize?: string;
+        /** Get responses that match search param value */
+        search?: string;
+        /** Get ordered responses */
+        order?: string;
+      };
+    };
+    responses: {
+      /** Workspace events */
+      200: {
+        content: {
+          "application/json": {
             page?: number;
             page_size?: number;
             total_count?: number;
             /** @description The data of the eventspage. */
             data?: {
-                /** Format: uuid */
-                user_id: string;
-                /** Format: uuid */
-                system_id?: string;
-                /** @description The category of the event. */
-                category: string;
-                /** @description The action of the event. */
-                action: string;
-                /** @description Description of the event. */
-                description?: string;
-                /** @description The first name of the event. */
-                firstName?: string;
-                /** @description The last name of the event. */
-                lastName?: string;
-                /**
-                 * Format: email
-                 * @description email
-                 */
-                email?: string;
-                /** @description One of (x-oapi-codegen-extra-tags-cloud, github, google) */
-                provider?: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the resource was created.
-                 */
-                created_at?: string;
+              /** Format: uuid */
+              user_id: string;
+              /** Format: uuid */
+              system_id?: string;
+              /** @description The category of the event. */
+              category: string;
+              /** @description The action of the event. */
+              action: string;
+              /** @description Description of the event. */
+              description?: string;
+              /** @description The first name of the event. */
+              firstName?: string;
+              /** @description The last name of the event. */
+              lastName?: string;
+              /**
+               * Format: email
+               * @description email
+               */
+              email?: string;
+              /** @description One of (x-oapi-codegen-extra-tags-cloud, github, google) */
+              provider?: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was created.
+               */
+              created_at?: string;
             }[];
+          };
         };
-        EventsAggregate: {
+      };
+      /** Invalid request */
+      400: {
+        content: {
+          "application/json": {
+            /** @description The error of the errorresponse. */
+            error?: string;
+          };
+        };
+      };
+      /** Unauthorized */
+      401: unknown;
+      /** Workspace not found */
+      404: unknown;
+      /** Server error */
+      500: unknown;
+    };
+  };
+  getEventsAggregate: {
+    parameters: {
+      query: {
+        cumulative?: boolean;
+      };
+    };
+    responses: {
+      /** Events aggregate */
+      200: {
+        content: {
+          "application/json": {
             /** @description The audit of the eventsaggregate. */
             audit?: number;
-        } & {
-            [key: string]: unknown;
+          } & { [key: string]: unknown };
         };
-        EventSummary: {
-            [key: string]: unknown;
+      };
+      /** Unauthorized */
+      401: unknown;
+      /** Not found */
+      404: unknown;
+      /** Server error */
+      500: unknown;
+    };
+  };
+  getEvents: {
+    parameters: {
+      query: {
+        /** Get responses by page */
+        page?: string;
+        /** Get responses by pagesize */
+        pagesize?: string;
+        /** Get responses that match search param value */
+        search?: string;
+        /** Get ordered responses */
+        order?: string;
+        /** Get filtered reponses */
+        filter?: string;
+      };
+    };
+    responses: {
+      /** Events page */
+      200: {
+        content: {
+          "application/json": {
+            page?: number;
+            page_size?: number;
+            total_count?: number;
+            /** @description The data of the eventspage. */
+            data?: {
+              /** Format: uuid */
+              user_id: string;
+              /** Format: uuid */
+              system_id?: string;
+              /** @description The category of the event. */
+              category: string;
+              /** @description The action of the event. */
+              action: string;
+              /** @description Description of the event. */
+              description?: string;
+              /** @description The first name of the event. */
+              firstName?: string;
+              /** @description The last name of the event. */
+              lastName?: string;
+              /**
+               * Format: email
+               * @description email
+               */
+              email?: string;
+              /** @description One of (x-oapi-codegen-extra-tags-cloud, github, google) */
+              provider?: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was created.
+               */
+              created_at?: string;
+            }[];
+          };
         };
-        EventSummaryPage: {
+      };
+      /** Unauthorized */
+      401: unknown;
+      /** Not found */
+      404: unknown;
+      /** Server error */
+      500: unknown;
+    };
+  };
+  getEventSummaryByUser: {
+    parameters: {
+      query: {
+        /** Get responses by page */
+        page?: string;
+        /** Get responses by pagesize */
+        pagesize?: string;
+        /** Get responses that match search param value */
+        search?: string;
+        /** Get ordered responses */
+        order?: string;
+        /** Get filtered reponses */
+        filter?: string;
+      };
+    };
+    responses: {
+      /** Event summary page */
+      200: {
+        content: {
+          "application/json": {
             /** @description Current page number of the result set. */
             page?: number;
             /** @description Number of items per page. */
@@ -573,425 +580,47 @@ export interface components {
             /** @description Total number of items available. */
             total_count?: number;
             /** @description The data of the eventsummarypage. */
-            data?: {
-                [key: string]: unknown;
-            }[];
+            data?: { [key: string]: unknown }[];
+          };
         };
-        EventType: {
+      };
+      /** Unauthorized */
+      401: unknown;
+      /** Not found */
+      404: unknown;
+      /** Server error */
+      500: unknown;
+    };
+  };
+  getEventTypes: {
+    parameters: {
+      query: {
+        /** Get responses by page */
+        page?: string;
+        /** Get responses by pagesize */
+        pagesize?: string;
+      };
+    };
+    responses: {
+      /** Event types */
+      200: {
+        content: {
+          "application/json": {
             /** @description The category of the eventtype. */
             category?: string;
             /** @description The action of the eventtype. */
             action?: string;
+          }[];
         };
-        ErrorResponse: {
-            /** @description The error of the errorresponse. */
-            error?: string;
-        };
+      };
+      /** Unauthorized */
+      401: unknown;
+      /** Not found */
+      404: unknown;
+      /** Server error */
+      500: unknown;
     };
-    responses: {
-        /** @description Invalid request body or request param */
-        400: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
-        };
-        /** @description Expired JWT token used or insufficient privilege */
-        401: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
-        };
-        /** @description Result not found */
-        404: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
-        };
-        /** @description Internal server error */
-        500: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
-        };
-    };
-    parameters: {
-        /** @description Workspace ID */
-        workspaceId: string;
-        /** @description Get responses by page */
-        page: string;
-        /** @description Get responses by pagesize */
-        pagesize: string;
-        /** @description Get responses that match search param value */
-        search: string;
-        /** @description Get ordered responses */
-        order: string;
-        cumulative: boolean;
-        /** @description Get filtered reponses */
-        filter: string;
-        /** @description Get filtered reponses */
-        eventsFilter: string;
-    };
-    requestBodies: never;
-    headers: never;
-    pathItems: never;
+  };
 }
-export type $defs = Record<string, never>;
-export interface operations {
-    getEventsOfWorkspace: {
-        parameters: {
-            query?: {
-                /** @description Get responses by page */
-                page?: string;
-                /** @description Get responses by pagesize */
-                pagesize?: string;
-                /** @description Get responses that match search param value */
-                search?: string;
-                /** @description Get ordered responses */
-                order?: string;
-            };
-            header?: never;
-            path: {
-                /** @description Workspace ID */
-                workspaceId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Workspace events */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        page?: number;
-                        page_size?: number;
-                        total_count?: number;
-                        /** @description The data of the eventspage. */
-                        data?: {
-                            /** Format: uuid */
-                            user_id: string;
-                            /** Format: uuid */
-                            system_id?: string;
-                            /** @description The category of the event. */
-                            category: string;
-                            /** @description The action of the event. */
-                            action: string;
-                            /** @description Description of the event. */
-                            description?: string;
-                            /** @description The first name of the event. */
-                            firstName?: string;
-                            /** @description The last name of the event. */
-                            lastName?: string;
-                            /**
-                             * Format: email
-                             * @description email
-                             */
-                            email?: string;
-                            /** @description One of (x-oapi-codegen-extra-tags-cloud, github, google) */
-                            provider?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the resource was created.
-                             */
-                            created_at?: string;
-                        }[];
-                    };
-                };
-            };
-            /** @description Invalid request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @description The error of the errorresponse. */
-                        error?: string;
-                    };
-                };
-            };
-            /** @description Unauthorized */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Workspace not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getEventsAggregate: {
-        parameters: {
-            query?: {
-                cumulative?: boolean;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Events aggregate */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @description The audit of the eventsaggregate. */
-                        audit?: number;
-                    } & {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-            /** @description Unauthorized */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getEvents: {
-        parameters: {
-            query?: {
-                /** @description Get responses by page */
-                page?: string;
-                /** @description Get responses by pagesize */
-                pagesize?: string;
-                /** @description Get responses that match search param value */
-                search?: string;
-                /** @description Get ordered responses */
-                order?: string;
-                /** @description Get filtered reponses */
-                filter?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Events page */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        page?: number;
-                        page_size?: number;
-                        total_count?: number;
-                        /** @description The data of the eventspage. */
-                        data?: {
-                            /** Format: uuid */
-                            user_id: string;
-                            /** Format: uuid */
-                            system_id?: string;
-                            /** @description The category of the event. */
-                            category: string;
-                            /** @description The action of the event. */
-                            action: string;
-                            /** @description Description of the event. */
-                            description?: string;
-                            /** @description The first name of the event. */
-                            firstName?: string;
-                            /** @description The last name of the event. */
-                            lastName?: string;
-                            /**
-                             * Format: email
-                             * @description email
-                             */
-                            email?: string;
-                            /** @description One of (x-oapi-codegen-extra-tags-cloud, github, google) */
-                            provider?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the resource was created.
-                             */
-                            created_at?: string;
-                        }[];
-                    };
-                };
-            };
-            /** @description Unauthorized */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getEventSummaryByUser: {
-        parameters: {
-            query?: {
-                /** @description Get responses by page */
-                page?: string;
-                /** @description Get responses by pagesize */
-                pagesize?: string;
-                /** @description Get responses that match search param value */
-                search?: string;
-                /** @description Get ordered responses */
-                order?: string;
-                /** @description Get filtered reponses */
-                filter?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Event summary page */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @description Current page number of the result set. */
-                        page?: number;
-                        /** @description Number of items per page. */
-                        page_size?: number;
-                        /** @description Total number of items available. */
-                        total_count?: number;
-                        /** @description The data of the eventsummarypage. */
-                        data?: {
-                            [key: string]: unknown;
-                        }[];
-                    };
-                };
-            };
-            /** @description Unauthorized */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getEventTypes: {
-        parameters: {
-            query?: {
-                /** @description Get responses by page */
-                page?: string;
-                /** @description Get responses by pagesize */
-                pagesize?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Event types */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @description The category of the eventtype. */
-                        category?: string;
-                        /** @description The action of the eventtype. */
-                        action?: string;
-                    }[];
-                };
-            };
-            /** @description Unauthorized */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-}
+
+export interface external {}

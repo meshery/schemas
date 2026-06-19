@@ -4,68 +4,326 @@
  */
 
 export interface paths {
-    "/api/identity/orgs/{orgId}/users/keys": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get User Keys
-         * @description Get all keys based on roles assigned to user
-         */
-        get: operations["getUserKeys"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/auth/keys": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List key */
-        get: operations["getKeys"];
-        put?: never;
-        /** Create or update a key */
-        post: operations["upsertKey"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/auth/key/{keyId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get key by ID */
-        get: operations["getKeyById"];
-        put?: never;
-        post?: never;
-        /** Delete key */
-        delete: operations["deleteKey"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
+  "/api/identity/orgs/{orgId}/users/keys": {
+    /** Get all keys based on roles assigned to user */
+    get: operations["getUserKeys"];
+  };
+  "/api/auth/keys": {
+    get: operations["getKeys"];
+    post: operations["upsertKey"];
+  };
+  "/api/auth/key/{keyId}": {
+    get: operations["getKeyById"];
+    delete: operations["deleteKey"];
+  };
 }
-export type webhooks = Record<string, never>;
+
 export interface components {
-    schemas: {
-        /** @description Represents an authorization key used for access control. */
-        Key: {
+  schemas: {
+    /** @description Represents an authorization key used for access control. */
+    Key: {
+      /**
+       * Format: uuid
+       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+       */
+      id: string;
+      /**
+       * Format: uuid
+       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+       */
+      owner: string;
+      /** @description Operation permitted by the key. */
+      function: string;
+      /** @description Category for the key. */
+      category: string;
+      /** @description Subcategory for the key. */
+      subcategory: string;
+      /** @description Human readable description of the key. */
+      description: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the resource was created.
+       */
+      created_at: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the resource was updated.
+       */
+      updated_at: string;
+      /**
+       * Format: date-time
+       * @description SQL null Timestamp to handle null values of time.
+       */
+      deleted_at?: string;
+    };
+    /** @description Payload for creating or updating a key. */
+    KeyPayload: {
+      /**
+       * Format: uuid
+       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+       */
+      id?: string;
+      /** @description Operation permitted by the key. */
+      function?: string;
+      /** @description Category for the key. */
+      category?: string;
+      /** @description Subcategory for the key. */
+      subcategory?: string;
+      /** @description Human readable description of the key. */
+      description?: string;
+    };
+    KeyPage: {
+      page: number;
+      page_size: number;
+      total_count: number;
+      /** @description The keys of the keypage. */
+      keys: {
+        /**
+         * Format: uuid
+         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+         */
+        id: string;
+        /**
+         * Format: uuid
+         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+         */
+        owner: string;
+        /** @description Operation permitted by the key. */
+        function: string;
+        /** @description Category for the key. */
+        category: string;
+        /** @description Subcategory for the key. */
+        subcategory: string;
+        /** @description Human readable description of the key. */
+        description: string;
+        /**
+         * Format: date-time
+         * @description Timestamp when the resource was created.
+         */
+        created_at: string;
+        /**
+         * Format: date-time
+         * @description Timestamp when the resource was updated.
+         */
+        updated_at: string;
+        /**
+         * Format: date-time
+         * @description SQL null Timestamp to handle null values of time.
+         */
+        deleted_at?: string;
+      }[];
+    };
+  };
+  responses: {
+    /** Invalid request body or request param */
+    400: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Expired JWT token used or insufficient privilege */
+    401: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Result not found */
+    404: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Internal server error */
+    500: {
+      content: {
+        "text/plain": string;
+      };
+    };
+  };
+  parameters: {
+    /** @description Organization ID */
+    orgId: string;
+    /** @description Key ID */
+    keyId: string;
+    /** @description Get responses by page */
+    page: string;
+    /** @description Get responses by pagesize */
+    pagesize: string;
+    /** @description Get ordered responses */
+    order: string;
+    /** @description Get responses that match search param value */
+    search: string;
+  };
+}
+
+export interface operations {
+  /** Get all keys based on roles assigned to user */
+  getUserKeys: {
+    parameters: {
+      path: {
+        /** Organization ID */
+        orgId: string;
+      };
+      query: {
+        /** Get responses by page */
+        page?: string;
+        /** Get responses by pagesize */
+        pagesize?: string;
+      };
+    };
+    responses: {
+      /** Returns user keys based on roles assigned to user */
+      200: {
+        content: {
+          "application/json": {
+            page: number;
+            page_size: number;
+            total_count: number;
+            /** @description The keys of the keypage. */
+            keys: {
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              id: string;
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              owner: string;
+              /** @description Operation permitted by the key. */
+              function: string;
+              /** @description Category for the key. */
+              category: string;
+              /** @description Subcategory for the key. */
+              subcategory: string;
+              /** @description Human readable description of the key. */
+              description: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was created.
+               */
+              created_at: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was updated.
+               */
+              updated_at: string;
+              /**
+               * Format: date-time
+               * @description SQL null Timestamp to handle null values of time.
+               */
+              deleted_at?: string;
+            }[];
+          };
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  getKeys: {
+    parameters: {
+      query: {
+        /** Get responses by page */
+        page?: string;
+        /** Get responses by pagesize */
+        pagesize?: string;
+        /** Get responses that match search param value */
+        search?: string;
+        /** Get ordered responses */
+        order?: string;
+      };
+    };
+    responses: {
+      /** Keys fetched */
+      200: {
+        content: {
+          "application/json": {
+            page: number;
+            page_size: number;
+            total_count: number;
+            /** @description The keys of the keypage. */
+            keys: {
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              id: string;
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              owner: string;
+              /** @description Operation permitted by the key. */
+              function: string;
+              /** @description Category for the key. */
+              category: string;
+              /** @description Subcategory for the key. */
+              subcategory: string;
+              /** @description Human readable description of the key. */
+              description: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was created.
+               */
+              created_at: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was updated.
+               */
+              updated_at: string;
+              /**
+               * Format: date-time
+               * @description SQL null Timestamp to handle null values of time.
+               */
+              deleted_at?: string;
+            }[];
+          };
+        };
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  upsertKey: {
+    responses: {
+      /** Key upserted */
+      200: {
+        content: {
+          "application/json": {
             /**
              * Format: uuid
              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -99,561 +357,158 @@ export interface components {
              * @description SQL null Timestamp to handle null values of time.
              */
             deleted_at?: string;
+          };
         };
-        /** @description Payload for creating or updating a key. */
-        KeyPayload: {
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /**
+           * Format: uuid
+           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+           */
+          id?: string;
+          /** @description Operation permitted by the key. */
+          function?: string;
+          /** @description Category for the key. */
+          category?: string;
+          /** @description Subcategory for the key. */
+          subcategory?: string;
+          /** @description Human readable description of the key. */
+          description?: string;
+        };
+      };
+    };
+  };
+  getKeyById: {
+    parameters: {
+      path: {
+        /** Key ID */
+        keyId: string;
+      };
+    };
+    responses: {
+      /** Key response */
+      200: {
+        content: {
+          "application/json": {
             /**
              * Format: uuid
              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
-            id?: string;
+            id: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            owner: string;
             /** @description Operation permitted by the key. */
-            function?: string;
+            function: string;
             /** @description Category for the key. */
-            category?: string;
+            category: string;
             /** @description Subcategory for the key. */
-            subcategory?: string;
+            subcategory: string;
             /** @description Human readable description of the key. */
-            description?: string;
+            description: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the resource was created.
+             */
+            created_at: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the resource was updated.
+             */
+            updated_at: string;
+            /**
+             * Format: date-time
+             * @description SQL null Timestamp to handle null values of time.
+             */
+            deleted_at?: string;
+          };
         };
-        KeyPage: {
-            page: number;
-            page_size: number;
-            total_count: number;
-            /** @description The keys of the keypage. */
-            keys: {
-                /**
-                 * Format: uuid
-                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                 */
-                id: string;
-                /**
-                 * Format: uuid
-                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                 */
-                owner: string;
-                /** @description Operation permitted by the key. */
-                function: string;
-                /** @description Category for the key. */
-                category: string;
-                /** @description Subcategory for the key. */
-                subcategory: string;
-                /** @description Human readable description of the key. */
-                description: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the resource was created.
-                 */
-                created_at: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the resource was updated.
-                 */
-                updated_at: string;
-                /**
-                 * Format: date-time
-                 * @description SQL null Timestamp to handle null values of time.
-                 */
-                deleted_at?: string;
-            }[];
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
         };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  deleteKey: {
+    parameters: {
+      path: {
+        /** Key ID */
+        keyId: string;
+      };
     };
     responses: {
-        /** @description Invalid request body or request param */
-        400: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
+      /** Key deleted */
+      204: never;
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
         };
-        /** @description Expired JWT token used or insufficient privilege */
-        401: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
         };
-        /** @description Result not found */
-        404: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
         };
-        /** @description Internal server error */
-        500: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
         };
+      };
     };
-    parameters: {
-        /** @description Organization ID */
-        orgId: string;
-        /** @description Key ID */
-        keyId: string;
-        /** @description Get responses by page */
-        page: string;
-        /** @description Get responses by pagesize */
-        pagesize: string;
-        /** @description Get ordered responses */
-        order: string;
-        /** @description Get responses that match search param value */
-        search: string;
-    };
-    requestBodies: never;
-    headers: never;
-    pathItems: never;
+  };
 }
-export type $defs = Record<string, never>;
-export interface operations {
-    getUserKeys: {
-        parameters: {
-            query?: {
-                /** @description Get responses by page */
-                page?: string;
-                /** @description Get responses by pagesize */
-                pagesize?: string;
-            };
-            header?: never;
-            path: {
-                /** @description Organization ID */
-                orgId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Returns user keys based on roles assigned to user */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        page: number;
-                        page_size: number;
-                        total_count: number;
-                        /** @description The keys of the keypage. */
-                        keys: {
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            id: string;
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            owner: string;
-                            /** @description Operation permitted by the key. */
-                            function: string;
-                            /** @description Category for the key. */
-                            category: string;
-                            /** @description Subcategory for the key. */
-                            subcategory: string;
-                            /** @description Human readable description of the key. */
-                            description: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the resource was created.
-                             */
-                            created_at: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the resource was updated.
-                             */
-                            updated_at: string;
-                            /**
-                             * Format: date-time
-                             * @description SQL null Timestamp to handle null values of time.
-                             */
-                            deleted_at?: string;
-                        }[];
-                    };
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    getKeys: {
-        parameters: {
-            query?: {
-                /** @description Get responses by page */
-                page?: string;
-                /** @description Get responses by pagesize */
-                pagesize?: string;
-                /** @description Get responses that match search param value */
-                search?: string;
-                /** @description Get ordered responses */
-                order?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Keys fetched */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        page: number;
-                        page_size: number;
-                        total_count: number;
-                        /** @description The keys of the keypage. */
-                        keys: {
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            id: string;
-                            /**
-                             * Format: uuid
-                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                             */
-                            owner: string;
-                            /** @description Operation permitted by the key. */
-                            function: string;
-                            /** @description Category for the key. */
-                            category: string;
-                            /** @description Subcategory for the key. */
-                            subcategory: string;
-                            /** @description Human readable description of the key. */
-                            description: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the resource was created.
-                             */
-                            created_at: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the resource was updated.
-                             */
-                            updated_at: string;
-                            /**
-                             * Format: date-time
-                             * @description SQL null Timestamp to handle null values of time.
-                             */
-                            deleted_at?: string;
-                        }[];
-                    };
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    upsertKey: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    /**
-                     * Format: uuid
-                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                     */
-                    id?: string;
-                    /** @description Operation permitted by the key. */
-                    function?: string;
-                    /** @description Category for the key. */
-                    category?: string;
-                    /** @description Subcategory for the key. */
-                    subcategory?: string;
-                    /** @description Human readable description of the key. */
-                    description?: string;
-                };
-            };
-        };
-        responses: {
-            /** @description Key upserted */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        id: string;
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        owner: string;
-                        /** @description Operation permitted by the key. */
-                        function: string;
-                        /** @description Category for the key. */
-                        category: string;
-                        /** @description Subcategory for the key. */
-                        subcategory: string;
-                        /** @description Human readable description of the key. */
-                        description: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the resource was created.
-                         */
-                        created_at: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the resource was updated.
-                         */
-                        updated_at: string;
-                        /**
-                         * Format: date-time
-                         * @description SQL null Timestamp to handle null values of time.
-                         */
-                        deleted_at?: string;
-                    };
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    getKeyById: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Key ID */
-                keyId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Key response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        id: string;
-                        /**
-                         * Format: uuid
-                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                         */
-                        owner: string;
-                        /** @description Operation permitted by the key. */
-                        function: string;
-                        /** @description Category for the key. */
-                        category: string;
-                        /** @description Subcategory for the key. */
-                        subcategory: string;
-                        /** @description Human readable description of the key. */
-                        description: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the resource was created.
-                         */
-                        created_at: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the resource was updated.
-                         */
-                        updated_at: string;
-                        /**
-                         * Format: date-time
-                         * @description SQL null Timestamp to handle null values of time.
-                         */
-                        deleted_at?: string;
-                    };
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    deleteKey: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Key ID */
-                keyId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Key deleted */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-}
+
+export interface external {}

@@ -4,102 +4,418 @@
  */
 
 export interface paths {
-    "/api/content/views": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get views
-         * @description Returns a paginated list of views accessible to the user.
-         */
-        get: operations["getViews"];
-        put?: never;
-        /**
-         * Create a view
-         * @description Creates a new view with the given filters and metadata.
-         */
-        post: operations["createView"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/content/view/share": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Share a view by email
-         * @description Shares a view with a list of email addresses. When `share` is true, the
-         *     view's visibility is flipped to public and an invitation email is sent
-         *     to each recipient. When `share` is false, visibility is reverted to
-         *     private. Only the owner of the view (or a provider admin) may change
-         *     its sharing mode.
-         */
-        post: operations["shareView"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/content/views/{viewId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get a view by ID
-         * @description Returns a single view by its unique identifier.
-         */
-        get: operations["getViewById"];
-        /**
-         * Update a view
-         * @description Updates an existing view with new filters, metadata, or visibility.
-         */
-        put: operations["updateView"];
-        post?: never;
-        /**
-         * Delete a view
-         * @description Soft-deletes a view by its unique identifier.
-         */
-        delete: operations["deleteView"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
+  "/api/content/views": {
+    /** Returns a paginated list of views accessible to the user. */
+    get: operations["getViews"];
+    /** Creates a new view with the given filters and metadata. */
+    post: operations["createView"];
+  };
+  "/api/content/view/share": {
+    /**
+     * Shares a view with a list of email addresses. When `share` is true, the
+     * view's visibility is flipped to public and an invitation email is sent
+     * to each recipient. When `share` is false, visibility is reverted to
+     * private. Only the owner of the view (or a provider admin) may change
+     * its sharing mode.
+     */
+    post: operations["shareView"];
+  };
+  "/api/content/views/{viewId}": {
+    /** Returns a single view by its unique identifier. */
+    get: operations["getViewById"];
+    /** Updates an existing view with new filters, metadata, or visibility. */
+    put: operations["updateView"];
+    /** Soft-deletes a view by its unique identifier. */
+    delete: operations["deleteView"];
+  };
 }
-export type webhooks = Record<string, never>;
+
 export interface components {
-    schemas: {
+  schemas: {
+    /**
+     * MesheryView
+     * @description A saved view with filters and metadata that defines a customized perspective of Meshery resources. Learn more at https://docs.meshery.io/concepts/logical/views
+     * @example {
+     *   "id": "00000000-0000-0000-0000-000000000000",
+     *   "name": "My Kubernetes View",
+     *   "visibility": "private",
+     *   "filters": {},
+     *   "metadata": {},
+     *   "user_id": "00000000-0000-0000-0000-000000000000",
+     *   "created_at": "0001-01-01T00:00:00Z",
+     *   "updated_at": "0001-01-01T00:00:00Z",
+     *   "deleted_at": null
+     * }
+     */
+    MesheryView: {
+      /**
+       * Format: uuid
+       * @description Unique identifier for the view.
+       */
+      id: string;
+      /** @description Display name of the view. */
+      name: string;
+      /** @description Visibility level of the view. */
+      visibility: string;
+      /** @description Filter configuration that defines which resources this view displays. */
+      filters?: { [key: string]: unknown };
+      /** @description Additional metadata associated with the view. */
+      metadata?: { [key: string]: unknown };
+      /**
+       * Format: uuid
+       * @description ID of the user who created the view.
+       */
+      user_id: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the view was created.
+       */
+      created_at: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the view was last updated.
+       */
+      updated_at: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the view was soft deleted. Null while the view remains active.
+       */
+      deleted_at?: string | null;
+    };
+    /** @description A view enriched with the workspace and organization it belongs to. */
+    MesheryViewWithLocation: {
+      /** Format: uuid */
+      id?: string;
+      /** @description Display name of the view. */
+      name?: string;
+      /** @description Visibility level of the view. */
+      visibility?: string;
+      /** @description Filter configuration for this view. */
+      filters?: { [key: string]: unknown };
+      /** @description Metadata associated with the view. */
+      metadata?: { [key: string]: unknown };
+      /**
+       * Format: uuid
+       * @description ID of the user who created the view.
+       */
+      user_id?: string;
+      /** @description Name of the workspace this view belongs to. */
+      workspace_name?: string;
+      /**
+       * Format: uuid
+       * @description ID of the workspace this view belongs to.
+       */
+      workspace_id: string;
+      /**
+       * Format: uuid
+       * @description ID of the organization this view belongs to.
+       */
+      organization_id: string;
+      /** @description Name of the organization this view belongs to. */
+      organization_name?: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the resource was created.
+       */
+      created_at?: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the resource was updated.
+       */
+      updated_at?: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the view was soft deleted. Null while the view remains active.
+       */
+      deleted_at?: string;
+    };
+    /** @description Payload for creating or updating a view. */
+    ViewPayload: {
+      /** @description Display name of the view. */
+      name: string;
+      /** @description Filter configuration for this view. */
+      filters?: { [key: string]: unknown };
+      /** @description Visibility level of the view. */
+      visibility?: string;
+      /** @description Metadata associated with the view. */
+      metadata?: { [key: string]: unknown };
+    };
+    /**
+     * @description Payload for sharing a view with one or more recipients by email. The
+     * wire format matches the canonical design share payload
+     * (`design.ContentSharePayload` in `v1beta2/design`), restricted to the
+     * `view` content type since that is all this endpoint accepts.
+     */
+    ContentSharePayload: {
+      /**
+       * Format: uuid
+       * @description Identifier of the view being shared.
+       */
+      content_id: string;
+      /**
+       * @description The kind of content being shared. Only `view` is accepted on this
+       * endpoint.
+       *
+       * @enum {string}
+       */
+      content_type: "view";
+      /** @description Email addresses of the recipients to share this view with. */
+      emails: string[];
+      /**
+       * @description When true, flip the view's visibility to public and send invitation
+       * emails to the recipients. When false, revert visibility to private.
+       */
+      share: boolean;
+    };
+    /** @description Paginated list of views with location enrichment. */
+    MesheryViewPage: {
+      page?: number;
+      page_size?: number;
+      total_count?: number;
+      /** @description Views in this page, enriched with workspace and organization context. */
+      views?: {
+        /** Format: uuid */
+        id?: string;
+        /** @description Display name of the view. */
+        name?: string;
+        /** @description Visibility level of the view. */
+        visibility?: string;
+        /** @description Filter configuration for this view. */
+        filters?: { [key: string]: unknown };
+        /** @description Metadata associated with the view. */
+        metadata?: { [key: string]: unknown };
         /**
-         * MesheryView
-         * @description A saved view with filters and metadata that defines a customized perspective of Meshery resources. Learn more at https://docs.meshery.io/concepts/logical/views
-         * @example {
-         *       "id": "00000000-0000-0000-0000-000000000000",
-         *       "name": "My Kubernetes View",
-         *       "visibility": "private",
-         *       "filters": {},
-         *       "metadata": {},
-         *       "user_id": "00000000-0000-0000-0000-000000000000",
-         *       "created_at": "0001-01-01T00:00:00Z",
-         *       "updated_at": "0001-01-01T00:00:00Z",
-         *       "deleted_at": null
-         *     }
+         * Format: uuid
+         * @description ID of the user who created the view.
          */
-        MesheryView: {
+        user_id?: string;
+        /** @description Name of the workspace this view belongs to. */
+        workspace_name?: string;
+        /**
+         * Format: uuid
+         * @description ID of the workspace this view belongs to.
+         */
+        workspace_id: string;
+        /**
+         * Format: uuid
+         * @description ID of the organization this view belongs to.
+         */
+        organization_id: string;
+        /** @description Name of the organization this view belongs to. */
+        organization_name?: string;
+        /**
+         * Format: date-time
+         * @description Timestamp when the resource was created.
+         */
+        created_at?: string;
+        /**
+         * Format: date-time
+         * @description Timestamp when the resource was updated.
+         */
+        updated_at?: string;
+        /**
+         * Format: date-time
+         * @description Timestamp when the view was soft deleted. Null while the view remains active.
+         */
+        deleted_at?: string;
+      }[];
+    };
+  };
+  responses: {
+    /** ok */
+    200: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Invalid request body or request param */
+    400: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Expired JWT token used or insufficient privilege */
+    401: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Result not found */
+    404: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Internal server error */
+    500: {
+      content: {
+        "text/plain": string;
+      };
+    };
+  };
+  parameters: {
+    /** @description View ID */
+    viewId: string;
+    /** @description Get responses that match search param value */
+    search: string;
+    /** @description Get ordered responses */
+    order: string;
+    /** @description Get responses by page */
+    page: string;
+    /** @description Get responses by pagesize */
+    pagesize: string;
+    /** @description Organization ID to scope the request. */
+    orgIdQuery: string;
+  };
+  requestBodies: {
+    /** Body for creating or updating a view */
+    viewPayload: {
+      content: {
+        "application/json": {
+          /** @description Display name of the view. */
+          name: string;
+          /** @description Filter configuration for this view. */
+          filters?: { [key: string]: unknown };
+          /** @description Visibility level of the view. */
+          visibility?: string;
+          /** @description Metadata associated with the view. */
+          metadata?: { [key: string]: unknown };
+        };
+      };
+    };
+    /** Body for sharing a view with recipients by email. */
+    contentSharePayload: {
+      content: {
+        "application/json": {
+          /**
+           * Format: uuid
+           * @description Identifier of the view being shared.
+           */
+          content_id: string;
+          /**
+           * @description The kind of content being shared. Only `view` is accepted on this
+           * endpoint.
+           *
+           * @enum {string}
+           */
+          content_type: "view";
+          /** @description Email addresses of the recipients to share this view with. */
+          emails: string[];
+          /**
+           * @description When true, flip the view's visibility to public and send invitation
+           * emails to the recipients. When false, revert visibility to private.
+           */
+          share: boolean;
+        };
+      };
+    };
+  };
+}
+
+export interface operations {
+  /** Returns a paginated list of views accessible to the user. */
+  getViews: {
+    parameters: {
+      query: {
+        /** Get responses that match search param value */
+        search?: string;
+        /** Get ordered responses */
+        order?: string;
+        /** Get responses by page */
+        page?: string;
+        /** Get responses by pagesize */
+        pagesize?: string;
+        /** JSON-encoded filter string for assignment and soft-delete filters. */
+        filter?: string;
+        /** When true, include views shared with the user. */
+        shared?: boolean;
+        /** Filter by visibility level (public, private). */
+        visibility?: string;
+        /** Organization ID to scope the request. */
+        orgId?: string;
+        /** UUID of the user whose views to retrieve. */
+        userId?: string;
+      };
+    };
+    responses: {
+      /** Views page */
+      200: {
+        content: {
+          "application/json": {
+            page?: number;
+            page_size?: number;
+            total_count?: number;
+            /** @description Views in this page, enriched with workspace and organization context. */
+            views?: {
+              /** Format: uuid */
+              id?: string;
+              /** @description Display name of the view. */
+              name?: string;
+              /** @description Visibility level of the view. */
+              visibility?: string;
+              /** @description Filter configuration for this view. */
+              filters?: { [key: string]: unknown };
+              /** @description Metadata associated with the view. */
+              metadata?: { [key: string]: unknown };
+              /**
+               * Format: uuid
+               * @description ID of the user who created the view.
+               */
+              user_id?: string;
+              /** @description Name of the workspace this view belongs to. */
+              workspace_name?: string;
+              /**
+               * Format: uuid
+               * @description ID of the workspace this view belongs to.
+               */
+              workspace_id: string;
+              /**
+               * Format: uuid
+               * @description ID of the organization this view belongs to.
+               */
+              organization_id: string;
+              /** @description Name of the organization this view belongs to. */
+              organization_name?: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was created.
+               */
+              created_at?: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was updated.
+               */
+              updated_at?: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the view was soft deleted. Null while the view remains active.
+               */
+              deleted_at?: string;
+            }[];
+          };
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  /** Creates a new view with the given filters and metadata. */
+  createView: {
+    responses: {
+      /** Created view */
+      201: {
+        content: {
+          "application/json": {
             /**
              * Format: uuid
              * @description Unique identifier for the view.
@@ -110,9 +426,9 @@ export interface components {
             /** @description Visibility level of the view. */
             visibility: string;
             /** @description Filter configuration that defines which resources this view displays. */
-            filters?: Record<string, never>;
+            filters?: { [key: string]: unknown };
             /** @description Additional metadata associated with the view. */
-            metadata?: Record<string, never>;
+            metadata?: { [key: string]: unknown };
             /**
              * Format: uuid
              * @description ID of the user who created the view.
@@ -133,796 +449,311 @@ export interface components {
              * @description Timestamp when the view was soft deleted. Null while the view remains active.
              */
             deleted_at?: string | null;
+          };
         };
-        /** @description A view enriched with the workspace and organization it belongs to. */
-        MesheryViewWithLocation: {
-            /** Format: uuid */
-            id?: string;
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+    /** Body for creating or updating a view */
+    requestBody: {
+      content: {
+        "application/json": {
+          /** @description Display name of the view. */
+          name: string;
+          /** @description Filter configuration for this view. */
+          filters?: { [key: string]: unknown };
+          /** @description Visibility level of the view. */
+          visibility?: string;
+          /** @description Metadata associated with the view. */
+          metadata?: { [key: string]: unknown };
+        };
+      };
+    };
+  };
+  /**
+   * Shares a view with a list of email addresses. When `share` is true, the
+   * view's visibility is flipped to public and an invitation email is sent
+   * to each recipient. When `share` is false, visibility is reverted to
+   * private. Only the owner of the view (or a provider admin) may change
+   * its sharing mode.
+   */
+  shareView: {
+    responses: {
+      /** View shared. */
+      200: unknown;
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Caller is not the owner of the view. */
+      403: unknown;
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+    /** Body for sharing a view with recipients by email. */
+    requestBody: {
+      content: {
+        "application/json": {
+          /**
+           * Format: uuid
+           * @description Identifier of the view being shared.
+           */
+          content_id: string;
+          /**
+           * @description The kind of content being shared. Only `view` is accepted on this
+           * endpoint.
+           *
+           * @enum {string}
+           */
+          content_type: "view";
+          /** @description Email addresses of the recipients to share this view with. */
+          emails: string[];
+          /**
+           * @description When true, flip the view's visibility to public and send invitation
+           * emails to the recipients. When false, revert visibility to private.
+           */
+          share: boolean;
+        };
+      };
+    };
+  };
+  /** Returns a single view by its unique identifier. */
+  getViewById: {
+    parameters: {
+      path: {
+        /** View ID */
+        viewId: string;
+      };
+    };
+    responses: {
+      /** View */
+      200: {
+        content: {
+          "application/json": {
+            /**
+             * Format: uuid
+             * @description Unique identifier for the view.
+             */
+            id: string;
             /** @description Display name of the view. */
-            name?: string;
+            name: string;
             /** @description Visibility level of the view. */
-            visibility?: string;
-            /** @description Filter configuration for this view. */
-            filters?: Record<string, never>;
-            /** @description Metadata associated with the view. */
-            metadata?: Record<string, never>;
+            visibility: string;
+            /** @description Filter configuration that defines which resources this view displays. */
+            filters?: { [key: string]: unknown };
+            /** @description Additional metadata associated with the view. */
+            metadata?: { [key: string]: unknown };
             /**
              * Format: uuid
              * @description ID of the user who created the view.
              */
-            user_id?: string;
-            /** @description Name of the workspace this view belongs to. */
-            workspace_name?: string;
-            /**
-             * Format: uuid
-             * @description ID of the workspace this view belongs to.
-             */
-            workspace_id: string;
-            /**
-             * Format: uuid
-             * @description ID of the organization this view belongs to.
-             */
-            organization_id: string;
-            /** @description Name of the organization this view belongs to. */
-            organization_name?: string;
+            user_id: string;
             /**
              * Format: date-time
-             * @description Timestamp when the resource was created.
+             * @description Timestamp when the view was created.
              */
-            created_at?: string;
+            created_at: string;
             /**
              * Format: date-time
-             * @description Timestamp when the resource was updated.
+             * @description Timestamp when the view was last updated.
              */
-            updated_at?: string;
+            updated_at: string;
             /**
              * Format: date-time
              * @description Timestamp when the view was soft deleted. Null while the view remains active.
              */
-            deleted_at?: string;
+            deleted_at?: string | null;
+          };
         };
-        /** @description Payload for creating or updating a view. */
-        ViewPayload: {
-            /** @description Display name of the view. */
-            name: string;
-            /** @description Filter configuration for this view. */
-            filters?: Record<string, never>;
-            /** @description Visibility level of the view. */
-            visibility?: string;
-            /** @description Metadata associated with the view. */
-            metadata?: Record<string, never>;
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
         };
-        /**
-         * @description Payload for sharing a view with one or more recipients by email. The
-         *     wire format matches the canonical design share payload
-         *     (`design.ContentSharePayload` in `v1beta2/design`), restricted to the
-         *     `view` content type since that is all this endpoint accepts.
-         */
-        ContentSharePayload: {
-            /**
-             * Format: uuid
-             * @description Identifier of the view being shared.
-             */
-            content_id: string;
-            /**
-             * @description The kind of content being shared. Only `view` is accepted on this
-             *     endpoint.
-             * @enum {string}
-             */
-            content_type: "view";
-            /** @description Email addresses of the recipients to share this view with. */
-            emails: string[];
-            /**
-             * @description When true, flip the view's visibility to public and send invitation
-             *     emails to the recipients. When false, revert visibility to private.
-             */
-            share: boolean;
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
         };
-        /** @description Paginated list of views with location enrichment. */
-        MesheryViewPage: {
-            page?: number;
-            page_size?: number;
-            total_count?: number;
-            /** @description Views in this page, enriched with workspace and organization context. */
-            views?: {
-                /** Format: uuid */
-                id?: string;
-                /** @description Display name of the view. */
-                name?: string;
-                /** @description Visibility level of the view. */
-                visibility?: string;
-                /** @description Filter configuration for this view. */
-                filters?: Record<string, never>;
-                /** @description Metadata associated with the view. */
-                metadata?: Record<string, never>;
-                /**
-                 * Format: uuid
-                 * @description ID of the user who created the view.
-                 */
-                user_id?: string;
-                /** @description Name of the workspace this view belongs to. */
-                workspace_name?: string;
-                /**
-                 * Format: uuid
-                 * @description ID of the workspace this view belongs to.
-                 */
-                workspace_id: string;
-                /**
-                 * Format: uuid
-                 * @description ID of the organization this view belongs to.
-                 */
-                organization_id: string;
-                /** @description Name of the organization this view belongs to. */
-                organization_name?: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the resource was created.
-                 */
-                created_at?: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the resource was updated.
-                 */
-                updated_at?: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the view was soft deleted. Null while the view remains active.
-                 */
-                deleted_at?: string;
-            }[];
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
         };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  /** Updates an existing view with new filters, metadata, or visibility. */
+  updateView: {
+    parameters: {
+      path: {
+        /** View ID */
+        viewId: string;
+      };
     };
     responses: {
-        /** @description ok */
-        200: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
+      /** Updated view */
+      200: {
+        content: {
+          "application/json": {
+            /**
+             * Format: uuid
+             * @description Unique identifier for the view.
+             */
+            id: string;
+            /** @description Display name of the view. */
+            name: string;
+            /** @description Visibility level of the view. */
+            visibility: string;
+            /** @description Filter configuration that defines which resources this view displays. */
+            filters?: { [key: string]: unknown };
+            /** @description Additional metadata associated with the view. */
+            metadata?: { [key: string]: unknown };
+            /**
+             * Format: uuid
+             * @description ID of the user who created the view.
+             */
+            user_id: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the view was created.
+             */
+            created_at: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the view was last updated.
+             */
+            updated_at: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the view was soft deleted. Null while the view remains active.
+             */
+            deleted_at?: string | null;
+          };
         };
-        /** @description Invalid request body or request param */
-        400: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
         };
-        /** @description Expired JWT token used or insufficient privilege */
-        401: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
         };
-        /** @description Result not found */
-        404: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
         };
-        /** @description Internal server error */
-        500: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
         };
+      };
     };
+    /** Body for creating or updating a view */
+    requestBody: {
+      content: {
+        "application/json": {
+          /** @description Display name of the view. */
+          name: string;
+          /** @description Filter configuration for this view. */
+          filters?: { [key: string]: unknown };
+          /** @description Visibility level of the view. */
+          visibility?: string;
+          /** @description Metadata associated with the view. */
+          metadata?: { [key: string]: unknown };
+        };
+      };
+    };
+  };
+  /** Soft-deletes a view by its unique identifier. */
+  deleteView: {
     parameters: {
-        /** @description View ID */
+      path: {
+        /** View ID */
         viewId: string;
-        /** @description Get responses that match search param value */
-        search: string;
-        /** @description Get ordered responses */
-        order: string;
-        /** @description Get responses by page */
-        page: string;
-        /** @description Get responses by pagesize */
-        pagesize: string;
-        /** @description Organization ID to scope the request. */
-        orgIdQuery: string;
+      };
     };
-    requestBodies: {
-        /** @description Body for creating or updating a view */
-        viewPayload: {
-            content: {
-                "application/json": {
-                    /** @description Display name of the view. */
-                    name: string;
-                    /** @description Filter configuration for this view. */
-                    filters?: Record<string, never>;
-                    /** @description Visibility level of the view. */
-                    visibility?: string;
-                    /** @description Metadata associated with the view. */
-                    metadata?: Record<string, never>;
-                };
-            };
+    responses: {
+      /** View deleted */
+      204: never;
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
         };
-        /** @description Body for sharing a view with recipients by email. */
-        contentSharePayload: {
-            content: {
-                "application/json": {
-                    /**
-                     * Format: uuid
-                     * @description Identifier of the view being shared.
-                     */
-                    content_id: string;
-                    /**
-                     * @description The kind of content being shared. Only `view` is accepted on this
-                     *     endpoint.
-                     * @enum {string}
-                     */
-                    content_type: "view";
-                    /** @description Email addresses of the recipients to share this view with. */
-                    emails: string[];
-                    /**
-                     * @description When true, flip the view's visibility to public and send invitation
-                     *     emails to the recipients. When false, revert visibility to private.
-                     */
-                    share: boolean;
-                };
-            };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
         };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
     };
-    headers: never;
-    pathItems: never;
+  };
 }
-export type $defs = Record<string, never>;
-export interface operations {
-    getViews: {
-        parameters: {
-            query?: {
-                /** @description Get responses that match search param value */
-                search?: string;
-                /** @description Get ordered responses */
-                order?: string;
-                /** @description Get responses by page */
-                page?: string;
-                /** @description Get responses by pagesize */
-                pagesize?: string;
-                /** @description JSON-encoded filter string for assignment and soft-delete filters. */
-                filter?: string;
-                /** @description When true, include views shared with the user. */
-                shared?: boolean;
-                /** @description Filter by visibility level (public, private). */
-                visibility?: string;
-                /** @description Organization ID to scope the request. */
-                orgId?: string;
-                /** @description UUID of the user whose views to retrieve. */
-                userId?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Views page */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        page?: number;
-                        page_size?: number;
-                        total_count?: number;
-                        /** @description Views in this page, enriched with workspace and organization context. */
-                        views?: {
-                            /** Format: uuid */
-                            id?: string;
-                            /** @description Display name of the view. */
-                            name?: string;
-                            /** @description Visibility level of the view. */
-                            visibility?: string;
-                            /** @description Filter configuration for this view. */
-                            filters?: Record<string, never>;
-                            /** @description Metadata associated with the view. */
-                            metadata?: Record<string, never>;
-                            /**
-                             * Format: uuid
-                             * @description ID of the user who created the view.
-                             */
-                            user_id?: string;
-                            /** @description Name of the workspace this view belongs to. */
-                            workspace_name?: string;
-                            /**
-                             * Format: uuid
-                             * @description ID of the workspace this view belongs to.
-                             */
-                            workspace_id: string;
-                            /**
-                             * Format: uuid
-                             * @description ID of the organization this view belongs to.
-                             */
-                            organization_id: string;
-                            /** @description Name of the organization this view belongs to. */
-                            organization_name?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the resource was created.
-                             */
-                            created_at?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the resource was updated.
-                             */
-                            updated_at?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the view was soft deleted. Null while the view remains active.
-                             */
-                            deleted_at?: string;
-                        }[];
-                    };
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    createView: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description Body for creating or updating a view */
-        requestBody: {
-            content: {
-                "application/json": {
-                    /** @description Display name of the view. */
-                    name: string;
-                    /** @description Filter configuration for this view. */
-                    filters?: Record<string, never>;
-                    /** @description Visibility level of the view. */
-                    visibility?: string;
-                    /** @description Metadata associated with the view. */
-                    metadata?: Record<string, never>;
-                };
-            };
-        };
-        responses: {
-            /** @description Created view */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * Format: uuid
-                         * @description Unique identifier for the view.
-                         */
-                        id: string;
-                        /** @description Display name of the view. */
-                        name: string;
-                        /** @description Visibility level of the view. */
-                        visibility: string;
-                        /** @description Filter configuration that defines which resources this view displays. */
-                        filters?: Record<string, never>;
-                        /** @description Additional metadata associated with the view. */
-                        metadata?: Record<string, never>;
-                        /**
-                         * Format: uuid
-                         * @description ID of the user who created the view.
-                         */
-                        user_id: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the view was created.
-                         */
-                        created_at: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the view was last updated.
-                         */
-                        updated_at: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the view was soft deleted. Null while the view remains active.
-                         */
-                        deleted_at?: string | null;
-                    };
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    shareView: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description Body for sharing a view with recipients by email. */
-        requestBody: {
-            content: {
-                "application/json": {
-                    /**
-                     * Format: uuid
-                     * @description Identifier of the view being shared.
-                     */
-                    content_id: string;
-                    /**
-                     * @description The kind of content being shared. Only `view` is accepted on this
-                     *     endpoint.
-                     * @enum {string}
-                     */
-                    content_type: "view";
-                    /** @description Email addresses of the recipients to share this view with. */
-                    emails: string[];
-                    /**
-                     * @description When true, flip the view's visibility to public and send invitation
-                     *     emails to the recipients. When false, revert visibility to private.
-                     */
-                    share: boolean;
-                };
-            };
-        };
-        responses: {
-            /** @description View shared. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Caller is not the owner of the view. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    getViewById: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description View ID */
-                viewId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description View */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * Format: uuid
-                         * @description Unique identifier for the view.
-                         */
-                        id: string;
-                        /** @description Display name of the view. */
-                        name: string;
-                        /** @description Visibility level of the view. */
-                        visibility: string;
-                        /** @description Filter configuration that defines which resources this view displays. */
-                        filters?: Record<string, never>;
-                        /** @description Additional metadata associated with the view. */
-                        metadata?: Record<string, never>;
-                        /**
-                         * Format: uuid
-                         * @description ID of the user who created the view.
-                         */
-                        user_id: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the view was created.
-                         */
-                        created_at: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the view was last updated.
-                         */
-                        updated_at: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the view was soft deleted. Null while the view remains active.
-                         */
-                        deleted_at?: string | null;
-                    };
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    updateView: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description View ID */
-                viewId: string;
-            };
-            cookie?: never;
-        };
-        /** @description Body for creating or updating a view */
-        requestBody: {
-            content: {
-                "application/json": {
-                    /** @description Display name of the view. */
-                    name: string;
-                    /** @description Filter configuration for this view. */
-                    filters?: Record<string, never>;
-                    /** @description Visibility level of the view. */
-                    visibility?: string;
-                    /** @description Metadata associated with the view. */
-                    metadata?: Record<string, never>;
-                };
-            };
-        };
-        responses: {
-            /** @description Updated view */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * Format: uuid
-                         * @description Unique identifier for the view.
-                         */
-                        id: string;
-                        /** @description Display name of the view. */
-                        name: string;
-                        /** @description Visibility level of the view. */
-                        visibility: string;
-                        /** @description Filter configuration that defines which resources this view displays. */
-                        filters?: Record<string, never>;
-                        /** @description Additional metadata associated with the view. */
-                        metadata?: Record<string, never>;
-                        /**
-                         * Format: uuid
-                         * @description ID of the user who created the view.
-                         */
-                        user_id: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the view was created.
-                         */
-                        created_at: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the view was last updated.
-                         */
-                        updated_at: string;
-                        /**
-                         * Format: date-time
-                         * @description Timestamp when the view was soft deleted. Null while the view remains active.
-                         */
-                        deleted_at?: string | null;
-                    };
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    deleteView: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description View ID */
-                viewId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description View deleted */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-}
+
+export interface external {}
