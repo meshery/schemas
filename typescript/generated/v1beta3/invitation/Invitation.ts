@@ -166,7 +166,7 @@ export interface components {
                  * Format: uuid
                  * @description ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.
                  */
-                ownerId: string;
+                owner: string;
                 /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
                 isDefault?: boolean;
                 /** @description Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
@@ -292,7 +292,7 @@ export interface components {
              * Format: uuid
              * @description ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.
              */
-            ownerId: string;
+            owner: string;
             /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
             isDefault?: boolean;
             /** @description Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
@@ -419,7 +419,7 @@ export interface operations {
                          * Format: uuid
                          * @description ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.
                          */
-                        ownerId: string;
+                        owner: string;
                         /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
                         isDefault?: boolean;
                         /** @description Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
@@ -579,7 +579,7 @@ export interface operations {
                          * Format: uuid
                          * @description ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.
                          */
-                        ownerId: string;
+                        owner: string;
                         /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
                         isDefault?: boolean;
                         /** @description Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
@@ -751,7 +751,7 @@ export interface operations {
                              * Format: uuid
                              * @description ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.
                              */
-                            ownerId: string;
+                            owner: string;
                             /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
                             isDefault?: boolean;
                             /** @description Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
@@ -902,7 +902,7 @@ export interface operations {
                          * Format: uuid
                          * @description ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.
                          */
-                        ownerId: string;
+                        owner: string;
                         /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
                         isDefault?: boolean;
                         /** @description Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
@@ -1009,7 +1009,7 @@ export interface operations {
                          * Format: uuid
                          * @description ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.
                          */
-                        ownerId: string;
+                        owner: string;
                         /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
                         isDefault?: boolean;
                         /** @description Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */

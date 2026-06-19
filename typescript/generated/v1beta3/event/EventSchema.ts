@@ -612,7 +612,7 @@ const EventSchema: Record<string, unknown> = {
                         "additionalProperties": false,
                         "description": "EventResult entity schema.",
                         "properties": {
-                          "userId": {
+                          "owner": {
                             "type": "string",
                             "format": "uuid",
                             "description": "UUID of the user associated with the event.",
@@ -620,11 +620,11 @@ const EventSchema: Record<string, unknown> = {
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
                             },
-                            "x-go-name": "UserID",
+                            "x-go-name": "Owner",
                             "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
-                              "db": "user_id",
-                              "json": "userId"
+                              "db": "owner",
+                              "json": "owner"
                             }
                           },
                           "systemId": {
@@ -686,7 +686,7 @@ const EventSchema: Record<string, unknown> = {
                           }
                         },
                         "required": [
-                          "userId",
+                          "owner",
                           "category",
                           "action"
                         ]
@@ -872,7 +872,7 @@ const EventSchema: Record<string, unknown> = {
                         "additionalProperties": false,
                         "description": "EventResult entity schema.",
                         "properties": {
-                          "userId": {
+                          "owner": {
                             "type": "string",
                             "format": "uuid",
                             "description": "UUID of the user associated with the event.",
@@ -880,11 +880,11 @@ const EventSchema: Record<string, unknown> = {
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
                             },
-                            "x-go-name": "UserID",
+                            "x-go-name": "Owner",
                             "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
-                              "db": "user_id",
-                              "json": "userId"
+                              "db": "owner",
+                              "json": "owner"
                             }
                           },
                           "systemId": {
@@ -946,7 +946,7 @@ const EventSchema: Record<string, unknown> = {
                           }
                         },
                         "required": [
-                          "userId",
+                          "owner",
                           "category",
                           "action"
                         ]
@@ -1444,7 +1444,7 @@ const EventSchema: Record<string, unknown> = {
         "additionalProperties": false,
         "description": "EventResult entity schema.",
         "properties": {
-          "userId": {
+          "owner": {
             "type": "string",
             "format": "uuid",
             "description": "UUID of the user associated with the event.",
@@ -1452,11 +1452,11 @@ const EventSchema: Record<string, unknown> = {
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
             },
-            "x-go-name": "UserID",
+            "x-go-name": "Owner",
             "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
-              "db": "user_id",
-              "json": "userId"
+              "db": "owner",
+              "json": "owner"
             }
           },
           "systemId": {
@@ -1518,7 +1518,7 @@ const EventSchema: Record<string, unknown> = {
           }
         },
         "required": [
-          "userId",
+          "owner",
           "category",
           "action"
         ]
@@ -1557,7 +1557,7 @@ const EventSchema: Record<string, unknown> = {
               "additionalProperties": false,
               "description": "EventResult entity schema.",
               "properties": {
-                "userId": {
+                "owner": {
                   "type": "string",
                   "format": "uuid",
                   "description": "UUID of the user associated with the event.",
@@ -1565,11 +1565,11 @@ const EventSchema: Record<string, unknown> = {
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
                   },
-                  "x-go-name": "UserID",
+                  "x-go-name": "Owner",
                   "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
-                    "db": "user_id",
-                    "json": "userId"
+                    "db": "owner",
+                    "json": "owner"
                   }
                 },
                 "systemId": {
@@ -1631,7 +1631,7 @@ const EventSchema: Record<string, unknown> = {
                 }
               },
               "required": [
-                "userId",
+                "owner",
                 "category",
                 "action"
               ]

@@ -148,7 +148,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                         "required": [
                           "id",
                           "name",
-                          "userId",
+                          "owner",
                           "createdAt",
                           "updatedAt"
                         ],
@@ -180,13 +180,13 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                               "json": "name"
                             }
                           },
-                          "userId": {
+                          "owner": {
                             "description": "User ID of the profile owner.",
                             "x-order": 3,
-                            "x-go-name": "UserID",
+                            "x-go-name": "Owner",
                             "x-oapi-codegen-extra-tags": {
-                              "db": "user_id",
-                              "json": "userId"
+                              "db": "owner",
+                              "json": "owner"
                             },
                             "type": "string",
                             "format": "uuid",
@@ -671,7 +671,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                   "required": [
                     "id",
                     "name",
-                    "userId",
+                    "owner",
                     "createdAt",
                     "updatedAt"
                   ],
@@ -703,13 +703,13 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                         "json": "name"
                       }
                     },
-                    "userId": {
+                    "owner": {
                       "description": "User ID of the profile owner.",
                       "x-order": 3,
-                      "x-go-name": "UserID",
+                      "x-go-name": "Owner",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id",
-                        "json": "userId"
+                        "db": "owner",
+                        "json": "owner"
                       },
                       "type": "string",
                       "format": "uuid",
@@ -1016,7 +1016,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                   "required": [
                     "id",
                     "name",
-                    "userId",
+                    "owner",
                     "createdAt",
                     "updatedAt"
                   ],
@@ -1048,13 +1048,13 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                         "json": "name"
                       }
                     },
-                    "userId": {
+                    "owner": {
                       "description": "User ID of the profile owner.",
                       "x-order": 3,
-                      "x-go-name": "UserID",
+                      "x-go-name": "Owner",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id",
-                        "json": "userId"
+                        "db": "owner",
+                        "json": "owner"
                       },
                       "type": "string",
                       "format": "uuid",
@@ -1563,7 +1563,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                   "required": [
                     "id",
                     "name",
-                    "userId",
+                    "owner",
                     "createdAt",
                     "updatedAt"
                   ],
@@ -1595,13 +1595,13 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                         "json": "name"
                       }
                     },
-                    "userId": {
+                    "owner": {
                       "description": "User ID of the profile owner.",
                       "x-order": 3,
-                      "x-go-name": "UserID",
+                      "x-go-name": "Owner",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id",
-                        "json": "userId"
+                        "db": "owner",
+                        "json": "owner"
                       },
                       "type": "string",
                       "format": "uuid",
@@ -2944,7 +2944,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
         "required": [
           "id",
           "name",
-          "userId",
+          "owner",
           "createdAt",
           "updatedAt"
         ],
@@ -2976,13 +2976,13 @@ const PerformanceProfileSchema: Record<string, unknown> = {
               "json": "name"
             }
           },
-          "userId": {
+          "owner": {
             "description": "User ID of the profile owner.",
             "x-order": 3,
-            "x-go-name": "UserID",
+            "x-go-name": "Owner",
             "x-oapi-codegen-extra-tags": {
-              "db": "user_id",
-              "json": "userId"
+              "db": "owner",
+              "json": "owner"
             },
             "type": "string",
             "format": "uuid",
@@ -3447,7 +3447,7 @@ const PerformanceProfileSchema: Record<string, unknown> = {
               "required": [
                 "id",
                 "name",
-                "userId",
+                "owner",
                 "createdAt",
                 "updatedAt"
               ],
@@ -3479,13 +3479,13 @@ const PerformanceProfileSchema: Record<string, unknown> = {
                     "json": "name"
                   }
                 },
-                "userId": {
+                "owner": {
                   "description": "User ID of the profile owner.",
                   "x-order": 3,
-                  "x-go-name": "UserID",
+                  "x-go-name": "Owner",
                   "x-oapi-codegen-extra-tags": {
-                    "db": "user_id",
-                    "json": "userId"
+                    "db": "owner",
+                    "json": "owner"
                   },
                   "type": "string",
                   "format": "uuid",

@@ -19,8 +19,8 @@ type PerformanceProfile struct {
 	// Name Human-readable name of the performance profile.
 	Name string `db:"name" json:"name" yaml:"name"`
 
-	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	UserID core.Uuid `db:"user_id" json:"userId" yaml:"userId"`
+	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	Owner core.Uuid `db:"owner" json:"owner" yaml:"owner"`
 
 	// Schedule A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	Schedule *core.Uuid `db:"schedule" json:"schedule,omitempty" yaml:"schedule,omitempty"`

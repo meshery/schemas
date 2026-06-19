@@ -3,7 +3,7 @@ additionalProperties: false
 description: Represents a user-owned API token or OAuth session.
 required:
 - id
-- userId
+- owner
 - provider
 properties:
   id:
@@ -13,13 +13,13 @@ properties:
       db: id
       json: id
     x-order: 1
-  userId:
+  owner:
     $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
     description: UUID of the user who owns the token.
-    x-go-name: UserID
+    x-go-name: Owner
     x-oapi-codegen-extra-tags:
-      db: user_id
-      json: userId
+      db: owner
+      json: owner
     x-order: 2
   provider:
     type: string

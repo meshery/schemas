@@ -64,7 +64,7 @@ const InvitationSchema: Record<string, unknown> = {
                   "description": "Invitation entity schema.",
                   "required": [
                     "id",
-                    "ownerId",
+                    "owner",
                     "name",
                     "description",
                     "orgId",
@@ -92,12 +92,12 @@ const InvitationSchema: Record<string, unknown> = {
                         "path": "github.com/gofrs/uuid"
                       }
                     },
-                    "ownerId": {
+                    "owner": {
                       "description": "ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.",
-                      "x-go-name": "OwnerID",
+                      "x-go-name": "Owner",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "owner_id",
-                        "json": "ownerId"
+                        "db": "owner",
+                        "json": "owner"
                       },
                       "type": "string",
                       "format": "uuid",
@@ -532,7 +532,7 @@ const InvitationSchema: Record<string, unknown> = {
                   "description": "Invitation entity schema.",
                   "required": [
                     "id",
-                    "ownerId",
+                    "owner",
                     "name",
                     "description",
                     "orgId",
@@ -560,12 +560,12 @@ const InvitationSchema: Record<string, unknown> = {
                         "path": "github.com/gofrs/uuid"
                       }
                     },
-                    "ownerId": {
+                    "owner": {
                       "description": "ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.",
-                      "x-go-name": "OwnerID",
+                      "x-go-name": "Owner",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "owner_id",
-                        "json": "ownerId"
+                        "db": "owner",
+                        "json": "owner"
                       },
                       "type": "string",
                       "format": "uuid",
@@ -793,7 +793,7 @@ const InvitationSchema: Record<string, unknown> = {
                         "description": "Invitation entity schema.",
                         "required": [
                           "id",
-                          "ownerId",
+                          "owner",
                           "name",
                           "description",
                           "orgId",
@@ -821,12 +821,12 @@ const InvitationSchema: Record<string, unknown> = {
                               "path": "github.com/gofrs/uuid"
                             }
                           },
-                          "ownerId": {
+                          "owner": {
                             "description": "ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.",
-                            "x-go-name": "OwnerID",
+                            "x-go-name": "Owner",
                             "x-oapi-codegen-extra-tags": {
-                              "db": "owner_id",
-                              "json": "ownerId"
+                              "db": "owner",
+                              "json": "owner"
                             },
                             "type": "string",
                             "format": "uuid",
@@ -1188,7 +1188,7 @@ const InvitationSchema: Record<string, unknown> = {
                   "description": "Invitation entity schema.",
                   "required": [
                     "id",
-                    "ownerId",
+                    "owner",
                     "name",
                     "description",
                     "orgId",
@@ -1216,12 +1216,12 @@ const InvitationSchema: Record<string, unknown> = {
                         "path": "github.com/gofrs/uuid"
                       }
                     },
-                    "ownerId": {
+                    "owner": {
                       "description": "ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.",
-                      "x-go-name": "OwnerID",
+                      "x-go-name": "Owner",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "owner_id",
-                        "json": "ownerId"
+                        "db": "owner",
+                        "json": "owner"
                       },
                       "type": "string",
                       "format": "uuid",
@@ -1441,7 +1441,7 @@ const InvitationSchema: Record<string, unknown> = {
                   "description": "Invitation entity schema.",
                   "required": [
                     "id",
-                    "ownerId",
+                    "owner",
                     "name",
                     "description",
                     "orgId",
@@ -1469,12 +1469,12 @@ const InvitationSchema: Record<string, unknown> = {
                         "path": "github.com/gofrs/uuid"
                       }
                     },
-                    "ownerId": {
+                    "owner": {
                       "description": "ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.",
-                      "x-go-name": "OwnerID",
+                      "x-go-name": "Owner",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "owner_id",
-                        "json": "ownerId"
+                        "db": "owner",
+                        "json": "owner"
                       },
                       "type": "string",
                       "format": "uuid",
@@ -2203,7 +2203,7 @@ const InvitationSchema: Record<string, unknown> = {
               "description": "Invitation entity schema.",
               "required": [
                 "id",
-                "ownerId",
+                "owner",
                 "name",
                 "description",
                 "orgId",
@@ -2231,12 +2231,12 @@ const InvitationSchema: Record<string, unknown> = {
                     "path": "github.com/gofrs/uuid"
                   }
                 },
-                "ownerId": {
+                "owner": {
                   "description": "ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.",
-                  "x-go-name": "OwnerID",
+                  "x-go-name": "Owner",
                   "x-oapi-codegen-extra-tags": {
-                    "db": "owner_id",
-                    "json": "ownerId"
+                    "db": "owner",
+                    "json": "owner"
                   },
                   "type": "string",
                   "format": "uuid",
@@ -2594,7 +2594,7 @@ const InvitationSchema: Record<string, unknown> = {
         "description": "Invitation entity schema.",
         "required": [
           "id",
-          "ownerId",
+          "owner",
           "name",
           "description",
           "orgId",
@@ -2622,12 +2622,12 @@ const InvitationSchema: Record<string, unknown> = {
               "path": "github.com/gofrs/uuid"
             }
           },
-          "ownerId": {
+          "owner": {
             "description": "ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.",
-            "x-go-name": "OwnerID",
+            "x-go-name": "Owner",
             "x-oapi-codegen-extra-tags": {
-              "db": "owner_id",
-              "json": "ownerId"
+              "db": "owner",
+              "json": "owner"
             },
             "type": "string",
             "format": "uuid",

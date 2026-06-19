@@ -87,7 +87,7 @@ export interface components {
              * Format: uuid
              * @description UUID of the user who owns the token.
              */
-            userId: string;
+            owner: string;
             /** @description Authentication provider associated with the token. */
             provider: string;
             /** @description Access token value. */
@@ -124,7 +124,7 @@ export interface components {
                  * Format: uuid
                  * @description UUID of the user who owns the token.
                  */
-                userId: string;
+                owner: string;
                 /** @description Authentication provider associated with the token. */
                 provider: string;
                 /** @description Access token value. */
@@ -262,7 +262,7 @@ export interface operations {
                              * Format: uuid
                              * @description UUID of the user who owns the token.
                              */
-                            userId: string;
+                            owner: string;
                             /** @description Authentication provider associated with the token. */
                             provider: string;
                             /** @description Access token value. */
@@ -347,7 +347,7 @@ export interface operations {
                              * Format: uuid
                              * @description UUID of the user who owns the token.
                              */
-                            userId: string;
+                            owner: string;
                             /** @description Authentication provider associated with the token. */
                             provider: string;
                             /** @description Access token value. */
@@ -439,7 +439,7 @@ export interface operations {
                              * Format: uuid
                              * @description UUID of the user who owns the token.
                              */
-                            userId: string;
+                            owner: string;
                             /** @description Authentication provider associated with the token. */
                             provider: string;
                             /** @description Access token value. */
@@ -529,7 +529,7 @@ export interface operations {
                          * Format: uuid
                          * @description UUID of the user who owns the token.
                          */
-                        userId: string;
+                        owner: string;
                         /** @description Authentication provider associated with the token. */
                         provider: string;
                         /** @description Access token value. */
@@ -616,7 +616,7 @@ export interface operations {
                              * Format: uuid
                              * @description UUID of the user who owns the token.
                              */
-                            userId: string;
+                            owner: string;
                             /** @description Authentication provider associated with the token. */
                             provider: string;
                             /** @description Access token value. */

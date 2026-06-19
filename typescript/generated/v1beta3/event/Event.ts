@@ -248,7 +248,7 @@ export interface components {
              * Format: uuid
              * @description UUID of the user associated with the event.
              */
-            userId: string;
+            owner: string;
             /** @description System identifier of the event source. */
             systemId?: string;
             /** @description The category of the event. */
@@ -288,7 +288,7 @@ export interface components {
                  * Format: uuid
                  * @description UUID of the user associated with the event.
                  */
-                userId: string;
+                owner: string;
                 /** @description System identifier of the event source. */
                 systemId?: string;
                 /** @description The category of the event. */
@@ -774,7 +774,7 @@ export interface operations {
                              * Format: uuid
                              * @description UUID of the user associated with the event.
                              */
-                            userId: string;
+                            owner: string;
                             /** @description System identifier of the event source. */
                             systemId?: string;
                             /** @description The category of the event. */
@@ -926,7 +926,7 @@ export interface operations {
                              * Format: uuid
                              * @description UUID of the user associated with the event.
                              */
-                            userId: string;
+                            owner: string;
                             /** @description System identifier of the event source. */
                             systemId?: string;
                             /** @description The category of the event. */

@@ -85,14 +85,14 @@ type EventResult struct {
 	// LastName The last name of the user associated with the event.
 	LastName *string `json:"lastName,omitempty" yaml:"lastName,omitempty"`
 
+	// Owner UUID of the user associated with the event.
+	Owner uuid.UUID `db:"owner" json:"owner" yaml:"owner"`
+
 	// Provider One of (x-oapi-codegen-extra-tags-cloud, github, google)
 	Provider core.Provider `json:"provider,omitempty" yaml:"provider,omitempty"`
 
 	// SystemId System identifier of the event source.
 	SystemId string `db:"system_id" json:"systemId" yaml:"systemId"`
-
-	// UserID UUID of the user associated with the event.
-	UserID uuid.UUID `db:"user_id" json:"userId" yaml:"userId"`
 }
 
 // EventSummary Per-user event summary entry.

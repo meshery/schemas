@@ -2931,7 +2931,7 @@ export interface components {
                  * Format: uuid
                  * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
-                userId: string;
+                owner: string;
                 /**
                  * Format: byte
                  * @description Raw filter source persisted as a byte array (`bytea` column
@@ -5440,7 +5440,7 @@ export interface operations {
                              * Format: uuid
                              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
-                            userId: string;
+                            owner: string;
                             /**
                              * Format: byte
                              * @description Raw filter source persisted as a byte array (`bytea` column

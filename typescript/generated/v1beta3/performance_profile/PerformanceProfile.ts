@@ -136,7 +136,7 @@ export interface components {
              * Format: uuid
              * @description User ID of the profile owner.
              */
-            userId: string;
+            owner: string;
             /**
              * Format: uuid
              * @description Optional schedule ID associated with this performance profile. Null when the profile is not bound to a recurring schedule.
@@ -249,7 +249,7 @@ export interface components {
                  * Format: uuid
                  * @description User ID of the profile owner.
                  */
-                userId: string;
+                owner: string;
                 /**
                  * Format: uuid
                  * @description Optional schedule ID associated with this performance profile. Null when the profile is not bound to a recurring schedule.
@@ -651,7 +651,7 @@ export interface operations {
                              * Format: uuid
                              * @description User ID of the profile owner.
                              */
-                            userId: string;
+                            owner: string;
                             /**
                              * Format: uuid
                              * @description Optional schedule ID associated with this performance profile. Null when the profile is not bound to a recurring schedule.
@@ -805,7 +805,7 @@ export interface operations {
                          * Format: uuid
                          * @description User ID of the profile owner.
                          */
-                        userId: string;
+                        owner: string;
                         /**
                          * Format: uuid
                          * @description Optional schedule ID associated with this performance profile. Null when the profile is not bound to a recurring schedule.
@@ -914,7 +914,7 @@ export interface operations {
                          * Format: uuid
                          * @description User ID of the profile owner.
                          */
-                        userId: string;
+                        owner: string;
                         /**
                          * Format: uuid
                          * @description Optional schedule ID associated with this performance profile. Null when the profile is not bound to a recurring schedule.
@@ -1079,7 +1079,7 @@ export interface operations {
                          * Format: uuid
                          * @description User ID of the profile owner.
                          */
-                        userId: string;
+                        owner: string;
                         /**
                          * Format: uuid
                          * @description Optional schedule ID associated with this performance profile. Null when the profile is not bound to a recurring schedule.

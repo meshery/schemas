@@ -11,7 +11,7 @@ type: object
 required:
   - id
   - name
-  - userId
+  - owner
   - createdAt
   - updatedAt
 properties:
@@ -33,14 +33,14 @@ properties:
     x-oapi-codegen-extra-tags:
       db: name
       json: name
-  userId:
+  owner:
     $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
     description: User ID of the profile owner.
     x-order: 3
-    x-go-name: UserID
+    x-go-name: Owner
     x-oapi-codegen-extra-tags:
-      db: user_id
-      json: userId
+      db: owner
+      json: owner
   schedule:
     $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
     description: Optional schedule ID associated with this performance profile. Null when the profile is not bound to a recurring schedule.

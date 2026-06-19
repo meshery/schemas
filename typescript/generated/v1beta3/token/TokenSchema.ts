@@ -122,7 +122,7 @@ const TokenSchema: Record<string, unknown> = {
                         "description": "Represents a user-owned API token or OAuth session.",
                         "required": [
                           "id",
-                          "userId",
+                          "owner",
                           "provider"
                         ],
                         "properties": {
@@ -140,12 +140,12 @@ const TokenSchema: Record<string, unknown> = {
                               "path": "github.com/gofrs/uuid"
                             }
                           },
-                          "userId": {
+                          "owner": {
                             "description": "UUID of the user who owns the token.",
-                            "x-go-name": "UserID",
+                            "x-go-name": "Owner",
                             "x-oapi-codegen-extra-tags": {
-                              "db": "user_id",
-                              "json": "userId"
+                              "db": "owner",
+                              "json": "owner"
                             },
                             "x-order": 2,
                             "type": "string",
@@ -355,7 +355,7 @@ const TokenSchema: Record<string, unknown> = {
                         "description": "Represents a user-owned API token or OAuth session.",
                         "required": [
                           "id",
-                          "userId",
+                          "owner",
                           "provider"
                         ],
                         "properties": {
@@ -373,12 +373,12 @@ const TokenSchema: Record<string, unknown> = {
                               "path": "github.com/gofrs/uuid"
                             }
                           },
-                          "userId": {
+                          "owner": {
                             "description": "UUID of the user who owns the token.",
-                            "x-go-name": "UserID",
+                            "x-go-name": "Owner",
                             "x-oapi-codegen-extra-tags": {
-                              "db": "user_id",
-                              "json": "userId"
+                              "db": "owner",
+                              "json": "owner"
                             },
                             "x-order": 2,
                             "type": "string",
@@ -593,7 +593,7 @@ const TokenSchema: Record<string, unknown> = {
                         "description": "Represents a user-owned API token or OAuth session.",
                         "required": [
                           "id",
-                          "userId",
+                          "owner",
                           "provider"
                         ],
                         "properties": {
@@ -611,12 +611,12 @@ const TokenSchema: Record<string, unknown> = {
                               "path": "github.com/gofrs/uuid"
                             }
                           },
-                          "userId": {
+                          "owner": {
                             "description": "UUID of the user who owns the token.",
-                            "x-go-name": "UserID",
+                            "x-go-name": "Owner",
                             "x-oapi-codegen-extra-tags": {
-                              "db": "user_id",
-                              "json": "userId"
+                              "db": "owner",
+                              "json": "owner"
                             },
                             "x-order": 2,
                             "type": "string",
@@ -820,7 +820,7 @@ const TokenSchema: Record<string, unknown> = {
                   "description": "Represents a user-owned API token or OAuth session.",
                   "required": [
                     "id",
-                    "userId",
+                    "owner",
                     "provider"
                   ],
                   "properties": {
@@ -838,12 +838,12 @@ const TokenSchema: Record<string, unknown> = {
                         "path": "github.com/gofrs/uuid"
                       }
                     },
-                    "userId": {
+                    "owner": {
                       "description": "UUID of the user who owns the token.",
-                      "x-go-name": "UserID",
+                      "x-go-name": "Owner",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id",
-                        "json": "userId"
+                        "db": "owner",
+                        "json": "owner"
                       },
                       "x-order": 2,
                       "type": "string",
@@ -1038,7 +1038,7 @@ const TokenSchema: Record<string, unknown> = {
                         "description": "Represents a user-owned API token or OAuth session.",
                         "required": [
                           "id",
-                          "userId",
+                          "owner",
                           "provider"
                         ],
                         "properties": {
@@ -1056,12 +1056,12 @@ const TokenSchema: Record<string, unknown> = {
                               "path": "github.com/gofrs/uuid"
                             }
                           },
-                          "userId": {
+                          "owner": {
                             "description": "UUID of the user who owns the token.",
-                            "x-go-name": "UserID",
+                            "x-go-name": "Owner",
                             "x-oapi-codegen-extra-tags": {
-                              "db": "user_id",
-                              "json": "userId"
+                              "db": "owner",
+                              "json": "owner"
                             },
                             "x-order": 2,
                             "type": "string",
@@ -1401,7 +1401,7 @@ const TokenSchema: Record<string, unknown> = {
         "description": "Represents a user-owned API token or OAuth session.",
         "required": [
           "id",
-          "userId",
+          "owner",
           "provider"
         ],
         "properties": {
@@ -1419,12 +1419,12 @@ const TokenSchema: Record<string, unknown> = {
               "path": "github.com/gofrs/uuid"
             }
           },
-          "userId": {
+          "owner": {
             "description": "UUID of the user who owns the token.",
-            "x-go-name": "UserID",
+            "x-go-name": "Owner",
             "x-oapi-codegen-extra-tags": {
-              "db": "user_id",
-              "json": "userId"
+              "db": "owner",
+              "json": "owner"
             },
             "x-order": 2,
             "type": "string",
@@ -1540,7 +1540,7 @@ const TokenSchema: Record<string, unknown> = {
               "description": "Represents a user-owned API token or OAuth session.",
               "required": [
                 "id",
-                "userId",
+                "owner",
                 "provider"
               ],
               "properties": {
@@ -1558,12 +1558,12 @@ const TokenSchema: Record<string, unknown> = {
                     "path": "github.com/gofrs/uuid"
                   }
                 },
-                "userId": {
+                "owner": {
                   "description": "UUID of the user who owns the token.",
-                  "x-go-name": "UserID",
+                  "x-go-name": "Owner",
                   "x-oapi-codegen-extra-tags": {
-                    "db": "user_id",
-                    "json": "userId"
+                    "db": "owner",
+                    "json": "owner"
                   },
                   "x-order": 2,
                   "type": "string",
