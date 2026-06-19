@@ -207,20 +207,11 @@ const WorkspaceSchema: Record<string, unknown> = {
                             }
                           },
                           "owner": {
-                            "type": "string",
-                            "description": "Display name of the workspace owner.",
-                            "maxLength": 255,
+                            "description": "User ID of the workspace owner.",
+                            "x-go-name": "Owner",
                             "x-oapi-codegen-extra-tags": {
                               "db": "owner",
                               "json": "owner,omitempty"
-                            }
-                          },
-                          "ownerId": {
-                            "description": "User ID of the workspace owner.",
-                            "x-go-name": "OwnerId",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "owner_id",
-                              "json": "ownerId,omitempty"
                             },
                             "type": "string",
                             "format": "uuid",
@@ -8717,20 +8708,11 @@ const WorkspaceSchema: Record<string, unknown> = {
             }
           },
           "owner": {
-            "type": "string",
-            "description": "Display name of the workspace owner.",
-            "maxLength": 255,
+            "description": "User ID of the workspace owner.",
+            "x-go-name": "Owner",
             "x-oapi-codegen-extra-tags": {
               "db": "owner",
               "json": "owner,omitempty"
-            }
-          },
-          "ownerId": {
-            "description": "User ID of the workspace owner.",
-            "x-go-name": "OwnerId",
-            "x-oapi-codegen-extra-tags": {
-              "db": "owner_id",
-              "json": "ownerId,omitempty"
             },
             "type": "string",
             "format": "uuid",
@@ -9005,20 +8987,11 @@ const WorkspaceSchema: Record<string, unknown> = {
                   }
                 },
                 "owner": {
-                  "type": "string",
-                  "description": "Display name of the workspace owner.",
-                  "maxLength": 255,
+                  "description": "User ID of the workspace owner.",
+                  "x-go-name": "Owner",
                   "x-oapi-codegen-extra-tags": {
                     "db": "owner",
                     "json": "owner,omitempty"
-                  }
-                },
-                "ownerId": {
-                  "description": "User ID of the workspace owner.",
-                  "x-go-name": "OwnerId",
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "owner_id",
-                    "json": "ownerId,omitempty"
                   },
                   "type": "string",
                   "format": "uuid",

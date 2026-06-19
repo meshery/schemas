@@ -7702,10 +7702,8 @@ export type GetWorkspacesApiResponse = /** status 200 Workspaces */ {
     description?: string;
     /** Name of the owning organization. */
     orgName?: string;
-    /** Display name of the workspace owner. */
-    owner?: string;
     /** User ID of the workspace owner. */
-    ownerId?: string;
+    owner?: string;
     /** Email address of the workspace owner. */
     ownerEmail?: string;
     /** Avatar URL of the workspace owner. */

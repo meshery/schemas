@@ -34,17 +34,14 @@ type AvailableWorkspace struct {
 	// OrganizationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	OrganizationId core.Uuid `db:"organization_id" json:"organizationId,omitempty" yaml:"organizationId,omitempty"`
 
-	// Owner Display name of the workspace owner.
-	Owner *string `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
+	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	Owner *core.Uuid `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
 
 	// OwnerAvatar Avatar URL of the workspace owner.
 	OwnerAvatar *string `db:"owner_avatar" json:"ownerAvatar,omitempty" yaml:"ownerAvatar,omitempty"`
 
 	// OwnerEmail Email address of the workspace owner.
 	OwnerEmail *openapi_types.Email `db:"owner_email" json:"ownerEmail,omitempty" yaml:"ownerEmail,omitempty"`
-
-	// OwnerId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	OwnerId *core.Uuid `db:"owner_id" json:"ownerId,omitempty" yaml:"ownerId,omitempty"`
 
 	// UpdatedAt Timestamp when the resource was updated.
 	UpdatedAt core.UpdatedAt `db:"updated_at" json:"updatedAt,omitempty" yaml:"updatedAt,omitempty"`

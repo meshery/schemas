@@ -108,13 +108,11 @@ export interface components {
       description?: string;
       /** @description Name of the owning organization. */
       orgName?: string;
-      /** @description Display name of the workspace owner. */
-      owner?: string;
       /**
        * Format: uuid
        * @description User ID of the workspace owner.
        */
-      ownerId?: string;
+      owner?: string;
       /**
        * Format: email
        * @description Email address of the workspace owner.
@@ -194,13 +192,11 @@ export interface components {
         description?: string;
         /** @description Name of the owning organization. */
         orgName?: string;
-        /** @description Display name of the workspace owner. */
-        owner?: string;
         /**
          * Format: uuid
          * @description User ID of the workspace owner.
          */
-        ownerId?: string;
+        owner?: string;
         /**
          * Format: email
          * @description Email address of the workspace owner.
@@ -2321,13 +2317,11 @@ export interface operations {
               description?: string;
               /** @description Name of the owning organization. */
               orgName?: string;
-              /** @description Display name of the workspace owner. */
-              owner?: string;
               /**
                * Format: uuid
                * @description User ID of the workspace owner.
                */
-              ownerId?: string;
+              owner?: string;
               /**
                * Format: email
                * @description Email address of the workspace owner.
