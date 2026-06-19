@@ -205,6 +205,42 @@ Long-form reference material has been moved to `docs/` to keep this file concise
 - **[`docs/schema-review-checklist.md`](docs/schema-review-checklist.md)** — intentional design decisions (do not flag), the 26 common mistakes, and the full pre-PR schema-change checklist.
 - **[`docs/schema-tooling.md`](docs/schema-tooling.md)** — identifier-naming migration status, advisory baseline, consumer audit tooling and CI behavior.
 
+## Release Procedure
+
+**CRITICAL: Do not manually create releases.** Releases are managed by automated workflows.
+
+### Proper Release Flow
+
+1. **Push commits to master** — your changes trigger the `release-drafter` workflow
+2. **Draft release created automatically** — release-drafter generates a draft release using the configured template
+   - Reads commit messages for categorization (features, bugs, chores, docs, security)
+   - Auto-increments version using `$NEXT_PATCH_VERSION` (bugfix version)
+   - Generates release notes from commit categories
+3. **Review draft release** — visit GitHub Releases tab to review generated notes
+4. **Publish the draft** — manually click "Publish release" on the draft
+5. **Automated workflows trigger** on publish:
+   - `publish-schemas.yml` updates schema versions in `base_cloud.yml` and `base_meshery.yml`
+   - Publishes to npm
+   - Notifies downstream repositories
+   - Publishes OpenAPI documentation
+
+### What NOT to Do
+
+- ❌ Do NOT use `gh release create` manually
+- ❌ Do NOT hand-edit release notes (let release-drafter template handle it)
+- ❌ Do NOT bump minor/major versions manually (use `$NEXT_PATCH_VERSION` only)
+- ❌ Do NOT publish releases without awaiting workflow completion
+- ❌ Do NOT create releases before downstream PR feedback is resolved
+
+### Versioning
+
+Meshery Schemas uses semantic versioning (MAJOR.MINOR.PATCH):
+- **PATCH** (bugfix): Schema fixes, property renames, db tag updates that require downstream code changes
+- **MINOR**: New constructs, new API endpoints
+- **MAJOR**: Breaking API changes across multiple constructs
+
+Release-drafter increments PATCH by default (e.g., v1.3.9 → v1.3.10).
+
 ## Questions?
 
 If you're unsure about any schema modification:
