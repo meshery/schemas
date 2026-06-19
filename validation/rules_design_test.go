@@ -589,6 +589,96 @@ func TestCheckRule21_NilDoc(t *testing.T) {
 	}
 }
 
+func TestCheckRule24_NoSecuritySchemes(t *testing.T) {
+	doc := &openapi3.T{
+		OpenAPI: "3.0.0",
+		Info:    &openapi3.Info{Title: "Test", Version: "v1"},
+		Paths:   openapi3.NewPaths(),
+	}
+
+	doc.Paths.Set("/test", &openapi3.PathItem{
+		Get: &openapi3.Operation{
+			Responses: openapi3.NewResponses(),
+		},
+	})
+
+	vs := checkRule24("api.yml", doc, AuditOptions{})
+
+	if len(vs) != 1 {
+		t.Fatalf("expected 1 violation, got %d", len(vs))
+	}
+}
+
+func TestCheckRule24_JWTSchemeMustUseHTTP(t *testing.T) {
+	doc := &openapi3.T{
+		OpenAPI: "3.0.0",
+		Info:    &openapi3.Info{Title: "Test", Version: "v1"},
+		Paths:   openapi3.NewPaths(),
+		Components: &openapi3.Components{
+			SecuritySchemes: openapi3.SecuritySchemes{
+				"jwt": &openapi3.SecuritySchemeRef{
+					Value: &openapi3.SecurityScheme{
+						Type: "apiKey",
+					},
+				},
+			},
+		},
+	}
+
+	vs := checkRule24("api.yml", doc, AuditOptions{})
+
+	if len(vs) != 1 {
+		t.Fatalf("expected 1 violation, got %d", len(vs))
+	}
+}
+
+func TestCheckRule24_BearerSchemeMustUseHTTP(t *testing.T) {
+	doc := &openapi3.T{
+		OpenAPI: "3.0.0",
+		Info:    &openapi3.Info{Title: "Test", Version: "v1"},
+		Paths:   openapi3.NewPaths(),
+		Components: &openapi3.Components{
+			SecuritySchemes: openapi3.SecuritySchemes{
+				"bearer": &openapi3.SecuritySchemeRef{
+					Value: &openapi3.SecurityScheme{
+						Type: "apiKey",
+					},
+				},
+			},
+		},
+	}
+
+	vs := checkRule24("api.yml", doc, AuditOptions{})
+
+	if len(vs) != 1 {
+		t.Fatalf("expected 1 violation, got %d", len(vs))
+	}
+}
+
+func TestCheckRule24_ValidJWTScheme(t *testing.T) {
+	doc := &openapi3.T{
+		OpenAPI: "3.0.0",
+		Info:    &openapi3.Info{Title: "Test", Version: "v1"},
+		Paths:   openapi3.NewPaths(),
+		Components: &openapi3.Components{
+			SecuritySchemes: openapi3.SecuritySchemes{
+				"jwt": &openapi3.SecuritySchemeRef{
+					Value: &openapi3.SecurityScheme{
+						Type:   "http",
+						Scheme: "bearer",
+					},
+				},
+			},
+		},
+	}
+
+	vs := checkRule24("api.yml", doc, AuditOptions{})
+
+	if len(vs) != 0 {
+		t.Fatalf("expected 0 violations, got %d", len(vs))
+	}
+}
+
 // ---------------------------------------------------------------------------
 // Rule 28: Response codes match method semantics
 // ---------------------------------------------------------------------------

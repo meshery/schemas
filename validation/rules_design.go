@@ -277,14 +277,41 @@ func checkRule24(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 	if doc == nil || doc.Paths == nil {
 		return nil
 	}
+
 	var out []Violation
+
 	schemes := doc.Components
-	if schemes == nil || schemes.SecuritySchemes == nil || len(schemes.SecuritySchemes) == 0 {
+	if schemes == nil || len(schemes.SecuritySchemes) == 0 {
 		out = append(out, Violation{
-			File: filePath, Message: "No security schemes declared. api.yml files with path operations must define at least one entry under `components.securitySchemes`.",
-			Severity: classifyDesignIssue(opts), RuleNumber: 24,
+			File:       filePath,
+			Message:    "No security schemes declared. api.yml files with path operations must define at least one entry under `components.securitySchemes`.",
+			Severity:   classifyDesignIssue(opts),
+			RuleNumber: 24,
 		})
+		return out
 	}
+
+	for name, ref := range schemes.SecuritySchemes {
+		if ref == nil || ref.Value == nil {
+			continue
+		}
+
+		scheme := ref.Value
+		lower := strings.ToLower(name)
+
+		if (lower == "jwt" || lower == "bearer") && scheme.Type != "http" {
+			out = append(out, Violation{
+				File: filePath,
+				Message: fmt.Sprintf(
+					`Security scheme %q should use type "http" when representing JWT/Bearer authentication.`,
+					name,
+				),
+				Severity:   classifyDesignIssue(opts),
+				RuleNumber: 24,
+			})
+		}
+	}
+
 	return out
 }
 
