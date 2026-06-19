@@ -207,6 +207,8 @@ Long-form reference material has been moved to `docs/` to keep this file concise
 
 ## Release Procedure
 
+**Use the `meshery-schemas-release` skill** to cut releases. Invoke with `/meshery-schemas-release` — it automates the entire procedure and includes safeguards.
+
 **CRITICAL: Do not manually create releases.** Releases are managed by automated workflows.
 
 ### Proper Release Flow
