@@ -4,221 +4,46 @@
  */
 
 export interface paths {
-  "/api/entitlement/features": {
-    get: operations["getFeatures"];
-  };
-  "/api/entitlement/subscriptions/organizations/{orgId}/features": {
-    get: operations["getFeaturesByOrganization"];
-  };
+    "/api/entitlement/features": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all features defined across plans */
+        get: operations["getFeatures"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/entitlement/subscriptions/organizations/{orgId}/features": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get the active features entitled to an organization through its subscriptions */
+        get: operations["getFeaturesByOrganization"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
-
+export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    /** @description A feature is a quantified entitlement granted to an organization through its subscription plan, such as the number of components allowed in a design. */
-    Feature: {
-      /**
-       * Format: uuid
-       * @description Unique identifier for the feature.
-       */
-      id: string;
-      /**
-       * Format: uuid
-       * @description Identifier of the plan granting this feature.
-       */
-      plan_id: string;
-      /** @description The plan granting this feature. Populated only when the association is explicitly loaded. */
-      plan?: {
-        /**
-         * Format: uuid
-         * @description Unique identifier for the plan.
-         */
-        id: string;
-        /**
-         * @description Display name of the plan.
-         * @enum {string}
-         */
-        name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-        /**
-         * @description Billing cadence for the plan (monthly, annually, or none).
-         * @enum {string}
-         */
-        cadence: "none" | "monthly" | "annually";
-        /**
-         * @description Unit of consumption this plan charges against (e.g. user).
-         * @enum {string}
-         */
-        unit: "user" | "free";
-        /** @description Minimum number of units required for the plan. */
-        minimumUnits: number;
-        /** @description Price per unit of the plan. */
-        pricePerUnit: number;
-        /**
-         * @description Currency in which the plan is priced.
-         * @enum {string}
-         */
-        currency: "usd";
-      };
-      /**
-       * @description Name of the entitled feature.
-       * @enum {string}
-       */
-      name:
-        | "ComponentsInDesign"
-        | "RelationshipsInDesign"
-        | "DesignsInWorkspace"
-        | "WorkspacesInOrganization"
-        | "ImageSizeInDesign"
-        | "SizePerDesign";
-      /**
-       * Format: double
-       * @description Quantity of the feature granted by the plan. The sentinel value 999999999999 denotes unlimited.
-       */
-      quantity: number;
-      /**
-       * Format: date-time
-       * @description Timestamp when the resource was created.
-       */
-      created_at: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the resource was updated.
-       */
-      updated_at: string;
-    };
-    /**
-     * @description Enumeration of feature names that can be granted by a plan.
-     * @enum {string}
-     */
-    FeatureName:
-      | "ComponentsInDesign"
-      | "RelationshipsInDesign"
-      | "DesignsInWorkspace"
-      | "WorkspacesInOrganization"
-      | "ImageSizeInDesign"
-      | "SizePerDesign";
-    /** @description List of features. */
-    FeaturesPage: {
-      /**
-       * Format: uuid
-       * @description Unique identifier for the feature.
-       */
-      id: string;
-      /**
-       * Format: uuid
-       * @description Identifier of the plan granting this feature.
-       */
-      plan_id: string;
-      /** @description The plan granting this feature. Populated only when the association is explicitly loaded. */
-      plan?: {
-        /**
-         * Format: uuid
-         * @description Unique identifier for the plan.
-         */
-        id: string;
-        /**
-         * @description Display name of the plan.
-         * @enum {string}
-         */
-        name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-        /**
-         * @description Billing cadence for the plan (monthly, annually, or none).
-         * @enum {string}
-         */
-        cadence: "none" | "monthly" | "annually";
-        /**
-         * @description Unit of consumption this plan charges against (e.g. user).
-         * @enum {string}
-         */
-        unit: "user" | "free";
-        /** @description Minimum number of units required for the plan. */
-        minimumUnits: number;
-        /** @description Price per unit of the plan. */
-        pricePerUnit: number;
-        /**
-         * @description Currency in which the plan is priced.
-         * @enum {string}
-         */
-        currency: "usd";
-      };
-      /**
-       * @description Name of the entitled feature.
-       * @enum {string}
-       */
-      name:
-        | "ComponentsInDesign"
-        | "RelationshipsInDesign"
-        | "DesignsInWorkspace"
-        | "WorkspacesInOrganization"
-        | "ImageSizeInDesign"
-        | "SizePerDesign";
-      /**
-       * Format: double
-       * @description Quantity of the feature granted by the plan. The sentinel value 999999999999 denotes unlimited.
-       */
-      quantity: number;
-      /**
-       * Format: date-time
-       * @description Timestamp when the resource was created.
-       */
-      created_at: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the resource was updated.
-       */
-      updated_at: string;
-    }[];
-  };
-  responses: {
-    /** Invalid request body or request param */
-    400: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Expired JWT token used or insufficient privilege */
-    401: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Result not found */
-    404: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Internal server error */
-    500: {
-      content: {
-        "text/plain": string;
-      };
-    };
-  };
-  parameters: {
-    /** @description The ID of the organization */
-    orgId: string;
-    /** @description Get responses by page */
-    page: string;
-    /** @description Get responses by pagesize */
-    pagesize: string;
-  };
-}
-
-export interface operations {
-  getFeatures: {
-    parameters: {
-      query: {
-        /** Get responses by page */
-        page?: string;
-        /** Get responses by pagesize */
-        pagesize?: string;
-      };
-    };
-    responses: {
-      /** Features response */
-      200: {
-        content: {
-          "application/json": {
+    schemas: {
+        /** @description A feature is a quantified entitlement granted to an organization through its subscription plan, such as the number of components allowed in a design. */
+        Feature: {
             /**
              * Format: uuid
              * @description Unique identifier for the feature.
@@ -231,47 +56,41 @@ export interface operations {
             plan_id: string;
             /** @description The plan granting this feature. Populated only when the association is explicitly loaded. */
             plan?: {
-              /**
-               * Format: uuid
-               * @description Unique identifier for the plan.
-               */
-              id: string;
-              /**
-               * @description Display name of the plan.
-               * @enum {string}
-               */
-              name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-              /**
-               * @description Billing cadence for the plan (monthly, annually, or none).
-               * @enum {string}
-               */
-              cadence: "none" | "monthly" | "annually";
-              /**
-               * @description Unit of consumption this plan charges against (e.g. user).
-               * @enum {string}
-               */
-              unit: "user" | "free";
-              /** @description Minimum number of units required for the plan. */
-              minimumUnits: number;
-              /** @description Price per unit of the plan. */
-              pricePerUnit: number;
-              /**
-               * @description Currency in which the plan is priced.
-               * @enum {string}
-               */
-              currency: "usd";
+                /**
+                 * Format: uuid
+                 * @description Unique identifier for the plan.
+                 */
+                id: string;
+                /**
+                 * @description Display name of the plan.
+                 * @enum {string}
+                 */
+                name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+                /**
+                 * @description Billing cadence for the plan (monthly, annually, or none).
+                 * @enum {string}
+                 */
+                cadence: "none" | "monthly" | "annually";
+                /**
+                 * @description Unit of consumption this plan charges against (e.g. user).
+                 * @enum {string}
+                 */
+                unit: "user" | "free";
+                /** @description Minimum number of units required for the plan. */
+                minimumUnits: number;
+                /** @description Price per unit of the plan. */
+                pricePerUnit: number;
+                /**
+                 * @description Currency in which the plan is priced.
+                 * @enum {string}
+                 */
+                currency: "usd";
             };
             /**
              * @description Name of the entitled feature.
              * @enum {string}
              */
-            name:
-              | "ComponentsInDesign"
-              | "RelationshipsInDesign"
-              | "DesignsInWorkspace"
-              | "WorkspacesInOrganization"
-              | "ImageSizeInDesign"
-              | "SizePerDesign";
+            name: "ComponentsInDesign" | "RelationshipsInDesign" | "DesignsInWorkspace" | "WorkspacesInOrganization" | "ImageSizeInDesign" | "SizePerDesign";
             /**
              * Format: double
              * @description Quantity of the feature granted by the plan. The sentinel value 999999999999 denotes unlimited.
@@ -287,138 +106,365 @@ export interface operations {
              * @description Timestamp when the resource was updated.
              */
             updated_at: string;
-          }[];
         };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
+        /**
+         * @description Enumeration of feature names that can be granted by a plan.
+         * @enum {string}
+         */
+        FeatureName: "ComponentsInDesign" | "RelationshipsInDesign" | "DesignsInWorkspace" | "WorkspacesInOrganization" | "ImageSizeInDesign" | "SizePerDesign";
+        /** @description List of features. */
+        FeaturesPage: {
+            /**
+             * Format: uuid
+             * @description Unique identifier for the feature.
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description Identifier of the plan granting this feature.
+             */
+            plan_id: string;
+            /** @description The plan granting this feature. Populated only when the association is explicitly loaded. */
+            plan?: {
+                /**
+                 * Format: uuid
+                 * @description Unique identifier for the plan.
+                 */
+                id: string;
+                /**
+                 * @description Display name of the plan.
+                 * @enum {string}
+                 */
+                name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+                /**
+                 * @description Billing cadence for the plan (monthly, annually, or none).
+                 * @enum {string}
+                 */
+                cadence: "none" | "monthly" | "annually";
+                /**
+                 * @description Unit of consumption this plan charges against (e.g. user).
+                 * @enum {string}
+                 */
+                unit: "user" | "free";
+                /** @description Minimum number of units required for the plan. */
+                minimumUnits: number;
+                /** @description Price per unit of the plan. */
+                pricePerUnit: number;
+                /**
+                 * @description Currency in which the plan is priced.
+                 * @enum {string}
+                 */
+                currency: "usd";
+            };
+            /**
+             * @description Name of the entitled feature.
+             * @enum {string}
+             */
+            name: "ComponentsInDesign" | "RelationshipsInDesign" | "DesignsInWorkspace" | "WorkspacesInOrganization" | "ImageSizeInDesign" | "SizePerDesign";
+            /**
+             * Format: double
+             * @description Quantity of the feature granted by the plan. The sentinel value 999999999999 denotes unlimited.
+             */
+            quantity: number;
+            /**
+             * Format: date-time
+             * @description Timestamp when the resource was created.
+             */
+            created_at: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the resource was updated.
+             */
+            updated_at: string;
+        }[];
     };
-  };
-  getFeaturesByOrganization: {
+    responses: {
+        /** @description Invalid request body or request param */
+        400: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Expired JWT token used or insufficient privilege */
+        401: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Result not found */
+        404: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Internal server error */
+        500: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+    };
     parameters: {
-      path: {
-        /** The ID of the organization */
+        /** @description The ID of the organization */
         orgId: string;
-      };
+        /** @description Get responses by page */
+        page: string;
+        /** @description Get responses by pagesize */
+        pagesize: string;
     };
-    responses: {
-      /** Features response */
-      200: {
-        content: {
-          "application/json": {
-            /**
-             * Format: uuid
-             * @description Unique identifier for the feature.
-             */
-            id: string;
-            /**
-             * Format: uuid
-             * @description Identifier of the plan granting this feature.
-             */
-            plan_id: string;
-            /** @description The plan granting this feature. Populated only when the association is explicitly loaded. */
-            plan?: {
-              /**
-               * Format: uuid
-               * @description Unique identifier for the plan.
-               */
-              id: string;
-              /**
-               * @description Display name of the plan.
-               * @enum {string}
-               */
-              name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-              /**
-               * @description Billing cadence for the plan (monthly, annually, or none).
-               * @enum {string}
-               */
-              cadence: "none" | "monthly" | "annually";
-              /**
-               * @description Unit of consumption this plan charges against (e.g. user).
-               * @enum {string}
-               */
-              unit: "user" | "free";
-              /** @description Minimum number of units required for the plan. */
-              minimumUnits: number;
-              /** @description Price per unit of the plan. */
-              pricePerUnit: number;
-              /**
-               * @description Currency in which the plan is priced.
-               * @enum {string}
-               */
-              currency: "usd";
-            };
-            /**
-             * @description Name of the entitled feature.
-             * @enum {string}
-             */
-            name:
-              | "ComponentsInDesign"
-              | "RelationshipsInDesign"
-              | "DesignsInWorkspace"
-              | "WorkspacesInOrganization"
-              | "ImageSizeInDesign"
-              | "SizePerDesign";
-            /**
-             * Format: double
-             * @description Quantity of the feature granted by the plan. The sentinel value 999999999999 denotes unlimited.
-             */
-            quantity: number;
-            /**
-             * Format: date-time
-             * @description Timestamp when the resource was created.
-             */
-            created_at: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the resource was updated.
-             */
-            updated_at: string;
-          }[];
-        };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
-
-export interface external {}
+export type $defs = Record<string, never>;
+export interface operations {
+    getFeatures: {
+        parameters: {
+            query?: {
+                /** @description Get responses by page */
+                page?: string;
+                /** @description Get responses by pagesize */
+                pagesize?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Features response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Unique identifier for the feature.
+                         */
+                        id: string;
+                        /**
+                         * Format: uuid
+                         * @description Identifier of the plan granting this feature.
+                         */
+                        plan_id: string;
+                        /** @description The plan granting this feature. Populated only when the association is explicitly loaded. */
+                        plan?: {
+                            /**
+                             * Format: uuid
+                             * @description Unique identifier for the plan.
+                             */
+                            id: string;
+                            /**
+                             * @description Display name of the plan.
+                             * @enum {string}
+                             */
+                            name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+                            /**
+                             * @description Billing cadence for the plan (monthly, annually, or none).
+                             * @enum {string}
+                             */
+                            cadence: "none" | "monthly" | "annually";
+                            /**
+                             * @description Unit of consumption this plan charges against (e.g. user).
+                             * @enum {string}
+                             */
+                            unit: "user" | "free";
+                            /** @description Minimum number of units required for the plan. */
+                            minimumUnits: number;
+                            /** @description Price per unit of the plan. */
+                            pricePerUnit: number;
+                            /**
+                             * @description Currency in which the plan is priced.
+                             * @enum {string}
+                             */
+                            currency: "usd";
+                        };
+                        /**
+                         * @description Name of the entitled feature.
+                         * @enum {string}
+                         */
+                        name: "ComponentsInDesign" | "RelationshipsInDesign" | "DesignsInWorkspace" | "WorkspacesInOrganization" | "ImageSizeInDesign" | "SizePerDesign";
+                        /**
+                         * Format: double
+                         * @description Quantity of the feature granted by the plan. The sentinel value 999999999999 denotes unlimited.
+                         */
+                        quantity: number;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the resource was created.
+                         */
+                        created_at: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the resource was updated.
+                         */
+                        updated_at: string;
+                    }[];
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getFeaturesByOrganization: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the organization */
+                orgId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Features response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Unique identifier for the feature.
+                         */
+                        id: string;
+                        /**
+                         * Format: uuid
+                         * @description Identifier of the plan granting this feature.
+                         */
+                        plan_id: string;
+                        /** @description The plan granting this feature. Populated only when the association is explicitly loaded. */
+                        plan?: {
+                            /**
+                             * Format: uuid
+                             * @description Unique identifier for the plan.
+                             */
+                            id: string;
+                            /**
+                             * @description Display name of the plan.
+                             * @enum {string}
+                             */
+                            name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+                            /**
+                             * @description Billing cadence for the plan (monthly, annually, or none).
+                             * @enum {string}
+                             */
+                            cadence: "none" | "monthly" | "annually";
+                            /**
+                             * @description Unit of consumption this plan charges against (e.g. user).
+                             * @enum {string}
+                             */
+                            unit: "user" | "free";
+                            /** @description Minimum number of units required for the plan. */
+                            minimumUnits: number;
+                            /** @description Price per unit of the plan. */
+                            pricePerUnit: number;
+                            /**
+                             * @description Currency in which the plan is priced.
+                             * @enum {string}
+                             */
+                            currency: "usd";
+                        };
+                        /**
+                         * @description Name of the entitled feature.
+                         * @enum {string}
+                         */
+                        name: "ComponentsInDesign" | "RelationshipsInDesign" | "DesignsInWorkspace" | "WorkspacesInOrganization" | "ImageSizeInDesign" | "SizePerDesign";
+                        /**
+                         * Format: double
+                         * @description Quantity of the feature granted by the plan. The sentinel value 999999999999 denotes unlimited.
+                         */
+                        quantity: number;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the resource was created.
+                         */
+                        created_at: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the resource was updated.
+                         */
+                        updated_at: string;
+                    }[];
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+}
