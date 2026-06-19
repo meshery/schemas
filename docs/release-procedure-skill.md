@@ -138,7 +138,7 @@ The version should increment PATCH only (e.g., v1.3.9 → v1.3.10). If it's wron
 
 1. Delete the draft: `gh release delete <TAG> --yes`
 2. Check `.github/release-drafter.yml` configuration
-3. Verify the last published tag: `git tag --list | sort -V | tail -1`
+3. Verify the last published tag: `git tag --list | sort -V | tail -1` (or use `git tag --sort=-v:refname | head -n 1`)
 4. Report the issue; do not manually adjust versions
 
 ### Artifact generation or publish workflow failed
