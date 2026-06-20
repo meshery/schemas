@@ -1,0 +1,81 @@
+name: Refresh Permissions
+
+# Pulls the "Features & Permissions" master tab from the published Google Sheet
+# into build/permissions.csv, regenerates the Go + TS permission constants, and
+# commits the result. Replaces the manual hand-edit of build/permissions.csv.
+#
+# The sheet is the source of truth: added / renamed / removed permissions all
+# flow through to master without gating. The generator skips any row whose Key
+# ID is not a valid UUID, so a typo'd cell can't break generation — that row is
+# simply omitted, the same as any other content change. The one safety check is
+# on the fetch itself (below): if the download isn't the expected CSV, the run
+# stops rather than overwrite permissions.csv with a redirect/error page.
+
+on:
+  workflow_dispatch:
+    inputs:
+      csv_url:
+        description: "Published CSV URL of the Features & Permissions master tab"
+        type: string
+        default: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQwzrUSKfuSRcpkp7sJTw1cSB63s4HCjYLJeGPWECsvqn222hjaaONQlN4X8auKvlaB0es3BqV5rQyz/pub?gid=829069645&single=true&output=csv"
+  schedule:
+    # Once daily. The :41 minute avoids top-of-hour scheduler congestion and the
+    # consumer-audit slot (:17).
+    - cron: "41 5 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-permissions
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    name: Refresh permissions.csv
+    if: github.repository == 'meshery/schemas'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      CSV_URL: ${{ inputs.csv_url || 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQwzrUSKfuSRcpkp7sJTw1cSB63s4HCjYLJeGPWECsvqn222hjaaONQlN4X8auKvlaB0es3BqV5rQyz/pub?gid=829069645&single=true&output=csv' }}
+    steps:
+      - name: Check out schemas
+        uses: actions/checkout@v6
+        with:
+          ref: master
+          token: ${{ secrets.MESHERY_CI }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Fetch permissions CSV from published sheet
+        run: |
+          set -euo pipefail
+          curl -fsSL "$CSV_URL" -o build/permissions.csv
+          # Guard: the master tab's first row carries the "Entitlement" group
+          # header. A private/redirected response returns HTML, not this.
+          head -n 1 build/permissions.csv | grep -qi "Entitlement" \
+            || { echo "::error::Fetched file is not the 'Features & Permissions' master tab (wrong gid or not published?)"; exit 1; }
+
+      - name: Regenerate Go + TS permission constants
+        run: make generate-permissions
+
+      - name: Auto-commit refreshed permissions
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: "chore: refresh permissions from canonical Google Sheet"
+          commit_options: "--signoff"
+          branch: master
+          commit_user_name: meshery
+          commit_user_email: ci@meshery.io
+          file_pattern: |
+            build/permissions.csv
+            models/permissions/permissions.go
+            typescript/permissions.ts
+            permissions_history/*-permissions_index.json
+          token: ${{ secrets.MESHERY_CI }}
