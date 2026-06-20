@@ -87,16 +87,7 @@ function parsePermissions(csvContent, options = {}) {
   // below. The allowlist is SHRINK-ONLY — remove an entry once the source
   // sheet assigns the colliding functions distinct UUIDs; never add a new one
   // (fix new collisions in the sheet). Tracked in meshery/schemas#930.
-  const KNOWN_DUPLICATE_UUIDS = new Set([
-    // GitOps: "Snapshots" and "ArgoEvents" share one UUID; no downstream
-    // consumer anchors the keep-side, so the split is a sheet-owner decision.
-    "81287ea7-5e3f-480c-8b2e-211d62d08797",
-    // GitOps Pipeline: BitBucket/GitHub/GitLab share one UUID (sheet decision).
-    "9f236c99-b2ec-4474-9ec8-7c3f8a09e63e",
-    // Performance: Analysis/Nighthawk/Distributed Tests/Performance Profiles
-    // share one UUID (sheet decision).
-    "72066352-d09b-494a-b02e-846676bd7a0a",
-  ]);
+  const KNOWN_DUPLICATE_UUIDS = new Set([]);
   const uuidToNames = new Map();
   for (const p of permissions) {
     const u = p.uuid.toLowerCase();
