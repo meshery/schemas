@@ -24,7 +24,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/users": {
+    "/api/identity/orgs/{orgId}/users/search": {
         parameters: {
             query?: never;
             header?: never;
@@ -32,10 +32,74 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get public users
-         * @description Returns publicly viewable user records.
+         * Search organization users
+         * @description Returns restricted user records visible to authenticated organization identity-management flows.
          */
-        get: operations["getUsers"];
+        get: operations["searchOrganizationUsers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/orgs/{orgId}/users/{userId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add user to organization
+         * @description Adds a user to an organization.
+         */
+        post: operations["addUserToOrg"];
+        /**
+         * Remove user from organization
+         * @description Removes a user from an organization.
+         */
+        delete: operations["deleteUserFromOrg"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/orgs/{orgId}/users/bulk": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Bulk delete organization users
+         * @description Deletes multiple users from an organization.
+         */
+        post: operations["bulkDeleteOrganizationUsers"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/orgs/{orgId}/users/online": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get recently online organization users
+         * @description Returns recently online users for an organization.
+         */
+        get: operations["getRecentlyOnlineUsersForOrg"];
         put?: never;
         post?: never;
         delete?: never;
@@ -51,7 +115,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get user profile by ID */
+        /**
+         * Get user profile by ID
+         * @description Returns the public user profile for the requested ID.
+         */
         get: operations["getUserProfileById"];
         put?: never;
         post?: never;
@@ -68,8 +135,287 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get current user profile */
+        /**
+         * Get current user profile
+         * @description Returns the authenticated user profile.
+         */
         get: operations["getUser"];
+        /**
+         * Update current user profile
+         * @description Updates a user profile.
+         */
+        put: operations["updateProfile"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/users/profile/details": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get profile details
+         * @description Returns account profile details for the authenticated user.
+         */
+        get: operations["getProfileOverview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/users/profile/provider": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get user provider
+         * @description Returns provider information for the authenticated user.
+         */
+        get: operations["getUserProvider"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/users/{userId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get user by ID
+         * @description Returns a user profile by ID.
+         */
+        get: operations["getUserById"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete user by ID
+         * @description Deletes a user account by ID.
+         */
+        delete: operations["deleteUserById"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/user": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete own account
+         * @description Deletes the authenticated user's account.
+         */
+        delete: operations["deleteOwnAccount"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/users/online": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get recently online users
+         * @description Returns recently online users.
+         */
+        get: operations["getRecentlyOnlineUsers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/users/preferences": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get user preferences
+         * @description Returns preferences for the authenticated user.
+         */
+        get: operations["getUserPreferences"];
+        /**
+         * Update user preferences
+         * @description Updates preferences for the authenticated user.
+         */
+        put: operations["updateUserPreferences"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/users/notifications/preferences": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get notification preferences
+         * @description Returns available notification preferences.
+         */
+        get: operations["getAvailableNotificationPreferences"];
+        /**
+         * Update notification preferences
+         * @description Updates notification preferences for the authenticated user.
+         */
+        put: operations["updateNotificationPreferences"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/users/notify/comment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Notify mentioned users
+         * @description Sends comment mention notifications to users.
+         */
+        post: operations["handleNotifyMentionUsers"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/users/notify/feedback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Submit user feedback
+         * @description Sends feedback submitted by the authenticated user.
+         */
+        post: operations["handleFeedbackFormSubmission"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/users/password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Update user password
+         * @description Updates the authenticated user's password.
+         */
+        post: operations["updateUsersPassword"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/users/account": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Link user account
+         * @description Starts an account-linking flow for the authenticated user.
+         */
+        get: operations["getUserAccount"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/users/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Search users
+         * @description Returns public user records visible to authenticated identity-management flows.
+         */
+        get: operations["searchUsers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get users
+         * @description Returns user records visible to the authenticated caller.
+         */
+        get: operations["getUsers"];
         put?: never;
         post?: never;
         delete?: never;
@@ -82,23 +428,18 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /** @description Represents a user */
+        /** @description Represents a user in Layer5 Cloud (Meshery) */
         User: {
             /**
              * Format: uuid
-             * @description Unique identifier for the user
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             id: string;
-            /** @description User identifier (username or external ID) */
+            /** @description User's identifier (username or external ID) */
             userId: string;
             /**
-             * @description Authentication provider (e.g., Google, Github)
-             * @example [
-             *       "local",
-             *       "github",
-             *       "google",
-             *       "twitter"
-             *     ]
+             * @description User's authentication provider (e.g., Layer5, Twitter, Facebook, GitHub)
+             * @example Layer5
              */
             provider: string;
             /**
@@ -112,11 +453,11 @@ export interface components {
             lastName: string;
             /**
              * Format: uri
-             * @description URL to user's avatar image
+             * @description URL to the user's avatar image
              */
             avatarUrl?: string;
             /**
-             * @description User account status
+             * @description User's account status
              * @enum {string}
              */
             status: "active" | "inactive" | "pending" | "anonymous";
@@ -133,10 +474,31 @@ export interface components {
             region?: {
                 [key: string]: unknown;
             };
-            /** @description User preferences stored as JSONB */
+            /** @description User's preferences stored as JSONB */
             preferences?: {
                 /** @description The mesh adapters of the preference. */
-                meshAdapters?: Record<string, never>[];
+                meshAdapters?: {
+                    /** @description Network location used to reach the adapter. */
+                    adapterLocation: string;
+                    /** @description Adapter name. */
+                    name: string;
+                    /** @description Adapter version. */
+                    version: string;
+                    /** @description Git commit SHA for the adapter build. */
+                    gitCommitSha: string;
+                    /** @description Operations supported by the adapter. */
+                    ops: {
+                        /** @description Stable operation key. */
+                        key: string;
+                        /** @description Human-readable operation value. */
+                        value: string;
+                        /**
+                         * @description Protobuf OpCategory wire value. Integer values intentionally mirror meshops.proto instead of using lowercase string enum literals.
+                         * @enum {integer}
+                         */
+                        category: 0 | 1 | 2 | 3 | 4;
+                    }[];
+                }[];
                 grafana?: {
                     /** @description Grafana URL for the user configuration. */
                     grafanaUrl?: string;
@@ -208,17 +570,17 @@ export interface components {
             };
             /**
              * Format: date-time
-             * @description Timestamp when user accepted terms and conditions
+             * @description Timestamp when the user accepted terms and conditions
              */
-            acceptedTermsAt?: string;
+            acceptedTermsAt: string;
             /**
              * Format: date-time
-             * @description Timestamp of user's first login
+             * @description Timestamp of the user's first login
              */
-            firstLoginTime?: string;
+            firstLoginTime: string;
             /**
              * Format: date-time
-             * @description Timestamp of user's most recent login
+             * @description Timestamp of the user's most recent login
              */
             lastLoginTime: string;
             /**
@@ -231,7 +593,7 @@ export interface components {
              * @description Timestamp when the user record was last updated
              */
             updatedAt: string;
-            /** @description Various online profiles associated with the user account */
+            /** @description Various online profiles associated with the user's account */
             socials?: {
                 /** @description The site of the social. */
                 site: string;
@@ -245,425 +607,1105 @@ export interface components {
              * Format: date-time
              * @description Timestamp when the user record was soft-deleted (null if not deleted)
              */
-            deletedAt: string | null;
-            /**
-             * @description List of global roles assigned to the user
-             * @example [
-             *       "admin",
-             *       "meshmap"
-             *     ]
-             */
-            roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
-            /** @description Teams the user belongs to with role information */
+            deletedAt?: string | null;
+        };
+        /** @description Authenticated user profile with role, team, organization, and linked account context. */
+        UserProfile: {
+            /** @description Represents a user in Layer5 Cloud (Meshery) */
+            user?: {
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                id: string;
+                /** @description User's identifier (username or external ID) */
+                userId: string;
+                /**
+                 * @description User's authentication provider (e.g., Layer5, Twitter, Facebook, GitHub)
+                 * @example Layer5
+                 */
+                provider: string;
+                /**
+                 * Format: email
+                 * @description User's email address
+                 */
+                email: string;
+                /** @description User's first name */
+                firstName: string;
+                /** @description User's last name */
+                lastName: string;
+                /**
+                 * Format: uri
+                 * @description URL to the user's avatar image
+                 */
+                avatarUrl?: string;
+                /**
+                 * @description User's account status
+                 * @enum {string}
+                 */
+                status: "active" | "inactive" | "pending" | "anonymous";
+                /**
+                 * @description User's biography or description
+                 * @default
+                 */
+                bio: string;
+                /** @description User's country information stored as JSONB */
+                country?: {
+                    [key: string]: unknown;
+                };
+                /** @description User's region information stored as JSONB */
+                region?: {
+                    [key: string]: unknown;
+                };
+                /** @description User's preferences stored as JSONB */
+                preferences?: {
+                    /** @description The mesh adapters of the preference. */
+                    meshAdapters?: {
+                        /** @description Network location used to reach the adapter. */
+                        adapterLocation: string;
+                        /** @description Adapter name. */
+                        name: string;
+                        /** @description Adapter version. */
+                        version: string;
+                        /** @description Git commit SHA for the adapter build. */
+                        gitCommitSha: string;
+                        /** @description Operations supported by the adapter. */
+                        ops: {
+                            /** @description Stable operation key. */
+                            key: string;
+                            /** @description Human-readable operation value. */
+                            value: string;
+                            /**
+                             * @description Protobuf OpCategory wire value. Integer values intentionally mirror meshops.proto instead of using lowercase string enum literals.
+                             * @enum {integer}
+                             */
+                            category: 0 | 1 | 2 | 3 | 4;
+                        }[];
+                    }[];
+                    grafana?: {
+                        /** @description Grafana URL for the user configuration. */
+                        grafanaUrl?: string;
+                        /** @description Grafana API key for the user configuration. */
+                        grafanaApiKey?: string;
+                        /** @description Selected Grafana board configurations for the user. */
+                        selectedBoardsConfigs?: {
+                            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                            board?: Record<string, never>;
+                            /** @description Panels selected for the Grafana board configuration. */
+                            panels?: Record<string, never>[];
+                            /** @description Template variables applied to the selected Grafana board configuration. */
+                            templateVars?: string[];
+                        }[];
+                    };
+                    prometheus?: {
+                        /** @description The prometheus URL of the prometheus. */
+                        prometheusUrl?: string;
+                        /** @description The selected prometheus boards configs of the prometheus. */
+                        selectedPrometheusBoardsConfigs?: {
+                            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                            board?: Record<string, never>;
+                            /** @description Panels selected for the Grafana board configuration. */
+                            panels?: Record<string, never>[];
+                            /** @description Template variables applied to the selected Grafana board configuration. */
+                            templateVars?: string[];
+                        }[];
+                    };
+                    loadTestPrefs?: {
+                        /** @description Concurrent requests */
+                        c?: number;
+                        /** @description Queries per second */
+                        qps?: number;
+                        /** @description Duration */
+                        t?: string;
+                        /** @description Load generator */
+                        gen?: string;
+                    };
+                    /** @description The anonymous usage stats of the preference. */
+                    anonymousUsageStats: boolean;
+                    /** @description The anonymous perf results of the preference. */
+                    anonymousPerfResults: boolean;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp of when the resource was last updated.
+                     */
+                    updatedAt: string;
+                    /** @description The dashboard preferences of the preference. */
+                    dashboardPreferences: {
+                        [key: string]: unknown;
+                    };
+                    /**
+                     * Format: uuid
+                     * @description ID of the associated selectedOrganization.
+                     */
+                    selectedOrganizationId: string;
+                    /** @description The selected workspace for organizations of the preference. */
+                    selectedWorkspaceForOrganizations: {
+                        [key: string]: string;
+                    };
+                    /** @description The users extension preferences of the preference. */
+                    usersExtensionPreferences: {
+                        [key: string]: unknown;
+                    };
+                    /** @description The remote provider preferences of the preference. */
+                    remoteProviderPreferences: {
+                        [key: string]: unknown;
+                    };
+                };
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the user accepted terms and conditions
+                 */
+                acceptedTermsAt: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp of the user's first login
+                 */
+                firstLoginTime: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp of the user's most recent login
+                 */
+                lastLoginTime: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the user record was created
+                 */
+                createdAt: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the user record was last updated
+                 */
+                updatedAt: string;
+                /** @description Various online profiles associated with the user's account */
+                socials?: {
+                    /** @description The site of the social. */
+                    site: string;
+                    /**
+                     * Format: uri
+                     * @description The link of the social.
+                     */
+                    link: string;
+                }[];
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the user record was soft-deleted (null if not deleted)
+                 */
+                deletedAt?: string | null;
+            };
+            /** @description Names of roles assigned to the user. */
+            roleNames: string[];
+            /** @description Teams the user belongs to with their assigned role information. */
             teams?: {
-                /** @description Team memberships for the user with their assigned roles. */
-                teamsWithRoles?: Record<string, never>[];
+                /** @description Team memberships with the user's assigned roles. */
+                teamsWithRoles: {
+                    /**
+                     * Format: uuid
+                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                     */
+                    id: string;
+                    /** @description Team name. */
+                    name: string;
+                    /** @description Team description. */
+                    description: string;
+                    /**
+                     * Format: uuid
+                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                     */
+                    owner: string;
+                    /** @description Team metadata stored with the membership row. */
+                    metadata: {
+                        [key: string]: unknown;
+                    };
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the team was created.
+                     */
+                    createdAt: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the team was last updated.
+                     */
+                    updatedAt: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the team was soft-deleted, if applicable.
+                     */
+                    deletedAt: string;
+                    /** @description Names of roles assigned to the user in this team. */
+                    roleNames: string[];
+                }[];
                 /** @description Total number of team memberships returned for the user. */
-                totalCount?: number;
+                totalCount: number;
             };
-            /** @description Organizations the user belongs to with role information */
+            /** @description Organizations the user belongs to with their assigned role information. */
             organizations?: {
-                /** @description Organization memberships for the user with their assigned roles. */
-                organizationsWithRoles?: Record<string, never>[];
+                /** @description Organization memberships with the user's assigned roles. */
+                organizationsWithRoles: {
+                    /**
+                     * Format: uuid
+                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                     */
+                    id: string;
+                    /** @description Organization name. */
+                    name: string;
+                    /** @description Organization description. */
+                    description: string;
+                    /** @description Organization country. */
+                    country: string;
+                    /** @description Organization region. */
+                    region: string;
+                    /**
+                     * Format: uuid
+                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                     */
+                    owner: string;
+                    /** @description Organization metadata stored with the membership row. */
+                    metadata: {
+                        [key: string]: unknown;
+                    };
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the organization was created.
+                     */
+                    createdAt: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the organization was last updated.
+                     */
+                    updatedAt: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the organization was soft-deleted, if applicable.
+                     */
+                    deletedAt: string;
+                    /** @description Names of roles assigned to the user in this organization. */
+                    roleNames: string[];
+                }[];
                 /** @description Total number of organization memberships returned for the user. */
-                totalCount?: number;
+                totalCount: number;
             };
+            /** @description Linked social account providers for the current user. */
+            linkedAccounts: string[];
+        };
+        /** @description Public user profile fields safe to return without authentication. */
+        UserPublicProfile: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            id: string;
+            /** @description User's public identifier. */
+            userId: string;
+            /** @description User's first name. */
+            firstName: string;
+            /** @description User's last name. */
+            lastName: string;
+            /**
+             * Format: uri
+             * @description URL to the user's avatar image.
+             */
+            avatarUrl?: string;
+            /** @description User's biography or description. */
+            bio?: string;
+            /**
+             * @description User's account status.
+             * @enum {string}
+             */
+            status: "active" | "inactive" | "pending" | "anonymous";
+            /** @description Public online profiles associated with the user's account. */
+            socials?: {
+                /** @description The site of the social. */
+                site: string;
+                /**
+                 * Format: uri
+                 * @description The link of the social.
+                 */
+                link: string;
+            }[];
+        };
+        /** @description Team memberships with the total membership count. */
+        TeamsWithCount: {
+            /** @description Team memberships with the user's assigned roles. */
+            teamsWithRoles: {
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                id: string;
+                /** @description Team name. */
+                name: string;
+                /** @description Team description. */
+                description: string;
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                owner: string;
+                /** @description Team metadata stored with the membership row. */
+                metadata: {
+                    [key: string]: unknown;
+                };
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the team was created.
+                 */
+                createdAt: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the team was last updated.
+                 */
+                updatedAt: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the team was soft-deleted, if applicable.
+                 */
+                deletedAt: string;
+                /** @description Names of roles assigned to the user in this team. */
+                roleNames: string[];
+            }[];
+            /** @description Total number of team memberships returned for the user. */
+            totalCount: number;
+        };
+        /** @description Organization memberships with the total membership count. */
+        OrganizationsWithCount: {
+            /** @description Organization memberships with the user's assigned roles. */
+            organizationsWithRoles: {
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                id: string;
+                /** @description Organization name. */
+                name: string;
+                /** @description Organization description. */
+                description: string;
+                /** @description Organization country. */
+                country: string;
+                /** @description Organization region. */
+                region: string;
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                owner: string;
+                /** @description Organization metadata stored with the membership row. */
+                metadata: {
+                    [key: string]: unknown;
+                };
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the organization was created.
+                 */
+                createdAt: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the organization was last updated.
+                 */
+                updatedAt: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the organization was soft-deleted, if applicable.
+                 */
+                deletedAt: string;
+                /** @description Names of roles assigned to the user in this organization. */
+                roleNames: string[];
+            }[];
+            /** @description Total number of organization memberships returned for the user. */
+            totalCount: number;
+        };
+        /** @description Team membership record with role information. */
+        TeamWithUserRoles: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            id: string;
+            /** @description Team name. */
+            name: string;
+            /** @description Team description. */
+            description: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            owner: string;
+            /** @description Team metadata stored with the membership row. */
+            metadata: {
+                [key: string]: unknown;
+            };
+            /**
+             * Format: date-time
+             * @description Timestamp when the team was created.
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the team was last updated.
+             */
+            updatedAt: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the team was soft-deleted, if applicable.
+             */
+            deletedAt: string;
+            /** @description Names of roles assigned to the user in this team. */
+            roleNames: string[];
+        };
+        /** @description Organization membership record with role information. */
+        OrganizationWithUserRoles: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            id: string;
+            /** @description Organization name. */
+            name: string;
+            /** @description Organization description. */
+            description: string;
+            /** @description Organization country. */
+            country: string;
+            /** @description Organization region. */
+            region: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            owner: string;
+            /** @description Organization metadata stored with the membership row. */
+            metadata: {
+                [key: string]: unknown;
+            };
+            /**
+             * Format: date-time
+             * @description Timestamp when the organization was created.
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the organization was last updated.
+             */
+            updatedAt: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the organization was soft-deleted, if applicable.
+             */
+            deletedAt: string;
+            /** @description Names of roles assigned to the user in this organization. */
+            roleNames: string[];
+        };
+        /** @description Payload for creating or updating a user profile. */
+        UserPayload: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            id?: string;
+            /**
+             * Format: email
+             * @description User's email address.
+             */
+            email?: string;
+            /** @description User's first name. */
+            firstName?: string;
+            /** @description User's last name. */
+            lastName?: string;
+            /**
+             * Format: uri
+             * @description URL to the user's avatar image.
+             */
+            avatarUrl?: string;
+            /** @description User's biography or description. */
+            bio?: string;
+            /** @description User's country information. */
+            country?: {
+                [key: string]: unknown;
+            };
+            /** @description User's region information. */
+            region?: {
+                [key: string]: unknown;
+            };
+            /** @description Online profiles associated with the user's account. */
+            socials?: {
+                /** @description The site of the social. */
+                site: string;
+                /**
+                 * Format: uri
+                 * @description The link of the social.
+                 */
+                link: string;
+            }[];
+        };
+        /** @description Payload for deleting multiple users from an organization. User IDs and email addresses are both required and must be index-aligned so audit and response messages can identify each deleted user. */
+        BulkUserDeletePayload: {
+            /** @description User IDs to delete. */
+            userIds: string[];
+            /** @description Email addresses for the users to delete. */
+            userEmails: string[];
+        };
+        /** @description Profile details for the authenticated user, including counts of associated resources. */
+        ProfileDetails: {
+            /** @description Number of Kubernetes contexts registered by the user. */
+            k8sCount: number;
+            /** @description Number of designs owned by the user. */
+            patternCount: number;
+        };
+        /** @description List of external identity providers linked to the authenticated user's account. */
+        UserProvider: string[];
+        /** @description A notification preference option. */
+        NotificationPreference: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            id?: string;
+            /** @description Notification preference name. */
+            name?: string;
+            /** @description Notification preference description. */
+            description?: string;
+            /** @description Notification preference category. */
+            category?: string;
+            /** @description Notification preference subcategory. */
+            subcategory?: string;
+            /** @description Notification preference label. */
+            label?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the notification preference was created.
+             */
+            createdAt?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the notification preference was last updated.
+             */
+            updatedAt?: string;
+        };
+        /** @description Available notification preferences. */
+        AvailableNotificationPreferences: {
+            /** @description Notification preferences keyed by preference identifier. */
+            notificationPreferences?: {
+                [key: string]: {
+                    /**
+                     * Format: uuid
+                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                     */
+                    id?: string;
+                    /** @description Notification preference name. */
+                    name?: string;
+                    /** @description Notification preference description. */
+                    description?: string;
+                    /** @description Notification preference category. */
+                    category?: string;
+                    /** @description Notification preference subcategory. */
+                    subcategory?: string;
+                    /** @description Notification preference label. */
+                    label?: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the notification preference was created.
+                     */
+                    createdAt?: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the notification preference was last updated.
+                     */
+                    updatedAt?: string;
+                };
+            };
+            /** @description Total number of notification preferences. */
+            totalCount?: number;
+        };
+        /** @description Payload for updating notification preferences. */
+        NotificationPreferencePayload: {
+            /** @description Notification preference labels to enable. */
+            notificationPreferences?: string[];
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            userId?: string;
+        };
+        /** @description Comment notification message. */
+        Message: {
+            /** @description Sender first name. */
+            firstName?: string;
+            /** @description Sender last name. */
+            lastName?: string;
+            /**
+             * Format: uri
+             * @description Sender avatar URL.
+             */
+            avatarUrl?: string;
+            /** @description Comment message text. */
+            message?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the message was created.
+             */
+            timestamp?: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            userId?: string;
+        };
+        /** @description Payload for sending comment mention notifications. */
+        MentionNotificationPayload: {
+            /** @description Users mentioned in the comment. */
+            mentionUsers: string[];
+            /** @description Users participating in the comment thread. */
+            participants: string[];
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            designId: string;
+            /** @description Users excluded from comment notifications. */
+            usersOptedOutOfNotifications: string[];
+            /** @description Messages in the comment thread. */
+            messages: {
+                /** @description Sender first name. */
+                firstName?: string;
+                /** @description Sender last name. */
+                lastName?: string;
+                /**
+                 * Format: uri
+                 * @description Sender avatar URL.
+                 */
+                avatarUrl?: string;
+                /** @description Comment message text. */
+                message?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the message was created.
+                 */
+                timestamp?: string;
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                userId?: string;
+            }[];
+        };
+        /** @description Payload for submitting user feedback. */
+        UserFeedbackPayload: {
+            /** @description Feedback message. */
+            message: string;
+            /** @description Product area or workflow for the feedback. */
+            scope: string;
+            /** @description Page location where the feedback was submitted. */
+            pageLocation: string;
+            /** @description Additional feedback metadata. */
+            metadata?: {
+                [key: string]: unknown;
+            };
+        };
+        /** @description Payload for updating a user password. */
+        PasswordUpdatePayload: {
+            /** @description Current password for verification before update. */
+            currentPassword: string;
+            /** @description New password for the user account. */
+            password: string;
+        };
+        /** @description Anonymous user identity response. */
+        AnonymousFlowResponse: {
+            /** @description Access token for the anonymous user. */
+            accessToken: string;
+            /** @description Capability set for the anonymous user. */
+            capability?: {
+                [key: string]: unknown;
+            };
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            userId: string;
         };
         /** @description Paginated list of users with organization and team role context */
         UsersPageForAdmin: {
             /** @description Current page number of the result set. */
-            page?: number;
+            page: number;
             /** @description Number of items per page. */
-            pageSize?: number;
+            pageSize: number;
             /** @description Total number of items available. */
-            totalCount?: number;
-            /** @description The data of the userspageforadmin. */
-            data?: {
+            totalCount: number;
+            /** @description User records returned on this page. */
+            data: {
                 /**
                  * Format: uuid
-                 * @description Unique identifier for the user
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
-                id: string;
-                /** @description User identifier (username or external ID) */
-                userId: string;
-                /**
-                 * @description Authentication provider (e.g., Google, Github)
-                 * @example [
-                 *       "local",
-                 *       "github",
-                 *       "google",
-                 *       "twitter"
-                 *     ]
-                 */
-                provider: string;
+                userId?: string;
+                /** @description Public username. */
+                username?: string;
                 /**
                  * Format: email
-                 * @description User's email address
+                 * @description User email address.
                  */
-                email: string;
-                /** @description User's first name */
-                firstName: string;
-                /** @description User's last name */
-                lastName: string;
+                email?: string;
+                /** @description User's first name. */
+                firstName?: string;
+                /** @description User's last name. */
+                lastName?: string;
+                /** @description User account status. */
+                status?: string;
+                /** @description Names of roles assigned to the user in the listing context. */
+                roleNames?: string[];
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the user was created.
+                 */
+                createdAt?: string;
+                /**
+                 * Format: date-time
+                 * @description Legacy listing timestamp currently scanned from the created_at projection.
+                 */
+                updatedAt?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the user joined the filtered team, when listing by team.
+                 */
+                joinedAt?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the user last signed in.
+                 */
+                lastLoginTime?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the user was soft-deleted, if applicable.
+                 */
+                deletedAt?: string;
+                /** @description Legacy role notification preferences attached to listing rows. */
+                prefs?: {
+                    [key: string]: unknown;
+                };
                 /**
                  * Format: uri
-                 * @description URL to user's avatar image
+                 * @description URL of the user's avatar image.
                  */
                 avatarUrl?: string;
-                /**
-                 * @description User account status
-                 * @enum {string}
-                 */
-                status: "active" | "inactive" | "pending" | "anonymous";
-                /**
-                 * @description User's biography or description
-                 * @default
-                 */
-                bio: string;
-                /** @description User's country information stored as JSONB */
-                country?: {
-                    [key: string]: unknown;
-                };
-                /** @description User's region information stored as JSONB */
-                region?: {
-                    [key: string]: unknown;
-                };
-                /** @description User preferences stored as JSONB */
+                /** @description User preference JSON attached to listing rows. */
                 preferences?: {
-                    /** @description The mesh adapters of the preference. */
-                    meshAdapters?: Record<string, never>[];
-                    grafana?: {
-                        /** @description Grafana URL for the user configuration. */
-                        grafanaUrl?: string;
-                        /** @description Grafana API key for the user configuration. */
-                        grafanaApiKey?: string;
-                        /** @description Selected Grafana board configurations for the user. */
-                        selectedBoardsConfigs?: {
-                            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                            board?: Record<string, never>;
-                            /** @description Panels selected for the Grafana board configuration. */
-                            panels?: Record<string, never>[];
-                            /** @description Template variables applied to the selected Grafana board configuration. */
-                            templateVars?: string[];
-                        }[];
-                    };
-                    prometheus?: {
-                        /** @description The prometheus URL of the prometheus. */
-                        prometheusUrl?: string;
-                        /** @description The selected prometheus boards configs of the prometheus. */
-                        selectedPrometheusBoardsConfigs?: {
-                            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                            board?: Record<string, never>;
-                            /** @description Panels selected for the Grafana board configuration. */
-                            panels?: Record<string, never>[];
-                            /** @description Template variables applied to the selected Grafana board configuration. */
-                            templateVars?: string[];
-                        }[];
-                    };
-                    loadTestPrefs?: {
-                        /** @description Concurrent requests */
-                        c?: number;
-                        /** @description Queries per second */
-                        qps?: number;
-                        /** @description Duration */
-                        t?: string;
-                        /** @description Load generator */
-                        gen?: string;
-                    };
-                    /** @description The anonymous usage stats of the preference. */
-                    anonymousUsageStats: boolean;
-                    /** @description The anonymous perf results of the preference. */
-                    anonymousPerfResults: boolean;
-                    /**
-                     * Format: date-time
-                     * @description Timestamp of when the resource was last updated.
-                     */
-                    updatedAt: string;
-                    /** @description The dashboard preferences of the preference. */
-                    dashboardPreferences: {
-                        [key: string]: unknown;
-                    };
+                    [key: string]: unknown;
+                };
+                /** @description Organization role names derived by Cloud after scanning the user row. */
+                organizationWithUserRoles?: {
+                    /** @description Names of roles assigned to the user in the selected organization context. */
+                    roleNames?: string[];
+                };
+                /** @description Team role context for legacy listing consumers when present. */
+                teamsWithUserRoles?: {
                     /**
                      * Format: uuid
-                     * @description ID of the associated selectedOrganization.
+                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                      */
-                    selectedOrganizationId: string;
-                    /** @description The selected workspace for organizations of the preference. */
-                    selectedWorkspaceForOrganizations: {
-                        [key: string]: string;
-                    };
-                    /** @description The users extension preferences of the preference. */
-                    usersExtensionPreferences: {
+                    id: string;
+                    /** @description Team name. */
+                    name: string;
+                    /** @description Team description. */
+                    description: string;
+                    /**
+                     * Format: uuid
+                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                     */
+                    owner: string;
+                    /** @description Team metadata stored with the membership row. */
+                    metadata: {
                         [key: string]: unknown;
                     };
-                    /** @description The remote provider preferences of the preference. */
-                    remoteProviderPreferences: {
-                        [key: string]: unknown;
-                    };
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the team was created.
+                     */
+                    createdAt: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the team was last updated.
+                     */
+                    updatedAt: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the team was soft-deleted, if applicable.
+                     */
+                    deletedAt: string;
+                    /** @description Names of roles assigned to the user in this team. */
+                    roleNames: string[];
+                }[];
+            }[];
+        };
+        /** @description User row returned by Cloud identity-management listings. DB tags match the users_with_roles DAO projection aliases. */
+        UserWithRole: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            userId?: string;
+            /** @description Public username. */
+            username?: string;
+            /**
+             * Format: email
+             * @description User email address.
+             */
+            email?: string;
+            /** @description User's first name. */
+            firstName?: string;
+            /** @description User's last name. */
+            lastName?: string;
+            /** @description User account status. */
+            status?: string;
+            /** @description Names of roles assigned to the user in the listing context. */
+            roleNames?: string[];
+            /**
+             * Format: date-time
+             * @description Timestamp when the user was created.
+             */
+            createdAt?: string;
+            /**
+             * Format: date-time
+             * @description Legacy listing timestamp currently scanned from the created_at projection.
+             */
+            updatedAt?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the user joined the filtered team, when listing by team.
+             */
+            joinedAt?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the user last signed in.
+             */
+            lastLoginTime?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the user was soft-deleted, if applicable.
+             */
+            deletedAt?: string;
+            /** @description Legacy role notification preferences attached to listing rows. */
+            prefs?: {
+                [key: string]: unknown;
+            };
+            /**
+             * Format: uri
+             * @description URL of the user's avatar image.
+             */
+            avatarUrl?: string;
+            /** @description User preference JSON attached to listing rows. */
+            preferences?: {
+                [key: string]: unknown;
+            };
+            /** @description Organization role names derived by Cloud after scanning the user row. */
+            organizationWithUserRoles?: {
+                /** @description Names of roles assigned to the user in the selected organization context. */
+                roleNames?: string[];
+            };
+            /** @description Team role context for legacy listing consumers when present. */
+            teamsWithUserRoles?: {
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                id: string;
+                /** @description Team name. */
+                name: string;
+                /** @description Team description. */
+                description: string;
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                owner: string;
+                /** @description Team metadata stored with the membership row. */
+                metadata: {
+                    [key: string]: unknown;
                 };
                 /**
                  * Format: date-time
-                 * @description Timestamp when user accepted terms and conditions
-                 */
-                acceptedTermsAt?: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp of user's first login
-                 */
-                firstLoginTime?: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp of user's most recent login
-                 */
-                lastLoginTime: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the user record was created
+                 * @description Timestamp when the team was created.
                  */
                 createdAt: string;
                 /**
                  * Format: date-time
-                 * @description Timestamp when the user record was last updated
+                 * @description Timestamp when the team was last updated.
                  */
                 updatedAt: string;
-                /** @description Various online profiles associated with the user account */
-                socials?: {
-                    /** @description The site of the social. */
-                    site: string;
-                    /**
-                     * Format: uri
-                     * @description The link of the social.
-                     */
-                    link: string;
-                }[];
                 /**
                  * Format: date-time
-                 * @description Timestamp when the user record was soft-deleted (null if not deleted)
+                 * @description Timestamp when the team was soft-deleted, if applicable.
                  */
-                deletedAt: string | null;
-                /**
-                 * @description List of global roles assigned to the user
-                 * @example [
-                 *       "admin",
-                 *       "meshmap"
-                 *     ]
-                 */
-                roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
-                /** @description Teams the user belongs to with role information */
-                teams?: {
-                    /** @description Team memberships for the user with their assigned roles. */
-                    teamsWithRoles?: Record<string, never>[];
-                    /** @description Total number of team memberships returned for the user. */
-                    totalCount?: number;
-                };
-                /** @description Organizations the user belongs to with role information */
-                organizations?: {
-                    /** @description Organization memberships for the user with their assigned roles. */
-                    organizationsWithRoles?: Record<string, never>[];
-                    /** @description Total number of organization memberships returned for the user. */
-                    totalCount?: number;
-                };
+                deletedAt: string;
+                /** @description Names of roles assigned to the user in this team. */
+                roleNames: string[];
             }[];
         };
-        /** @description Paginated list of public user records */
-        UsersPageForNonAdmin: {
+        /** @description Organization role context attached to Cloud user listing rows. */
+        UserListingOrganizationRoles: {
+            /** @description Names of roles assigned to the user in the selected organization context. */
+            roleNames?: string[];
+        };
+        /** @description Mapping between a user and an organization. */
+        UserOrganizationMapping: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            userId: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            organizationId: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            roleId?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the mapping was created.
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the mapping was last updated.
+             */
+            updatedAt: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the mapping was soft-deleted, if applicable.
+             */
+            deletedAt?: string;
+        };
+        /**
+         * @description Public user picker fields. Wire-compatible with legacy /api/users.
+         *     userId carries the user's UUID; username is the human handle.
+         */
+        PublicUserView: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            userId: string;
+            /** @description Public username or handle. */
+            username: string;
+            /**
+             * Format: uri
+             * @description URL to the user's avatar image.
+             */
+            avatarUrl?: string;
+        };
+        /** @description Paginated list of public user picker records. */
+        PublicUsersPage: {
             /** @description Current page number of the result set. */
-            page?: number;
+            page: number;
             /** @description Number of items per page. */
-            pageSize?: number;
+            pageSize: number;
             /** @description Total number of items available. */
-            totalCount?: number;
-            /** @description The data of the userspagefornonadmin. */
-            data?: {
+            totalCount: number;
+            /** @description Public user picker records returned on this page. */
+            data: {
                 /**
                  * Format: uuid
-                 * @description Unique identifier for the user
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
-                id: string;
-                /** @description User identifier (username or external ID) */
                 userId: string;
-                /**
-                 * @description Authentication provider (e.g., Google, Github)
-                 * @example [
-                 *       "local",
-                 *       "github",
-                 *       "google",
-                 *       "twitter"
-                 *     ]
-                 */
-                provider: string;
-                /**
-                 * Format: email
-                 * @description User's email address
-                 */
-                email: string;
-                /** @description User's first name */
-                firstName: string;
-                /** @description User's last name */
-                lastName: string;
+                /** @description Public username or handle. */
+                username: string;
                 /**
                  * Format: uri
-                 * @description URL to user's avatar image
+                 * @description URL to the user's avatar image.
                  */
                 avatarUrl?: string;
-                /**
-                 * @description User account status
-                 * @enum {string}
-                 */
-                status: "active" | "inactive" | "pending" | "anonymous";
-                /**
-                 * @description User's biography or description
-                 * @default
-                 */
-                bio: string;
-                /** @description User's country information stored as JSONB */
-                country?: {
-                    [key: string]: unknown;
-                };
-                /** @description User's region information stored as JSONB */
-                region?: {
-                    [key: string]: unknown;
-                };
-                /** @description User preferences stored as JSONB */
-                preferences?: {
-                    /** @description The mesh adapters of the preference. */
-                    meshAdapters?: Record<string, never>[];
-                    grafana?: {
-                        /** @description Grafana URL for the user configuration. */
-                        grafanaUrl?: string;
-                        /** @description Grafana API key for the user configuration. */
-                        grafanaApiKey?: string;
-                        /** @description Selected Grafana board configurations for the user. */
-                        selectedBoardsConfigs?: {
-                            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                            board?: Record<string, never>;
-                            /** @description Panels selected for the Grafana board configuration. */
-                            panels?: Record<string, never>[];
-                            /** @description Template variables applied to the selected Grafana board configuration. */
-                            templateVars?: string[];
-                        }[];
-                    };
-                    prometheus?: {
-                        /** @description The prometheus URL of the prometheus. */
-                        prometheusUrl?: string;
-                        /** @description The selected prometheus boards configs of the prometheus. */
-                        selectedPrometheusBoardsConfigs?: {
-                            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                            board?: Record<string, never>;
-                            /** @description Panels selected for the Grafana board configuration. */
-                            panels?: Record<string, never>[];
-                            /** @description Template variables applied to the selected Grafana board configuration. */
-                            templateVars?: string[];
-                        }[];
-                    };
-                    loadTestPrefs?: {
-                        /** @description Concurrent requests */
-                        c?: number;
-                        /** @description Queries per second */
-                        qps?: number;
-                        /** @description Duration */
-                        t?: string;
-                        /** @description Load generator */
-                        gen?: string;
-                    };
-                    /** @description The anonymous usage stats of the preference. */
-                    anonymousUsageStats: boolean;
-                    /** @description The anonymous perf results of the preference. */
-                    anonymousPerfResults: boolean;
-                    /**
-                     * Format: date-time
-                     * @description Timestamp of when the resource was last updated.
-                     */
-                    updatedAt: string;
-                    /** @description The dashboard preferences of the preference. */
-                    dashboardPreferences: {
-                        [key: string]: unknown;
-                    };
-                    /**
-                     * Format: uuid
-                     * @description ID of the associated selectedOrganization.
-                     */
-                    selectedOrganizationId: string;
-                    /** @description The selected workspace for organizations of the preference. */
-                    selectedWorkspaceForOrganizations: {
-                        [key: string]: string;
-                    };
-                    /** @description The users extension preferences of the preference. */
-                    usersExtensionPreferences: {
-                        [key: string]: unknown;
-                    };
-                    /** @description The remote provider preferences of the preference. */
-                    remoteProviderPreferences: {
-                        [key: string]: unknown;
-                    };
-                };
-                /**
-                 * Format: date-time
-                 * @description Timestamp when user accepted terms and conditions
-                 */
-                acceptedTermsAt?: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp of user's first login
-                 */
-                firstLoginTime?: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp of user's most recent login
-                 */
-                lastLoginTime: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the user record was created
-                 */
-                createdAt: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the user record was last updated
-                 */
-                updatedAt: string;
-                /** @description Various online profiles associated with the user account */
-                socials?: {
-                    /** @description The site of the social. */
-                    site: string;
-                    /**
-                     * Format: uri
-                     * @description The link of the social.
-                     */
-                    link: string;
-                }[];
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the user record was soft-deleted (null if not deleted)
-                 */
-                deletedAt: string | null;
-                /**
-                 * @description List of global roles assigned to the user
-                 * @example [
-                 *       "admin",
-                 *       "meshmap"
-                 *     ]
-                 */
-                roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
-                /** @description Teams the user belongs to with role information */
-                teams?: {
-                    /** @description Team memberships for the user with their assigned roles. */
-                    teamsWithRoles?: Record<string, never>[];
-                    /** @description Total number of team memberships returned for the user. */
-                    totalCount?: number;
-                };
-                /** @description Organizations the user belongs to with role information */
-                organizations?: {
-                    /** @description Organization memberships for the user with their assigned roles. */
-                    organizationsWithRoles?: Record<string, never>[];
-                    /** @description Total number of organization memberships returned for the user. */
-                    totalCount?: number;
-                };
             }[];
         };
+        /** @description Restricted user record returned by authenticated user search. */
+        SearchableUserView: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            id?: string;
+            /** @description User's public identifier. */
+            userId?: string;
+            /** @description Public username. */
+            username?: string;
+            /**
+             * Format: email
+             * @description User email address.
+             */
+            email?: string;
+            /**
+             * Format: uri
+             * @description URL of the user's avatar image.
+             */
+            avatarUrl?: string;
+        };
+        /** @description Paginated list of restricted user records returned by authenticated user search. */
+        SearchableUsersPage: {
+            /** @description Current page number of the result set. */
+            page: number;
+            /** @description Number of items per page. */
+            pageSize: number;
+            /** @description Total number of items available. */
+            totalCount: number;
+            /** @description Restricted users matching the search query. */
+            data: {
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                id?: string;
+                /** @description User's public identifier. */
+                userId?: string;
+                /** @description Public username. */
+                username?: string;
+                /**
+                 * Format: email
+                 * @description User email address.
+                 */
+                email?: string;
+                /**
+                 * Format: uri
+                 * @description URL of the user's avatar image.
+                 */
+                avatarUrl?: string;
+            }[];
+        };
+        /**
+         * Format: date-time
+         * @description SQL null Timestamp to handle null values of time.
+         */
+        NullTime: string;
+        /** Format: date-time */
+        SqlNullTime: string;
         Preference: {
             /** @description The mesh adapters of the preference. */
-            meshAdapters?: Record<string, never>[];
+            meshAdapters?: {
+                /** @description Network location used to reach the adapter. */
+                adapterLocation: string;
+                /** @description Adapter name. */
+                name: string;
+                /** @description Adapter version. */
+                version: string;
+                /** @description Git commit SHA for the adapter build. */
+                gitCommitSha: string;
+                /** @description Operations supported by the adapter. */
+                ops: {
+                    /** @description Stable operation key. */
+                    key: string;
+                    /** @description Human-readable operation value. */
+                    value: string;
+                    /**
+                     * @description Protobuf OpCategory wire value. Integer values intentionally mirror meshops.proto instead of using lowercase string enum literals.
+                     * @enum {integer}
+                     */
+                    category: 0 | 1 | 2 | 3 | 4;
+                }[];
+            }[];
             grafana?: {
                 /** @description Grafana URL for the user configuration. */
                 grafanaUrl?: string;
@@ -733,8 +1775,130 @@ export interface components {
                 [key: string]: unknown;
             };
         };
-        /** @description Placeholder for Adapter struct definition. */
-        Adapter: Record<string, never>;
+        /** @description Payload for updating user preferences. Contains only client-settable fields; omitted fields are left unchanged by the server. */
+        PreferencePayload: {
+            /** @description The mesh adapters of the preference. */
+            meshAdapters?: {
+                /** @description Network location used to reach the adapter. */
+                adapterLocation: string;
+                /** @description Adapter name. */
+                name: string;
+                /** @description Adapter version. */
+                version: string;
+                /** @description Git commit SHA for the adapter build. */
+                gitCommitSha: string;
+                /** @description Operations supported by the adapter. */
+                ops: {
+                    /** @description Stable operation key. */
+                    key: string;
+                    /** @description Human-readable operation value. */
+                    value: string;
+                    /**
+                     * @description Protobuf OpCategory wire value. Integer values intentionally mirror meshops.proto instead of using lowercase string enum literals.
+                     * @enum {integer}
+                     */
+                    category: 0 | 1 | 2 | 3 | 4;
+                }[];
+            }[];
+            grafana?: {
+                /** @description Grafana URL for the user configuration. */
+                grafanaUrl?: string;
+                /** @description Grafana API key for the user configuration. */
+                grafanaApiKey?: string;
+                /** @description Selected Grafana board configurations for the user. */
+                selectedBoardsConfigs?: {
+                    /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                    board?: Record<string, never>;
+                    /** @description Panels selected for the Grafana board configuration. */
+                    panels?: Record<string, never>[];
+                    /** @description Template variables applied to the selected Grafana board configuration. */
+                    templateVars?: string[];
+                }[];
+            };
+            prometheus?: {
+                /** @description The prometheus URL of the prometheus. */
+                prometheusUrl?: string;
+                /** @description The selected prometheus boards configs of the prometheus. */
+                selectedPrometheusBoardsConfigs?: {
+                    /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                    board?: Record<string, never>;
+                    /** @description Panels selected for the Grafana board configuration. */
+                    panels?: Record<string, never>[];
+                    /** @description Template variables applied to the selected Grafana board configuration. */
+                    templateVars?: string[];
+                }[];
+            };
+            loadTestPrefs?: {
+                /** @description Concurrent requests */
+                c?: number;
+                /** @description Queries per second */
+                qps?: number;
+                /** @description Duration */
+                t?: string;
+                /** @description Load generator */
+                gen?: string;
+            };
+            /** @description The anonymous usage stats of the preference. */
+            anonymousUsageStats?: boolean;
+            /** @description The anonymous perf results of the preference. */
+            anonymousPerfResults?: boolean;
+            /** @description The dashboard preferences of the preference. */
+            dashboardPreferences?: {
+                [key: string]: unknown;
+            };
+            /**
+             * Format: uuid
+             * @description ID of the associated selectedOrganization.
+             */
+            selectedOrganizationId?: string;
+            /** @description The selected workspace for organizations of the preference. */
+            selectedWorkspaceForOrganizations?: {
+                [key: string]: string;
+            };
+            /** @description The users extension preferences of the preference. */
+            usersExtensionPreferences?: {
+                [key: string]: unknown;
+            };
+            /** @description The remote provider preferences of the preference. */
+            remoteProviderPreferences?: {
+                [key: string]: unknown;
+            };
+        };
+        /** @description Meshery adapter configuration stored in user preferences. */
+        Adapter: {
+            /** @description Network location used to reach the adapter. */
+            adapterLocation: string;
+            /** @description Adapter name. */
+            name: string;
+            /** @description Adapter version. */
+            version: string;
+            /** @description Git commit SHA for the adapter build. */
+            gitCommitSha: string;
+            /** @description Operations supported by the adapter. */
+            ops: {
+                /** @description Stable operation key. */
+                key: string;
+                /** @description Human-readable operation value. */
+                value: string;
+                /**
+                 * @description Protobuf OpCategory wire value. Integer values intentionally mirror meshops.proto instead of using lowercase string enum literals.
+                 * @enum {integer}
+                 */
+                category: 0 | 1 | 2 | 3 | 4;
+            }[];
+        };
+        /** @description Operation supported by a Meshery adapter. */
+        SupportedOperation: {
+            /** @description Stable operation key. */
+            key: string;
+            /** @description Human-readable operation value. */
+            value: string;
+            /**
+             * @description Protobuf OpCategory wire value. Integer values intentionally mirror meshops.proto instead of using lowercase string enum literals.
+             * @enum {integer}
+             */
+            category: 0 | 1 | 2 | 3 | 4;
+        };
         Grafana: {
             /** @description Grafana URL for the user configuration. */
             grafanaUrl?: string;
@@ -839,6 +2003,10 @@ export interface components {
         id: string;
         /** @description Organization ID */
         orgId: string;
+        /** @description Organization ID to scope the request. */
+        orgIdQuery: string;
+        /** @description User ID */
+        userId: string;
         /** @description Get responses by page */
         page: string;
         /** @description Get responses by page size */
@@ -891,197 +2059,114 @@ export interface operations {
                 content: {
                     "application/json": {
                         /** @description Current page number of the result set. */
-                        page?: number;
+                        page: number;
                         /** @description Number of items per page. */
-                        pageSize?: number;
+                        pageSize: number;
                         /** @description Total number of items available. */
-                        totalCount?: number;
-                        /** @description The data of the userspageforadmin. */
-                        data?: {
+                        totalCount: number;
+                        /** @description User records returned on this page. */
+                        data: {
                             /**
                              * Format: uuid
-                             * @description Unique identifier for the user
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
-                            id: string;
-                            /** @description User identifier (username or external ID) */
-                            userId: string;
-                            /**
-                             * @description Authentication provider (e.g., Google, Github)
-                             * @example [
-                             *       "local",
-                             *       "github",
-                             *       "google",
-                             *       "twitter"
-                             *     ]
-                             */
-                            provider: string;
+                            userId?: string;
+                            /** @description Public username. */
+                            username?: string;
                             /**
                              * Format: email
-                             * @description User's email address
+                             * @description User email address.
                              */
-                            email: string;
-                            /** @description User's first name */
-                            firstName: string;
-                            /** @description User's last name */
-                            lastName: string;
+                            email?: string;
+                            /** @description User's first name. */
+                            firstName?: string;
+                            /** @description User's last name. */
+                            lastName?: string;
+                            /** @description User account status. */
+                            status?: string;
+                            /** @description Names of roles assigned to the user in the listing context. */
+                            roleNames?: string[];
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user was created.
+                             */
+                            createdAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Legacy listing timestamp currently scanned from the created_at projection.
+                             */
+                            updatedAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user joined the filtered team, when listing by team.
+                             */
+                            joinedAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user last signed in.
+                             */
+                            lastLoginTime?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user was soft-deleted, if applicable.
+                             */
+                            deletedAt?: string;
+                            /** @description Legacy role notification preferences attached to listing rows. */
+                            prefs?: {
+                                [key: string]: unknown;
+                            };
                             /**
                              * Format: uri
-                             * @description URL to user's avatar image
+                             * @description URL of the user's avatar image.
                              */
                             avatarUrl?: string;
-                            /**
-                             * @description User account status
-                             * @enum {string}
-                             */
-                            status: "active" | "inactive" | "pending" | "anonymous";
-                            /**
-                             * @description User's biography or description
-                             * @default
-                             */
-                            bio: string;
-                            /** @description User's country information stored as JSONB */
-                            country?: {
-                                [key: string]: unknown;
-                            };
-                            /** @description User's region information stored as JSONB */
-                            region?: {
-                                [key: string]: unknown;
-                            };
-                            /** @description User preferences stored as JSONB */
+                            /** @description User preference JSON attached to listing rows. */
                             preferences?: {
-                                /** @description The mesh adapters of the preference. */
-                                meshAdapters?: Record<string, never>[];
-                                grafana?: {
-                                    /** @description Grafana URL for the user configuration. */
-                                    grafanaUrl?: string;
-                                    /** @description Grafana API key for the user configuration. */
-                                    grafanaApiKey?: string;
-                                    /** @description Selected Grafana board configurations for the user. */
-                                    selectedBoardsConfigs?: {
-                                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                                        board?: Record<string, never>;
-                                        /** @description Panels selected for the Grafana board configuration. */
-                                        panels?: Record<string, never>[];
-                                        /** @description Template variables applied to the selected Grafana board configuration. */
-                                        templateVars?: string[];
-                                    }[];
-                                };
-                                prometheus?: {
-                                    /** @description The prometheus URL of the prometheus. */
-                                    prometheusUrl?: string;
-                                    /** @description The selected prometheus boards configs of the prometheus. */
-                                    selectedPrometheusBoardsConfigs?: {
-                                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                                        board?: Record<string, never>;
-                                        /** @description Panels selected for the Grafana board configuration. */
-                                        panels?: Record<string, never>[];
-                                        /** @description Template variables applied to the selected Grafana board configuration. */
-                                        templateVars?: string[];
-                                    }[];
-                                };
-                                loadTestPrefs?: {
-                                    /** @description Concurrent requests */
-                                    c?: number;
-                                    /** @description Queries per second */
-                                    qps?: number;
-                                    /** @description Duration */
-                                    t?: string;
-                                    /** @description Load generator */
-                                    gen?: string;
-                                };
-                                /** @description The anonymous usage stats of the preference. */
-                                anonymousUsageStats: boolean;
-                                /** @description The anonymous perf results of the preference. */
-                                anonymousPerfResults: boolean;
-                                /**
-                                 * Format: date-time
-                                 * @description Timestamp of when the resource was last updated.
-                                 */
-                                updatedAt: string;
-                                /** @description The dashboard preferences of the preference. */
-                                dashboardPreferences: {
-                                    [key: string]: unknown;
-                                };
+                                [key: string]: unknown;
+                            };
+                            /** @description Organization role names derived by Cloud after scanning the user row. */
+                            organizationWithUserRoles?: {
+                                /** @description Names of roles assigned to the user in the selected organization context. */
+                                roleNames?: string[];
+                            };
+                            /** @description Team role context for legacy listing consumers when present. */
+                            teamsWithUserRoles?: {
                                 /**
                                  * Format: uuid
-                                 * @description ID of the associated selectedOrganization.
+                                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                                  */
-                                selectedOrganizationId: string;
-                                /** @description The selected workspace for organizations of the preference. */
-                                selectedWorkspaceForOrganizations: {
-                                    [key: string]: string;
-                                };
-                                /** @description The users extension preferences of the preference. */
-                                usersExtensionPreferences: {
-                                    [key: string]: unknown;
-                                };
-                                /** @description The remote provider preferences of the preference. */
-                                remoteProviderPreferences: {
-                                    [key: string]: unknown;
-                                };
-                            };
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when user accepted terms and conditions
-                             */
-                            acceptedTermsAt?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp of user's first login
-                             */
-                            firstLoginTime?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp of user's most recent login
-                             */
-                            lastLoginTime: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the user record was created
-                             */
-                            createdAt: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the user record was last updated
-                             */
-                            updatedAt: string;
-                            /** @description Various online profiles associated with the user account */
-                            socials?: {
-                                /** @description The site of the social. */
-                                site: string;
+                                id: string;
+                                /** @description Team name. */
+                                name: string;
+                                /** @description Team description. */
+                                description: string;
                                 /**
-                                 * Format: uri
-                                 * @description The link of the social.
+                                 * Format: uuid
+                                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                                  */
-                                link: string;
+                                owner: string;
+                                /** @description Team metadata stored with the membership row. */
+                                metadata: {
+                                    [key: string]: unknown;
+                                };
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the team was created.
+                                 */
+                                createdAt: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the team was last updated.
+                                 */
+                                updatedAt: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the team was soft-deleted, if applicable.
+                                 */
+                                deletedAt: string;
+                                /** @description Names of roles assigned to the user in this team. */
+                                roleNames: string[];
                             }[];
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the user record was soft-deleted (null if not deleted)
-                             */
-                            deletedAt: string | null;
-                            /**
-                             * @description List of global roles assigned to the user
-                             * @example [
-                             *       "admin",
-                             *       "meshmap"
-                             *     ]
-                             */
-                            roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
-                            /** @description Teams the user belongs to with role information */
-                            teams?: {
-                                /** @description Team memberships for the user with their assigned roles. */
-                                teamsWithRoles?: Record<string, never>[];
-                                /** @description Total number of team memberships returned for the user. */
-                                totalCount?: number;
-                            };
-                            /** @description Organizations the user belongs to with role information */
-                            organizations?: {
-                                /** @description Organization memberships for the user with their assigned roles. */
-                                organizationsWithRoles?: Record<string, never>[];
-                                /** @description Total number of organization memberships returned for the user. */
-                                totalCount?: number;
-                            };
                         }[];
                     };
                 };
@@ -1124,7 +2209,7 @@ export interface operations {
             };
         };
     };
-    getUsers: {
+    searchOrganizationUsers: {
         parameters: {
             query?: {
                 /** @description Get responses by page */
@@ -1139,12 +2224,15 @@ export interface operations {
                 filter?: string;
             };
             header?: never;
-            path?: never;
+            path: {
+                /** @description Organization ID */
+                orgId: string;
+            };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description Paginated list of public users */
+            /** @description Paginated list of searchable organization users */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -1152,197 +2240,32 @@ export interface operations {
                 content: {
                     "application/json": {
                         /** @description Current page number of the result set. */
-                        page?: number;
+                        page: number;
                         /** @description Number of items per page. */
-                        pageSize?: number;
+                        pageSize: number;
                         /** @description Total number of items available. */
-                        totalCount?: number;
-                        /** @description The data of the userspagefornonadmin. */
-                        data?: {
+                        totalCount: number;
+                        /** @description Restricted users matching the search query. */
+                        data: {
                             /**
                              * Format: uuid
-                             * @description Unique identifier for the user
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
-                            id: string;
-                            /** @description User identifier (username or external ID) */
-                            userId: string;
-                            /**
-                             * @description Authentication provider (e.g., Google, Github)
-                             * @example [
-                             *       "local",
-                             *       "github",
-                             *       "google",
-                             *       "twitter"
-                             *     ]
-                             */
-                            provider: string;
+                            id?: string;
+                            /** @description User's public identifier. */
+                            userId?: string;
+                            /** @description Public username. */
+                            username?: string;
                             /**
                              * Format: email
-                             * @description User's email address
+                             * @description User email address.
                              */
-                            email: string;
-                            /** @description User's first name */
-                            firstName: string;
-                            /** @description User's last name */
-                            lastName: string;
+                            email?: string;
                             /**
                              * Format: uri
-                             * @description URL to user's avatar image
+                             * @description URL of the user's avatar image.
                              */
                             avatarUrl?: string;
-                            /**
-                             * @description User account status
-                             * @enum {string}
-                             */
-                            status: "active" | "inactive" | "pending" | "anonymous";
-                            /**
-                             * @description User's biography or description
-                             * @default
-                             */
-                            bio: string;
-                            /** @description User's country information stored as JSONB */
-                            country?: {
-                                [key: string]: unknown;
-                            };
-                            /** @description User's region information stored as JSONB */
-                            region?: {
-                                [key: string]: unknown;
-                            };
-                            /** @description User preferences stored as JSONB */
-                            preferences?: {
-                                /** @description The mesh adapters of the preference. */
-                                meshAdapters?: Record<string, never>[];
-                                grafana?: {
-                                    /** @description Grafana URL for the user configuration. */
-                                    grafanaUrl?: string;
-                                    /** @description Grafana API key for the user configuration. */
-                                    grafanaApiKey?: string;
-                                    /** @description Selected Grafana board configurations for the user. */
-                                    selectedBoardsConfigs?: {
-                                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                                        board?: Record<string, never>;
-                                        /** @description Panels selected for the Grafana board configuration. */
-                                        panels?: Record<string, never>[];
-                                        /** @description Template variables applied to the selected Grafana board configuration. */
-                                        templateVars?: string[];
-                                    }[];
-                                };
-                                prometheus?: {
-                                    /** @description The prometheus URL of the prometheus. */
-                                    prometheusUrl?: string;
-                                    /** @description The selected prometheus boards configs of the prometheus. */
-                                    selectedPrometheusBoardsConfigs?: {
-                                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                                        board?: Record<string, never>;
-                                        /** @description Panels selected for the Grafana board configuration. */
-                                        panels?: Record<string, never>[];
-                                        /** @description Template variables applied to the selected Grafana board configuration. */
-                                        templateVars?: string[];
-                                    }[];
-                                };
-                                loadTestPrefs?: {
-                                    /** @description Concurrent requests */
-                                    c?: number;
-                                    /** @description Queries per second */
-                                    qps?: number;
-                                    /** @description Duration */
-                                    t?: string;
-                                    /** @description Load generator */
-                                    gen?: string;
-                                };
-                                /** @description The anonymous usage stats of the preference. */
-                                anonymousUsageStats: boolean;
-                                /** @description The anonymous perf results of the preference. */
-                                anonymousPerfResults: boolean;
-                                /**
-                                 * Format: date-time
-                                 * @description Timestamp of when the resource was last updated.
-                                 */
-                                updatedAt: string;
-                                /** @description The dashboard preferences of the preference. */
-                                dashboardPreferences: {
-                                    [key: string]: unknown;
-                                };
-                                /**
-                                 * Format: uuid
-                                 * @description ID of the associated selectedOrganization.
-                                 */
-                                selectedOrganizationId: string;
-                                /** @description The selected workspace for organizations of the preference. */
-                                selectedWorkspaceForOrganizations: {
-                                    [key: string]: string;
-                                };
-                                /** @description The users extension preferences of the preference. */
-                                usersExtensionPreferences: {
-                                    [key: string]: unknown;
-                                };
-                                /** @description The remote provider preferences of the preference. */
-                                remoteProviderPreferences: {
-                                    [key: string]: unknown;
-                                };
-                            };
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when user accepted terms and conditions
-                             */
-                            acceptedTermsAt?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp of user's first login
-                             */
-                            firstLoginTime?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp of user's most recent login
-                             */
-                            lastLoginTime: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the user record was created
-                             */
-                            createdAt: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the user record was last updated
-                             */
-                            updatedAt: string;
-                            /** @description Various online profiles associated with the user account */
-                            socials?: {
-                                /** @description The site of the social. */
-                                site: string;
-                                /**
-                                 * Format: uri
-                                 * @description The link of the social.
-                                 */
-                                link: string;
-                            }[];
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the user record was soft-deleted (null if not deleted)
-                             */
-                            deletedAt: string | null;
-                            /**
-                             * @description List of global roles assigned to the user
-                             * @example [
-                             *       "admin",
-                             *       "meshmap"
-                             *     ]
-                             */
-                            roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
-                            /** @description Teams the user belongs to with role information */
-                            teams?: {
-                                /** @description Team memberships for the user with their assigned roles. */
-                                teamsWithRoles?: Record<string, never>[];
-                                /** @description Total number of team memberships returned for the user. */
-                                totalCount?: number;
-                            };
-                            /** @description Organizations the user belongs to with role information */
-                            organizations?: {
-                                /** @description Organization memberships for the user with their assigned roles. */
-                                organizationsWithRoles?: Record<string, never>[];
-                                /** @description Total number of organization memberships returned for the user. */
-                                totalCount?: number;
-                            };
                         }[];
                     };
                 };
@@ -1365,6 +2288,15 @@ export interface operations {
                     "text/plain": string;
                 };
             };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
             /** @description Internal server error */
             500: {
                 headers: {
@@ -1376,19 +2308,252 @@ export interface operations {
             };
         };
     };
-    getUserProfileById: {
+    addUserToOrg: {
         parameters: {
             query?: never;
             header?: never;
             path: {
+                /** @description Organization ID */
+                orgId: string;
                 /** @description User ID */
-                id: string;
+                userId: string;
             };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description User profile for the requested ID */
+            /** @description User added to organization */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        id: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        userId: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        organizationId: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        roleId?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the mapping was created.
+                         */
+                        createdAt: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the mapping was last updated.
+                         */
+                        updatedAt: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the mapping was soft-deleted, if applicable.
+                         */
+                        deletedAt?: string;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description User cannot be added to organization */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    deleteUserFromOrg: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization ID */
+                orgId: string;
+                /** @description User ID */
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description User removed from organization */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    bulkDeleteOrganizationUsers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization ID */
+                orgId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description User IDs to delete. */
+                    userIds: string[];
+                    /** @description Email addresses for the users to delete. */
+                    userEmails: string[];
+                };
+            };
+        };
+        responses: {
+            /** @description Bulk user deletion result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string[];
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getRecentlyOnlineUsersForOrg: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization ID */
+                orgId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Recently online organization users */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -1397,19 +2562,14 @@ export interface operations {
                     "application/json": {
                         /**
                          * Format: uuid
-                         * @description Unique identifier for the user
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         id: string;
-                        /** @description User identifier (username or external ID) */
+                        /** @description User's identifier (username or external ID) */
                         userId: string;
                         /**
-                         * @description Authentication provider (e.g., Google, Github)
-                         * @example [
-                         *       "local",
-                         *       "github",
-                         *       "google",
-                         *       "twitter"
-                         *     ]
+                         * @description User's authentication provider (e.g., Layer5, Twitter, Facebook, GitHub)
+                         * @example Layer5
                          */
                         provider: string;
                         /**
@@ -1423,11 +2583,11 @@ export interface operations {
                         lastName: string;
                         /**
                          * Format: uri
-                         * @description URL to user's avatar image
+                         * @description URL to the user's avatar image
                          */
                         avatarUrl?: string;
                         /**
-                         * @description User account status
+                         * @description User's account status
                          * @enum {string}
                          */
                         status: "active" | "inactive" | "pending" | "anonymous";
@@ -1444,10 +2604,31 @@ export interface operations {
                         region?: {
                             [key: string]: unknown;
                         };
-                        /** @description User preferences stored as JSONB */
+                        /** @description User's preferences stored as JSONB */
                         preferences?: {
                             /** @description The mesh adapters of the preference. */
-                            meshAdapters?: Record<string, never>[];
+                            meshAdapters?: {
+                                /** @description Network location used to reach the adapter. */
+                                adapterLocation: string;
+                                /** @description Adapter name. */
+                                name: string;
+                                /** @description Adapter version. */
+                                version: string;
+                                /** @description Git commit SHA for the adapter build. */
+                                gitCommitSha: string;
+                                /** @description Operations supported by the adapter. */
+                                ops: {
+                                    /** @description Stable operation key. */
+                                    key: string;
+                                    /** @description Human-readable operation value. */
+                                    value: string;
+                                    /**
+                                     * @description Protobuf OpCategory wire value. Integer values intentionally mirror meshops.proto instead of using lowercase string enum literals.
+                                     * @enum {integer}
+                                     */
+                                    category: 0 | 1 | 2 | 3 | 4;
+                                }[];
+                            }[];
                             grafana?: {
                                 /** @description Grafana URL for the user configuration. */
                                 grafanaUrl?: string;
@@ -1519,17 +2700,17 @@ export interface operations {
                         };
                         /**
                          * Format: date-time
-                         * @description Timestamp when user accepted terms and conditions
+                         * @description Timestamp when the user accepted terms and conditions
                          */
-                        acceptedTermsAt?: string;
+                        acceptedTermsAt: string;
                         /**
                          * Format: date-time
-                         * @description Timestamp of user's first login
+                         * @description Timestamp of the user's first login
                          */
-                        firstLoginTime?: string;
+                        firstLoginTime: string;
                         /**
                          * Format: date-time
-                         * @description Timestamp of user's most recent login
+                         * @description Timestamp of the user's most recent login
                          */
                         lastLoginTime: string;
                         /**
@@ -1542,7 +2723,7 @@ export interface operations {
                          * @description Timestamp when the user record was last updated
                          */
                         updatedAt: string;
-                        /** @description Various online profiles associated with the user account */
+                        /** @description Various online profiles associated with the user's account */
                         socials?: {
                             /** @description The site of the social. */
                             site: string;
@@ -1556,29 +2737,91 @@ export interface operations {
                          * Format: date-time
                          * @description Timestamp when the user record was soft-deleted (null if not deleted)
                          */
-                        deletedAt: string | null;
+                        deletedAt?: string | null;
+                    }[];
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getUserProfileById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description User ID */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description User profile for the requested ID */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
                         /**
-                         * @description List of global roles assigned to the user
-                         * @example [
-                         *       "admin",
-                         *       "meshmap"
-                         *     ]
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
-                        roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
-                        /** @description Teams the user belongs to with role information */
-                        teams?: {
-                            /** @description Team memberships for the user with their assigned roles. */
-                            teamsWithRoles?: Record<string, never>[];
-                            /** @description Total number of team memberships returned for the user. */
-                            totalCount?: number;
-                        };
-                        /** @description Organizations the user belongs to with role information */
-                        organizations?: {
-                            /** @description Organization memberships for the user with their assigned roles. */
-                            organizationsWithRoles?: Record<string, never>[];
-                            /** @description Total number of organization memberships returned for the user. */
-                            totalCount?: number;
-                        };
+                        id: string;
+                        /** @description User's public identifier. */
+                        userId: string;
+                        /** @description User's first name. */
+                        firstName: string;
+                        /** @description User's last name. */
+                        lastName: string;
+                        /**
+                         * Format: uri
+                         * @description URL to the user's avatar image.
+                         */
+                        avatarUrl?: string;
+                        /** @description User's biography or description. */
+                        bio?: string;
+                        /**
+                         * @description User's account status.
+                         * @enum {string}
+                         */
+                        status: "active" | "inactive" | "pending" | "anonymous";
+                        /** @description Public online profiles associated with the user's account. */
+                        socials?: {
+                            /** @description The site of the social. */
+                            site: string;
+                            /**
+                             * Format: uri
+                             * @description The link of the social.
+                             */
+                            link: string;
+                        }[];
                     };
                 };
             };
@@ -1636,21 +2879,374 @@ export interface operations {
                 };
                 content: {
                     "application/json": {
+                        /** @description Represents a user in Layer5 Cloud (Meshery) */
+                        user?: {
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            id: string;
+                            /** @description User's identifier (username or external ID) */
+                            userId: string;
+                            /**
+                             * @description User's authentication provider (e.g., Layer5, Twitter, Facebook, GitHub)
+                             * @example Layer5
+                             */
+                            provider: string;
+                            /**
+                             * Format: email
+                             * @description User's email address
+                             */
+                            email: string;
+                            /** @description User's first name */
+                            firstName: string;
+                            /** @description User's last name */
+                            lastName: string;
+                            /**
+                             * Format: uri
+                             * @description URL to the user's avatar image
+                             */
+                            avatarUrl?: string;
+                            /**
+                             * @description User's account status
+                             * @enum {string}
+                             */
+                            status: "active" | "inactive" | "pending" | "anonymous";
+                            /**
+                             * @description User's biography or description
+                             * @default
+                             */
+                            bio: string;
+                            /** @description User's country information stored as JSONB */
+                            country?: {
+                                [key: string]: unknown;
+                            };
+                            /** @description User's region information stored as JSONB */
+                            region?: {
+                                [key: string]: unknown;
+                            };
+                            /** @description User's preferences stored as JSONB */
+                            preferences?: {
+                                /** @description The mesh adapters of the preference. */
+                                meshAdapters?: {
+                                    /** @description Network location used to reach the adapter. */
+                                    adapterLocation: string;
+                                    /** @description Adapter name. */
+                                    name: string;
+                                    /** @description Adapter version. */
+                                    version: string;
+                                    /** @description Git commit SHA for the adapter build. */
+                                    gitCommitSha: string;
+                                    /** @description Operations supported by the adapter. */
+                                    ops: {
+                                        /** @description Stable operation key. */
+                                        key: string;
+                                        /** @description Human-readable operation value. */
+                                        value: string;
+                                        /**
+                                         * @description Protobuf OpCategory wire value. Integer values intentionally mirror meshops.proto instead of using lowercase string enum literals.
+                                         * @enum {integer}
+                                         */
+                                        category: 0 | 1 | 2 | 3 | 4;
+                                    }[];
+                                }[];
+                                grafana?: {
+                                    /** @description Grafana URL for the user configuration. */
+                                    grafanaUrl?: string;
+                                    /** @description Grafana API key for the user configuration. */
+                                    grafanaApiKey?: string;
+                                    /** @description Selected Grafana board configurations for the user. */
+                                    selectedBoardsConfigs?: {
+                                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                        board?: Record<string, never>;
+                                        /** @description Panels selected for the Grafana board configuration. */
+                                        panels?: Record<string, never>[];
+                                        /** @description Template variables applied to the selected Grafana board configuration. */
+                                        templateVars?: string[];
+                                    }[];
+                                };
+                                prometheus?: {
+                                    /** @description The prometheus URL of the prometheus. */
+                                    prometheusUrl?: string;
+                                    /** @description The selected prometheus boards configs of the prometheus. */
+                                    selectedPrometheusBoardsConfigs?: {
+                                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                        board?: Record<string, never>;
+                                        /** @description Panels selected for the Grafana board configuration. */
+                                        panels?: Record<string, never>[];
+                                        /** @description Template variables applied to the selected Grafana board configuration. */
+                                        templateVars?: string[];
+                                    }[];
+                                };
+                                loadTestPrefs?: {
+                                    /** @description Concurrent requests */
+                                    c?: number;
+                                    /** @description Queries per second */
+                                    qps?: number;
+                                    /** @description Duration */
+                                    t?: string;
+                                    /** @description Load generator */
+                                    gen?: string;
+                                };
+                                /** @description The anonymous usage stats of the preference. */
+                                anonymousUsageStats: boolean;
+                                /** @description The anonymous perf results of the preference. */
+                                anonymousPerfResults: boolean;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp of when the resource was last updated.
+                                 */
+                                updatedAt: string;
+                                /** @description The dashboard preferences of the preference. */
+                                dashboardPreferences: {
+                                    [key: string]: unknown;
+                                };
+                                /**
+                                 * Format: uuid
+                                 * @description ID of the associated selectedOrganization.
+                                 */
+                                selectedOrganizationId: string;
+                                /** @description The selected workspace for organizations of the preference. */
+                                selectedWorkspaceForOrganizations: {
+                                    [key: string]: string;
+                                };
+                                /** @description The users extension preferences of the preference. */
+                                usersExtensionPreferences: {
+                                    [key: string]: unknown;
+                                };
+                                /** @description The remote provider preferences of the preference. */
+                                remoteProviderPreferences: {
+                                    [key: string]: unknown;
+                                };
+                            };
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user accepted terms and conditions
+                             */
+                            acceptedTermsAt: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of the user's first login
+                             */
+                            firstLoginTime: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of the user's most recent login
+                             */
+                            lastLoginTime: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was created
+                             */
+                            createdAt: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was last updated
+                             */
+                            updatedAt: string;
+                            /** @description Various online profiles associated with the user's account */
+                            socials?: {
+                                /** @description The site of the social. */
+                                site: string;
+                                /**
+                                 * Format: uri
+                                 * @description The link of the social.
+                                 */
+                                link: string;
+                            }[];
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was soft-deleted (null if not deleted)
+                             */
+                            deletedAt?: string | null;
+                        };
+                        /** @description Names of roles assigned to the user. */
+                        roleNames: string[];
+                        /** @description Teams the user belongs to with their assigned role information. */
+                        teams?: {
+                            /** @description Team memberships with the user's assigned roles. */
+                            teamsWithRoles: {
+                                /**
+                                 * Format: uuid
+                                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                                 */
+                                id: string;
+                                /** @description Team name. */
+                                name: string;
+                                /** @description Team description. */
+                                description: string;
+                                /**
+                                 * Format: uuid
+                                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                                 */
+                                owner: string;
+                                /** @description Team metadata stored with the membership row. */
+                                metadata: {
+                                    [key: string]: unknown;
+                                };
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the team was created.
+                                 */
+                                createdAt: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the team was last updated.
+                                 */
+                                updatedAt: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the team was soft-deleted, if applicable.
+                                 */
+                                deletedAt: string;
+                                /** @description Names of roles assigned to the user in this team. */
+                                roleNames: string[];
+                            }[];
+                            /** @description Total number of team memberships returned for the user. */
+                            totalCount: number;
+                        };
+                        /** @description Organizations the user belongs to with their assigned role information. */
+                        organizations?: {
+                            /** @description Organization memberships with the user's assigned roles. */
+                            organizationsWithRoles: {
+                                /**
+                                 * Format: uuid
+                                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                                 */
+                                id: string;
+                                /** @description Organization name. */
+                                name: string;
+                                /** @description Organization description. */
+                                description: string;
+                                /** @description Organization country. */
+                                country: string;
+                                /** @description Organization region. */
+                                region: string;
+                                /**
+                                 * Format: uuid
+                                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                                 */
+                                owner: string;
+                                /** @description Organization metadata stored with the membership row. */
+                                metadata: {
+                                    [key: string]: unknown;
+                                };
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the organization was created.
+                                 */
+                                createdAt: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the organization was last updated.
+                                 */
+                                updatedAt: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the organization was soft-deleted, if applicable.
+                                 */
+                                deletedAt: string;
+                                /** @description Names of roles assigned to the user in this organization. */
+                                roleNames: string[];
+                            }[];
+                            /** @description Total number of organization memberships returned for the user. */
+                            totalCount: number;
+                        };
+                        /** @description Linked social account providers for the current user. */
+                        linkedAccounts: string[];
+                    };
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    updateProfile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * Format: uuid
+                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                     */
+                    id?: string;
+                    /**
+                     * Format: email
+                     * @description User's email address.
+                     */
+                    email?: string;
+                    /** @description User's first name. */
+                    firstName?: string;
+                    /** @description User's last name. */
+                    lastName?: string;
+                    /**
+                     * Format: uri
+                     * @description URL to the user's avatar image.
+                     */
+                    avatarUrl?: string;
+                    /** @description User's biography or description. */
+                    bio?: string;
+                    /** @description User's country information. */
+                    country?: {
+                        [key: string]: unknown;
+                    };
+                    /** @description User's region information. */
+                    region?: {
+                        [key: string]: unknown;
+                    };
+                    /** @description Online profiles associated with the user's account. */
+                    socials?: {
+                        /** @description The site of the social. */
+                        site: string;
+                        /**
+                         * Format: uri
+                         * @description The link of the social.
+                         */
+                        link: string;
+                    }[];
+                };
+            };
+        };
+        responses: {
+            /** @description User profile updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
                         /**
                          * Format: uuid
-                         * @description Unique identifier for the user
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         id: string;
-                        /** @description User identifier (username or external ID) */
+                        /** @description User's identifier (username or external ID) */
                         userId: string;
                         /**
-                         * @description Authentication provider (e.g., Google, Github)
-                         * @example [
-                         *       "local",
-                         *       "github",
-                         *       "google",
-                         *       "twitter"
-                         *     ]
+                         * @description User's authentication provider (e.g., Layer5, Twitter, Facebook, GitHub)
+                         * @example Layer5
                          */
                         provider: string;
                         /**
@@ -1664,11 +3260,11 @@ export interface operations {
                         lastName: string;
                         /**
                          * Format: uri
-                         * @description URL to user's avatar image
+                         * @description URL to the user's avatar image
                          */
                         avatarUrl?: string;
                         /**
-                         * @description User account status
+                         * @description User's account status
                          * @enum {string}
                          */
                         status: "active" | "inactive" | "pending" | "anonymous";
@@ -1685,10 +3281,31 @@ export interface operations {
                         region?: {
                             [key: string]: unknown;
                         };
-                        /** @description User preferences stored as JSONB */
+                        /** @description User's preferences stored as JSONB */
                         preferences?: {
                             /** @description The mesh adapters of the preference. */
-                            meshAdapters?: Record<string, never>[];
+                            meshAdapters?: {
+                                /** @description Network location used to reach the adapter. */
+                                adapterLocation: string;
+                                /** @description Adapter name. */
+                                name: string;
+                                /** @description Adapter version. */
+                                version: string;
+                                /** @description Git commit SHA for the adapter build. */
+                                gitCommitSha: string;
+                                /** @description Operations supported by the adapter. */
+                                ops: {
+                                    /** @description Stable operation key. */
+                                    key: string;
+                                    /** @description Human-readable operation value. */
+                                    value: string;
+                                    /**
+                                     * @description Protobuf OpCategory wire value. Integer values intentionally mirror meshops.proto instead of using lowercase string enum literals.
+                                     * @enum {integer}
+                                     */
+                                    category: 0 | 1 | 2 | 3 | 4;
+                                }[];
+                            }[];
                             grafana?: {
                                 /** @description Grafana URL for the user configuration. */
                                 grafanaUrl?: string;
@@ -1760,17 +3377,17 @@ export interface operations {
                         };
                         /**
                          * Format: date-time
-                         * @description Timestamp when user accepted terms and conditions
+                         * @description Timestamp when the user accepted terms and conditions
                          */
-                        acceptedTermsAt?: string;
+                        acceptedTermsAt: string;
                         /**
                          * Format: date-time
-                         * @description Timestamp of user's first login
+                         * @description Timestamp of the user's first login
                          */
-                        firstLoginTime?: string;
+                        firstLoginTime: string;
                         /**
                          * Format: date-time
-                         * @description Timestamp of user's most recent login
+                         * @description Timestamp of the user's most recent login
                          */
                         lastLoginTime: string;
                         /**
@@ -1783,7 +3400,7 @@ export interface operations {
                          * @description Timestamp when the user record was last updated
                          */
                         updatedAt: string;
-                        /** @description Various online profiles associated with the user account */
+                        /** @description Various online profiles associated with the user's account */
                         socials?: {
                             /** @description The site of the social. */
                             site: string;
@@ -1797,30 +3414,1543 @@ export interface operations {
                          * Format: date-time
                          * @description Timestamp when the user record was soft-deleted (null if not deleted)
                          */
-                        deletedAt: string | null;
+                        deletedAt?: string | null;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getProfileOverview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description User profile details */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Number of Kubernetes contexts registered by the user. */
+                        k8sCount: number;
+                        /** @description Number of designs owned by the user. */
+                        patternCount: number;
+                    };
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getUserProvider: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description User provider information */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string[];
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getUserById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description User ID */
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description User profile for the requested ID */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
                         /**
-                         * @description List of global roles assigned to the user
-                         * @example [
-                         *       "admin",
-                         *       "meshmap"
-                         *     ]
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
-                        roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
-                        /** @description Teams the user belongs to with role information */
-                        teams?: {
-                            /** @description Team memberships for the user with their assigned roles. */
-                            teamsWithRoles?: Record<string, never>[];
-                            /** @description Total number of team memberships returned for the user. */
-                            totalCount?: number;
+                        id: string;
+                        /** @description User's identifier (username or external ID) */
+                        userId: string;
+                        /**
+                         * @description User's authentication provider (e.g., Layer5, Twitter, Facebook, GitHub)
+                         * @example Layer5
+                         */
+                        provider: string;
+                        /**
+                         * Format: email
+                         * @description User's email address
+                         */
+                        email: string;
+                        /** @description User's first name */
+                        firstName: string;
+                        /** @description User's last name */
+                        lastName: string;
+                        /**
+                         * Format: uri
+                         * @description URL to the user's avatar image
+                         */
+                        avatarUrl?: string;
+                        /**
+                         * @description User's account status
+                         * @enum {string}
+                         */
+                        status: "active" | "inactive" | "pending" | "anonymous";
+                        /**
+                         * @description User's biography or description
+                         * @default
+                         */
+                        bio: string;
+                        /** @description User's country information stored as JSONB */
+                        country?: {
+                            [key: string]: unknown;
                         };
-                        /** @description Organizations the user belongs to with role information */
-                        organizations?: {
-                            /** @description Organization memberships for the user with their assigned roles. */
-                            organizationsWithRoles?: Record<string, never>[];
-                            /** @description Total number of organization memberships returned for the user. */
-                            totalCount?: number;
+                        /** @description User's region information stored as JSONB */
+                        region?: {
+                            [key: string]: unknown;
+                        };
+                        /** @description User's preferences stored as JSONB */
+                        preferences?: {
+                            /** @description The mesh adapters of the preference. */
+                            meshAdapters?: {
+                                /** @description Network location used to reach the adapter. */
+                                adapterLocation: string;
+                                /** @description Adapter name. */
+                                name: string;
+                                /** @description Adapter version. */
+                                version: string;
+                                /** @description Git commit SHA for the adapter build. */
+                                gitCommitSha: string;
+                                /** @description Operations supported by the adapter. */
+                                ops: {
+                                    /** @description Stable operation key. */
+                                    key: string;
+                                    /** @description Human-readable operation value. */
+                                    value: string;
+                                    /**
+                                     * @description Protobuf OpCategory wire value. Integer values intentionally mirror meshops.proto instead of using lowercase string enum literals.
+                                     * @enum {integer}
+                                     */
+                                    category: 0 | 1 | 2 | 3 | 4;
+                                }[];
+                            }[];
+                            grafana?: {
+                                /** @description Grafana URL for the user configuration. */
+                                grafanaUrl?: string;
+                                /** @description Grafana API key for the user configuration. */
+                                grafanaApiKey?: string;
+                                /** @description Selected Grafana board configurations for the user. */
+                                selectedBoardsConfigs?: {
+                                    /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                    board?: Record<string, never>;
+                                    /** @description Panels selected for the Grafana board configuration. */
+                                    panels?: Record<string, never>[];
+                                    /** @description Template variables applied to the selected Grafana board configuration. */
+                                    templateVars?: string[];
+                                }[];
+                            };
+                            prometheus?: {
+                                /** @description The prometheus URL of the prometheus. */
+                                prometheusUrl?: string;
+                                /** @description The selected prometheus boards configs of the prometheus. */
+                                selectedPrometheusBoardsConfigs?: {
+                                    /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                    board?: Record<string, never>;
+                                    /** @description Panels selected for the Grafana board configuration. */
+                                    panels?: Record<string, never>[];
+                                    /** @description Template variables applied to the selected Grafana board configuration. */
+                                    templateVars?: string[];
+                                }[];
+                            };
+                            loadTestPrefs?: {
+                                /** @description Concurrent requests */
+                                c?: number;
+                                /** @description Queries per second */
+                                qps?: number;
+                                /** @description Duration */
+                                t?: string;
+                                /** @description Load generator */
+                                gen?: string;
+                            };
+                            /** @description The anonymous usage stats of the preference. */
+                            anonymousUsageStats: boolean;
+                            /** @description The anonymous perf results of the preference. */
+                            anonymousPerfResults: boolean;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of when the resource was last updated.
+                             */
+                            updatedAt: string;
+                            /** @description The dashboard preferences of the preference. */
+                            dashboardPreferences: {
+                                [key: string]: unknown;
+                            };
+                            /**
+                             * Format: uuid
+                             * @description ID of the associated selectedOrganization.
+                             */
+                            selectedOrganizationId: string;
+                            /** @description The selected workspace for organizations of the preference. */
+                            selectedWorkspaceForOrganizations: {
+                                [key: string]: string;
+                            };
+                            /** @description The users extension preferences of the preference. */
+                            usersExtensionPreferences: {
+                                [key: string]: unknown;
+                            };
+                            /** @description The remote provider preferences of the preference. */
+                            remoteProviderPreferences: {
+                                [key: string]: unknown;
+                            };
+                        };
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the user accepted terms and conditions
+                         */
+                        acceptedTermsAt: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp of the user's first login
+                         */
+                        firstLoginTime: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp of the user's most recent login
+                         */
+                        lastLoginTime: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the user record was created
+                         */
+                        createdAt: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the user record was last updated
+                         */
+                        updatedAt: string;
+                        /** @description Various online profiles associated with the user's account */
+                        socials?: {
+                            /** @description The site of the social. */
+                            site: string;
+                            /**
+                             * Format: uri
+                             * @description The link of the social.
+                             */
+                            link: string;
+                        }[];
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the user record was soft-deleted (null if not deleted)
+                         */
+                        deletedAt?: string | null;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    deleteUserById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description User ID */
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description User deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    deleteOwnAccount: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description User account deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getRecentlyOnlineUsers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Recently online users */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        id: string;
+                        /** @description User's identifier (username or external ID) */
+                        userId: string;
+                        /**
+                         * @description User's authentication provider (e.g., Layer5, Twitter, Facebook, GitHub)
+                         * @example Layer5
+                         */
+                        provider: string;
+                        /**
+                         * Format: email
+                         * @description User's email address
+                         */
+                        email: string;
+                        /** @description User's first name */
+                        firstName: string;
+                        /** @description User's last name */
+                        lastName: string;
+                        /**
+                         * Format: uri
+                         * @description URL to the user's avatar image
+                         */
+                        avatarUrl?: string;
+                        /**
+                         * @description User's account status
+                         * @enum {string}
+                         */
+                        status: "active" | "inactive" | "pending" | "anonymous";
+                        /**
+                         * @description User's biography or description
+                         * @default
+                         */
+                        bio: string;
+                        /** @description User's country information stored as JSONB */
+                        country?: {
+                            [key: string]: unknown;
+                        };
+                        /** @description User's region information stored as JSONB */
+                        region?: {
+                            [key: string]: unknown;
+                        };
+                        /** @description User's preferences stored as JSONB */
+                        preferences?: {
+                            /** @description The mesh adapters of the preference. */
+                            meshAdapters?: {
+                                /** @description Network location used to reach the adapter. */
+                                adapterLocation: string;
+                                /** @description Adapter name. */
+                                name: string;
+                                /** @description Adapter version. */
+                                version: string;
+                                /** @description Git commit SHA for the adapter build. */
+                                gitCommitSha: string;
+                                /** @description Operations supported by the adapter. */
+                                ops: {
+                                    /** @description Stable operation key. */
+                                    key: string;
+                                    /** @description Human-readable operation value. */
+                                    value: string;
+                                    /**
+                                     * @description Protobuf OpCategory wire value. Integer values intentionally mirror meshops.proto instead of using lowercase string enum literals.
+                                     * @enum {integer}
+                                     */
+                                    category: 0 | 1 | 2 | 3 | 4;
+                                }[];
+                            }[];
+                            grafana?: {
+                                /** @description Grafana URL for the user configuration. */
+                                grafanaUrl?: string;
+                                /** @description Grafana API key for the user configuration. */
+                                grafanaApiKey?: string;
+                                /** @description Selected Grafana board configurations for the user. */
+                                selectedBoardsConfigs?: {
+                                    /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                    board?: Record<string, never>;
+                                    /** @description Panels selected for the Grafana board configuration. */
+                                    panels?: Record<string, never>[];
+                                    /** @description Template variables applied to the selected Grafana board configuration. */
+                                    templateVars?: string[];
+                                }[];
+                            };
+                            prometheus?: {
+                                /** @description The prometheus URL of the prometheus. */
+                                prometheusUrl?: string;
+                                /** @description The selected prometheus boards configs of the prometheus. */
+                                selectedPrometheusBoardsConfigs?: {
+                                    /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                    board?: Record<string, never>;
+                                    /** @description Panels selected for the Grafana board configuration. */
+                                    panels?: Record<string, never>[];
+                                    /** @description Template variables applied to the selected Grafana board configuration. */
+                                    templateVars?: string[];
+                                }[];
+                            };
+                            loadTestPrefs?: {
+                                /** @description Concurrent requests */
+                                c?: number;
+                                /** @description Queries per second */
+                                qps?: number;
+                                /** @description Duration */
+                                t?: string;
+                                /** @description Load generator */
+                                gen?: string;
+                            };
+                            /** @description The anonymous usage stats of the preference. */
+                            anonymousUsageStats: boolean;
+                            /** @description The anonymous perf results of the preference. */
+                            anonymousPerfResults: boolean;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of when the resource was last updated.
+                             */
+                            updatedAt: string;
+                            /** @description The dashboard preferences of the preference. */
+                            dashboardPreferences: {
+                                [key: string]: unknown;
+                            };
+                            /**
+                             * Format: uuid
+                             * @description ID of the associated selectedOrganization.
+                             */
+                            selectedOrganizationId: string;
+                            /** @description The selected workspace for organizations of the preference. */
+                            selectedWorkspaceForOrganizations: {
+                                [key: string]: string;
+                            };
+                            /** @description The users extension preferences of the preference. */
+                            usersExtensionPreferences: {
+                                [key: string]: unknown;
+                            };
+                            /** @description The remote provider preferences of the preference. */
+                            remoteProviderPreferences: {
+                                [key: string]: unknown;
+                            };
+                        };
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the user accepted terms and conditions
+                         */
+                        acceptedTermsAt: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp of the user's first login
+                         */
+                        firstLoginTime: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp of the user's most recent login
+                         */
+                        lastLoginTime: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the user record was created
+                         */
+                        createdAt: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the user record was last updated
+                         */
+                        updatedAt: string;
+                        /** @description Various online profiles associated with the user's account */
+                        socials?: {
+                            /** @description The site of the social. */
+                            site: string;
+                            /**
+                             * Format: uri
+                             * @description The link of the social.
+                             */
+                            link: string;
+                        }[];
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the user record was soft-deleted (null if not deleted)
+                         */
+                        deletedAt?: string | null;
+                    }[];
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getUserPreferences: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description User preferences response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The mesh adapters of the preference. */
+                        meshAdapters?: {
+                            /** @description Network location used to reach the adapter. */
+                            adapterLocation: string;
+                            /** @description Adapter name. */
+                            name: string;
+                            /** @description Adapter version. */
+                            version: string;
+                            /** @description Git commit SHA for the adapter build. */
+                            gitCommitSha: string;
+                            /** @description Operations supported by the adapter. */
+                            ops: {
+                                /** @description Stable operation key. */
+                                key: string;
+                                /** @description Human-readable operation value. */
+                                value: string;
+                                /**
+                                 * @description Protobuf OpCategory wire value. Integer values intentionally mirror meshops.proto instead of using lowercase string enum literals.
+                                 * @enum {integer}
+                                 */
+                                category: 0 | 1 | 2 | 3 | 4;
+                            }[];
+                        }[];
+                        grafana?: {
+                            /** @description Grafana URL for the user configuration. */
+                            grafanaUrl?: string;
+                            /** @description Grafana API key for the user configuration. */
+                            grafanaApiKey?: string;
+                            /** @description Selected Grafana board configurations for the user. */
+                            selectedBoardsConfigs?: {
+                                /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                board?: Record<string, never>;
+                                /** @description Panels selected for the Grafana board configuration. */
+                                panels?: Record<string, never>[];
+                                /** @description Template variables applied to the selected Grafana board configuration. */
+                                templateVars?: string[];
+                            }[];
+                        };
+                        prometheus?: {
+                            /** @description The prometheus URL of the prometheus. */
+                            prometheusUrl?: string;
+                            /** @description The selected prometheus boards configs of the prometheus. */
+                            selectedPrometheusBoardsConfigs?: {
+                                /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                board?: Record<string, never>;
+                                /** @description Panels selected for the Grafana board configuration. */
+                                panels?: Record<string, never>[];
+                                /** @description Template variables applied to the selected Grafana board configuration. */
+                                templateVars?: string[];
+                            }[];
+                        };
+                        loadTestPrefs?: {
+                            /** @description Concurrent requests */
+                            c?: number;
+                            /** @description Queries per second */
+                            qps?: number;
+                            /** @description Duration */
+                            t?: string;
+                            /** @description Load generator */
+                            gen?: string;
+                        };
+                        /** @description The anonymous usage stats of the preference. */
+                        anonymousUsageStats: boolean;
+                        /** @description The anonymous perf results of the preference. */
+                        anonymousPerfResults: boolean;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp of when the resource was last updated.
+                         */
+                        updatedAt: string;
+                        /** @description The dashboard preferences of the preference. */
+                        dashboardPreferences: {
+                            [key: string]: unknown;
+                        };
+                        /**
+                         * Format: uuid
+                         * @description ID of the associated selectedOrganization.
+                         */
+                        selectedOrganizationId: string;
+                        /** @description The selected workspace for organizations of the preference. */
+                        selectedWorkspaceForOrganizations: {
+                            [key: string]: string;
+                        };
+                        /** @description The users extension preferences of the preference. */
+                        usersExtensionPreferences: {
+                            [key: string]: unknown;
+                        };
+                        /** @description The remote provider preferences of the preference. */
+                        remoteProviderPreferences: {
+                            [key: string]: unknown;
                         };
                     };
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    updateUserPreferences: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description The mesh adapters of the preference. */
+                    meshAdapters?: {
+                        /** @description Network location used to reach the adapter. */
+                        adapterLocation: string;
+                        /** @description Adapter name. */
+                        name: string;
+                        /** @description Adapter version. */
+                        version: string;
+                        /** @description Git commit SHA for the adapter build. */
+                        gitCommitSha: string;
+                        /** @description Operations supported by the adapter. */
+                        ops: {
+                            /** @description Stable operation key. */
+                            key: string;
+                            /** @description Human-readable operation value. */
+                            value: string;
+                            /**
+                             * @description Protobuf OpCategory wire value. Integer values intentionally mirror meshops.proto instead of using lowercase string enum literals.
+                             * @enum {integer}
+                             */
+                            category: 0 | 1 | 2 | 3 | 4;
+                        }[];
+                    }[];
+                    grafana?: {
+                        /** @description Grafana URL for the user configuration. */
+                        grafanaUrl?: string;
+                        /** @description Grafana API key for the user configuration. */
+                        grafanaApiKey?: string;
+                        /** @description Selected Grafana board configurations for the user. */
+                        selectedBoardsConfigs?: {
+                            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                            board?: Record<string, never>;
+                            /** @description Panels selected for the Grafana board configuration. */
+                            panels?: Record<string, never>[];
+                            /** @description Template variables applied to the selected Grafana board configuration. */
+                            templateVars?: string[];
+                        }[];
+                    };
+                    prometheus?: {
+                        /** @description The prometheus URL of the prometheus. */
+                        prometheusUrl?: string;
+                        /** @description The selected prometheus boards configs of the prometheus. */
+                        selectedPrometheusBoardsConfigs?: {
+                            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                            board?: Record<string, never>;
+                            /** @description Panels selected for the Grafana board configuration. */
+                            panels?: Record<string, never>[];
+                            /** @description Template variables applied to the selected Grafana board configuration. */
+                            templateVars?: string[];
+                        }[];
+                    };
+                    loadTestPrefs?: {
+                        /** @description Concurrent requests */
+                        c?: number;
+                        /** @description Queries per second */
+                        qps?: number;
+                        /** @description Duration */
+                        t?: string;
+                        /** @description Load generator */
+                        gen?: string;
+                    };
+                    /** @description The anonymous usage stats of the preference. */
+                    anonymousUsageStats?: boolean;
+                    /** @description The anonymous perf results of the preference. */
+                    anonymousPerfResults?: boolean;
+                    /** @description The dashboard preferences of the preference. */
+                    dashboardPreferences?: {
+                        [key: string]: unknown;
+                    };
+                    /**
+                     * Format: uuid
+                     * @description ID of the associated selectedOrganization.
+                     */
+                    selectedOrganizationId?: string;
+                    /** @description The selected workspace for organizations of the preference. */
+                    selectedWorkspaceForOrganizations?: {
+                        [key: string]: string;
+                    };
+                    /** @description The users extension preferences of the preference. */
+                    usersExtensionPreferences?: {
+                        [key: string]: unknown;
+                    };
+                    /** @description The remote provider preferences of the preference. */
+                    remoteProviderPreferences?: {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+        responses: {
+            /** @description User preferences updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The mesh adapters of the preference. */
+                        meshAdapters?: {
+                            /** @description Network location used to reach the adapter. */
+                            adapterLocation: string;
+                            /** @description Adapter name. */
+                            name: string;
+                            /** @description Adapter version. */
+                            version: string;
+                            /** @description Git commit SHA for the adapter build. */
+                            gitCommitSha: string;
+                            /** @description Operations supported by the adapter. */
+                            ops: {
+                                /** @description Stable operation key. */
+                                key: string;
+                                /** @description Human-readable operation value. */
+                                value: string;
+                                /**
+                                 * @description Protobuf OpCategory wire value. Integer values intentionally mirror meshops.proto instead of using lowercase string enum literals.
+                                 * @enum {integer}
+                                 */
+                                category: 0 | 1 | 2 | 3 | 4;
+                            }[];
+                        }[];
+                        grafana?: {
+                            /** @description Grafana URL for the user configuration. */
+                            grafanaUrl?: string;
+                            /** @description Grafana API key for the user configuration. */
+                            grafanaApiKey?: string;
+                            /** @description Selected Grafana board configurations for the user. */
+                            selectedBoardsConfigs?: {
+                                /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                board?: Record<string, never>;
+                                /** @description Panels selected for the Grafana board configuration. */
+                                panels?: Record<string, never>[];
+                                /** @description Template variables applied to the selected Grafana board configuration. */
+                                templateVars?: string[];
+                            }[];
+                        };
+                        prometheus?: {
+                            /** @description The prometheus URL of the prometheus. */
+                            prometheusUrl?: string;
+                            /** @description The selected prometheus boards configs of the prometheus. */
+                            selectedPrometheusBoardsConfigs?: {
+                                /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                board?: Record<string, never>;
+                                /** @description Panels selected for the Grafana board configuration. */
+                                panels?: Record<string, never>[];
+                                /** @description Template variables applied to the selected Grafana board configuration. */
+                                templateVars?: string[];
+                            }[];
+                        };
+                        loadTestPrefs?: {
+                            /** @description Concurrent requests */
+                            c?: number;
+                            /** @description Queries per second */
+                            qps?: number;
+                            /** @description Duration */
+                            t?: string;
+                            /** @description Load generator */
+                            gen?: string;
+                        };
+                        /** @description The anonymous usage stats of the preference. */
+                        anonymousUsageStats: boolean;
+                        /** @description The anonymous perf results of the preference. */
+                        anonymousPerfResults: boolean;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp of when the resource was last updated.
+                         */
+                        updatedAt: string;
+                        /** @description The dashboard preferences of the preference. */
+                        dashboardPreferences: {
+                            [key: string]: unknown;
+                        };
+                        /**
+                         * Format: uuid
+                         * @description ID of the associated selectedOrganization.
+                         */
+                        selectedOrganizationId: string;
+                        /** @description The selected workspace for organizations of the preference. */
+                        selectedWorkspaceForOrganizations: {
+                            [key: string]: string;
+                        };
+                        /** @description The users extension preferences of the preference. */
+                        usersExtensionPreferences: {
+                            [key: string]: unknown;
+                        };
+                        /** @description The remote provider preferences of the preference. */
+                        remoteProviderPreferences: {
+                            [key: string]: unknown;
+                        };
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getAvailableNotificationPreferences: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Available notification preferences */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Notification preferences keyed by preference identifier. */
+                        notificationPreferences?: {
+                            [key: string]: {
+                                /**
+                                 * Format: uuid
+                                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                                 */
+                                id?: string;
+                                /** @description Notification preference name. */
+                                name?: string;
+                                /** @description Notification preference description. */
+                                description?: string;
+                                /** @description Notification preference category. */
+                                category?: string;
+                                /** @description Notification preference subcategory. */
+                                subcategory?: string;
+                                /** @description Notification preference label. */
+                                label?: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the notification preference was created.
+                                 */
+                                createdAt?: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the notification preference was last updated.
+                                 */
+                                updatedAt?: string;
+                            };
+                        };
+                        /** @description Total number of notification preferences. */
+                        totalCount?: number;
+                    };
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    updateNotificationPreferences: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description Notification preference labels to enable. */
+                    notificationPreferences?: string[];
+                    /**
+                     * Format: uuid
+                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                     */
+                    userId?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Notification preferences updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    handleNotifyMentionUsers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description Users mentioned in the comment. */
+                    mentionUsers: string[];
+                    /** @description Users participating in the comment thread. */
+                    participants: string[];
+                    /**
+                     * Format: uuid
+                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                     */
+                    designId: string;
+                    /** @description Users excluded from comment notifications. */
+                    usersOptedOutOfNotifications: string[];
+                    /** @description Messages in the comment thread. */
+                    messages: {
+                        /** @description Sender first name. */
+                        firstName?: string;
+                        /** @description Sender last name. */
+                        lastName?: string;
+                        /**
+                         * Format: uri
+                         * @description Sender avatar URL.
+                         */
+                        avatarUrl?: string;
+                        /** @description Comment message text. */
+                        message?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the message was created.
+                         */
+                        timestamp?: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        userId?: string;
+                    }[];
+                };
+            };
+        };
+        responses: {
+            /** @description Mention notifications processed */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    handleFeedbackFormSubmission: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description Feedback message. */
+                    message: string;
+                    /** @description Product area or workflow for the feedback. */
+                    scope: string;
+                    /** @description Page location where the feedback was submitted. */
+                    pageLocation: string;
+                    /** @description Additional feedback metadata. */
+                    metadata?: {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+        responses: {
+            /** @description Feedback submitted */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    updateUsersPassword: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description Current password for verification before update. */
+                    currentPassword: string;
+                    /** @description New password for the user account. */
+                    password: string;
+                };
+            };
+        };
+        responses: {
+            /** @description User password updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getUserAccount: {
+        parameters: {
+            query?: {
+                /** @description Optional account-linking provider hint. */
+                oidc?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Account-linking page */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    searchUsers: {
+        parameters: {
+            query?: {
+                /** @description Get responses by page */
+                page?: string;
+                /** @description Get responses by page size */
+                pageSize?: string;
+                /** @description Organization ID to scope the request. */
+                orgId?: string;
+                /** @description Get responses that match search param value */
+                search?: string;
+                /** @description Get ordered responses */
+                order?: string;
+                /** @description Get filtered reponses */
+                filter?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated list of searchable users */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Current page number of the result set. */
+                        page: number;
+                        /** @description Number of items per page. */
+                        pageSize: number;
+                        /** @description Total number of items available. */
+                        totalCount: number;
+                        /** @description Restricted users matching the search query. */
+                        data: {
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            id?: string;
+                            /** @description User's public identifier. */
+                            userId?: string;
+                            /** @description Public username. */
+                            username?: string;
+                            /**
+                             * Format: email
+                             * @description User email address.
+                             */
+                            email?: string;
+                            /**
+                             * Format: uri
+                             * @description URL of the user's avatar image.
+                             */
+                            avatarUrl?: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getUsers: {
+        parameters: {
+            query?: {
+                /** @description Get responses by page */
+                page?: string;
+                /** @description Get responses by page size */
+                pageSize?: string;
+                /** @description Get responses that match search param value */
+                search?: string;
+                /** @description Get ordered responses */
+                order?: string;
+                /** @description Get filtered reponses */
+                filter?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated list of users */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Current page number of the result set. */
+                        page: number;
+                        /** @description Number of items per page. */
+                        pageSize: number;
+                        /** @description Total number of items available. */
+                        totalCount: number;
+                        /** @description Public user picker records returned on this page. */
+                        data: {
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            userId: string;
+                            /** @description Public username or handle. */
+                            username: string;
+                            /**
+                             * Format: uri
+                             * @description URL to the user's avatar image.
+                             */
+                            avatarUrl?: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
                 };
             };
             /** @description Expired JWT token used or insufficient privilege */

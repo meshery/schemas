@@ -304,7 +304,10 @@ const DesignSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "-"
                             },
+                            "$id": "https://schemas.meshery.io/user.yaml",
+                            "$schema": "http://json-schema.org/draft-07/schema#",
                             "type": "object",
+                            "additionalProperties": false,
                             "required": [
                               "id",
                               "userId",
@@ -313,10 +316,11 @@ const DesignSchema: Record<string, unknown> = {
                               "firstName",
                               "lastName",
                               "status",
-                              "createdAt",
-                              "updatedAt",
+                              "acceptedTermsAt",
+                              "firstLoginTime",
                               "lastLoginTime",
-                              "deletedAt"
+                              "createdAt",
+                              "updatedAt"
                             ],
                             "properties": {
                               "id": {
@@ -336,7 +340,7 @@ const DesignSchema: Record<string, unknown> = {
                               "userId": {
                                 "type": "string",
                                 "maxLength": 200,
-                                "description": "User identifier (username or external ID)",
+                                "description": "User's identifier (username or external ID)",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "user_id",
                                   "json": "userId"
@@ -346,13 +350,8 @@ const DesignSchema: Record<string, unknown> = {
                               "provider": {
                                 "type": "string",
                                 "maxLength": 100,
-                                "description": "Authentication provider (e.g., Google, Github)",
-                                "example": [
-                                  "local",
-                                  "github",
-                                  "google",
-                                  "twitter"
-                                ],
+                                "description": "User's authentication provider (e.g., Layer5, Twitter, Facebook, GitHub)",
+                                "example": "Layer5",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "provider",
                                   "json": "provider"
@@ -390,7 +389,7 @@ const DesignSchema: Record<string, unknown> = {
                                 "type": "string",
                                 "format": "uri",
                                 "maxLength": 500,
-                                "description": "URL to user's avatar image",
+                                "description": "URL to the user's avatar image",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "avatar_url",
                                   "json": "avatarUrl"
@@ -405,7 +404,7 @@ const DesignSchema: Record<string, unknown> = {
                                   "pending",
                                   "anonymous"
                                 ],
-                                "description": "User account status",
+                                "description": "User's account status",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "status",
                                   "json": "status"
@@ -426,6 +425,10 @@ const DesignSchema: Record<string, unknown> = {
                                 "description": "User's country information stored as JSONB",
                                 "additionalProperties": true,
                                 "x-go-type": "core.Map",
+                                "x-go-type-import": {
+                                  "path": "github.com/meshery/schemas/models/core",
+                                  "name": "core"
+                                },
                                 "x-go-type-skip-optional-pointer": true,
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "country",
@@ -437,6 +440,10 @@ const DesignSchema: Record<string, unknown> = {
                                 "description": "User's region information stored as JSONB",
                                 "additionalProperties": true,
                                 "x-go-type": "core.Map",
+                                "x-go-type-import": {
+                                  "path": "github.com/meshery/schemas/models/core",
+                                  "name": "core"
+                                },
                                 "x-go-type-skip-optional-pointer": true,
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "region",
@@ -445,7 +452,7 @@ const DesignSchema: Record<string, unknown> = {
                               },
                               "preferences": {
                                 "x-go-type": "Preference",
-                                "description": "User preferences stored as JSONB",
+                                "description": "User's preferences stored as JSONB",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "preferences",
                                   "json": "preferences"
@@ -468,7 +475,80 @@ const DesignSchema: Record<string, unknown> = {
                                     "items": {
                                       "x-go-type": "Adapter",
                                       "type": "object",
-                                      "description": "Placeholder for Adapter struct definition."
+                                      "additionalProperties": false,
+                                      "description": "Meshery adapter configuration stored in user preferences.",
+                                      "required": [
+                                        "adapterLocation",
+                                        "name",
+                                        "version",
+                                        "gitCommitSha",
+                                        "ops"
+                                      ],
+                                      "properties": {
+                                        "adapterLocation": {
+                                          "type": "string",
+                                          "description": "Network location used to reach the adapter.",
+                                          "minLength": 1,
+                                          "maxLength": 500
+                                        },
+                                        "name": {
+                                          "type": "string",
+                                          "description": "Adapter name.",
+                                          "minLength": 1,
+                                          "maxLength": 255
+                                        },
+                                        "version": {
+                                          "type": "string",
+                                          "description": "Adapter version.",
+                                          "maxLength": 100
+                                        },
+                                        "gitCommitSha": {
+                                          "type": "string",
+                                          "description": "Git commit SHA for the adapter build.",
+                                          "maxLength": 64
+                                        },
+                                        "ops": {
+                                          "type": "array",
+                                          "description": "Operations supported by the adapter.",
+                                          "items": {
+                                            "type": "object",
+                                            "additionalProperties": false,
+                                            "description": "Operation supported by a Meshery adapter.",
+                                            "required": [
+                                              "key",
+                                              "value",
+                                              "category"
+                                            ],
+                                            "properties": {
+                                              "key": {
+                                                "type": "string",
+                                                "description": "Stable operation key.",
+                                                "minLength": 1,
+                                                "maxLength": 255
+                                              },
+                                              "value": {
+                                                "type": "string",
+                                                "description": "Human-readable operation value.",
+                                                "minLength": 1,
+                                                "maxLength": 255
+                                              },
+                                              "category": {
+                                                "type": "integer",
+                                                "description": "Protobuf OpCategory wire value. Integer values intentionally mirror meshops.proto instead of using lowercase string enum literals.",
+                                                "minimum": 0,
+                                                "maximum": 4,
+                                                "enum": [
+                                                  0,
+                                                  1,
+                                                  2,
+                                                  3,
+                                                  4
+                                                ]
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
                                     },
                                     "description": "The mesh adapters of the preference."
                                   },
@@ -603,7 +683,12 @@ const DesignSchema: Record<string, unknown> = {
                                     "type": "string",
                                     "description": "ID of the associated selectedOrganization.",
                                     "maxLength": 500,
-                                    "format": "uuid"
+                                    "format": "uuid",
+                                    "x-go-type": "core.Uuid",
+                                    "x-go-type-import": {
+                                      "path": "github.com/meshery/schemas/models/core",
+                                      "name": "core"
+                                    }
                                   },
                                   "selectedWorkspaceForOrganizations": {
                                     "type": "object",
@@ -625,7 +710,7 @@ const DesignSchema: Record<string, unknown> = {
                                 }
                               },
                               "acceptedTermsAt": {
-                                "description": "Timestamp when user accepted terms and conditions",
+                                "description": "Timestamp when the user accepted terms and conditions",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "accepted_terms_at",
                                   "json": "acceptedTermsAt"
@@ -635,7 +720,7 @@ const DesignSchema: Record<string, unknown> = {
                                 "x-go-type-skip-optional-pointer": true
                               },
                               "firstLoginTime": {
-                                "description": "Timestamp of user's first login",
+                                "description": "Timestamp of the user's first login",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "first_login_time",
                                   "json": "firstLoginTime"
@@ -645,7 +730,7 @@ const DesignSchema: Record<string, unknown> = {
                                 "x-go-type-skip-optional-pointer": true
                               },
                               "lastLoginTime": {
-                                "description": "Timestamp of user's most recent login",
+                                "description": "Timestamp of the user's most recent login",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "last_login_time",
                                   "json": "lastLoginTime"
@@ -676,7 +761,7 @@ const DesignSchema: Record<string, unknown> = {
                               },
                               "socials": {
                                 "type": "array",
-                                "description": "Various online profiles associated with the user account",
+                                "description": "Various online profiles associated with the user's account",
                                 "x-go-type": "UserSocials",
                                 "items": {
                                   "x-go-type": "Social",
@@ -710,98 +795,16 @@ const DesignSchema: Record<string, unknown> = {
                                 "nullable": true,
                                 "description": "Timestamp when the user record was soft-deleted (null if not deleted)",
                                 "x-go-type": "core.NullTime",
+                                "x-go-type-import": {
+                                  "path": "github.com/meshery/schemas/models/core",
+                                  "name": "core"
+                                },
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "deleted_at",
                                   "json": "deletedAt"
                                 }
-                              },
-                              "roleNames": {
-                                "type": "array",
-                                "items": {
-                                  "type": "string",
-                                  "enum": [
-                                    "admin",
-                                    "meshmap",
-                                    "curator",
-                                    "team admin",
-                                    "workspace admin",
-                                    "workspace manager",
-                                    "organization admin",
-                                    "user"
-                                  ]
-                                },
-                                "description": "List of global roles assigned to the user",
-                                "example": [
-                                  "admin",
-                                  "meshmap"
-                                ],
-                                "x-oapi-codegen-extra-tags": {
-                                  "db": "role_names",
-                                  "json": "roleNames"
-                                }
-                              },
-                              "teams": {
-                                "type": "object",
-                                "description": "Teams the user belongs to with role information",
-                                "x-oapi-codegen-extra-tags": {
-                                  "db": "teams",
-                                  "json": "teams"
-                                },
-                                "properties": {
-                                  "teamsWithRoles": {
-                                    "type": "array",
-                                    "description": "Team memberships for the user with their assigned roles.",
-                                    "items": {
-                                      "type": "object"
-                                    },
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "teams_with_roles",
-                                      "json": "teamsWithRoles"
-                                    }
-                                  },
-                                  "totalCount": {
-                                    "type": "integer",
-                                    "description": "Total number of team memberships returned for the user.",
-                                    "minimum": 0,
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "total_count",
-                                      "json": "totalCount"
-                                    }
-                                  }
-                                }
-                              },
-                              "organizations": {
-                                "type": "object",
-                                "description": "Organizations the user belongs to with role information",
-                                "x-oapi-codegen-extra-tags": {
-                                  "db": "organizations",
-                                  "json": "organizations"
-                                },
-                                "properties": {
-                                  "organizationsWithRoles": {
-                                    "type": "array",
-                                    "description": "Organization memberships for the user with their assigned roles.",
-                                    "items": {
-                                      "type": "object"
-                                    },
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "organizations_with_roles",
-                                      "json": "organizationsWithRoles"
-                                    }
-                                  },
-                                  "totalCount": {
-                                    "type": "integer",
-                                    "description": "Total number of organization memberships returned for the user.",
-                                    "minimum": 0,
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "total_count",
-                                      "json": "totalCount"
-                                    }
-                                  }
-                                }
                               }
-                            },
-                            "additionalProperties": false
+                            }
                           },
                           "location": {
                             "description": "Optional structured location metadata (branch, host, path, ...).",
@@ -1318,7 +1321,10 @@ const DesignSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "-"
                       },
+                      "$id": "https://schemas.meshery.io/user.yaml",
+                      "$schema": "http://json-schema.org/draft-07/schema#",
                       "type": "object",
+                      "additionalProperties": false,
                       "required": [
                         "id",
                         "userId",
@@ -1327,10 +1333,11 @@ const DesignSchema: Record<string, unknown> = {
                         "firstName",
                         "lastName",
                         "status",
-                        "createdAt",
-                        "updatedAt",
+                        "acceptedTermsAt",
+                        "firstLoginTime",
                         "lastLoginTime",
-                        "deletedAt"
+                        "createdAt",
+                        "updatedAt"
                       ],
                       "properties": {
                         "id": {
@@ -1350,7 +1357,7 @@ const DesignSchema: Record<string, unknown> = {
                         "userId": {
                           "type": "string",
                           "maxLength": 200,
-                          "description": "User identifier (username or external ID)",
+                          "description": "User's identifier (username or external ID)",
                           "x-oapi-codegen-extra-tags": {
                             "db": "user_id",
                             "json": "userId"
@@ -1360,13 +1367,8 @@ const DesignSchema: Record<string, unknown> = {
                         "provider": {
                           "type": "string",
                           "maxLength": 100,
-                          "description": "Authentication provider (e.g., Google, Github)",
-                          "example": [
-                            "local",
-                            "github",
-                            "google",
-                            "twitter"
-                          ],
+                          "description": "User's authentication provider (e.g., Layer5, Twitter, Facebook, GitHub)",
+                          "example": "Layer5",
                           "x-oapi-codegen-extra-tags": {
                             "db": "provider",
                             "json": "provider"
@@ -1404,7 +1406,7 @@ const DesignSchema: Record<string, unknown> = {
                           "type": "string",
                           "format": "uri",
                           "maxLength": 500,
-                          "description": "URL to user's avatar image",
+                          "description": "URL to the user's avatar image",
                           "x-oapi-codegen-extra-tags": {
                             "db": "avatar_url",
                             "json": "avatarUrl"
@@ -1419,7 +1421,7 @@ const DesignSchema: Record<string, unknown> = {
                             "pending",
                             "anonymous"
                           ],
-                          "description": "User account status",
+                          "description": "User's account status",
                           "x-oapi-codegen-extra-tags": {
                             "db": "status",
                             "json": "status"
@@ -1440,6 +1442,10 @@ const DesignSchema: Record<string, unknown> = {
                           "description": "User's country information stored as JSONB",
                           "additionalProperties": true,
                           "x-go-type": "core.Map",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/core",
+                            "name": "core"
+                          },
                           "x-go-type-skip-optional-pointer": true,
                           "x-oapi-codegen-extra-tags": {
                             "db": "country",
@@ -1451,6 +1457,10 @@ const DesignSchema: Record<string, unknown> = {
                           "description": "User's region information stored as JSONB",
                           "additionalProperties": true,
                           "x-go-type": "core.Map",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/core",
+                            "name": "core"
+                          },
                           "x-go-type-skip-optional-pointer": true,
                           "x-oapi-codegen-extra-tags": {
                             "db": "region",
@@ -1459,7 +1469,7 @@ const DesignSchema: Record<string, unknown> = {
                         },
                         "preferences": {
                           "x-go-type": "Preference",
-                          "description": "User preferences stored as JSONB",
+                          "description": "User's preferences stored as JSONB",
                           "x-oapi-codegen-extra-tags": {
                             "db": "preferences",
                             "json": "preferences"
@@ -1482,7 +1492,80 @@ const DesignSchema: Record<string, unknown> = {
                               "items": {
                                 "x-go-type": "Adapter",
                                 "type": "object",
-                                "description": "Placeholder for Adapter struct definition."
+                                "additionalProperties": false,
+                                "description": "Meshery adapter configuration stored in user preferences.",
+                                "required": [
+                                  "adapterLocation",
+                                  "name",
+                                  "version",
+                                  "gitCommitSha",
+                                  "ops"
+                                ],
+                                "properties": {
+                                  "adapterLocation": {
+                                    "type": "string",
+                                    "description": "Network location used to reach the adapter.",
+                                    "minLength": 1,
+                                    "maxLength": 500
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Adapter name.",
+                                    "minLength": 1,
+                                    "maxLength": 255
+                                  },
+                                  "version": {
+                                    "type": "string",
+                                    "description": "Adapter version.",
+                                    "maxLength": 100
+                                  },
+                                  "gitCommitSha": {
+                                    "type": "string",
+                                    "description": "Git commit SHA for the adapter build.",
+                                    "maxLength": 64
+                                  },
+                                  "ops": {
+                                    "type": "array",
+                                    "description": "Operations supported by the adapter.",
+                                    "items": {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "description": "Operation supported by a Meshery adapter.",
+                                      "required": [
+                                        "key",
+                                        "value",
+                                        "category"
+                                      ],
+                                      "properties": {
+                                        "key": {
+                                          "type": "string",
+                                          "description": "Stable operation key.",
+                                          "minLength": 1,
+                                          "maxLength": 255
+                                        },
+                                        "value": {
+                                          "type": "string",
+                                          "description": "Human-readable operation value.",
+                                          "minLength": 1,
+                                          "maxLength": 255
+                                        },
+                                        "category": {
+                                          "type": "integer",
+                                          "description": "Protobuf OpCategory wire value. Integer values intentionally mirror meshops.proto instead of using lowercase string enum literals.",
+                                          "minimum": 0,
+                                          "maximum": 4,
+                                          "enum": [
+                                            0,
+                                            1,
+                                            2,
+                                            3,
+                                            4
+                                          ]
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
                               },
                               "description": "The mesh adapters of the preference."
                             },
@@ -1617,7 +1700,12 @@ const DesignSchema: Record<string, unknown> = {
                               "type": "string",
                               "description": "ID of the associated selectedOrganization.",
                               "maxLength": 500,
-                              "format": "uuid"
+                              "format": "uuid",
+                              "x-go-type": "core.Uuid",
+                              "x-go-type-import": {
+                                "path": "github.com/meshery/schemas/models/core",
+                                "name": "core"
+                              }
                             },
                             "selectedWorkspaceForOrganizations": {
                               "type": "object",
@@ -1639,7 +1727,7 @@ const DesignSchema: Record<string, unknown> = {
                           }
                         },
                         "acceptedTermsAt": {
-                          "description": "Timestamp when user accepted terms and conditions",
+                          "description": "Timestamp when the user accepted terms and conditions",
                           "x-oapi-codegen-extra-tags": {
                             "db": "accepted_terms_at",
                             "json": "acceptedTermsAt"
@@ -1649,7 +1737,7 @@ const DesignSchema: Record<string, unknown> = {
                           "x-go-type-skip-optional-pointer": true
                         },
                         "firstLoginTime": {
-                          "description": "Timestamp of user's first login",
+                          "description": "Timestamp of the user's first login",
                           "x-oapi-codegen-extra-tags": {
                             "db": "first_login_time",
                             "json": "firstLoginTime"
@@ -1659,7 +1747,7 @@ const DesignSchema: Record<string, unknown> = {
                           "x-go-type-skip-optional-pointer": true
                         },
                         "lastLoginTime": {
-                          "description": "Timestamp of user's most recent login",
+                          "description": "Timestamp of the user's most recent login",
                           "x-oapi-codegen-extra-tags": {
                             "db": "last_login_time",
                             "json": "lastLoginTime"
@@ -1690,7 +1778,7 @@ const DesignSchema: Record<string, unknown> = {
                         },
                         "socials": {
                           "type": "array",
-                          "description": "Various online profiles associated with the user account",
+                          "description": "Various online profiles associated with the user's account",
                           "x-go-type": "UserSocials",
                           "items": {
                             "x-go-type": "Social",
@@ -1724,98 +1812,16 @@ const DesignSchema: Record<string, unknown> = {
                           "nullable": true,
                           "description": "Timestamp when the user record was soft-deleted (null if not deleted)",
                           "x-go-type": "core.NullTime",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/core",
+                            "name": "core"
+                          },
                           "x-oapi-codegen-extra-tags": {
                             "db": "deleted_at",
                             "json": "deletedAt"
                           }
-                        },
-                        "roleNames": {
-                          "type": "array",
-                          "items": {
-                            "type": "string",
-                            "enum": [
-                              "admin",
-                              "meshmap",
-                              "curator",
-                              "team admin",
-                              "workspace admin",
-                              "workspace manager",
-                              "organization admin",
-                              "user"
-                            ]
-                          },
-                          "description": "List of global roles assigned to the user",
-                          "example": [
-                            "admin",
-                            "meshmap"
-                          ],
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "role_names",
-                            "json": "roleNames"
-                          }
-                        },
-                        "teams": {
-                          "type": "object",
-                          "description": "Teams the user belongs to with role information",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "teams",
-                            "json": "teams"
-                          },
-                          "properties": {
-                            "teamsWithRoles": {
-                              "type": "array",
-                              "description": "Team memberships for the user with their assigned roles.",
-                              "items": {
-                                "type": "object"
-                              },
-                              "x-oapi-codegen-extra-tags": {
-                                "db": "teams_with_roles",
-                                "json": "teamsWithRoles"
-                              }
-                            },
-                            "totalCount": {
-                              "type": "integer",
-                              "description": "Total number of team memberships returned for the user.",
-                              "minimum": 0,
-                              "x-oapi-codegen-extra-tags": {
-                                "db": "total_count",
-                                "json": "totalCount"
-                              }
-                            }
-                          }
-                        },
-                        "organizations": {
-                          "type": "object",
-                          "description": "Organizations the user belongs to with role information",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "organizations",
-                            "json": "organizations"
-                          },
-                          "properties": {
-                            "organizationsWithRoles": {
-                              "type": "array",
-                              "description": "Organization memberships for the user with their assigned roles.",
-                              "items": {
-                                "type": "object"
-                              },
-                              "x-oapi-codegen-extra-tags": {
-                                "db": "organizations_with_roles",
-                                "json": "organizationsWithRoles"
-                              }
-                            },
-                            "totalCount": {
-                              "type": "integer",
-                              "description": "Total number of organization memberships returned for the user.",
-                              "minimum": 0,
-                              "x-oapi-codegen-extra-tags": {
-                                "db": "total_count",
-                                "json": "totalCount"
-                              }
-                            }
-                          }
                         }
-                      },
-                      "additionalProperties": false
+                      }
                     },
                     "location": {
                       "description": "Optional structured location metadata (branch, host, path, ...).",
@@ -2479,7 +2485,10 @@ const DesignSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "-"
                       },
+                      "$id": "https://schemas.meshery.io/user.yaml",
+                      "$schema": "http://json-schema.org/draft-07/schema#",
                       "type": "object",
+                      "additionalProperties": false,
                       "required": [
                         "id",
                         "userId",
@@ -2488,10 +2497,11 @@ const DesignSchema: Record<string, unknown> = {
                         "firstName",
                         "lastName",
                         "status",
-                        "createdAt",
-                        "updatedAt",
+                        "acceptedTermsAt",
+                        "firstLoginTime",
                         "lastLoginTime",
-                        "deletedAt"
+                        "createdAt",
+                        "updatedAt"
                       ],
                       "properties": {
                         "id": {
@@ -2511,7 +2521,7 @@ const DesignSchema: Record<string, unknown> = {
                         "userId": {
                           "type": "string",
                           "maxLength": 200,
-                          "description": "User identifier (username or external ID)",
+                          "description": "User's identifier (username or external ID)",
                           "x-oapi-codegen-extra-tags": {
                             "db": "user_id",
                             "json": "userId"
@@ -2521,13 +2531,8 @@ const DesignSchema: Record<string, unknown> = {
                         "provider": {
                           "type": "string",
                           "maxLength": 100,
-                          "description": "Authentication provider (e.g., Google, Github)",
-                          "example": [
-                            "local",
-                            "github",
-                            "google",
-                            "twitter"
-                          ],
+                          "description": "User's authentication provider (e.g., Layer5, Twitter, Facebook, GitHub)",
+                          "example": "Layer5",
                           "x-oapi-codegen-extra-tags": {
                             "db": "provider",
                             "json": "provider"
@@ -2565,7 +2570,7 @@ const DesignSchema: Record<string, unknown> = {
                           "type": "string",
                           "format": "uri",
                           "maxLength": 500,
-                          "description": "URL to user's avatar image",
+                          "description": "URL to the user's avatar image",
                           "x-oapi-codegen-extra-tags": {
                             "db": "avatar_url",
                             "json": "avatarUrl"
@@ -2580,7 +2585,7 @@ const DesignSchema: Record<string, unknown> = {
                             "pending",
                             "anonymous"
                           ],
-                          "description": "User account status",
+                          "description": "User's account status",
                           "x-oapi-codegen-extra-tags": {
                             "db": "status",
                             "json": "status"
@@ -2601,6 +2606,10 @@ const DesignSchema: Record<string, unknown> = {
                           "description": "User's country information stored as JSONB",
                           "additionalProperties": true,
                           "x-go-type": "core.Map",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/core",
+                            "name": "core"
+                          },
                           "x-go-type-skip-optional-pointer": true,
                           "x-oapi-codegen-extra-tags": {
                             "db": "country",
@@ -2612,6 +2621,10 @@ const DesignSchema: Record<string, unknown> = {
                           "description": "User's region information stored as JSONB",
                           "additionalProperties": true,
                           "x-go-type": "core.Map",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/core",
+                            "name": "core"
+                          },
                           "x-go-type-skip-optional-pointer": true,
                           "x-oapi-codegen-extra-tags": {
                             "db": "region",
@@ -2620,7 +2633,7 @@ const DesignSchema: Record<string, unknown> = {
                         },
                         "preferences": {
                           "x-go-type": "Preference",
-                          "description": "User preferences stored as JSONB",
+                          "description": "User's preferences stored as JSONB",
                           "x-oapi-codegen-extra-tags": {
                             "db": "preferences",
                             "json": "preferences"
@@ -2643,7 +2656,80 @@ const DesignSchema: Record<string, unknown> = {
                               "items": {
                                 "x-go-type": "Adapter",
                                 "type": "object",
-                                "description": "Placeholder for Adapter struct definition."
+                                "additionalProperties": false,
+                                "description": "Meshery adapter configuration stored in user preferences.",
+                                "required": [
+                                  "adapterLocation",
+                                  "name",
+                                  "version",
+                                  "gitCommitSha",
+                                  "ops"
+                                ],
+                                "properties": {
+                                  "adapterLocation": {
+                                    "type": "string",
+                                    "description": "Network location used to reach the adapter.",
+                                    "minLength": 1,
+                                    "maxLength": 500
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Adapter name.",
+                                    "minLength": 1,
+                                    "maxLength": 255
+                                  },
+                                  "version": {
+                                    "type": "string",
+                                    "description": "Adapter version.",
+                                    "maxLength": 100
+                                  },
+                                  "gitCommitSha": {
+                                    "type": "string",
+                                    "description": "Git commit SHA for the adapter build.",
+                                    "maxLength": 64
+                                  },
+                                  "ops": {
+                                    "type": "array",
+                                    "description": "Operations supported by the adapter.",
+                                    "items": {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "description": "Operation supported by a Meshery adapter.",
+                                      "required": [
+                                        "key",
+                                        "value",
+                                        "category"
+                                      ],
+                                      "properties": {
+                                        "key": {
+                                          "type": "string",
+                                          "description": "Stable operation key.",
+                                          "minLength": 1,
+                                          "maxLength": 255
+                                        },
+                                        "value": {
+                                          "type": "string",
+                                          "description": "Human-readable operation value.",
+                                          "minLength": 1,
+                                          "maxLength": 255
+                                        },
+                                        "category": {
+                                          "type": "integer",
+                                          "description": "Protobuf OpCategory wire value. Integer values intentionally mirror meshops.proto instead of using lowercase string enum literals.",
+                                          "minimum": 0,
+                                          "maximum": 4,
+                                          "enum": [
+                                            0,
+                                            1,
+                                            2,
+                                            3,
+                                            4
+                                          ]
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
                               },
                               "description": "The mesh adapters of the preference."
                             },
@@ -2778,7 +2864,12 @@ const DesignSchema: Record<string, unknown> = {
                               "type": "string",
                               "description": "ID of the associated selectedOrganization.",
                               "maxLength": 500,
-                              "format": "uuid"
+                              "format": "uuid",
+                              "x-go-type": "core.Uuid",
+                              "x-go-type-import": {
+                                "path": "github.com/meshery/schemas/models/core",
+                                "name": "core"
+                              }
                             },
                             "selectedWorkspaceForOrganizations": {
                               "type": "object",
@@ -2800,7 +2891,7 @@ const DesignSchema: Record<string, unknown> = {
                           }
                         },
                         "acceptedTermsAt": {
-                          "description": "Timestamp when user accepted terms and conditions",
+                          "description": "Timestamp when the user accepted terms and conditions",
                           "x-oapi-codegen-extra-tags": {
                             "db": "accepted_terms_at",
                             "json": "acceptedTermsAt"
@@ -2810,7 +2901,7 @@ const DesignSchema: Record<string, unknown> = {
                           "x-go-type-skip-optional-pointer": true
                         },
                         "firstLoginTime": {
-                          "description": "Timestamp of user's first login",
+                          "description": "Timestamp of the user's first login",
                           "x-oapi-codegen-extra-tags": {
                             "db": "first_login_time",
                             "json": "firstLoginTime"
@@ -2820,7 +2911,7 @@ const DesignSchema: Record<string, unknown> = {
                           "x-go-type-skip-optional-pointer": true
                         },
                         "lastLoginTime": {
-                          "description": "Timestamp of user's most recent login",
+                          "description": "Timestamp of the user's most recent login",
                           "x-oapi-codegen-extra-tags": {
                             "db": "last_login_time",
                             "json": "lastLoginTime"
@@ -2851,7 +2942,7 @@ const DesignSchema: Record<string, unknown> = {
                         },
                         "socials": {
                           "type": "array",
-                          "description": "Various online profiles associated with the user account",
+                          "description": "Various online profiles associated with the user's account",
                           "x-go-type": "UserSocials",
                           "items": {
                             "x-go-type": "Social",
@@ -2885,98 +2976,16 @@ const DesignSchema: Record<string, unknown> = {
                           "nullable": true,
                           "description": "Timestamp when the user record was soft-deleted (null if not deleted)",
                           "x-go-type": "core.NullTime",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/core",
+                            "name": "core"
+                          },
                           "x-oapi-codegen-extra-tags": {
                             "db": "deleted_at",
                             "json": "deletedAt"
                           }
-                        },
-                        "roleNames": {
-                          "type": "array",
-                          "items": {
-                            "type": "string",
-                            "enum": [
-                              "admin",
-                              "meshmap",
-                              "curator",
-                              "team admin",
-                              "workspace admin",
-                              "workspace manager",
-                              "organization admin",
-                              "user"
-                            ]
-                          },
-                          "description": "List of global roles assigned to the user",
-                          "example": [
-                            "admin",
-                            "meshmap"
-                          ],
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "role_names",
-                            "json": "roleNames"
-                          }
-                        },
-                        "teams": {
-                          "type": "object",
-                          "description": "Teams the user belongs to with role information",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "teams",
-                            "json": "teams"
-                          },
-                          "properties": {
-                            "teamsWithRoles": {
-                              "type": "array",
-                              "description": "Team memberships for the user with their assigned roles.",
-                              "items": {
-                                "type": "object"
-                              },
-                              "x-oapi-codegen-extra-tags": {
-                                "db": "teams_with_roles",
-                                "json": "teamsWithRoles"
-                              }
-                            },
-                            "totalCount": {
-                              "type": "integer",
-                              "description": "Total number of team memberships returned for the user.",
-                              "minimum": 0,
-                              "x-oapi-codegen-extra-tags": {
-                                "db": "total_count",
-                                "json": "totalCount"
-                              }
-                            }
-                          }
-                        },
-                        "organizations": {
-                          "type": "object",
-                          "description": "Organizations the user belongs to with role information",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "organizations",
-                            "json": "organizations"
-                          },
-                          "properties": {
-                            "organizationsWithRoles": {
-                              "type": "array",
-                              "description": "Organization memberships for the user with their assigned roles.",
-                              "items": {
-                                "type": "object"
-                              },
-                              "x-oapi-codegen-extra-tags": {
-                                "db": "organizations_with_roles",
-                                "json": "organizationsWithRoles"
-                              }
-                            },
-                            "totalCount": {
-                              "type": "integer",
-                              "description": "Total number of organization memberships returned for the user.",
-                              "minimum": 0,
-                              "x-oapi-codegen-extra-tags": {
-                                "db": "total_count",
-                                "json": "totalCount"
-                              }
-                            }
-                          }
                         }
-                      },
-                      "additionalProperties": false
+                      }
                     },
                     "location": {
                       "description": "Optional structured location metadata (branch, host, path, ...).",
@@ -3371,7 +3380,10 @@ const DesignSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "-"
                       },
+                      "$id": "https://schemas.meshery.io/user.yaml",
+                      "$schema": "http://json-schema.org/draft-07/schema#",
                       "type": "object",
+                      "additionalProperties": false,
                       "required": [
                         "id",
                         "userId",
@@ -3380,10 +3392,11 @@ const DesignSchema: Record<string, unknown> = {
                         "firstName",
                         "lastName",
                         "status",
-                        "createdAt",
-                        "updatedAt",
+                        "acceptedTermsAt",
+                        "firstLoginTime",
                         "lastLoginTime",
-                        "deletedAt"
+                        "createdAt",
+                        "updatedAt"
                       ],
                       "properties": {
                         "id": {
@@ -3403,7 +3416,7 @@ const DesignSchema: Record<string, unknown> = {
                         "userId": {
                           "type": "string",
                           "maxLength": 200,
-                          "description": "User identifier (username or external ID)",
+                          "description": "User's identifier (username or external ID)",
                           "x-oapi-codegen-extra-tags": {
                             "db": "user_id",
                             "json": "userId"
@@ -3413,13 +3426,8 @@ const DesignSchema: Record<string, unknown> = {
                         "provider": {
                           "type": "string",
                           "maxLength": 100,
-                          "description": "Authentication provider (e.g., Google, Github)",
-                          "example": [
-                            "local",
-                            "github",
-                            "google",
-                            "twitter"
-                          ],
+                          "description": "User's authentication provider (e.g., Layer5, Twitter, Facebook, GitHub)",
+                          "example": "Layer5",
                           "x-oapi-codegen-extra-tags": {
                             "db": "provider",
                             "json": "provider"
@@ -3457,7 +3465,7 @@ const DesignSchema: Record<string, unknown> = {
                           "type": "string",
                           "format": "uri",
                           "maxLength": 500,
-                          "description": "URL to user's avatar image",
+                          "description": "URL to the user's avatar image",
                           "x-oapi-codegen-extra-tags": {
                             "db": "avatar_url",
                             "json": "avatarUrl"
@@ -3472,7 +3480,7 @@ const DesignSchema: Record<string, unknown> = {
                             "pending",
                             "anonymous"
                           ],
-                          "description": "User account status",
+                          "description": "User's account status",
                           "x-oapi-codegen-extra-tags": {
                             "db": "status",
                             "json": "status"
@@ -3493,6 +3501,10 @@ const DesignSchema: Record<string, unknown> = {
                           "description": "User's country information stored as JSONB",
                           "additionalProperties": true,
                           "x-go-type": "core.Map",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/core",
+                            "name": "core"
+                          },
                           "x-go-type-skip-optional-pointer": true,
                           "x-oapi-codegen-extra-tags": {
                             "db": "country",
@@ -3504,6 +3516,10 @@ const DesignSchema: Record<string, unknown> = {
                           "description": "User's region information stored as JSONB",
                           "additionalProperties": true,
                           "x-go-type": "core.Map",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/core",
+                            "name": "core"
+                          },
                           "x-go-type-skip-optional-pointer": true,
                           "x-oapi-codegen-extra-tags": {
                             "db": "region",
@@ -3512,7 +3528,7 @@ const DesignSchema: Record<string, unknown> = {
                         },
                         "preferences": {
                           "x-go-type": "Preference",
-                          "description": "User preferences stored as JSONB",
+                          "description": "User's preferences stored as JSONB",
                           "x-oapi-codegen-extra-tags": {
                             "db": "preferences",
                             "json": "preferences"
@@ -3535,7 +3551,80 @@ const DesignSchema: Record<string, unknown> = {
                               "items": {
                                 "x-go-type": "Adapter",
                                 "type": "object",
-                                "description": "Placeholder for Adapter struct definition."
+                                "additionalProperties": false,
+                                "description": "Meshery adapter configuration stored in user preferences.",
+                                "required": [
+                                  "adapterLocation",
+                                  "name",
+                                  "version",
+                                  "gitCommitSha",
+                                  "ops"
+                                ],
+                                "properties": {
+                                  "adapterLocation": {
+                                    "type": "string",
+                                    "description": "Network location used to reach the adapter.",
+                                    "minLength": 1,
+                                    "maxLength": 500
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Adapter name.",
+                                    "minLength": 1,
+                                    "maxLength": 255
+                                  },
+                                  "version": {
+                                    "type": "string",
+                                    "description": "Adapter version.",
+                                    "maxLength": 100
+                                  },
+                                  "gitCommitSha": {
+                                    "type": "string",
+                                    "description": "Git commit SHA for the adapter build.",
+                                    "maxLength": 64
+                                  },
+                                  "ops": {
+                                    "type": "array",
+                                    "description": "Operations supported by the adapter.",
+                                    "items": {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "description": "Operation supported by a Meshery adapter.",
+                                      "required": [
+                                        "key",
+                                        "value",
+                                        "category"
+                                      ],
+                                      "properties": {
+                                        "key": {
+                                          "type": "string",
+                                          "description": "Stable operation key.",
+                                          "minLength": 1,
+                                          "maxLength": 255
+                                        },
+                                        "value": {
+                                          "type": "string",
+                                          "description": "Human-readable operation value.",
+                                          "minLength": 1,
+                                          "maxLength": 255
+                                        },
+                                        "category": {
+                                          "type": "integer",
+                                          "description": "Protobuf OpCategory wire value. Integer values intentionally mirror meshops.proto instead of using lowercase string enum literals.",
+                                          "minimum": 0,
+                                          "maximum": 4,
+                                          "enum": [
+                                            0,
+                                            1,
+                                            2,
+                                            3,
+                                            4
+                                          ]
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
                               },
                               "description": "The mesh adapters of the preference."
                             },
@@ -3670,7 +3759,12 @@ const DesignSchema: Record<string, unknown> = {
                               "type": "string",
                               "description": "ID of the associated selectedOrganization.",
                               "maxLength": 500,
-                              "format": "uuid"
+                              "format": "uuid",
+                              "x-go-type": "core.Uuid",
+                              "x-go-type-import": {
+                                "path": "github.com/meshery/schemas/models/core",
+                                "name": "core"
+                              }
                             },
                             "selectedWorkspaceForOrganizations": {
                               "type": "object",
@@ -3692,7 +3786,7 @@ const DesignSchema: Record<string, unknown> = {
                           }
                         },
                         "acceptedTermsAt": {
-                          "description": "Timestamp when user accepted terms and conditions",
+                          "description": "Timestamp when the user accepted terms and conditions",
                           "x-oapi-codegen-extra-tags": {
                             "db": "accepted_terms_at",
                             "json": "acceptedTermsAt"
@@ -3702,7 +3796,7 @@ const DesignSchema: Record<string, unknown> = {
                           "x-go-type-skip-optional-pointer": true
                         },
                         "firstLoginTime": {
-                          "description": "Timestamp of user's first login",
+                          "description": "Timestamp of the user's first login",
                           "x-oapi-codegen-extra-tags": {
                             "db": "first_login_time",
                             "json": "firstLoginTime"
@@ -3712,7 +3806,7 @@ const DesignSchema: Record<string, unknown> = {
                           "x-go-type-skip-optional-pointer": true
                         },
                         "lastLoginTime": {
-                          "description": "Timestamp of user's most recent login",
+                          "description": "Timestamp of the user's most recent login",
                           "x-oapi-codegen-extra-tags": {
                             "db": "last_login_time",
                             "json": "lastLoginTime"
@@ -3743,7 +3837,7 @@ const DesignSchema: Record<string, unknown> = {
                         },
                         "socials": {
                           "type": "array",
-                          "description": "Various online profiles associated with the user account",
+                          "description": "Various online profiles associated with the user's account",
                           "x-go-type": "UserSocials",
                           "items": {
                             "x-go-type": "Social",
@@ -3777,98 +3871,16 @@ const DesignSchema: Record<string, unknown> = {
                           "nullable": true,
                           "description": "Timestamp when the user record was soft-deleted (null if not deleted)",
                           "x-go-type": "core.NullTime",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/core",
+                            "name": "core"
+                          },
                           "x-oapi-codegen-extra-tags": {
                             "db": "deleted_at",
                             "json": "deletedAt"
                           }
-                        },
-                        "roleNames": {
-                          "type": "array",
-                          "items": {
-                            "type": "string",
-                            "enum": [
-                              "admin",
-                              "meshmap",
-                              "curator",
-                              "team admin",
-                              "workspace admin",
-                              "workspace manager",
-                              "organization admin",
-                              "user"
-                            ]
-                          },
-                          "description": "List of global roles assigned to the user",
-                          "example": [
-                            "admin",
-                            "meshmap"
-                          ],
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "role_names",
-                            "json": "roleNames"
-                          }
-                        },
-                        "teams": {
-                          "type": "object",
-                          "description": "Teams the user belongs to with role information",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "teams",
-                            "json": "teams"
-                          },
-                          "properties": {
-                            "teamsWithRoles": {
-                              "type": "array",
-                              "description": "Team memberships for the user with their assigned roles.",
-                              "items": {
-                                "type": "object"
-                              },
-                              "x-oapi-codegen-extra-tags": {
-                                "db": "teams_with_roles",
-                                "json": "teamsWithRoles"
-                              }
-                            },
-                            "totalCount": {
-                              "type": "integer",
-                              "description": "Total number of team memberships returned for the user.",
-                              "minimum": 0,
-                              "x-oapi-codegen-extra-tags": {
-                                "db": "total_count",
-                                "json": "totalCount"
-                              }
-                            }
-                          }
-                        },
-                        "organizations": {
-                          "type": "object",
-                          "description": "Organizations the user belongs to with role information",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "organizations",
-                            "json": "organizations"
-                          },
-                          "properties": {
-                            "organizationsWithRoles": {
-                              "type": "array",
-                              "description": "Organization memberships for the user with their assigned roles.",
-                              "items": {
-                                "type": "object"
-                              },
-                              "x-oapi-codegen-extra-tags": {
-                                "db": "organizations_with_roles",
-                                "json": "organizationsWithRoles"
-                              }
-                            },
-                            "totalCount": {
-                              "type": "integer",
-                              "description": "Total number of organization memberships returned for the user.",
-                              "minimum": 0,
-                              "x-oapi-codegen-extra-tags": {
-                                "db": "total_count",
-                                "json": "totalCount"
-                              }
-                            }
-                          }
                         }
-                      },
-                      "additionalProperties": false
+                      }
                     },
                     "location": {
                       "description": "Optional structured location metadata (branch, host, path, ...).",
@@ -4597,7 +4609,10 @@ const DesignSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "-"
                             },
+                            "$id": "https://schemas.meshery.io/user.yaml",
+                            "$schema": "http://json-schema.org/draft-07/schema#",
                             "type": "object",
+                            "additionalProperties": false,
                             "required": [
                               "id",
                               "userId",
@@ -4606,10 +4621,11 @@ const DesignSchema: Record<string, unknown> = {
                               "firstName",
                               "lastName",
                               "status",
-                              "createdAt",
-                              "updatedAt",
+                              "acceptedTermsAt",
+                              "firstLoginTime",
                               "lastLoginTime",
-                              "deletedAt"
+                              "createdAt",
+                              "updatedAt"
                             ],
                             "properties": {
                               "id": {
@@ -4629,7 +4645,7 @@ const DesignSchema: Record<string, unknown> = {
                               "userId": {
                                 "type": "string",
                                 "maxLength": 200,
-                                "description": "User identifier (username or external ID)",
+                                "description": "User's identifier (username or external ID)",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "user_id",
                                   "json": "userId"
@@ -4639,13 +4655,8 @@ const DesignSchema: Record<string, unknown> = {
                               "provider": {
                                 "type": "string",
                                 "maxLength": 100,
-                                "description": "Authentication provider (e.g., Google, Github)",
-                                "example": [
-                                  "local",
-                                  "github",
-                                  "google",
-                                  "twitter"
-                                ],
+                                "description": "User's authentication provider (e.g., Layer5, Twitter, Facebook, GitHub)",
+                                "example": "Layer5",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "provider",
                                   "json": "provider"
@@ -4683,7 +4694,7 @@ const DesignSchema: Record<string, unknown> = {
                                 "type": "string",
                                 "format": "uri",
                                 "maxLength": 500,
-                                "description": "URL to user's avatar image",
+                                "description": "URL to the user's avatar image",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "avatar_url",
                                   "json": "avatarUrl"
@@ -4698,7 +4709,7 @@ const DesignSchema: Record<string, unknown> = {
                                   "pending",
                                   "anonymous"
                                 ],
-                                "description": "User account status",
+                                "description": "User's account status",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "status",
                                   "json": "status"
@@ -4719,6 +4730,10 @@ const DesignSchema: Record<string, unknown> = {
                                 "description": "User's country information stored as JSONB",
                                 "additionalProperties": true,
                                 "x-go-type": "core.Map",
+                                "x-go-type-import": {
+                                  "path": "github.com/meshery/schemas/models/core",
+                                  "name": "core"
+                                },
                                 "x-go-type-skip-optional-pointer": true,
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "country",
@@ -4730,6 +4745,10 @@ const DesignSchema: Record<string, unknown> = {
                                 "description": "User's region information stored as JSONB",
                                 "additionalProperties": true,
                                 "x-go-type": "core.Map",
+                                "x-go-type-import": {
+                                  "path": "github.com/meshery/schemas/models/core",
+                                  "name": "core"
+                                },
                                 "x-go-type-skip-optional-pointer": true,
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "region",
@@ -4738,7 +4757,7 @@ const DesignSchema: Record<string, unknown> = {
                               },
                               "preferences": {
                                 "x-go-type": "Preference",
-                                "description": "User preferences stored as JSONB",
+                                "description": "User's preferences stored as JSONB",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "preferences",
                                   "json": "preferences"
@@ -4761,7 +4780,80 @@ const DesignSchema: Record<string, unknown> = {
                                     "items": {
                                       "x-go-type": "Adapter",
                                       "type": "object",
-                                      "description": "Placeholder for Adapter struct definition."
+                                      "additionalProperties": false,
+                                      "description": "Meshery adapter configuration stored in user preferences.",
+                                      "required": [
+                                        "adapterLocation",
+                                        "name",
+                                        "version",
+                                        "gitCommitSha",
+                                        "ops"
+                                      ],
+                                      "properties": {
+                                        "adapterLocation": {
+                                          "type": "string",
+                                          "description": "Network location used to reach the adapter.",
+                                          "minLength": 1,
+                                          "maxLength": 500
+                                        },
+                                        "name": {
+                                          "type": "string",
+                                          "description": "Adapter name.",
+                                          "minLength": 1,
+                                          "maxLength": 255
+                                        },
+                                        "version": {
+                                          "type": "string",
+                                          "description": "Adapter version.",
+                                          "maxLength": 100
+                                        },
+                                        "gitCommitSha": {
+                                          "type": "string",
+                                          "description": "Git commit SHA for the adapter build.",
+                                          "maxLength": 64
+                                        },
+                                        "ops": {
+                                          "type": "array",
+                                          "description": "Operations supported by the adapter.",
+                                          "items": {
+                                            "type": "object",
+                                            "additionalProperties": false,
+                                            "description": "Operation supported by a Meshery adapter.",
+                                            "required": [
+                                              "key",
+                                              "value",
+                                              "category"
+                                            ],
+                                            "properties": {
+                                              "key": {
+                                                "type": "string",
+                                                "description": "Stable operation key.",
+                                                "minLength": 1,
+                                                "maxLength": 255
+                                              },
+                                              "value": {
+                                                "type": "string",
+                                                "description": "Human-readable operation value.",
+                                                "minLength": 1,
+                                                "maxLength": 255
+                                              },
+                                              "category": {
+                                                "type": "integer",
+                                                "description": "Protobuf OpCategory wire value. Integer values intentionally mirror meshops.proto instead of using lowercase string enum literals.",
+                                                "minimum": 0,
+                                                "maximum": 4,
+                                                "enum": [
+                                                  0,
+                                                  1,
+                                                  2,
+                                                  3,
+                                                  4
+                                                ]
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
                                     },
                                     "description": "The mesh adapters of the preference."
                                   },
@@ -4896,7 +4988,12 @@ const DesignSchema: Record<string, unknown> = {
                                     "type": "string",
                                     "description": "ID of the associated selectedOrganization.",
                                     "maxLength": 500,
-                                    "format": "uuid"
+                                    "format": "uuid",
+                                    "x-go-type": "core.Uuid",
+                                    "x-go-type-import": {
+                                      "path": "github.com/meshery/schemas/models/core",
+                                      "name": "core"
+                                    }
                                   },
                                   "selectedWorkspaceForOrganizations": {
                                     "type": "object",
@@ -4918,7 +5015,7 @@ const DesignSchema: Record<string, unknown> = {
                                 }
                               },
                               "acceptedTermsAt": {
-                                "description": "Timestamp when user accepted terms and conditions",
+                                "description": "Timestamp when the user accepted terms and conditions",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "accepted_terms_at",
                                   "json": "acceptedTermsAt"
@@ -4928,7 +5025,7 @@ const DesignSchema: Record<string, unknown> = {
                                 "x-go-type-skip-optional-pointer": true
                               },
                               "firstLoginTime": {
-                                "description": "Timestamp of user's first login",
+                                "description": "Timestamp of the user's first login",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "first_login_time",
                                   "json": "firstLoginTime"
@@ -4938,7 +5035,7 @@ const DesignSchema: Record<string, unknown> = {
                                 "x-go-type-skip-optional-pointer": true
                               },
                               "lastLoginTime": {
-                                "description": "Timestamp of user's most recent login",
+                                "description": "Timestamp of the user's most recent login",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "last_login_time",
                                   "json": "lastLoginTime"
@@ -4969,7 +5066,7 @@ const DesignSchema: Record<string, unknown> = {
                               },
                               "socials": {
                                 "type": "array",
-                                "description": "Various online profiles associated with the user account",
+                                "description": "Various online profiles associated with the user's account",
                                 "x-go-type": "UserSocials",
                                 "items": {
                                   "x-go-type": "Social",
@@ -5003,98 +5100,16 @@ const DesignSchema: Record<string, unknown> = {
                                 "nullable": true,
                                 "description": "Timestamp when the user record was soft-deleted (null if not deleted)",
                                 "x-go-type": "core.NullTime",
+                                "x-go-type-import": {
+                                  "path": "github.com/meshery/schemas/models/core",
+                                  "name": "core"
+                                },
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "deleted_at",
                                   "json": "deletedAt"
                                 }
-                              },
-                              "roleNames": {
-                                "type": "array",
-                                "items": {
-                                  "type": "string",
-                                  "enum": [
-                                    "admin",
-                                    "meshmap",
-                                    "curator",
-                                    "team admin",
-                                    "workspace admin",
-                                    "workspace manager",
-                                    "organization admin",
-                                    "user"
-                                  ]
-                                },
-                                "description": "List of global roles assigned to the user",
-                                "example": [
-                                  "admin",
-                                  "meshmap"
-                                ],
-                                "x-oapi-codegen-extra-tags": {
-                                  "db": "role_names",
-                                  "json": "roleNames"
-                                }
-                              },
-                              "teams": {
-                                "type": "object",
-                                "description": "Teams the user belongs to with role information",
-                                "x-oapi-codegen-extra-tags": {
-                                  "db": "teams",
-                                  "json": "teams"
-                                },
-                                "properties": {
-                                  "teamsWithRoles": {
-                                    "type": "array",
-                                    "description": "Team memberships for the user with their assigned roles.",
-                                    "items": {
-                                      "type": "object"
-                                    },
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "teams_with_roles",
-                                      "json": "teamsWithRoles"
-                                    }
-                                  },
-                                  "totalCount": {
-                                    "type": "integer",
-                                    "description": "Total number of team memberships returned for the user.",
-                                    "minimum": 0,
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "total_count",
-                                      "json": "totalCount"
-                                    }
-                                  }
-                                }
-                              },
-                              "organizations": {
-                                "type": "object",
-                                "description": "Organizations the user belongs to with role information",
-                                "x-oapi-codegen-extra-tags": {
-                                  "db": "organizations",
-                                  "json": "organizations"
-                                },
-                                "properties": {
-                                  "organizationsWithRoles": {
-                                    "type": "array",
-                                    "description": "Organization memberships for the user with their assigned roles.",
-                                    "items": {
-                                      "type": "object"
-                                    },
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "organizations_with_roles",
-                                      "json": "organizationsWithRoles"
-                                    }
-                                  },
-                                  "totalCount": {
-                                    "type": "integer",
-                                    "description": "Total number of organization memberships returned for the user.",
-                                    "minimum": 0,
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "total_count",
-                                      "json": "totalCount"
-                                    }
-                                  }
-                                }
                               }
-                            },
-                            "additionalProperties": false
+                            }
                           },
                           "location": {
                             "description": "Optional structured location metadata (branch, host, path, ...).",
@@ -11201,7 +11216,10 @@ const DesignSchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "db": "-"
             },
+            "$id": "https://schemas.meshery.io/user.yaml",
+            "$schema": "http://json-schema.org/draft-07/schema#",
             "type": "object",
+            "additionalProperties": false,
             "required": [
               "id",
               "userId",
@@ -11210,10 +11228,11 @@ const DesignSchema: Record<string, unknown> = {
               "firstName",
               "lastName",
               "status",
-              "createdAt",
-              "updatedAt",
+              "acceptedTermsAt",
+              "firstLoginTime",
               "lastLoginTime",
-              "deletedAt"
+              "createdAt",
+              "updatedAt"
             ],
             "properties": {
               "id": {
@@ -11233,7 +11252,7 @@ const DesignSchema: Record<string, unknown> = {
               "userId": {
                 "type": "string",
                 "maxLength": 200,
-                "description": "User identifier (username or external ID)",
+                "description": "User's identifier (username or external ID)",
                 "x-oapi-codegen-extra-tags": {
                   "db": "user_id",
                   "json": "userId"
@@ -11243,13 +11262,8 @@ const DesignSchema: Record<string, unknown> = {
               "provider": {
                 "type": "string",
                 "maxLength": 100,
-                "description": "Authentication provider (e.g., Google, Github)",
-                "example": [
-                  "local",
-                  "github",
-                  "google",
-                  "twitter"
-                ],
+                "description": "User's authentication provider (e.g., Layer5, Twitter, Facebook, GitHub)",
+                "example": "Layer5",
                 "x-oapi-codegen-extra-tags": {
                   "db": "provider",
                   "json": "provider"
@@ -11287,7 +11301,7 @@ const DesignSchema: Record<string, unknown> = {
                 "type": "string",
                 "format": "uri",
                 "maxLength": 500,
-                "description": "URL to user's avatar image",
+                "description": "URL to the user's avatar image",
                 "x-oapi-codegen-extra-tags": {
                   "db": "avatar_url",
                   "json": "avatarUrl"
@@ -11302,7 +11316,7 @@ const DesignSchema: Record<string, unknown> = {
                   "pending",
                   "anonymous"
                 ],
-                "description": "User account status",
+                "description": "User's account status",
                 "x-oapi-codegen-extra-tags": {
                   "db": "status",
                   "json": "status"
@@ -11323,6 +11337,10 @@ const DesignSchema: Record<string, unknown> = {
                 "description": "User's country information stored as JSONB",
                 "additionalProperties": true,
                 "x-go-type": "core.Map",
+                "x-go-type-import": {
+                  "path": "github.com/meshery/schemas/models/core",
+                  "name": "core"
+                },
                 "x-go-type-skip-optional-pointer": true,
                 "x-oapi-codegen-extra-tags": {
                   "db": "country",
@@ -11334,6 +11352,10 @@ const DesignSchema: Record<string, unknown> = {
                 "description": "User's region information stored as JSONB",
                 "additionalProperties": true,
                 "x-go-type": "core.Map",
+                "x-go-type-import": {
+                  "path": "github.com/meshery/schemas/models/core",
+                  "name": "core"
+                },
                 "x-go-type-skip-optional-pointer": true,
                 "x-oapi-codegen-extra-tags": {
                   "db": "region",
@@ -11342,7 +11364,7 @@ const DesignSchema: Record<string, unknown> = {
               },
               "preferences": {
                 "x-go-type": "Preference",
-                "description": "User preferences stored as JSONB",
+                "description": "User's preferences stored as JSONB",
                 "x-oapi-codegen-extra-tags": {
                   "db": "preferences",
                   "json": "preferences"
@@ -11365,7 +11387,80 @@ const DesignSchema: Record<string, unknown> = {
                     "items": {
                       "x-go-type": "Adapter",
                       "type": "object",
-                      "description": "Placeholder for Adapter struct definition."
+                      "additionalProperties": false,
+                      "description": "Meshery adapter configuration stored in user preferences.",
+                      "required": [
+                        "adapterLocation",
+                        "name",
+                        "version",
+                        "gitCommitSha",
+                        "ops"
+                      ],
+                      "properties": {
+                        "adapterLocation": {
+                          "type": "string",
+                          "description": "Network location used to reach the adapter.",
+                          "minLength": 1,
+                          "maxLength": 500
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "Adapter name.",
+                          "minLength": 1,
+                          "maxLength": 255
+                        },
+                        "version": {
+                          "type": "string",
+                          "description": "Adapter version.",
+                          "maxLength": 100
+                        },
+                        "gitCommitSha": {
+                          "type": "string",
+                          "description": "Git commit SHA for the adapter build.",
+                          "maxLength": 64
+                        },
+                        "ops": {
+                          "type": "array",
+                          "description": "Operations supported by the adapter.",
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "description": "Operation supported by a Meshery adapter.",
+                            "required": [
+                              "key",
+                              "value",
+                              "category"
+                            ],
+                            "properties": {
+                              "key": {
+                                "type": "string",
+                                "description": "Stable operation key.",
+                                "minLength": 1,
+                                "maxLength": 255
+                              },
+                              "value": {
+                                "type": "string",
+                                "description": "Human-readable operation value.",
+                                "minLength": 1,
+                                "maxLength": 255
+                              },
+                              "category": {
+                                "type": "integer",
+                                "description": "Protobuf OpCategory wire value. Integer values intentionally mirror meshops.proto instead of using lowercase string enum literals.",
+                                "minimum": 0,
+                                "maximum": 4,
+                                "enum": [
+                                  0,
+                                  1,
+                                  2,
+                                  3,
+                                  4
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
                     },
                     "description": "The mesh adapters of the preference."
                   },
@@ -11500,7 +11595,12 @@ const DesignSchema: Record<string, unknown> = {
                     "type": "string",
                     "description": "ID of the associated selectedOrganization.",
                     "maxLength": 500,
-                    "format": "uuid"
+                    "format": "uuid",
+                    "x-go-type": "core.Uuid",
+                    "x-go-type-import": {
+                      "path": "github.com/meshery/schemas/models/core",
+                      "name": "core"
+                    }
                   },
                   "selectedWorkspaceForOrganizations": {
                     "type": "object",
@@ -11522,7 +11622,7 @@ const DesignSchema: Record<string, unknown> = {
                 }
               },
               "acceptedTermsAt": {
-                "description": "Timestamp when user accepted terms and conditions",
+                "description": "Timestamp when the user accepted terms and conditions",
                 "x-oapi-codegen-extra-tags": {
                   "db": "accepted_terms_at",
                   "json": "acceptedTermsAt"
@@ -11532,7 +11632,7 @@ const DesignSchema: Record<string, unknown> = {
                 "x-go-type-skip-optional-pointer": true
               },
               "firstLoginTime": {
-                "description": "Timestamp of user's first login",
+                "description": "Timestamp of the user's first login",
                 "x-oapi-codegen-extra-tags": {
                   "db": "first_login_time",
                   "json": "firstLoginTime"
@@ -11542,7 +11642,7 @@ const DesignSchema: Record<string, unknown> = {
                 "x-go-type-skip-optional-pointer": true
               },
               "lastLoginTime": {
-                "description": "Timestamp of user's most recent login",
+                "description": "Timestamp of the user's most recent login",
                 "x-oapi-codegen-extra-tags": {
                   "db": "last_login_time",
                   "json": "lastLoginTime"
@@ -11573,7 +11673,7 @@ const DesignSchema: Record<string, unknown> = {
               },
               "socials": {
                 "type": "array",
-                "description": "Various online profiles associated with the user account",
+                "description": "Various online profiles associated with the user's account",
                 "x-go-type": "UserSocials",
                 "items": {
                   "x-go-type": "Social",
@@ -11607,98 +11707,16 @@ const DesignSchema: Record<string, unknown> = {
                 "nullable": true,
                 "description": "Timestamp when the user record was soft-deleted (null if not deleted)",
                 "x-go-type": "core.NullTime",
+                "x-go-type-import": {
+                  "path": "github.com/meshery/schemas/models/core",
+                  "name": "core"
+                },
                 "x-oapi-codegen-extra-tags": {
                   "db": "deleted_at",
                   "json": "deletedAt"
                 }
-              },
-              "roleNames": {
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "enum": [
-                    "admin",
-                    "meshmap",
-                    "curator",
-                    "team admin",
-                    "workspace admin",
-                    "workspace manager",
-                    "organization admin",
-                    "user"
-                  ]
-                },
-                "description": "List of global roles assigned to the user",
-                "example": [
-                  "admin",
-                  "meshmap"
-                ],
-                "x-oapi-codegen-extra-tags": {
-                  "db": "role_names",
-                  "json": "roleNames"
-                }
-              },
-              "teams": {
-                "type": "object",
-                "description": "Teams the user belongs to with role information",
-                "x-oapi-codegen-extra-tags": {
-                  "db": "teams",
-                  "json": "teams"
-                },
-                "properties": {
-                  "teamsWithRoles": {
-                    "type": "array",
-                    "description": "Team memberships for the user with their assigned roles.",
-                    "items": {
-                      "type": "object"
-                    },
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "teams_with_roles",
-                      "json": "teamsWithRoles"
-                    }
-                  },
-                  "totalCount": {
-                    "type": "integer",
-                    "description": "Total number of team memberships returned for the user.",
-                    "minimum": 0,
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "total_count",
-                      "json": "totalCount"
-                    }
-                  }
-                }
-              },
-              "organizations": {
-                "type": "object",
-                "description": "Organizations the user belongs to with role information",
-                "x-oapi-codegen-extra-tags": {
-                  "db": "organizations",
-                  "json": "organizations"
-                },
-                "properties": {
-                  "organizationsWithRoles": {
-                    "type": "array",
-                    "description": "Organization memberships for the user with their assigned roles.",
-                    "items": {
-                      "type": "object"
-                    },
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "organizations_with_roles",
-                      "json": "organizationsWithRoles"
-                    }
-                  },
-                  "totalCount": {
-                    "type": "integer",
-                    "description": "Total number of organization memberships returned for the user.",
-                    "minimum": 0,
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "total_count",
-                      "json": "totalCount"
-                    }
-                  }
-                }
               }
-            },
-            "additionalProperties": false
+            }
           },
           "location": {
             "description": "Optional structured location metadata (branch, host, path, ...).",
@@ -11984,7 +12002,10 @@ const DesignSchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "-"
                   },
+                  "$id": "https://schemas.meshery.io/user.yaml",
+                  "$schema": "http://json-schema.org/draft-07/schema#",
                   "type": "object",
+                  "additionalProperties": false,
                   "required": [
                     "id",
                     "userId",
@@ -11993,10 +12014,11 @@ const DesignSchema: Record<string, unknown> = {
                     "firstName",
                     "lastName",
                     "status",
-                    "createdAt",
-                    "updatedAt",
+                    "acceptedTermsAt",
+                    "firstLoginTime",
                     "lastLoginTime",
-                    "deletedAt"
+                    "createdAt",
+                    "updatedAt"
                   ],
                   "properties": {
                     "id": {
@@ -12016,7 +12038,7 @@ const DesignSchema: Record<string, unknown> = {
                     "userId": {
                       "type": "string",
                       "maxLength": 200,
-                      "description": "User identifier (username or external ID)",
+                      "description": "User's identifier (username or external ID)",
                       "x-oapi-codegen-extra-tags": {
                         "db": "user_id",
                         "json": "userId"
@@ -12026,13 +12048,8 @@ const DesignSchema: Record<string, unknown> = {
                     "provider": {
                       "type": "string",
                       "maxLength": 100,
-                      "description": "Authentication provider (e.g., Google, Github)",
-                      "example": [
-                        "local",
-                        "github",
-                        "google",
-                        "twitter"
-                      ],
+                      "description": "User's authentication provider (e.g., Layer5, Twitter, Facebook, GitHub)",
+                      "example": "Layer5",
                       "x-oapi-codegen-extra-tags": {
                         "db": "provider",
                         "json": "provider"
@@ -12070,7 +12087,7 @@ const DesignSchema: Record<string, unknown> = {
                       "type": "string",
                       "format": "uri",
                       "maxLength": 500,
-                      "description": "URL to user's avatar image",
+                      "description": "URL to the user's avatar image",
                       "x-oapi-codegen-extra-tags": {
                         "db": "avatar_url",
                         "json": "avatarUrl"
@@ -12085,7 +12102,7 @@ const DesignSchema: Record<string, unknown> = {
                         "pending",
                         "anonymous"
                       ],
-                      "description": "User account status",
+                      "description": "User's account status",
                       "x-oapi-codegen-extra-tags": {
                         "db": "status",
                         "json": "status"
@@ -12106,6 +12123,10 @@ const DesignSchema: Record<string, unknown> = {
                       "description": "User's country information stored as JSONB",
                       "additionalProperties": true,
                       "x-go-type": "core.Map",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/core",
+                        "name": "core"
+                      },
                       "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "country",
@@ -12117,6 +12138,10 @@ const DesignSchema: Record<string, unknown> = {
                       "description": "User's region information stored as JSONB",
                       "additionalProperties": true,
                       "x-go-type": "core.Map",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/core",
+                        "name": "core"
+                      },
                       "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "region",
@@ -12125,7 +12150,7 @@ const DesignSchema: Record<string, unknown> = {
                     },
                     "preferences": {
                       "x-go-type": "Preference",
-                      "description": "User preferences stored as JSONB",
+                      "description": "User's preferences stored as JSONB",
                       "x-oapi-codegen-extra-tags": {
                         "db": "preferences",
                         "json": "preferences"
@@ -12148,7 +12173,80 @@ const DesignSchema: Record<string, unknown> = {
                           "items": {
                             "x-go-type": "Adapter",
                             "type": "object",
-                            "description": "Placeholder for Adapter struct definition."
+                            "additionalProperties": false,
+                            "description": "Meshery adapter configuration stored in user preferences.",
+                            "required": [
+                              "adapterLocation",
+                              "name",
+                              "version",
+                              "gitCommitSha",
+                              "ops"
+                            ],
+                            "properties": {
+                              "adapterLocation": {
+                                "type": "string",
+                                "description": "Network location used to reach the adapter.",
+                                "minLength": 1,
+                                "maxLength": 500
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "Adapter name.",
+                                "minLength": 1,
+                                "maxLength": 255
+                              },
+                              "version": {
+                                "type": "string",
+                                "description": "Adapter version.",
+                                "maxLength": 100
+                              },
+                              "gitCommitSha": {
+                                "type": "string",
+                                "description": "Git commit SHA for the adapter build.",
+                                "maxLength": 64
+                              },
+                              "ops": {
+                                "type": "array",
+                                "description": "Operations supported by the adapter.",
+                                "items": {
+                                  "type": "object",
+                                  "additionalProperties": false,
+                                  "description": "Operation supported by a Meshery adapter.",
+                                  "required": [
+                                    "key",
+                                    "value",
+                                    "category"
+                                  ],
+                                  "properties": {
+                                    "key": {
+                                      "type": "string",
+                                      "description": "Stable operation key.",
+                                      "minLength": 1,
+                                      "maxLength": 255
+                                    },
+                                    "value": {
+                                      "type": "string",
+                                      "description": "Human-readable operation value.",
+                                      "minLength": 1,
+                                      "maxLength": 255
+                                    },
+                                    "category": {
+                                      "type": "integer",
+                                      "description": "Protobuf OpCategory wire value. Integer values intentionally mirror meshops.proto instead of using lowercase string enum literals.",
+                                      "minimum": 0,
+                                      "maximum": 4,
+                                      "enum": [
+                                        0,
+                                        1,
+                                        2,
+                                        3,
+                                        4
+                                      ]
+                                    }
+                                  }
+                                }
+                              }
+                            }
                           },
                           "description": "The mesh adapters of the preference."
                         },
@@ -12283,7 +12381,12 @@ const DesignSchema: Record<string, unknown> = {
                           "type": "string",
                           "description": "ID of the associated selectedOrganization.",
                           "maxLength": 500,
-                          "format": "uuid"
+                          "format": "uuid",
+                          "x-go-type": "core.Uuid",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/core",
+                            "name": "core"
+                          }
                         },
                         "selectedWorkspaceForOrganizations": {
                           "type": "object",
@@ -12305,7 +12408,7 @@ const DesignSchema: Record<string, unknown> = {
                       }
                     },
                     "acceptedTermsAt": {
-                      "description": "Timestamp when user accepted terms and conditions",
+                      "description": "Timestamp when the user accepted terms and conditions",
                       "x-oapi-codegen-extra-tags": {
                         "db": "accepted_terms_at",
                         "json": "acceptedTermsAt"
@@ -12315,7 +12418,7 @@ const DesignSchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true
                     },
                     "firstLoginTime": {
-                      "description": "Timestamp of user's first login",
+                      "description": "Timestamp of the user's first login",
                       "x-oapi-codegen-extra-tags": {
                         "db": "first_login_time",
                         "json": "firstLoginTime"
@@ -12325,7 +12428,7 @@ const DesignSchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true
                     },
                     "lastLoginTime": {
-                      "description": "Timestamp of user's most recent login",
+                      "description": "Timestamp of the user's most recent login",
                       "x-oapi-codegen-extra-tags": {
                         "db": "last_login_time",
                         "json": "lastLoginTime"
@@ -12356,7 +12459,7 @@ const DesignSchema: Record<string, unknown> = {
                     },
                     "socials": {
                       "type": "array",
-                      "description": "Various online profiles associated with the user account",
+                      "description": "Various online profiles associated with the user's account",
                       "x-go-type": "UserSocials",
                       "items": {
                         "x-go-type": "Social",
@@ -12390,98 +12493,16 @@ const DesignSchema: Record<string, unknown> = {
                       "nullable": true,
                       "description": "Timestamp when the user record was soft-deleted (null if not deleted)",
                       "x-go-type": "core.NullTime",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/core",
+                        "name": "core"
+                      },
                       "x-oapi-codegen-extra-tags": {
                         "db": "deleted_at",
                         "json": "deletedAt"
                       }
-                    },
-                    "roleNames": {
-                      "type": "array",
-                      "items": {
-                        "type": "string",
-                        "enum": [
-                          "admin",
-                          "meshmap",
-                          "curator",
-                          "team admin",
-                          "workspace admin",
-                          "workspace manager",
-                          "organization admin",
-                          "user"
-                        ]
-                      },
-                      "description": "List of global roles assigned to the user",
-                      "example": [
-                        "admin",
-                        "meshmap"
-                      ],
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "role_names",
-                        "json": "roleNames"
-                      }
-                    },
-                    "teams": {
-                      "type": "object",
-                      "description": "Teams the user belongs to with role information",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "teams",
-                        "json": "teams"
-                      },
-                      "properties": {
-                        "teamsWithRoles": {
-                          "type": "array",
-                          "description": "Team memberships for the user with their assigned roles.",
-                          "items": {
-                            "type": "object"
-                          },
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "teams_with_roles",
-                            "json": "teamsWithRoles"
-                          }
-                        },
-                        "totalCount": {
-                          "type": "integer",
-                          "description": "Total number of team memberships returned for the user.",
-                          "minimum": 0,
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "total_count",
-                            "json": "totalCount"
-                          }
-                        }
-                      }
-                    },
-                    "organizations": {
-                      "type": "object",
-                      "description": "Organizations the user belongs to with role information",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "organizations",
-                        "json": "organizations"
-                      },
-                      "properties": {
-                        "organizationsWithRoles": {
-                          "type": "array",
-                          "description": "Organization memberships for the user with their assigned roles.",
-                          "items": {
-                            "type": "object"
-                          },
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "organizations_with_roles",
-                            "json": "organizationsWithRoles"
-                          }
-                        },
-                        "totalCount": {
-                          "type": "integer",
-                          "description": "Total number of organization memberships returned for the user.",
-                          "minimum": 0,
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "total_count",
-                            "json": "totalCount"
-                          }
-                        }
-                      }
                     }
-                  },
-                  "additionalProperties": false
+                  }
                 },
                 "location": {
                   "description": "Optional structured location metadata (branch, host, path, ...).",
@@ -13328,7 +13349,10 @@ const DesignSchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "-"
                   },
+                  "$id": "https://schemas.meshery.io/user.yaml",
+                  "$schema": "http://json-schema.org/draft-07/schema#",
                   "type": "object",
+                  "additionalProperties": false,
                   "required": [
                     "id",
                     "userId",
@@ -13337,10 +13361,11 @@ const DesignSchema: Record<string, unknown> = {
                     "firstName",
                     "lastName",
                     "status",
-                    "createdAt",
-                    "updatedAt",
+                    "acceptedTermsAt",
+                    "firstLoginTime",
                     "lastLoginTime",
-                    "deletedAt"
+                    "createdAt",
+                    "updatedAt"
                   ],
                   "properties": {
                     "id": {
@@ -13360,7 +13385,7 @@ const DesignSchema: Record<string, unknown> = {
                     "userId": {
                       "type": "string",
                       "maxLength": 200,
-                      "description": "User identifier (username or external ID)",
+                      "description": "User's identifier (username or external ID)",
                       "x-oapi-codegen-extra-tags": {
                         "db": "user_id",
                         "json": "userId"
@@ -13370,13 +13395,8 @@ const DesignSchema: Record<string, unknown> = {
                     "provider": {
                       "type": "string",
                       "maxLength": 100,
-                      "description": "Authentication provider (e.g., Google, Github)",
-                      "example": [
-                        "local",
-                        "github",
-                        "google",
-                        "twitter"
-                      ],
+                      "description": "User's authentication provider (e.g., Layer5, Twitter, Facebook, GitHub)",
+                      "example": "Layer5",
                       "x-oapi-codegen-extra-tags": {
                         "db": "provider",
                         "json": "provider"
@@ -13414,7 +13434,7 @@ const DesignSchema: Record<string, unknown> = {
                       "type": "string",
                       "format": "uri",
                       "maxLength": 500,
-                      "description": "URL to user's avatar image",
+                      "description": "URL to the user's avatar image",
                       "x-oapi-codegen-extra-tags": {
                         "db": "avatar_url",
                         "json": "avatarUrl"
@@ -13429,7 +13449,7 @@ const DesignSchema: Record<string, unknown> = {
                         "pending",
                         "anonymous"
                       ],
-                      "description": "User account status",
+                      "description": "User's account status",
                       "x-oapi-codegen-extra-tags": {
                         "db": "status",
                         "json": "status"
@@ -13450,6 +13470,10 @@ const DesignSchema: Record<string, unknown> = {
                       "description": "User's country information stored as JSONB",
                       "additionalProperties": true,
                       "x-go-type": "core.Map",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/core",
+                        "name": "core"
+                      },
                       "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "country",
@@ -13461,6 +13485,10 @@ const DesignSchema: Record<string, unknown> = {
                       "description": "User's region information stored as JSONB",
                       "additionalProperties": true,
                       "x-go-type": "core.Map",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/core",
+                        "name": "core"
+                      },
                       "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "region",
@@ -13469,7 +13497,7 @@ const DesignSchema: Record<string, unknown> = {
                     },
                     "preferences": {
                       "x-go-type": "Preference",
-                      "description": "User preferences stored as JSONB",
+                      "description": "User's preferences stored as JSONB",
                       "x-oapi-codegen-extra-tags": {
                         "db": "preferences",
                         "json": "preferences"
@@ -13492,7 +13520,80 @@ const DesignSchema: Record<string, unknown> = {
                           "items": {
                             "x-go-type": "Adapter",
                             "type": "object",
-                            "description": "Placeholder for Adapter struct definition."
+                            "additionalProperties": false,
+                            "description": "Meshery adapter configuration stored in user preferences.",
+                            "required": [
+                              "adapterLocation",
+                              "name",
+                              "version",
+                              "gitCommitSha",
+                              "ops"
+                            ],
+                            "properties": {
+                              "adapterLocation": {
+                                "type": "string",
+                                "description": "Network location used to reach the adapter.",
+                                "minLength": 1,
+                                "maxLength": 500
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "Adapter name.",
+                                "minLength": 1,
+                                "maxLength": 255
+                              },
+                              "version": {
+                                "type": "string",
+                                "description": "Adapter version.",
+                                "maxLength": 100
+                              },
+                              "gitCommitSha": {
+                                "type": "string",
+                                "description": "Git commit SHA for the adapter build.",
+                                "maxLength": 64
+                              },
+                              "ops": {
+                                "type": "array",
+                                "description": "Operations supported by the adapter.",
+                                "items": {
+                                  "type": "object",
+                                  "additionalProperties": false,
+                                  "description": "Operation supported by a Meshery adapter.",
+                                  "required": [
+                                    "key",
+                                    "value",
+                                    "category"
+                                  ],
+                                  "properties": {
+                                    "key": {
+                                      "type": "string",
+                                      "description": "Stable operation key.",
+                                      "minLength": 1,
+                                      "maxLength": 255
+                                    },
+                                    "value": {
+                                      "type": "string",
+                                      "description": "Human-readable operation value.",
+                                      "minLength": 1,
+                                      "maxLength": 255
+                                    },
+                                    "category": {
+                                      "type": "integer",
+                                      "description": "Protobuf OpCategory wire value. Integer values intentionally mirror meshops.proto instead of using lowercase string enum literals.",
+                                      "minimum": 0,
+                                      "maximum": 4,
+                                      "enum": [
+                                        0,
+                                        1,
+                                        2,
+                                        3,
+                                        4
+                                      ]
+                                    }
+                                  }
+                                }
+                              }
+                            }
                           },
                           "description": "The mesh adapters of the preference."
                         },
@@ -13627,7 +13728,12 @@ const DesignSchema: Record<string, unknown> = {
                           "type": "string",
                           "description": "ID of the associated selectedOrganization.",
                           "maxLength": 500,
-                          "format": "uuid"
+                          "format": "uuid",
+                          "x-go-type": "core.Uuid",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/core",
+                            "name": "core"
+                          }
                         },
                         "selectedWorkspaceForOrganizations": {
                           "type": "object",
@@ -13649,7 +13755,7 @@ const DesignSchema: Record<string, unknown> = {
                       }
                     },
                     "acceptedTermsAt": {
-                      "description": "Timestamp when user accepted terms and conditions",
+                      "description": "Timestamp when the user accepted terms and conditions",
                       "x-oapi-codegen-extra-tags": {
                         "db": "accepted_terms_at",
                         "json": "acceptedTermsAt"
@@ -13659,7 +13765,7 @@ const DesignSchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true
                     },
                     "firstLoginTime": {
-                      "description": "Timestamp of user's first login",
+                      "description": "Timestamp of the user's first login",
                       "x-oapi-codegen-extra-tags": {
                         "db": "first_login_time",
                         "json": "firstLoginTime"
@@ -13669,7 +13775,7 @@ const DesignSchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true
                     },
                     "lastLoginTime": {
-                      "description": "Timestamp of user's most recent login",
+                      "description": "Timestamp of the user's most recent login",
                       "x-oapi-codegen-extra-tags": {
                         "db": "last_login_time",
                         "json": "lastLoginTime"
@@ -13700,7 +13806,7 @@ const DesignSchema: Record<string, unknown> = {
                     },
                     "socials": {
                       "type": "array",
-                      "description": "Various online profiles associated with the user account",
+                      "description": "Various online profiles associated with the user's account",
                       "x-go-type": "UserSocials",
                       "items": {
                         "x-go-type": "Social",
@@ -13734,98 +13840,16 @@ const DesignSchema: Record<string, unknown> = {
                       "nullable": true,
                       "description": "Timestamp when the user record was soft-deleted (null if not deleted)",
                       "x-go-type": "core.NullTime",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/core",
+                        "name": "core"
+                      },
                       "x-oapi-codegen-extra-tags": {
                         "db": "deleted_at",
                         "json": "deletedAt"
                       }
-                    },
-                    "roleNames": {
-                      "type": "array",
-                      "items": {
-                        "type": "string",
-                        "enum": [
-                          "admin",
-                          "meshmap",
-                          "curator",
-                          "team admin",
-                          "workspace admin",
-                          "workspace manager",
-                          "organization admin",
-                          "user"
-                        ]
-                      },
-                      "description": "List of global roles assigned to the user",
-                      "example": [
-                        "admin",
-                        "meshmap"
-                      ],
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "role_names",
-                        "json": "roleNames"
-                      }
-                    },
-                    "teams": {
-                      "type": "object",
-                      "description": "Teams the user belongs to with role information",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "teams",
-                        "json": "teams"
-                      },
-                      "properties": {
-                        "teamsWithRoles": {
-                          "type": "array",
-                          "description": "Team memberships for the user with their assigned roles.",
-                          "items": {
-                            "type": "object"
-                          },
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "teams_with_roles",
-                            "json": "teamsWithRoles"
-                          }
-                        },
-                        "totalCount": {
-                          "type": "integer",
-                          "description": "Total number of team memberships returned for the user.",
-                          "minimum": 0,
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "total_count",
-                            "json": "totalCount"
-                          }
-                        }
-                      }
-                    },
-                    "organizations": {
-                      "type": "object",
-                      "description": "Organizations the user belongs to with role information",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "organizations",
-                        "json": "organizations"
-                      },
-                      "properties": {
-                        "organizationsWithRoles": {
-                          "type": "array",
-                          "description": "Organization memberships for the user with their assigned roles.",
-                          "items": {
-                            "type": "object"
-                          },
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "organizations_with_roles",
-                            "json": "organizationsWithRoles"
-                          }
-                        },
-                        "totalCount": {
-                          "type": "integer",
-                          "description": "Total number of organization memberships returned for the user.",
-                          "minimum": 0,
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "total_count",
-                            "json": "totalCount"
-                          }
-                        }
-                      }
                     }
-                  },
-                  "additionalProperties": false
+                  }
                 },
                 "location": {
                   "description": "Optional structured location metadata (branch, host, path, ...).",

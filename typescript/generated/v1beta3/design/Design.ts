@@ -1841,16 +1841,11 @@ export interface components {
                  * @description Unique identifier for the user
                  */
                 id: string;
-                /** @description User identifier (username or external ID) */
+                /** @description User's identifier (username or external ID) */
                 userId: string;
                 /**
-                 * @description Authentication provider (e.g., Google, Github)
-                 * @example [
-                 *       "local",
-                 *       "github",
-                 *       "google",
-                 *       "twitter"
-                 *     ]
+                 * @description User's authentication provider (e.g., Layer5, Twitter, Facebook, GitHub)
+                 * @example Layer5
                  */
                 provider: string;
                 /**
@@ -1864,11 +1859,11 @@ export interface components {
                 lastName: string;
                 /**
                  * Format: uri
-                 * @description URL to user's avatar image
+                 * @description URL to the user's avatar image
                  */
                 avatarUrl?: string;
                 /**
-                 * @description User account status
+                 * @description User's account status
                  * @enum {string}
                  */
                 status: "active" | "inactive" | "pending" | "anonymous";
@@ -1885,10 +1880,31 @@ export interface components {
                 region?: {
                     [key: string]: unknown;
                 };
-                /** @description User preferences stored as JSONB */
+                /** @description User's preferences stored as JSONB */
                 preferences?: {
                     /** @description The mesh adapters of the preference. */
-                    meshAdapters?: Record<string, never>[];
+                    meshAdapters?: {
+                        /** @description Network location used to reach the adapter. */
+                        adapterLocation: string;
+                        /** @description Adapter name. */
+                        name: string;
+                        /** @description Adapter version. */
+                        version: string;
+                        /** @description Git commit SHA for the adapter build. */
+                        gitCommitSha: string;
+                        /** @description Operations supported by the adapter. */
+                        ops: {
+                            /** @description Stable operation key. */
+                            key: string;
+                            /** @description Human-readable operation value. */
+                            value: string;
+                            /**
+                             * @description Protobuf OpCategory wire value. Integer values intentionally mirror meshops.proto instead of using lowercase string enum literals.
+                             * @enum {integer}
+                             */
+                            category: 0 | 1 | 2 | 3 | 4;
+                        }[];
+                    }[];
                     grafana?: {
                         /** @description Grafana URL for the user configuration. */
                         grafanaUrl?: string;
@@ -1960,17 +1976,17 @@ export interface components {
                 };
                 /**
                  * Format: date-time
-                 * @description Timestamp when user accepted terms and conditions
+                 * @description Timestamp when the user accepted terms and conditions
                  */
-                acceptedTermsAt?: string;
+                acceptedTermsAt: string;
                 /**
                  * Format: date-time
-                 * @description Timestamp of user's first login
+                 * @description Timestamp of the user's first login
                  */
-                firstLoginTime?: string;
+                firstLoginTime: string;
                 /**
                  * Format: date-time
-                 * @description Timestamp of user's most recent login
+                 * @description Timestamp of the user's most recent login
                  */
                 lastLoginTime: string;
                 /**
@@ -1983,7 +1999,7 @@ export interface components {
                  * @description Timestamp when the user record was last updated
                  */
                 updatedAt: string;
-                /** @description Various online profiles associated with the user account */
+                /** @description Various online profiles associated with the user's account */
                 socials?: {
                     /** @description The site of the social. */
                     site: string;
@@ -1997,29 +2013,7 @@ export interface components {
                  * Format: date-time
                  * @description Timestamp when the user record was soft-deleted (null if not deleted)
                  */
-                deletedAt: string | null;
-                /**
-                 * @description List of global roles assigned to the user
-                 * @example [
-                 *       "admin",
-                 *       "meshmap"
-                 *     ]
-                 */
-                roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
-                /** @description Teams the user belongs to with role information */
-                teams?: {
-                    /** @description Team memberships for the user with their assigned roles. */
-                    teamsWithRoles?: Record<string, never>[];
-                    /** @description Total number of team memberships returned for the user. */
-                    totalCount?: number;
-                };
-                /** @description Organizations the user belongs to with role information */
-                organizations?: {
-                    /** @description Organization memberships for the user with their assigned roles. */
-                    organizationsWithRoles?: Record<string, never>[];
-                    /** @description Total number of organization memberships returned for the user. */
-                    totalCount?: number;
-                };
+                deletedAt?: string | null;
             } | null;
             /** @description Optional structured location metadata (branch, host, path, ...). */
             location?: {
@@ -2138,16 +2132,11 @@ export interface components {
                      * @description Unique identifier for the user
                      */
                     id: string;
-                    /** @description User identifier (username or external ID) */
+                    /** @description User's identifier (username or external ID) */
                     userId: string;
                     /**
-                     * @description Authentication provider (e.g., Google, Github)
-                     * @example [
-                     *       "local",
-                     *       "github",
-                     *       "google",
-                     *       "twitter"
-                     *     ]
+                     * @description User's authentication provider (e.g., Layer5, Twitter, Facebook, GitHub)
+                     * @example Layer5
                      */
                     provider: string;
                     /**
@@ -2161,11 +2150,11 @@ export interface components {
                     lastName: string;
                     /**
                      * Format: uri
-                     * @description URL to user's avatar image
+                     * @description URL to the user's avatar image
                      */
                     avatarUrl?: string;
                     /**
-                     * @description User account status
+                     * @description User's account status
                      * @enum {string}
                      */
                     status: "active" | "inactive" | "pending" | "anonymous";
@@ -2182,10 +2171,31 @@ export interface components {
                     region?: {
                         [key: string]: unknown;
                     };
-                    /** @description User preferences stored as JSONB */
+                    /** @description User's preferences stored as JSONB */
                     preferences?: {
                         /** @description The mesh adapters of the preference. */
-                        meshAdapters?: Record<string, never>[];
+                        meshAdapters?: {
+                            /** @description Network location used to reach the adapter. */
+                            adapterLocation: string;
+                            /** @description Adapter name. */
+                            name: string;
+                            /** @description Adapter version. */
+                            version: string;
+                            /** @description Git commit SHA for the adapter build. */
+                            gitCommitSha: string;
+                            /** @description Operations supported by the adapter. */
+                            ops: {
+                                /** @description Stable operation key. */
+                                key: string;
+                                /** @description Human-readable operation value. */
+                                value: string;
+                                /**
+                                 * @description Protobuf OpCategory wire value. Integer values intentionally mirror meshops.proto instead of using lowercase string enum literals.
+                                 * @enum {integer}
+                                 */
+                                category: 0 | 1 | 2 | 3 | 4;
+                            }[];
+                        }[];
                         grafana?: {
                             /** @description Grafana URL for the user configuration. */
                             grafanaUrl?: string;
@@ -2257,17 +2267,17 @@ export interface components {
                     };
                     /**
                      * Format: date-time
-                     * @description Timestamp when user accepted terms and conditions
+                     * @description Timestamp when the user accepted terms and conditions
                      */
-                    acceptedTermsAt?: string;
+                    acceptedTermsAt: string;
                     /**
                      * Format: date-time
-                     * @description Timestamp of user's first login
+                     * @description Timestamp of the user's first login
                      */
-                    firstLoginTime?: string;
+                    firstLoginTime: string;
                     /**
                      * Format: date-time
-                     * @description Timestamp of user's most recent login
+                     * @description Timestamp of the user's most recent login
                      */
                     lastLoginTime: string;
                     /**
@@ -2280,7 +2290,7 @@ export interface components {
                      * @description Timestamp when the user record was last updated
                      */
                     updatedAt: string;
-                    /** @description Various online profiles associated with the user account */
+                    /** @description Various online profiles associated with the user's account */
                     socials?: {
                         /** @description The site of the social. */
                         site: string;
@@ -2294,29 +2304,7 @@ export interface components {
                      * Format: date-time
                      * @description Timestamp when the user record was soft-deleted (null if not deleted)
                      */
-                    deletedAt: string | null;
-                    /**
-                     * @description List of global roles assigned to the user
-                     * @example [
-                     *       "admin",
-                     *       "meshmap"
-                     *     ]
-                     */
-                    roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
-                    /** @description Teams the user belongs to with role information */
-                    teams?: {
-                        /** @description Team memberships for the user with their assigned roles. */
-                        teamsWithRoles?: Record<string, never>[];
-                        /** @description Total number of team memberships returned for the user. */
-                        totalCount?: number;
-                    };
-                    /** @description Organizations the user belongs to with role information */
-                    organizations?: {
-                        /** @description Organization memberships for the user with their assigned roles. */
-                        organizationsWithRoles?: Record<string, never>[];
-                        /** @description Total number of organization memberships returned for the user. */
-                        totalCount?: number;
-                    };
+                    deletedAt?: string | null;
                 } | null;
                 /** @description Optional structured location metadata (branch, host, path, ...). */
                 location?: {
@@ -2681,16 +2669,11 @@ export interface components {
                      * @description Unique identifier for the user
                      */
                     id: string;
-                    /** @description User identifier (username or external ID) */
+                    /** @description User's identifier (username or external ID) */
                     userId: string;
                     /**
-                     * @description Authentication provider (e.g., Google, Github)
-                     * @example [
-                     *       "local",
-                     *       "github",
-                     *       "google",
-                     *       "twitter"
-                     *     ]
+                     * @description User's authentication provider (e.g., Layer5, Twitter, Facebook, GitHub)
+                     * @example Layer5
                      */
                     provider: string;
                     /**
@@ -2704,11 +2687,11 @@ export interface components {
                     lastName: string;
                     /**
                      * Format: uri
-                     * @description URL to user's avatar image
+                     * @description URL to the user's avatar image
                      */
                     avatarUrl?: string;
                     /**
-                     * @description User account status
+                     * @description User's account status
                      * @enum {string}
                      */
                     status: "active" | "inactive" | "pending" | "anonymous";
@@ -2725,10 +2708,31 @@ export interface components {
                     region?: {
                         [key: string]: unknown;
                     };
-                    /** @description User preferences stored as JSONB */
+                    /** @description User's preferences stored as JSONB */
                     preferences?: {
                         /** @description The mesh adapters of the preference. */
-                        meshAdapters?: Record<string, never>[];
+                        meshAdapters?: {
+                            /** @description Network location used to reach the adapter. */
+                            adapterLocation: string;
+                            /** @description Adapter name. */
+                            name: string;
+                            /** @description Adapter version. */
+                            version: string;
+                            /** @description Git commit SHA for the adapter build. */
+                            gitCommitSha: string;
+                            /** @description Operations supported by the adapter. */
+                            ops: {
+                                /** @description Stable operation key. */
+                                key: string;
+                                /** @description Human-readable operation value. */
+                                value: string;
+                                /**
+                                 * @description Protobuf OpCategory wire value. Integer values intentionally mirror meshops.proto instead of using lowercase string enum literals.
+                                 * @enum {integer}
+                                 */
+                                category: 0 | 1 | 2 | 3 | 4;
+                            }[];
+                        }[];
                         grafana?: {
                             /** @description Grafana URL for the user configuration. */
                             grafanaUrl?: string;
@@ -2800,17 +2804,17 @@ export interface components {
                     };
                     /**
                      * Format: date-time
-                     * @description Timestamp when user accepted terms and conditions
+                     * @description Timestamp when the user accepted terms and conditions
                      */
-                    acceptedTermsAt?: string;
+                    acceptedTermsAt: string;
                     /**
                      * Format: date-time
-                     * @description Timestamp of user's first login
+                     * @description Timestamp of the user's first login
                      */
-                    firstLoginTime?: string;
+                    firstLoginTime: string;
                     /**
                      * Format: date-time
-                     * @description Timestamp of user's most recent login
+                     * @description Timestamp of the user's most recent login
                      */
                     lastLoginTime: string;
                     /**
@@ -2823,7 +2827,7 @@ export interface components {
                      * @description Timestamp when the user record was last updated
                      */
                     updatedAt: string;
-                    /** @description Various online profiles associated with the user account */
+                    /** @description Various online profiles associated with the user's account */
                     socials?: {
                         /** @description The site of the social. */
                         site: string;
@@ -2837,29 +2841,7 @@ export interface components {
                      * Format: date-time
                      * @description Timestamp when the user record was soft-deleted (null if not deleted)
                      */
-                    deletedAt: string | null;
-                    /**
-                     * @description List of global roles assigned to the user
-                     * @example [
-                     *       "admin",
-                     *       "meshmap"
-                     *     ]
-                     */
-                    roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
-                    /** @description Teams the user belongs to with role information */
-                    teams?: {
-                        /** @description Team memberships for the user with their assigned roles. */
-                        teamsWithRoles?: Record<string, never>[];
-                        /** @description Total number of team memberships returned for the user. */
-                        totalCount?: number;
-                    };
-                    /** @description Organizations the user belongs to with role information */
-                    organizations?: {
-                        /** @description Organization memberships for the user with their assigned roles. */
-                        organizationsWithRoles?: Record<string, never>[];
-                        /** @description Total number of organization memberships returned for the user. */
-                        totalCount?: number;
-                    };
+                    deletedAt?: string | null;
                 } | null;
                 /** @description Optional structured location metadata (branch, host, path, ...). */
                 location?: {
@@ -3261,16 +3243,11 @@ export interface operations {
                                  * @description Unique identifier for the user
                                  */
                                 id: string;
-                                /** @description User identifier (username or external ID) */
+                                /** @description User's identifier (username or external ID) */
                                 userId: string;
                                 /**
-                                 * @description Authentication provider (e.g., Google, Github)
-                                 * @example [
-                                 *       "local",
-                                 *       "github",
-                                 *       "google",
-                                 *       "twitter"
-                                 *     ]
+                                 * @description User's authentication provider (e.g., Layer5, Twitter, Facebook, GitHub)
+                                 * @example Layer5
                                  */
                                 provider: string;
                                 /**
@@ -3284,11 +3261,11 @@ export interface operations {
                                 lastName: string;
                                 /**
                                  * Format: uri
-                                 * @description URL to user's avatar image
+                                 * @description URL to the user's avatar image
                                  */
                                 avatarUrl?: string;
                                 /**
-                                 * @description User account status
+                                 * @description User's account status
                                  * @enum {string}
                                  */
                                 status: "active" | "inactive" | "pending" | "anonymous";
@@ -3305,10 +3282,31 @@ export interface operations {
                                 region?: {
                                     [key: string]: unknown;
                                 };
-                                /** @description User preferences stored as JSONB */
+                                /** @description User's preferences stored as JSONB */
                                 preferences?: {
                                     /** @description The mesh adapters of the preference. */
-                                    meshAdapters?: Record<string, never>[];
+                                    meshAdapters?: {
+                                        /** @description Network location used to reach the adapter. */
+                                        adapterLocation: string;
+                                        /** @description Adapter name. */
+                                        name: string;
+                                        /** @description Adapter version. */
+                                        version: string;
+                                        /** @description Git commit SHA for the adapter build. */
+                                        gitCommitSha: string;
+                                        /** @description Operations supported by the adapter. */
+                                        ops: {
+                                            /** @description Stable operation key. */
+                                            key: string;
+                                            /** @description Human-readable operation value. */
+                                            value: string;
+                                            /**
+                                             * @description Protobuf OpCategory wire value. Integer values intentionally mirror meshops.proto instead of using lowercase string enum literals.
+                                             * @enum {integer}
+                                             */
+                                            category: 0 | 1 | 2 | 3 | 4;
+                                        }[];
+                                    }[];
                                     grafana?: {
                                         /** @description Grafana URL for the user configuration. */
                                         grafanaUrl?: string;
@@ -3380,17 +3378,17 @@ export interface operations {
                                 };
                                 /**
                                  * Format: date-time
-                                 * @description Timestamp when user accepted terms and conditions
+                                 * @description Timestamp when the user accepted terms and conditions
                                  */
-                                acceptedTermsAt?: string;
+                                acceptedTermsAt: string;
                                 /**
                                  * Format: date-time
-                                 * @description Timestamp of user's first login
+                                 * @description Timestamp of the user's first login
                                  */
-                                firstLoginTime?: string;
+                                firstLoginTime: string;
                                 /**
                                  * Format: date-time
-                                 * @description Timestamp of user's most recent login
+                                 * @description Timestamp of the user's most recent login
                                  */
                                 lastLoginTime: string;
                                 /**
@@ -3403,7 +3401,7 @@ export interface operations {
                                  * @description Timestamp when the user record was last updated
                                  */
                                 updatedAt: string;
-                                /** @description Various online profiles associated with the user account */
+                                /** @description Various online profiles associated with the user's account */
                                 socials?: {
                                     /** @description The site of the social. */
                                     site: string;
@@ -3417,29 +3415,7 @@ export interface operations {
                                  * Format: date-time
                                  * @description Timestamp when the user record was soft-deleted (null if not deleted)
                                  */
-                                deletedAt: string | null;
-                                /**
-                                 * @description List of global roles assigned to the user
-                                 * @example [
-                                 *       "admin",
-                                 *       "meshmap"
-                                 *     ]
-                                 */
-                                roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
-                                /** @description Teams the user belongs to with role information */
-                                teams?: {
-                                    /** @description Team memberships for the user with their assigned roles. */
-                                    teamsWithRoles?: Record<string, never>[];
-                                    /** @description Total number of team memberships returned for the user. */
-                                    totalCount?: number;
-                                };
-                                /** @description Organizations the user belongs to with role information */
-                                organizations?: {
-                                    /** @description Organization memberships for the user with their assigned roles. */
-                                    organizationsWithRoles?: Record<string, never>[];
-                                    /** @description Total number of organization memberships returned for the user. */
-                                    totalCount?: number;
-                                };
+                                deletedAt?: string | null;
                             } | null;
                             /** @description Optional structured location metadata (branch, host, path, ...). */
                             location?: {
@@ -3667,16 +3643,11 @@ export interface operations {
                              * @description Unique identifier for the user
                              */
                             id: string;
-                            /** @description User identifier (username or external ID) */
+                            /** @description User's identifier (username or external ID) */
                             userId: string;
                             /**
-                             * @description Authentication provider (e.g., Google, Github)
-                             * @example [
-                             *       "local",
-                             *       "github",
-                             *       "google",
-                             *       "twitter"
-                             *     ]
+                             * @description User's authentication provider (e.g., Layer5, Twitter, Facebook, GitHub)
+                             * @example Layer5
                              */
                             provider: string;
                             /**
@@ -3690,11 +3661,11 @@ export interface operations {
                             lastName: string;
                             /**
                              * Format: uri
-                             * @description URL to user's avatar image
+                             * @description URL to the user's avatar image
                              */
                             avatarUrl?: string;
                             /**
-                             * @description User account status
+                             * @description User's account status
                              * @enum {string}
                              */
                             status: "active" | "inactive" | "pending" | "anonymous";
@@ -3711,10 +3682,31 @@ export interface operations {
                             region?: {
                                 [key: string]: unknown;
                             };
-                            /** @description User preferences stored as JSONB */
+                            /** @description User's preferences stored as JSONB */
                             preferences?: {
                                 /** @description The mesh adapters of the preference. */
-                                meshAdapters?: Record<string, never>[];
+                                meshAdapters?: {
+                                    /** @description Network location used to reach the adapter. */
+                                    adapterLocation: string;
+                                    /** @description Adapter name. */
+                                    name: string;
+                                    /** @description Adapter version. */
+                                    version: string;
+                                    /** @description Git commit SHA for the adapter build. */
+                                    gitCommitSha: string;
+                                    /** @description Operations supported by the adapter. */
+                                    ops: {
+                                        /** @description Stable operation key. */
+                                        key: string;
+                                        /** @description Human-readable operation value. */
+                                        value: string;
+                                        /**
+                                         * @description Protobuf OpCategory wire value. Integer values intentionally mirror meshops.proto instead of using lowercase string enum literals.
+                                         * @enum {integer}
+                                         */
+                                        category: 0 | 1 | 2 | 3 | 4;
+                                    }[];
+                                }[];
                                 grafana?: {
                                     /** @description Grafana URL for the user configuration. */
                                     grafanaUrl?: string;
@@ -3786,17 +3778,17 @@ export interface operations {
                             };
                             /**
                              * Format: date-time
-                             * @description Timestamp when user accepted terms and conditions
+                             * @description Timestamp when the user accepted terms and conditions
                              */
-                            acceptedTermsAt?: string;
+                            acceptedTermsAt: string;
                             /**
                              * Format: date-time
-                             * @description Timestamp of user's first login
+                             * @description Timestamp of the user's first login
                              */
-                            firstLoginTime?: string;
+                            firstLoginTime: string;
                             /**
                              * Format: date-time
-                             * @description Timestamp of user's most recent login
+                             * @description Timestamp of the user's most recent login
                              */
                             lastLoginTime: string;
                             /**
@@ -3809,7 +3801,7 @@ export interface operations {
                              * @description Timestamp when the user record was last updated
                              */
                             updatedAt: string;
-                            /** @description Various online profiles associated with the user account */
+                            /** @description Various online profiles associated with the user's account */
                             socials?: {
                                 /** @description The site of the social. */
                                 site: string;
@@ -3823,29 +3815,7 @@ export interface operations {
                              * Format: date-time
                              * @description Timestamp when the user record was soft-deleted (null if not deleted)
                              */
-                            deletedAt: string | null;
-                            /**
-                             * @description List of global roles assigned to the user
-                             * @example [
-                             *       "admin",
-                             *       "meshmap"
-                             *     ]
-                             */
-                            roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
-                            /** @description Teams the user belongs to with role information */
-                            teams?: {
-                                /** @description Team memberships for the user with their assigned roles. */
-                                teamsWithRoles?: Record<string, never>[];
-                                /** @description Total number of team memberships returned for the user. */
-                                totalCount?: number;
-                            };
-                            /** @description Organizations the user belongs to with role information */
-                            organizations?: {
-                                /** @description Organization memberships for the user with their assigned roles. */
-                                organizationsWithRoles?: Record<string, never>[];
-                                /** @description Total number of organization memberships returned for the user. */
-                                totalCount?: number;
-                            };
+                            deletedAt?: string | null;
                         } | null;
                         /** @description Optional structured location metadata (branch, host, path, ...). */
                         location?: {
@@ -4250,16 +4220,11 @@ export interface operations {
                              * @description Unique identifier for the user
                              */
                             id: string;
-                            /** @description User identifier (username or external ID) */
+                            /** @description User's identifier (username or external ID) */
                             userId: string;
                             /**
-                             * @description Authentication provider (e.g., Google, Github)
-                             * @example [
-                             *       "local",
-                             *       "github",
-                             *       "google",
-                             *       "twitter"
-                             *     ]
+                             * @description User's authentication provider (e.g., Layer5, Twitter, Facebook, GitHub)
+                             * @example Layer5
                              */
                             provider: string;
                             /**
@@ -4273,11 +4238,11 @@ export interface operations {
                             lastName: string;
                             /**
                              * Format: uri
-                             * @description URL to user's avatar image
+                             * @description URL to the user's avatar image
                              */
                             avatarUrl?: string;
                             /**
-                             * @description User account status
+                             * @description User's account status
                              * @enum {string}
                              */
                             status: "active" | "inactive" | "pending" | "anonymous";
@@ -4294,10 +4259,31 @@ export interface operations {
                             region?: {
                                 [key: string]: unknown;
                             };
-                            /** @description User preferences stored as JSONB */
+                            /** @description User's preferences stored as JSONB */
                             preferences?: {
                                 /** @description The mesh adapters of the preference. */
-                                meshAdapters?: Record<string, never>[];
+                                meshAdapters?: {
+                                    /** @description Network location used to reach the adapter. */
+                                    adapterLocation: string;
+                                    /** @description Adapter name. */
+                                    name: string;
+                                    /** @description Adapter version. */
+                                    version: string;
+                                    /** @description Git commit SHA for the adapter build. */
+                                    gitCommitSha: string;
+                                    /** @description Operations supported by the adapter. */
+                                    ops: {
+                                        /** @description Stable operation key. */
+                                        key: string;
+                                        /** @description Human-readable operation value. */
+                                        value: string;
+                                        /**
+                                         * @description Protobuf OpCategory wire value. Integer values intentionally mirror meshops.proto instead of using lowercase string enum literals.
+                                         * @enum {integer}
+                                         */
+                                        category: 0 | 1 | 2 | 3 | 4;
+                                    }[];
+                                }[];
                                 grafana?: {
                                     /** @description Grafana URL for the user configuration. */
                                     grafanaUrl?: string;
@@ -4369,17 +4355,17 @@ export interface operations {
                             };
                             /**
                              * Format: date-time
-                             * @description Timestamp when user accepted terms and conditions
+                             * @description Timestamp when the user accepted terms and conditions
                              */
-                            acceptedTermsAt?: string;
+                            acceptedTermsAt: string;
                             /**
                              * Format: date-time
-                             * @description Timestamp of user's first login
+                             * @description Timestamp of the user's first login
                              */
-                            firstLoginTime?: string;
+                            firstLoginTime: string;
                             /**
                              * Format: date-time
-                             * @description Timestamp of user's most recent login
+                             * @description Timestamp of the user's most recent login
                              */
                             lastLoginTime: string;
                             /**
@@ -4392,7 +4378,7 @@ export interface operations {
                              * @description Timestamp when the user record was last updated
                              */
                             updatedAt: string;
-                            /** @description Various online profiles associated with the user account */
+                            /** @description Various online profiles associated with the user's account */
                             socials?: {
                                 /** @description The site of the social. */
                                 site: string;
@@ -4406,29 +4392,7 @@ export interface operations {
                              * Format: date-time
                              * @description Timestamp when the user record was soft-deleted (null if not deleted)
                              */
-                            deletedAt: string | null;
-                            /**
-                             * @description List of global roles assigned to the user
-                             * @example [
-                             *       "admin",
-                             *       "meshmap"
-                             *     ]
-                             */
-                            roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
-                            /** @description Teams the user belongs to with role information */
-                            teams?: {
-                                /** @description Team memberships for the user with their assigned roles. */
-                                teamsWithRoles?: Record<string, never>[];
-                                /** @description Total number of team memberships returned for the user. */
-                                totalCount?: number;
-                            };
-                            /** @description Organizations the user belongs to with role information */
-                            organizations?: {
-                                /** @description Organization memberships for the user with their assigned roles. */
-                                organizationsWithRoles?: Record<string, never>[];
-                                /** @description Total number of organization memberships returned for the user. */
-                                totalCount?: number;
-                            };
+                            deletedAt?: string | null;
                         } | null;
                         /** @description Optional structured location metadata (branch, host, path, ...). */
                         location?: {
@@ -4635,16 +4599,11 @@ export interface operations {
                              * @description Unique identifier for the user
                              */
                             id: string;
-                            /** @description User identifier (username or external ID) */
+                            /** @description User's identifier (username or external ID) */
                             userId: string;
                             /**
-                             * @description Authentication provider (e.g., Google, Github)
-                             * @example [
-                             *       "local",
-                             *       "github",
-                             *       "google",
-                             *       "twitter"
-                             *     ]
+                             * @description User's authentication provider (e.g., Layer5, Twitter, Facebook, GitHub)
+                             * @example Layer5
                              */
                             provider: string;
                             /**
@@ -4658,11 +4617,11 @@ export interface operations {
                             lastName: string;
                             /**
                              * Format: uri
-                             * @description URL to user's avatar image
+                             * @description URL to the user's avatar image
                              */
                             avatarUrl?: string;
                             /**
-                             * @description User account status
+                             * @description User's account status
                              * @enum {string}
                              */
                             status: "active" | "inactive" | "pending" | "anonymous";
@@ -4679,10 +4638,31 @@ export interface operations {
                             region?: {
                                 [key: string]: unknown;
                             };
-                            /** @description User preferences stored as JSONB */
+                            /** @description User's preferences stored as JSONB */
                             preferences?: {
                                 /** @description The mesh adapters of the preference. */
-                                meshAdapters?: Record<string, never>[];
+                                meshAdapters?: {
+                                    /** @description Network location used to reach the adapter. */
+                                    adapterLocation: string;
+                                    /** @description Adapter name. */
+                                    name: string;
+                                    /** @description Adapter version. */
+                                    version: string;
+                                    /** @description Git commit SHA for the adapter build. */
+                                    gitCommitSha: string;
+                                    /** @description Operations supported by the adapter. */
+                                    ops: {
+                                        /** @description Stable operation key. */
+                                        key: string;
+                                        /** @description Human-readable operation value. */
+                                        value: string;
+                                        /**
+                                         * @description Protobuf OpCategory wire value. Integer values intentionally mirror meshops.proto instead of using lowercase string enum literals.
+                                         * @enum {integer}
+                                         */
+                                        category: 0 | 1 | 2 | 3 | 4;
+                                    }[];
+                                }[];
                                 grafana?: {
                                     /** @description Grafana URL for the user configuration. */
                                     grafanaUrl?: string;
@@ -4754,17 +4734,17 @@ export interface operations {
                             };
                             /**
                              * Format: date-time
-                             * @description Timestamp when user accepted terms and conditions
+                             * @description Timestamp when the user accepted terms and conditions
                              */
-                            acceptedTermsAt?: string;
+                            acceptedTermsAt: string;
                             /**
                              * Format: date-time
-                             * @description Timestamp of user's first login
+                             * @description Timestamp of the user's first login
                              */
-                            firstLoginTime?: string;
+                            firstLoginTime: string;
                             /**
                              * Format: date-time
-                             * @description Timestamp of user's most recent login
+                             * @description Timestamp of the user's most recent login
                              */
                             lastLoginTime: string;
                             /**
@@ -4777,7 +4757,7 @@ export interface operations {
                              * @description Timestamp when the user record was last updated
                              */
                             updatedAt: string;
-                            /** @description Various online profiles associated with the user account */
+                            /** @description Various online profiles associated with the user's account */
                             socials?: {
                                 /** @description The site of the social. */
                                 site: string;
@@ -4791,29 +4771,7 @@ export interface operations {
                              * Format: date-time
                              * @description Timestamp when the user record was soft-deleted (null if not deleted)
                              */
-                            deletedAt: string | null;
-                            /**
-                             * @description List of global roles assigned to the user
-                             * @example [
-                             *       "admin",
-                             *       "meshmap"
-                             *     ]
-                             */
-                            roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
-                            /** @description Teams the user belongs to with role information */
-                            teams?: {
-                                /** @description Team memberships for the user with their assigned roles. */
-                                teamsWithRoles?: Record<string, never>[];
-                                /** @description Total number of team memberships returned for the user. */
-                                totalCount?: number;
-                            };
-                            /** @description Organizations the user belongs to with role information */
-                            organizations?: {
-                                /** @description Organization memberships for the user with their assigned roles. */
-                                organizationsWithRoles?: Record<string, never>[];
-                                /** @description Total number of organization memberships returned for the user. */
-                                totalCount?: number;
-                            };
+                            deletedAt?: string | null;
                         } | null;
                         /** @description Optional structured location metadata (branch, host, path, ...). */
                         location?: {
@@ -5190,16 +5148,11 @@ export interface operations {
                                  * @description Unique identifier for the user
                                  */
                                 id: string;
-                                /** @description User identifier (username or external ID) */
+                                /** @description User's identifier (username or external ID) */
                                 userId: string;
                                 /**
-                                 * @description Authentication provider (e.g., Google, Github)
-                                 * @example [
-                                 *       "local",
-                                 *       "github",
-                                 *       "google",
-                                 *       "twitter"
-                                 *     ]
+                                 * @description User's authentication provider (e.g., Layer5, Twitter, Facebook, GitHub)
+                                 * @example Layer5
                                  */
                                 provider: string;
                                 /**
@@ -5213,11 +5166,11 @@ export interface operations {
                                 lastName: string;
                                 /**
                                  * Format: uri
-                                 * @description URL to user's avatar image
+                                 * @description URL to the user's avatar image
                                  */
                                 avatarUrl?: string;
                                 /**
-                                 * @description User account status
+                                 * @description User's account status
                                  * @enum {string}
                                  */
                                 status: "active" | "inactive" | "pending" | "anonymous";
@@ -5234,10 +5187,31 @@ export interface operations {
                                 region?: {
                                     [key: string]: unknown;
                                 };
-                                /** @description User preferences stored as JSONB */
+                                /** @description User's preferences stored as JSONB */
                                 preferences?: {
                                     /** @description The mesh adapters of the preference. */
-                                    meshAdapters?: Record<string, never>[];
+                                    meshAdapters?: {
+                                        /** @description Network location used to reach the adapter. */
+                                        adapterLocation: string;
+                                        /** @description Adapter name. */
+                                        name: string;
+                                        /** @description Adapter version. */
+                                        version: string;
+                                        /** @description Git commit SHA for the adapter build. */
+                                        gitCommitSha: string;
+                                        /** @description Operations supported by the adapter. */
+                                        ops: {
+                                            /** @description Stable operation key. */
+                                            key: string;
+                                            /** @description Human-readable operation value. */
+                                            value: string;
+                                            /**
+                                             * @description Protobuf OpCategory wire value. Integer values intentionally mirror meshops.proto instead of using lowercase string enum literals.
+                                             * @enum {integer}
+                                             */
+                                            category: 0 | 1 | 2 | 3 | 4;
+                                        }[];
+                                    }[];
                                     grafana?: {
                                         /** @description Grafana URL for the user configuration. */
                                         grafanaUrl?: string;
@@ -5309,17 +5283,17 @@ export interface operations {
                                 };
                                 /**
                                  * Format: date-time
-                                 * @description Timestamp when user accepted terms and conditions
+                                 * @description Timestamp when the user accepted terms and conditions
                                  */
-                                acceptedTermsAt?: string;
+                                acceptedTermsAt: string;
                                 /**
                                  * Format: date-time
-                                 * @description Timestamp of user's first login
+                                 * @description Timestamp of the user's first login
                                  */
-                                firstLoginTime?: string;
+                                firstLoginTime: string;
                                 /**
                                  * Format: date-time
-                                 * @description Timestamp of user's most recent login
+                                 * @description Timestamp of the user's most recent login
                                  */
                                 lastLoginTime: string;
                                 /**
@@ -5332,7 +5306,7 @@ export interface operations {
                                  * @description Timestamp when the user record was last updated
                                  */
                                 updatedAt: string;
-                                /** @description Various online profiles associated with the user account */
+                                /** @description Various online profiles associated with the user's account */
                                 socials?: {
                                     /** @description The site of the social. */
                                     site: string;
@@ -5346,29 +5320,7 @@ export interface operations {
                                  * Format: date-time
                                  * @description Timestamp when the user record was soft-deleted (null if not deleted)
                                  */
-                                deletedAt: string | null;
-                                /**
-                                 * @description List of global roles assigned to the user
-                                 * @example [
-                                 *       "admin",
-                                 *       "meshmap"
-                                 *     ]
-                                 */
-                                roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
-                                /** @description Teams the user belongs to with role information */
-                                teams?: {
-                                    /** @description Team memberships for the user with their assigned roles. */
-                                    teamsWithRoles?: Record<string, never>[];
-                                    /** @description Total number of team memberships returned for the user. */
-                                    totalCount?: number;
-                                };
-                                /** @description Organizations the user belongs to with role information */
-                                organizations?: {
-                                    /** @description Organization memberships for the user with their assigned roles. */
-                                    organizationsWithRoles?: Record<string, never>[];
-                                    /** @description Total number of organization memberships returned for the user. */
-                                    totalCount?: number;
-                                };
+                                deletedAt?: string | null;
                             } | null;
                             /** @description Optional structured location metadata (branch, host, path, ...). */
                             location?: {

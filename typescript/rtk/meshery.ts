@@ -177,17 +177,6 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["Organization_Organizations"],
       }),
-      addUserToOrg: build.mutation<AddUserToOrgApiResponse, AddUserToOrgApiArg>({
-        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}/users/${queryArg.userId}`, method: "POST" }),
-        invalidatesTags: ["Organization_Organizations"],
-      }),
-      deleteUserFromOrg: build.mutation<DeleteUserFromOrgApiResponse, DeleteUserFromOrgApiArg>({
-        query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/users/${queryArg.userId}`,
-          method: "DELETE",
-        }),
-        invalidatesTags: ["Organization_Organizations"],
-      }),
       getTeams: build.query<GetTeamsApiResponse, GetTeamsApiArg>({
         query: (queryArg) => ({
           url: `/api/identity/orgs/${queryArg.orgId}/teams`,
@@ -246,39 +235,33 @@ const injectedRtkApi = api
         }),
         providesTags: ["Team_teams"],
       }),
-      getUsersForOrg: build.query<GetUsersForOrgApiResponse, GetUsersForOrgApiArg>({
-        query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/users`,
-          params: {
-            page: queryArg?.page,
-            pageSize: queryArg?.pageSize,
-            search: queryArg?.search,
-            order: queryArg?.order,
-            filter: queryArg?.filter,
-            teamId: queryArg?.teamId,
-          },
-        }),
-        providesTags: ["User_users"],
-      }),
-      getUsers: build.query<GetUsersApiResponse, GetUsersApiArg>({
-        query: (queryArg) => ({
-          url: `/api/users`,
-          params: {
-            page: queryArg?.page,
-            pageSize: queryArg?.pageSize,
-            search: queryArg?.search,
-            order: queryArg?.order,
-            filter: queryArg?.filter,
-          },
-        }),
-        providesTags: ["User_users"],
-      }),
       getUserProfileById: build.query<GetUserProfileByIdApiResponse, GetUserProfileByIdApiArg>({
         query: (queryArg) => ({ url: `/api/identity/users/profile/${queryArg.id}` }),
         providesTags: ["User_users"],
       }),
       getUser: build.query<GetUserApiResponse, GetUserApiArg>({
         query: () => ({ url: `/api/identity/users/profile` }),
+        providesTags: ["User_users"],
+      }),
+      getUserPreferences: build.query<GetUserPreferencesApiResponse, GetUserPreferencesApiArg>({
+        query: () => ({ url: `/api/identity/users/preferences` }),
+        providesTags: ["User_users"],
+      }),
+      updateUserPreferences: build.mutation<UpdateUserPreferencesApiResponse, UpdateUserPreferencesApiArg>({
+        query: (queryArg) => ({ url: `/api/identity/users/preferences`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["User_users"],
+      }),
+      getUsers: build.query<GetUsersApiResponse, GetUsersApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/users`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            filter: queryArg?.filter,
+          },
+        }),
         providesTags: ["User_users"],
       }),
       getConnections: build.query<GetConnectionsApiResponse, GetConnectionsApiArg>({
@@ -3726,22 +3709,6 @@ export type RemoveTeamFromOrgApiArg = {
   /** Team ID. */
   teamId: string;
 };
-export type AddUserToOrgApiResponse = /** status 201 User added to organization */ {
-  [key: string]: any;
-};
-export type AddUserToOrgApiArg = {
-  /** Organization ID. */
-  orgId: string;
-  /** User ID. */
-  userId: string;
-};
-export type DeleteUserFromOrgApiResponse = unknown;
-export type DeleteUserFromOrgApiArg = {
-  /** Organization ID. */
-  orgId: string;
-  /** User ID. */
-  userId: string;
-};
 export type GetTeamsApiResponse = /** status 200 Teams */ {
   /** Current page number of the result set. */
   page?: number;
@@ -3909,184 +3876,41 @@ export type ListUsersNotInTeamApiArg = {
   /** Get responses by pagesize */
   pagesize?: string;
 };
-export type GetUsersForOrgApiResponse = /** status 200 Paginated list of organization users */ {
-  /** Current page number of the result set. */
-  page?: number;
-  /** Number of items per page. */
-  pageSize?: number;
-  /** Total number of items available. */
-  totalCount?: number;
-  /** The data of the userspageforadmin. */
-  data?: {
-    /** Unique identifier for the user */
-    id: string;
-    /** User identifier (username or external ID) */
-    userId: string;
-    /** Authentication provider (e.g., Google, Github) */
-    provider: string;
-    /** User's email address */
-    email: string;
-    /** User's first name */
-    firstName: string;
-    /** User's last name */
-    lastName: string;
-    /** URL to user's avatar image */
-    avatarUrl?: string;
-    /** User account status */
-    status: "active" | "inactive" | "pending" | "anonymous";
-    /** User's biography or description */
-    bio?: string;
-    /** User's country information stored as JSONB */
-    country?: {
-      [key: string]: any;
-    };
-    /** User's region information stored as JSONB */
-    region?: {
-      [key: string]: any;
-    };
-    /** User preferences stored as JSONB */
-    preferences?: {
-      /** The mesh adapters of the preference. */
-      meshAdapters?: object[];
-      grafana?: {
-        /** Grafana URL for the user configuration. */
-        grafanaUrl?: string;
-        /** Grafana API key for the user configuration. */
-        grafanaApiKey?: string;
-        /** Selected Grafana board configurations for the user. */
-        selectedBoardsConfigs?: {
-          /** Placeholder for GrafanaBoard definition (define fields as needed) */
-          board?: object;
-          /** Panels selected for the Grafana board configuration. */
-          panels?: object[];
-          /** Template variables applied to the selected Grafana board configuration. */
-          templateVars?: string[];
-        }[];
-      };
-      prometheus?: {
-        /** The prometheus URL of the prometheus. */
-        prometheusUrl?: string;
-        /** The selected prometheus boards configs of the prometheus. */
-        selectedPrometheusBoardsConfigs?: {
-          /** Placeholder for GrafanaBoard definition (define fields as needed) */
-          board?: object;
-          /** Panels selected for the Grafana board configuration. */
-          panels?: object[];
-          /** Template variables applied to the selected Grafana board configuration. */
-          templateVars?: string[];
-        }[];
-      };
-      loadTestPrefs?: {
-        /** Concurrent requests */
-        c?: number;
-        /** Queries per second */
-        qps?: number;
-        /** Duration */
-        t?: string;
-        /** Load generator */
-        gen?: string;
-      };
-      /** The anonymous usage stats of the preference. */
-      anonymousUsageStats: boolean;
-      /** The anonymous perf results of the preference. */
-      anonymousPerfResults: boolean;
-      /** Timestamp of when the resource was last updated. */
-      updatedAt: string;
-      /** The dashboard preferences of the preference. */
-      dashboardPreferences: {
-        [key: string]: any;
-      };
-      /** ID of the associated selectedOrganization. */
-      selectedOrganizationId: string;
-      /** The selected workspace for organizations of the preference. */
-      selectedWorkspaceForOrganizations: {
-        [key: string]: string;
-      };
-      /** The users extension preferences of the preference. */
-      usersExtensionPreferences: {
-        [key: string]: any;
-      };
-      /** The remote provider preferences of the preference. */
-      remoteProviderPreferences: {
-        [key: string]: any;
-      };
-    };
-    /** Timestamp when user accepted terms and conditions */
-    acceptedTermsAt?: string;
-    /** Timestamp of user's first login */
-    firstLoginTime?: string;
-    /** Timestamp of user's most recent login */
-    lastLoginTime: string;
-    /** Timestamp when the user record was created */
-    createdAt: string;
-    /** Timestamp when the user record was last updated */
-    updatedAt: string;
-    /** Various online profiles associated with the user account */
-    socials?: {
-      /** The site of the social. */
-      site: string;
-      /** The link of the social. */
-      link: string;
-    }[];
-    /** Timestamp when the user record was soft-deleted (null if not deleted) */
-    deletedAt: string | null;
-    /** List of global roles assigned to the user */
-    roleNames?: (
-      | "admin"
-      | "meshmap"
-      | "curator"
-      | "team admin"
-      | "workspace admin"
-      | "workspace manager"
-      | "organization admin"
-      | "user"
-    )[];
-    /** Teams the user belongs to with role information */
-    teams?: {
-      /** Team memberships for the user with their assigned roles. */
-      teamsWithRoles?: object[];
-      /** Total number of team memberships returned for the user. */
-      totalCount?: number;
-    };
-    /** Organizations the user belongs to with role information */
-    organizations?: {
-      /** Organization memberships for the user with their assigned roles. */
-      organizationsWithRoles?: object[];
-      /** Total number of organization memberships returned for the user. */
-      totalCount?: number;
-    };
+export type GetUserProfileByIdApiResponse = /** status 200 User profile for the requested ID */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** User's public identifier. */
+  userId: string;
+  /** User's first name. */
+  firstName: string;
+  /** User's last name. */
+  lastName: string;
+  /** URL to the user's avatar image. */
+  avatarUrl?: string;
+  /** User's biography or description. */
+  bio?: string;
+  /** User's account status. */
+  status: "active" | "inactive" | "pending" | "anonymous";
+  /** Public online profiles associated with the user's account. */
+  socials?: {
+    /** The site of the social. */
+    site: string;
+    /** The link of the social. */
+    link: string;
   }[];
 };
-export type GetUsersForOrgApiArg = {
-  /** Organization ID */
-  orgId: string;
-  /** Get responses by page */
-  page?: string;
-  /** Get responses by page size */
-  pageSize?: string;
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-  /** Get filtered reponses */
-  filter?: string;
-  /** Optional team filter when listing organization users */
-  teamId?: string;
+export type GetUserProfileByIdApiArg = {
+  /** User ID */
+  id: string;
 };
-export type GetUsersApiResponse = /** status 200 Paginated list of public users */ {
-  /** Current page number of the result set. */
-  page?: number;
-  /** Number of items per page. */
-  pageSize?: number;
-  /** Total number of items available. */
-  totalCount?: number;
-  /** The data of the userspagefornonadmin. */
-  data?: {
-    /** Unique identifier for the user */
+export type GetUserApiResponse = /** status 200 Current user profile and role context */ {
+  /** Represents a user in Layer5 Cloud (Meshery) */
+  user?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     id: string;
-    /** User identifier (username or external ID) */
+    /** User's identifier (username or external ID) */
     userId: string;
-    /** Authentication provider (e.g., Google, Github) */
+    /** User's authentication provider (e.g., Layer5, Twitter, Facebook, GitHub) */
     provider: string;
     /** User's email address */
     email: string;
@@ -4094,9 +3918,9 @@ export type GetUsersApiResponse = /** status 200 Paginated list of public users 
     firstName: string;
     /** User's last name */
     lastName: string;
-    /** URL to user's avatar image */
+    /** URL to the user's avatar image */
     avatarUrl?: string;
-    /** User account status */
+    /** User's account status */
     status: "active" | "inactive" | "pending" | "anonymous";
     /** User's biography or description */
     bio?: string;
@@ -4108,10 +3932,28 @@ export type GetUsersApiResponse = /** status 200 Paginated list of public users 
     region?: {
       [key: string]: any;
     };
-    /** User preferences stored as JSONB */
+    /** User's preferences stored as JSONB */
     preferences?: {
       /** The mesh adapters of the preference. */
-      meshAdapters?: object[];
+      meshAdapters?: {
+        /** Network location used to reach the adapter. */
+        adapterLocation: string;
+        /** Adapter name. */
+        name: string;
+        /** Adapter version. */
+        version: string;
+        /** Git commit SHA for the adapter build. */
+        gitCommitSha: string;
+        /** Operations supported by the adapter. */
+        ops: {
+          /** Stable operation key. */
+          key: string;
+          /** Human-readable operation value. */
+          value: string;
+          /** Protobuf OpCategory wire value. Integer values intentionally mirror meshops.proto instead of using lowercase string enum literals. */
+          category: 0 | 1 | 2 | 3 | 4;
+        }[];
+      }[];
       grafana?: {
         /** Grafana URL for the user configuration. */
         grafanaUrl?: string;
@@ -4175,17 +4017,17 @@ export type GetUsersApiResponse = /** status 200 Paginated list of public users 
         [key: string]: any;
       };
     };
-    /** Timestamp when user accepted terms and conditions */
-    acceptedTermsAt?: string;
-    /** Timestamp of user's first login */
-    firstLoginTime?: string;
-    /** Timestamp of user's most recent login */
+    /** Timestamp when the user accepted terms and conditions */
+    acceptedTermsAt: string;
+    /** Timestamp of the user's first login */
+    firstLoginTime: string;
+    /** Timestamp of the user's most recent login */
     lastLoginTime: string;
     /** Timestamp when the user record was created */
     createdAt: string;
     /** Timestamp when the user record was last updated */
     updatedAt: string;
-    /** Various online profiles associated with the user account */
+    /** Various online profiles associated with the user's account */
     socials?: {
       /** The site of the social. */
       site: string;
@@ -4193,32 +4035,342 @@ export type GetUsersApiResponse = /** status 200 Paginated list of public users 
       link: string;
     }[];
     /** Timestamp when the user record was soft-deleted (null if not deleted) */
-    deletedAt: string | null;
-    /** List of global roles assigned to the user */
-    roleNames?: (
-      | "admin"
-      | "meshmap"
-      | "curator"
-      | "team admin"
-      | "workspace admin"
-      | "workspace manager"
-      | "organization admin"
-      | "user"
-    )[];
-    /** Teams the user belongs to with role information */
-    teams?: {
-      /** Team memberships for the user with their assigned roles. */
-      teamsWithRoles?: object[];
-      /** Total number of team memberships returned for the user. */
-      totalCount?: number;
+    deletedAt?: string | null;
+  };
+  /** Names of roles assigned to the user. */
+  roleNames: string[];
+  /** Teams the user belongs to with their assigned role information. */
+  teams?: {
+    /** Team memberships with the user's assigned roles. */
+    teamsWithRoles: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** Team name. */
+      name: string;
+      /** Team description. */
+      description: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      owner: string;
+      /** Team metadata stored with the membership row. */
+      metadata: {
+        [key: string]: any;
+      };
+      /** Timestamp when the team was created. */
+      createdAt: string;
+      /** Timestamp when the team was last updated. */
+      updatedAt: string;
+      /** Timestamp when the team was soft-deleted, if applicable. */
+      deletedAt: string;
+      /** Names of roles assigned to the user in this team. */
+      roleNames: string[];
+    }[];
+    /** Total number of team memberships returned for the user. */
+    totalCount: number;
+  };
+  /** Organizations the user belongs to with their assigned role information. */
+  organizations?: {
+    /** Organization memberships with the user's assigned roles. */
+    organizationsWithRoles: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** Organization name. */
+      name: string;
+      /** Organization description. */
+      description: string;
+      /** Organization country. */
+      country: string;
+      /** Organization region. */
+      region: string;
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      owner: string;
+      /** Organization metadata stored with the membership row. */
+      metadata: {
+        [key: string]: any;
+      };
+      /** Timestamp when the organization was created. */
+      createdAt: string;
+      /** Timestamp when the organization was last updated. */
+      updatedAt: string;
+      /** Timestamp when the organization was soft-deleted, if applicable. */
+      deletedAt: string;
+      /** Names of roles assigned to the user in this organization. */
+      roleNames: string[];
+    }[];
+    /** Total number of organization memberships returned for the user. */
+    totalCount: number;
+  };
+  /** Linked social account providers for the current user. */
+  linkedAccounts: string[];
+};
+export type GetUserApiArg = void;
+export type GetUserPreferencesApiResponse = /** status 200 User preferences response */ {
+  /** The mesh adapters of the preference. */
+  meshAdapters?: {
+    /** Network location used to reach the adapter. */
+    adapterLocation: string;
+    /** Adapter name. */
+    name: string;
+    /** Adapter version. */
+    version: string;
+    /** Git commit SHA for the adapter build. */
+    gitCommitSha: string;
+    /** Operations supported by the adapter. */
+    ops: {
+      /** Stable operation key. */
+      key: string;
+      /** Human-readable operation value. */
+      value: string;
+      /** Protobuf OpCategory wire value. Integer values intentionally mirror meshops.proto instead of using lowercase string enum literals. */
+      category: 0 | 1 | 2 | 3 | 4;
+    }[];
+  }[];
+  grafana?: {
+    /** Grafana URL for the user configuration. */
+    grafanaUrl?: string;
+    /** Grafana API key for the user configuration. */
+    grafanaApiKey?: string;
+    /** Selected Grafana board configurations for the user. */
+    selectedBoardsConfigs?: {
+      /** Placeholder for GrafanaBoard definition (define fields as needed) */
+      board?: object;
+      /** Panels selected for the Grafana board configuration. */
+      panels?: object[];
+      /** Template variables applied to the selected Grafana board configuration. */
+      templateVars?: string[];
+    }[];
+  };
+  prometheus?: {
+    /** The prometheus URL of the prometheus. */
+    prometheusUrl?: string;
+    /** The selected prometheus boards configs of the prometheus. */
+    selectedPrometheusBoardsConfigs?: {
+      /** Placeholder for GrafanaBoard definition (define fields as needed) */
+      board?: object;
+      /** Panels selected for the Grafana board configuration. */
+      panels?: object[];
+      /** Template variables applied to the selected Grafana board configuration. */
+      templateVars?: string[];
+    }[];
+  };
+  loadTestPrefs?: {
+    /** Concurrent requests */
+    c?: number;
+    /** Queries per second */
+    qps?: number;
+    /** Duration */
+    t?: string;
+    /** Load generator */
+    gen?: string;
+  };
+  /** The anonymous usage stats of the preference. */
+  anonymousUsageStats: boolean;
+  /** The anonymous perf results of the preference. */
+  anonymousPerfResults: boolean;
+  /** Timestamp of when the resource was last updated. */
+  updatedAt: string;
+  /** The dashboard preferences of the preference. */
+  dashboardPreferences: {
+    [key: string]: any;
+  };
+  /** ID of the associated selectedOrganization. */
+  selectedOrganizationId: string;
+  /** The selected workspace for organizations of the preference. */
+  selectedWorkspaceForOrganizations: {
+    [key: string]: string;
+  };
+  /** The users extension preferences of the preference. */
+  usersExtensionPreferences: {
+    [key: string]: any;
+  };
+  /** The remote provider preferences of the preference. */
+  remoteProviderPreferences: {
+    [key: string]: any;
+  };
+};
+export type GetUserPreferencesApiArg = void;
+export type UpdateUserPreferencesApiResponse = /** status 200 User preferences updated */ {
+  /** The mesh adapters of the preference. */
+  meshAdapters?: {
+    /** Network location used to reach the adapter. */
+    adapterLocation: string;
+    /** Adapter name. */
+    name: string;
+    /** Adapter version. */
+    version: string;
+    /** Git commit SHA for the adapter build. */
+    gitCommitSha: string;
+    /** Operations supported by the adapter. */
+    ops: {
+      /** Stable operation key. */
+      key: string;
+      /** Human-readable operation value. */
+      value: string;
+      /** Protobuf OpCategory wire value. Integer values intentionally mirror meshops.proto instead of using lowercase string enum literals. */
+      category: 0 | 1 | 2 | 3 | 4;
+    }[];
+  }[];
+  grafana?: {
+    /** Grafana URL for the user configuration. */
+    grafanaUrl?: string;
+    /** Grafana API key for the user configuration. */
+    grafanaApiKey?: string;
+    /** Selected Grafana board configurations for the user. */
+    selectedBoardsConfigs?: {
+      /** Placeholder for GrafanaBoard definition (define fields as needed) */
+      board?: object;
+      /** Panels selected for the Grafana board configuration. */
+      panels?: object[];
+      /** Template variables applied to the selected Grafana board configuration. */
+      templateVars?: string[];
+    }[];
+  };
+  prometheus?: {
+    /** The prometheus URL of the prometheus. */
+    prometheusUrl?: string;
+    /** The selected prometheus boards configs of the prometheus. */
+    selectedPrometheusBoardsConfigs?: {
+      /** Placeholder for GrafanaBoard definition (define fields as needed) */
+      board?: object;
+      /** Panels selected for the Grafana board configuration. */
+      panels?: object[];
+      /** Template variables applied to the selected Grafana board configuration. */
+      templateVars?: string[];
+    }[];
+  };
+  loadTestPrefs?: {
+    /** Concurrent requests */
+    c?: number;
+    /** Queries per second */
+    qps?: number;
+    /** Duration */
+    t?: string;
+    /** Load generator */
+    gen?: string;
+  };
+  /** The anonymous usage stats of the preference. */
+  anonymousUsageStats: boolean;
+  /** The anonymous perf results of the preference. */
+  anonymousPerfResults: boolean;
+  /** Timestamp of when the resource was last updated. */
+  updatedAt: string;
+  /** The dashboard preferences of the preference. */
+  dashboardPreferences: {
+    [key: string]: any;
+  };
+  /** ID of the associated selectedOrganization. */
+  selectedOrganizationId: string;
+  /** The selected workspace for organizations of the preference. */
+  selectedWorkspaceForOrganizations: {
+    [key: string]: string;
+  };
+  /** The users extension preferences of the preference. */
+  usersExtensionPreferences: {
+    [key: string]: any;
+  };
+  /** The remote provider preferences of the preference. */
+  remoteProviderPreferences: {
+    [key: string]: any;
+  };
+};
+export type UpdateUserPreferencesApiArg = {
+  body: {
+    /** The mesh adapters of the preference. */
+    meshAdapters?: {
+      /** Network location used to reach the adapter. */
+      adapterLocation: string;
+      /** Adapter name. */
+      name: string;
+      /** Adapter version. */
+      version: string;
+      /** Git commit SHA for the adapter build. */
+      gitCommitSha: string;
+      /** Operations supported by the adapter. */
+      ops: {
+        /** Stable operation key. */
+        key: string;
+        /** Human-readable operation value. */
+        value: string;
+        /** Protobuf OpCategory wire value. Integer values intentionally mirror meshops.proto instead of using lowercase string enum literals. */
+        category: 0 | 1 | 2 | 3 | 4;
+      }[];
+    }[];
+    grafana?: {
+      /** Grafana URL for the user configuration. */
+      grafanaUrl?: string;
+      /** Grafana API key for the user configuration. */
+      grafanaApiKey?: string;
+      /** Selected Grafana board configurations for the user. */
+      selectedBoardsConfigs?: {
+        /** Placeholder for GrafanaBoard definition (define fields as needed) */
+        board?: object;
+        /** Panels selected for the Grafana board configuration. */
+        panels?: object[];
+        /** Template variables applied to the selected Grafana board configuration. */
+        templateVars?: string[];
+      }[];
     };
-    /** Organizations the user belongs to with role information */
-    organizations?: {
-      /** Organization memberships for the user with their assigned roles. */
-      organizationsWithRoles?: object[];
-      /** Total number of organization memberships returned for the user. */
-      totalCount?: number;
+    prometheus?: {
+      /** The prometheus URL of the prometheus. */
+      prometheusUrl?: string;
+      /** The selected prometheus boards configs of the prometheus. */
+      selectedPrometheusBoardsConfigs?: {
+        /** Placeholder for GrafanaBoard definition (define fields as needed) */
+        board?: object;
+        /** Panels selected for the Grafana board configuration. */
+        panels?: object[];
+        /** Template variables applied to the selected Grafana board configuration. */
+        templateVars?: string[];
+      }[];
     };
+    loadTestPrefs?: {
+      /** Concurrent requests */
+      c?: number;
+      /** Queries per second */
+      qps?: number;
+      /** Duration */
+      t?: string;
+      /** Load generator */
+      gen?: string;
+    };
+    /** The anonymous usage stats of the preference. */
+    anonymousUsageStats?: boolean;
+    /** The anonymous perf results of the preference. */
+    anonymousPerfResults?: boolean;
+    /** The dashboard preferences of the preference. */
+    dashboardPreferences?: {
+      [key: string]: any;
+    };
+    /** ID of the associated selectedOrganization. */
+    selectedOrganizationId?: string;
+    /** The selected workspace for organizations of the preference. */
+    selectedWorkspaceForOrganizations?: {
+      [key: string]: string;
+    };
+    /** The users extension preferences of the preference. */
+    usersExtensionPreferences?: {
+      [key: string]: any;
+    };
+    /** The remote provider preferences of the preference. */
+    remoteProviderPreferences?: {
+      [key: string]: any;
+    };
+  };
+};
+export type GetUsersApiResponse = /** status 200 Paginated list of users */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Public user picker records returned on this page. */
+  data: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    userId: string;
+    /** Public username or handle. */
+    username: string;
+    /** URL to the user's avatar image. */
+    avatarUrl?: string;
   }[];
 };
 export type GetUsersApiArg = {
@@ -4233,289 +4385,6 @@ export type GetUsersApiArg = {
   /** Get filtered reponses */
   filter?: string;
 };
-export type GetUserProfileByIdApiResponse = /** status 200 User profile for the requested ID */ {
-  /** Unique identifier for the user */
-  id: string;
-  /** User identifier (username or external ID) */
-  userId: string;
-  /** Authentication provider (e.g., Google, Github) */
-  provider: string;
-  /** User's email address */
-  email: string;
-  /** User's first name */
-  firstName: string;
-  /** User's last name */
-  lastName: string;
-  /** URL to user's avatar image */
-  avatarUrl?: string;
-  /** User account status */
-  status: "active" | "inactive" | "pending" | "anonymous";
-  /** User's biography or description */
-  bio?: string;
-  /** User's country information stored as JSONB */
-  country?: {
-    [key: string]: any;
-  };
-  /** User's region information stored as JSONB */
-  region?: {
-    [key: string]: any;
-  };
-  /** User preferences stored as JSONB */
-  preferences?: {
-    /** The mesh adapters of the preference. */
-    meshAdapters?: object[];
-    grafana?: {
-      /** Grafana URL for the user configuration. */
-      grafanaUrl?: string;
-      /** Grafana API key for the user configuration. */
-      grafanaApiKey?: string;
-      /** Selected Grafana board configurations for the user. */
-      selectedBoardsConfigs?: {
-        /** Placeholder for GrafanaBoard definition (define fields as needed) */
-        board?: object;
-        /** Panels selected for the Grafana board configuration. */
-        panels?: object[];
-        /** Template variables applied to the selected Grafana board configuration. */
-        templateVars?: string[];
-      }[];
-    };
-    prometheus?: {
-      /** The prometheus URL of the prometheus. */
-      prometheusUrl?: string;
-      /** The selected prometheus boards configs of the prometheus. */
-      selectedPrometheusBoardsConfigs?: {
-        /** Placeholder for GrafanaBoard definition (define fields as needed) */
-        board?: object;
-        /** Panels selected for the Grafana board configuration. */
-        panels?: object[];
-        /** Template variables applied to the selected Grafana board configuration. */
-        templateVars?: string[];
-      }[];
-    };
-    loadTestPrefs?: {
-      /** Concurrent requests */
-      c?: number;
-      /** Queries per second */
-      qps?: number;
-      /** Duration */
-      t?: string;
-      /** Load generator */
-      gen?: string;
-    };
-    /** The anonymous usage stats of the preference. */
-    anonymousUsageStats: boolean;
-    /** The anonymous perf results of the preference. */
-    anonymousPerfResults: boolean;
-    /** Timestamp of when the resource was last updated. */
-    updatedAt: string;
-    /** The dashboard preferences of the preference. */
-    dashboardPreferences: {
-      [key: string]: any;
-    };
-    /** ID of the associated selectedOrganization. */
-    selectedOrganizationId: string;
-    /** The selected workspace for organizations of the preference. */
-    selectedWorkspaceForOrganizations: {
-      [key: string]: string;
-    };
-    /** The users extension preferences of the preference. */
-    usersExtensionPreferences: {
-      [key: string]: any;
-    };
-    /** The remote provider preferences of the preference. */
-    remoteProviderPreferences: {
-      [key: string]: any;
-    };
-  };
-  /** Timestamp when user accepted terms and conditions */
-  acceptedTermsAt?: string;
-  /** Timestamp of user's first login */
-  firstLoginTime?: string;
-  /** Timestamp of user's most recent login */
-  lastLoginTime: string;
-  /** Timestamp when the user record was created */
-  createdAt: string;
-  /** Timestamp when the user record was last updated */
-  updatedAt: string;
-  /** Various online profiles associated with the user account */
-  socials?: {
-    /** The site of the social. */
-    site: string;
-    /** The link of the social. */
-    link: string;
-  }[];
-  /** Timestamp when the user record was soft-deleted (null if not deleted) */
-  deletedAt: string | null;
-  /** List of global roles assigned to the user */
-  roleNames?: (
-    | "admin"
-    | "meshmap"
-    | "curator"
-    | "team admin"
-    | "workspace admin"
-    | "workspace manager"
-    | "organization admin"
-    | "user"
-  )[];
-  /** Teams the user belongs to with role information */
-  teams?: {
-    /** Team memberships for the user with their assigned roles. */
-    teamsWithRoles?: object[];
-    /** Total number of team memberships returned for the user. */
-    totalCount?: number;
-  };
-  /** Organizations the user belongs to with role information */
-  organizations?: {
-    /** Organization memberships for the user with their assigned roles. */
-    organizationsWithRoles?: object[];
-    /** Total number of organization memberships returned for the user. */
-    totalCount?: number;
-  };
-};
-export type GetUserProfileByIdApiArg = {
-  /** User ID */
-  id: string;
-};
-export type GetUserApiResponse = /** status 200 Current user profile and role context */ {
-  /** Unique identifier for the user */
-  id: string;
-  /** User identifier (username or external ID) */
-  userId: string;
-  /** Authentication provider (e.g., Google, Github) */
-  provider: string;
-  /** User's email address */
-  email: string;
-  /** User's first name */
-  firstName: string;
-  /** User's last name */
-  lastName: string;
-  /** URL to user's avatar image */
-  avatarUrl?: string;
-  /** User account status */
-  status: "active" | "inactive" | "pending" | "anonymous";
-  /** User's biography or description */
-  bio?: string;
-  /** User's country information stored as JSONB */
-  country?: {
-    [key: string]: any;
-  };
-  /** User's region information stored as JSONB */
-  region?: {
-    [key: string]: any;
-  };
-  /** User preferences stored as JSONB */
-  preferences?: {
-    /** The mesh adapters of the preference. */
-    meshAdapters?: object[];
-    grafana?: {
-      /** Grafana URL for the user configuration. */
-      grafanaUrl?: string;
-      /** Grafana API key for the user configuration. */
-      grafanaApiKey?: string;
-      /** Selected Grafana board configurations for the user. */
-      selectedBoardsConfigs?: {
-        /** Placeholder for GrafanaBoard definition (define fields as needed) */
-        board?: object;
-        /** Panels selected for the Grafana board configuration. */
-        panels?: object[];
-        /** Template variables applied to the selected Grafana board configuration. */
-        templateVars?: string[];
-      }[];
-    };
-    prometheus?: {
-      /** The prometheus URL of the prometheus. */
-      prometheusUrl?: string;
-      /** The selected prometheus boards configs of the prometheus. */
-      selectedPrometheusBoardsConfigs?: {
-        /** Placeholder for GrafanaBoard definition (define fields as needed) */
-        board?: object;
-        /** Panels selected for the Grafana board configuration. */
-        panels?: object[];
-        /** Template variables applied to the selected Grafana board configuration. */
-        templateVars?: string[];
-      }[];
-    };
-    loadTestPrefs?: {
-      /** Concurrent requests */
-      c?: number;
-      /** Queries per second */
-      qps?: number;
-      /** Duration */
-      t?: string;
-      /** Load generator */
-      gen?: string;
-    };
-    /** The anonymous usage stats of the preference. */
-    anonymousUsageStats: boolean;
-    /** The anonymous perf results of the preference. */
-    anonymousPerfResults: boolean;
-    /** Timestamp of when the resource was last updated. */
-    updatedAt: string;
-    /** The dashboard preferences of the preference. */
-    dashboardPreferences: {
-      [key: string]: any;
-    };
-    /** ID of the associated selectedOrganization. */
-    selectedOrganizationId: string;
-    /** The selected workspace for organizations of the preference. */
-    selectedWorkspaceForOrganizations: {
-      [key: string]: string;
-    };
-    /** The users extension preferences of the preference. */
-    usersExtensionPreferences: {
-      [key: string]: any;
-    };
-    /** The remote provider preferences of the preference. */
-    remoteProviderPreferences: {
-      [key: string]: any;
-    };
-  };
-  /** Timestamp when user accepted terms and conditions */
-  acceptedTermsAt?: string;
-  /** Timestamp of user's first login */
-  firstLoginTime?: string;
-  /** Timestamp of user's most recent login */
-  lastLoginTime: string;
-  /** Timestamp when the user record was created */
-  createdAt: string;
-  /** Timestamp when the user record was last updated */
-  updatedAt: string;
-  /** Various online profiles associated with the user account */
-  socials?: {
-    /** The site of the social. */
-    site: string;
-    /** The link of the social. */
-    link: string;
-  }[];
-  /** Timestamp when the user record was soft-deleted (null if not deleted) */
-  deletedAt: string | null;
-  /** List of global roles assigned to the user */
-  roleNames?: (
-    | "admin"
-    | "meshmap"
-    | "curator"
-    | "team admin"
-    | "workspace admin"
-    | "workspace manager"
-    | "organization admin"
-    | "user"
-  )[];
-  /** Teams the user belongs to with role information */
-  teams?: {
-    /** Team memberships for the user with their assigned roles. */
-    teamsWithRoles?: object[];
-    /** Total number of team memberships returned for the user. */
-    totalCount?: number;
-  };
-  /** Organizations the user belongs to with role information */
-  organizations?: {
-    /** Organization memberships for the user with their assigned roles. */
-    organizationsWithRoles?: object[];
-    /** Total number of organization memberships returned for the user. */
-    totalCount?: number;
-  };
-};
-export type GetUserApiArg = void;
 export type GetConnectionsApiResponse = /** status 200 Paginated list of connections with summary information */ {
   /** List of connections on this page */
   connections: {
@@ -9156,18 +9025,17 @@ export const {
   useUpdateTeamMutation,
   useDeleteTeamMutation,
   useRemoveTeamFromOrgMutation,
-  useAddUserToOrgMutation,
-  useDeleteUserFromOrgMutation,
   useGetTeamsQuery,
   useCreateTeamMutation,
   useGetTeamUsersQuery,
   useAddUserToTeamMutation,
   useRemoveUserFromTeamMutation,
   useListUsersNotInTeamQuery,
-  useGetUsersForOrgQuery,
-  useGetUsersQuery,
   useGetUserProfileByIdQuery,
   useGetUserQuery,
+  useGetUserPreferencesQuery,
+  useUpdateUserPreferencesMutation,
+  useGetUsersQuery,
   useGetConnectionsQuery,
   useRegisterConnectionMutation,
   useGetConnectionByIdQuery,
