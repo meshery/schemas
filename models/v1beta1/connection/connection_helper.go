@@ -8,7 +8,7 @@ import (
 	"encoding/json"
 	"sync"
 
-	"github.com/gofrs/uuid"
+	"github.com/google/uuid"
 	"github.com/meshery/meshkit/database"
 	"github.com/meshery/schemas/models/core"
 	"gorm.io/gorm"
@@ -23,7 +23,7 @@ func (h *Connection) GenerateID() (uuid.UUID, error) {
 	}
 
 	hash := md5.Sum(byt)
-	return uuid.FromString(hex.EncodeToString(hash[:]))
+	return uuid.Parse(hex.EncodeToString(hash[:]))
 }
 
 func (h *Connection) Create(db *database.Handler) (uuid.UUID, error) {

@@ -3,7 +3,7 @@ package core
 import (
 	"testing"
 
-	"github.com/gofrs/uuid"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -14,8 +14,7 @@ func TestUUIDOrUUIDNil(t *testing.T) {
 	})
 
 	t.Run("returns dereferenced UUID when input is not nil", func(t *testing.T) {
-		testUUID, err := uuid.NewV4()
-		assert.NoError(t, err)
+		testUUID := uuid.New()
 
 		result := UUIDOrUUIDNil(&testUUID)
 		assert.Equal(t, testUUID, result)
