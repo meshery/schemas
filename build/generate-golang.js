@@ -63,8 +63,8 @@ function removeSelfReferentialAliases(filePath) {
 function ensureRequiredImports(filePath) {
   let content = fs.readFileSync(filePath, "utf-8");
   const needs = [];
-  if (/\buuid\.UUID\b/.test(content) && !content.includes('"github.com/gofrs/uuid"')) {
-    needs.push('\t"github.com/gofrs/uuid"');
+  if (/\buuid\.UUID\b/.test(content) && !content.includes('"github.com/google/uuid"')) {
+    needs.push('\t"github.com/google/uuid"');
   }
   if (needs.length === 0) return;
   // Insert into the import block that follows the package declaration.
@@ -1582,6 +1582,7 @@ module.exports = {
   buildImportMappings,
   collectRefs,
   createGeneratorConfig,
+  ensureRequiredImports,
   findPackageForFile,
   generateGoModels,
   loadYamlFile,
