@@ -107,7 +107,7 @@ const ViewSchema: Record<string, unknown> = {
           "format": "uuid",
           "x-go-type": "uuid.UUID",
           "x-go-type-import": {
-            "path": "github.com/gofrs/uuid"
+            "path": "github.com/google/uuid"
           },
           "x-oapi-codegen-extra-tags": {
             "db": "view_id",
@@ -216,7 +216,7 @@ const ViewSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
+              "path": "github.com/google/uuid"
             }
           },
           "name": {
@@ -284,7 +284,7 @@ const ViewSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
+              "path": "github.com/google/uuid"
             }
           },
           "createdAt": {
@@ -342,7 +342,7 @@ const ViewSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
+              "path": "github.com/google/uuid"
             },
             "x-oapi-codegen-extra-tags": {
               "db": "id",
@@ -411,7 +411,7 @@ const ViewSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
+              "path": "github.com/google/uuid"
             }
           },
           "workspaceName": {
@@ -436,7 +436,7 @@ const ViewSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
+              "path": "github.com/google/uuid"
             }
           },
           "organizationId": {
@@ -451,7 +451,7 @@ const ViewSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
+              "path": "github.com/google/uuid"
             }
           },
           "organizationName": {
@@ -574,7 +574,7 @@ const ViewSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
+              "path": "github.com/google/uuid"
             }
           },
           "contentType": {
@@ -646,7 +646,7 @@ const ViewSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
+                    "path": "github.com/google/uuid"
                   },
                   "x-oapi-codegen-extra-tags": {
                     "db": "id",
@@ -715,7 +715,7 @@ const ViewSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
+                    "path": "github.com/google/uuid"
                   }
                 },
                 "workspaceName": {
@@ -740,7 +740,7 @@ const ViewSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
+                    "path": "github.com/google/uuid"
                   }
                 },
                 "organizationId": {
@@ -755,7 +755,7 @@ const ViewSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
+                    "path": "github.com/google/uuid"
                   }
                 },
                 "organizationName": {
@@ -897,7 +897,7 @@ const ViewSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
+                    "path": "github.com/google/uuid"
                   }
                 },
                 "contentType": {
@@ -1045,7 +1045,7 @@ const ViewSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
+                        "path": "github.com/google/uuid"
                       }
                     },
                     "name": {
@@ -1113,7 +1113,7 @@ const ViewSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
+                        "path": "github.com/google/uuid"
                       }
                     },
                     "createdAt": {
@@ -1332,7 +1332,7 @@ const ViewSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
+                              "path": "github.com/google/uuid"
                             },
                             "x-oapi-codegen-extra-tags": {
                               "db": "id",
@@ -1401,7 +1401,7 @@ const ViewSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
+                              "path": "github.com/google/uuid"
                             }
                           },
                           "workspaceName": {
@@ -1426,7 +1426,7 @@ const ViewSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
+                              "path": "github.com/google/uuid"
                             }
                           },
                           "organizationId": {
@@ -1441,7 +1441,7 @@ const ViewSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
+                              "path": "github.com/google/uuid"
                             }
                           },
                           "organizationName": {
@@ -1558,7 +1558,7 @@ const ViewSchema: Record<string, unknown> = {
                     "format": "uuid",
                     "x-go-type": "uuid.UUID",
                     "x-go-type-import": {
-                      "path": "github.com/gofrs/uuid"
+                      "path": "github.com/google/uuid"
                     }
                   },
                   "contentType": {
@@ -1659,7 +1659,7 @@ const ViewSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
+                "path": "github.com/google/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "view_id",
@@ -1715,7 +1715,7 @@ const ViewSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
+                        "path": "github.com/google/uuid"
                       }
                     },
                     "name": {
@@ -1783,7 +1783,7 @@ const ViewSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
+                        "path": "github.com/google/uuid"
                       }
                     },
                     "createdAt": {
@@ -1893,7 +1893,7 @@ const ViewSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
+                "path": "github.com/google/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "view_id",
@@ -2009,7 +2009,7 @@ const ViewSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
+                        "path": "github.com/google/uuid"
                       }
                     },
                     "name": {
@@ -2077,7 +2077,7 @@ const ViewSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
+                        "path": "github.com/google/uuid"
                       }
                     },
                     "createdAt": {
@@ -2187,7 +2187,7 @@ const ViewSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
+                "path": "github.com/google/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "view_id",

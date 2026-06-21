@@ -150,7 +150,7 @@ const SubscriptionSchema: Record<string, unknown> = {
                             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
+                              "path": "github.com/google/uuid"
                             }
                           },
                           "org_id": {
@@ -162,7 +162,7 @@ const SubscriptionSchema: Record<string, unknown> = {
                             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
+                              "path": "github.com/google/uuid"
                             }
                           },
                           "plan_id": {
@@ -174,7 +174,7 @@ const SubscriptionSchema: Record<string, unknown> = {
                             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
+                              "path": "github.com/google/uuid"
                             }
                           },
                           "plan": {
@@ -212,7 +212,7 @@ const SubscriptionSchema: Record<string, unknown> = {
                                 "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                 "x-go-type": "uuid.UUID",
                                 "x-go-type-import": {
-                                  "path": "github.com/gofrs/uuid"
+                                  "path": "github.com/google/uuid"
                                 }
                               },
                               "name": {
@@ -503,7 +503,7 @@ const SubscriptionSchema: Record<string, unknown> = {
                             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
+                              "path": "github.com/google/uuid"
                             }
                           },
                           "org_id": {
@@ -515,7 +515,7 @@ const SubscriptionSchema: Record<string, unknown> = {
                             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
+                              "path": "github.com/google/uuid"
                             }
                           },
                           "plan_id": {
@@ -527,7 +527,7 @@ const SubscriptionSchema: Record<string, unknown> = {
                             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
+                              "path": "github.com/google/uuid"
                             }
                           },
                           "plan": {
@@ -565,7 +565,7 @@ const SubscriptionSchema: Record<string, unknown> = {
                                 "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                 "x-go-type": "uuid.UUID",
                                 "x-go-type-import": {
-                                  "path": "github.com/gofrs/uuid"
+                                  "path": "github.com/google/uuid"
                                 }
                               },
                               "name": {
@@ -814,7 +814,7 @@ const SubscriptionSchema: Record<string, unknown> = {
                     "format": "uuid",
                     "x-go-type": "uuid.UUID",
                     "x-go-type-import": {
-                      "path": "github.com/gofrs/uuid"
+                      "path": "github.com/google/uuid"
                     }
                   },
                   "planId": {
@@ -952,7 +952,7 @@ const SubscriptionSchema: Record<string, unknown> = {
                     "format": "uuid",
                     "x-go-type": "uuid.UUID",
                     "x-go-type-import": {
-                      "path": "github.com/gofrs/uuid"
+                      "path": "github.com/google/uuid"
                     }
                   },
                   "newPlanId": {
@@ -961,7 +961,7 @@ const SubscriptionSchema: Record<string, unknown> = {
                     "format": "uuid",
                     "x-go-type": "uuid.UUID",
                     "x-go-type-import": {
-                      "path": "github.com/gofrs/uuid"
+                      "path": "github.com/google/uuid"
                     }
                   }
                 }
@@ -995,7 +995,7 @@ const SubscriptionSchema: Record<string, unknown> = {
                       "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
+                        "path": "github.com/google/uuid"
                       }
                     },
                     "org_id": {
@@ -1007,7 +1007,7 @@ const SubscriptionSchema: Record<string, unknown> = {
                       "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
+                        "path": "github.com/google/uuid"
                       }
                     },
                     "plan_id": {
@@ -1019,7 +1019,7 @@ const SubscriptionSchema: Record<string, unknown> = {
                       "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
+                        "path": "github.com/google/uuid"
                       }
                     },
                     "plan": {
@@ -1057,7 +1057,7 @@ const SubscriptionSchema: Record<string, unknown> = {
                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
-                            "path": "github.com/gofrs/uuid"
+                            "path": "github.com/google/uuid"
                           }
                         },
                         "name": {
@@ -1313,7 +1313,7 @@ const SubscriptionSchema: Record<string, unknown> = {
                     "format": "uuid",
                     "x-go-type": "uuid.UUID",
                     "x-go-type-import": {
-                      "path": "github.com/gofrs/uuid"
+                      "path": "github.com/google/uuid"
                     }
                   },
                   "newPlanId": {
@@ -1322,7 +1322,7 @@ const SubscriptionSchema: Record<string, unknown> = {
                     "format": "uuid",
                     "x-go-type": "uuid.UUID",
                     "x-go-type-import": {
-                      "path": "github.com/gofrs/uuid"
+                      "path": "github.com/google/uuid"
                     }
                   }
                 }
@@ -1556,7 +1556,7 @@ const SubscriptionSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
+              "path": "github.com/google/uuid"
             }
           },
           "planId": {
@@ -1603,7 +1603,7 @@ const SubscriptionSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
+              "path": "github.com/google/uuid"
             }
           },
           "newPlanId": {
@@ -1612,7 +1612,7 @@ const SubscriptionSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
+              "path": "github.com/google/uuid"
             }
           }
         }
@@ -1722,7 +1722,7 @@ const SubscriptionSchema: Record<string, unknown> = {
                   "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
+                    "path": "github.com/google/uuid"
                   }
                 },
                 "org_id": {
@@ -1734,7 +1734,7 @@ const SubscriptionSchema: Record<string, unknown> = {
                   "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
+                    "path": "github.com/google/uuid"
                   }
                 },
                 "plan_id": {
@@ -1746,7 +1746,7 @@ const SubscriptionSchema: Record<string, unknown> = {
                   "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
+                    "path": "github.com/google/uuid"
                   }
                 },
                 "plan": {
@@ -1784,7 +1784,7 @@ const SubscriptionSchema: Record<string, unknown> = {
                       "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
+                        "path": "github.com/google/uuid"
                       }
                     },
                     "name": {
@@ -1981,7 +1981,7 @@ const SubscriptionSchema: Record<string, unknown> = {
             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
+              "path": "github.com/google/uuid"
             }
           },
           "org_id": {
@@ -1993,7 +1993,7 @@ const SubscriptionSchema: Record<string, unknown> = {
             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
+              "path": "github.com/google/uuid"
             }
           },
           "plan_id": {
@@ -2005,7 +2005,7 @@ const SubscriptionSchema: Record<string, unknown> = {
             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
+              "path": "github.com/google/uuid"
             }
           },
           "plan": {
@@ -2043,7 +2043,7 @@ const SubscriptionSchema: Record<string, unknown> = {
                 "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                 "x-go-type": "uuid.UUID",
                 "x-go-type-import": {
-                  "path": "github.com/gofrs/uuid"
+                  "path": "github.com/google/uuid"
                 }
               },
               "name": {

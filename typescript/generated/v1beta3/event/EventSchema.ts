@@ -122,7 +122,7 @@ const EventSchema: Record<string, unknown> = {
                     "description": "UUID of the user associated with the event.",
                     "x-go-type": "uuid.UUID",
                     "x-go-type-import": {
-                      "path": "github.com/gofrs/uuid"
+                      "path": "github.com/google/uuid"
                     },
                     "x-go-name": "Owner",
                     "x-oapi-codegen-extra-tags": {
@@ -217,7 +217,7 @@ const EventSchema: Record<string, unknown> = {
                       "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
+                        "path": "github.com/google/uuid"
                       }
                     },
                     "description": "UUIDs of the events to delete."
@@ -313,7 +313,7 @@ const EventSchema: Record<string, unknown> = {
                       "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
+                        "path": "github.com/google/uuid"
                       }
                     },
                     "description": "UUIDs of the events to update."
@@ -530,7 +530,7 @@ const EventSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
+                "path": "github.com/google/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "workspace_id",
@@ -619,7 +619,7 @@ const EventSchema: Record<string, unknown> = {
                             "description": "UUID of the user associated with the event.",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
+                              "path": "github.com/google/uuid"
                             },
                             "x-go-name": "Owner",
                             "x-go-type-skip-optional-pointer": true,
@@ -879,7 +879,7 @@ const EventSchema: Record<string, unknown> = {
                             "description": "UUID of the user associated with the event.",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
+                              "path": "github.com/google/uuid"
                             },
                             "x-go-name": "Owner",
                             "x-go-type-skip-optional-pointer": true,
@@ -1210,7 +1210,7 @@ const EventSchema: Record<string, unknown> = {
           "format": "uuid",
           "x-go-type": "uuid.UUID",
           "x-go-type-import": {
-            "path": "github.com/gofrs/uuid"
+            "path": "github.com/google/uuid"
           },
           "x-oapi-codegen-extra-tags": {
             "db": "workspace_id",
@@ -1298,7 +1298,7 @@ const EventSchema: Record<string, unknown> = {
             "description": "UUID of the user associated with the event.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
+              "path": "github.com/google/uuid"
             },
             "x-go-name": "Owner",
             "x-oapi-codegen-extra-tags": {
@@ -1377,7 +1377,7 @@ const EventSchema: Record<string, unknown> = {
               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
+                "path": "github.com/google/uuid"
               }
             },
             "description": "UUIDs of the events to delete."
@@ -1414,7 +1414,7 @@ const EventSchema: Record<string, unknown> = {
               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
+                "path": "github.com/google/uuid"
               }
             },
             "description": "UUIDs of the events to update."
@@ -1452,7 +1452,7 @@ const EventSchema: Record<string, unknown> = {
             "description": "UUID of the user associated with the event.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
+              "path": "github.com/google/uuid"
             },
             "x-go-name": "Owner",
             "x-go-type-skip-optional-pointer": true,
@@ -1565,7 +1565,7 @@ const EventSchema: Record<string, unknown> = {
                   "description": "UUID of the user associated with the event.",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
+                    "path": "github.com/google/uuid"
                   },
                   "x-go-name": "Owner",
                   "x-go-type-skip-optional-pointer": true,

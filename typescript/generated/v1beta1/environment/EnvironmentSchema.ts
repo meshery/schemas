@@ -101,7 +101,7 @@ const EnvironmentSchema: Record<string, unknown> = {
           "format": "uuid",
           "x-go-type": "uuid.UUID",
           "x-go-type-import": {
-            "path": "github.com/gofrs/uuid"
+            "path": "github.com/google/uuid"
           },
           "x-go-type-skip-optional-pointer": true
         },
@@ -196,7 +196,7 @@ const EnvironmentSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
+              "path": "github.com/google/uuid"
             }
           },
           "schemaVersion": {
@@ -253,7 +253,7 @@ const EnvironmentSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
+              "path": "github.com/google/uuid"
             }
           },
           "owner": {
@@ -267,7 +267,7 @@ const EnvironmentSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
+              "path": "github.com/google/uuid"
             }
           },
           "created_at": {
@@ -335,7 +335,7 @@ const EnvironmentSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
+              "path": "github.com/google/uuid"
             },
             "x-oapi-codegen-extra-tags": {
               "db": "id",
@@ -355,7 +355,7 @@ const EnvironmentSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
+              "path": "github.com/google/uuid"
             }
           },
           "connection_id": {
@@ -369,7 +369,7 @@ const EnvironmentSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
+              "path": "github.com/google/uuid"
             }
           },
           "created_at": {
@@ -481,7 +481,7 @@ const EnvironmentSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
+                    "path": "github.com/google/uuid"
                   }
                 },
                 "schemaVersion": {
@@ -538,7 +538,7 @@ const EnvironmentSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
+                    "path": "github.com/google/uuid"
                   }
                 },
                 "owner": {
@@ -552,7 +552,7 @@ const EnvironmentSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
+                    "path": "github.com/google/uuid"
                   }
                 },
                 "created_at": {
@@ -779,7 +779,7 @@ const EnvironmentSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
+                        "path": "github.com/google/uuid"
                       }
                     },
                     "schemaVersion": {
@@ -836,7 +836,7 @@ const EnvironmentSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
+                        "path": "github.com/google/uuid"
                       }
                     },
                     "owner": {
@@ -850,7 +850,7 @@ const EnvironmentSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
+                        "path": "github.com/google/uuid"
                       }
                     },
                     "created_at": {
@@ -1061,7 +1061,7 @@ const EnvironmentSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
+                              "path": "github.com/google/uuid"
                             }
                           },
                           "schemaVersion": {
@@ -1118,7 +1118,7 @@ const EnvironmentSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
+                              "path": "github.com/google/uuid"
                             }
                           },
                           "owner": {
@@ -1132,7 +1132,7 @@ const EnvironmentSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
+                              "path": "github.com/google/uuid"
                             }
                           },
                           "created_at": {
@@ -1243,7 +1243,7 @@ const EnvironmentSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
+                "path": "github.com/google/uuid"
               },
               "x-go-type-skip-optional-pointer": true
             },
@@ -1321,7 +1321,7 @@ const EnvironmentSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
+                              "path": "github.com/google/uuid"
                             }
                           },
                           "schemaVersion": {
@@ -1378,7 +1378,7 @@ const EnvironmentSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
+                              "path": "github.com/google/uuid"
                             }
                           },
                           "owner": {
@@ -1392,7 +1392,7 @@ const EnvironmentSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
+                              "path": "github.com/google/uuid"
                             }
                           },
                           "created_at": {
@@ -1521,7 +1521,7 @@ const EnvironmentSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
+                "path": "github.com/google/uuid"
               },
               "x-go-type-skip-optional-pointer": true
             },
@@ -1627,7 +1627,7 @@ const EnvironmentSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
+                              "path": "github.com/google/uuid"
                             }
                           },
                           "schemaVersion": {
@@ -1684,7 +1684,7 @@ const EnvironmentSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
+                              "path": "github.com/google/uuid"
                             }
                           },
                           "owner": {
@@ -1698,7 +1698,7 @@ const EnvironmentSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
+                              "path": "github.com/google/uuid"
                             }
                           },
                           "created_at": {
@@ -1827,7 +1827,7 @@ const EnvironmentSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
+                "path": "github.com/google/uuid"
               },
               "x-go-type-skip-optional-pointer": true
             },
@@ -1902,7 +1902,7 @@ const EnvironmentSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
+                "path": "github.com/google/uuid"
               },
               "x-go-type-skip-optional-pointer": true
             },

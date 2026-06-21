@@ -109,7 +109,7 @@ const TeamSchema: Record<string, unknown> = {
           "format": "uuid",
           "x-go-type": "uuid.UUID",
           "x-go-type-import": {
-            "path": "github.com/gofrs/uuid"
+            "path": "github.com/google/uuid"
           },
           "x-oapi-codegen-extra-tags": {
             "db": "team_id",
@@ -129,7 +129,7 @@ const TeamSchema: Record<string, unknown> = {
           "format": "uuid",
           "x-go-type": "uuid.UUID",
           "x-go-type-import": {
-            "path": "github.com/gofrs/uuid"
+            "path": "github.com/google/uuid"
           },
           "x-oapi-codegen-extra-tags": {
             "db": "org_id",
@@ -204,7 +204,7 @@ const TeamSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
+              "path": "github.com/google/uuid"
             }
           },
           "name": {
@@ -239,7 +239,7 @@ const TeamSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
+              "path": "github.com/google/uuid"
             }
           },
           "metadata": {
@@ -369,7 +369,7 @@ const TeamSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
+                    "path": "github.com/google/uuid"
                   }
                 },
                 "name": {
@@ -404,7 +404,7 @@ const TeamSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
+                    "path": "github.com/google/uuid"
                   }
                 },
                 "metadata": {
@@ -470,7 +470,7 @@ const TeamSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
+              "path": "github.com/google/uuid"
             },
             "x-oapi-codegen-extra-tags": {
               "db": "id",
@@ -484,7 +484,7 @@ const TeamSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
+              "path": "github.com/google/uuid"
             },
             "x-oapi-codegen-extra-tags": {
               "db": "team_id",
@@ -571,7 +571,7 @@ const TeamSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
+                    "path": "github.com/google/uuid"
                   },
                   "x-oapi-codegen-extra-tags": {
                     "db": "id",
@@ -585,7 +585,7 @@ const TeamSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
+                    "path": "github.com/google/uuid"
                   },
                   "x-oapi-codegen-extra-tags": {
                     "db": "team_id",
@@ -756,7 +756,7 @@ const TeamSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
+                "path": "github.com/google/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "org_id",
@@ -848,7 +848,7 @@ const TeamSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
+                              "path": "github.com/google/uuid"
                             }
                           },
                           "name": {
@@ -883,7 +883,7 @@ const TeamSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
+                              "path": "github.com/google/uuid"
                             }
                           },
                           "metadata": {
@@ -995,7 +995,7 @@ const TeamSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
+                "path": "github.com/google/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "org_id",
@@ -1062,7 +1062,7 @@ const TeamSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
+                        "path": "github.com/google/uuid"
                       }
                     },
                     "name": {
@@ -1097,7 +1097,7 @@ const TeamSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
+                        "path": "github.com/google/uuid"
                       }
                     },
                     "metadata": {
@@ -1217,7 +1217,7 @@ const TeamSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
+                "path": "github.com/google/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "org_id",
@@ -1237,7 +1237,7 @@ const TeamSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
+                "path": "github.com/google/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "team_id",
@@ -1277,7 +1277,7 @@ const TeamSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
+                        "path": "github.com/google/uuid"
                       }
                     },
                     "name": {
@@ -1312,7 +1312,7 @@ const TeamSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
+                        "path": "github.com/google/uuid"
                       }
                     },
                     "metadata": {
@@ -1430,7 +1430,7 @@ const TeamSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
+                "path": "github.com/google/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "org_id",
@@ -1450,7 +1450,7 @@ const TeamSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
+                "path": "github.com/google/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "team_id",
@@ -1514,7 +1514,7 @@ const TeamSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
+                        "path": "github.com/google/uuid"
                       }
                     },
                     "name": {
@@ -1549,7 +1549,7 @@ const TeamSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
+                        "path": "github.com/google/uuid"
                       }
                     },
                     "metadata": {
@@ -1667,7 +1667,7 @@ const TeamSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
+                "path": "github.com/google/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "org_id",
@@ -1687,7 +1687,7 @@ const TeamSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
+                "path": "github.com/google/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "team_id",
@@ -1768,7 +1768,7 @@ const TeamSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
+                "path": "github.com/google/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "team_id",
@@ -1847,7 +1847,7 @@ const TeamSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
+                              "path": "github.com/google/uuid"
                             },
                             "x-oapi-codegen-extra-tags": {
                               "db": "id",
@@ -1861,7 +1861,7 @@ const TeamSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
+                              "path": "github.com/google/uuid"
                             },
                             "x-oapi-codegen-extra-tags": {
                               "db": "team_id",
@@ -1990,7 +1990,7 @@ const TeamSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
+                "path": "github.com/google/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "org_id",
@@ -2010,7 +2010,7 @@ const TeamSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
+                "path": "github.com/google/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "team_id",
@@ -2048,7 +2048,7 @@ const TeamSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
+                        "path": "github.com/google/uuid"
                       },
                       "x-oapi-codegen-extra-tags": {
                         "db": "id",
@@ -2062,7 +2062,7 @@ const TeamSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
+                        "path": "github.com/google/uuid"
                       },
                       "x-oapi-codegen-extra-tags": {
                         "db": "team_id",
@@ -2185,7 +2185,7 @@ const TeamSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
+                "path": "github.com/google/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "org_id",
@@ -2205,7 +2205,7 @@ const TeamSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
+                "path": "github.com/google/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "team_id",
@@ -2296,7 +2296,7 @@ const TeamSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
+                "path": "github.com/google/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "org_id",
@@ -2316,7 +2316,7 @@ const TeamSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
+                "path": "github.com/google/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "team_id",

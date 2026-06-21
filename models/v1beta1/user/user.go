@@ -8,7 +8,7 @@ import (
 
 	"github.com/meshery/schemas/models/core"
 	openapi_types "github.com/oapi-codegen/runtime/types"
-	"github.com/gofrs/uuid"
+	"github.com/google/uuid"
 )
 
 // Defines values for UserRoleNames.

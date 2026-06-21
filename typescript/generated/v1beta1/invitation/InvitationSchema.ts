@@ -83,7 +83,7 @@ const InvitationSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
+                        "path": "github.com/google/uuid"
                       }
                     },
                     "owner_id": {
@@ -96,7 +96,7 @@ const InvitationSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
+                        "path": "github.com/google/uuid"
                       }
                     },
                     "is_default": {
@@ -382,7 +382,7 @@ const InvitationSchema: Record<string, unknown> = {
                     "format": "uuid",
                     "x-go-type": "uuid.UUID",
                     "x-go-type-import": {
-                      "path": "github.com/gofrs/uuid"
+                      "path": "github.com/google/uuid"
                     }
                   },
                   "owner_id": {
@@ -395,7 +395,7 @@ const InvitationSchema: Record<string, unknown> = {
                     "format": "uuid",
                     "x-go-type": "uuid.UUID",
                     "x-go-type-import": {
-                      "path": "github.com/gofrs/uuid"
+                      "path": "github.com/google/uuid"
                     }
                   },
                   "is_default": {
@@ -511,7 +511,7 @@ const InvitationSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
+                        "path": "github.com/google/uuid"
                       }
                     },
                     "owner_id": {
@@ -524,7 +524,7 @@ const InvitationSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
+                        "path": "github.com/google/uuid"
                       }
                     },
                     "is_default": {
@@ -747,7 +747,7 @@ const InvitationSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
+                              "path": "github.com/google/uuid"
                             }
                           },
                           "owner_id": {
@@ -760,7 +760,7 @@ const InvitationSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
+                              "path": "github.com/google/uuid"
                             }
                           },
                           "is_default": {
@@ -974,7 +974,7 @@ const InvitationSchema: Record<string, unknown> = {
                     "format": "uuid",
                     "x-go-type": "uuid.UUID",
                     "x-go-type-import": {
-                      "path": "github.com/gofrs/uuid"
+                      "path": "github.com/google/uuid"
                     }
                   },
                   "owner_id": {
@@ -987,7 +987,7 @@ const InvitationSchema: Record<string, unknown> = {
                     "format": "uuid",
                     "x-go-type": "uuid.UUID",
                     "x-go-type-import": {
-                      "path": "github.com/gofrs/uuid"
+                      "path": "github.com/google/uuid"
                     }
                   },
                   "is_default": {
@@ -1103,7 +1103,7 @@ const InvitationSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
+                        "path": "github.com/google/uuid"
                       }
                     },
                     "owner_id": {
@@ -1116,7 +1116,7 @@ const InvitationSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
+                        "path": "github.com/google/uuid"
                       }
                     },
                     "is_default": {
@@ -1331,7 +1331,7 @@ const InvitationSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
+                        "path": "github.com/google/uuid"
                       }
                     },
                     "owner_id": {
@@ -1344,7 +1344,7 @@ const InvitationSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
+                        "path": "github.com/google/uuid"
                       }
                     },
                     "is_default": {
@@ -2011,7 +2011,7 @@ const InvitationSchema: Record<string, unknown> = {
         "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
         "x-go-type": "uuid.UUID",
         "x-go-type-import": {
-          "path": "github.com/gofrs/uuid"
+          "path": "github.com/google/uuid"
         }
       },
       "InvitationsPage": {
@@ -2048,7 +2048,7 @@ const InvitationSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
+                    "path": "github.com/google/uuid"
                   }
                 },
                 "owner_id": {
@@ -2061,7 +2061,7 @@ const InvitationSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
+                    "path": "github.com/google/uuid"
                   }
                 },
                 "is_default": {
@@ -2253,7 +2253,7 @@ const InvitationSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
+              "path": "github.com/google/uuid"
             }
           },
           "owner_id": {
@@ -2266,7 +2266,7 @@ const InvitationSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
+              "path": "github.com/google/uuid"
             }
           },
           "is_default": {
@@ -2382,7 +2382,7 @@ const InvitationSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
+              "path": "github.com/google/uuid"
             }
           },
           "owner_id": {
@@ -2395,7 +2395,7 @@ const InvitationSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
+              "path": "github.com/google/uuid"
             }
           },
           "is_default": {

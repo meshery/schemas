@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/gofrs/uuid"
+	"github.com/google/uuid"
 	core "github.com/meshery/schemas/models/core"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
