@@ -146,7 +146,7 @@ const ScheduleSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             }
                           },
                           "name": {
@@ -169,7 +169,7 @@ const ScheduleSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             }
                           },
                           "cron_expression": {
@@ -272,7 +272,7 @@ const ScheduleSchema: Record<string, unknown> = {
                     "format": "uuid",
                     "x-go-type": "uuid.UUID",
                     "x-go-type-import": {
-                      "path": "github.com/google/uuid"
+                      "path": "github.com/gofrs/uuid"
                     }
                   },
                   "name": {
@@ -295,7 +295,7 @@ const ScheduleSchema: Record<string, unknown> = {
                     "format": "uuid",
                     "x-go-type": "uuid.UUID",
                     "x-go-type-import": {
-                      "path": "github.com/google/uuid"
+                      "path": "github.com/gofrs/uuid"
                     }
                   },
                   "cron_expression": {
@@ -362,7 +362,7 @@ const ScheduleSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "name": {
@@ -385,7 +385,7 @@ const ScheduleSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "cron_expression": {
@@ -484,7 +484,7 @@ const ScheduleSchema: Record<string, unknown> = {
               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               }
             }
           }
@@ -513,7 +513,7 @@ const ScheduleSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "name": {
@@ -536,7 +536,7 @@ const ScheduleSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "cron_expression": {
@@ -633,7 +633,7 @@ const ScheduleSchema: Record<string, unknown> = {
               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               }
             }
           }
@@ -738,7 +738,7 @@ const ScheduleSchema: Record<string, unknown> = {
           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
           "x-go-type": "uuid.UUID",
           "x-go-type-import": {
-            "path": "github.com/google/uuid"
+            "path": "github.com/gofrs/uuid"
           }
         }
       },
@@ -795,7 +795,7 @@ const ScheduleSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             }
           },
           "name": {
@@ -818,7 +818,7 @@ const ScheduleSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             }
           },
           "cron_expression": {
@@ -907,7 +907,7 @@ const ScheduleSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   }
                 },
                 "name": {
@@ -930,7 +930,7 @@ const ScheduleSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   }
                 },
                 "cron_expression": {

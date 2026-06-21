@@ -391,7 +391,7 @@ const ModelSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             }
           },
           "schemaVersion": {
@@ -518,7 +518,7 @@ const ModelSchema: Record<string, unknown> = {
                 "format": "uuid",
                 "x-go-type": "uuid.UUID",
                 "x-go-type-import": {
-                  "path": "github.com/google/uuid"
+                  "path": "github.com/gofrs/uuid"
                 }
               },
               "name": {
@@ -542,7 +542,7 @@ const ModelSchema: Record<string, unknown> = {
                 "format": "uuid",
                 "x-go-type": "uuid.UUID",
                 "x-go-type-import": {
-                  "path": "github.com/google/uuid"
+                  "path": "github.com/gofrs/uuid"
                 }
               },
               "type": {
@@ -617,7 +617,7 @@ const ModelSchema: Record<string, unknown> = {
                 "format": "uuid",
                 "x-go-type": "uuid.UUID",
                 "x-go-type-import": {
-                  "path": "github.com/google/uuid"
+                  "path": "github.com/gofrs/uuid"
                 }
               },
               "created_at": {
@@ -703,7 +703,7 @@ const ModelSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "schemaVersion": {
@@ -760,7 +760,7 @@ const ModelSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "owner": {
@@ -774,7 +774,7 @@ const ModelSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "created_at": {
@@ -877,7 +877,7 @@ const ModelSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             }
           },
           "categoryId": {
@@ -892,7 +892,7 @@ const ModelSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             }
           },
           "category": {
@@ -924,7 +924,7 @@ const ModelSchema: Record<string, unknown> = {
                 "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                 "x-go-type": "uuid.UUID",
                 "x-go-type-import": {
-                  "path": "github.com/google/uuid"
+                  "path": "github.com/gofrs/uuid"
                 }
               },
               "name": {
@@ -1478,7 +1478,7 @@ const ModelSchema: Record<string, unknown> = {
             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             }
           },
           "name": {

@@ -50,7 +50,7 @@ const UserSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "org_id",
@@ -110,7 +110,7 @@ const UserSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "team_id",
@@ -175,7 +175,7 @@ const UserSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             }
                           },
                           "user_id": {
@@ -807,7 +807,7 @@ const UserSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             }
                           },
                           "user_id": {
@@ -1343,7 +1343,7 @@ const UserSchema: Record<string, unknown> = {
               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               }
             }
           }
@@ -1381,7 +1381,7 @@ const UserSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "user_id": {
@@ -1944,7 +1944,7 @@ const UserSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "user_id": {
@@ -2499,7 +2499,7 @@ const UserSchema: Record<string, unknown> = {
           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
           "x-go-type": "uuid.UUID",
           "x-go-type-import": {
-            "path": "github.com/google/uuid"
+            "path": "github.com/gofrs/uuid"
           }
         }
       },
@@ -2513,7 +2513,7 @@ const UserSchema: Record<string, unknown> = {
           "format": "uuid",
           "x-go-type": "uuid.UUID",
           "x-go-type-import": {
-            "path": "github.com/google/uuid"
+            "path": "github.com/gofrs/uuid"
           },
           "x-oapi-codegen-extra-tags": {
             "db": "org_id",
@@ -2573,7 +2573,7 @@ const UserSchema: Record<string, unknown> = {
           "format": "uuid",
           "x-go-type": "uuid.UUID",
           "x-go-type-import": {
-            "path": "github.com/google/uuid"
+            "path": "github.com/gofrs/uuid"
           },
           "x-oapi-codegen-extra-tags": {
             "db": "team_id",
@@ -2620,7 +2620,7 @@ const UserSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             }
           },
           "user_id": {
@@ -3142,7 +3142,7 @@ const UserSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   }
                 },
                 "user_id": {
@@ -3668,7 +3668,7 @@ const UserSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   }
                 },
                 "user_id": {

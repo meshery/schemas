@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"sync"
 
-	"github.com/google/uuid"
+	"github.com/gofrs/uuid"
 	"github.com/meshery/meshkit/database"
 	"github.com/meshery/schemas/models/core"
 	"gorm.io/gorm"

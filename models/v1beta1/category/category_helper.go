@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/google/uuid"
+	"github.com/gofrs/uuid"
 	"github.com/meshery/meshkit/database"
 	"github.com/meshery/meshkit/models/meshmodel/entity"
 	"gorm.io/gorm"

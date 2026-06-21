@@ -130,7 +130,7 @@ const KeychainSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             }
                           },
                           "name": {
@@ -153,7 +153,7 @@ const KeychainSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             }
                           },
                           "created_at": {
@@ -273,7 +273,7 @@ const KeychainSchema: Record<string, unknown> = {
                     "format": "uuid",
                     "x-go-type": "uuid.UUID",
                     "x-go-type-import": {
-                      "path": "github.com/google/uuid"
+                      "path": "github.com/gofrs/uuid"
                     }
                   }
                 }
@@ -309,7 +309,7 @@ const KeychainSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "name": {
@@ -332,7 +332,7 @@ const KeychainSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "created_at": {
@@ -436,7 +436,7 @@ const KeychainSchema: Record<string, unknown> = {
               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               }
             }
           }
@@ -469,7 +469,7 @@ const KeychainSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "name": {
@@ -492,7 +492,7 @@ const KeychainSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "created_at": {
@@ -604,7 +604,7 @@ const KeychainSchema: Record<string, unknown> = {
               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               }
             }
           }
@@ -634,7 +634,7 @@ const KeychainSchema: Record<string, unknown> = {
                     "format": "uuid",
                     "x-go-type": "uuid.UUID",
                     "x-go-type-import": {
-                      "path": "github.com/google/uuid"
+                      "path": "github.com/gofrs/uuid"
                     }
                   }
                 }
@@ -670,7 +670,7 @@ const KeychainSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "name": {
@@ -693,7 +693,7 @@ const KeychainSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "created_at": {
@@ -805,7 +805,7 @@ const KeychainSchema: Record<string, unknown> = {
               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               }
             }
           }
@@ -879,7 +879,7 @@ const KeychainSchema: Record<string, unknown> = {
               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               }
             }
           },
@@ -894,7 +894,7 @@ const KeychainSchema: Record<string, unknown> = {
               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               }
             }
           }
@@ -966,7 +966,7 @@ const KeychainSchema: Record<string, unknown> = {
               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               }
             }
           },
@@ -981,7 +981,7 @@ const KeychainSchema: Record<string, unknown> = {
               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               }
             }
           }
@@ -1055,7 +1055,7 @@ const KeychainSchema: Record<string, unknown> = {
               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               }
             }
           },
@@ -1144,7 +1144,7 @@ const KeychainSchema: Record<string, unknown> = {
                             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             },
                             "x-go-name": "ID",
                             "x-oapi-codegen-extra-tags": {
@@ -1158,7 +1158,7 @@ const KeychainSchema: Record<string, unknown> = {
                             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             },
                             "x-go-name": "Owner",
                             "x-oapi-codegen-extra-tags": {
@@ -1352,7 +1352,7 @@ const KeychainSchema: Record<string, unknown> = {
           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
           "x-go-type": "uuid.UUID",
           "x-go-type-import": {
-            "path": "github.com/google/uuid"
+            "path": "github.com/gofrs/uuid"
           }
         }
       },
@@ -1367,7 +1367,7 @@ const KeychainSchema: Record<string, unknown> = {
           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
           "x-go-type": "uuid.UUID",
           "x-go-type-import": {
-            "path": "github.com/google/uuid"
+            "path": "github.com/gofrs/uuid"
           }
         }
       },
@@ -1435,7 +1435,7 @@ const KeychainSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             }
           },
           "name": {
@@ -1458,7 +1458,7 @@ const KeychainSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             }
           },
           "created_at": {
@@ -1525,7 +1525,7 @@ const KeychainSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             }
           }
         }
@@ -1579,7 +1579,7 @@ const KeychainSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   }
                 },
                 "name": {
@@ -1602,7 +1602,7 @@ const KeychainSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   }
                 },
                 "created_at": {

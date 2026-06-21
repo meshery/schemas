@@ -63,8 +63,8 @@ function removeSelfReferentialAliases(filePath) {
 function ensureRequiredImports(filePath) {
   let content = fs.readFileSync(filePath, "utf-8");
   const needs = [];
-  if (/\buuid\.UUID\b/.test(content) && !content.includes('"github.com/google/uuid"')) {
-    needs.push('\t"github.com/google/uuid"');
+  if (/\buuid\.UUID\b/.test(content) && !content.includes('"github.com/gofrs/uuid"')) {
+    needs.push('\t"github.com/gofrs/uuid"');
   }
   if (needs.length === 0) return;
   // Insert into the import block that follows the package declaration.
@@ -72,6 +72,38 @@ function ensureRequiredImports(filePath) {
   const importBlockRe = /(import\s*\([\s\S]*?)(\n\))/;
   content = content.replace(importBlockRe, `$1\n${needs.join("\n")}$2`);
   fs.writeFileSync(filePath, content);
+}
+
+/**
+ * Normalize google-typed `openapi_types.UUID` to the ecosystem-standard
+ * gofrs `uuid.UUID`.
+ *
+ * oapi-codegen emits `openapi_types.UUID` (an alias of github.com/google/uuid)
+ * for any `format: uuid` field that lacks an explicit x-go-type override. That
+ * type is incompatible with gobuffalo/pop: pop type-asserts UUID primary keys
+ * to github.com/gofrs/uuid.UUID and panics on a google-typed value on every
+ * Create/Update. All generated UUID fields therefore MUST be gofrs. This runs
+ * before ensureRequiredImports(), which then injects the gofrs import because
+ * the file now contains `uuid.UUID`.
+ *
+ * Both the value (`openapi_types.UUID`) and pointer (`*openapi_types.UUID`)
+ * forms are rewritten; the leading `*` sits outside the match and is preserved.
+ * The openapi_types import is dropped only when no other openapi_types.* symbol
+ * (e.g. Email, Date) remains, otherwise an unused-import compile error results.
+ */
+function normalizeUuidType(filePath) {
+  let content = fs.readFileSync(filePath, "utf-8");
+  if (!content.includes("openapi_types.UUID")) {
+    return;
+  }
+  content = content.replace(/\bopenapi_types\.UUID\b/g, "uuid.UUID");
+  if (!/\bopenapi_types\./.test(content)) {
+    content = content.replace(
+      /^[ \t]*openapi_types "github\.com\/oapi-codegen\/runtime\/types"\r?\n/m,
+      "",
+    );
+  }
+  fs.writeFileSync(filePath, content, "utf-8");
 }
 
 function addYamlTags(filePath) {
@@ -1479,6 +1511,7 @@ async function generateGoModels(pkg) {
     rewriteExternalRefAliases(outputPath, inputPath);
     validateReadableImportAliases(outputPath);
     addCompatibilityParameterAliases(outputPath, inputPath);
+    normalizeUuidType(outputPath);
     ensureRequiredImports(outputPath);
     validateGeneratedDbTags(outputPath, inputPath);
     validateGeneratedJsonTags(outputPath, inputPath);
@@ -1582,7 +1615,6 @@ module.exports = {
   buildImportMappings,
   collectRefs,
   createGeneratorConfig,
-  ensureRequiredImports,
   findPackageForFile,
   generateGoModels,
   loadYamlFile,

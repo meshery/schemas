@@ -208,7 +208,7 @@ const ConnectionSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             }
                           },
                           "name": {
@@ -254,7 +254,7 @@ const ConnectionSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             }
                           },
                           "type": {
@@ -317,7 +317,7 @@ const ConnectionSchema: Record<string, unknown> = {
                                 "format": "uuid",
                                 "x-go-type": "uuid.UUID",
                                 "x-go-type-import": {
-                                  "path": "github.com/google/uuid"
+                                  "path": "github.com/gofrs/uuid"
                                 }
                               },
                               "schemaVersion": {
@@ -451,7 +451,7 @@ const ConnectionSchema: Record<string, unknown> = {
                                     "format": "uuid",
                                     "x-go-type": "uuid.UUID",
                                     "x-go-type-import": {
-                                      "path": "github.com/google/uuid"
+                                      "path": "github.com/gofrs/uuid"
                                     }
                                   },
                                   "name": {
@@ -475,7 +475,7 @@ const ConnectionSchema: Record<string, unknown> = {
                                     "format": "uuid",
                                     "x-go-type": "uuid.UUID",
                                     "x-go-type-import": {
-                                      "path": "github.com/google/uuid"
+                                      "path": "github.com/gofrs/uuid"
                                     }
                                   },
                                   "type": {
@@ -550,7 +550,7 @@ const ConnectionSchema: Record<string, unknown> = {
                                     "format": "uuid",
                                     "x-go-type": "uuid.UUID",
                                     "x-go-type-import": {
-                                      "path": "github.com/google/uuid"
+                                      "path": "github.com/gofrs/uuid"
                                     }
                                   },
                                   "created_at": {
@@ -636,7 +636,7 @@ const ConnectionSchema: Record<string, unknown> = {
                                           "format": "uuid",
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
-                                            "path": "github.com/google/uuid"
+                                            "path": "github.com/gofrs/uuid"
                                           }
                                         },
                                         "schemaVersion": {
@@ -693,7 +693,7 @@ const ConnectionSchema: Record<string, unknown> = {
                                           "format": "uuid",
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
-                                            "path": "github.com/google/uuid"
+                                            "path": "github.com/gofrs/uuid"
                                           }
                                         },
                                         "owner": {
@@ -707,7 +707,7 @@ const ConnectionSchema: Record<string, unknown> = {
                                           "format": "uuid",
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
-                                            "path": "github.com/google/uuid"
+                                            "path": "github.com/gofrs/uuid"
                                           }
                                         },
                                         "created_at": {
@@ -811,7 +811,7 @@ const ConnectionSchema: Record<string, unknown> = {
                                 "format": "uuid",
                                 "x-go-type": "uuid.UUID",
                                 "x-go-type-import": {
-                                  "path": "github.com/google/uuid"
+                                  "path": "github.com/gofrs/uuid"
                                 }
                               },
                               "categoryId": {
@@ -826,7 +826,7 @@ const ConnectionSchema: Record<string, unknown> = {
                                 "format": "uuid",
                                 "x-go-type": "uuid.UUID",
                                 "x-go-type-import": {
-                                  "path": "github.com/google/uuid"
+                                  "path": "github.com/gofrs/uuid"
                                 }
                               },
                               "category": {
@@ -859,7 +859,7 @@ const ConnectionSchema: Record<string, unknown> = {
                                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                     "x-go-type": "uuid.UUID",
                                     "x-go-type-import": {
-                                      "path": "github.com/google/uuid"
+                                      "path": "github.com/gofrs/uuid"
                                     }
                                   },
                                   "name": {
@@ -1419,7 +1419,7 @@ const ConnectionSchema: Record<string, unknown> = {
                                 "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                 "x-go-type": "uuid.UUID",
                                 "x-go-type-import": {
-                                  "path": "github.com/google/uuid"
+                                  "path": "github.com/gofrs/uuid"
                                 }
                               },
                               "name": {
@@ -1499,7 +1499,7 @@ const ConnectionSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             }
                           },
                           "metadata": {
@@ -2072,7 +2072,7 @@ const ConnectionSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             }
                           },
                           "createdAt": {
@@ -2160,7 +2160,7 @@ const ConnectionSchema: Record<string, unknown> = {
                                   "format": "uuid",
                                   "x-go-type": "uuid.UUID",
                                   "x-go-type-import": {
-                                    "path": "github.com/google/uuid"
+                                    "path": "github.com/gofrs/uuid"
                                   }
                                 },
                                 "schemaVersion": {
@@ -2217,7 +2217,7 @@ const ConnectionSchema: Record<string, unknown> = {
                                   "format": "uuid",
                                   "x-go-type": "uuid.UUID",
                                   "x-go-type-import": {
-                                    "path": "github.com/google/uuid"
+                                    "path": "github.com/gofrs/uuid"
                                   }
                                 },
                                 "owner": {
@@ -2231,7 +2231,7 @@ const ConnectionSchema: Record<string, unknown> = {
                                   "format": "uuid",
                                   "x-go-type": "uuid.UUID",
                                   "x-go-type-import": {
-                                    "path": "github.com/google/uuid"
+                                    "path": "github.com/gofrs/uuid"
                                   }
                                 },
                                 "createdAt": {
@@ -2980,7 +2980,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "name": {
@@ -3026,7 +3026,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "type": {
@@ -3089,7 +3089,7 @@ const ConnectionSchema: Record<string, unknown> = {
                           "format": "uuid",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
-                            "path": "github.com/google/uuid"
+                            "path": "github.com/gofrs/uuid"
                           }
                         },
                         "schemaVersion": {
@@ -3223,7 +3223,7 @@ const ConnectionSchema: Record<string, unknown> = {
                               "format": "uuid",
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
-                                "path": "github.com/google/uuid"
+                                "path": "github.com/gofrs/uuid"
                               }
                             },
                             "name": {
@@ -3247,7 +3247,7 @@ const ConnectionSchema: Record<string, unknown> = {
                               "format": "uuid",
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
-                                "path": "github.com/google/uuid"
+                                "path": "github.com/gofrs/uuid"
                               }
                             },
                             "type": {
@@ -3322,7 +3322,7 @@ const ConnectionSchema: Record<string, unknown> = {
                               "format": "uuid",
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
-                                "path": "github.com/google/uuid"
+                                "path": "github.com/gofrs/uuid"
                               }
                             },
                             "created_at": {
@@ -3408,7 +3408,7 @@ const ConnectionSchema: Record<string, unknown> = {
                                     "format": "uuid",
                                     "x-go-type": "uuid.UUID",
                                     "x-go-type-import": {
-                                      "path": "github.com/google/uuid"
+                                      "path": "github.com/gofrs/uuid"
                                     }
                                   },
                                   "schemaVersion": {
@@ -3465,7 +3465,7 @@ const ConnectionSchema: Record<string, unknown> = {
                                     "format": "uuid",
                                     "x-go-type": "uuid.UUID",
                                     "x-go-type-import": {
-                                      "path": "github.com/google/uuid"
+                                      "path": "github.com/gofrs/uuid"
                                     }
                                   },
                                   "owner": {
@@ -3479,7 +3479,7 @@ const ConnectionSchema: Record<string, unknown> = {
                                     "format": "uuid",
                                     "x-go-type": "uuid.UUID",
                                     "x-go-type-import": {
-                                      "path": "github.com/google/uuid"
+                                      "path": "github.com/gofrs/uuid"
                                     }
                                   },
                                   "created_at": {
@@ -3583,7 +3583,7 @@ const ConnectionSchema: Record<string, unknown> = {
                           "format": "uuid",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
-                            "path": "github.com/google/uuid"
+                            "path": "github.com/gofrs/uuid"
                           }
                         },
                         "categoryId": {
@@ -3598,7 +3598,7 @@ const ConnectionSchema: Record<string, unknown> = {
                           "format": "uuid",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
-                            "path": "github.com/google/uuid"
+                            "path": "github.com/gofrs/uuid"
                           }
                         },
                         "category": {
@@ -3631,7 +3631,7 @@ const ConnectionSchema: Record<string, unknown> = {
                               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
-                                "path": "github.com/google/uuid"
+                                "path": "github.com/gofrs/uuid"
                               }
                             },
                             "name": {
@@ -4191,7 +4191,7 @@ const ConnectionSchema: Record<string, unknown> = {
                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
-                            "path": "github.com/google/uuid"
+                            "path": "github.com/gofrs/uuid"
                           }
                         },
                         "name": {
@@ -4271,7 +4271,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "metadata": {
@@ -4844,7 +4844,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "createdAt": {
@@ -4932,7 +4932,7 @@ const ConnectionSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             }
                           },
                           "schemaVersion": {
@@ -4989,7 +4989,7 @@ const ConnectionSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             }
                           },
                           "owner": {
@@ -5003,7 +5003,7 @@ const ConnectionSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             }
                           },
                           "createdAt": {
@@ -5183,7 +5183,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "name": {
@@ -5229,7 +5229,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "type": {
@@ -5292,7 +5292,7 @@ const ConnectionSchema: Record<string, unknown> = {
                           "format": "uuid",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
-                            "path": "github.com/google/uuid"
+                            "path": "github.com/gofrs/uuid"
                           }
                         },
                         "schemaVersion": {
@@ -5426,7 +5426,7 @@ const ConnectionSchema: Record<string, unknown> = {
                               "format": "uuid",
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
-                                "path": "github.com/google/uuid"
+                                "path": "github.com/gofrs/uuid"
                               }
                             },
                             "name": {
@@ -5450,7 +5450,7 @@ const ConnectionSchema: Record<string, unknown> = {
                               "format": "uuid",
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
-                                "path": "github.com/google/uuid"
+                                "path": "github.com/gofrs/uuid"
                               }
                             },
                             "type": {
@@ -5525,7 +5525,7 @@ const ConnectionSchema: Record<string, unknown> = {
                               "format": "uuid",
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
-                                "path": "github.com/google/uuid"
+                                "path": "github.com/gofrs/uuid"
                               }
                             },
                             "created_at": {
@@ -5611,7 +5611,7 @@ const ConnectionSchema: Record<string, unknown> = {
                                     "format": "uuid",
                                     "x-go-type": "uuid.UUID",
                                     "x-go-type-import": {
-                                      "path": "github.com/google/uuid"
+                                      "path": "github.com/gofrs/uuid"
                                     }
                                   },
                                   "schemaVersion": {
@@ -5668,7 +5668,7 @@ const ConnectionSchema: Record<string, unknown> = {
                                     "format": "uuid",
                                     "x-go-type": "uuid.UUID",
                                     "x-go-type-import": {
-                                      "path": "github.com/google/uuid"
+                                      "path": "github.com/gofrs/uuid"
                                     }
                                   },
                                   "owner": {
@@ -5682,7 +5682,7 @@ const ConnectionSchema: Record<string, unknown> = {
                                     "format": "uuid",
                                     "x-go-type": "uuid.UUID",
                                     "x-go-type-import": {
-                                      "path": "github.com/google/uuid"
+                                      "path": "github.com/gofrs/uuid"
                                     }
                                   },
                                   "created_at": {
@@ -5786,7 +5786,7 @@ const ConnectionSchema: Record<string, unknown> = {
                           "format": "uuid",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
-                            "path": "github.com/google/uuid"
+                            "path": "github.com/gofrs/uuid"
                           }
                         },
                         "categoryId": {
@@ -5801,7 +5801,7 @@ const ConnectionSchema: Record<string, unknown> = {
                           "format": "uuid",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
-                            "path": "github.com/google/uuid"
+                            "path": "github.com/gofrs/uuid"
                           }
                         },
                         "category": {
@@ -5834,7 +5834,7 @@ const ConnectionSchema: Record<string, unknown> = {
                               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
-                                "path": "github.com/google/uuid"
+                                "path": "github.com/gofrs/uuid"
                               }
                             },
                             "name": {
@@ -6394,7 +6394,7 @@ const ConnectionSchema: Record<string, unknown> = {
                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
-                            "path": "github.com/google/uuid"
+                            "path": "github.com/gofrs/uuid"
                           }
                         },
                         "name": {
@@ -6474,7 +6474,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "metadata": {
@@ -7047,7 +7047,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "createdAt": {
@@ -7135,7 +7135,7 @@ const ConnectionSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             }
                           },
                           "schemaVersion": {
@@ -7192,7 +7192,7 @@ const ConnectionSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             }
                           },
                           "owner": {
@@ -7206,7 +7206,7 @@ const ConnectionSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             }
                           },
                           "createdAt": {
@@ -7937,7 +7937,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "name": {
@@ -7983,7 +7983,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "type": {
@@ -8046,7 +8046,7 @@ const ConnectionSchema: Record<string, unknown> = {
                           "format": "uuid",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
-                            "path": "github.com/google/uuid"
+                            "path": "github.com/gofrs/uuid"
                           }
                         },
                         "schemaVersion": {
@@ -8180,7 +8180,7 @@ const ConnectionSchema: Record<string, unknown> = {
                               "format": "uuid",
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
-                                "path": "github.com/google/uuid"
+                                "path": "github.com/gofrs/uuid"
                               }
                             },
                             "name": {
@@ -8204,7 +8204,7 @@ const ConnectionSchema: Record<string, unknown> = {
                               "format": "uuid",
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
-                                "path": "github.com/google/uuid"
+                                "path": "github.com/gofrs/uuid"
                               }
                             },
                             "type": {
@@ -8279,7 +8279,7 @@ const ConnectionSchema: Record<string, unknown> = {
                               "format": "uuid",
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
-                                "path": "github.com/google/uuid"
+                                "path": "github.com/gofrs/uuid"
                               }
                             },
                             "created_at": {
@@ -8365,7 +8365,7 @@ const ConnectionSchema: Record<string, unknown> = {
                                     "format": "uuid",
                                     "x-go-type": "uuid.UUID",
                                     "x-go-type-import": {
-                                      "path": "github.com/google/uuid"
+                                      "path": "github.com/gofrs/uuid"
                                     }
                                   },
                                   "schemaVersion": {
@@ -8422,7 +8422,7 @@ const ConnectionSchema: Record<string, unknown> = {
                                     "format": "uuid",
                                     "x-go-type": "uuid.UUID",
                                     "x-go-type-import": {
-                                      "path": "github.com/google/uuid"
+                                      "path": "github.com/gofrs/uuid"
                                     }
                                   },
                                   "owner": {
@@ -8436,7 +8436,7 @@ const ConnectionSchema: Record<string, unknown> = {
                                     "format": "uuid",
                                     "x-go-type": "uuid.UUID",
                                     "x-go-type-import": {
-                                      "path": "github.com/google/uuid"
+                                      "path": "github.com/gofrs/uuid"
                                     }
                                   },
                                   "created_at": {
@@ -8540,7 +8540,7 @@ const ConnectionSchema: Record<string, unknown> = {
                           "format": "uuid",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
-                            "path": "github.com/google/uuid"
+                            "path": "github.com/gofrs/uuid"
                           }
                         },
                         "categoryId": {
@@ -8555,7 +8555,7 @@ const ConnectionSchema: Record<string, unknown> = {
                           "format": "uuid",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
-                            "path": "github.com/google/uuid"
+                            "path": "github.com/gofrs/uuid"
                           }
                         },
                         "category": {
@@ -8588,7 +8588,7 @@ const ConnectionSchema: Record<string, unknown> = {
                               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
-                                "path": "github.com/google/uuid"
+                                "path": "github.com/gofrs/uuid"
                               }
                             },
                             "name": {
@@ -9148,7 +9148,7 @@ const ConnectionSchema: Record<string, unknown> = {
                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
-                            "path": "github.com/google/uuid"
+                            "path": "github.com/gofrs/uuid"
                           }
                         },
                         "name": {
@@ -9228,7 +9228,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "metadata": {
@@ -9801,7 +9801,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "createdAt": {
@@ -9889,7 +9889,7 @@ const ConnectionSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             }
                           },
                           "schemaVersion": {
@@ -9946,7 +9946,7 @@ const ConnectionSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             }
                           },
                           "owner": {
@@ -9960,7 +9960,7 @@ const ConnectionSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             }
                           },
                           "createdAt": {
@@ -11054,7 +11054,7 @@ const ConnectionSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             }
           },
           "name": {
@@ -11100,7 +11100,7 @@ const ConnectionSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             }
           },
           "type": {
@@ -11163,7 +11163,7 @@ const ConnectionSchema: Record<string, unknown> = {
                 "format": "uuid",
                 "x-go-type": "uuid.UUID",
                 "x-go-type-import": {
-                  "path": "github.com/google/uuid"
+                  "path": "github.com/gofrs/uuid"
                 }
               },
               "schemaVersion": {
@@ -11297,7 +11297,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "format": "uuid",
                     "x-go-type": "uuid.UUID",
                     "x-go-type-import": {
-                      "path": "github.com/google/uuid"
+                      "path": "github.com/gofrs/uuid"
                     }
                   },
                   "name": {
@@ -11321,7 +11321,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "format": "uuid",
                     "x-go-type": "uuid.UUID",
                     "x-go-type-import": {
-                      "path": "github.com/google/uuid"
+                      "path": "github.com/gofrs/uuid"
                     }
                   },
                   "type": {
@@ -11396,7 +11396,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "format": "uuid",
                     "x-go-type": "uuid.UUID",
                     "x-go-type-import": {
-                      "path": "github.com/google/uuid"
+                      "path": "github.com/gofrs/uuid"
                     }
                   },
                   "created_at": {
@@ -11482,7 +11482,7 @@ const ConnectionSchema: Record<string, unknown> = {
                           "format": "uuid",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
-                            "path": "github.com/google/uuid"
+                            "path": "github.com/gofrs/uuid"
                           }
                         },
                         "schemaVersion": {
@@ -11539,7 +11539,7 @@ const ConnectionSchema: Record<string, unknown> = {
                           "format": "uuid",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
-                            "path": "github.com/google/uuid"
+                            "path": "github.com/gofrs/uuid"
                           }
                         },
                         "owner": {
@@ -11553,7 +11553,7 @@ const ConnectionSchema: Record<string, unknown> = {
                           "format": "uuid",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
-                            "path": "github.com/google/uuid"
+                            "path": "github.com/gofrs/uuid"
                           }
                         },
                         "created_at": {
@@ -11657,7 +11657,7 @@ const ConnectionSchema: Record<string, unknown> = {
                 "format": "uuid",
                 "x-go-type": "uuid.UUID",
                 "x-go-type-import": {
-                  "path": "github.com/google/uuid"
+                  "path": "github.com/gofrs/uuid"
                 }
               },
               "categoryId": {
@@ -11672,7 +11672,7 @@ const ConnectionSchema: Record<string, unknown> = {
                 "format": "uuid",
                 "x-go-type": "uuid.UUID",
                 "x-go-type-import": {
-                  "path": "github.com/google/uuid"
+                  "path": "github.com/gofrs/uuid"
                 }
               },
               "category": {
@@ -11705,7 +11705,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                     "x-go-type": "uuid.UUID",
                     "x-go-type-import": {
-                      "path": "github.com/google/uuid"
+                      "path": "github.com/gofrs/uuid"
                     }
                   },
                   "name": {
@@ -12265,7 +12265,7 @@ const ConnectionSchema: Record<string, unknown> = {
                 "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                 "x-go-type": "uuid.UUID",
                 "x-go-type-import": {
-                  "path": "github.com/google/uuid"
+                  "path": "github.com/gofrs/uuid"
                 }
               },
               "name": {
@@ -12345,7 +12345,7 @@ const ConnectionSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             }
           },
           "metadata": {
@@ -12918,7 +12918,7 @@ const ConnectionSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             }
           },
           "createdAt": {
@@ -13006,7 +13006,7 @@ const ConnectionSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   }
                 },
                 "schemaVersion": {
@@ -13063,7 +13063,7 @@ const ConnectionSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   }
                 },
                 "owner": {
@@ -13077,7 +13077,7 @@ const ConnectionSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   }
                 },
                 "createdAt": {
@@ -13258,7 +13258,7 @@ const ConnectionSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   }
                 },
                 "name": {
@@ -13304,7 +13304,7 @@ const ConnectionSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   }
                 },
                 "type": {
@@ -13367,7 +13367,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "schemaVersion": {
@@ -13501,7 +13501,7 @@ const ConnectionSchema: Record<string, unknown> = {
                           "format": "uuid",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
-                            "path": "github.com/google/uuid"
+                            "path": "github.com/gofrs/uuid"
                           }
                         },
                         "name": {
@@ -13525,7 +13525,7 @@ const ConnectionSchema: Record<string, unknown> = {
                           "format": "uuid",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
-                            "path": "github.com/google/uuid"
+                            "path": "github.com/gofrs/uuid"
                           }
                         },
                         "type": {
@@ -13600,7 +13600,7 @@ const ConnectionSchema: Record<string, unknown> = {
                           "format": "uuid",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
-                            "path": "github.com/google/uuid"
+                            "path": "github.com/gofrs/uuid"
                           }
                         },
                         "created_at": {
@@ -13686,7 +13686,7 @@ const ConnectionSchema: Record<string, unknown> = {
                                 "format": "uuid",
                                 "x-go-type": "uuid.UUID",
                                 "x-go-type-import": {
-                                  "path": "github.com/google/uuid"
+                                  "path": "github.com/gofrs/uuid"
                                 }
                               },
                               "schemaVersion": {
@@ -13743,7 +13743,7 @@ const ConnectionSchema: Record<string, unknown> = {
                                 "format": "uuid",
                                 "x-go-type": "uuid.UUID",
                                 "x-go-type-import": {
-                                  "path": "github.com/google/uuid"
+                                  "path": "github.com/gofrs/uuid"
                                 }
                               },
                               "owner": {
@@ -13757,7 +13757,7 @@ const ConnectionSchema: Record<string, unknown> = {
                                 "format": "uuid",
                                 "x-go-type": "uuid.UUID",
                                 "x-go-type-import": {
-                                  "path": "github.com/google/uuid"
+                                  "path": "github.com/gofrs/uuid"
                                 }
                               },
                               "created_at": {
@@ -13861,7 +13861,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "categoryId": {
@@ -13876,7 +13876,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "category": {
@@ -13909,7 +13909,7 @@ const ConnectionSchema: Record<string, unknown> = {
                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
-                            "path": "github.com/google/uuid"
+                            "path": "github.com/gofrs/uuid"
                           }
                         },
                         "name": {
@@ -14469,7 +14469,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "name": {
@@ -14549,7 +14549,7 @@ const ConnectionSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   }
                 },
                 "metadata": {
@@ -15122,7 +15122,7 @@ const ConnectionSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   }
                 },
                 "createdAt": {
@@ -15210,7 +15210,7 @@ const ConnectionSchema: Record<string, unknown> = {
                         "format": "uuid",
                         "x-go-type": "uuid.UUID",
                         "x-go-type-import": {
-                          "path": "github.com/google/uuid"
+                          "path": "github.com/gofrs/uuid"
                         }
                       },
                       "schemaVersion": {
@@ -15267,7 +15267,7 @@ const ConnectionSchema: Record<string, unknown> = {
                         "format": "uuid",
                         "x-go-type": "uuid.UUID",
                         "x-go-type-import": {
-                          "path": "github.com/google/uuid"
+                          "path": "github.com/gofrs/uuid"
                         }
                       },
                       "owner": {
@@ -15281,7 +15281,7 @@ const ConnectionSchema: Record<string, unknown> = {
                         "format": "uuid",
                         "x-go-type": "uuid.UUID",
                         "x-go-type-import": {
-                          "path": "github.com/google/uuid"
+                          "path": "github.com/gofrs/uuid"
                         }
                       },
                       "createdAt": {

@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/meshery/schemas/models/core"
-	openapi_types "github.com/oapi-codegen/runtime/types"
+	"github.com/gofrs/uuid"
 )
 
 // Defines values for OrgTeamActionPayloadAction.
@@ -250,7 +250,7 @@ type Text = core.Text
 // Theme UI theme configured for an organization.
 type Theme struct {
 	// Id Theme identifier.
-	ID openapi_types.UUID `json:"id" yaml:"id"`
+	ID uuid.UUID `json:"id" yaml:"id"`
 
 	// Logo Themed logo assets used across light and dark, desktop and mobile presentations.
 	Logo Logo `json:"logo" yaml:"logo"`

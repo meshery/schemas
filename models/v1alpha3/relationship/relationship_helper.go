@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/google/uuid"
+	"github.com/gofrs/uuid"
 	"github.com/meshery/meshkit/database"
 	"github.com/meshery/meshkit/models/meshmodel/entity"
 	"github.com/meshery/meshkit/utils"
@@ -40,7 +40,7 @@ func (r RelationshipDefinition) Type() entity.EntityType {
 }
 
 func (r *RelationshipDefinition) GenerateID() (uuid.UUID, error) {
-	return uuid.NewRandom()
+	return uuid.NewV4()
 }
 
 func (r RelationshipDefinition) GetID() uuid.UUID {

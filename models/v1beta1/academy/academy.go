@@ -9,6 +9,7 @@ import (
 	core "github.com/meshery/schemas/models/core"
 	invitationv1beta1 "github.com/meshery/schemas/models/v1beta1/invitation"
 	openapi_types "github.com/oapi-codegen/runtime/types"
+	"github.com/gofrs/uuid"
 )
 
 // Defines values for AcademyRegistrationStatus.
@@ -610,7 +611,7 @@ type UserRegistration struct {
 	CurriculaType  ContentType `db:"curricula_type" json:"curricula_type" yaml:"curricula_type"`
 
 	// RegistrationId Unique ID of the registration
-	RegistrationId openapi_types.UUID `db:"registration_id" json:"registration_id" yaml:"registration_id"`
+	RegistrationId uuid.UUID `db:"registration_id" json:"registration_id" yaml:"registration_id"`
 
 	// Status Status of the user's course registration
 	Status AcademyRegistrationStatus `db:"status" json:"status" yaml:"status"`
@@ -628,7 +629,7 @@ type UserRegistration struct {
 	UserFirstName string `db:"user_first_name" json:"user_first_name" yaml:"user_first_name"`
 
 	// UserId ID of the user
-	UserId openapi_types.UUID `db:"user_id" json:"user_id" yaml:"user_id"`
+	UserId uuid.UUID `db:"user_id" json:"user_id" yaml:"user_id"`
 
 	// UserLastName Last name of the user
 	UserLastName string `db:"user_last_name" json:"user_last_name" yaml:"user_last_name"`

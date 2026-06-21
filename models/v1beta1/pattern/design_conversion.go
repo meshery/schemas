@@ -5,8 +5,7 @@ import (
 	"reflect"
 	"strings"
 
-	gofrsuuid "github.com/gofrs/uuid"
-	"github.com/google/uuid"
+	"github.com/gofrs/uuid"
 	"github.com/meshery/meshkit/utils"
 	"github.com/meshery/schemas/models/conversion"
 	"github.com/meshery/schemas/models/v1alpha2"
@@ -16,22 +15,6 @@ import (
 	"github.com/meshery/schemas/models/v1beta2/relationship"
 	"github.com/pkg/errors"
 )
-
-func parseUUIDOrNil(value string) uuid.UUID {
-	id, err := uuid.Parse(value)
-	if err != nil {
-		return uuid.Nil
-	}
-	return id
-}
-
-func parseLegacyUUIDOrNil(value string) gofrsuuid.UUID {
-	id, err := gofrsuuid.FromString(value)
-	if err != nil {
-		return gofrsuuid.Nil
-	}
-	return id
-}
 
 type position struct {
 	X float64 `json:"posX" yaml:"posX"`
@@ -60,7 +43,7 @@ func (p *PatternFile) ConvertTo(pattern conversion.Hub) error {
 
 		service.ApiVersion = component.Component.Version
 		service.Type = component.Component.Kind
-		componentId := parseLegacyUUIDOrNil(component.ID.String())
+		componentId := component.ID
 		service.Id = &componentId
 		service.IsAnnotation = component.Metadata.IsAnnotation
 		if component.Model != nil {
@@ -93,7 +76,7 @@ func (p *PatternFile) ConvertFrom(pattern conversion.Hub) error {
 		return err
 	}
 
-	p.ID = parseUUIDOrNil(patternFile.PatternID)
+	p.ID = uuid.FromStringOrNil(patternFile.PatternID)
 	p.Name = patternFile.Name
 	p.SchemaVersion = v1beta1.DesignSchemaVersion
 	p.Version = patternFile.Version
@@ -143,11 +126,11 @@ func (p *PatternFile) convertFromTraits(cmp *component.ComponentDefinition, serv
 	}
 
 	// Handle node id: traits.meshmap.id
-	compNodeUUID := uuid.New()
+	compNodeUUID, _ := uuid.NewV4()
 
 	compNodeID, ok := extensionsMetadata["id"].(string)
 	if ok {
-		nodeID, err := uuid.Parse(compNodeID)
+		nodeID, err := uuid.FromString(compNodeID)
 		if err == nil {
 			compNodeUUID = nodeID
 		}

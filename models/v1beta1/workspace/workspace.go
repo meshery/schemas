@@ -7,7 +7,7 @@ import (
 	"github.com/meshery/schemas/models/core"
 	patternv1beta1 "github.com/meshery/schemas/models/v1beta1/pattern"
 	viewv1beta1 "github.com/meshery/schemas/models/v1beta1/view"
-	openapi_types "github.com/oapi-codegen/runtime/types"
+	"github.com/gofrs/uuid"
 )
 
 // AvailableWorkspace Workspace with resolved owner details, as returned in list and get responses.
@@ -115,7 +115,7 @@ type WorkspacePayload struct {
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 
 	// OrganizationID Organization ID.
-	OrganizationID openapi_types.UUID `json:"organization_id,omitempty" yaml:"organization_id,omitempty"`
+	OrganizationID uuid.UUID `json:"organization_id,omitempty" yaml:"organization_id,omitempty"`
 }
 
 // WorkspaceUpdatePayload Payload for updating a workspace.
@@ -130,7 +130,7 @@ type WorkspaceUpdatePayload struct {
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 
 	// OrganizationID Organization ID.
-	OrganizationID openapi_types.UUID `json:"organization_id,omitempty" yaml:"organization_id,omitempty"`
+	OrganizationID uuid.UUID `json:"organization_id,omitempty" yaml:"organization_id,omitempty"`
 }
 
 // WorkspacesDesignsMapping Junction record linking a workspace to a design.

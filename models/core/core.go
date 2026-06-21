@@ -10,7 +10,7 @@ import (
 
 	"database/sql"
 
-	"github.com/google/uuid"
+	"github.com/gofrs/uuid"
 	"github.com/oapi-codegen/runtime"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
