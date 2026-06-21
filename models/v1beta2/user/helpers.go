@@ -67,7 +67,9 @@ func (p *Preference) Scan(src interface{}) error {
 	// on the next preference update.
 	if v, ok := mapVal["selectedOrganizationId"]; ok {
 		s, isStr := v.(string)
-		if _, err := uuid.FromString(s); !isStr || err != nil {
+		if !isStr {
+			delete(mapVal, "selectedOrganizationId")
+		} else if _, err := uuid.FromString(s); err != nil {
 			delete(mapVal, "selectedOrganizationId")
 		}
 	}

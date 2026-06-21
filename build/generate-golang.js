@@ -99,7 +99,7 @@ function normalizeUuidType(filePath) {
   content = content.replace(/\bopenapi_types\.UUID\b/g, "uuid.UUID");
   if (!/\bopenapi_types\./.test(content)) {
     content = content.replace(
-      /^[ \t]*openapi_types "github\.com\/oapi-codegen\/runtime\/types"\n/m,
+      /^[ \t]*openapi_types "github\.com\/oapi-codegen\/runtime\/types"\r?\n/m,
       "",
     );
   }
