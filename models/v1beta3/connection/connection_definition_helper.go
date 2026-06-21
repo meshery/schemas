@@ -22,7 +22,7 @@ func (c ConnectionDefinition) Type() entity.EntityType {
 }
 
 func (c *ConnectionDefinition) GenerateID() (uuid.UUID, error) {
-	return uuid.New(), nil
+	return uuid.NewRandom()
 }
 
 func (c ConnectionDefinition) GetID() uuid.UUID {
