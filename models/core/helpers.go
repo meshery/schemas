@@ -1,6 +1,6 @@
 package core
 
-import "github.com/google/uuid"
+import "github.com/gofrs/uuid"
 
 func UUIDOrUUIDNil(value *uuid.UUID) uuid.UUID {
 	if value == nil {

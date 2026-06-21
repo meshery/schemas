@@ -9,7 +9,7 @@ import (
 	"github.com/meshery/schemas/models/core"
 	modelv1beta1 "github.com/meshery/schemas/models/v1beta1/model"
 	environmentv1beta3 "github.com/meshery/schemas/models/v1beta3/environment"
-	openapi_types "github.com/oapi-codegen/runtime/types"
+	"github.com/gofrs/uuid"
 )
 
 // Defines values for ConnectionStatus.
@@ -146,13 +146,13 @@ type ConnectionPage struct {
 // ConnectionPayload Payload for creating or updating a connection
 type ConnectionPayload struct {
 	// CredentialID Associated credential ID
-	CredentialID *openapi_types.UUID `json:"credentialId,omitempty" yaml:"credentialId,omitempty"`
+	CredentialID *uuid.UUID `json:"credentialId,omitempty" yaml:"credentialId,omitempty"`
 
 	// CredentialSecret Credential secret data
 	CredentialSecret core.Map `json:"credentialSecret" yaml:"credentialSecret"`
 
 	// ConnectionID Connection ID
-	ConnectionID *openapi_types.UUID `json:"id,omitempty" yaml:"id,omitempty"`
+	ConnectionID *uuid.UUID `json:"id,omitempty" yaml:"id,omitempty"`
 
 	// Kind Connection kind
 	Kind string `json:"kind" yaml:"kind"`
@@ -230,7 +230,7 @@ type MesheryInstance struct {
 	DeletedAt *time.Time `db:"deleted_at" json:"deletedAt,omitempty" yaml:"deletedAt,omitempty"`
 
 	// Id Instance ID
-	ID *openapi_types.UUID `db:"id" json:"id,omitempty" yaml:"id,omitempty"`
+	ID *uuid.UUID `db:"id" json:"id,omitempty" yaml:"id,omitempty"`
 
 	// Name Instance name
 	Name *string `db:"name" json:"name,omitempty" yaml:"name,omitempty"`
@@ -239,7 +239,7 @@ type MesheryInstance struct {
 	ServerBuildSHA *string `db:"server_build_sha" json:"serverBuildSha,omitempty" yaml:"serverBuildSha,omitempty"`
 
 	// ServerID Server ID
-	ServerID *openapi_types.UUID `db:"server_id" json:"serverId,omitempty" yaml:"serverId,omitempty"`
+	ServerID *uuid.UUID `db:"server_id" json:"serverId,omitempty" yaml:"serverId,omitempty"`
 
 	// ServerLocation Server location URL
 	ServerLocation *string `db:"server_location" json:"serverLocation,omitempty" yaml:"serverLocation,omitempty"`
@@ -267,25 +267,25 @@ type MesheryInstancePage struct {
 }
 
 // ConnectionDefinitionId defines model for connectionDefinitionId.
-type ConnectionDefinitionId = openapi_types.UUID
+type ConnectionDefinitionId = uuid.UUID
 
 // ConnectionId defines model for connectionId.
-type ConnectionId = openapi_types.UUID
+type ConnectionId = uuid.UUID
 
 // ConnectionKind defines model for connectionKind.
 type ConnectionKind = string
 
 // EnvironmentId defines model for environmentId.
-type EnvironmentId = openapi_types.UUID
+type EnvironmentId = uuid.UUID
 
 // MesheryServerId defines model for mesheryServerId.
-type MesheryServerId = openapi_types.UUID
+type MesheryServerId = uuid.UUID
 
 // Order defines model for order.
 type Order = string
 
 // OrgIdQuery defines model for orgIdQuery.
-type OrgIdQuery = openapi_types.UUID
+type OrgIdQuery = uuid.UUID
 
 // Page defines model for page.
 type Page = int

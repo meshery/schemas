@@ -5,7 +5,6 @@ go 1.26.4
 require (
 	github.com/getkin/kin-openapi v0.133.0
 	github.com/gofrs/uuid v4.4.0+incompatible
-	github.com/google/uuid v1.6.0
 	github.com/lib/pq v1.12.3
 	github.com/meshery/meshkit v1.0.11
 	github.com/oapi-codegen/runtime v1.4.1
@@ -37,6 +36,7 @@ require (
 	github.com/go-openapi/swag/jsonname v0.25.4 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/google/s2a-go v0.1.9 // indirect
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.16 // indirect
 	github.com/googleapis/gax-go/v2 v2.22.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect

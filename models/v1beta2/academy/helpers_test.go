@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/google/uuid"
+	"github.com/gofrs/uuid"
 )
 
 func TestQuizUnmarshalJSON_LegacyHugoQuiz(t *testing.T) {
@@ -107,6 +107,14 @@ func TestQuizUnmarshalJSON_LegacyHugoQuiz(t *testing.T) {
 	}
 	if quiz.Parent.ID == uuid.Nil {
 		t.Fatalf("expected legacy parent ID to derive a UUID")
+	}
+	// Golden-value anchor: the parent ID is derived via NewV5(NamespaceURL, ...).
+	// gofrs NewV5 is byte-identical to the prior google NewSHA1 for the same
+	// namespace and inputs, so existing academy content IDs MUST NOT change.
+	// If this value drifts, the derivation (library, namespace, input order, or
+	// separator) regressed and persisted academy IDs would be orphaned.
+	if quiz.Parent.ID.String() != "74e323bb-c345-5031-98b1-9f29e6f8adda" {
+		t.Fatalf("derived parent UUID changed; academy content IDs would break: got %s", quiz.Parent.ID)
 	}
 	if quiz.NextPage != (Parent{}) {
 		t.Fatalf("expected empty legacy next_page object to remain zero-valued, got %+v", quiz.NextPage)

@@ -9,6 +9,7 @@ import (
 	core "github.com/meshery/schemas/models/core"
 	planv1beta3 "github.com/meshery/schemas/models/v1beta3/plan"
 	openapi_types "github.com/oapi-codegen/runtime/types"
+	"github.com/gofrs/uuid"
 )
 
 // Defines values for PaymentProcessor.
@@ -157,4 +158,4 @@ type Pagesize = string
 type PagesizeWithAll = string
 
 // SubscriptionId defines model for subscriptionId.
-type SubscriptionId = openapi_types.UUID
+type SubscriptionId = uuid.UUID

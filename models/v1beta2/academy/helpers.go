@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/google/uuid"
+	"github.com/gofrs/uuid"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
@@ -267,7 +267,7 @@ func looksLikeHugoQuiz(data []byte) bool {
 	return false
 }
 
-func (quiz HugoQuiz) toCanonicalQuestion(quizID openapi_types.UUID, index int, question HugoQuestion) (Question, error) {
+func (quiz HugoQuiz) toCanonicalQuestion(quizID uuid.UUID, index int, question HugoQuestion) (Question, error) {
 	questionID := quiz.deriveQuestionUUID(quizID, question.ID, index, question.Text)
 	options := make([]QuestionOption, len(question.Options))
 	for optionIndex, option := range question.Options {
@@ -345,9 +345,9 @@ func normalizeLegacyQuestionType(raw string) QuestionType {
 	return QuestionType(strings.ReplaceAll(strings.TrimSpace(raw), "_", "-"))
 }
 
-func parseRequiredUUID(field, raw string) (openapi_types.UUID, error) {
+func parseRequiredUUID(field, raw string) (uuid.UUID, error) {
 	normalized := normalizeSeedValue(raw)
-	value, err := uuid.Parse(normalized)
+	value, err := uuid.FromString(normalized)
 	if err != nil {
 		return uuid.Nil, fmt.Errorf("parse academy quiz %s UUID %q: %w", field, raw, err)
 	}
@@ -355,17 +355,17 @@ func parseRequiredUUID(field, raw string) (openapi_types.UUID, error) {
 	return value, nil
 }
 
-func (quiz HugoQuiz) deriveQuizUUID() openapi_types.UUID {
+func (quiz HugoQuiz) deriveQuizUUID() uuid.UUID {
 	return quiz.deriveContentUUID(quiz.ID, quiz.RelPermalink, quiz.Title, quiz.Type)
 }
 
-func (quiz HugoQuiz) deriveContentUUID(rawID, relPermalink, title, contentType string) openapi_types.UUID {
+func (quiz HugoQuiz) deriveContentUUID(rawID, relPermalink, title, contentType string) uuid.UUID {
 	rawID = normalizeSeedValue(rawID)
-	if parsed, err := uuid.Parse(rawID); err == nil {
+	if parsed, err := uuid.FromString(rawID); err == nil {
 		return parsed
 	}
 
-	return uuid.NewSHA1(uuid.NameSpaceURL, []byte(strings.Join([]string{
+	return uuid.NewV5(uuid.NamespaceURL, strings.Join([]string{
 		"academy-theme",
 		"v1beta2",
 		"content",
@@ -374,16 +374,16 @@ func (quiz HugoQuiz) deriveContentUUID(rawID, relPermalink, title, contentType s
 		strings.TrimSpace(title),
 		strings.TrimSpace(contentType),
 		rawID,
-	}, "\x1f")))
+	}, "\x1f"))
 }
 
-func (quiz HugoQuiz) deriveQuestionUUID(quizID openapi_types.UUID, rawID string, index int, text string) openapi_types.UUID {
+func (quiz HugoQuiz) deriveQuestionUUID(quizID uuid.UUID, rawID string, index int, text string) uuid.UUID {
 	rawID = normalizeSeedValue(rawID)
-	if parsed, err := uuid.Parse(rawID); err == nil {
+	if parsed, err := uuid.FromString(rawID); err == nil {
 		return parsed
 	}
 
-	return uuid.NewSHA1(uuid.NameSpaceURL, []byte(strings.Join([]string{
+	return uuid.NewV5(uuid.NamespaceURL, strings.Join([]string{
 		"academy-theme",
 		"v1beta2",
 		"question",
@@ -392,16 +392,16 @@ func (quiz HugoQuiz) deriveQuestionUUID(quizID openapi_types.UUID, rawID string,
 		strconv.Itoa(index),
 		rawID,
 		strings.TrimSpace(text),
-	}, "\x1f")))
+	}, "\x1f"))
 }
 
-func (quiz HugoQuiz) deriveOptionUUID(questionID openapi_types.UUID, rawID string, index int, text string) openapi_types.UUID {
+func (quiz HugoQuiz) deriveOptionUUID(questionID uuid.UUID, rawID string, index int, text string) uuid.UUID {
 	rawID = normalizeSeedValue(rawID)
-	if parsed, err := uuid.Parse(rawID); err == nil {
+	if parsed, err := uuid.FromString(rawID); err == nil {
 		return parsed
 	}
 
-	return uuid.NewSHA1(uuid.NameSpaceURL, []byte(strings.Join([]string{
+	return uuid.NewV5(uuid.NamespaceURL, strings.Join([]string{
 		"academy-theme",
 		"v1beta2",
 		"option",
@@ -409,12 +409,12 @@ func (quiz HugoQuiz) deriveOptionUUID(questionID openapi_types.UUID, rawID strin
 		strconv.Itoa(index),
 		rawID,
 		strings.TrimSpace(text),
-	}, "\x1f")))
+	}, "\x1f"))
 }
 
 func normalizeSeedValue(raw string) string {
 	trimmed := strings.TrimSpace(raw)
-	if parsed, err := uuid.Parse(trimmed); err == nil {
+	if parsed, err := uuid.FromString(trimmed); err == nil {
 		return parsed.String()
 	}
 	return trimmed

@@ -9,6 +9,7 @@ import (
 	core "github.com/meshery/schemas/models/core"
 	invitationv1beta2 "github.com/meshery/schemas/models/v1beta2/invitation"
 	openapi_types "github.com/oapi-codegen/runtime/types"
+	"github.com/gofrs/uuid"
 )
 
 // Defines values for AcademyRegistrationStatus.
@@ -71,7 +72,7 @@ type AcademyCurricula struct {
 	DeletedAt AcademyCurriculaDeletedAt `db:"deleted_at" json:"deleted_at" yaml:"deleted_at"`
 
 	// ID Id of the Curricula
-	ID openapi_types.UUID `db:"id" json:"id" yaml:"id"`
+	ID uuid.UUID `db:"id" json:"id" yaml:"id"`
 
 	// InviteId ID of the invite associated with this Curricula
 	InviteId *AcademyCurriculaInviteId `db:"invite_id" json:"invite_id" yaml:"invite_id"`
@@ -136,7 +137,7 @@ type AcademyCurriculaWithMetrics struct {
 	DeletedAt AcademyCurriculaDeletedAt `db:"deleted_at" json:"deleted_at" yaml:"deleted_at"`
 
 	// ID Id of the Curricula
-	ID openapi_types.UUID `db:"id" json:"id" yaml:"id"`
+	ID uuid.UUID `db:"id" json:"id" yaml:"id"`
 
 	// InviteId ID of the invite associated with this Curricula
 	InviteId *AcademyCurriculaInviteId `db:"invite_id" json:"invite_id" yaml:"invite_id"`
@@ -181,7 +182,7 @@ type AcademyRegistration struct {
 	Certificate core.Map `db:"certificate" json:"certificate" yaml:"certificate"`
 
 	// ContentId ID of the course content
-	ContentId openapi_types.UUID `db:"content_id" json:"content_id" yaml:"content_id"`
+	ContentId uuid.UUID `db:"content_id" json:"content_id" yaml:"content_id"`
 	CreatedAt core.Time  `db:"created_at" json:"created_at" yaml:"created_at"`
 
 	// DeletedAt Timestamp when the resource was deleted.
@@ -231,7 +232,7 @@ type Certificate struct {
 	ExpiresIn *int `json:"expiresIn,omitempty" yaml:"expiresIn,omitempty"`
 
 	// ID Unique identifier for the certificate
-	ID openapi_types.UUID `json:"id" yaml:"id"`
+	ID uuid.UUID `json:"id" yaml:"id"`
 
 	// IssuedDate Date when the certificate was issued
 	IssuedDate time.Time `json:"issuedDate" yaml:"issuedDate"`
@@ -243,7 +244,7 @@ type Certificate struct {
 	OrgId core.Uuid `json:"orgId" yaml:"orgId"`
 
 	// RecipientId ID of the recipient (user) who received the certificate
-	RecipientId openapi_types.UUID `json:"recipientId" yaml:"recipientId"`
+	RecipientId uuid.UUID `json:"recipientId" yaml:"recipientId"`
 
 	// RecipientName Name of the recipient (user) who received the certificate
 	RecipientName string `json:"recipientName" yaml:"recipientName"`
@@ -279,7 +280,7 @@ type ChildNode struct {
 	Description string `json:"description" yaml:"description"`
 
 	// ID Unique identifier for the course
-	ID openapi_types.UUID `db:"id" json:"id" yaml:"id"`
+	ID uuid.UUID `db:"id" json:"id" yaml:"id"`
 
 	// Permalink URL to the course content
 	Permalink string `json:"permalink" yaml:"permalink"`
@@ -328,7 +329,7 @@ type CurriculaCurrentItemData struct {
 	ContentType ContentType `json:"contentType" yaml:"contentType"`
 
 	// Id CurriculaCurrentItemData ID.
-	ID openapi_types.UUID `json:"id" yaml:"id"`
+	ID uuid.UUID `json:"id" yaml:"id"`
 
 	// LastOpened The last opened of the curriculacurrentitemdata.
 	LastOpened time.Time `json:"lastOpened" yaml:"lastOpened"`
@@ -422,7 +423,7 @@ type Level string
 // Parent defines model for Parent.
 type Parent struct {
 	// Id Parent ID.
-	ID openapi_types.UUID `json:"id" yaml:"id"`
+	ID uuid.UUID `json:"id" yaml:"id"`
 
 	// RelPermalink The rel permalink of the parent.
 	RelPermalink string `json:"relPermalink" yaml:"relPermalink"`
@@ -447,7 +448,7 @@ type Question struct {
 	CorrectAnswer string `json:"correctAnswer" yaml:"correctAnswer"`
 
 	// Id Question ID.
-	ID openapi_types.UUID `json:"id" yaml:"id"`
+	ID uuid.UUID `json:"id" yaml:"id"`
 
 	// Marks The marks of the question.
 	Marks int `json:"marks" yaml:"marks"`
@@ -466,7 +467,7 @@ type Question struct {
 // QuestionOption defines model for QuestionOption.
 type QuestionOption struct {
 	// Id QuestionOption ID.
-	ID openapi_types.UUID `json:"id" yaml:"id"`
+	ID uuid.UUID `json:"id" yaml:"id"`
 
 	// IsCorrect The is correct of the questionoption.
 	IsCorrect bool `json:"isCorrect" yaml:"isCorrect"`
@@ -496,7 +497,7 @@ type Quiz struct {
 	Final bool `json:"final" yaml:"final"`
 
 	// ID Quiz ID.
-	ID openapi_types.UUID `json:"id" yaml:"id"`
+	ID uuid.UUID `json:"id" yaml:"id"`
 
 	// Lastmod The lastmod of the quiz.
 	Lastmod openapi_types.Date `json:"lastmod" yaml:"lastmod"`
@@ -509,7 +510,7 @@ type Quiz struct {
 	NextPage    Parent `json:"nextPage" yaml:"nextPage"`
 
 	// OrgId Organization ID that owns this quiz
-	OrgId  openapi_types.UUID `db:"org_id" json:"org_id" yaml:"org_id"`
+	OrgId  uuid.UUID `db:"org_id" json:"org_id" yaml:"org_id"`
 	Parent *Parent            `json:"parent,omitempty" yaml:"parent,omitempty"`
 
 	// PassPercentage The pass percentage of the quiz.
@@ -592,23 +593,23 @@ type QuizSubmission struct {
 	QuizAbsPath string `json:"quizAbsPath" yaml:"quizAbsPath"`
 
 	// RegistrationId ID of the associated registration.
-	RegistrationId openapi_types.UUID `json:"registrationId" yaml:"registrationId"`
+	RegistrationId uuid.UUID `json:"registrationId" yaml:"registrationId"`
 
 	// TestSessionId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	TestSessionId core.Uuid `json:"testSessionId" yaml:"testSessionId"`
 
 	// UserId ID of the user who owns or created this resource.
-	UserId openapi_types.UUID `json:"user_id" yaml:"user_id"`
+	UserId uuid.UUID `json:"user_id" yaml:"user_id"`
 }
 
 // RegisterToAcademyContentRequest defines model for RegisterToAcademyContentRequest.
 type RegisterToAcademyContentRequest struct {
 	// ContentId ID of the academy content to register for
-	ContentId   openapi_types.UUID `json:"contentId" yaml:"contentId"`
+	ContentId   uuid.UUID `json:"contentId" yaml:"contentId"`
 	ContentType *ContentType       `json:"contentType,omitempty" yaml:"contentType,omitempty"`
 
 	// UserId ID of the user registering for the content.
-	UserId openapi_types.UUID `json:"user_id" yaml:"user_id"`
+	UserId uuid.UUID `json:"user_id" yaml:"user_id"`
 }
 
 // SingleAcademyCurriculaResponse defines model for SingleAcademyCurriculaResponse.
@@ -621,7 +622,7 @@ type SingleAcademyCurriculaResponse struct {
 	DeletedAt AcademyCurriculaDeletedAt `db:"deleted_at" json:"deleted_at" yaml:"deleted_at"`
 
 	// ID Id of the Curricula
-	ID openapi_types.UUID `db:"id" json:"id" yaml:"id"`
+	ID uuid.UUID `db:"id" json:"id" yaml:"id"`
 
 	// Invitation Invitation entity schema.
 	Invitation *invitationv1beta2.Invitation `json:"invitation,omitempty" yaml:"invitation,omitempty"`
@@ -655,7 +656,7 @@ type SingleAcademyCurriculaResponse struct {
 // StartTestRequest defines model for StartTestRequest.
 type StartTestRequest struct {
 	// RegistrationId ID of the associated registration.
-	RegistrationId openapi_types.UUID `json:"registrationId" yaml:"registrationId"`
+	RegistrationId uuid.UUID `json:"registrationId" yaml:"registrationId"`
 
 	// TestAbsPath The test abs path of the starttestrequest.
 	TestAbsPath string `json:"testAbsPath" yaml:"testAbsPath"`
@@ -670,7 +671,7 @@ type SubmittedAnswer struct {
 	AnswerText string `json:"answerText" yaml:"answerText"`
 
 	// QuestionId ID of the associated question.
-	QuestionId openapi_types.UUID `json:"questionId" yaml:"questionId"`
+	QuestionId uuid.UUID `json:"questionId" yaml:"questionId"`
 
 	// SelectedOptionId Map of selected option IDs to a boolean value indicating if it was selected.
 	SelectedOptionId map[string]bool `json:"selectedOptionId" yaml:"selectedOptionId"`
@@ -726,7 +727,7 @@ type UpdateCurrentItemProgressResponse struct {
 	ProgressTracker *CurriculaProgressTracker `json:"progressTracker,omitempty" yaml:"progressTracker,omitempty"`
 
 	// RegistrationId ID of the associated registration.
-	RegistrationId *openapi_types.UUID `json:"registrationId,omitempty" yaml:"registrationId,omitempty"`
+	RegistrationId *uuid.UUID `json:"registrationId,omitempty" yaml:"registrationId,omitempty"`
 }
 
 // UpdateCurrentItemRequest defines model for UpdateCurrentItemRequest.
@@ -748,7 +749,7 @@ type UserRegistration struct {
 	CurriculaType  ContentType `db:"curricula_type" json:"curricula_type" yaml:"curricula_type"`
 
 	// RegistrationId Unique ID of the registration
-	RegistrationId openapi_types.UUID `db:"registration_id" json:"registration_id" yaml:"registration_id"`
+	RegistrationId uuid.UUID `db:"registration_id" json:"registration_id" yaml:"registration_id"`
 
 	// Status Status of the user's course registration
 	Status AcademyRegistrationStatus `db:"status" json:"status" yaml:"status"`
@@ -766,7 +767,7 @@ type UserRegistration struct {
 	UserFirstName string `db:"user_first_name" json:"user_first_name" yaml:"user_first_name"`
 
 	// UserId ID of the user
-	UserId openapi_types.UUID `db:"user_id" json:"user_id" yaml:"user_id"`
+	UserId uuid.UUID `db:"user_id" json:"user_id" yaml:"user_id"`
 
 	// UserLastName Last name of the user
 	UserLastName string `db:"user_last_name" json:"user_last_name" yaml:"user_last_name"`

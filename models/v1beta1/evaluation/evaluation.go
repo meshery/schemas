@@ -7,7 +7,7 @@ import (
 	"time"
 
 	patternv1beta1 "github.com/meshery/schemas/models/v1beta1/pattern"
-	openapi_types "github.com/oapi-codegen/runtime/types"
+	"github.com/gofrs/uuid"
 )
 
 // Defines values for ActionOp.
@@ -119,7 +119,7 @@ type DeleteComponentOp struct {
 	// Value The value of the deletecomponentop.
 	Value *struct {
 		// Id Identifier of the component to delete.
-		Id openapi_types.UUID `json:"id" yaml:"id"`
+		Id uuid.UUID `json:"id" yaml:"id"`
 	} `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -134,7 +134,7 @@ type DeleteRelationshipOp struct {
 	// Value The value of the deleterelationshipop.
 	Value *struct {
 		// Id Identifier of the relationship to delete.
-		Id openapi_types.UUID `json:"id" yaml:"id"`
+		Id uuid.UUID `json:"id" yaml:"id"`
 	} `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -185,7 +185,7 @@ type UpdateComponentConfigurationOp struct {
 	// Value The value of the updatecomponentconfigurationop.
 	Value *struct {
 		// Id Identifier of the component whose configuration will be updated.
-		Id openapi_types.UUID `json:"id" yaml:"id"`
+		Id uuid.UUID `json:"id" yaml:"id"`
 
 		// Mode Strategy to use when applying the configuration update value.
 		Mode *UpdateComponentConfigurationOpValueMode `json:"mode,omitempty" yaml:"mode,omitempty"`
@@ -212,7 +212,7 @@ type UpdateComponentOp struct {
 	// Value The value of the updatecomponentop.
 	Value *struct {
 		// Id Identifier of the component to update.
-		Id openapi_types.UUID `json:"id" yaml:"id"`
+		Id uuid.UUID `json:"id" yaml:"id"`
 
 		// Mode Strategy to use when applying the component update value.
 		Mode *UpdateComponentOpValueMode `json:"mode,omitempty" yaml:"mode,omitempty"`
@@ -239,7 +239,7 @@ type UpdateRelationshipOp struct {
 	// Value The value of the updaterelationshipop.
 	Value *struct {
 		// Id Identifier of the relationship to update.
-		Id openapi_types.UUID `json:"id" yaml:"id"`
+		Id uuid.UUID `json:"id" yaml:"id"`
 
 		// Path Path to the field being updated on the relationship.
 		Path []string `json:"path" yaml:"path"`

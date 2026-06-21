@@ -187,7 +187,7 @@ const AcademySchema: Record<string, unknown> = {
                                 "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                 "x-go-type": "uuid.UUID",
                                 "x-go-type-import": {
-                                  "path": "github.com/google/uuid"
+                                  "path": "github.com/gofrs/uuid"
                                 }
                               }
                             ],
@@ -205,7 +205,7 @@ const AcademySchema: Record<string, unknown> = {
                                 "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                 "x-go-type": "uuid.UUID",
                                 "x-go-type-import": {
-                                  "path": "github.com/google/uuid"
+                                  "path": "github.com/gofrs/uuid"
                                 }
                               }
                             ],
@@ -334,7 +334,7 @@ const AcademySchema: Record<string, unknown> = {
                                         "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                         "x-go-type": "uuid.UUID",
                                         "x-go-type-import": {
-                                          "path": "github.com/google/uuid"
+                                          "path": "github.com/gofrs/uuid"
                                         }
                                       },
                                       "recipientId": {
@@ -589,7 +589,7 @@ const AcademySchema: Record<string, unknown> = {
                         "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                         "x-go-type": "uuid.UUID",
                         "x-go-type-import": {
-                          "path": "github.com/google/uuid"
+                          "path": "github.com/gofrs/uuid"
                         }
                       }
                     ],
@@ -619,7 +619,7 @@ const AcademySchema: Record<string, unknown> = {
                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                     "x-go-type": "uuid.UUID",
                     "x-go-type-import": {
-                      "path": "github.com/google/uuid"
+                      "path": "github.com/gofrs/uuid"
                     },
                     "x-go-name": "TeamId",
                     "x-oapi-codegen-extra-tags": {
@@ -729,7 +729,7 @@ const AcademySchema: Record<string, unknown> = {
                                 "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                 "x-go-type": "uuid.UUID",
                                 "x-go-type-import": {
-                                  "path": "github.com/google/uuid"
+                                  "path": "github.com/gofrs/uuid"
                                 }
                               },
                               "recipientId": {
@@ -1004,7 +1004,7 @@ const AcademySchema: Record<string, unknown> = {
                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
-                            "path": "github.com/google/uuid"
+                            "path": "github.com/gofrs/uuid"
                           }
                         }
                       ],
@@ -1022,7 +1022,7 @@ const AcademySchema: Record<string, unknown> = {
                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
-                            "path": "github.com/google/uuid"
+                            "path": "github.com/gofrs/uuid"
                           }
                         }
                       ],
@@ -1151,7 +1151,7 @@ const AcademySchema: Record<string, unknown> = {
                                   "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                   "x-go-type": "uuid.UUID",
                                   "x-go-type-import": {
-                                    "path": "github.com/google/uuid"
+                                    "path": "github.com/gofrs/uuid"
                                   }
                                 },
                                 "recipientId": {
@@ -1609,7 +1609,7 @@ const AcademySchema: Record<string, unknown> = {
                                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                     "x-go-type": "uuid.UUID",
                                     "x-go-type-import": {
-                                      "path": "github.com/google/uuid"
+                                      "path": "github.com/gofrs/uuid"
                                     }
                                   }
                                 ],
@@ -1627,7 +1627,7 @@ const AcademySchema: Record<string, unknown> = {
                                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                     "x-go-type": "uuid.UUID",
                                     "x-go-type-import": {
-                                      "path": "github.com/google/uuid"
+                                      "path": "github.com/gofrs/uuid"
                                     }
                                   }
                                 ],
@@ -1756,7 +1756,7 @@ const AcademySchema: Record<string, unknown> = {
                                             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                             "x-go-type": "uuid.UUID",
                                             "x-go-type-import": {
-                                              "path": "github.com/google/uuid"
+                                              "path": "github.com/gofrs/uuid"
                                             }
                                           },
                                           "recipientId": {
@@ -2111,7 +2111,7 @@ const AcademySchema: Record<string, unknown> = {
                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
-                            "path": "github.com/google/uuid"
+                            "path": "github.com/gofrs/uuid"
                           }
                         }
                       ],
@@ -2129,7 +2129,7 @@ const AcademySchema: Record<string, unknown> = {
                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
-                            "path": "github.com/google/uuid"
+                            "path": "github.com/gofrs/uuid"
                           }
                         }
                       ],
@@ -2258,7 +2258,7 @@ const AcademySchema: Record<string, unknown> = {
                                   "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                   "x-go-type": "uuid.UUID",
                                   "x-go-type-import": {
-                                    "path": "github.com/google/uuid"
+                                    "path": "github.com/gofrs/uuid"
                                   }
                                 },
                                 "recipientId": {
@@ -2522,7 +2522,7 @@ const AcademySchema: Record<string, unknown> = {
                       "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       },
                       "x-go-name": "ID",
                       "x-oapi-codegen-extra-tags": {
@@ -2536,7 +2536,7 @@ const AcademySchema: Record<string, unknown> = {
                       "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       },
                       "x-oapi-codegen-extra-tags": {
                         "db": "org_id"
@@ -2555,7 +2555,7 @@ const AcademySchema: Record<string, unknown> = {
                       "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       },
                       "x-oapi-codegen-extra-tags": {
                         "db": "user_id"
@@ -2636,7 +2636,7 @@ const AcademySchema: Record<string, unknown> = {
                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
-                            "path": "github.com/google/uuid"
+                            "path": "github.com/gofrs/uuid"
                           }
                         },
                         "recipientId": {
@@ -2789,7 +2789,7 @@ const AcademySchema: Record<string, unknown> = {
                       "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       },
                       "x-go-name": "ID",
                       "x-oapi-codegen-extra-tags": {
@@ -2803,7 +2803,7 @@ const AcademySchema: Record<string, unknown> = {
                       "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       },
                       "x-oapi-codegen-extra-tags": {
                         "db": "org_id"
@@ -2822,7 +2822,7 @@ const AcademySchema: Record<string, unknown> = {
                       "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       },
                       "x-oapi-codegen-extra-tags": {
                         "db": "user_id"
@@ -2903,7 +2903,7 @@ const AcademySchema: Record<string, unknown> = {
                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
-                            "path": "github.com/google/uuid"
+                            "path": "github.com/gofrs/uuid"
                           }
                         },
                         "recipientId": {
@@ -3088,7 +3088,7 @@ const AcademySchema: Record<string, unknown> = {
                         "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                         "x-go-type": "uuid.UUID",
                         "x-go-type-import": {
-                          "path": "github.com/google/uuid"
+                          "path": "github.com/gofrs/uuid"
                         }
                       }
                     ],
@@ -3118,7 +3118,7 @@ const AcademySchema: Record<string, unknown> = {
                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                     "x-go-type": "uuid.UUID",
                     "x-go-type-import": {
-                      "path": "github.com/google/uuid"
+                      "path": "github.com/gofrs/uuid"
                     },
                     "x-go-name": "TeamId",
                     "x-oapi-codegen-extra-tags": {
@@ -3228,7 +3228,7 @@ const AcademySchema: Record<string, unknown> = {
                                 "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                 "x-go-type": "uuid.UUID",
                                 "x-go-type-import": {
-                                  "path": "github.com/google/uuid"
+                                  "path": "github.com/gofrs/uuid"
                                 }
                               },
                               "recipientId": {
@@ -3506,7 +3506,7 @@ const AcademySchema: Record<string, unknown> = {
                               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
-                                "path": "github.com/google/uuid"
+                                "path": "github.com/gofrs/uuid"
                               }
                             }
                           ],
@@ -3524,7 +3524,7 @@ const AcademySchema: Record<string, unknown> = {
                               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
-                                "path": "github.com/google/uuid"
+                                "path": "github.com/gofrs/uuid"
                               }
                             }
                           ],
@@ -3653,7 +3653,7 @@ const AcademySchema: Record<string, unknown> = {
                                       "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                       "x-go-type": "uuid.UUID",
                                       "x-go-type-import": {
-                                        "path": "github.com/google/uuid"
+                                        "path": "github.com/gofrs/uuid"
                                       }
                                     },
                                     "recipientId": {
@@ -3863,7 +3863,7 @@ const AcademySchema: Record<string, unknown> = {
                               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
-                                "path": "github.com/google/uuid"
+                                "path": "github.com/gofrs/uuid"
                               },
                               "x-go-name": "ID"
                             },
@@ -3873,7 +3873,7 @@ const AcademySchema: Record<string, unknown> = {
                               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
-                                "path": "github.com/google/uuid"
+                                "path": "github.com/gofrs/uuid"
                               },
                               "x-oapi-codegen-extra-tags": {
                                 "db": "owner_id",
@@ -4212,7 +4212,7 @@ const AcademySchema: Record<string, unknown> = {
                               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
-                                "path": "github.com/google/uuid"
+                                "path": "github.com/gofrs/uuid"
                               }
                             }
                           ],
@@ -4230,7 +4230,7 @@ const AcademySchema: Record<string, unknown> = {
                               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
-                                "path": "github.com/google/uuid"
+                                "path": "github.com/gofrs/uuid"
                               }
                             }
                           ],
@@ -4359,7 +4359,7 @@ const AcademySchema: Record<string, unknown> = {
                                       "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                       "x-go-type": "uuid.UUID",
                                       "x-go-type-import": {
-                                        "path": "github.com/google/uuid"
+                                        "path": "github.com/gofrs/uuid"
                                       }
                                     },
                                     "recipientId": {
@@ -4569,7 +4569,7 @@ const AcademySchema: Record<string, unknown> = {
                               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
-                                "path": "github.com/google/uuid"
+                                "path": "github.com/gofrs/uuid"
                               },
                               "x-go-name": "ID"
                             },
@@ -4579,7 +4579,7 @@ const AcademySchema: Record<string, unknown> = {
                               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
-                                "path": "github.com/google/uuid"
+                                "path": "github.com/gofrs/uuid"
                               },
                               "x-oapi-codegen-extra-tags": {
                                 "db": "owner_id",
@@ -4797,7 +4797,7 @@ const AcademySchema: Record<string, unknown> = {
                       "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       },
                       "x-go-name": "ID",
                       "x-oapi-codegen-extra-tags": {
@@ -4811,7 +4811,7 @@ const AcademySchema: Record<string, unknown> = {
                       "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       },
                       "x-oapi-codegen-extra-tags": {
                         "db": "org_id"
@@ -4830,7 +4830,7 @@ const AcademySchema: Record<string, unknown> = {
                       "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       },
                       "x-oapi-codegen-extra-tags": {
                         "db": "user_id"
@@ -4911,7 +4911,7 @@ const AcademySchema: Record<string, unknown> = {
                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
-                            "path": "github.com/google/uuid"
+                            "path": "github.com/gofrs/uuid"
                           }
                         },
                         "recipientId": {
@@ -6674,7 +6674,7 @@ const AcademySchema: Record<string, unknown> = {
                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                     "x-go-type": "uuid.UUID",
                     "x-go-type-import": {
-                      "path": "github.com/google/uuid"
+                      "path": "github.com/gofrs/uuid"
                     }
                   },
                   "quizAbsPath": {
@@ -7408,7 +7408,7 @@ const AcademySchema: Record<string, unknown> = {
                       "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "recipientId": {
@@ -7585,7 +7585,7 @@ const AcademySchema: Record<string, unknown> = {
             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             }
           }
         ],
@@ -7603,7 +7603,7 @@ const AcademySchema: Record<string, unknown> = {
             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             }
           }
         ],
@@ -7621,7 +7621,7 @@ const AcademySchema: Record<string, unknown> = {
             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             }
           }
         ],
@@ -7750,7 +7750,7 @@ const AcademySchema: Record<string, unknown> = {
                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                     "x-go-type": "uuid.UUID",
                     "x-go-type-import": {
-                      "path": "github.com/google/uuid"
+                      "path": "github.com/gofrs/uuid"
                     }
                   },
                   "recipientId": {
@@ -8073,7 +8073,7 @@ const AcademySchema: Record<string, unknown> = {
                 "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                 "x-go-type": "uuid.UUID",
                 "x-go-type-import": {
-                  "path": "github.com/google/uuid"
+                  "path": "github.com/gofrs/uuid"
                 }
               }
             ],
@@ -8091,7 +8091,7 @@ const AcademySchema: Record<string, unknown> = {
                 "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                 "x-go-type": "uuid.UUID",
                 "x-go-type-import": {
-                  "path": "github.com/google/uuid"
+                  "path": "github.com/gofrs/uuid"
                 }
               }
             ],
@@ -8220,7 +8220,7 @@ const AcademySchema: Record<string, unknown> = {
                         "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                         "x-go-type": "uuid.UUID",
                         "x-go-type-import": {
-                          "path": "github.com/google/uuid"
+                          "path": "github.com/gofrs/uuid"
                         }
                       },
                       "recipientId": {
@@ -8494,7 +8494,7 @@ const AcademySchema: Record<string, unknown> = {
                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                     "x-go-type": "uuid.UUID",
                     "x-go-type-import": {
-                      "path": "github.com/google/uuid"
+                      "path": "github.com/gofrs/uuid"
                     }
                   }
                 ],
@@ -8512,7 +8512,7 @@ const AcademySchema: Record<string, unknown> = {
                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                     "x-go-type": "uuid.UUID",
                     "x-go-type-import": {
-                      "path": "github.com/google/uuid"
+                      "path": "github.com/gofrs/uuid"
                     }
                   }
                 ],
@@ -8641,7 +8641,7 @@ const AcademySchema: Record<string, unknown> = {
                             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             }
                           },
                           "recipientId": {
@@ -8851,7 +8851,7 @@ const AcademySchema: Record<string, unknown> = {
                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                     "x-go-type": "uuid.UUID",
                     "x-go-type-import": {
-                      "path": "github.com/google/uuid"
+                      "path": "github.com/gofrs/uuid"
                     },
                     "x-go-name": "ID"
                   },
@@ -8861,7 +8861,7 @@ const AcademySchema: Record<string, unknown> = {
                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                     "x-go-type": "uuid.UUID",
                     "x-go-type-import": {
-                      "path": "github.com/google/uuid"
+                      "path": "github.com/gofrs/uuid"
                     },
                     "x-oapi-codegen-extra-tags": {
                       "db": "owner_id",
@@ -9041,7 +9041,7 @@ const AcademySchema: Record<string, unknown> = {
                 "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                 "x-go-type": "uuid.UUID",
                 "x-go-type-import": {
-                  "path": "github.com/google/uuid"
+                  "path": "github.com/gofrs/uuid"
                 }
               }
             ],
@@ -9071,7 +9071,7 @@ const AcademySchema: Record<string, unknown> = {
             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             },
             "x-go-name": "TeamId",
             "x-oapi-codegen-extra-tags": {
@@ -9181,7 +9181,7 @@ const AcademySchema: Record<string, unknown> = {
                         "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                         "x-go-type": "uuid.UUID",
                         "x-go-type-import": {
-                          "path": "github.com/google/uuid"
+                          "path": "github.com/gofrs/uuid"
                         }
                       },
                       "recipientId": {
@@ -9450,7 +9450,7 @@ const AcademySchema: Record<string, unknown> = {
                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                     "x-go-type": "uuid.UUID",
                     "x-go-type-import": {
-                      "path": "github.com/google/uuid"
+                      "path": "github.com/gofrs/uuid"
                     }
                   }
                 ],
@@ -9468,7 +9468,7 @@ const AcademySchema: Record<string, unknown> = {
                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                     "x-go-type": "uuid.UUID",
                     "x-go-type-import": {
-                      "path": "github.com/google/uuid"
+                      "path": "github.com/gofrs/uuid"
                     }
                   }
                 ],
@@ -9597,7 +9597,7 @@ const AcademySchema: Record<string, unknown> = {
                             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             }
                           },
                           "recipientId": {
@@ -9896,7 +9896,7 @@ const AcademySchema: Record<string, unknown> = {
                       "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     }
                   ],
@@ -9914,7 +9914,7 @@ const AcademySchema: Record<string, unknown> = {
                       "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     }
                   ],
@@ -10043,7 +10043,7 @@ const AcademySchema: Record<string, unknown> = {
                               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
-                                "path": "github.com/google/uuid"
+                                "path": "github.com/gofrs/uuid"
                               }
                             },
                             "recipientId": {
@@ -10335,7 +10335,7 @@ const AcademySchema: Record<string, unknown> = {
                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
-                            "path": "github.com/google/uuid"
+                            "path": "github.com/gofrs/uuid"
                           }
                         }
                       ],
@@ -10353,7 +10353,7 @@ const AcademySchema: Record<string, unknown> = {
                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
-                            "path": "github.com/google/uuid"
+                            "path": "github.com/gofrs/uuid"
                           }
                         }
                       ],
@@ -10482,7 +10482,7 @@ const AcademySchema: Record<string, unknown> = {
                                   "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                   "x-go-type": "uuid.UUID",
                                   "x-go-type-import": {
-                                    "path": "github.com/google/uuid"
+                                    "path": "github.com/gofrs/uuid"
                                   }
                                 },
                                 "recipientId": {
@@ -10732,7 +10732,7 @@ const AcademySchema: Record<string, unknown> = {
                 "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                 "x-go-type": "uuid.UUID",
                 "x-go-type-import": {
-                  "path": "github.com/google/uuid"
+                  "path": "github.com/gofrs/uuid"
                 }
               },
               "recipientId": {
@@ -10941,7 +10941,7 @@ const AcademySchema: Record<string, unknown> = {
                 "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                 "x-go-type": "uuid.UUID",
                 "x-go-type-import": {
-                  "path": "github.com/google/uuid"
+                  "path": "github.com/gofrs/uuid"
                 }
               },
               "recipientId": {
@@ -11142,7 +11142,7 @@ const AcademySchema: Record<string, unknown> = {
             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             }
           },
           "recipientId": {
@@ -11271,7 +11271,7 @@ const AcademySchema: Record<string, unknown> = {
                 "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                 "x-go-type": "uuid.UUID",
                 "x-go-type-import": {
-                  "path": "github.com/google/uuid"
+                  "path": "github.com/gofrs/uuid"
                 }
               },
               "recipientId": {
@@ -11456,7 +11456,7 @@ const AcademySchema: Record<string, unknown> = {
             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             },
             "x-go-name": "ID",
             "x-oapi-codegen-extra-tags": {
@@ -11470,7 +11470,7 @@ const AcademySchema: Record<string, unknown> = {
             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             },
             "x-oapi-codegen-extra-tags": {
               "db": "org_id"
@@ -11489,7 +11489,7 @@ const AcademySchema: Record<string, unknown> = {
             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             },
             "x-oapi-codegen-extra-tags": {
               "db": "user_id"
@@ -11570,7 +11570,7 @@ const AcademySchema: Record<string, unknown> = {
                 "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                 "x-go-type": "uuid.UUID",
                 "x-go-type-import": {
-                  "path": "github.com/google/uuid"
+                  "path": "github.com/gofrs/uuid"
                 }
               },
               "recipientId": {
@@ -12383,7 +12383,7 @@ const AcademySchema: Record<string, unknown> = {
                   "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   },
                   "x-go-name": "ID",
                   "x-oapi-codegen-extra-tags": {
@@ -12397,7 +12397,7 @@ const AcademySchema: Record<string, unknown> = {
                   "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   },
                   "x-oapi-codegen-extra-tags": {
                     "db": "org_id"
@@ -12416,7 +12416,7 @@ const AcademySchema: Record<string, unknown> = {
                   "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   },
                   "x-oapi-codegen-extra-tags": {
                     "db": "user_id"
@@ -12497,7 +12497,7 @@ const AcademySchema: Record<string, unknown> = {
                       "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "recipientId": {
@@ -13533,7 +13533,7 @@ const AcademySchema: Record<string, unknown> = {
             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             }
           },
           "quizAbsPath": {
@@ -13626,7 +13626,7 @@ const AcademySchema: Record<string, unknown> = {
             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             },
             "x-go-name": "ID",
             "x-oapi-codegen-extra-tags": {
@@ -13640,7 +13640,7 @@ const AcademySchema: Record<string, unknown> = {
             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             },
             "x-oapi-codegen-extra-tags": {
               "db": "registration_id",
@@ -13659,7 +13659,7 @@ const AcademySchema: Record<string, unknown> = {
             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             },
             "x-oapi-codegen-extra-tags": {
               "db": "user_id"
@@ -13716,7 +13716,7 @@ const AcademySchema: Record<string, unknown> = {
                 "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                 "x-go-type": "uuid.UUID",
                 "x-go-type-import": {
-                  "path": "github.com/google/uuid"
+                  "path": "github.com/gofrs/uuid"
                 }
               },
               "quizAbsPath": {

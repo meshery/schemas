@@ -5,7 +5,7 @@ package environment
 
 import (
 	"github.com/meshery/schemas/models/core"
-	openapi_types "github.com/oapi-codegen/runtime/types"
+	"github.com/gofrs/uuid"
 )
 
 // Environment Environments allow you to logically group related Connections and their associated Credentials. Learn more at https://docs.meshery.io/concepts/logical/environments
@@ -86,7 +86,7 @@ type EnvironmentPayload struct {
 	Name        core.Text `json:"name" yaml:"name"`
 
 	// OrgId Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
-	OrgId openapi_types.UUID `json:"organizationId" yaml:"organizationId"`
+	OrgId uuid.UUID `json:"organizationId" yaml:"organizationId"`
 }
 
 // EnvironmentId defines model for environmentId.
@@ -96,7 +96,7 @@ type EnvironmentId = core.Id
 type Order = string
 
 // OrgIdQuery defines model for orgIdQuery.
-type OrgIdQuery = openapi_types.UUID
+type OrgIdQuery = uuid.UUID
 
 // Page defines model for page.
 type Page = string

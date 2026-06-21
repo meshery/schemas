@@ -6,7 +6,7 @@ package connection
 import (
 	"fmt"
 
-	"github.com/google/uuid"
+	"github.com/gofrs/uuid"
 	"github.com/meshery/meshkit/database"
 	"github.com/meshery/meshkit/models/meshmodel/entity"
 	core "github.com/meshery/schemas/models/core"
@@ -22,7 +22,7 @@ func (c ConnectionDefinition) Type() entity.EntityType {
 }
 
 func (c *ConnectionDefinition) GenerateID() (uuid.UUID, error) {
-	return uuid.NewRandom()
+	return uuid.NewV4()
 }
 
 func (c ConnectionDefinition) GetID() uuid.UUID {

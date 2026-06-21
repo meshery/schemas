@@ -16,6 +16,7 @@ import (
 	filterv1beta3 "github.com/meshery/schemas/models/v1beta3/filter"
 	"github.com/oapi-codegen/runtime"
 	openapi_types "github.com/oapi-codegen/runtime/types"
+	"github.com/gofrs/uuid"
 )
 
 // Defines values for ContentSharePayloadContentType.
@@ -359,7 +360,7 @@ type DesignId = core.Uuid
 type Order = string
 
 // OrgIdQuery defines model for orgIdQuery.
-type OrgIdQuery = openapi_types.UUID
+type OrgIdQuery = uuid.UUID
 
 // Page defines model for page.
 type Page = string

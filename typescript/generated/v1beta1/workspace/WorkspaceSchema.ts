@@ -144,7 +144,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             },
                             "x-oapi-codegen-extra-tags": {
                               "db": "id",
@@ -203,7 +203,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             }
                           },
                           "owner_email": {
@@ -246,7 +246,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             }
                           },
                           "created_at": {
@@ -408,7 +408,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       },
                       "x-oapi-codegen-extra-tags": {
                         "db": "id",
@@ -450,7 +450,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "owner": {
@@ -463,7 +463,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "metadata": {
@@ -572,7 +572,7 @@ const WorkspaceSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "workspace_id",
@@ -608,7 +608,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       },
                       "x-oapi-codegen-extra-tags": {
                         "db": "id",
@@ -650,7 +650,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "owner": {
@@ -663,7 +663,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "metadata": {
@@ -780,7 +780,7 @@ const WorkspaceSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "workspace_id",
@@ -872,7 +872,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       },
                       "x-oapi-codegen-extra-tags": {
                         "db": "id",
@@ -914,7 +914,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "owner": {
@@ -927,7 +927,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "metadata": {
@@ -1044,7 +1044,7 @@ const WorkspaceSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "workspace_id",
@@ -1125,7 +1125,7 @@ const WorkspaceSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "workspace_id",
@@ -1225,7 +1225,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             }
                           },
                           "name": {
@@ -1260,7 +1260,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             }
                           },
                           "metadata": {
@@ -1384,7 +1384,7 @@ const WorkspaceSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "workspace_id",
@@ -1404,7 +1404,7 @@ const WorkspaceSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "team_id",
@@ -1451,7 +1451,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             },
                             "x-oapi-codegen-extra-tags": {
                               "db": "id",
@@ -1465,7 +1465,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             },
                             "x-oapi-codegen-extra-tags": {
                               "db": "workspace_id",
@@ -1479,7 +1479,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             },
                             "x-oapi-codegen-extra-tags": {
                               "db": "team_id",
@@ -1596,7 +1596,7 @@ const WorkspaceSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "workspace_id",
@@ -1616,7 +1616,7 @@ const WorkspaceSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "team_id",
@@ -1697,7 +1697,7 @@ const WorkspaceSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "workspace_id",
@@ -1811,7 +1811,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             }
                           },
                           "schemaVersion": {
@@ -1868,7 +1868,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             }
                           },
                           "owner": {
@@ -1882,7 +1882,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             }
                           },
                           "created_at": {
@@ -2014,7 +2014,7 @@ const WorkspaceSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "workspace_id",
@@ -2034,7 +2034,7 @@ const WorkspaceSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "environment_id",
@@ -2081,7 +2081,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             },
                             "x-oapi-codegen-extra-tags": {
                               "db": "id",
@@ -2095,7 +2095,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             },
                             "x-oapi-codegen-extra-tags": {
                               "db": "workspace_id",
@@ -2109,7 +2109,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             },
                             "x-oapi-codegen-extra-tags": {
                               "db": "environment_id",
@@ -2226,7 +2226,7 @@ const WorkspaceSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "workspace_id",
@@ -2246,7 +2246,7 @@ const WorkspaceSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "environment_id",
@@ -2328,7 +2328,7 @@ const WorkspaceSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "workspace_id",
@@ -2505,7 +2505,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             },
                             "x-go-type-skip-optional-pointer": true
                           },
@@ -2535,7 +2535,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                 "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                 "x-go-type": "uuid.UUID",
                                 "x-go-type-import": {
-                                  "path": "github.com/google/uuid"
+                                  "path": "github.com/gofrs/uuid"
                                 }
                               },
                               "name": {
@@ -2594,7 +2594,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
-                                                "path": "github.com/google/uuid"
+                                                "path": "github.com/gofrs/uuid"
                                               }
                                             },
                                             "alias_component_id": {
@@ -2603,7 +2603,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
-                                                "path": "github.com/google/uuid"
+                                                "path": "github.com/gofrs/uuid"
                                               }
                                             },
                                             "immediate_parent_id": {
@@ -2612,7 +2612,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
-                                                "path": "github.com/google/uuid"
+                                                "path": "github.com/gofrs/uuid"
                                               }
                                             },
                                             "immediate_ref_field_path": {
@@ -2638,7 +2638,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
-                                                "path": "github.com/google/uuid"
+                                                "path": "github.com/gofrs/uuid"
                                               }
                                             },
                                             "resolved_ref_field_path": {
@@ -2683,7 +2683,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
-                                            "path": "github.com/google/uuid"
+                                            "path": "github.com/gofrs/uuid"
                                           },
                                           "x-order": 1,
                                           "x-oapi-codegen-extra-tags": {
@@ -2781,7 +2781,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
-                                                "path": "github.com/google/uuid"
+                                                "path": "github.com/gofrs/uuid"
                                               },
                                               "x-order": 1,
                                               "x-oapi-codegen-extra-tags": {
@@ -2914,7 +2914,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                   "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                   "x-go-type": "uuid.UUID",
                                                   "x-go-type-import": {
-                                                    "path": "github.com/google/uuid"
+                                                    "path": "github.com/gofrs/uuid"
                                                   },
                                                   "x-order": 1,
                                                   "x-go-name": "ID",
@@ -2938,7 +2938,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                   "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                   "x-go-type": "uuid.UUID",
                                                   "x-go-type-import": {
-                                                    "path": "github.com/google/uuid"
+                                                    "path": "github.com/gofrs/uuid"
                                                   },
                                                   "x-go-name": "CredentialID",
                                                   "x-oapi-codegen-extra-tags": {
@@ -3013,7 +3013,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                   "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                   "x-go-type": "uuid.UUID",
                                                   "x-go-type-import": {
-                                                    "path": "github.com/google/uuid"
+                                                    "path": "github.com/gofrs/uuid"
                                                   },
                                                   "x-go-name": "UserID",
                                                   "x-oapi-codegen-extra-tags": {
@@ -3105,7 +3105,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                         "format": "uuid",
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
-                                                          "path": "github.com/google/uuid"
+                                                          "path": "github.com/gofrs/uuid"
                                                         }
                                                       },
                                                       "schemaVersion": {
@@ -3162,7 +3162,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                         "format": "uuid",
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
-                                                          "path": "github.com/google/uuid"
+                                                          "path": "github.com/gofrs/uuid"
                                                         }
                                                       },
                                                       "owner": {
@@ -3176,7 +3176,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                         "format": "uuid",
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
-                                                          "path": "github.com/google/uuid"
+                                                          "path": "github.com/gofrs/uuid"
                                                         }
                                                       },
                                                       "created_at": {
@@ -3274,7 +3274,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
-                                                "path": "github.com/google/uuid"
+                                                "path": "github.com/gofrs/uuid"
                                               },
                                               "x-oapi-codegen-extra-tags": {
                                                 "yaml": "connection_id",
@@ -3289,7 +3289,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
-                                                "path": "github.com/google/uuid"
+                                                "path": "github.com/gofrs/uuid"
                                               },
                                               "x-oapi-codegen-extra-tags": {
                                                 "yaml": "-",
@@ -3327,7 +3327,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                   "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                   "x-go-type": "uuid.UUID",
                                                   "x-go-type-import": {
-                                                    "path": "github.com/google/uuid"
+                                                    "path": "github.com/gofrs/uuid"
                                                   },
                                                   "x-order": 1
                                                 },
@@ -3888,7 +3888,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
-                                                "path": "github.com/google/uuid"
+                                                "path": "github.com/gofrs/uuid"
                                               }
                                             },
                                             "name": {
@@ -3961,7 +3961,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
-                                            "path": "github.com/google/uuid"
+                                            "path": "github.com/gofrs/uuid"
                                           },
                                           "x-oapi-codegen-extra-tags": {
                                             "gorm": "index:idx_component_definition_dbs_model_id,column:model_id",
@@ -4868,7 +4868,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
-                                            "path": "github.com/google/uuid"
+                                            "path": "github.com/gofrs/uuid"
                                           },
                                           "x-go-type-skip-optional-pointer": true,
                                           "x-order": 1,
@@ -5559,7 +5559,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
-                                                "path": "github.com/google/uuid"
+                                                "path": "github.com/gofrs/uuid"
                                               }
                                             },
                                             "name": {
@@ -5632,7 +5632,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
-                                            "path": "github.com/google/uuid"
+                                            "path": "github.com/gofrs/uuid"
                                           },
                                           "x-go-type-skip-optional-pointer": true,
                                           "x-go-name": "ModelId",
@@ -5696,7 +5696,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                           "x-go-type": "uuid.UUID",
                                                           "x-go-type-import": {
-                                                            "path": "github.com/google/uuid"
+                                                            "path": "github.com/gofrs/uuid"
                                                           },
                                                           "x-oapi-codegen-extra-tags": {
                                                             "yaml": "id",
@@ -5748,7 +5748,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                                     "x-go-type": "uuid.UUID",
                                                                     "x-go-type-import": {
-                                                                      "path": "github.com/google/uuid"
+                                                                      "path": "github.com/gofrs/uuid"
                                                                     },
                                                                     "x-oapi-codegen-extra-tags": {
                                                                       "yaml": "id",
@@ -5814,7 +5814,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                                     "x-go-type": "uuid.UUID",
                                                                     "x-go-type-import": {
-                                                                      "path": "github.com/google/uuid"
+                                                                      "path": "github.com/gofrs/uuid"
                                                                     },
                                                                     "x-oapi-codegen-extra-tags": {
                                                                       "yaml": "id",
@@ -5907,7 +5907,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                               "x-go-type": "uuid.UUID",
                                                               "x-go-type-import": {
-                                                                "path": "github.com/google/uuid"
+                                                                "path": "github.com/gofrs/uuid"
                                                               }
                                                             },
                                                             "name": {
@@ -6052,7 +6052,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                           "x-go-type": "uuid.UUID",
                                                           "x-go-type-import": {
-                                                            "path": "github.com/google/uuid"
+                                                            "path": "github.com/gofrs/uuid"
                                                           },
                                                           "x-oapi-codegen-extra-tags": {
                                                             "yaml": "id",
@@ -6104,7 +6104,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                                     "x-go-type": "uuid.UUID",
                                                                     "x-go-type-import": {
-                                                                      "path": "github.com/google/uuid"
+                                                                      "path": "github.com/gofrs/uuid"
                                                                     },
                                                                     "x-oapi-codegen-extra-tags": {
                                                                       "yaml": "id",
@@ -6170,7 +6170,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                                     "x-go-type": "uuid.UUID",
                                                                     "x-go-type-import": {
-                                                                      "path": "github.com/google/uuid"
+                                                                      "path": "github.com/gofrs/uuid"
                                                                     },
                                                                     "x-oapi-codegen-extra-tags": {
                                                                       "yaml": "id",
@@ -6263,7 +6263,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                               "x-go-type": "uuid.UUID",
                                                               "x-go-type-import": {
-                                                                "path": "github.com/google/uuid"
+                                                                "path": "github.com/gofrs/uuid"
                                                               }
                                                             },
                                                             "name": {
@@ -6423,7 +6423,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                           "x-go-type": "uuid.UUID",
                                                           "x-go-type-import": {
-                                                            "path": "github.com/google/uuid"
+                                                            "path": "github.com/gofrs/uuid"
                                                           },
                                                           "x-oapi-codegen-extra-tags": {
                                                             "yaml": "id",
@@ -6475,7 +6475,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                                     "x-go-type": "uuid.UUID",
                                                                     "x-go-type-import": {
-                                                                      "path": "github.com/google/uuid"
+                                                                      "path": "github.com/gofrs/uuid"
                                                                     },
                                                                     "x-oapi-codegen-extra-tags": {
                                                                       "yaml": "id",
@@ -6541,7 +6541,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                                     "x-go-type": "uuid.UUID",
                                                                     "x-go-type-import": {
-                                                                      "path": "github.com/google/uuid"
+                                                                      "path": "github.com/gofrs/uuid"
                                                                     },
                                                                     "x-oapi-codegen-extra-tags": {
                                                                       "yaml": "id",
@@ -6634,7 +6634,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                               "x-go-type": "uuid.UUID",
                                                               "x-go-type-import": {
-                                                                "path": "github.com/google/uuid"
+                                                                "path": "github.com/gofrs/uuid"
                                                               }
                                                             },
                                                             "name": {
@@ -6779,7 +6779,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                           "x-go-type": "uuid.UUID",
                                                           "x-go-type-import": {
-                                                            "path": "github.com/google/uuid"
+                                                            "path": "github.com/gofrs/uuid"
                                                           },
                                                           "x-oapi-codegen-extra-tags": {
                                                             "yaml": "id",
@@ -6831,7 +6831,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                                     "x-go-type": "uuid.UUID",
                                                                     "x-go-type-import": {
-                                                                      "path": "github.com/google/uuid"
+                                                                      "path": "github.com/gofrs/uuid"
                                                                     },
                                                                     "x-oapi-codegen-extra-tags": {
                                                                       "yaml": "id",
@@ -6897,7 +6897,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                                     "x-go-type": "uuid.UUID",
                                                                     "x-go-type-import": {
-                                                                      "path": "github.com/google/uuid"
+                                                                      "path": "github.com/gofrs/uuid"
                                                                     },
                                                                     "x-oapi-codegen-extra-tags": {
                                                                       "yaml": "id",
@@ -6990,7 +6990,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                               "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                               "x-go-type": "uuid.UUID",
                                                               "x-go-type-import": {
-                                                                "path": "github.com/google/uuid"
+                                                                "path": "github.com/gofrs/uuid"
                                                               }
                                                             },
                                                             "name": {
@@ -7151,7 +7151,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             },
                             "x-go-type-skip-optional-pointer": true
                           },
@@ -7234,7 +7234,7 @@ const WorkspaceSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "workspace_id",
@@ -7254,7 +7254,7 @@ const WorkspaceSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "design_id",
@@ -7301,7 +7301,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             },
                             "x-oapi-codegen-extra-tags": {
                               "db": "id",
@@ -7315,7 +7315,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             },
                             "x-oapi-codegen-extra-tags": {
                               "db": "workspace_id",
@@ -7329,7 +7329,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             },
                             "x-oapi-codegen-extra-tags": {
                               "db": "design_id",
@@ -7447,7 +7447,7 @@ const WorkspaceSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "workspace_id",
@@ -7467,7 +7467,7 @@ const WorkspaceSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "design_id",
@@ -7549,7 +7549,7 @@ const WorkspaceSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "workspace_id",
@@ -7639,7 +7639,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             },
                             "x-oapi-codegen-extra-tags": {
                               "db": "id",
@@ -7702,7 +7702,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             },
                             "x-go-name": "UserID",
                             "x-go-type-skip-optional-pointer": true,
@@ -7727,7 +7727,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             },
                             "x-go-name": "WorkspaceID",
                             "x-go-type-skip-optional-pointer": true,
@@ -7742,7 +7742,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             },
                             "x-go-name": "OrganizationID",
                             "x-go-type-skip-optional-pointer": true,
@@ -7871,7 +7871,7 @@ const WorkspaceSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "workspace_id",
@@ -7891,7 +7891,7 @@ const WorkspaceSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "view_id",
@@ -7938,7 +7938,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             },
                             "x-oapi-codegen-extra-tags": {
                               "db": "id",
@@ -7952,7 +7952,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             },
                             "x-oapi-codegen-extra-tags": {
                               "db": "workspace_id",
@@ -7966,7 +7966,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
-                              "path": "github.com/google/uuid"
+                              "path": "github.com/gofrs/uuid"
                             },
                             "x-oapi-codegen-extra-tags": {
                               "db": "view_id",
@@ -8084,7 +8084,7 @@ const WorkspaceSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "workspace_id",
@@ -8104,7 +8104,7 @@ const WorkspaceSchema: Record<string, unknown> = {
               "format": "uuid",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
-                "path": "github.com/google/uuid"
+                "path": "github.com/gofrs/uuid"
               },
               "x-oapi-codegen-extra-tags": {
                 "db": "view_id",
@@ -8227,7 +8227,7 @@ const WorkspaceSchema: Record<string, unknown> = {
           "format": "uuid",
           "x-go-type": "uuid.UUID",
           "x-go-type-import": {
-            "path": "github.com/google/uuid"
+            "path": "github.com/gofrs/uuid"
           },
           "x-oapi-codegen-extra-tags": {
             "db": "workspace_id",
@@ -8247,7 +8247,7 @@ const WorkspaceSchema: Record<string, unknown> = {
           "format": "uuid",
           "x-go-type": "uuid.UUID",
           "x-go-type-import": {
-            "path": "github.com/google/uuid"
+            "path": "github.com/gofrs/uuid"
           },
           "x-oapi-codegen-extra-tags": {
             "db": "team_id",
@@ -8267,7 +8267,7 @@ const WorkspaceSchema: Record<string, unknown> = {
           "format": "uuid",
           "x-go-type": "uuid.UUID",
           "x-go-type-import": {
-            "path": "github.com/google/uuid"
+            "path": "github.com/gofrs/uuid"
           },
           "x-oapi-codegen-extra-tags": {
             "db": "environment_id",
@@ -8287,7 +8287,7 @@ const WorkspaceSchema: Record<string, unknown> = {
           "format": "uuid",
           "x-go-type": "uuid.UUID",
           "x-go-type-import": {
-            "path": "github.com/google/uuid"
+            "path": "github.com/gofrs/uuid"
           },
           "x-oapi-codegen-extra-tags": {
             "db": "design_id",
@@ -8307,7 +8307,7 @@ const WorkspaceSchema: Record<string, unknown> = {
           "format": "uuid",
           "x-go-type": "uuid.UUID",
           "x-go-type-import": {
-            "path": "github.com/google/uuid"
+            "path": "github.com/gofrs/uuid"
           },
           "x-oapi-codegen-extra-tags": {
             "db": "view_id",
@@ -8386,7 +8386,7 @@ const WorkspaceSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             },
             "x-oapi-codegen-extra-tags": {
               "db": "id",
@@ -8428,7 +8428,7 @@ const WorkspaceSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             }
           },
           "owner": {
@@ -8441,7 +8441,7 @@ const WorkspaceSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             }
           },
           "metadata": {
@@ -8502,7 +8502,7 @@ const WorkspaceSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             },
             "x-oapi-codegen-extra-tags": {
               "db": "id",
@@ -8561,7 +8561,7 @@ const WorkspaceSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             }
           },
           "owner_email": {
@@ -8604,7 +8604,7 @@ const WorkspaceSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             }
           },
           "created_at": {
@@ -8772,7 +8772,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   },
                   "x-oapi-codegen-extra-tags": {
                     "db": "id",
@@ -8831,7 +8831,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   }
                 },
                 "owner_email": {
@@ -8874,7 +8874,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   }
                 },
                 "created_at": {
@@ -8929,7 +8929,7 @@ const WorkspaceSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             },
             "x-oapi-codegen-extra-tags": {
               "db": "id",
@@ -8943,7 +8943,7 @@ const WorkspaceSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             },
             "x-oapi-codegen-extra-tags": {
               "db": "workspace_id",
@@ -8957,7 +8957,7 @@ const WorkspaceSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             },
             "x-oapi-codegen-extra-tags": {
               "db": "team_id",
@@ -9034,7 +9034,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   },
                   "x-oapi-codegen-extra-tags": {
                     "db": "id",
@@ -9048,7 +9048,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   },
                   "x-oapi-codegen-extra-tags": {
                     "db": "workspace_id",
@@ -9062,7 +9062,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   },
                   "x-oapi-codegen-extra-tags": {
                     "db": "team_id",
@@ -9123,7 +9123,7 @@ const WorkspaceSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             },
             "x-oapi-codegen-extra-tags": {
               "db": "id",
@@ -9137,7 +9137,7 @@ const WorkspaceSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             },
             "x-oapi-codegen-extra-tags": {
               "db": "workspace_id",
@@ -9151,7 +9151,7 @@ const WorkspaceSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             },
             "x-oapi-codegen-extra-tags": {
               "db": "environment_id",
@@ -9228,7 +9228,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   },
                   "x-oapi-codegen-extra-tags": {
                     "db": "id",
@@ -9242,7 +9242,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   },
                   "x-oapi-codegen-extra-tags": {
                     "db": "workspace_id",
@@ -9256,7 +9256,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   },
                   "x-oapi-codegen-extra-tags": {
                     "db": "environment_id",
@@ -9317,7 +9317,7 @@ const WorkspaceSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             },
             "x-oapi-codegen-extra-tags": {
               "db": "id",
@@ -9331,7 +9331,7 @@ const WorkspaceSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             },
             "x-oapi-codegen-extra-tags": {
               "db": "workspace_id",
@@ -9345,7 +9345,7 @@ const WorkspaceSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             },
             "x-oapi-codegen-extra-tags": {
               "db": "design_id",
@@ -9422,7 +9422,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   },
                   "x-oapi-codegen-extra-tags": {
                     "db": "id",
@@ -9436,7 +9436,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   },
                   "x-oapi-codegen-extra-tags": {
                     "db": "workspace_id",
@@ -9450,7 +9450,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   },
                   "x-oapi-codegen-extra-tags": {
                     "db": "design_id",
@@ -9511,7 +9511,7 @@ const WorkspaceSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             },
             "x-oapi-codegen-extra-tags": {
               "db": "id",
@@ -9525,7 +9525,7 @@ const WorkspaceSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             },
             "x-oapi-codegen-extra-tags": {
               "db": "workspace_id",
@@ -9539,7 +9539,7 @@ const WorkspaceSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             },
             "x-oapi-codegen-extra-tags": {
               "db": "view_id",
@@ -9616,7 +9616,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   },
                   "x-oapi-codegen-extra-tags": {
                     "db": "id",
@@ -9630,7 +9630,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   },
                   "x-oapi-codegen-extra-tags": {
                     "db": "workspace_id",
@@ -9644,7 +9644,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   },
                   "x-oapi-codegen-extra-tags": {
                     "db": "view_id",
@@ -9815,7 +9815,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   },
                   "x-go-type-skip-optional-pointer": true
                 },
@@ -9845,7 +9845,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                       "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
-                        "path": "github.com/google/uuid"
+                        "path": "github.com/gofrs/uuid"
                       }
                     },
                     "name": {
@@ -9904,7 +9904,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                     "x-go-type": "uuid.UUID",
                                     "x-go-type-import": {
-                                      "path": "github.com/google/uuid"
+                                      "path": "github.com/gofrs/uuid"
                                     }
                                   },
                                   "alias_component_id": {
@@ -9913,7 +9913,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                     "x-go-type": "uuid.UUID",
                                     "x-go-type-import": {
-                                      "path": "github.com/google/uuid"
+                                      "path": "github.com/gofrs/uuid"
                                     }
                                   },
                                   "immediate_parent_id": {
@@ -9922,7 +9922,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                     "x-go-type": "uuid.UUID",
                                     "x-go-type-import": {
-                                      "path": "github.com/google/uuid"
+                                      "path": "github.com/gofrs/uuid"
                                     }
                                   },
                                   "immediate_ref_field_path": {
@@ -9948,7 +9948,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                     "x-go-type": "uuid.UUID",
                                     "x-go-type-import": {
-                                      "path": "github.com/google/uuid"
+                                      "path": "github.com/gofrs/uuid"
                                     }
                                   },
                                   "resolved_ref_field_path": {
@@ -9993,7 +9993,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                 "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                 "x-go-type": "uuid.UUID",
                                 "x-go-type-import": {
-                                  "path": "github.com/google/uuid"
+                                  "path": "github.com/gofrs/uuid"
                                 },
                                 "x-order": 1,
                                 "x-oapi-codegen-extra-tags": {
@@ -10091,7 +10091,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                     "x-go-type": "uuid.UUID",
                                     "x-go-type-import": {
-                                      "path": "github.com/google/uuid"
+                                      "path": "github.com/gofrs/uuid"
                                     },
                                     "x-order": 1,
                                     "x-oapi-codegen-extra-tags": {
@@ -10224,7 +10224,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                         "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                         "x-go-type": "uuid.UUID",
                                         "x-go-type-import": {
-                                          "path": "github.com/google/uuid"
+                                          "path": "github.com/gofrs/uuid"
                                         },
                                         "x-order": 1,
                                         "x-go-name": "ID",
@@ -10248,7 +10248,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                         "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                         "x-go-type": "uuid.UUID",
                                         "x-go-type-import": {
-                                          "path": "github.com/google/uuid"
+                                          "path": "github.com/gofrs/uuid"
                                         },
                                         "x-go-name": "CredentialID",
                                         "x-oapi-codegen-extra-tags": {
@@ -10323,7 +10323,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                         "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                         "x-go-type": "uuid.UUID",
                                         "x-go-type-import": {
-                                          "path": "github.com/google/uuid"
+                                          "path": "github.com/gofrs/uuid"
                                         },
                                         "x-go-name": "UserID",
                                         "x-oapi-codegen-extra-tags": {
@@ -10415,7 +10415,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                               "format": "uuid",
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
-                                                "path": "github.com/google/uuid"
+                                                "path": "github.com/gofrs/uuid"
                                               }
                                             },
                                             "schemaVersion": {
@@ -10472,7 +10472,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                               "format": "uuid",
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
-                                                "path": "github.com/google/uuid"
+                                                "path": "github.com/gofrs/uuid"
                                               }
                                             },
                                             "owner": {
@@ -10486,7 +10486,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                               "format": "uuid",
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
-                                                "path": "github.com/google/uuid"
+                                                "path": "github.com/gofrs/uuid"
                                               }
                                             },
                                             "created_at": {
@@ -10584,7 +10584,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                     "x-go-type": "uuid.UUID",
                                     "x-go-type-import": {
-                                      "path": "github.com/google/uuid"
+                                      "path": "github.com/gofrs/uuid"
                                     },
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "connection_id",
@@ -10599,7 +10599,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                     "x-go-type": "uuid.UUID",
                                     "x-go-type-import": {
-                                      "path": "github.com/google/uuid"
+                                      "path": "github.com/gofrs/uuid"
                                     },
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "-",
@@ -10637,7 +10637,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                         "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                         "x-go-type": "uuid.UUID",
                                         "x-go-type-import": {
-                                          "path": "github.com/google/uuid"
+                                          "path": "github.com/gofrs/uuid"
                                         },
                                         "x-order": 1
                                       },
@@ -11198,7 +11198,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                     "x-go-type": "uuid.UUID",
                                     "x-go-type-import": {
-                                      "path": "github.com/google/uuid"
+                                      "path": "github.com/gofrs/uuid"
                                     }
                                   },
                                   "name": {
@@ -11271,7 +11271,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                 "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                 "x-go-type": "uuid.UUID",
                                 "x-go-type-import": {
-                                  "path": "github.com/google/uuid"
+                                  "path": "github.com/gofrs/uuid"
                                 },
                                 "x-oapi-codegen-extra-tags": {
                                   "gorm": "index:idx_component_definition_dbs_model_id,column:model_id",
@@ -12178,7 +12178,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                 "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                 "x-go-type": "uuid.UUID",
                                 "x-go-type-import": {
-                                  "path": "github.com/google/uuid"
+                                  "path": "github.com/gofrs/uuid"
                                 },
                                 "x-go-type-skip-optional-pointer": true,
                                 "x-order": 1,
@@ -12869,7 +12869,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                     "x-go-type": "uuid.UUID",
                                     "x-go-type-import": {
-                                      "path": "github.com/google/uuid"
+                                      "path": "github.com/gofrs/uuid"
                                     }
                                   },
                                   "name": {
@@ -12942,7 +12942,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                 "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                 "x-go-type": "uuid.UUID",
                                 "x-go-type-import": {
-                                  "path": "github.com/google/uuid"
+                                  "path": "github.com/gofrs/uuid"
                                 },
                                 "x-go-type-skip-optional-pointer": true,
                                 "x-go-name": "ModelId",
@@ -13006,7 +13006,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                 "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                 "x-go-type": "uuid.UUID",
                                                 "x-go-type-import": {
-                                                  "path": "github.com/google/uuid"
+                                                  "path": "github.com/gofrs/uuid"
                                                 },
                                                 "x-oapi-codegen-extra-tags": {
                                                   "yaml": "id",
@@ -13058,7 +13058,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                           "x-go-type": "uuid.UUID",
                                                           "x-go-type-import": {
-                                                            "path": "github.com/google/uuid"
+                                                            "path": "github.com/gofrs/uuid"
                                                           },
                                                           "x-oapi-codegen-extra-tags": {
                                                             "yaml": "id",
@@ -13124,7 +13124,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                           "x-go-type": "uuid.UUID",
                                                           "x-go-type-import": {
-                                                            "path": "github.com/google/uuid"
+                                                            "path": "github.com/gofrs/uuid"
                                                           },
                                                           "x-oapi-codegen-extra-tags": {
                                                             "yaml": "id",
@@ -13217,7 +13217,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                     "x-go-type": "uuid.UUID",
                                                     "x-go-type-import": {
-                                                      "path": "github.com/google/uuid"
+                                                      "path": "github.com/gofrs/uuid"
                                                     }
                                                   },
                                                   "name": {
@@ -13362,7 +13362,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                 "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                 "x-go-type": "uuid.UUID",
                                                 "x-go-type-import": {
-                                                  "path": "github.com/google/uuid"
+                                                  "path": "github.com/gofrs/uuid"
                                                 },
                                                 "x-oapi-codegen-extra-tags": {
                                                   "yaml": "id",
@@ -13414,7 +13414,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                           "x-go-type": "uuid.UUID",
                                                           "x-go-type-import": {
-                                                            "path": "github.com/google/uuid"
+                                                            "path": "github.com/gofrs/uuid"
                                                           },
                                                           "x-oapi-codegen-extra-tags": {
                                                             "yaml": "id",
@@ -13480,7 +13480,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                           "x-go-type": "uuid.UUID",
                                                           "x-go-type-import": {
-                                                            "path": "github.com/google/uuid"
+                                                            "path": "github.com/gofrs/uuid"
                                                           },
                                                           "x-oapi-codegen-extra-tags": {
                                                             "yaml": "id",
@@ -13573,7 +13573,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                     "x-go-type": "uuid.UUID",
                                                     "x-go-type-import": {
-                                                      "path": "github.com/google/uuid"
+                                                      "path": "github.com/gofrs/uuid"
                                                     }
                                                   },
                                                   "name": {
@@ -13733,7 +13733,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                 "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                 "x-go-type": "uuid.UUID",
                                                 "x-go-type-import": {
-                                                  "path": "github.com/google/uuid"
+                                                  "path": "github.com/gofrs/uuid"
                                                 },
                                                 "x-oapi-codegen-extra-tags": {
                                                   "yaml": "id",
@@ -13785,7 +13785,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                           "x-go-type": "uuid.UUID",
                                                           "x-go-type-import": {
-                                                            "path": "github.com/google/uuid"
+                                                            "path": "github.com/gofrs/uuid"
                                                           },
                                                           "x-oapi-codegen-extra-tags": {
                                                             "yaml": "id",
@@ -13851,7 +13851,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                           "x-go-type": "uuid.UUID",
                                                           "x-go-type-import": {
-                                                            "path": "github.com/google/uuid"
+                                                            "path": "github.com/gofrs/uuid"
                                                           },
                                                           "x-oapi-codegen-extra-tags": {
                                                             "yaml": "id",
@@ -13944,7 +13944,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                     "x-go-type": "uuid.UUID",
                                                     "x-go-type-import": {
-                                                      "path": "github.com/google/uuid"
+                                                      "path": "github.com/gofrs/uuid"
                                                     }
                                                   },
                                                   "name": {
@@ -14089,7 +14089,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                 "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                 "x-go-type": "uuid.UUID",
                                                 "x-go-type-import": {
-                                                  "path": "github.com/google/uuid"
+                                                  "path": "github.com/gofrs/uuid"
                                                 },
                                                 "x-oapi-codegen-extra-tags": {
                                                   "yaml": "id",
@@ -14141,7 +14141,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                           "x-go-type": "uuid.UUID",
                                                           "x-go-type-import": {
-                                                            "path": "github.com/google/uuid"
+                                                            "path": "github.com/gofrs/uuid"
                                                           },
                                                           "x-oapi-codegen-extra-tags": {
                                                             "yaml": "id",
@@ -14207,7 +14207,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                           "x-go-type": "uuid.UUID",
                                                           "x-go-type-import": {
-                                                            "path": "github.com/google/uuid"
+                                                            "path": "github.com/gofrs/uuid"
                                                           },
                                                           "x-oapi-codegen-extra-tags": {
                                                             "yaml": "id",
@@ -14300,7 +14300,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                     "x-go-type": "uuid.UUID",
                                                     "x-go-type-import": {
-                                                      "path": "github.com/google/uuid"
+                                                      "path": "github.com/gofrs/uuid"
                                                     }
                                                   },
                                                   "name": {
@@ -14461,7 +14461,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   },
                   "x-go-type-skip-optional-pointer": true
                 },
@@ -14488,7 +14488,7 @@ const WorkspaceSchema: Record<string, unknown> = {
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             },
             "x-oapi-codegen-extra-tags": {
               "db": "id",
@@ -14551,7 +14551,7 @@ const WorkspaceSchema: Record<string, unknown> = {
             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             },
             "x-go-name": "UserID",
             "x-go-type-skip-optional-pointer": true,
@@ -14576,7 +14576,7 @@ const WorkspaceSchema: Record<string, unknown> = {
             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             },
             "x-go-name": "WorkspaceID",
             "x-go-type-skip-optional-pointer": true,
@@ -14591,7 +14591,7 @@ const WorkspaceSchema: Record<string, unknown> = {
             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
-              "path": "github.com/google/uuid"
+              "path": "github.com/gofrs/uuid"
             },
             "x-go-name": "OrganizationID",
             "x-go-type-skip-optional-pointer": true,
@@ -14680,7 +14680,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   },
                   "x-oapi-codegen-extra-tags": {
                     "db": "id",
@@ -14743,7 +14743,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   },
                   "x-go-name": "UserID",
                   "x-go-type-skip-optional-pointer": true,
@@ -14768,7 +14768,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   },
                   "x-go-name": "WorkspaceID",
                   "x-go-type-skip-optional-pointer": true,
@@ -14783,7 +14783,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
-                    "path": "github.com/google/uuid"
+                    "path": "github.com/gofrs/uuid"
                   },
                   "x-go-name": "OrganizationID",
                   "x-go-type-skip-optional-pointer": true,

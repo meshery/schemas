@@ -41,14 +41,14 @@ components:
       description: A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
       x-go-type: uuid.UUID
       x-go-type-import:
-        path: github.com/google/uuid
+        path: github.com/gofrs/uuid
 
     Id:
       type: string
       format: uuid
       x-go-type: uuid.UUID
       x-go-type-import:
-        path: github.com/google/uuid
+        path: github.com/gofrs/uuid
       x-go-type-skip-optional-pointer: true
 
     Username:
@@ -236,7 +236,7 @@ components:
       format: uuid
       x-go-type: uuid.UUID
       x-go-type-import:
-        path: github.com/google/uuid
+        path: github.com/gofrs/uuid
       x-oapi-codegen-extra-tags:
         db: user_id
         json: userId
@@ -248,7 +248,7 @@ components:
       format: uuid
       x-go-type: uuid.UUID
       x-go-type-import:
-        path: github.com/google/uuid
+        path: github.com/gofrs/uuid
       x-oapi-codegen-extra-tags:
         db: org_id
         json: orgId
@@ -260,7 +260,7 @@ components:
       format: uuid
       x-go-type: uuid.UUID
       x-go-type-import:
-        path: github.com/google/uuid
+        path: github.com/gofrs/uuid
       x-oapi-codegen-extra-tags:
         db: id
         json: id
@@ -272,7 +272,7 @@ components:
       format: uuid
       x-go-type: uuid.UUID
       x-go-type-import:
-        path: github.com/google/uuid
+        path: github.com/gofrs/uuid
       x-oapi-codegen-extra-tags:
         db: environment_id
         json: environmentId
@@ -284,7 +284,7 @@ components:
       format: uuid
       x-go-type: uuid.UUID
       x-go-type-import:
-        path: github.com/google/uuid
+        path: github.com/gofrs/uuid
       x-oapi-codegen-extra-tags:
         db: workspace_id
         json: workspaceId
@@ -296,7 +296,7 @@ components:
       format: uuid
       x-go-type: uuid.UUID
       x-go-type-import:
-        path: github.com/google/uuid
+        path: github.com/gofrs/uuid
       x-oapi-codegen-extra-tags:
         db: view_id
         json: viewId
@@ -308,7 +308,7 @@ components:
       format: uuid
       x-go-type: uuid.UUID
       x-go-type-import:
-        path: github.com/google/uuid
+        path: github.com/gofrs/uuid
       x-oapi-codegen-extra-tags:
         db: team_id
         json: teamId
@@ -320,7 +320,7 @@ components:
       format: uuid
       x-go-type: uuid.UUID
       x-go-type-import:
-        path: github.com/google/uuid
+        path: github.com/gofrs/uuid
       x-oapi-codegen-extra-tags:
         db: design_id
         json: designId
@@ -332,7 +332,7 @@ components:
       format: uuid
       x-go-type: uuid.UUID
       x-go-type-import:
-        path: github.com/google/uuid
+        path: github.com/gofrs/uuid
       x-oapi-codegen-extra-tags:
         db: credential_id
         json: credentialId
@@ -344,7 +344,7 @@ components:
       format: uuid
       x-go-type: uuid.UUID
       x-go-type-import:
-        path: github.com/google/uuid
+        path: github.com/gofrs/uuid
       x-oapi-codegen-extra-tags:
         db: meshery_instance_id
         json: mesheryInstanceId
@@ -356,7 +356,7 @@ components:
       format: uuid
       x-go-type: uuid.UUID
       x-go-type-import:
-        path: github.com/google/uuid
+        path: github.com/gofrs/uuid
       x-oapi-codegen-extra-tags:
         db: kubernetes_server_id
         json: kubernetesServerId
@@ -368,7 +368,7 @@ components:
       format: uuid
       x-go-type: uuid.UUID
       x-go-type-import:
-        path: github.com/google/uuid
+        path: github.com/gofrs/uuid
       x-oapi-codegen-extra-tags:
         db: system_id
       x-go-name: SystemID
@@ -379,7 +379,7 @@ components:
       format: uuid
       x-go-type: uuid.UUID
       x-go-type-import:
-        path: github.com/google/uuid
+        path: github.com/gofrs/uuid
       x-oapi-codegen-extra-tags:
         db: operation_id
       x-go-name: OperationID

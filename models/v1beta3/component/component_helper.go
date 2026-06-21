@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/google/uuid"
+	"github.com/gofrs/uuid"
 	"github.com/meshery/meshkit/database"
 	"github.com/meshery/meshkit/models/meshmodel/entity"
 	"github.com/meshery/meshkit/utils"
@@ -26,7 +26,7 @@ func (c ComponentDefinition) Type() entity.EntityType {
 }
 
 func (c *ComponentDefinition) GenerateID() (uuid.UUID, error) {
-	return uuid.NewRandom()
+	return uuid.NewV4()
 }
 
 func (c ComponentDefinition) GetID() uuid.UUID {

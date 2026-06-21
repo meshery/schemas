@@ -4,12 +4,13 @@ package model
 
 import (
 	"crypto/md5"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"path/filepath"
 	"sync"
 
-	"github.com/google/uuid"
+	"github.com/gofrs/uuid"
 	"github.com/meshery/meshkit/database"
 	"github.com/meshery/meshkit/models/meshmodel/entity"
 	"github.com/meshery/meshkit/utils"
@@ -57,7 +58,7 @@ func (m *ModelDefinition) GenerateID() (uuid.UUID, error) {
 	}
 
 	hash := md5.Sum(byt)
-	return uuid.UUID(hash), nil
+	return uuid.FromString(hex.EncodeToString(hash[:]))
 }
 
 func (m ModelDefinition) GetID() uuid.UUID {

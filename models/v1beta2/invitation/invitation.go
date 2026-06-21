@@ -8,7 +8,7 @@ import (
 
 	"github.com/lib/pq"
 	"github.com/meshery/schemas/models/core"
-	openapi_types "github.com/oapi-codegen/runtime/types"
+	"github.com/gofrs/uuid"
 )
 
 // Defines values for InvitationStatus.
@@ -89,7 +89,7 @@ type InvitationPayload struct {
 	Name string `json:"name" yaml:"name"`
 
 	// OrgId ID of the organization to which the user is invited.
-	OrgId openapi_types.UUID `db:"org_id" json:"org_id" yaml:"org_id"`
+	OrgId uuid.UUID `db:"org_id" json:"org_id" yaml:"org_id"`
 
 	// OwnerId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	OwnerId *core.Uuid `db:"owner_id" json:"owner_id,omitempty" yaml:"owner_id,omitempty"`

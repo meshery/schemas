@@ -8,7 +8,7 @@ import (
 
 	"github.com/meshery/schemas/models/core"
 	openapi_types "github.com/oapi-codegen/runtime/types"
-	"github.com/google/uuid"
+	"github.com/gofrs/uuid"
 )
 
 // Defines values for UserRoleNames.
@@ -88,7 +88,7 @@ type Preference struct {
 	RemoteProviderPreferences map[string]interface{} `json:"remoteProviderPreferences" yaml:"remoteProviderPreferences"`
 
 	// SelectedOrganizationId ID of the associated selectedOrganization.
-	SelectedOrganizationId openapi_types.UUID `json:"selectedOrganizationId" yaml:"selectedOrganizationId"`
+	SelectedOrganizationId uuid.UUID `json:"selectedOrganizationId" yaml:"selectedOrganizationId"`
 
 	// SelectedWorkspaceForOrganizations The selected workspace for organizations of the preference.
 	SelectedWorkspaceForOrganizations map[string]string `json:"selectedWorkspaceForOrganizations" yaml:"selectedWorkspaceForOrganizations"`

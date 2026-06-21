@@ -4,10 +4,11 @@ package connection
 
 import (
 	"crypto/md5"
+	"encoding/hex"
 	"encoding/json"
 	"sync"
 
-	"github.com/google/uuid"
+	"github.com/gofrs/uuid"
 	"github.com/meshery/meshkit/database"
 	"github.com/meshery/schemas/models/core"
 	"gorm.io/gorm"
@@ -22,7 +23,7 @@ func (h *Connection) GenerateID() (uuid.UUID, error) {
 	}
 
 	hash := md5.Sum(byt)
-	return uuid.UUID(hash), nil
+	return uuid.FromString(hex.EncodeToString(hash[:]))
 }
 
 func (h *Connection) Create(db *database.Handler) (uuid.UUID, error) {

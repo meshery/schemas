@@ -8,6 +8,7 @@ import (
 	patternv1beta1 "github.com/meshery/schemas/models/v1beta1/pattern"
 	viewv1beta1 "github.com/meshery/schemas/models/v1beta1/view"
 	openapi_types "github.com/oapi-codegen/runtime/types"
+	"github.com/gofrs/uuid"
 )
 
 // AvailableWorkspace Workspace with resolved owner details, as returned in list and get responses.
@@ -115,7 +116,7 @@ type WorkspacePayload struct {
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 
 	// OrganizationID Organization ID.
-	OrganizationID openapi_types.UUID `json:"organizationId,omitempty" yaml:"organizationId,omitempty"`
+	OrganizationID uuid.UUID `json:"organizationId,omitempty" yaml:"organizationId,omitempty"`
 }
 
 // WorkspaceUpdatePayload Payload for updating a workspace.
@@ -130,7 +131,7 @@ type WorkspaceUpdatePayload struct {
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 
 	// OrganizationID Organization ID.
-	OrganizationID openapi_types.UUID `json:"organizationId,omitempty" yaml:"organizationId,omitempty"`
+	OrganizationID uuid.UUID `json:"organizationId,omitempty" yaml:"organizationId,omitempty"`
 }
 
 // WorkspacesDesignsMapping Junction record linking a workspace to a design.
@@ -262,7 +263,7 @@ type Filter = string
 type Order = string
 
 // OrgIdQuery defines model for orgIdQuery.
-type OrgIdQuery = openapi_types.UUID
+type OrgIdQuery = uuid.UUID
 
 // CorePage defines model for page.
 type CorePage = string

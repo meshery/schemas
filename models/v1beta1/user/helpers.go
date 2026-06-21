@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/google/uuid"
+	"github.com/gofrs/uuid"
 	core "github.com/meshery/schemas/models/core"
 )
 
@@ -66,7 +66,7 @@ func (p *Preference) Scan(src interface{}) error {
 	// on the next preference update.
 	if v, ok := mapVal["selectedOrganizationId"]; ok {
 		s, isStr := v.(string)
-		if !isStr || uuid.Validate(s) != nil {
+		if _, err := uuid.FromString(s); !isStr || err != nil {
 			delete(mapVal, "selectedOrganizationId")
 		}
 	}
