@@ -40,7 +40,7 @@ func (r RelationshipDefinition) Type() entity.EntityType {
 }
 
 func (r *RelationshipDefinition) GenerateID() (uuid.UUID, error) {
-	return uuid.New(), nil
+	return uuid.NewRandom()
 }
 
 func (r RelationshipDefinition) GetID() uuid.UUID {

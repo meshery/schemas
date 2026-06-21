@@ -26,7 +26,7 @@ func (c ComponentDefinition) Type() entity.EntityType {
 }
 
 func (c *ComponentDefinition) GenerateID() (uuid.UUID, error) {
-	return uuid.New(), nil
+	return uuid.NewRandom()
 }
 
 func (c ComponentDefinition) GetID() uuid.UUID {

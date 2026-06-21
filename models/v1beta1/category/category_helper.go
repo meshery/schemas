@@ -4,7 +4,6 @@ package category
 
 import (
 	"crypto/md5"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"sync"
@@ -38,7 +37,7 @@ func (cat *CategoryDefinition) GenerateID() (uuid.UUID, error) {
 	}
 
 	hash := md5.Sum(byt)
-	return uuid.Parse(hex.EncodeToString(hash[:]))
+	return uuid.UUID(hash), nil
 }
 
 func (cat CategoryDefinition) GetID() uuid.UUID {
