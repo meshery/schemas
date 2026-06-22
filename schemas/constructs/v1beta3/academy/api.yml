@@ -1151,7 +1151,7 @@ components:
           $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
           description: ID of the user (foreign key to User)
           x-oapi-codegen-extra-tags:
-            db: user_id
+            db: owner
         status:
           $ref: '#/components/schemas/AcademyRegistrationStatus'
           x-go-type: AcademyRegistrationStatus
@@ -1711,7 +1711,7 @@ components:
         userId:
           $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
           x-oapi-codegen-extra-tags:
-            db: user_id
+            db: owner
         createdAt:
           description: When the submission was created or started
           type: string
