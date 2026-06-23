@@ -6,21 +6,10 @@ package user
 import (
 	"time"
 
+	"github.com/lib/pq"
 	"github.com/meshery/schemas/models/core"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 	"github.com/gofrs/uuid"
-)
-
-// Defines values for UserRoleNames.
-const (
-	UserRoleNamesAdmin             UserRoleNames = "admin"
-	UserRoleNamesCurator           UserRoleNames = "curator"
-	UserRoleNamesMeshmap           UserRoleNames = "meshmap"
-	UserRoleNamesOrganizationAdmin UserRoleNames = "organization admin"
-	UserRoleNamesTeamAdmin         UserRoleNames = "team admin"
-	UserRoleNamesUser              UserRoleNames = "user"
-	UserRoleNamesWorkspaceAdmin    UserRoleNames = "workspace admin"
-	UserRoleNamesWorkspaceManager  UserRoleNames = "workspace manager"
 )
 
 // Defines values for UserStatus.
@@ -62,6 +51,35 @@ type LoadTestPreferences struct {
 
 	// T Duration
 	T *string `json:"t,omitempty" yaml:"t,omitempty"`
+}
+
+// OrganizationWithRoles An organization the user is a member of, together with the names of the roles assigned to that user within the organization. Returned as an item of User.organizations.organizationsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).
+type OrganizationWithRoles struct {
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID core.Uuid `db:"id" json:"id,omitempty" yaml:"id"`
+
+	// Name Name of the organization.
+	Name string `db:"name" json:"name,omitempty" yaml:"name,omitempty"`
+
+	// Description Human readable description of the organization.
+	Description *string `db:"description" json:"description,omitempty" yaml:"description,omitempty"`
+
+	// Country Country associated with the organization.
+	Country *string `db:"country" json:"country,omitempty" yaml:"country,omitempty"`
+
+	// Region Region associated with the organization.
+	Region *string `db:"region" json:"region,omitempty" yaml:"region,omitempty"`
+
+	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	Owner     *core.Uuid `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
+	CreatedAt core.Time  `db:"created_at" json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
+	UpdatedAt core.Time  `db:"updated_at" json:"updatedAt,omitempty" yaml:"updatedAt,omitempty"`
+
+	// DeletedAt Timestamp when the organization was soft-deleted (null if not deleted).
+	DeletedAt *core.NullTime `db:"deleted_at" json:"deletedAt,omitempty" yaml:"deletedAt,omitempty"`
+
+	// RoleNames Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.
+	RoleNames pq.StringArray `db:"role_names" json:"roleNames" yaml:"roleNames"`
 }
 
 // Panel Grafana panel structure imported from github.com/grafana-tools/sdk
@@ -130,6 +148,32 @@ type Social struct {
 	Site string `json:"site" yaml:"site"`
 }
 
+// TeamWithRoles A team the user is a member of, together with the names of the roles assigned to that user within the team. Returned as an item of User.teams.teamsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).
+type TeamWithRoles struct {
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID core.Uuid `db:"id" json:"id,omitempty" yaml:"id"`
+
+	// Name Name of the team.
+	Name string `db:"name" json:"name,omitempty" yaml:"name,omitempty"`
+
+	// Description Human readable description of the team.
+	Description *string `db:"description" json:"description,omitempty" yaml:"description,omitempty"`
+
+	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	Owner *core.Uuid `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
+
+	// Metadata Free-form metadata associated with the team.
+	Metadata  core.Map          `db:"metadata" json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	CreatedAt core.Time `db:"created_at" json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
+	UpdatedAt core.Time `db:"updated_at" json:"updatedAt,omitempty" yaml:"updatedAt,omitempty"`
+
+	// DeletedAt Timestamp when the team was soft-deleted (null if not deleted).
+	DeletedAt *core.NullTime `db:"deleted_at" json:"deletedAt,omitempty" yaml:"deletedAt,omitempty"`
+
+	// RoleNames Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.
+	RoleNames pq.StringArray `db:"role_names" json:"roleNames" yaml:"roleNames"`
+}
+
 // User Represents a user
 type User struct {
 	AcceptedTermsAt core.Time `db:"accepted_terms_at" json:"acceptedTermsAt" yaml:"acceptedTermsAt,omitempty"`
@@ -164,7 +208,7 @@ type User struct {
 	// Organizations Organizations the user belongs to with role information
 	Organizations *struct {
 		// OrganizationsWithRoles Organization memberships for the user with their assigned roles.
-		OrganizationsWithRoles *[]map[string]interface{} `db:"organizations_with_roles" json:"organizationsWithRoles" yaml:"organizationsWithRoles"`
+		OrganizationsWithRoles *[]OrganizationWithRoles `db:"organizations_with_roles" json:"organizationsWithRoles" yaml:"organizationsWithRoles"`
 
 		// TotalCount Total number of organization memberships returned for the user.
 		TotalCount *int `db:"total_count" json:"totalCount" yaml:"totalCount"`
@@ -177,8 +221,8 @@ type User struct {
 	// Region User's region information stored as JSONB
 	Region core.Map `db:"region" json:"region" yaml:"region"`
 
-	// RoleNames List of global roles assigned to the user
-	RoleNames *[]UserRoleNames `db:"role_names" json:"roleNames" yaml:"roleNames"`
+	// RoleNames Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
+	RoleNames pq.StringArray `db:"role_names" json:"roleNames" yaml:"roleNames"`
 
 	// Socials Various online profiles associated with the user account
 	Socials *UserSocials `db:"socials" json:"socials" yaml:"socials"`
@@ -189,7 +233,7 @@ type User struct {
 	// Teams Teams the user belongs to with role information
 	Teams *struct {
 		// TeamsWithRoles Team memberships for the user with their assigned roles.
-		TeamsWithRoles *[]map[string]interface{} `db:"teams_with_roles" json:"teamsWithRoles" yaml:"teamsWithRoles"`
+		TeamsWithRoles *[]TeamWithRoles `db:"teams_with_roles" json:"teamsWithRoles" yaml:"teamsWithRoles"`
 
 		// TotalCount Total number of team memberships returned for the user.
 		TotalCount *int `db:"total_count" json:"totalCount" yaml:"totalCount"`
@@ -199,9 +243,6 @@ type User struct {
 	// UserId User identifier (username or external ID)
 	UserId string `db:"user_id" json:"userId" yaml:"userId"`
 }
-
-// UserRoleNames defines model for User.RoleNames.
-type UserRoleNames string
 
 // UserStatus User account status
 type UserStatus string

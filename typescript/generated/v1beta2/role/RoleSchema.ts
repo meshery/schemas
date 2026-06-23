@@ -211,7 +211,7 @@ const RoleSchema: Record<string, unknown> = {
         ],
         "summary": "Get organization roles",
         "operationId": "getAllRoles",
-        "description": "Returns all roles defined for the specified organization.",
+        "description": "Returns all roles defined for the specified organization — the seeded system roles plus any custom roles the organization has created. This is the canonical, drift-free source for surfacing roles to tooling (role pickers, dropdown defaults, docs): role names are free-form, user-defined strings (User.roleNames and Role.roleName are open arrays, not an enumeration), so clients should list them here rather than hard-code a fixed set.",
         "parameters": [
           {
             "name": "orgId",
