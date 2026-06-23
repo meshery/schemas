@@ -727,8 +727,8 @@ const DesignSchema: Record<string, unknown> = {
                                 },
                                 "description": "Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as \"admin\", \"organization admin\" and \"user\" are a subset, not the whole set.",
                                 "example": [
-                                  "admin",
-                                  "organization admin"
+                                  "organization admin",
+                                  "user"
                                 ],
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "role_names",
@@ -1978,8 +1978,8 @@ const DesignSchema: Record<string, unknown> = {
                           },
                           "description": "Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as \"admin\", \"organization admin\" and \"user\" are a subset, not the whole set.",
                           "example": [
-                            "admin",
-                            "organization admin"
+                            "organization admin",
+                            "user"
                           ],
                           "x-oapi-codegen-extra-tags": {
                             "db": "role_names",
@@ -3376,8 +3376,8 @@ const DesignSchema: Record<string, unknown> = {
                           },
                           "description": "Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as \"admin\", \"organization admin\" and \"user\" are a subset, not the whole set.",
                           "example": [
-                            "admin",
-                            "organization admin"
+                            "organization admin",
+                            "user"
                           ],
                           "x-oapi-codegen-extra-tags": {
                             "db": "role_names",
@@ -4505,8 +4505,8 @@ const DesignSchema: Record<string, unknown> = {
                           },
                           "description": "Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as \"admin\", \"organization admin\" and \"user\" are a subset, not the whole set.",
                           "example": [
-                            "admin",
-                            "organization admin"
+                            "organization admin",
+                            "user"
                           ],
                           "x-oapi-codegen-extra-tags": {
                             "db": "role_names",
@@ -5968,8 +5968,8 @@ const DesignSchema: Record<string, unknown> = {
                                 },
                                 "description": "Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as \"admin\", \"organization admin\" and \"user\" are a subset, not the whole set.",
                                 "example": [
-                                  "admin",
-                                  "organization admin"
+                                  "organization admin",
+                                  "user"
                                 ],
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "role_names",
@@ -12809,8 +12809,8 @@ const DesignSchema: Record<string, unknown> = {
                 },
                 "description": "Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as \"admin\", \"organization admin\" and \"user\" are a subset, not the whole set.",
                 "example": [
-                  "admin",
-                  "organization admin"
+                  "organization admin",
+                  "user"
                 ],
                 "x-oapi-codegen-extra-tags": {
                   "db": "role_names",
@@ -13829,8 +13829,8 @@ const DesignSchema: Record<string, unknown> = {
                       },
                       "description": "Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as \"admin\", \"organization admin\" and \"user\" are a subset, not the whole set.",
                       "example": [
-                        "admin",
-                        "organization admin"
+                        "organization admin",
+                        "user"
                       ],
                       "x-oapi-codegen-extra-tags": {
                         "db": "role_names",
@@ -15410,8 +15410,8 @@ const DesignSchema: Record<string, unknown> = {
                       },
                       "description": "Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as \"admin\", \"organization admin\" and \"user\" are a subset, not the whole set.",
                       "example": [
-                        "admin",
-                        "organization admin"
+                        "organization admin",
+                        "user"
                       ],
                       "x-oapi-codegen-extra-tags": {
                         "db": "role_names",
