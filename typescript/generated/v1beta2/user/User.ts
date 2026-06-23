@@ -257,17 +257,165 @@ export interface components {
             /** @description Teams the user belongs to with role information */
             teams?: {
                 /** @description Team memberships for the user with their assigned roles. */
-                teamsWithRoles?: Record<string, never>[];
+                teamsWithRoles?: {
+                    /**
+                     * Format: uuid
+                     * @description Unique identifier of the team.
+                     */
+                    id: string;
+                    /** @description Name of the team. */
+                    name: string;
+                    /** @description Human readable description of the team. */
+                    description?: string;
+                    /**
+                     * Format: uuid
+                     * @description Identifier of the team owner.
+                     */
+                    owner?: string;
+                    /** @description Free-form metadata associated with the team. */
+                    metadata?: {
+                        [key: string]: unknown;
+                    };
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the team was created.
+                     */
+                    createdAt?: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the team was last updated.
+                     */
+                    updatedAt?: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the team was soft-deleted (null if not deleted).
+                     */
+                    deletedAt?: string | null;
+                    /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+                    roleNames: string[];
+                }[];
                 /** @description Total number of team memberships returned for the user. */
                 totalCount?: number;
             };
             /** @description Organizations the user belongs to with role information */
             organizations?: {
                 /** @description Organization memberships for the user with their assigned roles. */
-                organizationsWithRoles?: Record<string, never>[];
+                organizationsWithRoles?: {
+                    /**
+                     * Format: uuid
+                     * @description Unique identifier of the organization.
+                     */
+                    id: string;
+                    /** @description Name of the organization. */
+                    name: string;
+                    /** @description Human readable description of the organization. */
+                    description?: string;
+                    /** @description Country associated with the organization. */
+                    country?: string;
+                    /** @description Region associated with the organization. */
+                    region?: string;
+                    /**
+                     * Format: uuid
+                     * @description Identifier of the organization owner.
+                     */
+                    owner?: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the organization was created.
+                     */
+                    createdAt?: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the organization was last updated.
+                     */
+                    updatedAt?: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the organization was soft-deleted (null if not deleted).
+                     */
+                    deletedAt?: string | null;
+                    /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+                    roleNames: string[];
+                }[];
                 /** @description Total number of organization memberships returned for the user. */
                 totalCount?: number;
             };
+        };
+        /** @description An organization the user is a member of, together with the names of the roles assigned to that user within the organization. Returned as an item of User.organizations.organizationsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration). */
+        OrganizationWithRoles: {
+            /**
+             * Format: uuid
+             * @description Unique identifier of the organization.
+             */
+            id: string;
+            /** @description Name of the organization. */
+            name: string;
+            /** @description Human readable description of the organization. */
+            description?: string;
+            /** @description Country associated with the organization. */
+            country?: string;
+            /** @description Region associated with the organization. */
+            region?: string;
+            /**
+             * Format: uuid
+             * @description Identifier of the organization owner.
+             */
+            owner?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the organization was created.
+             */
+            createdAt?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the organization was last updated.
+             */
+            updatedAt?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the organization was soft-deleted (null if not deleted).
+             */
+            deletedAt?: string | null;
+            /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
+        };
+        /** @description A team the user is a member of, together with the names of the roles assigned to that user within the team. Returned as an item of User.teams.teamsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration). */
+        TeamWithRoles: {
+            /**
+             * Format: uuid
+             * @description Unique identifier of the team.
+             */
+            id: string;
+            /** @description Name of the team. */
+            name: string;
+            /** @description Human readable description of the team. */
+            description?: string;
+            /**
+             * Format: uuid
+             * @description Identifier of the team owner.
+             */
+            owner?: string;
+            /** @description Free-form metadata associated with the team. */
+            metadata?: {
+                [key: string]: unknown;
+            };
+            /**
+             * Format: date-time
+             * @description Timestamp when the team was created.
+             */
+            createdAt?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the team was last updated.
+             */
+            updatedAt?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the team was soft-deleted (null if not deleted).
+             */
+            deletedAt?: string | null;
+            /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+            roleNames: string[];
         };
         /** @description Paginated list of users with organization and team role context */
         UsersPageForAdmin: {
@@ -452,14 +600,86 @@ export interface components {
                 /** @description Teams the user belongs to with role information */
                 teams?: {
                     /** @description Team memberships for the user with their assigned roles. */
-                    teamsWithRoles?: Record<string, never>[];
+                    teamsWithRoles?: {
+                        /**
+                         * Format: uuid
+                         * @description Unique identifier of the team.
+                         */
+                        id: string;
+                        /** @description Name of the team. */
+                        name: string;
+                        /** @description Human readable description of the team. */
+                        description?: string;
+                        /**
+                         * Format: uuid
+                         * @description Identifier of the team owner.
+                         */
+                        owner?: string;
+                        /** @description Free-form metadata associated with the team. */
+                        metadata?: {
+                            [key: string]: unknown;
+                        };
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the team was created.
+                         */
+                        createdAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the team was last updated.
+                         */
+                        updatedAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the team was soft-deleted (null if not deleted).
+                         */
+                        deletedAt?: string | null;
+                        /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+                        roleNames: string[];
+                    }[];
                     /** @description Total number of team memberships returned for the user. */
                     totalCount?: number;
                 };
                 /** @description Organizations the user belongs to with role information */
                 organizations?: {
                     /** @description Organization memberships for the user with their assigned roles. */
-                    organizationsWithRoles?: Record<string, never>[];
+                    organizationsWithRoles?: {
+                        /**
+                         * Format: uuid
+                         * @description Unique identifier of the organization.
+                         */
+                        id: string;
+                        /** @description Name of the organization. */
+                        name: string;
+                        /** @description Human readable description of the organization. */
+                        description?: string;
+                        /** @description Country associated with the organization. */
+                        country?: string;
+                        /** @description Region associated with the organization. */
+                        region?: string;
+                        /**
+                         * Format: uuid
+                         * @description Identifier of the organization owner.
+                         */
+                        owner?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the organization was created.
+                         */
+                        createdAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the organization was last updated.
+                         */
+                        updatedAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the organization was soft-deleted (null if not deleted).
+                         */
+                        deletedAt?: string | null;
+                        /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+                        roleNames: string[];
+                    }[];
                     /** @description Total number of organization memberships returned for the user. */
                     totalCount?: number;
                 };
@@ -648,14 +868,86 @@ export interface components {
                 /** @description Teams the user belongs to with role information */
                 teams?: {
                     /** @description Team memberships for the user with their assigned roles. */
-                    teamsWithRoles?: Record<string, never>[];
+                    teamsWithRoles?: {
+                        /**
+                         * Format: uuid
+                         * @description Unique identifier of the team.
+                         */
+                        id: string;
+                        /** @description Name of the team. */
+                        name: string;
+                        /** @description Human readable description of the team. */
+                        description?: string;
+                        /**
+                         * Format: uuid
+                         * @description Identifier of the team owner.
+                         */
+                        owner?: string;
+                        /** @description Free-form metadata associated with the team. */
+                        metadata?: {
+                            [key: string]: unknown;
+                        };
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the team was created.
+                         */
+                        createdAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the team was last updated.
+                         */
+                        updatedAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the team was soft-deleted (null if not deleted).
+                         */
+                        deletedAt?: string | null;
+                        /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+                        roleNames: string[];
+                    }[];
                     /** @description Total number of team memberships returned for the user. */
                     totalCount?: number;
                 };
                 /** @description Organizations the user belongs to with role information */
                 organizations?: {
                     /** @description Organization memberships for the user with their assigned roles. */
-                    organizationsWithRoles?: Record<string, never>[];
+                    organizationsWithRoles?: {
+                        /**
+                         * Format: uuid
+                         * @description Unique identifier of the organization.
+                         */
+                        id: string;
+                        /** @description Name of the organization. */
+                        name: string;
+                        /** @description Human readable description of the organization. */
+                        description?: string;
+                        /** @description Country associated with the organization. */
+                        country?: string;
+                        /** @description Region associated with the organization. */
+                        region?: string;
+                        /**
+                         * Format: uuid
+                         * @description Identifier of the organization owner.
+                         */
+                        owner?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the organization was created.
+                         */
+                        createdAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the organization was last updated.
+                         */
+                        updatedAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the organization was soft-deleted (null if not deleted).
+                         */
+                        deletedAt?: string | null;
+                        /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+                        roleNames: string[];
+                    }[];
                     /** @description Total number of organization memberships returned for the user. */
                     totalCount?: number;
                 };
@@ -1071,14 +1363,86 @@ export interface operations {
                             /** @description Teams the user belongs to with role information */
                             teams?: {
                                 /** @description Team memberships for the user with their assigned roles. */
-                                teamsWithRoles?: Record<string, never>[];
+                                teamsWithRoles?: {
+                                    /**
+                                     * Format: uuid
+                                     * @description Unique identifier of the team.
+                                     */
+                                    id: string;
+                                    /** @description Name of the team. */
+                                    name: string;
+                                    /** @description Human readable description of the team. */
+                                    description?: string;
+                                    /**
+                                     * Format: uuid
+                                     * @description Identifier of the team owner.
+                                     */
+                                    owner?: string;
+                                    /** @description Free-form metadata associated with the team. */
+                                    metadata?: {
+                                        [key: string]: unknown;
+                                    };
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the team was created.
+                                     */
+                                    createdAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the team was last updated.
+                                     */
+                                    updatedAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the team was soft-deleted (null if not deleted).
+                                     */
+                                    deletedAt?: string | null;
+                                    /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+                                    roleNames: string[];
+                                }[];
                                 /** @description Total number of team memberships returned for the user. */
                                 totalCount?: number;
                             };
                             /** @description Organizations the user belongs to with role information */
                             organizations?: {
                                 /** @description Organization memberships for the user with their assigned roles. */
-                                organizationsWithRoles?: Record<string, never>[];
+                                organizationsWithRoles?: {
+                                    /**
+                                     * Format: uuid
+                                     * @description Unique identifier of the organization.
+                                     */
+                                    id: string;
+                                    /** @description Name of the organization. */
+                                    name: string;
+                                    /** @description Human readable description of the organization. */
+                                    description?: string;
+                                    /** @description Country associated with the organization. */
+                                    country?: string;
+                                    /** @description Region associated with the organization. */
+                                    region?: string;
+                                    /**
+                                     * Format: uuid
+                                     * @description Identifier of the organization owner.
+                                     */
+                                    owner?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the organization was created.
+                                     */
+                                    createdAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the organization was last updated.
+                                     */
+                                    updatedAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the organization was soft-deleted (null if not deleted).
+                                     */
+                                    deletedAt?: string | null;
+                                    /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+                                    roleNames: string[];
+                                }[];
                                 /** @description Total number of organization memberships returned for the user. */
                                 totalCount?: number;
                             };
@@ -1332,14 +1696,86 @@ export interface operations {
                             /** @description Teams the user belongs to with role information */
                             teams?: {
                                 /** @description Team memberships for the user with their assigned roles. */
-                                teamsWithRoles?: Record<string, never>[];
+                                teamsWithRoles?: {
+                                    /**
+                                     * Format: uuid
+                                     * @description Unique identifier of the team.
+                                     */
+                                    id: string;
+                                    /** @description Name of the team. */
+                                    name: string;
+                                    /** @description Human readable description of the team. */
+                                    description?: string;
+                                    /**
+                                     * Format: uuid
+                                     * @description Identifier of the team owner.
+                                     */
+                                    owner?: string;
+                                    /** @description Free-form metadata associated with the team. */
+                                    metadata?: {
+                                        [key: string]: unknown;
+                                    };
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the team was created.
+                                     */
+                                    createdAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the team was last updated.
+                                     */
+                                    updatedAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the team was soft-deleted (null if not deleted).
+                                     */
+                                    deletedAt?: string | null;
+                                    /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+                                    roleNames: string[];
+                                }[];
                                 /** @description Total number of team memberships returned for the user. */
                                 totalCount?: number;
                             };
                             /** @description Organizations the user belongs to with role information */
                             organizations?: {
                                 /** @description Organization memberships for the user with their assigned roles. */
-                                organizationsWithRoles?: Record<string, never>[];
+                                organizationsWithRoles?: {
+                                    /**
+                                     * Format: uuid
+                                     * @description Unique identifier of the organization.
+                                     */
+                                    id: string;
+                                    /** @description Name of the organization. */
+                                    name: string;
+                                    /** @description Human readable description of the organization. */
+                                    description?: string;
+                                    /** @description Country associated with the organization. */
+                                    country?: string;
+                                    /** @description Region associated with the organization. */
+                                    region?: string;
+                                    /**
+                                     * Format: uuid
+                                     * @description Identifier of the organization owner.
+                                     */
+                                    owner?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the organization was created.
+                                     */
+                                    createdAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the organization was last updated.
+                                     */
+                                    updatedAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the organization was soft-deleted (null if not deleted).
+                                     */
+                                    deletedAt?: string | null;
+                                    /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+                                    roleNames: string[];
+                                }[];
                                 /** @description Total number of organization memberships returned for the user. */
                                 totalCount?: number;
                             };
@@ -1568,14 +2004,86 @@ export interface operations {
                         /** @description Teams the user belongs to with role information */
                         teams?: {
                             /** @description Team memberships for the user with their assigned roles. */
-                            teamsWithRoles?: Record<string, never>[];
+                            teamsWithRoles?: {
+                                /**
+                                 * Format: uuid
+                                 * @description Unique identifier of the team.
+                                 */
+                                id: string;
+                                /** @description Name of the team. */
+                                name: string;
+                                /** @description Human readable description of the team. */
+                                description?: string;
+                                /**
+                                 * Format: uuid
+                                 * @description Identifier of the team owner.
+                                 */
+                                owner?: string;
+                                /** @description Free-form metadata associated with the team. */
+                                metadata?: {
+                                    [key: string]: unknown;
+                                };
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the team was created.
+                                 */
+                                createdAt?: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the team was last updated.
+                                 */
+                                updatedAt?: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the team was soft-deleted (null if not deleted).
+                                 */
+                                deletedAt?: string | null;
+                                /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+                                roleNames: string[];
+                            }[];
                             /** @description Total number of team memberships returned for the user. */
                             totalCount?: number;
                         };
                         /** @description Organizations the user belongs to with role information */
                         organizations?: {
                             /** @description Organization memberships for the user with their assigned roles. */
-                            organizationsWithRoles?: Record<string, never>[];
+                            organizationsWithRoles?: {
+                                /**
+                                 * Format: uuid
+                                 * @description Unique identifier of the organization.
+                                 */
+                                id: string;
+                                /** @description Name of the organization. */
+                                name: string;
+                                /** @description Human readable description of the organization. */
+                                description?: string;
+                                /** @description Country associated with the organization. */
+                                country?: string;
+                                /** @description Region associated with the organization. */
+                                region?: string;
+                                /**
+                                 * Format: uuid
+                                 * @description Identifier of the organization owner.
+                                 */
+                                owner?: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the organization was created.
+                                 */
+                                createdAt?: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the organization was last updated.
+                                 */
+                                updatedAt?: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the organization was soft-deleted (null if not deleted).
+                                 */
+                                deletedAt?: string | null;
+                                /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+                                roleNames: string[];
+                            }[];
                             /** @description Total number of organization memberships returned for the user. */
                             totalCount?: number;
                         };
@@ -1809,14 +2317,86 @@ export interface operations {
                         /** @description Teams the user belongs to with role information */
                         teams?: {
                             /** @description Team memberships for the user with their assigned roles. */
-                            teamsWithRoles?: Record<string, never>[];
+                            teamsWithRoles?: {
+                                /**
+                                 * Format: uuid
+                                 * @description Unique identifier of the team.
+                                 */
+                                id: string;
+                                /** @description Name of the team. */
+                                name: string;
+                                /** @description Human readable description of the team. */
+                                description?: string;
+                                /**
+                                 * Format: uuid
+                                 * @description Identifier of the team owner.
+                                 */
+                                owner?: string;
+                                /** @description Free-form metadata associated with the team. */
+                                metadata?: {
+                                    [key: string]: unknown;
+                                };
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the team was created.
+                                 */
+                                createdAt?: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the team was last updated.
+                                 */
+                                updatedAt?: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the team was soft-deleted (null if not deleted).
+                                 */
+                                deletedAt?: string | null;
+                                /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+                                roleNames: string[];
+                            }[];
                             /** @description Total number of team memberships returned for the user. */
                             totalCount?: number;
                         };
                         /** @description Organizations the user belongs to with role information */
                         organizations?: {
                             /** @description Organization memberships for the user with their assigned roles. */
-                            organizationsWithRoles?: Record<string, never>[];
+                            organizationsWithRoles?: {
+                                /**
+                                 * Format: uuid
+                                 * @description Unique identifier of the organization.
+                                 */
+                                id: string;
+                                /** @description Name of the organization. */
+                                name: string;
+                                /** @description Human readable description of the organization. */
+                                description?: string;
+                                /** @description Country associated with the organization. */
+                                country?: string;
+                                /** @description Region associated with the organization. */
+                                region?: string;
+                                /**
+                                 * Format: uuid
+                                 * @description Identifier of the organization owner.
+                                 */
+                                owner?: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the organization was created.
+                                 */
+                                createdAt?: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the organization was last updated.
+                                 */
+                                updatedAt?: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the organization was soft-deleted (null if not deleted).
+                                 */
+                                deletedAt?: string | null;
+                                /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+                                roleNames: string[];
+                            }[];
                             /** @description Total number of organization memberships returned for the user. */
                             totalCount?: number;
                         };

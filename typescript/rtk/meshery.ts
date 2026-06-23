@@ -4044,14 +4044,56 @@ export type GetUsersForOrgApiResponse = /** status 200 Paginated list of organiz
     /** Teams the user belongs to with role information */
     teams?: {
       /** Team memberships for the user with their assigned roles. */
-      teamsWithRoles?: object[];
+      teamsWithRoles?: {
+        /** Unique identifier of the team. */
+        id: string;
+        /** Name of the team. */
+        name: string;
+        /** Human readable description of the team. */
+        description?: string;
+        /** Identifier of the team owner. */
+        owner?: string;
+        /** Free-form metadata associated with the team. */
+        metadata?: {
+          [key: string]: any;
+        };
+        /** Timestamp when the team was created. */
+        createdAt?: string;
+        /** Timestamp when the team was last updated. */
+        updatedAt?: string;
+        /** Timestamp when the team was soft-deleted (null if not deleted). */
+        deletedAt?: string | null;
+        /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+        roleNames: string[];
+      }[];
       /** Total number of team memberships returned for the user. */
       totalCount?: number;
     };
     /** Organizations the user belongs to with role information */
     organizations?: {
       /** Organization memberships for the user with their assigned roles. */
-      organizationsWithRoles?: object[];
+      organizationsWithRoles?: {
+        /** Unique identifier of the organization. */
+        id: string;
+        /** Name of the organization. */
+        name: string;
+        /** Human readable description of the organization. */
+        description?: string;
+        /** Country associated with the organization. */
+        country?: string;
+        /** Region associated with the organization. */
+        region?: string;
+        /** Identifier of the organization owner. */
+        owner?: string;
+        /** Timestamp when the organization was created. */
+        createdAt?: string;
+        /** Timestamp when the organization was last updated. */
+        updatedAt?: string;
+        /** Timestamp when the organization was soft-deleted (null if not deleted). */
+        deletedAt?: string | null;
+        /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+        roleNames: string[];
+      }[];
       /** Total number of organization memberships returned for the user. */
       totalCount?: number;
     };
@@ -4208,14 +4250,56 @@ export type GetUsersApiResponse = /** status 200 Paginated list of public users 
     /** Teams the user belongs to with role information */
     teams?: {
       /** Team memberships for the user with their assigned roles. */
-      teamsWithRoles?: object[];
+      teamsWithRoles?: {
+        /** Unique identifier of the team. */
+        id: string;
+        /** Name of the team. */
+        name: string;
+        /** Human readable description of the team. */
+        description?: string;
+        /** Identifier of the team owner. */
+        owner?: string;
+        /** Free-form metadata associated with the team. */
+        metadata?: {
+          [key: string]: any;
+        };
+        /** Timestamp when the team was created. */
+        createdAt?: string;
+        /** Timestamp when the team was last updated. */
+        updatedAt?: string;
+        /** Timestamp when the team was soft-deleted (null if not deleted). */
+        deletedAt?: string | null;
+        /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+        roleNames: string[];
+      }[];
       /** Total number of team memberships returned for the user. */
       totalCount?: number;
     };
     /** Organizations the user belongs to with role information */
     organizations?: {
       /** Organization memberships for the user with their assigned roles. */
-      organizationsWithRoles?: object[];
+      organizationsWithRoles?: {
+        /** Unique identifier of the organization. */
+        id: string;
+        /** Name of the organization. */
+        name: string;
+        /** Human readable description of the organization. */
+        description?: string;
+        /** Country associated with the organization. */
+        country?: string;
+        /** Region associated with the organization. */
+        region?: string;
+        /** Identifier of the organization owner. */
+        owner?: string;
+        /** Timestamp when the organization was created. */
+        createdAt?: string;
+        /** Timestamp when the organization was last updated. */
+        updatedAt?: string;
+        /** Timestamp when the organization was soft-deleted (null if not deleted). */
+        deletedAt?: string | null;
+        /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+        roleNames: string[];
+      }[];
       /** Total number of organization memberships returned for the user. */
       totalCount?: number;
     };
@@ -4360,14 +4444,56 @@ export type GetUserProfileByIdApiResponse = /** status 200 User profile for the 
   /** Teams the user belongs to with role information */
   teams?: {
     /** Team memberships for the user with their assigned roles. */
-    teamsWithRoles?: object[];
+    teamsWithRoles?: {
+      /** Unique identifier of the team. */
+      id: string;
+      /** Name of the team. */
+      name: string;
+      /** Human readable description of the team. */
+      description?: string;
+      /** Identifier of the team owner. */
+      owner?: string;
+      /** Free-form metadata associated with the team. */
+      metadata?: {
+        [key: string]: any;
+      };
+      /** Timestamp when the team was created. */
+      createdAt?: string;
+      /** Timestamp when the team was last updated. */
+      updatedAt?: string;
+      /** Timestamp when the team was soft-deleted (null if not deleted). */
+      deletedAt?: string | null;
+      /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+      roleNames: string[];
+    }[];
     /** Total number of team memberships returned for the user. */
     totalCount?: number;
   };
   /** Organizations the user belongs to with role information */
   organizations?: {
     /** Organization memberships for the user with their assigned roles. */
-    organizationsWithRoles?: object[];
+    organizationsWithRoles?: {
+      /** Unique identifier of the organization. */
+      id: string;
+      /** Name of the organization. */
+      name: string;
+      /** Human readable description of the organization. */
+      description?: string;
+      /** Country associated with the organization. */
+      country?: string;
+      /** Region associated with the organization. */
+      region?: string;
+      /** Identifier of the organization owner. */
+      owner?: string;
+      /** Timestamp when the organization was created. */
+      createdAt?: string;
+      /** Timestamp when the organization was last updated. */
+      updatedAt?: string;
+      /** Timestamp when the organization was soft-deleted (null if not deleted). */
+      deletedAt?: string | null;
+      /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+      roleNames: string[];
+    }[];
     /** Total number of organization memberships returned for the user. */
     totalCount?: number;
   };
@@ -4503,14 +4629,56 @@ export type GetUserApiResponse = /** status 200 Current user profile and role co
   /** Teams the user belongs to with role information */
   teams?: {
     /** Team memberships for the user with their assigned roles. */
-    teamsWithRoles?: object[];
+    teamsWithRoles?: {
+      /** Unique identifier of the team. */
+      id: string;
+      /** Name of the team. */
+      name: string;
+      /** Human readable description of the team. */
+      description?: string;
+      /** Identifier of the team owner. */
+      owner?: string;
+      /** Free-form metadata associated with the team. */
+      metadata?: {
+        [key: string]: any;
+      };
+      /** Timestamp when the team was created. */
+      createdAt?: string;
+      /** Timestamp when the team was last updated. */
+      updatedAt?: string;
+      /** Timestamp when the team was soft-deleted (null if not deleted). */
+      deletedAt?: string | null;
+      /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+      roleNames: string[];
+    }[];
     /** Total number of team memberships returned for the user. */
     totalCount?: number;
   };
   /** Organizations the user belongs to with role information */
   organizations?: {
     /** Organization memberships for the user with their assigned roles. */
-    organizationsWithRoles?: object[];
+    organizationsWithRoles?: {
+      /** Unique identifier of the organization. */
+      id: string;
+      /** Name of the organization. */
+      name: string;
+      /** Human readable description of the organization. */
+      description?: string;
+      /** Country associated with the organization. */
+      country?: string;
+      /** Region associated with the organization. */
+      region?: string;
+      /** Identifier of the organization owner. */
+      owner?: string;
+      /** Timestamp when the organization was created. */
+      createdAt?: string;
+      /** Timestamp when the organization was last updated. */
+      updatedAt?: string;
+      /** Timestamp when the organization was soft-deleted (null if not deleted). */
+      deletedAt?: string | null;
+      /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+      roleNames: string[];
+    }[];
     /** Total number of organization memberships returned for the user. */
     totalCount?: number;
   };
