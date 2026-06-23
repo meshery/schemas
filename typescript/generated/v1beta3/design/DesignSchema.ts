@@ -856,11 +856,14 @@ const DesignSchema: Record<string, unknown> = {
                                         },
                                         "roleNames": {
                                           "type": "array",
+                                          "x-go-type": "pq.StringArray",
+                                          "x-go-type-import": {
+                                            "path": "github.com/lib/pq"
+                                          },
                                           "description": "Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.",
                                           "items": {
                                             "type": "string"
                                           },
-                                          "x-go-type-skip-optional-pointer": true,
                                           "x-order": 9,
                                           "x-oapi-codegen-extra-tags": {
                                             "db": "role_names",
@@ -1007,11 +1010,14 @@ const DesignSchema: Record<string, unknown> = {
                                         },
                                         "roleNames": {
                                           "type": "array",
+                                          "x-go-type": "pq.StringArray",
+                                          "x-go-type-import": {
+                                            "path": "github.com/lib/pq"
+                                          },
                                           "description": "Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.",
                                           "items": {
                                             "type": "string"
                                           },
-                                          "x-go-type-skip-optional-pointer": true,
                                           "x-order": 10,
                                           "x-oapi-codegen-extra-tags": {
                                             "db": "role_names",
@@ -2106,11 +2112,14 @@ const DesignSchema: Record<string, unknown> = {
                                   },
                                   "roleNames": {
                                     "type": "array",
+                                    "x-go-type": "pq.StringArray",
+                                    "x-go-type-import": {
+                                      "path": "github.com/lib/pq"
+                                    },
                                     "description": "Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.",
                                     "items": {
                                       "type": "string"
                                     },
-                                    "x-go-type-skip-optional-pointer": true,
                                     "x-order": 9,
                                     "x-oapi-codegen-extra-tags": {
                                       "db": "role_names",
@@ -2257,11 +2266,14 @@ const DesignSchema: Record<string, unknown> = {
                                   },
                                   "roleNames": {
                                     "type": "array",
+                                    "x-go-type": "pq.StringArray",
+                                    "x-go-type-import": {
+                                      "path": "github.com/lib/pq"
+                                    },
                                     "description": "Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.",
                                     "items": {
                                       "type": "string"
                                     },
-                                    "x-go-type-skip-optional-pointer": true,
                                     "x-order": 10,
                                     "x-oapi-codegen-extra-tags": {
                                       "db": "role_names",
@@ -3503,11 +3515,14 @@ const DesignSchema: Record<string, unknown> = {
                                   },
                                   "roleNames": {
                                     "type": "array",
+                                    "x-go-type": "pq.StringArray",
+                                    "x-go-type-import": {
+                                      "path": "github.com/lib/pq"
+                                    },
                                     "description": "Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.",
                                     "items": {
                                       "type": "string"
                                     },
-                                    "x-go-type-skip-optional-pointer": true,
                                     "x-order": 9,
                                     "x-oapi-codegen-extra-tags": {
                                       "db": "role_names",
@@ -3654,11 +3669,14 @@ const DesignSchema: Record<string, unknown> = {
                                   },
                                   "roleNames": {
                                     "type": "array",
+                                    "x-go-type": "pq.StringArray",
+                                    "x-go-type-import": {
+                                      "path": "github.com/lib/pq"
+                                    },
                                     "description": "Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.",
                                     "items": {
                                       "type": "string"
                                     },
-                                    "x-go-type-skip-optional-pointer": true,
                                     "x-order": 10,
                                     "x-oapi-codegen-extra-tags": {
                                       "db": "role_names",
@@ -4631,11 +4649,14 @@ const DesignSchema: Record<string, unknown> = {
                                   },
                                   "roleNames": {
                                     "type": "array",
+                                    "x-go-type": "pq.StringArray",
+                                    "x-go-type-import": {
+                                      "path": "github.com/lib/pq"
+                                    },
                                     "description": "Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.",
                                     "items": {
                                       "type": "string"
                                     },
-                                    "x-go-type-skip-optional-pointer": true,
                                     "x-order": 9,
                                     "x-oapi-codegen-extra-tags": {
                                       "db": "role_names",
@@ -4782,11 +4803,14 @@ const DesignSchema: Record<string, unknown> = {
                                   },
                                   "roleNames": {
                                     "type": "array",
+                                    "x-go-type": "pq.StringArray",
+                                    "x-go-type-import": {
+                                      "path": "github.com/lib/pq"
+                                    },
                                     "description": "Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.",
                                     "items": {
                                       "type": "string"
                                     },
-                                    "x-go-type-skip-optional-pointer": true,
                                     "x-order": 10,
                                     "x-oapi-codegen-extra-tags": {
                                       "db": "role_names",
@@ -6093,11 +6117,14 @@ const DesignSchema: Record<string, unknown> = {
                                         },
                                         "roleNames": {
                                           "type": "array",
+                                          "x-go-type": "pq.StringArray",
+                                          "x-go-type-import": {
+                                            "path": "github.com/lib/pq"
+                                          },
                                           "description": "Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.",
                                           "items": {
                                             "type": "string"
                                           },
-                                          "x-go-type-skip-optional-pointer": true,
                                           "x-order": 9,
                                           "x-oapi-codegen-extra-tags": {
                                             "db": "role_names",
@@ -6244,11 +6271,14 @@ const DesignSchema: Record<string, unknown> = {
                                         },
                                         "roleNames": {
                                           "type": "array",
+                                          "x-go-type": "pq.StringArray",
+                                          "x-go-type-import": {
+                                            "path": "github.com/lib/pq"
+                                          },
                                           "description": "Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.",
                                           "items": {
                                             "type": "string"
                                           },
-                                          "x-go-type-skip-optional-pointer": true,
                                           "x-order": 10,
                                           "x-oapi-codegen-extra-tags": {
                                             "db": "role_names",
@@ -12933,11 +12963,14 @@ const DesignSchema: Record<string, unknown> = {
                         },
                         "roleNames": {
                           "type": "array",
+                          "x-go-type": "pq.StringArray",
+                          "x-go-type-import": {
+                            "path": "github.com/lib/pq"
+                          },
                           "description": "Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.",
                           "items": {
                             "type": "string"
                           },
-                          "x-go-type-skip-optional-pointer": true,
                           "x-order": 9,
                           "x-oapi-codegen-extra-tags": {
                             "db": "role_names",
@@ -13084,11 +13117,14 @@ const DesignSchema: Record<string, unknown> = {
                         },
                         "roleNames": {
                           "type": "array",
+                          "x-go-type": "pq.StringArray",
+                          "x-go-type-import": {
+                            "path": "github.com/lib/pq"
+                          },
                           "description": "Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.",
                           "items": {
                             "type": "string"
                           },
-                          "x-go-type-skip-optional-pointer": true,
                           "x-order": 10,
                           "x-oapi-codegen-extra-tags": {
                             "db": "role_names",
@@ -13952,11 +13988,14 @@ const DesignSchema: Record<string, unknown> = {
                               },
                               "roleNames": {
                                 "type": "array",
+                                "x-go-type": "pq.StringArray",
+                                "x-go-type-import": {
+                                  "path": "github.com/lib/pq"
+                                },
                                 "description": "Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.",
                                 "items": {
                                   "type": "string"
                                 },
-                                "x-go-type-skip-optional-pointer": true,
                                 "x-order": 9,
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "role_names",
@@ -14103,11 +14142,14 @@ const DesignSchema: Record<string, unknown> = {
                               },
                               "roleNames": {
                                 "type": "array",
+                                "x-go-type": "pq.StringArray",
+                                "x-go-type-import": {
+                                  "path": "github.com/lib/pq"
+                                },
                                 "description": "Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.",
                                 "items": {
                                   "type": "string"
                                 },
-                                "x-go-type-skip-optional-pointer": true,
                                 "x-order": 10,
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "role_names",
@@ -15532,11 +15574,14 @@ const DesignSchema: Record<string, unknown> = {
                               },
                               "roleNames": {
                                 "type": "array",
+                                "x-go-type": "pq.StringArray",
+                                "x-go-type-import": {
+                                  "path": "github.com/lib/pq"
+                                },
                                 "description": "Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.",
                                 "items": {
                                   "type": "string"
                                 },
-                                "x-go-type-skip-optional-pointer": true,
                                 "x-order": 9,
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "role_names",
@@ -15683,11 +15728,14 @@ const DesignSchema: Record<string, unknown> = {
                               },
                               "roleNames": {
                                 "type": "array",
+                                "x-go-type": "pq.StringArray",
+                                "x-go-type-import": {
+                                  "path": "github.com/lib/pq"
+                                },
                                 "description": "Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.",
                                 "items": {
                                   "type": "string"
                                 },
-                                "x-go-type-skip-optional-pointer": true,
                                 "x-order": 10,
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "role_names",

@@ -6,6 +6,7 @@ package user
 import (
 	"time"
 
+	"github.com/lib/pq"
 	"github.com/meshery/schemas/models/core"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 	"github.com/gofrs/uuid"
@@ -90,7 +91,7 @@ type OrganizationWithRoles struct {
 	DeletedAt *core.NullTime `db:"deleted_at" json:"deletedAt,omitempty" yaml:"deletedAt,omitempty"`
 
 	// RoleNames Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.
-	RoleNames []string `db:"role_names" json:"roleNames" yaml:"roleNames"`
+	RoleNames pq.StringArray `db:"role_names" json:"roleNames" yaml:"roleNames"`
 }
 
 // Panel Grafana panel structure imported from github.com/grafana-tools/sdk
@@ -182,7 +183,7 @@ type TeamWithRoles struct {
 	DeletedAt *core.NullTime `db:"deleted_at" json:"deletedAt,omitempty" yaml:"deletedAt,omitempty"`
 
 	// RoleNames Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.
-	RoleNames []string `db:"role_names" json:"roleNames" yaml:"roleNames"`
+	RoleNames pq.StringArray `db:"role_names" json:"roleNames" yaml:"roleNames"`
 }
 
 // User Represents a user
