@@ -247,13 +247,13 @@ export interface components {
              */
             deletedAt: string | null;
             /**
-             * @description List of global roles assigned to the user
+             * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
              * @example [
              *       "admin",
-             *       "meshmap"
+             *       "organization admin"
              *     ]
              */
-            roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
+            roleNames?: string[];
             /** @description Teams the user belongs to with role information */
             teams?: {
                 /** @description Team memberships for the user with their assigned roles. */
@@ -590,13 +590,13 @@ export interface components {
                  */
                 deletedAt: string | null;
                 /**
-                 * @description List of global roles assigned to the user
+                 * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
                  * @example [
                  *       "admin",
-                 *       "meshmap"
+                 *       "organization admin"
                  *     ]
                  */
-                roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
+                roleNames?: string[];
                 /** @description Teams the user belongs to with role information */
                 teams?: {
                     /** @description Team memberships for the user with their assigned roles. */
@@ -858,13 +858,13 @@ export interface components {
                  */
                 deletedAt: string | null;
                 /**
-                 * @description List of global roles assigned to the user
+                 * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
                  * @example [
                  *       "admin",
-                 *       "meshmap"
+                 *       "organization admin"
                  *     ]
                  */
-                roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
+                roleNames?: string[];
                 /** @description Teams the user belongs to with role information */
                 teams?: {
                     /** @description Team memberships for the user with their assigned roles. */
@@ -1353,13 +1353,13 @@ export interface operations {
                              */
                             deletedAt: string | null;
                             /**
-                             * @description List of global roles assigned to the user
+                             * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
                              * @example [
                              *       "admin",
-                             *       "meshmap"
+                             *       "organization admin"
                              *     ]
                              */
-                            roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
+                            roleNames?: string[];
                             /** @description Teams the user belongs to with role information */
                             teams?: {
                                 /** @description Team memberships for the user with their assigned roles. */
@@ -1686,13 +1686,13 @@ export interface operations {
                              */
                             deletedAt: string | null;
                             /**
-                             * @description List of global roles assigned to the user
+                             * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
                              * @example [
                              *       "admin",
-                             *       "meshmap"
+                             *       "organization admin"
                              *     ]
                              */
-                            roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
+                            roleNames?: string[];
                             /** @description Teams the user belongs to with role information */
                             teams?: {
                                 /** @description Team memberships for the user with their assigned roles. */
@@ -1994,13 +1994,13 @@ export interface operations {
                          */
                         deletedAt: string | null;
                         /**
-                         * @description List of global roles assigned to the user
+                         * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
                          * @example [
                          *       "admin",
-                         *       "meshmap"
+                         *       "organization admin"
                          *     ]
                          */
-                        roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
+                        roleNames?: string[];
                         /** @description Teams the user belongs to with role information */
                         teams?: {
                             /** @description Team memberships for the user with their assigned roles. */
@@ -2307,13 +2307,13 @@ export interface operations {
                          */
                         deletedAt: string | null;
                         /**
-                         * @description List of global roles assigned to the user
+                         * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
                          * @example [
                          *       "admin",
-                         *       "meshmap"
+                         *       "organization admin"
                          *     ]
                          */
-                        roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
+                        roleNames?: string[];
                         /** @description Teams the user belongs to with role information */
                         teams?: {
                             /** @description Team memberships for the user with their assigned roles. */

@@ -717,23 +717,18 @@ const DesignSchema: Record<string, unknown> = {
                               },
                               "roleNames": {
                                 "type": "array",
-                                "items": {
-                                  "type": "string",
-                                  "enum": [
-                                    "admin",
-                                    "meshmap",
-                                    "curator",
-                                    "team admin",
-                                    "workspace admin",
-                                    "workspace manager",
-                                    "organization admin",
-                                    "user"
-                                  ]
+                                "x-go-type": "pq.StringArray",
+                                "x-go-type-import": {
+                                  "path": "github.com/lib/pq"
                                 },
-                                "description": "List of global roles assigned to the user",
+                                "x-go-type-skip-optional-pointer": true,
+                                "items": {
+                                  "type": "string"
+                                },
+                                "description": "Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as \"admin\", \"organization admin\" and \"user\" are a subset, not the whole set.",
                                 "example": [
                                   "admin",
-                                  "meshmap"
+                                  "organization admin"
                                 ],
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "role_names",
@@ -1973,23 +1968,18 @@ const DesignSchema: Record<string, unknown> = {
                         },
                         "roleNames": {
                           "type": "array",
-                          "items": {
-                            "type": "string",
-                            "enum": [
-                              "admin",
-                              "meshmap",
-                              "curator",
-                              "team admin",
-                              "workspace admin",
-                              "workspace manager",
-                              "organization admin",
-                              "user"
-                            ]
+                          "x-go-type": "pq.StringArray",
+                          "x-go-type-import": {
+                            "path": "github.com/lib/pq"
                           },
-                          "description": "List of global roles assigned to the user",
+                          "x-go-type-skip-optional-pointer": true,
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as \"admin\", \"organization admin\" and \"user\" are a subset, not the whole set.",
                           "example": [
                             "admin",
-                            "meshmap"
+                            "organization admin"
                           ],
                           "x-oapi-codegen-extra-tags": {
                             "db": "role_names",
@@ -3376,23 +3366,18 @@ const DesignSchema: Record<string, unknown> = {
                         },
                         "roleNames": {
                           "type": "array",
-                          "items": {
-                            "type": "string",
-                            "enum": [
-                              "admin",
-                              "meshmap",
-                              "curator",
-                              "team admin",
-                              "workspace admin",
-                              "workspace manager",
-                              "organization admin",
-                              "user"
-                            ]
+                          "x-go-type": "pq.StringArray",
+                          "x-go-type-import": {
+                            "path": "github.com/lib/pq"
                           },
-                          "description": "List of global roles assigned to the user",
+                          "x-go-type-skip-optional-pointer": true,
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as \"admin\", \"organization admin\" and \"user\" are a subset, not the whole set.",
                           "example": [
                             "admin",
-                            "meshmap"
+                            "organization admin"
                           ],
                           "x-oapi-codegen-extra-tags": {
                             "db": "role_names",
@@ -4510,23 +4495,18 @@ const DesignSchema: Record<string, unknown> = {
                         },
                         "roleNames": {
                           "type": "array",
-                          "items": {
-                            "type": "string",
-                            "enum": [
-                              "admin",
-                              "meshmap",
-                              "curator",
-                              "team admin",
-                              "workspace admin",
-                              "workspace manager",
-                              "organization admin",
-                              "user"
-                            ]
+                          "x-go-type": "pq.StringArray",
+                          "x-go-type-import": {
+                            "path": "github.com/lib/pq"
                           },
-                          "description": "List of global roles assigned to the user",
+                          "x-go-type-skip-optional-pointer": true,
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as \"admin\", \"organization admin\" and \"user\" are a subset, not the whole set.",
                           "example": [
                             "admin",
-                            "meshmap"
+                            "organization admin"
                           ],
                           "x-oapi-codegen-extra-tags": {
                             "db": "role_names",
@@ -5978,23 +5958,18 @@ const DesignSchema: Record<string, unknown> = {
                               },
                               "roleNames": {
                                 "type": "array",
-                                "items": {
-                                  "type": "string",
-                                  "enum": [
-                                    "admin",
-                                    "meshmap",
-                                    "curator",
-                                    "team admin",
-                                    "workspace admin",
-                                    "workspace manager",
-                                    "organization admin",
-                                    "user"
-                                  ]
+                                "x-go-type": "pq.StringArray",
+                                "x-go-type-import": {
+                                  "path": "github.com/lib/pq"
                                 },
-                                "description": "List of global roles assigned to the user",
+                                "x-go-type-skip-optional-pointer": true,
+                                "items": {
+                                  "type": "string"
+                                },
+                                "description": "Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as \"admin\", \"organization admin\" and \"user\" are a subset, not the whole set.",
                                 "example": [
                                   "admin",
-                                  "meshmap"
+                                  "organization admin"
                                 ],
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "role_names",
@@ -12824,23 +12799,18 @@ const DesignSchema: Record<string, unknown> = {
               },
               "roleNames": {
                 "type": "array",
-                "items": {
-                  "type": "string",
-                  "enum": [
-                    "admin",
-                    "meshmap",
-                    "curator",
-                    "team admin",
-                    "workspace admin",
-                    "workspace manager",
-                    "organization admin",
-                    "user"
-                  ]
+                "x-go-type": "pq.StringArray",
+                "x-go-type-import": {
+                  "path": "github.com/lib/pq"
                 },
-                "description": "List of global roles assigned to the user",
+                "x-go-type-skip-optional-pointer": true,
+                "items": {
+                  "type": "string"
+                },
+                "description": "Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as \"admin\", \"organization admin\" and \"user\" are a subset, not the whole set.",
                 "example": [
                   "admin",
-                  "meshmap"
+                  "organization admin"
                 ],
                 "x-oapi-codegen-extra-tags": {
                   "db": "role_names",
@@ -13849,23 +13819,18 @@ const DesignSchema: Record<string, unknown> = {
                     },
                     "roleNames": {
                       "type": "array",
-                      "items": {
-                        "type": "string",
-                        "enum": [
-                          "admin",
-                          "meshmap",
-                          "curator",
-                          "team admin",
-                          "workspace admin",
-                          "workspace manager",
-                          "organization admin",
-                          "user"
-                        ]
+                      "x-go-type": "pq.StringArray",
+                      "x-go-type-import": {
+                        "path": "github.com/lib/pq"
                       },
-                      "description": "List of global roles assigned to the user",
+                      "x-go-type-skip-optional-pointer": true,
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as \"admin\", \"organization admin\" and \"user\" are a subset, not the whole set.",
                       "example": [
                         "admin",
-                        "meshmap"
+                        "organization admin"
                       ],
                       "x-oapi-codegen-extra-tags": {
                         "db": "role_names",
@@ -15435,23 +15400,18 @@ const DesignSchema: Record<string, unknown> = {
                     },
                     "roleNames": {
                       "type": "array",
-                      "items": {
-                        "type": "string",
-                        "enum": [
-                          "admin",
-                          "meshmap",
-                          "curator",
-                          "team admin",
-                          "workspace admin",
-                          "workspace manager",
-                          "organization admin",
-                          "user"
-                        ]
+                      "x-go-type": "pq.StringArray",
+                      "x-go-type-import": {
+                        "path": "github.com/lib/pq"
                       },
-                      "description": "List of global roles assigned to the user",
+                      "x-go-type-skip-optional-pointer": true,
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as \"admin\", \"organization admin\" and \"user\" are a subset, not the whole set.",
                       "example": [
                         "admin",
-                        "meshmap"
+                        "organization admin"
                       ],
                       "x-oapi-codegen-extra-tags": {
                         "db": "role_names",

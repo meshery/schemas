@@ -12,18 +12,6 @@ import (
 	"github.com/gofrs/uuid"
 )
 
-// Defines values for UserRoleNames.
-const (
-	UserRoleNamesAdmin             UserRoleNames = "admin"
-	UserRoleNamesCurator           UserRoleNames = "curator"
-	UserRoleNamesMeshmap           UserRoleNames = "meshmap"
-	UserRoleNamesOrganizationAdmin UserRoleNames = "organization admin"
-	UserRoleNamesTeamAdmin         UserRoleNames = "team admin"
-	UserRoleNamesUser              UserRoleNames = "user"
-	UserRoleNamesWorkspaceAdmin    UserRoleNames = "workspace admin"
-	UserRoleNamesWorkspaceManager  UserRoleNames = "workspace manager"
-)
-
 // Defines values for UserStatus.
 const (
 	Active    UserStatus = "active"
@@ -233,8 +221,8 @@ type User struct {
 	// Region User's region information stored as JSONB
 	Region core.Map `db:"region" json:"region" yaml:"region"`
 
-	// RoleNames List of global roles assigned to the user
-	RoleNames *[]UserRoleNames `db:"role_names" json:"roleNames" yaml:"roleNames"`
+	// RoleNames Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
+	RoleNames pq.StringArray `db:"role_names" json:"roleNames" yaml:"roleNames"`
 
 	// Socials Various online profiles associated with the user account
 	Socials *UserSocials `db:"socials" json:"socials" yaml:"socials"`
@@ -255,9 +243,6 @@ type User struct {
 	// UserId User identifier (username or external ID)
 	UserId string `db:"user_id" json:"userId" yaml:"userId"`
 }
-
-// UserRoleNames defines model for User.RoleNames.
-type UserRoleNames string
 
 // UserStatus User account status
 type UserStatus string

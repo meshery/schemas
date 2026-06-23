@@ -4030,17 +4030,8 @@ export type GetUsersForOrgApiResponse = /** status 200 Paginated list of organiz
     }[];
     /** Timestamp when the user record was soft-deleted (null if not deleted) */
     deletedAt: string | null;
-    /** List of global roles assigned to the user */
-    roleNames?: (
-      | "admin"
-      | "meshmap"
-      | "curator"
-      | "team admin"
-      | "workspace admin"
-      | "workspace manager"
-      | "organization admin"
-      | "user"
-    )[];
+    /** Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set. */
+    roleNames?: string[];
     /** Teams the user belongs to with role information */
     teams?: {
       /** Team memberships for the user with their assigned roles. */
@@ -4236,17 +4227,8 @@ export type GetUsersApiResponse = /** status 200 Paginated list of public users 
     }[];
     /** Timestamp when the user record was soft-deleted (null if not deleted) */
     deletedAt: string | null;
-    /** List of global roles assigned to the user */
-    roleNames?: (
-      | "admin"
-      | "meshmap"
-      | "curator"
-      | "team admin"
-      | "workspace admin"
-      | "workspace manager"
-      | "organization admin"
-      | "user"
-    )[];
+    /** Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set. */
+    roleNames?: string[];
     /** Teams the user belongs to with role information */
     teams?: {
       /** Team memberships for the user with their assigned roles. */
@@ -4430,17 +4412,8 @@ export type GetUserProfileByIdApiResponse = /** status 200 User profile for the 
   }[];
   /** Timestamp when the user record was soft-deleted (null if not deleted) */
   deletedAt: string | null;
-  /** List of global roles assigned to the user */
-  roleNames?: (
-    | "admin"
-    | "meshmap"
-    | "curator"
-    | "team admin"
-    | "workspace admin"
-    | "workspace manager"
-    | "organization admin"
-    | "user"
-  )[];
+  /** Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set. */
+  roleNames?: string[];
   /** Teams the user belongs to with role information */
   teams?: {
     /** Team memberships for the user with their assigned roles. */
@@ -4615,17 +4588,8 @@ export type GetUserApiResponse = /** status 200 Current user profile and role co
   }[];
   /** Timestamp when the user record was soft-deleted (null if not deleted) */
   deletedAt: string | null;
-  /** List of global roles assigned to the user */
-  roleNames?: (
-    | "admin"
-    | "meshmap"
-    | "curator"
-    | "team admin"
-    | "workspace admin"
-    | "workspace manager"
-    | "organization admin"
-    | "user"
-  )[];
+  /** Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set. */
+  roleNames?: string[];
   /** Teams the user belongs to with role information */
   teams?: {
     /** Team memberships for the user with their assigned roles. */
