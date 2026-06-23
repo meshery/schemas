@@ -367,7 +367,7 @@ components:
             varchar, not a fixed enumeration); the seeded system roles such as
             "admin", "organization admin" and "user" are a subset, not the whole
             set.
-          example: ["admin", "organization admin"]
+          example: ["organization admin", "user"]
           x-oapi-codegen-extra-tags:
             db: "role_names"
             json: "roleNames"
