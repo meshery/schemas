@@ -355,9 +355,13 @@ func auditAPISpec(apiYmlPath, constructDir string, opts AuditOptions,
 			return
 		}
 
+		msg := "Failed to load api.yml"
+		if loadErr != nil {
+			msg += ": " + loadErr.Error()
+		}
 		addViolation(result, Violation{
 			File:       relPath,
-			Message:    "Failed to load api.yml",
+			Message:    msg,
 			Severity:   SeverityBlocking,
 			RuleNumber: 12,
 		}, baseline)
