@@ -336,33 +336,33 @@ func auditTemplateFiles(constructDir, constructName string, opts AuditOptions,
 func auditAPISpec(apiYmlPath, constructDir string, opts AuditOptions,
 	baseline map[string]bool, result *AuditResult,
 	fingerprints map[string][]schemaLocation, enumBaselineRef string,
-	doc *openapi3.T,loadErr error) {
+	doc *openapi3.T, loadErr error) {
 
 	relPath := relativeToRoot(apiYmlPath, opts.RootDir)
 
 	if doc == nil {
 		// Structural load failure — report as blocking.
 		rule48 := checkRule48(
-        relPath,
-        loadErr,
-        opts,
-    )
+			relPath,
+			loadErr,
+			opts,
+		)
 
-    if len(rule48) > 0 {
-        for _, v := range rule48 {
-            addViolation(result, v, baseline)
-        }
-        return
-    }
+		if len(rule48) > 0 {
+			for _, v := range rule48 {
+				addViolation(result, v, baseline)
+			}
+			return
+		}
 
-    addViolation(result, Violation{
-        File:       relPath,
-        Message:    "Failed to load api.yml",
-        Severity:   SeverityBlocking,
-        RuleNumber: 12,
-    }, baseline)
+		addViolation(result, Violation{
+			File:       relPath,
+			Message:    "Failed to load api.yml",
+			Severity:   SeverityBlocking,
+			RuleNumber: 12,
+		}, baseline)
 
-    return
+		return
 	}
 
 	// Load the raw YAML doc once for rules that need $ref sibling access

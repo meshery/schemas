@@ -895,19 +895,19 @@ func TestCheckRule47_Valid205(t *testing.T) {
 }
 
 func TestCheckRule48_BrokenRefLoadError(t *testing.T) {
-    err := errors.New(`map key "Role" not found`)
+	err := errors.New(`map key "Role" not found`)
 
-    vs := checkRule48(
-        "api.yml",
-        err,
-        AuditOptions{},
-    )
+	vs := checkRule48(
+		"api.yml",
+		err,
+		AuditOptions{},
+	)
 
-    if len(vs) != 1 {
-        t.Fatalf("expected 1 violation, got %d", len(vs))
-    }
+	if len(vs) != 1 {
+		t.Fatalf("expected 1 violation, got %d", len(vs))
+	}
 
-    if vs[0].RuleNumber != 48 {
-        t.Fatalf("expected Rule 48")
-    }
+	if vs[0].RuleNumber != 48 {
+		t.Fatalf("expected Rule 48")
+	}
 }
