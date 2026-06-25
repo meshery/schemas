@@ -526,7 +526,16 @@ components:
 
     ConnectionDefinition:
       description: A connection definition is an uninitialized connection, authored per-model (in a model's `connections/` folder) and registered into the registry alongside components and relationships. It conforms to the connection schema; the dynamic, kind-specific shape is carried in `metadata`. The `model` association scopes the definition to its owning model.
-      x-go-type: "Connection"
+      # Self-referential x-go-type: oapi-codegen emits `type ConnectionDefinition =
+      # ConnectionDefinition`, which the generator's removeSelfReferentialAliases pass
+      # comments out, deferring to the hand-written definition in
+      # connection_definition_helper.go. ConnectionDefinition MUST be a DISTINCT Go type
+      # (not an alias of Connection): the registry-entity methods on it - notably
+      # TableName() => "connection_definition_dbs" - would otherwise leak onto the
+      # wire/runtime Connection type via Go's type-alias method-set sharing, redirecting
+      # every Pop/GORM save of a Connection (the `connections` table) to the
+      # registry-only `connection_definition_dbs` table and 500-ing connection writes.
+      x-go-type: "ConnectionDefinition"
 
     ConnectionDefinitionPage:
       description: Represents a page of connection definitions with meta information about the total count
