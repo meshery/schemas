@@ -1621,6 +1621,7 @@ const PatternSchema: Record<string, unknown> = {
                                           "x-oapi-codegen-extra-tags": {
                                             "gorm": "-"
                                           },
+                                          "x-generate-db-helpers": true,
                                           "type": "object",
                                           "required": [
                                             "id",
@@ -3292,6 +3293,7 @@ const PatternSchema: Record<string, unknown> = {
                                             "json": "model",
                                             "gorm": "type:bytes;serializer:json"
                                           },
+                                          "x-generate-db-helpers": true,
                                           "type": "object",
                                           "required": [
                                             "id",
@@ -3640,6 +3642,7 @@ const PatternSchema: Record<string, unknown> = {
                                                             "yaml": "model",
                                                             "json": "model,omitempty"
                                                           },
+                                                          "x-generate-db-helpers": true,
                                                           "type": "object",
                                                           "required": [
                                                             "id",
@@ -3996,6 +3999,7 @@ const PatternSchema: Record<string, unknown> = {
                                                             "yaml": "model",
                                                             "json": "model,omitempty"
                                                           },
+                                                          "x-generate-db-helpers": true,
                                                           "type": "object",
                                                           "required": [
                                                             "id",
@@ -4367,6 +4371,7 @@ const PatternSchema: Record<string, unknown> = {
                                                             "yaml": "model",
                                                             "json": "model,omitempty"
                                                           },
+                                                          "x-generate-db-helpers": true,
                                                           "type": "object",
                                                           "required": [
                                                             "id",
@@ -4723,6 +4728,7 @@ const PatternSchema: Record<string, unknown> = {
                                                             "yaml": "model",
                                                             "json": "model,omitempty"
                                                           },
+                                                          "x-generate-db-helpers": true,
                                                           "type": "object",
                                                           "required": [
                                                             "id",
@@ -6434,6 +6440,7 @@ const PatternSchema: Record<string, unknown> = {
                                       "x-oapi-codegen-extra-tags": {
                                         "gorm": "-"
                                       },
+                                      "x-generate-db-helpers": true,
                                       "type": "object",
                                       "required": [
                                         "id",
@@ -8105,6 +8112,7 @@ const PatternSchema: Record<string, unknown> = {
                                         "json": "model",
                                         "gorm": "type:bytes;serializer:json"
                                       },
+                                      "x-generate-db-helpers": true,
                                       "type": "object",
                                       "required": [
                                         "id",
@@ -8453,6 +8461,7 @@ const PatternSchema: Record<string, unknown> = {
                                                         "yaml": "model",
                                                         "json": "model,omitempty"
                                                       },
+                                                      "x-generate-db-helpers": true,
                                                       "type": "object",
                                                       "required": [
                                                         "id",
@@ -8809,6 +8818,7 @@ const PatternSchema: Record<string, unknown> = {
                                                         "yaml": "model",
                                                         "json": "model,omitempty"
                                                       },
+                                                      "x-generate-db-helpers": true,
                                                       "type": "object",
                                                       "required": [
                                                         "id",
@@ -9180,6 +9190,7 @@ const PatternSchema: Record<string, unknown> = {
                                                         "yaml": "model",
                                                         "json": "model,omitempty"
                                                       },
+                                                      "x-generate-db-helpers": true,
                                                       "type": "object",
                                                       "required": [
                                                         "id",
@@ -9536,6 +9547,7 @@ const PatternSchema: Record<string, unknown> = {
                                                         "yaml": "model",
                                                         "json": "model,omitempty"
                                                       },
+                                                      "x-generate-db-helpers": true,
                                                       "type": "object",
                                                       "required": [
                                                         "id",
@@ -11214,6 +11226,7 @@ const PatternSchema: Record<string, unknown> = {
                                     "x-oapi-codegen-extra-tags": {
                                       "gorm": "-"
                                     },
+                                    "x-generate-db-helpers": true,
                                     "type": "object",
                                     "required": [
                                       "id",
@@ -12885,6 +12898,7 @@ const PatternSchema: Record<string, unknown> = {
                                       "json": "model",
                                       "gorm": "type:bytes;serializer:json"
                                     },
+                                    "x-generate-db-helpers": true,
                                     "type": "object",
                                     "required": [
                                       "id",
@@ -13233,6 +13247,7 @@ const PatternSchema: Record<string, unknown> = {
                                                       "yaml": "model",
                                                       "json": "model,omitempty"
                                                     },
+                                                    "x-generate-db-helpers": true,
                                                     "type": "object",
                                                     "required": [
                                                       "id",
@@ -13589,6 +13604,7 @@ const PatternSchema: Record<string, unknown> = {
                                                       "yaml": "model",
                                                       "json": "model,omitempty"
                                                     },
+                                                    "x-generate-db-helpers": true,
                                                     "type": "object",
                                                     "required": [
                                                       "id",
@@ -13960,6 +13976,7 @@ const PatternSchema: Record<string, unknown> = {
                                                       "yaml": "model",
                                                       "json": "model,omitempty"
                                                     },
+                                                    "x-generate-db-helpers": true,
                                                     "type": "object",
                                                     "required": [
                                                       "id",
@@ -14316,6 +14333,7 @@ const PatternSchema: Record<string, unknown> = {
                                                       "yaml": "model",
                                                       "json": "model,omitempty"
                                                     },
+                                                    "x-generate-db-helpers": true,
                                                     "type": "object",
                                                     "required": [
                                                       "id",
@@ -16365,6 +16383,7 @@ const PatternSchema: Record<string, unknown> = {
                                     "x-oapi-codegen-extra-tags": {
                                       "gorm": "-"
                                     },
+                                    "x-generate-db-helpers": true,
                                     "type": "object",
                                     "required": [
                                       "id",
@@ -18036,6 +18055,7 @@ const PatternSchema: Record<string, unknown> = {
                                       "json": "model",
                                       "gorm": "type:bytes;serializer:json"
                                     },
+                                    "x-generate-db-helpers": true,
                                     "type": "object",
                                     "required": [
                                       "id",
@@ -18384,6 +18404,7 @@ const PatternSchema: Record<string, unknown> = {
                                                       "yaml": "model",
                                                       "json": "model,omitempty"
                                                     },
+                                                    "x-generate-db-helpers": true,
                                                     "type": "object",
                                                     "required": [
                                                       "id",
@@ -18740,6 +18761,7 @@ const PatternSchema: Record<string, unknown> = {
                                                       "yaml": "model",
                                                       "json": "model,omitempty"
                                                     },
+                                                    "x-generate-db-helpers": true,
                                                     "type": "object",
                                                     "required": [
                                                       "id",
@@ -19111,6 +19133,7 @@ const PatternSchema: Record<string, unknown> = {
                                                       "yaml": "model",
                                                       "json": "model,omitempty"
                                                     },
+                                                    "x-generate-db-helpers": true,
                                                     "type": "object",
                                                     "required": [
                                                       "id",
@@ -19467,6 +19490,7 @@ const PatternSchema: Record<string, unknown> = {
                                                       "yaml": "model",
                                                       "json": "model,omitempty"
                                                     },
+                                                    "x-generate-db-helpers": true,
                                                     "type": "object",
                                                     "required": [
                                                       "id",
@@ -21253,6 +21277,7 @@ const PatternSchema: Record<string, unknown> = {
                                     "x-oapi-codegen-extra-tags": {
                                       "gorm": "-"
                                     },
+                                    "x-generate-db-helpers": true,
                                     "type": "object",
                                     "required": [
                                       "id",
@@ -22924,6 +22949,7 @@ const PatternSchema: Record<string, unknown> = {
                                       "json": "model",
                                       "gorm": "type:bytes;serializer:json"
                                     },
+                                    "x-generate-db-helpers": true,
                                     "type": "object",
                                     "required": [
                                       "id",
@@ -23272,6 +23298,7 @@ const PatternSchema: Record<string, unknown> = {
                                                       "yaml": "model",
                                                       "json": "model,omitempty"
                                                     },
+                                                    "x-generate-db-helpers": true,
                                                     "type": "object",
                                                     "required": [
                                                       "id",
@@ -23628,6 +23655,7 @@ const PatternSchema: Record<string, unknown> = {
                                                       "yaml": "model",
                                                       "json": "model,omitempty"
                                                     },
+                                                    "x-generate-db-helpers": true,
                                                     "type": "object",
                                                     "required": [
                                                       "id",
@@ -23999,6 +24027,7 @@ const PatternSchema: Record<string, unknown> = {
                                                       "yaml": "model",
                                                       "json": "model,omitempty"
                                                     },
+                                                    "x-generate-db-helpers": true,
                                                     "type": "object",
                                                     "required": [
                                                       "id",
@@ -24355,6 +24384,7 @@ const PatternSchema: Record<string, unknown> = {
                                                       "yaml": "model",
                                                       "json": "model,omitempty"
                                                     },
+                                                    "x-generate-db-helpers": true,
                                                     "type": "object",
                                                     "required": [
                                                       "id",
@@ -26462,6 +26492,7 @@ const PatternSchema: Record<string, unknown> = {
                                           "x-oapi-codegen-extra-tags": {
                                             "gorm": "-"
                                           },
+                                          "x-generate-db-helpers": true,
                                           "type": "object",
                                           "required": [
                                             "id",
@@ -28133,6 +28164,7 @@ const PatternSchema: Record<string, unknown> = {
                                             "json": "model",
                                             "gorm": "type:bytes;serializer:json"
                                           },
+                                          "x-generate-db-helpers": true,
                                           "type": "object",
                                           "required": [
                                             "id",
@@ -28481,6 +28513,7 @@ const PatternSchema: Record<string, unknown> = {
                                                             "yaml": "model",
                                                             "json": "model,omitempty"
                                                           },
+                                                          "x-generate-db-helpers": true,
                                                           "type": "object",
                                                           "required": [
                                                             "id",
@@ -28837,6 +28870,7 @@ const PatternSchema: Record<string, unknown> = {
                                                             "yaml": "model",
                                                             "json": "model,omitempty"
                                                           },
+                                                          "x-generate-db-helpers": true,
                                                           "type": "object",
                                                           "required": [
                                                             "id",
@@ -29208,6 +29242,7 @@ const PatternSchema: Record<string, unknown> = {
                                                             "yaml": "model",
                                                             "json": "model,omitempty"
                                                           },
+                                                          "x-generate-db-helpers": true,
                                                           "type": "object",
                                                           "required": [
                                                             "id",
@@ -29564,6 +29599,7 @@ const PatternSchema: Record<string, unknown> = {
                                                             "yaml": "model",
                                                             "json": "model,omitempty"
                                                           },
+                                                          "x-generate-db-helpers": true,
                                                           "type": "object",
                                                           "required": [
                                                             "id",
@@ -32121,6 +32157,7 @@ const PatternSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "gorm": "-"
                       },
+                      "x-generate-db-helpers": true,
                       "type": "object",
                       "required": [
                         "id",
@@ -33792,6 +33829,7 @@ const PatternSchema: Record<string, unknown> = {
                         "json": "model",
                         "gorm": "type:bytes;serializer:json"
                       },
+                      "x-generate-db-helpers": true,
                       "type": "object",
                       "required": [
                         "id",
@@ -34140,6 +34178,7 @@ const PatternSchema: Record<string, unknown> = {
                                         "yaml": "model",
                                         "json": "model,omitempty"
                                       },
+                                      "x-generate-db-helpers": true,
                                       "type": "object",
                                       "required": [
                                         "id",
@@ -34496,6 +34535,7 @@ const PatternSchema: Record<string, unknown> = {
                                         "yaml": "model",
                                         "json": "model,omitempty"
                                       },
+                                      "x-generate-db-helpers": true,
                                       "type": "object",
                                       "required": [
                                         "id",
@@ -34867,6 +34907,7 @@ const PatternSchema: Record<string, unknown> = {
                                         "yaml": "model",
                                         "json": "model,omitempty"
                                       },
+                                      "x-generate-db-helpers": true,
                                       "type": "object",
                                       "required": [
                                         "id",
@@ -35223,6 +35264,7 @@ const PatternSchema: Record<string, unknown> = {
                                         "yaml": "model",
                                         "json": "model,omitempty"
                                       },
+                                      "x-generate-db-helpers": true,
                                       "type": "object",
                                       "required": [
                                         "id",
@@ -36858,6 +36900,7 @@ const PatternSchema: Record<string, unknown> = {
                           "x-oapi-codegen-extra-tags": {
                             "gorm": "-"
                           },
+                          "x-generate-db-helpers": true,
                           "type": "object",
                           "required": [
                             "id",
@@ -38529,6 +38572,7 @@ const PatternSchema: Record<string, unknown> = {
                             "json": "model",
                             "gorm": "type:bytes;serializer:json"
                           },
+                          "x-generate-db-helpers": true,
                           "type": "object",
                           "required": [
                             "id",
@@ -38877,6 +38921,7 @@ const PatternSchema: Record<string, unknown> = {
                                             "yaml": "model",
                                             "json": "model,omitempty"
                                           },
+                                          "x-generate-db-helpers": true,
                                           "type": "object",
                                           "required": [
                                             "id",
@@ -39233,6 +39278,7 @@ const PatternSchema: Record<string, unknown> = {
                                             "yaml": "model",
                                             "json": "model,omitempty"
                                           },
+                                          "x-generate-db-helpers": true,
                                           "type": "object",
                                           "required": [
                                             "id",
@@ -39604,6 +39650,7 @@ const PatternSchema: Record<string, unknown> = {
                                             "yaml": "model",
                                             "json": "model,omitempty"
                                           },
+                                          "x-generate-db-helpers": true,
                                           "type": "object",
                                           "required": [
                                             "id",
@@ -39960,6 +40007,7 @@ const PatternSchema: Record<string, unknown> = {
                                             "yaml": "model",
                                             "json": "model,omitempty"
                                           },
+                                          "x-generate-db-helpers": true,
                                           "type": "object",
                                           "required": [
                                             "id",
@@ -41627,6 +41675,7 @@ const PatternSchema: Record<string, unknown> = {
                                 "x-oapi-codegen-extra-tags": {
                                   "gorm": "-"
                                 },
+                                "x-generate-db-helpers": true,
                                 "type": "object",
                                 "required": [
                                   "id",
@@ -43298,6 +43347,7 @@ const PatternSchema: Record<string, unknown> = {
                                   "json": "model",
                                   "gorm": "type:bytes;serializer:json"
                                 },
+                                "x-generate-db-helpers": true,
                                 "type": "object",
                                 "required": [
                                   "id",
@@ -43646,6 +43696,7 @@ const PatternSchema: Record<string, unknown> = {
                                                   "yaml": "model",
                                                   "json": "model,omitempty"
                                                 },
+                                                "x-generate-db-helpers": true,
                                                 "type": "object",
                                                 "required": [
                                                   "id",
@@ -44002,6 +44053,7 @@ const PatternSchema: Record<string, unknown> = {
                                                   "yaml": "model",
                                                   "json": "model,omitempty"
                                                 },
+                                                "x-generate-db-helpers": true,
                                                 "type": "object",
                                                 "required": [
                                                   "id",
@@ -44373,6 +44425,7 @@ const PatternSchema: Record<string, unknown> = {
                                                   "yaml": "model",
                                                   "json": "model,omitempty"
                                                 },
+                                                "x-generate-db-helpers": true,
                                                 "type": "object",
                                                 "required": [
                                                   "id",
@@ -44729,6 +44782,7 @@ const PatternSchema: Record<string, unknown> = {
                                                   "yaml": "model",
                                                   "json": "model,omitempty"
                                                 },
+                                                "x-generate-db-helpers": true,
                                                 "type": "object",
                                                 "required": [
                                                   "id",
@@ -46428,6 +46482,7 @@ const PatternSchema: Record<string, unknown> = {
                               "x-oapi-codegen-extra-tags": {
                                 "gorm": "-"
                               },
+                              "x-generate-db-helpers": true,
                               "type": "object",
                               "required": [
                                 "id",
@@ -48099,6 +48154,7 @@ const PatternSchema: Record<string, unknown> = {
                                 "json": "model",
                                 "gorm": "type:bytes;serializer:json"
                               },
+                              "x-generate-db-helpers": true,
                               "type": "object",
                               "required": [
                                 "id",
@@ -48447,6 +48503,7 @@ const PatternSchema: Record<string, unknown> = {
                                                 "yaml": "model",
                                                 "json": "model,omitempty"
                                               },
+                                              "x-generate-db-helpers": true,
                                               "type": "object",
                                               "required": [
                                                 "id",
@@ -48803,6 +48860,7 @@ const PatternSchema: Record<string, unknown> = {
                                                 "yaml": "model",
                                                 "json": "model,omitempty"
                                               },
+                                              "x-generate-db-helpers": true,
                                               "type": "object",
                                               "required": [
                                                 "id",
@@ -49174,6 +49232,7 @@ const PatternSchema: Record<string, unknown> = {
                                                 "yaml": "model",
                                                 "json": "model,omitempty"
                                               },
+                                              "x-generate-db-helpers": true,
                                               "type": "object",
                                               "required": [
                                                 "id",
@@ -49530,6 +49589,7 @@ const PatternSchema: Record<string, unknown> = {
                                                 "yaml": "model",
                                                 "json": "model,omitempty"
                                               },
+                                              "x-generate-db-helpers": true,
                                               "type": "object",
                                               "required": [
                                                 "id",
@@ -51327,6 +51387,7 @@ const PatternSchema: Record<string, unknown> = {
                                 "x-oapi-codegen-extra-tags": {
                                   "gorm": "-"
                                 },
+                                "x-generate-db-helpers": true,
                                 "type": "object",
                                 "required": [
                                   "id",
@@ -52998,6 +53059,7 @@ const PatternSchema: Record<string, unknown> = {
                                   "json": "model",
                                   "gorm": "type:bytes;serializer:json"
                                 },
+                                "x-generate-db-helpers": true,
                                 "type": "object",
                                 "required": [
                                   "id",
@@ -53346,6 +53408,7 @@ const PatternSchema: Record<string, unknown> = {
                                                   "yaml": "model",
                                                   "json": "model,omitempty"
                                                 },
+                                                "x-generate-db-helpers": true,
                                                 "type": "object",
                                                 "required": [
                                                   "id",
@@ -53702,6 +53765,7 @@ const PatternSchema: Record<string, unknown> = {
                                                   "yaml": "model",
                                                   "json": "model,omitempty"
                                                 },
+                                                "x-generate-db-helpers": true,
                                                 "type": "object",
                                                 "required": [
                                                   "id",
@@ -54073,6 +54137,7 @@ const PatternSchema: Record<string, unknown> = {
                                                   "yaml": "model",
                                                   "json": "model,omitempty"
                                                 },
+                                                "x-generate-db-helpers": true,
                                                 "type": "object",
                                                 "required": [
                                                   "id",
@@ -54429,6 +54494,7 @@ const PatternSchema: Record<string, unknown> = {
                                                   "yaml": "model",
                                                   "json": "model,omitempty"
                                                 },
+                                                "x-generate-db-helpers": true,
                                                 "type": "object",
                                                 "required": [
                                                   "id",

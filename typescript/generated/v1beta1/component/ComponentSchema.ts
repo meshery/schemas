@@ -1226,6 +1226,7 @@ const ComponentSchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "gorm": "-"
             },
+            "x-generate-db-helpers": true,
             "type": "object",
             "required": [
               "id",
