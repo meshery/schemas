@@ -13,6 +13,28 @@ import (
 	"gorm.io/gorm/clause"
 )
 
+// ConnectionDefinition is the registry-entity form of a connection - an
+// uninitialized connection authored per-model and registered alongside
+// components and relationships. It is a DISTINCT defined type, NOT an alias of
+// Connection.
+//
+// The distinction is load-bearing: the entity.Entity methods below (notably
+// TableName, which returns "connection_definition_dbs") attach only to this
+// type. Were ConnectionDefinition a `= Connection` alias, those methods would
+// share Connection's method set and every Pop/GORM persistence of a runtime
+// Connection - which lives in the `connections` table - would be redirected to
+// the registry-only `connection_definition_dbs` table, 500-ing connection
+// writes (e.g. Meshery Server saving its connection to the remote provider).
+//
+// The generated alias is suppressed via a self-referential x-go-type in the
+// connection api.yml; see that spec and the generator's
+// removeSelfReferentialAliases pass.
+type ConnectionDefinition Connection
+
+// ConnectionDefinition is a registry entity; persistence and registration go
+// through the meshkit registry via this interface.
+var _ entity.Entity = (*ConnectionDefinition)(nil)
+
 func (c ConnectionDefinition) TableName() string {
 	return "connection_definition_dbs"
 }
