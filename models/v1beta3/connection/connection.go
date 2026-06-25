@@ -108,8 +108,7 @@ type Connection struct {
 type ConnectionStatus string
 
 // ConnectionDefinition A connection definition is an uninitialized connection, authored per-model (in a model's `connections/` folder) and registered into the registry alongside components and relationships. It conforms to the connection schema; the dynamic, kind-specific shape is carried in `metadata`. The `model` association scopes the definition to its owning model.
-type ConnectionDefinition = Connection
-
+// type ConnectionDefinition — defined in manual helper file
 // ConnectionDefinitionPage Represents a page of connection definitions with meta information about the total count
 type ConnectionDefinitionPage struct {
 	// ConnectionDefinitions List of connection definitions on this page

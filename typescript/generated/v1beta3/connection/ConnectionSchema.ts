@@ -10533,7 +10533,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "x-go-type": "[]*ConnectionDefinition",
                       "items": {
                         "description": "A connection definition is an uninitialized connection, authored per-model (in a model's `connections/` folder) and registered into the registry alongside components and relationships. It conforms to the connection schema; the dynamic, kind-specific shape is carried in `metadata`. The `model` association scopes the definition to its owning model.",
-                        "x-go-type": "Connection"
+                        "x-go-type": "ConnectionDefinition"
                       },
                       "x-order": 1
                     },
@@ -10605,7 +10605,7 @@ const ConnectionSchema: Record<string, unknown> = {
             "application/json": {
               "schema": {
                 "description": "A connection definition is an uninitialized connection, authored per-model (in a model's `connections/` folder) and registered into the registry alongside components and relationships. It conforms to the connection schema; the dynamic, kind-specific shape is carried in `metadata`. The `model` association scopes the definition to its owning model.",
-                "x-go-type": "Connection"
+                "x-go-type": "ConnectionDefinition"
               }
             }
           }
@@ -10617,7 +10617,7 @@ const ConnectionSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "description": "A connection definition is an uninitialized connection, authored per-model (in a model's `connections/` folder) and registered into the registry alongside components and relationships. It conforms to the connection schema; the dynamic, kind-specific shape is carried in `metadata`. The `model` association scopes the definition to its owning model.",
-                  "x-go-type": "Connection"
+                  "x-go-type": "ConnectionDefinition"
                 }
               }
             }
@@ -10686,7 +10686,7 @@ const ConnectionSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "description": "A connection definition is an uninitialized connection, authored per-model (in a model's `connections/` folder) and registered into the registry alongside components and relationships. It conforms to the connection schema; the dynamic, kind-specific shape is carried in `metadata`. The `model` association scopes the definition to its owning model.",
-                  "x-go-type": "Connection"
+                  "x-go-type": "ConnectionDefinition"
                 }
               }
             }
@@ -10752,7 +10752,7 @@ const ConnectionSchema: Record<string, unknown> = {
             "application/json": {
               "schema": {
                 "description": "A connection definition is an uninitialized connection, authored per-model (in a model's `connections/` folder) and registered into the registry alongside components and relationships. It conforms to the connection schema; the dynamic, kind-specific shape is carried in `metadata`. The `model` association scopes the definition to its owning model.",
-                "x-go-type": "Connection"
+                "x-go-type": "ConnectionDefinition"
               }
             }
           }
@@ -10764,7 +10764,7 @@ const ConnectionSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "description": "A connection definition is an uninitialized connection, authored per-model (in a model's `connections/` folder) and registered into the registry alongside components and relationships. It conforms to the connection schema; the dynamic, kind-specific shape is carried in `metadata`. The `model` association scopes the definition to its owning model.",
-                  "x-go-type": "Connection"
+                  "x-go-type": "ConnectionDefinition"
                 }
               }
             }
@@ -13167,7 +13167,7 @@ const ConnectionSchema: Record<string, unknown> = {
       },
       "ConnectionDefinition": {
         "description": "A connection definition is an uninitialized connection, authored per-model (in a model's `connections/` folder) and registered into the registry alongside components and relationships. It conforms to the connection schema; the dynamic, kind-specific shape is carried in `metadata`. The `model` association scopes the definition to its owning model.",
-        "x-go-type": "Connection"
+        "x-go-type": "ConnectionDefinition"
       },
       "ConnectionDefinitionPage": {
         "description": "Represents a page of connection definitions with meta information about the total count",
@@ -13186,7 +13186,7 @@ const ConnectionSchema: Record<string, unknown> = {
             "x-go-type": "[]*ConnectionDefinition",
             "items": {
               "description": "A connection definition is an uninitialized connection, authored per-model (in a model's `connections/` folder) and registered into the registry alongside components and relationships. It conforms to the connection schema; the dynamic, kind-specific shape is carried in `metadata`. The `model` association scopes the definition to its owning model.",
-              "x-go-type": "Connection"
+              "x-go-type": "ConnectionDefinition"
             },
             "x-order": 1
           },
