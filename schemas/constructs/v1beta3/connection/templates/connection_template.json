@@ -1,13 +1,40 @@
 {
   "id": "00000000-0000-0000-0000-000000000000",
   "name": "",
+  "description": "",
+  "url": "",
   "credentialId": "00000000-0000-0000-0000-000000000000",
   "type": "platform",
   "subType": "orchestration",
   "kind": "kubernetes",
+  "model": null,
+  "modelReference": null,
   "metadata": {},
+  "credentialSchema": {},
+  "connectionSchema": {},
+  "styles": null,
   "status": "discovered",
-  "userId": "00000000-0000-0000-0000-000000000000",
+  "transitionMap": {
+    "discovered": [
+      {
+        "nextState": "registered",
+        "description": "A discovered connection is registered by a user to begin managing it."
+      }
+    ],
+    "registered": [
+      {
+        "nextState": "connected",
+        "description": "Meshery establishes connectivity to the registered resource."
+      }
+    ],
+    "connected": [
+      {
+        "nextState": "disconnected",
+        "description": "Connectivity to the resource is lost or intentionally torn down."
+      }
+    ]
+  },
+  "owner": "00000000-0000-0000-0000-000000000000",
   "createdAt": "0001-01-01T00:00:00Z",
   "updatedAt": "0001-01-01T00:00:00Z",
   "deletedAt": null,
