@@ -41,6 +41,11 @@ jobs:
         run: |
           make build
 
+      - name: Generate schemas site index
+        shell: bash
+        run: |
+          make generate-site-index
+
       - name: Pull changes from remote
         run: git pull origin master
 

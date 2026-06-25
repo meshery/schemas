@@ -6,289 +6,50 @@
     <title>Meshery Schemas</title>
     <meta
       name="description"
-      content="Latest Meshery schema constructs, their latest API versions, and links to the canonical contributor guides."
+      content="Latest Meshery schema resource versions."
     >
-    <style>
-      :root {
-        color-scheme: light;
-        --sistent-green: #00b39f;
-        --sistent-green-dark: #0b7f73;
-        --sistent-ink: #293237;
-        --sistent-slate: #3c494f;
-        --sistent-line: #c6d2d8;
-      }
-
-      body {
-        margin: 24px;
-        font: 16px/1.5 Arial, Helvetica, sans-serif;
-        color: var(--sistent-ink);
-        background: #fff;
-      }
-
-      main {
-        max-width: 1100px;
-      }
-
-      h2 {
-        margin-top: 28px;
-      }
-
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 12px;
-      }
-
-      th,
-      td {
-        padding: 8px;
-        border: 1px solid var(--sistent-line);
-        text-align: left;
-        vertical-align: top;
-      }
-
-      th {
-        background: #eef8f6;
-      }
-
-      a {
-        color: var(--sistent-green-dark);
-      }
-
-      @media (max-width: 720px) {
-        body {
-          margin: 12px;
-          font-size: 14px;
-        }
-      }
-    </style>
   </head>
   <body>
     <main>
-      <h1 style="color: var(--sistent-slate);">Meshery Schemas</h1>
-      <p>Latest construct versions, schema links, and Meshery Docs contribution guides.</p>
-
-      <h2 id="contributor-guides">Contributor Guides</h2>
-      <ul>
-          <li><a href="https://docs.meshery.io/project/contributing/contributing-schemas">Schemas guide</a></li>
-          <li><a href="https://docs.meshery.io/project/contributing/contributing-models">Models guide</a></li>
-          <li><a href="https://docs.meshery.io/project/contributing/contributing-components">Components guide</a></li>
-          <li><a href="https://docs.meshery.io/project/contributing/contributing-relationships">Relationships guide</a></li>
-          <li><a href="https://docs.meshery.io/project/contributing/contributing-ui-schemas/">UI schemas guide</a></li>
-      </ul>
-
-      <h2 id="latest-constructs">Latest Construct Versions</h2>
-      <p>Resource links open Meshery Docs guides. Version and construct links open GitHub. Operations links open Meshery REST API reference.</p>
-      <table>
-        <thead>
-          <tr>
-            <th>Resource</th>
-            <th>Latest version</th>
-            <th>Construct</th>
-            <th>Operations</th>
-          </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td><a href="https://docs.meshery.io/project/contributing/contributing-schemas">Academy</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/academy/api.yml">v1beta3</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/academy/academy.yaml">academy.yaml</a></td>
-          <td><a href="https://docs.meshery.io/reference/rest-apis/endpoints/#apiacademycurricula">/api/academy/curricula</a></td>
-        </tr>
-        <tr>
-          <td><a href="https://docs.meshery.io/project/contributing/contributing-models">Badge</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/badge/api.yml">v1beta2</a></td>
-          <td>n/a</td>
-          <td><a href="https://docs.meshery.io/reference/rest-apis/endpoints/#apiidentitybadges">/api/identity/badges</a></td>
-        </tr>
-        <tr>
-          <td><a href="https://docs.meshery.io/project/contributing/contributing-models">Capability</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/capability/api.yml">v1beta1</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/capability/capability.yaml">capability.yaml</a></td>
-          <td>n/a</td>
-        </tr>
-        <tr>
-          <td><a href="https://docs.meshery.io/project/contributing/contributing-models">Catalog</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/catalog/api.yml">v1beta2</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/catalog/catalog.yaml">catalog.yaml</a></td>
-          <td>n/a</td>
-        </tr>
-        <tr>
-          <td><a href="https://docs.meshery.io/project/contributing/contributing-models">Category</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/category/api.yml">v1beta1</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/category/category.yaml">category.yaml</a></td>
-          <td>n/a</td>
-        </tr>
-        <tr>
-          <td><a href="https://docs.meshery.io/project/contributing/contributing-components">Component</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/component/api.yml">v1beta3</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/component/component.yaml">component.yaml</a></td>
-          <td>n/a</td>
-        </tr>
-        <tr>
-          <td><a href="https://docs.meshery.io/project/contributing/contributing-schemas">Connection</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/connection/api.yml">v1beta3</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/connection/connection.yaml">connection.yaml</a></td>
-          <td><a href="https://docs.meshery.io/reference/rest-apis/endpoints/#apiintegrationsconnections">/api/integrations/connections</a></td>
-        </tr>
-        <tr>
-          <td><a href="https://docs.meshery.io/project/contributing/contributing-schemas">Core</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/core/api.yml">v1beta2</a></td>
-          <td>n/a</td>
-          <td>n/a</td>
-        </tr>
-        <tr>
-          <td><a href="https://docs.meshery.io/project/contributing/contributing-schemas">Credential</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/credential/api.yml">v1beta2</a></td>
-          <td>n/a</td>
-          <td><a href="https://docs.meshery.io/reference/rest-apis/endpoints/#apiintegrationscredentials">/api/integrations/credentials</a></td>
-        </tr>
-        <tr>
-          <td><a href="https://docs.meshery.io/project/contributing/contributing-schemas">Design</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/design/api.yml">v1beta3</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/design/design.yaml">design.yaml</a></td>
-          <td><a href="https://docs.meshery.io/reference/rest-apis/endpoints/#apicontentpatterns">/api/content/patterns</a></td>
-        </tr>
-        <tr>
-          <td><a href="https://docs.meshery.io/project/contributing/contributing-schemas">Environment</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/environment/api.yml">v1beta3</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/environment/environment.yaml">environment.yaml</a></td>
-          <td><a href="https://docs.meshery.io/reference/rest-apis/endpoints/#apienvironments">/api/environments</a></td>
-        </tr>
-        <tr>
-          <td><a href="https://docs.meshery.io/project/contributing/contributing-schemas">Evaluation</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/evaluation/api.yml">v1beta1</a></td>
-          <td>n/a</td>
-          <td>n/a</td>
-        </tr>
-        <tr>
-          <td><a href="https://docs.meshery.io/project/contributing/contributing-schemas">Event</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/event/api.yml">v1beta3</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/event/event.yaml">event.yaml</a></td>
-          <td><a href="https://docs.meshery.io/reference/rest-apis/endpoints/#apievents">/api/events</a></td>
-        </tr>
-        <tr>
-          <td><a href="https://docs.meshery.io/project/contributing/contributing-schemas">Feature</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/feature/api.yml">v1beta1</a></td>
-          <td>n/a</td>
-          <td><a href="https://docs.meshery.io/reference/rest-apis/endpoints/#apientitlementfeatures">/api/entitlement/features</a></td>
-        </tr>
-        <tr>
-          <td><a href="https://docs.meshery.io/project/contributing/contributing-schemas">Filter</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/filter/api.yml">v1beta3</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/filter/filter.yaml">filter.yaml</a></td>
-          <td><a href="https://docs.meshery.io/reference/rest-apis/endpoints/#apicontentfilters">/api/content/filters</a></td>
-        </tr>
-        <tr>
-          <td><a href="https://docs.meshery.io/project/contributing/contributing-schemas">Invitation</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/invitation/api.yml">v1beta3</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/invitation/invitation.yaml">invitation.yaml</a></td>
-          <td><a href="https://docs.meshery.io/reference/rest-apis/endpoints/#apiorganizationsinvitations">/api/organizations/invitations</a></td>
-        </tr>
-        <tr>
-          <td><a href="https://docs.meshery.io/project/contributing/contributing-schemas">Key</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/key/api.yml">v1beta2</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/key/key.yaml">key.yaml</a></td>
-          <td><a href="https://docs.meshery.io/reference/rest-apis/endpoints/#apiauthkeys">/api/auth/keys</a></td>
-        </tr>
-        <tr>
-          <td><a href="https://docs.meshery.io/project/contributing/contributing-schemas">Keychain</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/keychain/api.yml">v1beta2</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/keychain/keychain.yaml">keychain.yaml</a></td>
-          <td><a href="https://docs.meshery.io/reference/rest-apis/endpoints/#apiauthkeychains">/api/auth/keychains</a></td>
-        </tr>
-        <tr>
-          <td><a href="https://docs.meshery.io/project/contributing/contributing-models">Model</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/model/api.yml">v1beta2</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/model/model.yaml">model.yaml</a></td>
-          <td><a href="https://docs.meshery.io/reference/rest-apis/endpoints/#apimeshmodelsregister">/api/meshmodels/register</a></td>
-        </tr>
-        <tr>
-          <td><a href="https://docs.meshery.io/project/contributing/contributing-schemas">Organization</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/organization/api.yml">v1beta2</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/organization/organization.yaml">organization.yaml</a></td>
-          <td><a href="https://docs.meshery.io/reference/rest-apis/endpoints/#apiidentityorgs">/api/identity/orgs</a></td>
-        </tr>
-        <tr>
-          <td><a href="https://docs.meshery.io/project/contributing/contributing-schemas">Performance Profile</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/performance_profile/api.yml">v1beta3</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/performance_profile/performance_profile.yaml">performance_profile.yaml</a></td>
-          <td><a href="https://docs.meshery.io/reference/rest-apis/endpoints/#apiperformanceprofiles">/api/performance-profiles</a></td>
-        </tr>
-        <tr>
-          <td><a href="https://docs.meshery.io/project/contributing/contributing-schemas">Plan</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/plan/api.yml">v1beta3</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/plan/plan.yaml">plan.yaml</a></td>
-          <td><a href="https://docs.meshery.io/reference/rest-apis/endpoints/#apientitlementplans">/api/entitlement/plans</a></td>
-        </tr>
-        <tr>
-          <td><a href="https://docs.meshery.io/project/contributing/contributing-relationships">Relationship</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/relationship/api.yml">v1beta3</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/relationship/relationship.yaml">relationship.yaml</a></td>
-          <td>n/a</td>
-        </tr>
-        <tr>
-          <td><a href="https://docs.meshery.io/project/contributing/contributing-schemas">Role</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/role/api.yml">v1beta2</a></td>
-          <td>n/a</td>
-          <td><a href="https://docs.meshery.io/reference/rest-apis/endpoints/#apiidentityroles">/api/identity/roles</a></td>
-        </tr>
-        <tr>
-          <td><a href="https://docs.meshery.io/project/contributing/contributing-schemas">Schedule</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/schedule/api.yml">v1beta2</a></td>
-          <td>n/a</td>
-          <td>n/a</td>
-        </tr>
-        <tr>
-          <td><a href="https://docs.meshery.io/project/contributing/contributing-models">Subcategory</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/subcategory/api.yml">v1beta1</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/subcategory/subcategory.yaml">subcategory.yaml</a></td>
-          <td>n/a</td>
-        </tr>
-        <tr>
-          <td><a href="https://docs.meshery.io/project/contributing/contributing-schemas">Subscription</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/subscription/api.yml">v1beta3</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/subscription/subscription.yaml">subscription.yaml</a></td>
-          <td><a href="https://docs.meshery.io/reference/rest-apis/endpoints/#apientitlementsubscriptions">/api/entitlement/subscriptions</a></td>
-        </tr>
-        <tr>
-          <td><a href="https://docs.meshery.io/project/contributing/contributing-schemas">Support</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/support/api.yml">v1beta1</a></td>
-          <td>n/a</td>
-          <td><a href="https://docs.meshery.io/reference/rest-apis/endpoints/#apiintegrationssupport">/api/integrations/support</a></td>
-        </tr>
-        <tr>
-          <td><a href="https://docs.meshery.io/project/contributing/contributing-schemas">Team</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/team/api.yml">v1beta2</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/team/team.yaml">team.yaml</a></td>
-          <td><a href="https://docs.meshery.io/reference/rest-apis/endpoints/#apiidentityorgsorgidteams">/api/identity/orgs/{orgId}/teams</a></td>
-        </tr>
-        <tr>
-          <td><a href="https://docs.meshery.io/project/contributing/contributing-schemas">Token</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/token/api.yml">v1beta3</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/token/token.yaml">token.yaml</a></td>
-          <td><a href="https://docs.meshery.io/reference/rest-apis/endpoints/#apiidentitytokens">/api/identity/tokens</a></td>
-        </tr>
-        <tr>
-          <td><a href="https://docs.meshery.io/project/contributing/contributing-schemas">User</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/user/api.yml">v1beta2</a></td>
-          <td>n/a</td>
-          <td><a href="https://docs.meshery.io/reference/rest-apis/endpoints/#apiusers">/api/users</a></td>
-        </tr>
-        <tr>
-          <td><a href="https://docs.meshery.io/project/contributing/contributing-schemas">View</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/view/api.yml">v1beta2</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/view/view.yaml">view.yaml</a></td>
-          <td><a href="https://docs.meshery.io/reference/rest-apis/endpoints/#apicontentviews">/api/content/views</a></td>
-        </tr>
-        <tr>
-          <td><a href="https://docs.meshery.io/project/contributing/contributing-schemas">Workspace</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/workspace/api.yml">v1beta3</a></td>
-          <td><a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/workspace/workspace.yaml">workspace.yaml</a></td>
-          <td><a href="https://docs.meshery.io/reference/rest-apis/endpoints/#apiworkspaces">/api/workspaces</a></td>
-        </tr>
-        </tbody>
-      </table>
+      <h1>Meshery Schemas</h1>
+      <p>Latest schema version for each Meshery resource.</p>
+      <pre>
+academy              <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/academy/academy.yaml">v1beta3</a>
+badge                <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/badge/api.yml">v1beta2</a>
+capability           <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/capability/capability.yaml">v1beta1</a>
+catalog              <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/catalog/catalog.yaml">v1beta2</a>
+category             <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/category/category.yaml">v1beta1</a>
+component            <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/component/component.yaml">v1beta3</a>
+connection           <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/connection/connection.yaml">v1beta3</a>
+core                 <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/core/api.yml">v1beta2</a>
+credential           <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/credential/api.yml">v1beta2</a>
+design               <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/design/design.yaml">v1beta3</a>
+environment          <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/environment/environment.yaml">v1beta3</a>
+evaluation           <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/evaluation/api.yml">v1beta1</a>
+event                <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/event/event.yaml">v1beta3</a>
+feature              <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/feature/feature.yaml">v1beta1</a>
+filter               <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/filter/filter.yaml">v1beta3</a>
+invitation           <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/invitation/invitation.yaml">v1beta3</a>
+key                  <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/key/key.yaml">v1beta2</a>
+keychain             <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/keychain/keychain.yaml">v1beta2</a>
+model                <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/model/model.yaml">v1beta2</a>
+organization         <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/organization/organization.yaml">v1beta2</a>
+performance_profile  <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/performance_profile/performance_profile.yaml">v1beta3</a>
+plan                 <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/plan/plan.yaml">v1beta3</a>
+relationship         <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/relationship/relationship.yaml">v1beta3</a>
+role                 <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/role/api.yml">v1beta2</a>
+schedule             <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/schedule/api.yml">v1beta2</a>
+subcategory          <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/subcategory/subcategory.yaml">v1beta1</a>
+subscription         <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/subscription/subscription.yaml">v1beta3</a>
+support              <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/support/api.yml">v1beta1</a>
+system               <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/system/api.yml">v1beta1</a>
+team                 <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/team/team.yaml">v1beta2</a>
+token                <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/token/token.yaml">v1beta3</a>
+user                 <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/user/api.yml">v1beta2</a>
+view                 <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/view/view.yaml">v1beta2</a>
+workspace            <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/workspace/workspace.yaml">v1beta3</a>
+      </pre>
+      <p><a href="https://docs.meshery.io/project/contributing/contributing-schemas/">Meshery schemas documentation</a></p>
     </main>
   </body>
 </html>
