@@ -76,7 +76,7 @@ function githubBlobUrl(relativePath) {
 }
 
 function renderSchemaLines(constructs) {
-  const longestConstructName = Math.max(...constructs.map(({ construct }) => construct.length));
+  const longestConstructName = constructs.length > 0 ? Math.max(...constructs.map(({ construct }) => construct.length)) : 0;
 
   return constructs
     .map(({ construct, version }) => {
