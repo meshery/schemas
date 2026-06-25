@@ -128,6 +128,7 @@ properties:
     $ref: ../../v1beta2/core/api.yml#/components/schemas/ComponentStyles
     x-oapi-codegen-extra-tags:
       gorm: type:bytes;serializer:json
+      db: "-"
       yaml: styles
       json: styles
     x-go-type: core.ComponentStyles
@@ -161,6 +162,7 @@ properties:
     x-go-type-skip-optional-pointer: true
     x-oapi-codegen-extra-tags:
       gorm: type:bytes;serializer:json
+      db: "-"
       json: "transitionMap,omitempty"
     x-order: 18
   owner:
