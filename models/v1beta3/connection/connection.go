@@ -56,9 +56,6 @@ type Connection struct {
 	// ConnectionType Connection Type (platform, telemetry, collaboration)
 	ConnectionType string `db:"type" json:"type" yaml:"type"`
 
-	// Model Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.
-	Model *modelv1beta1.ModelDefinition `gorm:"foreignKey:ModelID;references:ID" json:"model" yaml:"model"`
-
 	// SubType Connection Subtype (cloud, identity, metrics, chat, git, orchestration)
 	SubType string `db:"sub_type" json:"subType" yaml:"subType"`
 
@@ -66,7 +63,7 @@ type Connection struct {
 	Kind string `db:"kind" json:"kind" yaml:"kind"`
 
 	// ModelReference Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
-	ModelReference *modelv1beta1.ModelReference `gorm:"-" json:"modelReference,omitempty" yaml:"modelReference,omitempty"`
+	ModelReference *modelv1beta1.ModelReference `db:"model_reference" gorm:"model_reference" json:"modelReference" yaml:"modelReference"`
 
 	// ConnectionSchema Schema for the connection
 	ConnectionSchema core.Map `db:"connection_schema" json:"connectionSchema,omitempty" yaml:"connectionSchema,omitempty"`
@@ -95,13 +92,10 @@ type Connection struct {
 	SchemaVersion core.VersionString `gorm:"-" db:"-" json:"schemaVersion" yaml:"schemaVersion"`
 
 	// Styles Visualization styles for a component
-	Styles *core.ComponentStyles `gorm:"type:bytes;serializer:json" json:"styles" yaml:"styles"`
+	Styles *core.ComponentStyles `db:"-" gorm:"type:bytes;serializer:json" json:"styles" yaml:"styles"`
 
 	// TransitionMap Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status, along with a description of each transition.
-	TransitionMap map[string][]ConnectionStateTransition `gorm:"type:bytes;serializer:json" json:"transitionMap,omitempty" yaml:"transitionMap,omitempty"`
-
-	// ModelId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ModelID *core.Uuid `db:"model_id" gorm:"column:model_id" json:"-" yaml:"-"`
+	TransitionMap map[string][]ConnectionStateTransition `db:"-" gorm:"type:bytes;serializer:json" json:"transitionMap,omitempty" yaml:"transitionMap,omitempty"`
 }
 
 // ConnectionStatus Connection Status
