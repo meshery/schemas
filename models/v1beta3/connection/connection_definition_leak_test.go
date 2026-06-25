@@ -19,13 +19,17 @@ type tableNameAble interface{ TableName() string }
 // provider.
 //
 // Connection MUST NOT implement TableName(); ConnectionDefinition is a distinct
-// defined type that does.
+// defined type that does. The assertions use the pointer types (*Connection,
+// *ConnectionDefinition) because pop/GORM operate on pointers and a pointer's
+// method set includes both value- and pointer-receiver methods, whereas a
+// value's includes only value-receiver methods. Checking the pointer therefore
+// catches a re-leaked TableName() regardless of which receiver form it takes.
 func TestConnectionDoesNotInheritDefinitionTableName(t *testing.T) {
-	if tn, leaked := any(Connection{}).(tableNameAble); leaked {
+	if tn, leaked := any(&Connection{}).(tableNameAble); leaked {
 		t.Fatalf("Connection unexpectedly implements TableName() => %q; it must use pop's default \"connections\" table. ConnectionDefinition must be a distinct type, not a `= Connection` alias.", tn.TableName())
 	}
 
-	if got := (ConnectionDefinition{}).TableName(); got != "connection_definition_dbs" {
+	if got := (&ConnectionDefinition{}).TableName(); got != "connection_definition_dbs" {
 		t.Fatalf("ConnectionDefinition.TableName() = %q, want \"connection_definition_dbs\"", got)
 	}
 }
