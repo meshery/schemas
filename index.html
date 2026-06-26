@@ -198,10 +198,16 @@
           display: block;
         }
 
-        thead tr {
+        thead {
           position: absolute;
-          top: -9999px;
-          left: -9999px;
+          width: 1px;
+          height: 1px;
+          padding: 0;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0, 0, 0, 0);
+          white-space: nowrap;
+          border: 0;
         }
 
         tbody tr {
@@ -307,24 +313,24 @@
       </p>
 
       <div class="table-wrapper">
-        <table aria-label="Latest Meshery schema versions">
-          <thead>
-            <tr>
-              <th scope="col">Resource</th>
-              <th scope="col">Latest schema</th>
-              <th scope="col" class="classification">Core</th>
-              <th scope="col" class="classification">Extension</th>
+        <table role="table" aria-label="Latest Meshery schema versions">
+          <thead role="rowgroup">
+            <tr role="row">
+              <th scope="col" role="columnheader">Resource</th>
+              <th scope="col" role="columnheader">Latest schema</th>
+              <th scope="col" role="columnheader" class="classification">Core</th>
+              <th scope="col" role="columnheader" class="classification">Extension</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody role="rowgroup">
             {% for schema in site.data.latest_schema_versions %}
-            <tr>
-              <th scope="row">{{ schema.construct }}</th>
-              <td data-label="Latest schema"><a href="https://github.com/meshery/schemas/blob/master{{ schema.href }}" target="_blank" rel="noopener noreferrer">{{ schema.version }}</a></td>
-              <td class="classification" data-label="Core">
+            <tr role="row">
+              <th scope="row" role="rowheader">{{ schema.construct }}</th>
+              <td role="cell" data-label="Latest schema"><a href="https://github.com/meshery/schemas/blob/master{{ schema.href }}" target="_blank" rel="noopener noreferrer">{{ schema.version }}</a></td>
+              <td role="cell" class="classification" data-label="Core">
                 {% if schema.core %}<span class="yes" aria-hidden="true">✓</span><span class="sr-only">Core</span>{% else %}<span class="no" aria-hidden="true">·</span><span class="sr-only">Not Core</span>{% endif %}
               </td>
-              <td class="classification" data-label="Extension">
+              <td role="cell" class="classification" data-label="Extension">
                 {% if schema.extension %}<span class="yes" aria-hidden="true">✓</span><span class="sr-only">Extension</span>{% else %}<span class="no" aria-hidden="true">·</span><span class="sr-only">Not Extension</span>{% endif %}
               </td>
             </tr>
