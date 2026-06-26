@@ -1,3 +1,5 @@
+---
+---
 <!doctype html>
 <html lang="en">
   <head>
@@ -8,48 +10,166 @@
       name="description"
       content="Latest Meshery schema resource versions."
     >
+    <style>
+      :root {
+        color-scheme: light dark;
+        --surface-app-light: #fdfdfd;
+        --surface-card-light: #ffffff;
+        --surface-muted-light: #f6f8f8;
+        --text-light: #000d12;
+        --border-light: #eaedee;
+        --primary: #00b39f;
+        --primary-hover: #41ccb3;
+        --secondary: #3c494f;
+        --surface-app-dark: #000d12;
+        --surface-card-dark: #121212;
+        --surface-muted-dark: #15272f;
+        --text-dark: #fdfdfd;
+        --border-dark: #15272f;
+      }
+
+      body {
+        margin: 0;
+        padding: 24px 16px;
+        background: var(--surface-muted-light);
+        color: var(--text-light);
+        font-family: "Courier New", Courier, monospace;
+        line-height: 1.5;
+      }
+
+      main {
+        max-width: 56rem;
+        margin: 0 auto;
+        padding: 24px;
+        background: var(--surface-app-light);
+        border: 1px solid var(--border-light);
+      }
+
+      h1,
+      h2,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        margin-bottom: 0.5rem;
+        font-size: 2rem;
+      }
+
+      h2 {
+        margin-bottom: 0.5rem;
+        font-size: 1.25rem;
+      }
+
+      a {
+        color: var(--primary);
+      }
+
+      a:hover,
+      a:focus {
+        color: var(--primary-hover);
+      }
+
+      table {
+        width: 100%;
+        margin: 1.5rem 0;
+        border-collapse: collapse;
+        background: var(--surface-card-light);
+      }
+
+      th,
+      td {
+        padding: 0.5rem 0.75rem;
+        text-align: left;
+        border: 1px solid var(--border-light);
+      }
+
+      thead th {
+        background: var(--surface-muted-light);
+      }
+
+      tbody th {
+        font-weight: 400;
+      }
+
+      .eyebrow {
+        margin-bottom: 0.5rem;
+        color: var(--secondary);
+        font-size: 0.875rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .docs-links ul {
+        margin: 0.5rem 0 0;
+        padding-left: 1.25rem;
+      }
+
+      .docs-links li + li {
+        margin-top: 0.25rem;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: var(--surface-muted-dark);
+          color: var(--text-dark);
+        }
+
+        main {
+          background: var(--surface-app-dark);
+          border-color: var(--border-dark);
+        }
+
+        table {
+          background: var(--surface-card-dark);
+        }
+
+        th,
+        td {
+          border-color: var(--border-dark);
+        }
+
+        thead th {
+          background: var(--surface-muted-dark);
+        }
+
+        .eyebrow {
+          color: var(--primary-hover);
+        }
+      }
+    </style>
   </head>
   <body>
     <main>
+      <p class="eyebrow">schemas.meshery.io</p>
       <h1>Meshery Schemas</h1>
       <p>Latest schema version for each Meshery resource.</p>
-      <pre>
-academy              <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/academy/academy.yaml">v1beta3</a>
-badge                <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/badge/api.yml">v1beta2</a>
-capability           <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/capability/capability.yaml">v1beta1</a>
-catalog              <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/catalog/catalog.yaml">v1beta2</a>
-category             <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/category/category.yaml">v1beta1</a>
-component            <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/component/component.yaml">v1beta3</a>
-connection           <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/connection/connection.yaml">v1beta3</a>
-core                 <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/core/api.yml">v1beta2</a>
-credential           <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/credential/api.yml">v1beta2</a>
-design               <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/design/design.yaml">v1beta3</a>
-environment          <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/environment/environment.yaml">v1beta3</a>
-evaluation           <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/evaluation/api.yml">v1beta1</a>
-event                <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/event/event.yaml">v1beta3</a>
-feature              <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/feature/feature.yaml">v1beta1</a>
-filter               <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/filter/filter.yaml">v1beta3</a>
-invitation           <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/invitation/invitation.yaml">v1beta3</a>
-key                  <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/key/key.yaml">v1beta2</a>
-keychain             <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/keychain/keychain.yaml">v1beta2</a>
-model                <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/model/model.yaml">v1beta2</a>
-organization         <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/organization/organization.yaml">v1beta2</a>
-performance_profile  <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/performance_profile/performance_profile.yaml">v1beta3</a>
-plan                 <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/plan/plan.yaml">v1beta3</a>
-relationship         <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/relationship/relationship.yaml">v1beta3</a>
-role                 <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/role/api.yml">v1beta2</a>
-schedule             <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/schedule/api.yml">v1beta2</a>
-subcategory          <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/subcategory/subcategory.yaml">v1beta1</a>
-subscription         <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/subscription/subscription.yaml">v1beta3</a>
-support              <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/support/api.yml">v1beta1</a>
-system               <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/system/api.yml">v1beta1</a>
-team                 <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/team/team.yaml">v1beta2</a>
-token                <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/token/token.yaml">v1beta3</a>
-user                 <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/user/api.yml">v1beta2</a>
-view                 <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2/view/view.yaml">v1beta2</a>
-workspace            <a href="https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta3/workspace/workspace.yaml">v1beta3</a>
-      </pre>
-      <p><a href="https://docs.meshery.io/project/contributing/contributing-schemas/">Meshery schemas documentation</a></p>
+
+      <table aria-label="Latest Meshery schema versions">
+        <thead>
+          <tr>
+            <th scope="col">Resource</th>
+            <th scope="col">Latest schema</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for schema in site.data.latest_schema_versions %}
+          <tr>
+            <th scope="row">{{ schema.construct }}</th>
+            <td><a href="{{ schema.href | relative_url }}">{{ schema.version }}</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <section class="docs-links" aria-labelledby="contributor-guides-title">
+        <h2 id="contributor-guides-title">Contributor guides</h2>
+        <p>Contribution instructions live in Meshery Docs.</p>
+        <ul>
+          <li><a href="https://docs.meshery.io/project/contributing/contributing-schemas/">Schema-driven development guide</a></li>
+          <li><a href="https://docs.meshery.io/project/contributing/contributing-ui-schemas/">UI schema guide</a></li>
+        </ul>
+      </section>
     </main>
   </body>
 </html>
