@@ -4,9 +4,29 @@ const { execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 
+const yaml = require("js-yaml");
+
 const paths = require("./lib/paths");
 
 const DEFAULT_OUTPUT_RELATIVE_PATH = path.join("_data", "latest_schema_versions.json");
+
+// OpenAPI operation keys whose `x-internal` arrays classify a construct.
+const OPENAPI_OPERATION_METHODS = [
+  "get",
+  "put",
+  "post",
+  "delete",
+  "patch",
+  "head",
+  "options",
+  "trace",
+];
+
+// `x-internal` tags map to a consumer-facing classification:
+//   "meshery" -> Core      (operations bundled into meshery_openapi.yml)
+//   "cloud"   -> Extension (operations bundled into cloud_openapi.yml)
+const X_INTERNAL_CORE = "meshery";
+const X_INTERNAL_EXTENSION = "cloud";
 
 function resolveOutputPath(argv = process.argv.slice(2), repoRoot = paths.getProjectRoot()) {
   const outputFlagIndex = argv.indexOf("--output");
@@ -76,11 +96,58 @@ function resolveSchemaHref(repoRoot, version, construct) {
   return path.posix.join("/schemas/constructs", version, construct, fileName);
 }
 
+function collectXInternalTags(repoRoot, version, construct) {
+  const apiPath = path.join(repoRoot, "schemas", "constructs", version, construct, "api.yml");
+  if (!fs.existsSync(apiPath)) {
+    return new Set();
+  }
+
+  let doc;
+  try {
+    doc = yaml.load(fs.readFileSync(apiPath, "utf8"));
+  } catch (error) {
+    throw new Error(`Failed to parse ${apiPath}: ${error.message}`);
+  }
+
+  const tags = new Set();
+  const pathItems = (doc && doc.paths) || {};
+  for (const pathItem of Object.values(pathItems)) {
+    if (!pathItem || typeof pathItem !== "object") {
+      continue;
+    }
+
+    for (const method of OPENAPI_OPERATION_METHODS) {
+      const operation = pathItem[method];
+      const xInternal = operation && operation["x-internal"];
+      if (Array.isArray(xInternal)) {
+        for (const tag of xInternal) {
+          tags.add(tag);
+        }
+      }
+    }
+  }
+
+  return tags;
+}
+
+// A construct is classified by the union of `x-internal` tags across all of its
+// operations: any "meshery" operation makes it Core, any "cloud" operation makes
+// it an Extension. A construct can be both (shared APIs) or neither (schema-only
+// definitions with no operations).
+function resolveConstructClassification(repoRoot, version, construct) {
+  const tags = collectXInternalTags(repoRoot, version, construct);
+  return {
+    core: tags.has(X_INTERNAL_CORE),
+    extension: tags.has(X_INTERNAL_EXTENSION),
+  };
+}
+
 function buildSiteData(repoRoot, constructs) {
   return constructs.map(({ construct, version }) => ({
     construct,
     version,
     href: resolveSchemaHref(repoRoot, version, construct),
+    ...resolveConstructClassification(repoRoot, version, construct),
   }));
 }
 
@@ -106,9 +173,11 @@ if (require.main === module) {
 module.exports = {
   DEFAULT_OUTPUT_RELATIVE_PATH,
   buildSiteData,
+  collectXInternalTags,
   loadLatestConstructs,
   main,
   parseLatestConstructs,
+  resolveConstructClassification,
   resolveOutputPath,
   resolveSchemaHref,
   writeSiteData,

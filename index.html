@@ -11,6 +11,37 @@
       content="Latest Meshery schema resource versions."
     >
     <style>
+      /* Qanelas Soft is the Meshery brand typeface, vendored from meshery.io
+         (assets/fonts/qanelas-soft). Only the weights used by this page are
+         shipped to keep the payload small. */
+      @font-face {
+        font-family: "Qanelas Soft";
+        src: url("/assets/fonts/qanelas-soft/QanelasSoftRegular.otf") format("opentype");
+        font-weight: 400;
+        font-display: swap;
+      }
+
+      @font-face {
+        font-family: "Qanelas Soft";
+        src: url("/assets/fonts/qanelas-soft/QanelasSoftMedium.otf") format("opentype");
+        font-weight: 500;
+        font-display: swap;
+      }
+
+      @font-face {
+        font-family: "Qanelas Soft";
+        src: url("/assets/fonts/qanelas-soft/QanelasSoftSemiBold.otf") format("opentype");
+        font-weight: 600;
+        font-display: swap;
+      }
+
+      @font-face {
+        font-family: "Qanelas Soft";
+        src: url("/assets/fonts/qanelas-soft/QanelasSoftBold.otf") format("opentype");
+        font-weight: 700;
+        font-display: swap;
+      }
+
       :root {
         color-scheme: light dark;
         --surface-app-light: #fdfdfd;
@@ -33,7 +64,7 @@
         padding: 24px 16px;
         background: var(--surface-muted-light);
         color: var(--text-light);
-        font-family: "Courier New", Courier, monospace;
+        font-family: "Qanelas Soft", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         line-height: 1.5;
       }
 
@@ -92,12 +123,43 @@
         font-weight: 400;
       }
 
+      h1,
+      h2 {
+        font-weight: 700;
+      }
+
       .eyebrow {
         margin-bottom: 0.5rem;
         color: var(--secondary);
         font-size: 0.875rem;
+        font-weight: 600;
         letter-spacing: 0.08em;
         text-transform: uppercase;
+      }
+
+      .classification {
+        text-align: center;
+      }
+
+      .classification .yes {
+        color: var(--primary);
+        font-weight: 700;
+      }
+
+      .classification .no {
+        color: var(--secondary);
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
       }
 
       .docs-links ul {
@@ -145,11 +207,19 @@
       <h1>Meshery Schemas</h1>
       <p>Latest schema version for each Meshery resource.</p>
 
+      <p>
+        Each resource is also tagged by where its API surfaces: <strong>Core</strong>
+        resources are served by Meshery Server, and <strong>Extension</strong>
+        resources are served by Meshery Cloud. A resource can be both.
+      </p>
+
       <table aria-label="Latest Meshery schema versions">
         <thead>
           <tr>
             <th scope="col">Resource</th>
             <th scope="col">Latest schema</th>
+            <th scope="col" class="classification">Core</th>
+            <th scope="col" class="classification">Extension</th>
           </tr>
         </thead>
         <tbody>
@@ -157,6 +227,12 @@
           <tr>
             <th scope="row">{{ schema.construct }}</th>
             <td><a href="{{ schema.href | relative_url }}">{{ schema.version }}</a></td>
+            <td class="classification">
+              {% if schema.core %}<span class="yes" aria-hidden="true">✓</span><span class="sr-only">Core</span>{% else %}<span class="no" aria-hidden="true">·</span><span class="sr-only">Not Core</span>{% endif %}
+            </td>
+            <td class="classification">
+              {% if schema.extension %}<span class="yes" aria-hidden="true">✓</span><span class="sr-only">Extension</span>{% else %}<span class="no" aria-hidden="true">·</span><span class="sr-only">Not Extension</span>{% endif %}
+            </td>
           </tr>
           {% endfor %}
         </tbody>
