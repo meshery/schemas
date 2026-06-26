@@ -111,7 +111,41 @@ function collectXInternalTags(repoRoot, version, construct) {
 
   const tags = new Set();
   const pathItems = (doc && doc.paths) || {};
-  for (const pathItem of Object.values(pathItems)) {
+  const resolvePathItem = (pathItem) => {
+    const ref = pathItem && typeof pathItem === "object" ? pathItem.$ref : undefined;
+    if (typeof ref !== "string") {
+      return pathItem;
+    }
+
+    const [refFile, refPointer = ""] = ref.split("#");
+    if (!refFile) {
+      return undefined;
+    }
+
+    const refPath = path.resolve(path.dirname(apiPath), refFile);
+    let refDoc;
+    try {
+      refDoc = yaml.load(fs.readFileSync(refPath, "utf8"));
+    } catch (error) {
+      throw new Error(`Failed to parse ${refPath}: ${error.message}`);
+    }
+
+    if (!refPointer) {
+      return refDoc;
+    }
+
+    const segments = refPointer.replace(/^\/+/, "").split("/").filter(Boolean);
+    let node = refDoc;
+    for (const segment of segments) {
+      const key = segment.replace(/~1/g, "/").replace(/~0/g, "~");
+      node = node && typeof node === "object" ? node[key] : undefined;
+    }
+
+    return node;
+  };
+
+  for (const rawPathItem of Object.values(pathItems)) {
+    const pathItem = resolvePathItem(rawPathItem);
     if (!pathItem || typeof pathItem !== "object") {
       continue;
     }
