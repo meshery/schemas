@@ -38,6 +38,7 @@
     "construct": "component",
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/component/component.yaml",
+    "docs_href": "https://docs.meshery.io/concepts/logical/components",
     "core": false,
     "extension": false
   },
@@ -45,6 +46,7 @@
     "construct": "connection",
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/connection/connection.yaml",
+    "docs_href": "https://docs.meshery.io/concepts/logical/connections",
     "core": true,
     "extension": true
   },
@@ -59,6 +61,7 @@
     "construct": "credential",
     "version": "v1beta2",
     "href": "/schemas/constructs/v1beta2/credential/api.yml",
+    "docs_href": "https://docs.meshery.io/concepts/logical/credentials",
     "core": true,
     "extension": true
   },
@@ -66,6 +69,7 @@
     "construct": "design",
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/design/design.yaml",
+    "docs_href": "https://docs.meshery.io/concepts/logical/designs",
     "core": true,
     "extension": true
   },
@@ -73,6 +77,7 @@
     "construct": "environment",
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/environment/environment.yaml",
+    "docs_href": "https://docs.meshery.io/concepts/logical/environments",
     "core": true,
     "extension": true
   },
@@ -129,6 +134,7 @@
     "construct": "model",
     "version": "v1beta2",
     "href": "/schemas/constructs/v1beta2/model/model.yaml",
+    "docs_href": "https://docs.meshery.io/concepts/logical/models",
     "core": true,
     "extension": true
   },
@@ -136,6 +142,7 @@
     "construct": "organization",
     "version": "v1beta2",
     "href": "/schemas/constructs/v1beta2/organization/organization.yaml",
+    "docs_href": "https://docs.meshery.io/concepts/logical/organizations",
     "core": true,
     "extension": true
   },
@@ -157,6 +164,7 @@
     "construct": "relationship",
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/relationship/relationship.yaml",
+    "docs_href": "https://docs.meshery.io/concepts/logical/relationships",
     "core": false,
     "extension": false
   },
@@ -234,6 +242,7 @@
     "construct": "workspace",
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/workspace/workspace.yaml",
+    "docs_href": "https://docs.meshery.io/concepts/logical/workspaces",
     "core": true,
     "extension": true
   }
