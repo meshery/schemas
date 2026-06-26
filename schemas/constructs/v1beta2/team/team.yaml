@@ -1,5 +1,6 @@
 $id: https://schemas.meshery.io/team.yaml
 $schema: http://json-schema.org/draft-07/schema#
+x-internal: true
 description: A Team is a group of one or more users. Teams are often used as a grouping mechanism for assigning permissions, whether in the context of an organization, a workspace, or some other domain within Meshery. Learn more at https://docs.meshery.io/concepts/logical/teams
 additionalProperties: false
 type: object

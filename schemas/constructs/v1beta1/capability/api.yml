@@ -1,5 +1,6 @@
 openapi: 3.0.0
 info:
+  x-internal: ["cloud", "meshery"]
   title: Capability
   description: OpenAPI schema for Meshery capability definitions.
   version: v1beta1
@@ -15,3 +16,4 @@ components:
   schemas:
     Capability:
       $ref: "./capability.yaml"
+

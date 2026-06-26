@@ -1,5 +1,6 @@
 openapi: 3.0.0
 info:
+  x-internal: ["cloud", "meshery"]
   title: Keychain
   x-deprecated: true
   description: OpenAPI schema for keychain management in Meshery.
@@ -112,3 +113,4 @@ components:
             $ref: "#/components/schemas/Keychain"
           x-order: 4
           description: The keychains of the keychainpage.
+

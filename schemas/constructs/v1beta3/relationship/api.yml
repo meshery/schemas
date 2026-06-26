@@ -1,5 +1,6 @@
 openapi: 3.0.0
 info:
+  x-internal: ["cloud", "meshery"]
   title: Relationship
   description: OpenAPI schema for relationship definitions between Meshery components.
   version: v1beta3
@@ -556,3 +557,4 @@ components:
           description: Indicates whether the relationship should be treated as a logical representation only
           x-oapi-codegen-extra-tags:
             json: "isAnnotation"
+

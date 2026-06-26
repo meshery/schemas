@@ -1,5 +1,6 @@
 openapi: 3.0.0
 info:
+  x-internal: ["cloud", "meshery"]
   title: Relationship
   description: OpenAPI schema for relationship definitions between Meshery components.
   version: v1alpha3
@@ -47,3 +48,4 @@ components:
 
     RelationshipDefinitionMetadataStyles:
       $ref: "./relationship.yaml#/components/schemas/RelationshipDefinitionMetadataStyles"
+

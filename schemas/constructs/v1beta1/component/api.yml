@@ -1,5 +1,6 @@
 openapi: 3.0.0
 info:
+  x-internal: ["cloud", "meshery"]
   title: Component
   description: OpenAPI schema for component definitions in Meshery.
   x-deprecated: true
@@ -38,3 +39,4 @@ components:
         - version
         - kind
         - schema
+

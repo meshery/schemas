@@ -1,5 +1,6 @@
 $id: https://schemas.meshery.io/performance_profile.yaml
 $schema: http://json-schema.org/draft-07/schema#
+x-internal: true
 title: PerformanceProfile
 description: >-
   A performance profile captures the configuration for a load test run by

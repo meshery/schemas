@@ -1,5 +1,6 @@
 $id: https://schemas.meshery.io/model.yaml
 $schema: http://json-schema.org/draft-07/schema#
+x-internal: true
 description: Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.
 additionalProperties: false
 type: object

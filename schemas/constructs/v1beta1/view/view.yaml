@@ -1,5 +1,6 @@
 $id: https://schemas.meshery.io/view.yaml
 $schema: http://json-schema.org/draft-07/schema#
+x-internal: true
 title: MesheryView
 description: A saved view with filters and metadata that defines a customized perspective of Meshery resources. Learn more at https://docs.meshery.io/concepts/logical/views
 additionalProperties: false

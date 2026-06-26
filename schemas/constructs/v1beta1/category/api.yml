@@ -1,5 +1,6 @@
 openapi: 3.0.0
 info:
+  x-internal: ["cloud", "meshery"]
   title: Category
   description: OpenAPI schema for model category definitions in Meshery.
   version: v1beta1
@@ -15,3 +16,4 @@ components:
   schemas:
     CategoryDefinition:
       $ref: "./category.yaml"
+

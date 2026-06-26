@@ -1,5 +1,6 @@
 $id: https://schemas.meshery.io/organization.yaml
 $schema: http://json-schema.org/draft-07/schema#
+x-internal: true
 description: >-
   An organization in Meshery Cloud. Organizations are the top-level tenancy
   boundary and own teams, workspaces, environments, designs, and other resources.

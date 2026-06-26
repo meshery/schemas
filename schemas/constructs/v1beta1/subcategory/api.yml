@@ -1,5 +1,6 @@
 openapi: 3.0.0
 info:
+  x-internal: ["cloud", "meshery"]
   title: SubCategory API
   description: OpenAPI schema for model subcategory definitions in Meshery.
   version: v1beta1
@@ -15,3 +16,4 @@ components:
   schemas:
     SubCategoryDefinition:
       $ref: "./subcategory.yaml"
+

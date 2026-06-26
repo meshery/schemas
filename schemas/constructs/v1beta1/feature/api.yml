@@ -1,5 +1,6 @@
 openapi: 3.0.0
 info:
+  x-internal: ["cloud", "meshery"]
   title: Feature
   description: >-
     OpenAPI schema for the Features construct - the quantified entitlements
@@ -78,3 +79,4 @@ components:
       items:
         $ref: "#/components/schemas/Feature"
         x-go-type: Feature
+
