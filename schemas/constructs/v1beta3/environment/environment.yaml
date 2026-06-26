@@ -1,6 +1,5 @@
 $id: https://schemas.meshery.io/environment.yaml
 $schema: http://json-schema.org/draft-07/schema#
-x-internal: true
 title: Environment
 description: Environments allow you to logically group related Connections and their associated Credentials. Learn more at https://docs.meshery.io/concepts/logical/environments
 additionalProperties: false

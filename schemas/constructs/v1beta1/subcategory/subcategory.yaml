@@ -1,6 +1,5 @@
 $id: https://schemas.meshery.io/category.yaml
 $schema: http://json-schema.org/draft-07/schema#
-x-internal: true
 type: string
 title: SubCategory
 description: Sub category of the model determines the secondary grouping.

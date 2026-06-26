@@ -1,6 +1,5 @@
 $id: https://schemas.meshery.io/workspace.yaml
 $schema: http://json-schema.org/draft-07/schema#
-x-internal: true
 description: >-
   A workspace is a logical grouping of resources within an organization.
   Workspaces provide a way to organize environments, designs, teams, and views.

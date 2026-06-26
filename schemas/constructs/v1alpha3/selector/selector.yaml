@@ -1,6 +1,5 @@
 $id: https://schemas.meshery.io/selector.yaml
 $schema: http://json-schema.org/draft-07/schema#
-x-internal: true
 description: Reusable relationships selectors schema elements
 $comment: Sets of selectors are interpreted as a logical OR, while sets of allow/deny are interpreted a logical AND.
 definitions:
