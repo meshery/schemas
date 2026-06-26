@@ -8,6 +8,7 @@ const {
   DEFAULT_OUTPUT_RELATIVE_PATH,
   buildSiteData,
   parseLatestConstructs,
+  resolveConstructAudience,
   resolveOutputPath,
   resolveSchemaHref,
   writeSiteData,
@@ -81,6 +82,26 @@ test("resolveSchemaHref uses api.yml when it is the only YAML file", () => {
   });
 });
 
+test("resolveConstructAudience reuses x-internal filtering to classify constructs", () => {
+  withTempRepo({
+    "schemas/constructs/v1/test-construct/api.yml": `paths:
+  /core:
+    get:
+      x-internal:
+        - meshery
+  /extension:
+    get:
+      x-internal:
+        - cloud
+`,
+  }, (tempRepoRoot) => {
+    assert.deepEqual(resolveConstructAudience(tempRepoRoot, "v1", "test-construct"), {
+      isCore: true,
+      isExtension: true,
+    });
+  });
+});
+
 test("resolveSchemaHref throws when no valid schema file exists", () => {
   withTempRepo({
     "schemas/constructs/v1/test-construct/README.md": "",
@@ -95,7 +116,18 @@ test("resolveSchemaHref throws when no valid schema file exists", () => {
 test("buildSiteData returns Jekyll-friendly schema rows", () => {
   withTempRepo({
     "schemas/constructs/v1/academy/academy.yaml": "",
-    "schemas/constructs/v2/core/api.yml": "",
+    "schemas/constructs/v1/academy/api.yml": `paths:
+  /academy:
+    get:
+      x-internal:
+        - cloud
+`,
+    "schemas/constructs/v2/core/api.yml": `paths:
+  /core:
+    get:
+      x-internal:
+        - meshery
+`,
   }, (tempRepoRoot) => {
     const siteData = buildSiteData(tempRepoRoot, [
       { construct: "academy", version: "v1" },
@@ -107,11 +139,15 @@ test("buildSiteData returns Jekyll-friendly schema rows", () => {
         construct: "academy",
         version: "v1",
         href: "/schemas/constructs/v1/academy/academy.yaml",
+        isCore: false,
+        isExtension: true,
       },
       {
         construct: "core",
         version: "v2",
         href: "/schemas/constructs/v2/core/api.yml",
+        isCore: true,
+        isExtension: false,
       },
     ]);
   });

@@ -11,6 +11,14 @@
       content="Latest Meshery schema resource versions."
     >
     <style>
+      @font-face {
+        font-family: "Qanelas Soft";
+        src: url("assets/fonts/qanelas-soft/QanelasSoftRegular.otf") format("opentype");
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+      }
+
       :root {
         color-scheme: light dark;
         --surface-app-light: #fdfdfd;
@@ -33,7 +41,7 @@
         padding: 24px 16px;
         background: var(--surface-muted-light);
         color: var(--text-light);
-        font-family: "Courier New", Courier, monospace;
+        font-family: "Qanelas Soft", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
         line-height: 1.5;
       }
 
@@ -86,10 +94,23 @@
 
       thead th {
         background: var(--surface-muted-light);
+        font-weight: 600;
       }
 
       tbody th {
         font-weight: 400;
+      }
+
+      .status-flag {
+        font-weight: 600;
+      }
+
+      .status-flag[data-active="true"] {
+        color: var(--primary);
+      }
+
+      .status-flag[data-active="false"] {
+        color: var(--secondary);
       }
 
       .eyebrow {
@@ -150,6 +171,8 @@
           <tr>
             <th scope="col">Resource</th>
             <th scope="col">Latest schema</th>
+            <th scope="col">Core</th>
+            <th scope="col">Extension</th>
           </tr>
         </thead>
         <tbody>
@@ -157,6 +180,16 @@
           <tr>
             <th scope="row">{{ schema.construct }}</th>
             <td><a href="{{ schema.href | relative_url }}">{{ schema.version }}</a></td>
+            <td>
+              <span class="status-flag" data-active="{{ schema.isCore }}">
+                {% if schema.isCore %}✓{% else %}—{% endif %}
+              </span>
+            </td>
+            <td>
+              <span class="status-flag" data-active="{{ schema.isExtension }}">
+                {% if schema.isExtension %}✓{% else %}—{% endif %}
+              </span>
+            </td>
           </tr>
           {% endfor %}
         </tbody>

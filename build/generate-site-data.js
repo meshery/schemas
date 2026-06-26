@@ -4,6 +4,7 @@ const { execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 
+const { filterOpenapiByTag, loadYaml } = require("./filterOpenapiByTag");
 const paths = require("./lib/paths");
 
 const DEFAULT_OUTPUT_RELATIVE_PATH = path.join("_data", "latest_schema_versions.json");
@@ -76,11 +77,26 @@ function resolveSchemaHref(repoRoot, version, construct) {
   return path.posix.join("/schemas/constructs", version, construct, fileName);
 }
 
+function hasFilteredOperations(doc, tag) {
+  return Object.keys(filterOpenapiByTag(doc, tag).paths || {}).length > 0;
+}
+
+function resolveConstructAudience(repoRoot, version, construct) {
+  const apiPath = path.join(repoRoot, "schemas", "constructs", version, construct, "api.yml");
+  const doc = loadYaml(apiPath);
+
+  return {
+    isCore: hasFilteredOperations(doc, "meshery"),
+    isExtension: hasFilteredOperations(doc, "cloud"),
+  };
+}
+
 function buildSiteData(repoRoot, constructs) {
   return constructs.map(({ construct, version }) => ({
     construct,
     version,
     href: resolveSchemaHref(repoRoot, version, construct),
+    ...resolveConstructAudience(repoRoot, version, construct),
   }));
 }
 
@@ -109,6 +125,7 @@ module.exports = {
   loadLatestConstructs,
   main,
   parseLatestConstructs,
+  resolveConstructAudience,
   resolveOutputPath,
   resolveSchemaHref,
   writeSiteData,
