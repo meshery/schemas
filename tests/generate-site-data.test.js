@@ -128,6 +128,31 @@ test("collectXInternalTags gathers tags across all operations and styles", () =>
   });
 });
 
+test("collectXInternalTags resolves $ref path items under paths", () => {
+  const apiWithRef = [
+    "paths:",
+    "  /api/things:",
+    "    $ref: \"./thing_operations.yml#/collection\"",
+    "",
+  ].join("\n");
+
+  const operations = [
+    "collection:",
+    "  get:",
+    "    x-internal: [\"cloud\"]",
+    "    operationId: listThings",
+    "",
+  ].join("\n");
+
+  withTempRepo({
+    "schemas/constructs/v1/thing/api.yml": apiWithRef,
+    "schemas/constructs/v1/thing/thing_operations.yml": operations,
+  }, (tempRepoRoot) => {
+    const tags = collectXInternalTags(tempRepoRoot, "v1", "thing");
+    assert.deepEqual([...tags], ["cloud"]);
+  });
+});
+
 test("collectXInternalTags returns an empty set when api.yml is absent", () => {
   withTempRepo({
     "schemas/constructs/v1/thing/thing.yaml": "",
