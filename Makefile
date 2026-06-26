@@ -18,21 +18,31 @@ include build/Makefile.show-help.mk
 #-----------------------------------------------------------------------------
 # Schemas Site and public reference
 #-----------------------------------------------------------------------------
-.PHONY: site generate-site-data generate-site-index
+.PHONY: site site-data-test test-site-data site-data-generate generate-site-data generate-site-index
 
 jekyll = bundle exec jekyll
 
 ## Build and run schemas.meshery.io website
-site: generate-site-data
+site: site-data-generate
 	bundle install
 	$(jekyll) serve --drafts --incremental --livereload
 
+## Run site data generation regression tests
+site-data-test:
+	node --test tests/generate-site-data.test.js
+
+## Backward-compatible alias for site data tests
+test-site-data: site-data-test
+
 ## Capture the latest schema versions for the Jekyll site data
-generate-site-data:
+site-data-generate:
 	node build/generate-site-data.js
 
 ## Backward-compatible alias for generating schemas site data
-generate-site-index: generate-site-data
+generate-site-data: site-data-generate
+
+## Backward-compatible alias for generating schemas site data
+generate-site-index: site-data-generate
 
 #-----------------------------------------------------------------------------
 # OpenAPI spec

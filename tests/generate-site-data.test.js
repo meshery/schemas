@@ -7,7 +7,6 @@ const path = require("node:path");
 const {
   DEFAULT_OUTPUT_RELATIVE_PATH,
   buildSiteData,
-  loadLatestConstructs,
   parseLatestConstructs,
   resolveOutputPath,
   resolveSchemaHref,
@@ -15,6 +14,22 @@ const {
 } = require("../build/generate-site-data");
 
 const repoRoot = path.resolve(__dirname, "..");
+
+function withTempRepo(files, callback) {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "meshery-site-data-"));
+
+  try {
+    for (const [relativePath, contents] of Object.entries(files)) {
+      const filePath = path.join(tempDir, relativePath);
+      fs.mkdirSync(path.dirname(filePath), { recursive: true });
+      fs.writeFileSync(filePath, contents);
+    }
+
+    callback(tempDir);
+  } finally {
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  }
+}
 
 test("parseLatestConstructs parses the make target output", () => {
   const latestConstructs = parseLatestConstructs("academy              v1beta3\ncore                 v1beta2\n");
@@ -32,45 +47,74 @@ test("resolveOutputPath defaults to the Jekyll data file", () => {
 });
 
 test("resolveSchemaHref selects the construct schema when it exists", () => {
-  const latestConstructs = loadLatestConstructs(repoRoot);
-  const academy = latestConstructs.find((schema) => schema.construct === "academy");
-
-  assert.ok(academy);
-  assert.equal(
-    resolveSchemaHref(repoRoot, academy.version, academy.construct),
-    `/schemas/constructs/${academy.version}/academy/academy.yaml`,
-  );
+  withTempRepo({
+    "schemas/constructs/v1/test-construct/test-construct.yaml": "",
+    "schemas/constructs/v1/test-construct/api.yml": "",
+  }, (tempRepoRoot) => {
+    assert.equal(
+      resolveSchemaHref(tempRepoRoot, "v1", "test-construct"),
+      "/schemas/constructs/v1/test-construct/test-construct.yaml",
+    );
+  });
 });
 
-test("resolveSchemaHref falls back to api.yml when there is no construct schema file", () => {
-  const latestConstructs = loadLatestConstructs(repoRoot);
-  const core = latestConstructs.find((schema) => schema.construct === "core");
+test("resolveSchemaHref falls back to the first non-api YAML file when the construct schema is missing", () => {
+  withTempRepo({
+    "schemas/constructs/v1/test-construct/alternate.yaml": "",
+    "schemas/constructs/v1/test-construct/api.yml": "",
+  }, (tempRepoRoot) => {
+    assert.equal(
+      resolveSchemaHref(tempRepoRoot, "v1", "test-construct"),
+      "/schemas/constructs/v1/test-construct/alternate.yaml",
+    );
+  });
+});
 
-  assert.ok(core);
-  assert.equal(
-    resolveSchemaHref(repoRoot, core.version, core.construct),
-    `/schemas/constructs/${core.version}/core/api.yml`,
-  );
+test("resolveSchemaHref uses api.yml when it is the only YAML file", () => {
+  withTempRepo({
+    "schemas/constructs/v1/test-construct/api.yml": "",
+  }, (tempRepoRoot) => {
+    assert.equal(
+      resolveSchemaHref(tempRepoRoot, "v1", "test-construct"),
+      "/schemas/constructs/v1/test-construct/api.yml",
+    );
+  });
+});
+
+test("resolveSchemaHref throws when no valid schema file exists", () => {
+  withTempRepo({
+    "schemas/constructs/v1/test-construct/README.md": "",
+  }, (tempRepoRoot) => {
+    assert.throws(
+      () => resolveSchemaHref(tempRepoRoot, "v1", "test-construct"),
+      /No valid schema file found/,
+    );
+  });
 });
 
 test("buildSiteData returns Jekyll-friendly schema rows", () => {
-  const siteData = buildSiteData(repoRoot, [
-    { construct: "academy", version: "v1beta3" },
-    { construct: "core", version: "v1beta2" },
-  ]);
+  withTempRepo({
+    "schemas/constructs/v1/academy/academy.yaml": "",
+    "schemas/constructs/v2/core/api.yml": "",
+  }, (tempRepoRoot) => {
+    const siteData = buildSiteData(tempRepoRoot, [
+      { construct: "academy", version: "v1" },
+      { construct: "core", version: "v2" },
+    ]);
 
-  assert.deepEqual(siteData, [
-    {
-      construct: "academy",
-      version: "v1beta3",
-      href: "/schemas/constructs/v1beta3/academy/academy.yaml",
-    },
-    {
-      construct: "core",
-      version: "v1beta2",
-      href: "/schemas/constructs/v1beta2/core/api.yml",
-    },
-  ]);
+    assert.deepEqual(siteData, [
+      {
+        construct: "academy",
+        version: "v1",
+        href: "/schemas/constructs/v1/academy/academy.yaml",
+      },
+      {
+        construct: "core",
+        version: "v2",
+        href: "/schemas/constructs/v2/core/api.yml",
+      },
+    ]);
+  });
 });
 
 test("writeSiteData writes JSON for Jekyll to consume", () => {

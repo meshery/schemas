@@ -68,6 +68,11 @@ function resolveSchemaHref(repoRoot, version, construct) {
     .sort()[0];
 
   const fileName = fallback || "api.yml";
+  const filePath = path.join(constructDir, fileName);
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`No valid schema file found in ${constructDir}`);
+  }
+
   return path.posix.join("/schemas/constructs", version, construct, fileName);
 }
 

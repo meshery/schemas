@@ -41,10 +41,15 @@ jobs:
         run: |
           make build
 
-      - name: Generate schemas site data
+      - name: Site data tests
         shell: bash
         run: |
-          make generate-site-data
+          make site-data-test
+
+      - name: Site data generation
+        shell: bash
+        run: |
+          make site-data-generate
 
       - name: Pull changes from remote
         run: git pull origin master
