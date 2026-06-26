@@ -226,7 +226,7 @@
           {% for schema in site.data.latest_schema_versions %}
           <tr>
             <th scope="row">{{ schema.construct }}</th>
-            <td><a href="{{ schema.href | relative_url }}">{{ schema.version }}</a></td>
+            <td><a href="https://github.com/meshery/schemas/blob/master{{ schema.href }}" target="_blank" rel="noopener noreferrer">{{ schema.version }}</a></td>
             <td class="classification">
               {% if schema.core %}<span class="yes" aria-hidden="true">✓</span><span class="sr-only">Core</span>{% else %}<span class="no" aria-hidden="true">·</span><span class="sr-only">Not Core</span>{% endif %}
             </td>
