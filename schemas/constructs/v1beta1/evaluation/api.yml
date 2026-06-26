@@ -22,7 +22,7 @@ paths:
   /api/meshmodels/relationships/evaluate:
     post:
       operationId: evaluateRelationships
-      x-internal: ["cloud", "meshery"]
+      x-internal: ["meshery"]
       tags:
         - Evaluation
       summary: Evaluate relationships in a design
@@ -353,4 +353,3 @@ components:
     #   - relationshipsRemoved
     #   - componentsAdded
     #   - componentsRemoved
-

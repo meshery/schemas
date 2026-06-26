@@ -21,7 +21,7 @@ tags:
 paths:
   /api/system/database:
     get:
-      x-internal: ["cloud", "meshery"]
+      x-internal: ["meshery"]
       tags:
         - System
       summary: Get a summary of the Meshery server's database
@@ -80,7 +80,7 @@ paths:
 
   /api/system/database/reset:
     delete:
-      x-internal: ["cloud", "meshery"]
+      x-internal: ["meshery"]
       tags:
         - System
       summary: Reset the Meshery server's database
@@ -119,7 +119,7 @@ paths:
 
   /api/system/sync:
     get:
-      x-internal: ["cloud", "meshery"]
+      x-internal: ["meshery"]
       tags:
         - System
       summary: Get initial session bootstrap data
@@ -290,4 +290,3 @@ components:
           description: Kubernetes contexts currently tracked by the Meshery server.
           items:
             $ref: "#/components/schemas/SystemSessionSyncK8sContext"
-
