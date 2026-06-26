@@ -326,7 +326,7 @@ permalink: /
           <tbody role="rowgroup">
             {% for schema in site.data.latest_schema_versions %}
             <tr role="row">
-              <th scope="row" role="rowheader">{% if schema.docs_href %}<a href="{{ schema.docs_href }}" target="_blank" rel="noopener noreferrer">{{ schema.construct }}</a>{% else %}{{ schema.construct }}{% endif %}</th>
+              <th scope="row" role="rowheader">{% if schema.docs_href != blank %}<a href="{{ schema.docs_href }}" target="_blank" rel="noopener noreferrer">{{ schema.construct }}</a>{% else %}{{ schema.construct }}{% endif %}</th>
               <td role="cell" data-label="Latest schema"><a href="https://github.com/meshery/schemas/blob/master{{ schema.href }}" target="_blank" rel="noopener noreferrer">{{ schema.version }}</a></td>
               <td role="cell" class="classification" data-label="Core">
                 {% if schema.core %}<span class="yes" aria-hidden="true">✓</span><span class="sr-only">Core</span>{% else %}<span class="no" aria-hidden="true">·</span><span class="sr-only">Not Core</span>{% endif %}
