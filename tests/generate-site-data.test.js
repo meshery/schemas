@@ -7,11 +7,38 @@ const path = require("node:path");
 const {
   DEFAULT_OUTPUT_RELATIVE_PATH,
   buildSiteData,
+  collectXInternalTags,
   parseLatestConstructs,
+  resolveConstructClassification,
   resolveOutputPath,
   resolveSchemaHref,
   writeSiteData,
 } = require("../build/generate-site-data");
+
+const API_WITH_TAGS = [
+  "paths:",
+  "  /api/things:",
+  "    get:",
+  "      x-internal:",
+  "        - meshery",
+  "      operationId: listThings",
+  "    post:",
+  "      x-internal: [\"cloud\"]",
+  "      operationId: createThing",
+  "",
+].join("\n");
+
+const API_CLOUD_ONLY = [
+  "paths:",
+  "  /api/things:",
+  "    get:",
+  "      x-internal:",
+  "        - cloud",
+  "      operationId: listThings",
+  "",
+].join("\n");
+
+const API_NO_OPERATIONS = ["components:", "  schemas:", "    Thing:", "      type: object", ""].join("\n");
 
 const repoRoot = path.resolve(__dirname, "..");
 
@@ -92,10 +119,87 @@ test("resolveSchemaHref throws when no valid schema file exists", () => {
   });
 });
 
+test("collectXInternalTags gathers tags across all operations and styles", () => {
+  withTempRepo({
+    "schemas/constructs/v1/thing/api.yml": API_WITH_TAGS,
+  }, (tempRepoRoot) => {
+    const tags = collectXInternalTags(tempRepoRoot, "v1", "thing");
+    assert.deepEqual([...tags].sort(), ["cloud", "meshery"]);
+  });
+});
+
+test("collectXInternalTags resolves $ref path items under paths", () => {
+  const apiWithRef = [
+    "paths:",
+    "  /api/things:",
+    "    $ref: \"./thing_operations.yml#/collection\"",
+    "",
+  ].join("\n");
+
+  const operations = [
+    "collection:",
+    "  get:",
+    "    x-internal: [\"cloud\"]",
+    "    operationId: listThings",
+    "",
+  ].join("\n");
+
+  withTempRepo({
+    "schemas/constructs/v1/thing/api.yml": apiWithRef,
+    "schemas/constructs/v1/thing/thing_operations.yml": operations,
+  }, (tempRepoRoot) => {
+    const tags = collectXInternalTags(tempRepoRoot, "v1", "thing");
+    assert.deepEqual([...tags], ["cloud"]);
+  });
+});
+
+test("collectXInternalTags returns an empty set when api.yml is absent", () => {
+  withTempRepo({
+    "schemas/constructs/v1/thing/thing.yaml": "",
+  }, (tempRepoRoot) => {
+    assert.equal(collectXInternalTags(tempRepoRoot, "v1", "thing").size, 0);
+  });
+});
+
+test("resolveConstructClassification maps meshery to Core and cloud to Extension", () => {
+  withTempRepo({
+    "schemas/constructs/v1/thing/api.yml": API_WITH_TAGS,
+  }, (tempRepoRoot) => {
+    assert.deepEqual(resolveConstructClassification(tempRepoRoot, "v1", "thing"), {
+      core: true,
+      extension: true,
+    });
+  });
+});
+
+test("resolveConstructClassification marks cloud-only constructs as Extension", () => {
+  withTempRepo({
+    "schemas/constructs/v1/thing/api.yml": API_CLOUD_ONLY,
+  }, (tempRepoRoot) => {
+    assert.deepEqual(resolveConstructClassification(tempRepoRoot, "v1", "thing"), {
+      core: false,
+      extension: true,
+    });
+  });
+});
+
+test("resolveConstructClassification leaves schema-only constructs unclassified", () => {
+  withTempRepo({
+    "schemas/constructs/v1/thing/thing.yaml": "",
+    "schemas/constructs/v1/thing/api.yml": API_NO_OPERATIONS,
+  }, (tempRepoRoot) => {
+    assert.deepEqual(resolveConstructClassification(tempRepoRoot, "v1", "thing"), {
+      core: false,
+      extension: false,
+    });
+  });
+});
+
 test("buildSiteData returns Jekyll-friendly schema rows", () => {
   withTempRepo({
     "schemas/constructs/v1/academy/academy.yaml": "",
-    "schemas/constructs/v2/core/api.yml": "",
+    "schemas/constructs/v1/academy/api.yml": API_CLOUD_ONLY,
+    "schemas/constructs/v2/core/api.yml": API_NO_OPERATIONS,
   }, (tempRepoRoot) => {
     const siteData = buildSiteData(tempRepoRoot, [
       { construct: "academy", version: "v1" },
@@ -107,11 +211,15 @@ test("buildSiteData returns Jekyll-friendly schema rows", () => {
         construct: "academy",
         version: "v1",
         href: "/schemas/constructs/v1/academy/academy.yaml",
+        core: false,
+        extension: true,
       },
       {
         construct: "core",
         version: "v2",
         href: "/schemas/constructs/v2/core/api.yml",
+        core: false,
+        extension: false,
       },
     ]);
   });
