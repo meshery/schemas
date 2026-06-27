@@ -718,7 +718,7 @@ paths:
 
   /api/content/design/share:
     post:
-      x-internal: ["cloud"]
+      x-internal: ["cloud", "meshery"]
       tags:
         - designs
       summary: Share a design, view, or filter by email
