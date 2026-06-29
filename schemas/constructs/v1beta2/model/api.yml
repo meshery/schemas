@@ -294,7 +294,8 @@ components:
         models:
           type: array
           items:
-            $ref: "#/components/schemas/Model"
+            type: object
+            additionalProperties: true
           description: The models of the meshmodelmodelspage.
 
     MesheryModelImportFormPayload:

@@ -146,9 +146,8 @@ components:
         connections:
           type: array
           items:
-            type: object
-            additionalProperties: true
-          description: The connections of the environmentconnectionspage.
+            $ref: "../connection/api.yml#/components/schemas/Connection"
+          description: The connections associated with the environment.
 
   requestBodies:
     environmentPayload:
