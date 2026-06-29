@@ -370,7 +370,7 @@ components:
               type: array
               description: Team memberships for the user with their assigned roles.
               items:
-                type: object
+                $ref: "../team/api.yml#/components/schemas/Team"
               x-oapi-codegen-extra-tags:
                 db: "teams_with_roles"
                 json: "teams_with_roles"
@@ -392,7 +392,7 @@ components:
               type: array
               description: Organization memberships for the user with their assigned roles.
               items:
-                type: object
+                $ref: "../organization/api.yml#/components/schemas/Organization"
               x-oapi-codegen-extra-tags:
                 db: "organizations_with_roles"
                 json: "organizations_with_roles"

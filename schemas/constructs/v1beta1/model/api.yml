@@ -282,6 +282,5 @@ components:
         models:
           type: array
           items:
-            type: object
-            additionalProperties: true
+            $ref: "#/components/schemas/Model"
           description: The models of the meshmodelmodelspage.

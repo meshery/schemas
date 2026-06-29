@@ -178,7 +178,7 @@ function mergeOpenapiSpec(baseSpec, specToMerge) {
 }
 
 async function dereferenceOpenapiSpec(inputPath) {
-  return $RefParser.dereference(inputPath);
+  return $RefParser.dereference(inputPath, { dereference: { circular: "ignore" } });
 }
 
 /**

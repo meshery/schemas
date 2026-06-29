@@ -1253,8 +1253,7 @@ components:
         users:
           type: array
           items:
-            type: object
-            additionalProperties: true
+            $ref: "../../v1beta2/user/api.yml#/components/schemas/User"
           description: The users of the resourceaccessactorsresponse.
 
     ContentSharePayload:
