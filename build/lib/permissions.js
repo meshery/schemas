@@ -77,6 +77,7 @@ function parsePermissions(csvContent, options = {}) {
       name: constantName,
       uuid: keyId,
       feature: feature,
+      subject: func,
     });
   }
 
@@ -258,6 +259,33 @@ function generateTypeScriptFile(permissions, indexId) {
   lines.push("} as const;");
   lines.push("");
   lines.push("/**");
+  lines.push(" * Detailed permission key metadata including the human-readable subject name.");
+  lines.push(" */");
+  lines.push("export const PermissionDetails = {");
+
+  for (let i = 0; i < permissions.length; i++) {
+    const perm = permissions[i];
+    const isLast = i === permissions.length - 1;
+    const comma = isLast ? "" : ",";
+
+    lines.push(`  /**`);
+    lines.push(
+      `   * ${escapeJSDocComment(perm.feature || "No description available")}`,
+    );
+    lines.push(`   */`);
+    lines.push(`  ${perm.name}: {`);
+    lines.push(`    action: "${perm.uuid}" as PermissionKey,`);
+    lines.push(`    subject: "${perm.subject ? perm.subject.replace(/"/g, '\\"') : ""}"`);
+    lines.push(`  }${comma}`);
+
+    if (!isLast) {
+      lines.push("");
+    }
+  }
+
+  lines.push("} as const;");
+  lines.push("");
+  lines.push("/**");
   lines.push(" * Type representing all valid permission key names.");
   lines.push(" */");
   lines.push("export type PermissionKeyName = keyof typeof PermissionKeys;");
@@ -315,6 +343,7 @@ function buildIndex(permissions) {
       name: p.name,
       uuid: p.uuid,
       feature: p.feature,
+      subject: p.subject,
     })),
   };
 }
