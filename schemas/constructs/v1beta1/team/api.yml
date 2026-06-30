@@ -200,7 +200,7 @@ components:
 paths:
   /api/identity/orgs/{orgId}/teams:
     get:
-      x-internal: ["cloud", "meshery"]
+      x-internal: ["cloud"]
       tags:
         - teams
       operationId: getTeams
@@ -226,7 +226,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
     post:
-      x-internal: ["cloud", "meshery"]
+      x-internal: ["cloud"]
       tags:
         - teams
       operationId: createTeam
@@ -254,7 +254,7 @@ paths:
 
   /api/identity/orgs/{orgId}/teams/{teamId}:
     get:
-      x-internal: ["cloud", "meshery"]
+      x-internal: ["cloud"]
       tags:
         - teams
       operationId: getTeamById
@@ -279,7 +279,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
     put:
-      x-internal: ["cloud", "meshery"]
+      x-internal: ["cloud"]
       tags:
         - teams
       operationId: updateTeam
@@ -306,7 +306,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
     delete:
-      x-internal: ["cloud", "meshery"]
+      x-internal: ["cloud"]
       tags:
         - teams
       operationId: deleteTeam
@@ -329,7 +329,7 @@ paths:
 
   /api/identity/teams/{teamId}/users:
     get:
-      x-internal: ["cloud", "meshery"]
+      x-internal: ["cloud"]
       tags:
         - teams
       operationId: getTeamUsers
@@ -359,7 +359,7 @@ paths:
 
   /api/identity/orgs/{orgId}/teams/{teamId}/users/{userId}:
     post:
-      x-internal: ["cloud", "meshery"]
+      x-internal: ["cloud"]
       tags:
         - teams
       operationId: addUserToTeam
@@ -390,7 +390,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
     delete:
-      x-internal: ["cloud", "meshery"]
+      x-internal: ["cloud"]
       tags:
         - teams
       operationId: removeUserFromTeam
@@ -419,7 +419,7 @@ paths:
 
   /api/identity/orgs/{orgId}/teams/{teamId}/users:
     get:
-      x-internal: ["cloud", "meshery"]
+      x-internal: ["cloud"]
       tags:
         - teams
       operationId: listUsersNotInTeam

@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  x-internal: ["cloud", "meshery"]
+  x-internal: ["cloud"]
   title: View
   x-deprecated: true
   description: OpenAPI schema for managing Meshery views — saved perspectives with filters and metadata.
