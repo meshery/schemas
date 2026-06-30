@@ -4,565 +4,169 @@
  */
 
 export interface paths {
-  "/api/integrations/connections": {
-    /** Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support */
-    get: operations["getConnections"];
-    /** Register a new connection with credentials */
-    post: operations["registerConnection"];
-  };
-  "/api/integrations/connections/{connectionId}": {
-    /** Returns a specific connection by its ID */
-    get: operations["getConnectionById"];
-    /** Update an existing connection */
-    put: operations["updateConnection"];
-    /** Delete a specific connection */
-    delete: operations["deleteConnection"];
-  };
-  "/api/integrations/connections/meshery/{mesheryServerId}": {
-    /** Delete a Meshery server connection by server ID */
-    delete: operations["deleteMesheryConnection"];
-  };
-  "/api/integrations/connections/kubernetes/{connectionId}/context": {
-    /** Get Kubernetes context for a specific connection */
-    get: operations["getKubernetesContext"];
-  };
-  "/api/environments/{environmentId}/connections/{connectionId}": {
-    /** Associate a connection with an environment */
-    post: operations["addConnectionToEnvironment"];
-    /** Disassociate a connection from an environment */
-    delete: operations["removeConnectionFromEnvironment"];
-  };
+    "/api/integrations/connections": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get all connections
+         * @description Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support
+         */
+        get: operations["getConnections"];
+        put?: never;
+        /**
+         * Register a new connection
+         * @description Register a new connection with credentials
+         */
+        post: operations["registerConnection"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/integrations/connections/{connectionId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get connection by ID
+         * @description Returns a specific connection by its ID
+         */
+        get: operations["getConnectionById"];
+        /**
+         * Update a connection
+         * @description Update an existing connection
+         */
+        put: operations["updateConnection"];
+        post?: never;
+        /**
+         * Delete a connection
+         * @description Delete a specific connection
+         */
+        delete: operations["deleteConnection"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/integrations/connections/meshery/{mesheryServerId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete Meshery instance connection
+         * @description Delete a Meshery server connection by server ID
+         */
+        delete: operations["deleteMesheryConnection"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/integrations/connections/kubernetes/{connectionId}/context": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Kubernetes context
+         * @description Get Kubernetes context for a specific connection
+         */
+        get: operations["getKubernetesContext"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/environments/{environmentId}/connections/{connectionId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add connection to environment
+         * @description Associate a connection with an environment
+         */
+        post: operations["addConnectionToEnvironment"];
+        /**
+         * Remove connection from environment
+         * @description Disassociate a connection from an environment
+         */
+        delete: operations["removeConnectionFromEnvironment"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
-
+export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    /** @description Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections */
-    Connection: {
-      /**
-       * Format: uuid
-       * @description Connection ID
-       */
-      id: string;
-      /** @description Connection Name */
-      name: string;
-      /**
-       * Format: uuid
-       * @description Associated Credential ID
-       */
-      credential_id?: string;
-      /** @description Connection Type (platform, telemetry, collaboration) */
-      type: string;
-      /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
-      sub_type: string;
-      /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
-      kind: string;
-      /** @description Additional connection metadata */
-      metadata?: { [key: string]: unknown };
-      /**
-       * @description Connection Status
-       * @enum {string}
-       */
-      status:
-        | "discovered"
-        | "registered"
-        | "connected"
-        | "ignored"
-        | "maintenance"
-        | "disconnected"
-        | "deleted"
-        | "not found";
-      /**
-       * Format: uuid
-       * @description User ID who owns this connection
-       */
-      user_id?: string;
-      /** Format: date-time */
-      created_at?: string;
-      /** Format: date-time */
-      updated_at?: string;
-      /**
-       * Format: date-time
-       * @description SQL null Timestamp to handle null values of time.
-       */
-      deleted_at?: string;
-      /** @description Associated environments for this connection */
-      environments?: {
-        /**
-         * Format: uuid
-         * @description ID
-         */
-        id: string;
-        /**
-         * @description Specifies the version of the schema to which the environment conforms.
-         * @default environments.meshery.io/v1beta1
-         * @example [
-         *   "v1",
-         *   "v1alpha1",
-         *   "v2beta3",
-         *   "v1.custom-suffix",
-         *   "models.meshery.io/v1beta1",
-         *   "capability.meshery.io/v1alpha1"
-         * ]
-         */
-        schemaVersion: string;
-        /** @description Environment name */
-        name: string;
-        /** @description Environment description */
-        description: string;
-        /**
-         * Format: uuid
-         * @description Environment organization ID
-         */
-        organization_id: string;
-        /**
-         * Format: uuid
-         * @description Environment owner
-         */
-        owner?: string;
-        /**
-         * Format: date-time
-         * @description Timestamp when the resource was created.
-         */
-        created_at?: string;
-        /** @description Additional metadata associated with the environment. */
-        metadata?: { [key: string]: unknown };
-        /**
-         * Format: date-time
-         * @description Timestamp when the resource was updated.
-         */
-        updated_at?: string;
-        /**
-         * Format: date-time
-         * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
-         */
-        deleted_at?: string | null;
-      }[];
-      /**
-       * @description Specifies the version of the schema used for the definition.
-       * @default connections.meshery.io/v1beta2
-       * @example [
-       *   "v1",
-       *   "v1alpha1",
-       *   "v2beta3",
-       *   "v1.custom-suffix",
-       *   "models.meshery.io/v1beta1",
-       *   "capability.meshery.io/v1alpha1"
-       * ]
-       */
-      schemaVersion: string;
-    };
-    /** @description Represents a page of connections with meta information about connections count */
-    ConnectionPage: {
-      /** @description List of connections on this page */
-      connections: {
-        /**
-         * Format: uuid
-         * @description Connection ID
-         */
-        id: string;
-        /** @description Connection Name */
-        name: string;
-        /**
-         * Format: uuid
-         * @description Associated Credential ID
-         */
-        credential_id?: string;
-        /** @description Connection Type (platform, telemetry, collaboration) */
-        type: string;
-        /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
-        sub_type: string;
-        /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
-        kind: string;
-        /** @description Additional connection metadata */
-        metadata?: { [key: string]: unknown };
-        /**
-         * @description Connection Status
-         * @enum {string}
-         */
-        status:
-          | "discovered"
-          | "registered"
-          | "connected"
-          | "ignored"
-          | "maintenance"
-          | "disconnected"
-          | "deleted"
-          | "not found";
-        /**
-         * Format: uuid
-         * @description User ID who owns this connection
-         */
-        user_id?: string;
-        /** Format: date-time */
-        created_at?: string;
-        /** Format: date-time */
-        updated_at?: string;
-        /**
-         * Format: date-time
-         * @description SQL null Timestamp to handle null values of time.
-         */
-        deleted_at?: string;
-        /** @description Associated environments for this connection */
-        environments?: {
-          /**
-           * Format: uuid
-           * @description ID
-           */
-          id: string;
-          /**
-           * @description Specifies the version of the schema to which the environment conforms.
-           * @default environments.meshery.io/v1beta1
-           * @example [
-           *   "v1",
-           *   "v1alpha1",
-           *   "v2beta3",
-           *   "v1.custom-suffix",
-           *   "models.meshery.io/v1beta1",
-           *   "capability.meshery.io/v1alpha1"
-           * ]
-           */
-          schemaVersion: string;
-          /** @description Environment name */
-          name: string;
-          /** @description Environment description */
-          description: string;
-          /**
-           * Format: uuid
-           * @description Environment organization ID
-           */
-          organization_id: string;
-          /**
-           * Format: uuid
-           * @description Environment owner
-           */
-          owner?: string;
-          /**
-           * Format: date-time
-           * @description Timestamp when the resource was created.
-           */
-          created_at?: string;
-          /** @description Additional metadata associated with the environment. */
-          metadata?: { [key: string]: unknown };
-          /**
-           * Format: date-time
-           * @description Timestamp when the resource was updated.
-           */
-          updated_at?: string;
-          /**
-           * Format: date-time
-           * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
-           */
-          deleted_at?: string | null;
-        }[];
-        /**
-         * @description Specifies the version of the schema used for the definition.
-         * @default connections.meshery.io/v1beta2
-         * @example [
-         *   "v1",
-         *   "v1alpha1",
-         *   "v2beta3",
-         *   "v1.custom-suffix",
-         *   "models.meshery.io/v1beta1",
-         *   "capability.meshery.io/v1alpha1"
-         * ]
-         */
-        schemaVersion: string;
-      }[];
-      /** @description Total number of connections on all pages */
-      total_count: number;
-      /** @description Current page number */
-      page: number;
-      /** @description Number of elements per page */
-      page_size: number;
-      /** @description Aggregate count of connections grouped by status */
-      statusSummary?: { [key: string]: number };
-    };
-    /**
-     * @description Connection Status Value
-     * @enum {string}
-     */
-    ConnectionStatusValue:
-      | "discovered"
-      | "registered"
-      | "connected"
-      | "ignored"
-      | "maintenance"
-      | "disconnected"
-      | "deleted"
-      | "not found";
-    /** @description Payload for creating or updating a connection */
-    ConnectionPayload: {
-      /**
-       * Format: uuid
-       * @description Connection ID
-       */
-      id?: string;
-      /** @description Connection name */
-      name: string;
-      /** @description Connection kind */
-      kind: string;
-      /** @description Connection type */
-      type: string;
-      /** @description Connection sub-type */
-      subType: string;
-      /** @description Credential secret data */
-      credentialSecret?: { [key: string]: unknown };
-      /** @description Connection metadata */
-      metadata?: { [key: string]: unknown };
-      /** @description Connection status */
-      status: string;
-      /**
-       * Format: uuid
-       * @description Associated credential ID
-       */
-      credentialId?: string;
-    };
-    /** @description Status count information for connections */
-    ConnectionStatusInfo: {
-      /** @description Status value */
-      status: string;
-      /** @description Number of connections with this status */
-      count: number;
-    };
-    /** @description Paginated list of connection status counts */
-    ConnectionsStatusPage: {
-      /** @description Total number of status entries */
-      total_count: number;
-      /** @description Current page number */
-      page: number;
-      /** @description Number of items per page */
-      page_size: number;
-      /** @description List of status counts */
-      connectionsStatus: {
-        /** @description Status value */
-        status: string;
-        /** @description Number of connections with this status */
-        count: number;
-      }[];
-    };
-    /** @description Meshery server instance information */
-    MesheryInstance: {
-      /**
-       * Format: uuid
-       * @description Instance ID
-       */
-      id?: string;
-      /** @description Instance name */
-      name?: string;
-      /**
-       * Format: uuid
-       * @description Server ID
-       */
-      server_id?: string;
-      /** @description Meshery server version */
-      server_version?: string;
-      /** @description Server location URL */
-      server_location?: string;
-      /** @description Server build SHA */
-      server_build_sha?: string;
-      /**
-       * Format: date-time
-       * @description Creation timestamp
-       */
-      created_at?: string;
-      /**
-       * Format: date-time
-       * @description Last update timestamp
-       */
-      updated_at?: string;
-      /**
-       * Format: date-time
-       * @description Deletion timestamp
-       */
-      deleted_at?: string;
-    };
-    /** @description Paginated list of Meshery instances */
-    MesheryInstancePage: {
-      /** @description List of Meshery instances */
-      mesheryInstances: {
-        /**
-         * Format: uuid
-         * @description Instance ID
-         */
-        id?: string;
-        /** @description Instance name */
-        name?: string;
-        /**
-         * Format: uuid
-         * @description Server ID
-         */
-        server_id?: string;
-        /** @description Meshery server version */
-        server_version?: string;
-        /** @description Server location URL */
-        server_location?: string;
-        /** @description Server build SHA */
-        server_build_sha?: string;
-        /**
-         * Format: date-time
-         * @description Creation timestamp
-         */
-        created_at?: string;
-        /**
-         * Format: date-time
-         * @description Last update timestamp
-         */
-        updated_at?: string;
-        /**
-         * Format: date-time
-         * @description Deletion timestamp
-         */
-        deleted_at?: string;
-      }[];
-      /** @description Current page number */
-      page: number;
-      /** @description Number of items per page */
-      page_size: number;
-      /** @description Total number of instances */
-      total_count: number;
-    };
-    /** @description Meshery version compatibility check */
-    MesheryCompatibility: {
-      /** @description Meshery version string */
-      mesheryVersion?: string;
-      /** @description Whether to check compatibility */
-      checkCompatibility?: boolean;
-    };
-  };
-  responses: {
-    /** Invalid request body or request param */
-    400: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Expired JWT token used or insufficient privilege */
-    401: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Result not found */
-    404: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Internal server error */
-    500: {
-      content: {
-        "text/plain": string;
-      };
-    };
-  };
-  parameters: {
-    /** @description Connection ID */
-    connectionId: string;
-    /** @description Connection kind (meshery, kubernetes, prometheus, grafana, etc.) */
-    connectionKind: string;
-    /** @description Environment ID */
-    environmentId: string;
-    /** @description Page number */
-    page: number;
-    /** @description Number of items per page */
-    pagesize: number;
-    /** @description Search term */
-    search: string;
-    /** @description Sort order */
-    order: string;
-  };
-}
-
-export interface operations {
-  /** Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support */
-  getConnections: {
-    parameters: {
-      query: {
-        /** Page number */
-        page?: number;
-        /** Number of items per page */
-        pagesize?: number;
-        /** Search term */
-        search?: string;
-        /** Sort order */
-        order?: string;
-        /** Filter connections (general filter string) */
-        filter?: string;
-        /** Filter by connection kind (e.g., kubernetes, prometheus, grafana) */
-        kind?: string[];
-        /** Filter by connection status */
-        status?: (
-          | "discovered"
-          | "registered"
-          | "connected"
-          | "ignored"
-          | "maintenance"
-          | "disconnected"
-          | "deleted"
-          | "not found"
-        )[];
-        /** Filter by connection type */
-        type?: string[];
-        /** Filter by connection name (partial match supported) */
-        name?: string;
-      };
-    };
-    responses: {
-      /** Paginated list of connections with summary information */
-      200: {
-        content: {
-          "application/json": {
-            /** @description List of connections on this page */
-            connections: {
-              /**
-               * Format: uuid
-               * @description Connection ID
-               */
-              id: string;
-              /** @description Connection Name */
-              name: string;
-              /**
-               * Format: uuid
-               * @description Associated Credential ID
-               */
-              credential_id?: string;
-              /** @description Connection Type (platform, telemetry, collaboration) */
-              type: string;
-              /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
-              sub_type: string;
-              /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
-              kind: string;
-              /** @description Additional connection metadata */
-              metadata?: { [key: string]: unknown };
-              /**
-               * @description Connection Status
-               * @enum {string}
-               */
-              status:
-                | "discovered"
-                | "registered"
-                | "connected"
-                | "ignored"
-                | "maintenance"
-                | "disconnected"
-                | "deleted"
-                | "not found";
-              /**
-               * Format: uuid
-               * @description User ID who owns this connection
-               */
-              user_id?: string;
-              /** Format: date-time */
-              created_at?: string;
-              /** Format: date-time */
-              updated_at?: string;
-              /**
-               * Format: date-time
-               * @description SQL null Timestamp to handle null values of time.
-               */
-              deleted_at?: string;
-              /** @description Associated environments for this connection */
-              environments?: {
+    schemas: {
+        /** @description Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections */
+        Connection: {
+            /**
+             * Format: uuid
+             * @description Connection ID
+             */
+            id: string;
+            /** @description Connection Name */
+            name: string;
+            /**
+             * Format: uuid
+             * @description Associated Credential ID
+             */
+            credential_id?: string;
+            /** @description Connection Type (platform, telemetry, collaboration) */
+            type: string;
+            /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+            sub_type: string;
+            /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+            kind: string;
+            /** @description Additional connection metadata */
+            metadata?: Record<string, never>;
+            /**
+             * @description Connection Status
+             * @enum {string}
+             */
+            status: "discovered" | "registered" | "connected" | "ignored" | "maintenance" | "disconnected" | "deleted" | "not found";
+            /**
+             * Format: uuid
+             * @description User ID who owns this connection
+             */
+            user_id?: string;
+            /** Format: date-time */
+            created_at?: string;
+            /** Format: date-time */
+            updated_at?: string;
+            /**
+             * Format: date-time
+             * @description SQL null Timestamp to handle null values of time.
+             */
+            deleted_at?: string;
+            /** @description Associated environments for this connection */
+            environments?: {
                 /**
                  * Format: uuid
                  * @description ID
@@ -572,13 +176,13 @@ export interface operations {
                  * @description Specifies the version of the schema to which the environment conforms.
                  * @default environments.meshery.io/v1beta1
                  * @example [
-                 *   "v1",
-                 *   "v1alpha1",
-                 *   "v2beta3",
-                 *   "v1.custom-suffix",
-                 *   "models.meshery.io/v1beta1",
-                 *   "capability.meshery.io/v1alpha1"
-                 * ]
+                 *       "v1",
+                 *       "v1alpha1",
+                 *       "v2beta3",
+                 *       "v1.custom-suffix",
+                 *       "models.meshery.io/v1beta1",
+                 *       "capability.meshery.io/v1alpha1"
+                 *     ]
                  */
                 schemaVersion: string;
                 /** @description Environment name */
@@ -601,7 +205,7 @@ export interface operations {
                  */
                 created_at?: string;
                 /** @description Additional metadata associated with the environment. */
-                metadata?: { [key: string]: unknown };
+                metadata?: Record<string, never>;
                 /**
                  * Format: date-time
                  * @description Timestamp when the resource was updated.
@@ -612,20 +216,129 @@ export interface operations {
                  * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
                  */
                 deleted_at?: string | null;
-              }[];
-              /**
-               * @description Specifies the version of the schema used for the definition.
-               * @default connections.meshery.io/v1beta2
-               * @example [
-               *   "v1",
-               *   "v1alpha1",
-               *   "v2beta3",
-               *   "v1.custom-suffix",
-               *   "models.meshery.io/v1beta1",
-               *   "capability.meshery.io/v1alpha1"
-               * ]
-               */
-              schemaVersion: string;
+            }[];
+            /**
+             * @description Specifies the version of the schema used for the definition.
+             * @default connections.meshery.io/v1beta2
+             * @example [
+             *       "v1",
+             *       "v1alpha1",
+             *       "v2beta3",
+             *       "v1.custom-suffix",
+             *       "models.meshery.io/v1beta1",
+             *       "capability.meshery.io/v1alpha1"
+             *     ]
+             */
+            schemaVersion: string;
+        };
+        /** @description Represents a page of connections with meta information about connections count */
+        ConnectionPage: {
+            /** @description List of connections on this page */
+            connections: {
+                /**
+                 * Format: uuid
+                 * @description Connection ID
+                 */
+                id: string;
+                /** @description Connection Name */
+                name: string;
+                /**
+                 * Format: uuid
+                 * @description Associated Credential ID
+                 */
+                credential_id?: string;
+                /** @description Connection Type (platform, telemetry, collaboration) */
+                type: string;
+                /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+                sub_type: string;
+                /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+                kind: string;
+                /** @description Additional connection metadata */
+                metadata?: Record<string, never>;
+                /**
+                 * @description Connection Status
+                 * @enum {string}
+                 */
+                status: "discovered" | "registered" | "connected" | "ignored" | "maintenance" | "disconnected" | "deleted" | "not found";
+                /**
+                 * Format: uuid
+                 * @description User ID who owns this connection
+                 */
+                user_id?: string;
+                /** Format: date-time */
+                created_at?: string;
+                /** Format: date-time */
+                updated_at?: string;
+                /**
+                 * Format: date-time
+                 * @description SQL null Timestamp to handle null values of time.
+                 */
+                deleted_at?: string;
+                /** @description Associated environments for this connection */
+                environments?: {
+                    /**
+                     * Format: uuid
+                     * @description ID
+                     */
+                    id: string;
+                    /**
+                     * @description Specifies the version of the schema to which the environment conforms.
+                     * @default environments.meshery.io/v1beta1
+                     * @example [
+                     *       "v1",
+                     *       "v1alpha1",
+                     *       "v2beta3",
+                     *       "v1.custom-suffix",
+                     *       "models.meshery.io/v1beta1",
+                     *       "capability.meshery.io/v1alpha1"
+                     *     ]
+                     */
+                    schemaVersion: string;
+                    /** @description Environment name */
+                    name: string;
+                    /** @description Environment description */
+                    description: string;
+                    /**
+                     * Format: uuid
+                     * @description Environment organization ID
+                     */
+                    organization_id: string;
+                    /**
+                     * Format: uuid
+                     * @description Environment owner
+                     */
+                    owner?: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the resource was created.
+                     */
+                    created_at?: string;
+                    /** @description Additional metadata associated with the environment. */
+                    metadata?: Record<string, never>;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the resource was updated.
+                     */
+                    updated_at?: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
+                     */
+                    deleted_at?: string | null;
+                }[];
+                /**
+                 * @description Specifies the version of the schema used for the definition.
+                 * @default connections.meshery.io/v1beta2
+                 * @example [
+                 *       "v1",
+                 *       "v1alpha1",
+                 *       "v2beta3",
+                 *       "v1.custom-suffix",
+                 *       "models.meshery.io/v1beta1",
+                 *       "capability.meshery.io/v1alpha1"
+                 *     ]
+                 */
+                schemaVersion: string;
             }[];
             /** @description Total number of connections on all pages */
             total_count: number;
@@ -634,697 +347,1171 @@ export interface operations {
             /** @description Number of elements per page */
             page_size: number;
             /** @description Aggregate count of connections grouped by status */
-            statusSummary?: { [key: string]: number };
-          };
+            statusSummary?: {
+                [key: string]: number;
+            };
         };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  /** Register a new connection with credentials */
-  registerConnection: {
-    responses: {
-      /** Connection registered */
-      201: {
-        content: {
-          "application/json": {
+        /**
+         * @description Connection Status Value
+         * @enum {string}
+         */
+        ConnectionStatusValue: "discovered" | "registered" | "connected" | "ignored" | "maintenance" | "disconnected" | "deleted" | "not found";
+        /** @description Payload for creating or updating a connection */
+        ConnectionPayload: {
             /**
              * Format: uuid
              * @description Connection ID
              */
-            id: string;
-            /** @description Connection Name */
+            id?: string;
+            /** @description Connection name */
             name: string;
-            /**
-             * Format: uuid
-             * @description Associated Credential ID
-             */
-            credential_id?: string;
-            /** @description Connection Type (platform, telemetry, collaboration) */
-            type: string;
-            /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
-            sub_type: string;
-            /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+            /** @description Connection kind */
             kind: string;
-            /** @description Additional connection metadata */
-            metadata?: { [key: string]: unknown };
-            /**
-             * @description Connection Status
-             * @enum {string}
-             */
-            status:
-              | "discovered"
-              | "registered"
-              | "connected"
-              | "ignored"
-              | "maintenance"
-              | "disconnected"
-              | "deleted"
-              | "not found";
+            /** @description Connection type */
+            type: string;
+            /** @description Connection sub-type */
+            subType: string;
+            /** @description Credential secret data */
+            credentialSecret?: Record<string, never>;
+            /** @description Connection metadata */
+            metadata?: Record<string, never>;
+            /** @description Connection status */
+            status: string;
             /**
              * Format: uuid
-             * @description User ID who owns this connection
+             * @description Associated credential ID
              */
-            user_id?: string;
-            /** Format: date-time */
+            credentialId?: string;
+        };
+        /** @description Status count information for connections */
+        ConnectionStatusInfo: {
+            /** @description Status value */
+            status: string;
+            /** @description Number of connections with this status */
+            count: number;
+        };
+        /** @description Paginated list of connection status counts */
+        ConnectionsStatusPage: {
+            /** @description Total number of status entries */
+            total_count: number;
+            /** @description Current page number */
+            page: number;
+            /** @description Number of items per page */
+            page_size: number;
+            /** @description List of status counts */
+            connectionsStatus: {
+                /** @description Status value */
+                status: string;
+                /** @description Number of connections with this status */
+                count: number;
+            }[];
+        };
+        /** @description Meshery server instance information */
+        MesheryInstance: {
+            /**
+             * Format: uuid
+             * @description Instance ID
+             */
+            id?: string;
+            /** @description Instance name */
+            name?: string;
+            /**
+             * Format: uuid
+             * @description Server ID
+             */
+            server_id?: string;
+            /** @description Meshery server version */
+            server_version?: string;
+            /** @description Server location URL */
+            server_location?: string;
+            /** @description Server build SHA */
+            server_build_sha?: string;
+            /**
+             * Format: date-time
+             * @description Creation timestamp
+             */
             created_at?: string;
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @description Last update timestamp
+             */
             updated_at?: string;
             /**
              * Format: date-time
-             * @description SQL null Timestamp to handle null values of time.
+             * @description Deletion timestamp
              */
             deleted_at?: string;
-            /** @description Associated environments for this connection */
-            environments?: {
-              /**
-               * Format: uuid
-               * @description ID
-               */
-              id: string;
-              /**
-               * @description Specifies the version of the schema to which the environment conforms.
-               * @default environments.meshery.io/v1beta1
-               * @example [
-               *   "v1",
-               *   "v1alpha1",
-               *   "v2beta3",
-               *   "v1.custom-suffix",
-               *   "models.meshery.io/v1beta1",
-               *   "capability.meshery.io/v1alpha1"
-               * ]
-               */
-              schemaVersion: string;
-              /** @description Environment name */
-              name: string;
-              /** @description Environment description */
-              description: string;
-              /**
-               * Format: uuid
-               * @description Environment organization ID
-               */
-              organization_id: string;
-              /**
-               * Format: uuid
-               * @description Environment owner
-               */
-              owner?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the resource was created.
-               */
-              created_at?: string;
-              /** @description Additional metadata associated with the environment. */
-              metadata?: { [key: string]: unknown };
-              /**
-               * Format: date-time
-               * @description Timestamp when the resource was updated.
-               */
-              updated_at?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
-               */
-              deleted_at?: string | null;
+        };
+        /** @description Paginated list of Meshery instances */
+        MesheryInstancePage: {
+            /** @description List of Meshery instances */
+            mesheryInstances: {
+                /**
+                 * Format: uuid
+                 * @description Instance ID
+                 */
+                id?: string;
+                /** @description Instance name */
+                name?: string;
+                /**
+                 * Format: uuid
+                 * @description Server ID
+                 */
+                server_id?: string;
+                /** @description Meshery server version */
+                server_version?: string;
+                /** @description Server location URL */
+                server_location?: string;
+                /** @description Server build SHA */
+                server_build_sha?: string;
+                /**
+                 * Format: date-time
+                 * @description Creation timestamp
+                 */
+                created_at?: string;
+                /**
+                 * Format: date-time
+                 * @description Last update timestamp
+                 */
+                updated_at?: string;
+                /**
+                 * Format: date-time
+                 * @description Deletion timestamp
+                 */
+                deleted_at?: string;
             }[];
-            /**
-             * @description Specifies the version of the schema used for the definition.
-             * @default connections.meshery.io/v1beta2
-             * @example [
-             *   "v1",
-             *   "v1alpha1",
-             *   "v2beta3",
-             *   "v1.custom-suffix",
-             *   "models.meshery.io/v1beta1",
-             *   "capability.meshery.io/v1alpha1"
-             * ]
-             */
-            schemaVersion: string;
-          };
+            /** @description Current page number */
+            page: number;
+            /** @description Number of items per page */
+            page_size: number;
+            /** @description Total number of instances */
+            total_count: number;
         };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
+        /** @description Meshery version compatibility check */
+        MesheryCompatibility: {
+            /** @description Meshery version string */
+            mesheryVersion?: string;
+            /** @description Whether to check compatibility */
+            checkCompatibility?: boolean;
         };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
     };
-    requestBody: {
-      content: {
-        "application/json": {
-          /**
-           * Format: uuid
-           * @description Connection ID
-           */
-          id?: string;
-          /** @description Connection name */
-          name: string;
-          /** @description Connection kind */
-          kind: string;
-          /** @description Connection type */
-          type: string;
-          /** @description Connection sub-type */
-          subType: string;
-          /** @description Credential secret data */
-          credentialSecret?: { [key: string]: unknown };
-          /** @description Connection metadata */
-          metadata?: { [key: string]: unknown };
-          /** @description Connection status */
-          status: string;
-          /**
-           * Format: uuid
-           * @description Associated credential ID
-           */
-          credentialId?: string;
+    responses: {
+        /** @description Invalid request body or request param */
+        400: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
         };
-      };
+        /** @description Expired JWT token used or insufficient privilege */
+        401: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Result not found */
+        404: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Internal server error */
+        500: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
     };
-  };
-  /** Returns a specific connection by its ID */
-  getConnectionById: {
     parameters: {
-      path: {
-        /** Connection ID */
+        /** @description Connection ID */
         connectionId: string;
-      };
-    };
-    responses: {
-      /** Connection details */
-      200: {
-        content: {
-          "application/json": {
-            /**
-             * Format: uuid
-             * @description Connection ID
-             */
-            id: string;
-            /** @description Connection Name */
-            name: string;
-            /**
-             * Format: uuid
-             * @description Associated Credential ID
-             */
-            credential_id?: string;
-            /** @description Connection Type (platform, telemetry, collaboration) */
-            type: string;
-            /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
-            sub_type: string;
-            /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
-            kind: string;
-            /** @description Additional connection metadata */
-            metadata?: { [key: string]: unknown };
-            /**
-             * @description Connection Status
-             * @enum {string}
-             */
-            status:
-              | "discovered"
-              | "registered"
-              | "connected"
-              | "ignored"
-              | "maintenance"
-              | "disconnected"
-              | "deleted"
-              | "not found";
-            /**
-             * Format: uuid
-             * @description User ID who owns this connection
-             */
-            user_id?: string;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-            /**
-             * Format: date-time
-             * @description SQL null Timestamp to handle null values of time.
-             */
-            deleted_at?: string;
-            /** @description Associated environments for this connection */
-            environments?: {
-              /**
-               * Format: uuid
-               * @description ID
-               */
-              id: string;
-              /**
-               * @description Specifies the version of the schema to which the environment conforms.
-               * @default environments.meshery.io/v1beta1
-               * @example [
-               *   "v1",
-               *   "v1alpha1",
-               *   "v2beta3",
-               *   "v1.custom-suffix",
-               *   "models.meshery.io/v1beta1",
-               *   "capability.meshery.io/v1alpha1"
-               * ]
-               */
-              schemaVersion: string;
-              /** @description Environment name */
-              name: string;
-              /** @description Environment description */
-              description: string;
-              /**
-               * Format: uuid
-               * @description Environment organization ID
-               */
-              organization_id: string;
-              /**
-               * Format: uuid
-               * @description Environment owner
-               */
-              owner?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the resource was created.
-               */
-              created_at?: string;
-              /** @description Additional metadata associated with the environment. */
-              metadata?: { [key: string]: unknown };
-              /**
-               * Format: date-time
-               * @description Timestamp when the resource was updated.
-               */
-              updated_at?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
-               */
-              deleted_at?: string | null;
-            }[];
-            /**
-             * @description Specifies the version of the schema used for the definition.
-             * @default connections.meshery.io/v1beta2
-             * @example [
-             *   "v1",
-             *   "v1alpha1",
-             *   "v2beta3",
-             *   "v1.custom-suffix",
-             *   "models.meshery.io/v1beta1",
-             *   "capability.meshery.io/v1alpha1"
-             * ]
-             */
-            schemaVersion: string;
-          };
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  /** Update an existing connection */
-  updateConnection: {
-    parameters: {
-      path: {
-        /** Connection ID */
-        connectionId: string;
-      };
-    };
-    responses: {
-      /** Connection updated */
-      200: {
-        content: {
-          "application/json": {
-            /**
-             * Format: uuid
-             * @description Connection ID
-             */
-            id: string;
-            /** @description Connection Name */
-            name: string;
-            /**
-             * Format: uuid
-             * @description Associated Credential ID
-             */
-            credential_id?: string;
-            /** @description Connection Type (platform, telemetry, collaboration) */
-            type: string;
-            /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
-            sub_type: string;
-            /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
-            kind: string;
-            /** @description Additional connection metadata */
-            metadata?: { [key: string]: unknown };
-            /**
-             * @description Connection Status
-             * @enum {string}
-             */
-            status:
-              | "discovered"
-              | "registered"
-              | "connected"
-              | "ignored"
-              | "maintenance"
-              | "disconnected"
-              | "deleted"
-              | "not found";
-            /**
-             * Format: uuid
-             * @description User ID who owns this connection
-             */
-            user_id?: string;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-            /**
-             * Format: date-time
-             * @description SQL null Timestamp to handle null values of time.
-             */
-            deleted_at?: string;
-            /** @description Associated environments for this connection */
-            environments?: {
-              /**
-               * Format: uuid
-               * @description ID
-               */
-              id: string;
-              /**
-               * @description Specifies the version of the schema to which the environment conforms.
-               * @default environments.meshery.io/v1beta1
-               * @example [
-               *   "v1",
-               *   "v1alpha1",
-               *   "v2beta3",
-               *   "v1.custom-suffix",
-               *   "models.meshery.io/v1beta1",
-               *   "capability.meshery.io/v1alpha1"
-               * ]
-               */
-              schemaVersion: string;
-              /** @description Environment name */
-              name: string;
-              /** @description Environment description */
-              description: string;
-              /**
-               * Format: uuid
-               * @description Environment organization ID
-               */
-              organization_id: string;
-              /**
-               * Format: uuid
-               * @description Environment owner
-               */
-              owner?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the resource was created.
-               */
-              created_at?: string;
-              /** @description Additional metadata associated with the environment. */
-              metadata?: { [key: string]: unknown };
-              /**
-               * Format: date-time
-               * @description Timestamp when the resource was updated.
-               */
-              updated_at?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
-               */
-              deleted_at?: string | null;
-            }[];
-            /**
-             * @description Specifies the version of the schema used for the definition.
-             * @default connections.meshery.io/v1beta2
-             * @example [
-             *   "v1",
-             *   "v1alpha1",
-             *   "v2beta3",
-             *   "v1.custom-suffix",
-             *   "models.meshery.io/v1beta1",
-             *   "capability.meshery.io/v1alpha1"
-             * ]
-             */
-            schemaVersion: string;
-          };
-        };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": {
-          /**
-           * Format: uuid
-           * @description Connection ID
-           */
-          id?: string;
-          /** @description Connection name */
-          name: string;
-          /** @description Connection kind */
-          kind: string;
-          /** @description Connection type */
-          type: string;
-          /** @description Connection sub-type */
-          subType: string;
-          /** @description Credential secret data */
-          credentialSecret?: { [key: string]: unknown };
-          /** @description Connection metadata */
-          metadata?: { [key: string]: unknown };
-          /** @description Connection status */
-          status: string;
-          /**
-           * Format: uuid
-           * @description Associated credential ID
-           */
-          credentialId?: string;
-        };
-      };
-    };
-  };
-  /** Delete a specific connection */
-  deleteConnection: {
-    parameters: {
-      path: {
-        /** Connection ID */
-        connectionId: string;
-      };
-    };
-    responses: {
-      /** Connection deleted */
-      204: never;
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  /** Delete a Meshery server connection by server ID */
-  deleteMesheryConnection: {
-    parameters: {
-      path: {
-        /** Meshery server ID */
-        mesheryServerId: string;
-      };
-    };
-    responses: {
-      /** Meshery connection deleted */
-      204: never;
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  /** Get Kubernetes context for a specific connection */
-  getKubernetesContext: {
-    parameters: {
-      path: {
-        /** Connection ID */
-        connectionId: string;
-      };
-    };
-    responses: {
-      /** Kubernetes context */
-      200: {
-        content: {
-          "application/json": { [key: string]: unknown };
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  /** Associate a connection with an environment */
-  addConnectionToEnvironment: {
-    parameters: {
-      path: {
-        /** Environment ID */
+        /** @description Connection kind (meshery, kubernetes, prometheus, grafana, etc.) */
+        connectionKind: string;
+        /** @description Environment ID */
         environmentId: string;
-        /** Connection ID */
-        connectionId: string;
-      };
+        /** @description Page number */
+        page: number;
+        /** @description Number of items per page */
+        pagesize: number;
+        /** @description Search term */
+        search: string;
+        /** @description Sort order */
+        order: string;
     };
-    responses: {
-      /** Connection added to environment */
-      201: unknown;
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  /** Disassociate a connection from an environment */
-  removeConnectionFromEnvironment: {
-    parameters: {
-      path: {
-        /** Environment ID */
-        environmentId: string;
-        /** Connection ID */
-        connectionId: string;
-      };
-    };
-    responses: {
-      /** Connection removed from environment */
-      204: never;
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
-
-export interface external {}
+export type $defs = Record<string, never>;
+export interface operations {
+    getConnections: {
+        parameters: {
+            query?: {
+                /** @description Page number */
+                page?: number;
+                /** @description Number of items per page */
+                pagesize?: number;
+                /** @description Search term */
+                search?: string;
+                /** @description Sort order */
+                order?: string;
+                /** @description Filter connections (general filter string) */
+                filter?: string;
+                /** @description Filter by connection kind (e.g., kubernetes, prometheus, grafana) */
+                kind?: string[];
+                /** @description Filter by connection status */
+                status?: ("discovered" | "registered" | "connected" | "ignored" | "maintenance" | "disconnected" | "deleted" | "not found")[];
+                /** @description Filter by connection type */
+                type?: string[];
+                /** @description Filter by connection name (partial match supported) */
+                name?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated list of connections with summary information */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description List of connections on this page */
+                        connections: {
+                            /**
+                             * Format: uuid
+                             * @description Connection ID
+                             */
+                            id: string;
+                            /** @description Connection Name */
+                            name: string;
+                            /**
+                             * Format: uuid
+                             * @description Associated Credential ID
+                             */
+                            credential_id?: string;
+                            /** @description Connection Type (platform, telemetry, collaboration) */
+                            type: string;
+                            /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+                            sub_type: string;
+                            /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+                            kind: string;
+                            /** @description Additional connection metadata */
+                            metadata?: Record<string, never>;
+                            /**
+                             * @description Connection Status
+                             * @enum {string}
+                             */
+                            status: "discovered" | "registered" | "connected" | "ignored" | "maintenance" | "disconnected" | "deleted" | "not found";
+                            /**
+                             * Format: uuid
+                             * @description User ID who owns this connection
+                             */
+                            user_id?: string;
+                            /** Format: date-time */
+                            created_at?: string;
+                            /** Format: date-time */
+                            updated_at?: string;
+                            /**
+                             * Format: date-time
+                             * @description SQL null Timestamp to handle null values of time.
+                             */
+                            deleted_at?: string;
+                            /** @description Associated environments for this connection */
+                            environments?: {
+                                /**
+                                 * Format: uuid
+                                 * @description ID
+                                 */
+                                id: string;
+                                /**
+                                 * @description Specifies the version of the schema to which the environment conforms.
+                                 * @default environments.meshery.io/v1beta1
+                                 * @example [
+                                 *       "v1",
+                                 *       "v1alpha1",
+                                 *       "v2beta3",
+                                 *       "v1.custom-suffix",
+                                 *       "models.meshery.io/v1beta1",
+                                 *       "capability.meshery.io/v1alpha1"
+                                 *     ]
+                                 */
+                                schemaVersion: string;
+                                /** @description Environment name */
+                                name: string;
+                                /** @description Environment description */
+                                description: string;
+                                /**
+                                 * Format: uuid
+                                 * @description Environment organization ID
+                                 */
+                                organization_id: string;
+                                /**
+                                 * Format: uuid
+                                 * @description Environment owner
+                                 */
+                                owner?: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the resource was created.
+                                 */
+                                created_at?: string;
+                                /** @description Additional metadata associated with the environment. */
+                                metadata?: Record<string, never>;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the resource was updated.
+                                 */
+                                updated_at?: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
+                                 */
+                                deleted_at?: string | null;
+                            }[];
+                            /**
+                             * @description Specifies the version of the schema used for the definition.
+                             * @default connections.meshery.io/v1beta2
+                             * @example [
+                             *       "v1",
+                             *       "v1alpha1",
+                             *       "v2beta3",
+                             *       "v1.custom-suffix",
+                             *       "models.meshery.io/v1beta1",
+                             *       "capability.meshery.io/v1alpha1"
+                             *     ]
+                             */
+                            schemaVersion: string;
+                        }[];
+                        /** @description Total number of connections on all pages */
+                        total_count: number;
+                        /** @description Current page number */
+                        page: number;
+                        /** @description Number of elements per page */
+                        page_size: number;
+                        /** @description Aggregate count of connections grouped by status */
+                        statusSummary?: {
+                            [key: string]: number;
+                        };
+                    };
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    registerConnection: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * Format: uuid
+                     * @description Connection ID
+                     */
+                    id?: string;
+                    /** @description Connection name */
+                    name: string;
+                    /** @description Connection kind */
+                    kind: string;
+                    /** @description Connection type */
+                    type: string;
+                    /** @description Connection sub-type */
+                    subType: string;
+                    /** @description Credential secret data */
+                    credentialSecret?: Record<string, never>;
+                    /** @description Connection metadata */
+                    metadata?: Record<string, never>;
+                    /** @description Connection status */
+                    status: string;
+                    /**
+                     * Format: uuid
+                     * @description Associated credential ID
+                     */
+                    credentialId?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Connection registered */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Connection ID
+                         */
+                        id: string;
+                        /** @description Connection Name */
+                        name: string;
+                        /**
+                         * Format: uuid
+                         * @description Associated Credential ID
+                         */
+                        credential_id?: string;
+                        /** @description Connection Type (platform, telemetry, collaboration) */
+                        type: string;
+                        /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+                        sub_type: string;
+                        /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+                        kind: string;
+                        /** @description Additional connection metadata */
+                        metadata?: Record<string, never>;
+                        /**
+                         * @description Connection Status
+                         * @enum {string}
+                         */
+                        status: "discovered" | "registered" | "connected" | "ignored" | "maintenance" | "disconnected" | "deleted" | "not found";
+                        /**
+                         * Format: uuid
+                         * @description User ID who owns this connection
+                         */
+                        user_id?: string;
+                        /** Format: date-time */
+                        created_at?: string;
+                        /** Format: date-time */
+                        updated_at?: string;
+                        /**
+                         * Format: date-time
+                         * @description SQL null Timestamp to handle null values of time.
+                         */
+                        deleted_at?: string;
+                        /** @description Associated environments for this connection */
+                        environments?: {
+                            /**
+                             * Format: uuid
+                             * @description ID
+                             */
+                            id: string;
+                            /**
+                             * @description Specifies the version of the schema to which the environment conforms.
+                             * @default environments.meshery.io/v1beta1
+                             * @example [
+                             *       "v1",
+                             *       "v1alpha1",
+                             *       "v2beta3",
+                             *       "v1.custom-suffix",
+                             *       "models.meshery.io/v1beta1",
+                             *       "capability.meshery.io/v1alpha1"
+                             *     ]
+                             */
+                            schemaVersion: string;
+                            /** @description Environment name */
+                            name: string;
+                            /** @description Environment description */
+                            description: string;
+                            /**
+                             * Format: uuid
+                             * @description Environment organization ID
+                             */
+                            organization_id: string;
+                            /**
+                             * Format: uuid
+                             * @description Environment owner
+                             */
+                            owner?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the resource was created.
+                             */
+                            created_at?: string;
+                            /** @description Additional metadata associated with the environment. */
+                            metadata?: Record<string, never>;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the resource was updated.
+                             */
+                            updated_at?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
+                             */
+                            deleted_at?: string | null;
+                        }[];
+                        /**
+                         * @description Specifies the version of the schema used for the definition.
+                         * @default connections.meshery.io/v1beta2
+                         * @example [
+                         *       "v1",
+                         *       "v1alpha1",
+                         *       "v2beta3",
+                         *       "v1.custom-suffix",
+                         *       "models.meshery.io/v1beta1",
+                         *       "capability.meshery.io/v1alpha1"
+                         *     ]
+                         */
+                        schemaVersion: string;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getConnectionById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Connection ID */
+                connectionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Connection details */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Connection ID
+                         */
+                        id: string;
+                        /** @description Connection Name */
+                        name: string;
+                        /**
+                         * Format: uuid
+                         * @description Associated Credential ID
+                         */
+                        credential_id?: string;
+                        /** @description Connection Type (platform, telemetry, collaboration) */
+                        type: string;
+                        /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+                        sub_type: string;
+                        /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+                        kind: string;
+                        /** @description Additional connection metadata */
+                        metadata?: Record<string, never>;
+                        /**
+                         * @description Connection Status
+                         * @enum {string}
+                         */
+                        status: "discovered" | "registered" | "connected" | "ignored" | "maintenance" | "disconnected" | "deleted" | "not found";
+                        /**
+                         * Format: uuid
+                         * @description User ID who owns this connection
+                         */
+                        user_id?: string;
+                        /** Format: date-time */
+                        created_at?: string;
+                        /** Format: date-time */
+                        updated_at?: string;
+                        /**
+                         * Format: date-time
+                         * @description SQL null Timestamp to handle null values of time.
+                         */
+                        deleted_at?: string;
+                        /** @description Associated environments for this connection */
+                        environments?: {
+                            /**
+                             * Format: uuid
+                             * @description ID
+                             */
+                            id: string;
+                            /**
+                             * @description Specifies the version of the schema to which the environment conforms.
+                             * @default environments.meshery.io/v1beta1
+                             * @example [
+                             *       "v1",
+                             *       "v1alpha1",
+                             *       "v2beta3",
+                             *       "v1.custom-suffix",
+                             *       "models.meshery.io/v1beta1",
+                             *       "capability.meshery.io/v1alpha1"
+                             *     ]
+                             */
+                            schemaVersion: string;
+                            /** @description Environment name */
+                            name: string;
+                            /** @description Environment description */
+                            description: string;
+                            /**
+                             * Format: uuid
+                             * @description Environment organization ID
+                             */
+                            organization_id: string;
+                            /**
+                             * Format: uuid
+                             * @description Environment owner
+                             */
+                            owner?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the resource was created.
+                             */
+                            created_at?: string;
+                            /** @description Additional metadata associated with the environment. */
+                            metadata?: Record<string, never>;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the resource was updated.
+                             */
+                            updated_at?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
+                             */
+                            deleted_at?: string | null;
+                        }[];
+                        /**
+                         * @description Specifies the version of the schema used for the definition.
+                         * @default connections.meshery.io/v1beta2
+                         * @example [
+                         *       "v1",
+                         *       "v1alpha1",
+                         *       "v2beta3",
+                         *       "v1.custom-suffix",
+                         *       "models.meshery.io/v1beta1",
+                         *       "capability.meshery.io/v1alpha1"
+                         *     ]
+                         */
+                        schemaVersion: string;
+                    };
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    updateConnection: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Connection ID */
+                connectionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * Format: uuid
+                     * @description Connection ID
+                     */
+                    id?: string;
+                    /** @description Connection name */
+                    name: string;
+                    /** @description Connection kind */
+                    kind: string;
+                    /** @description Connection type */
+                    type: string;
+                    /** @description Connection sub-type */
+                    subType: string;
+                    /** @description Credential secret data */
+                    credentialSecret?: Record<string, never>;
+                    /** @description Connection metadata */
+                    metadata?: Record<string, never>;
+                    /** @description Connection status */
+                    status: string;
+                    /**
+                     * Format: uuid
+                     * @description Associated credential ID
+                     */
+                    credentialId?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Connection updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Connection ID
+                         */
+                        id: string;
+                        /** @description Connection Name */
+                        name: string;
+                        /**
+                         * Format: uuid
+                         * @description Associated Credential ID
+                         */
+                        credential_id?: string;
+                        /** @description Connection Type (platform, telemetry, collaboration) */
+                        type: string;
+                        /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+                        sub_type: string;
+                        /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+                        kind: string;
+                        /** @description Additional connection metadata */
+                        metadata?: Record<string, never>;
+                        /**
+                         * @description Connection Status
+                         * @enum {string}
+                         */
+                        status: "discovered" | "registered" | "connected" | "ignored" | "maintenance" | "disconnected" | "deleted" | "not found";
+                        /**
+                         * Format: uuid
+                         * @description User ID who owns this connection
+                         */
+                        user_id?: string;
+                        /** Format: date-time */
+                        created_at?: string;
+                        /** Format: date-time */
+                        updated_at?: string;
+                        /**
+                         * Format: date-time
+                         * @description SQL null Timestamp to handle null values of time.
+                         */
+                        deleted_at?: string;
+                        /** @description Associated environments for this connection */
+                        environments?: {
+                            /**
+                             * Format: uuid
+                             * @description ID
+                             */
+                            id: string;
+                            /**
+                             * @description Specifies the version of the schema to which the environment conforms.
+                             * @default environments.meshery.io/v1beta1
+                             * @example [
+                             *       "v1",
+                             *       "v1alpha1",
+                             *       "v2beta3",
+                             *       "v1.custom-suffix",
+                             *       "models.meshery.io/v1beta1",
+                             *       "capability.meshery.io/v1alpha1"
+                             *     ]
+                             */
+                            schemaVersion: string;
+                            /** @description Environment name */
+                            name: string;
+                            /** @description Environment description */
+                            description: string;
+                            /**
+                             * Format: uuid
+                             * @description Environment organization ID
+                             */
+                            organization_id: string;
+                            /**
+                             * Format: uuid
+                             * @description Environment owner
+                             */
+                            owner?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the resource was created.
+                             */
+                            created_at?: string;
+                            /** @description Additional metadata associated with the environment. */
+                            metadata?: Record<string, never>;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the resource was updated.
+                             */
+                            updated_at?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
+                             */
+                            deleted_at?: string | null;
+                        }[];
+                        /**
+                         * @description Specifies the version of the schema used for the definition.
+                         * @default connections.meshery.io/v1beta2
+                         * @example [
+                         *       "v1",
+                         *       "v1alpha1",
+                         *       "v2beta3",
+                         *       "v1.custom-suffix",
+                         *       "models.meshery.io/v1beta1",
+                         *       "capability.meshery.io/v1alpha1"
+                         *     ]
+                         */
+                        schemaVersion: string;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    deleteConnection: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Connection ID */
+                connectionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Connection deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    deleteMesheryConnection: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Meshery server ID */
+                mesheryServerId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Meshery connection deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getKubernetesContext: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Connection ID */
+                connectionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Kubernetes context */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    addConnectionToEnvironment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Environment ID */
+                environmentId: string;
+                /** @description Connection ID */
+                connectionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Connection added to environment */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    removeConnectionFromEnvironment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Environment ID */
+                environmentId: string;
+                /** @description Connection ID */
+                connectionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Connection removed from environment */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+}

@@ -4,919 +4,225 @@
  */
 
 export interface paths {
-  "/api/organizations/invitations/{invitationId}": {
-    get: operations["getInvitation"];
-    put: operations["updateInvitation"];
-    delete: operations["deleteInvitation"];
-  };
-  "/api/organizations/invitations": {
-    get: operations["getInvitations"];
-    post: operations["createInvitation"];
-  };
-  "/api/organizations/invitations/{invitationId}/accept": {
-    post: operations["acceptInvitation"];
-  };
-  "/api/identity/orgs/{orgId}/users/invite": {
-    post: operations["handleUserInvite"];
-  };
-  "/api/identity/users/request": {
-    get: operations["getSignupRequests"];
-    post: operations["signupRequest"];
-  };
-  "/api/identity/users/request/approve": {
-    post: operations["approveSignupRequest"];
-  };
-  "/api/identity/users/request/deny": {
-    post: operations["denySignupRequest"];
-  };
-  "/api/identity/users/request/notification": {
-    get: operations["getSignupRequestNotification"];
-  };
+    "/api/organizations/invitations/{invitationId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get an invitation by ID */
+        get: operations["getInvitation"];
+        /** Update an existing invitation */
+        put: operations["updateInvitation"];
+        post?: never;
+        /** Delete an invitation by ID */
+        delete: operations["deleteInvitation"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organizations/invitations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all invitations for the organization */
+        get: operations["getInvitations"];
+        put?: never;
+        /** Create a new invitation for the organization */
+        post: operations["createInvitation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organizations/invitations/{invitationId}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Accept an invitation by ID */
+        post: operations["acceptInvitation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/orgs/{orgId}/users/invite": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Invite users to an organization */
+        post: operations["handleUserInvite"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/users/request": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get signup requests */
+        get: operations["getSignupRequests"];
+        put?: never;
+        /** Create a signup request */
+        post: operations["signupRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/users/request/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve a signup request */
+        post: operations["approveSignupRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/users/request/deny": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Deny a signup request */
+        post: operations["denySignupRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/users/request/notification": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get signup request notification summary */
+        get: operations["getSignupRequestNotification"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
-
+export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    /**
-     * Format: uuid
-     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-     */
-    Uuid: string;
-    /** @description Paginated list of invitations for an organization. */
-    InvitationsPage: {
-      /** @description Invitations returned on the current page. */
-      data: {
+    schemas: {
         /**
          * Format: uuid
-         * @description Unique identifier for the invitation, also used as the invitation code.
+         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
          */
-        id: string;
-        /**
-         * Format: uuid
-         * @description ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.
-         */
-        owner: string;
-        /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
-        isDefault?: boolean;
-        /** @description Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
-        name: string;
-        /** @description Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
-        description: string;
-        /** @description Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-        emails: string[];
-        /**
-         * Format: uuid
-         * @description ID of the organization to which the user is invited.
-         */
-        orgId: string;
-        /**
-         * Format: date-time
-         * @description Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.
-         */
-        expiresAt?: string;
-        /** @description Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
-        quota?: number;
-        /** @description List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
-        acceptedBy: string[];
-        /** @description Roles that the user will have when accepting the invitation. Empty means the invitation does not specify any roles. */
-        roles: string[];
-        /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
-        teams: string[];
-        /**
-         * @description Activation status of the invitation.
-         * @enum {string}
-         */
-        status: "enabled" | "disabled";
-        /**
-         * Format: date-time
-         * @description Timestamp when the invitation was created.
-         */
-        createdAt: string;
-        /**
-         * Format: date-time
-         * @description Timestamp when the invitation was last updated.
-         */
-        updatedAt: string;
-        /**
-         * Format: date-time
-         * @description Timestamp when the invitation was deleted, if applicable.
-         */
-        deletedAt: string;
-      }[];
-      /** @description Total number of invitations available. */
-      total: number;
-    };
-    /** @description A signup request submitted for organization access. */
-    SignupRequest: { [key: string]: unknown };
-    /** @description Paginated list of signup requests. */
-    SignupRequestsPage: {
-      /** @description Current page number of the result set. */
-      page?: number;
-      /** @description Number of items per page. */
-      pageSize?: number;
-      /** @description Total number of items available. */
-      totalCount?: number;
-      /** @description Signup requests returned on the current page. */
-      data?: { [key: string]: unknown }[];
-    };
-    /** @description Payload for creating or updating an invitation. */
-    InvitationPayload: {
-      /**
-       * Format: uuid
-       * @description Existing invitation ID for updates; omit on create.
-       */
-      id?: string;
-      /**
-       * Format: uuid
-       * @description ID of the user who created the invitation.
-       */
-      owner?: string;
-      /** @description Indicates whether the invitation is a default invitation (open invite). */
-      isDefault?: boolean;
-      /** @description Name of the invitation. */
-      name: string;
-      /** @description Description of the invitation. */
-      description: string;
-      /** @description Email addresses or patterns this invitation is valid for. */
-      emails: string[];
-      /**
-       * Format: uuid
-       * @description ID of the organization to which the user is invited.
-       */
-      orgId: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the invitation expires, if applicable.
-       */
-      expiresAt?: string;
-      /** @description Quota for the invitation; limits the number of users that can accept it. */
-      quota?: number;
-      /** @description Roles that the user will have when accepting the invitation. */
-      roles: string[];
-      /** @description Teams that the user will be added to when accepting the invitation. */
-      teams: string[];
-      /**
-       * @description Activation status of the invitation.
-       * @enum {string}
-       */
-      status: "enabled" | "disabled";
-    };
-    /**
-     * @description Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive. Disabled invitations can be re-enabled later.
-     * @enum {string}
-     */
-    InvitationStatus: "enabled" | "disabled";
-    /** @description Invitation entity schema. */
-    Invitation: {
-      /**
-       * Format: uuid
-       * @description Unique identifier for the invitation, also used as the invitation code.
-       */
-      id: string;
-      /**
-       * Format: uuid
-       * @description ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.
-       */
-      owner: string;
-      /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
-      isDefault?: boolean;
-      /** @description Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
-      name: string;
-      /** @description Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
-      description: string;
-      /** @description Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-      emails: string[];
-      /**
-       * Format: uuid
-       * @description ID of the organization to which the user is invited.
-       */
-      orgId: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.
-       */
-      expiresAt?: string;
-      /** @description Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
-      quota?: number;
-      /** @description List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
-      acceptedBy: string[];
-      /** @description Roles that the user will have when accepting the invitation. Empty means the invitation does not specify any roles. */
-      roles: string[];
-      /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
-      teams: string[];
-      /**
-       * @description Activation status of the invitation.
-       * @enum {string}
-       */
-      status: "enabled" | "disabled";
-      /**
-       * Format: date-time
-       * @description Timestamp when the invitation was created.
-       */
-      createdAt: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the invitation was last updated.
-       */
-      updatedAt: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the invitation was deleted, if applicable.
-       */
-      deletedAt: string;
-    };
-  };
-  responses: {
-    /** Invalid request body or request param */
-    400: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Expired JWT token used or insufficient privilege */
-    401: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Result not found */
-    404: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Internal server error */
-    500: {
-      content: {
-        "text/plain": string;
-      };
-    };
-  };
-  parameters: {
-    /** @description The ID of the organization. */
-    orgId: string;
-    /** @description The ID of the invitation. */
-    invitationId: string;
-  };
-}
-
-export interface operations {
-  getInvitation: {
-    parameters: {
-      path: {
-        /** The ID of the invitation. */
-        invitationId: string;
-      };
-    };
-    responses: {
-      /** Invitation fetched */
-      200: {
-        content: {
-          "application/json": {
-            /**
-             * Format: uuid
-             * @description Unique identifier for the invitation, also used as the invitation code.
-             */
-            id: string;
-            /**
-             * Format: uuid
-             * @description ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.
-             */
-            owner: string;
-            /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
-            isDefault?: boolean;
-            /** @description Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
-            name: string;
-            /** @description Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
-            description: string;
-            /** @description Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-            emails: string[];
-            /**
-             * Format: uuid
-             * @description ID of the organization to which the user is invited.
-             */
-            orgId: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.
-             */
-            expiresAt?: string;
-            /** @description Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
-            quota?: number;
-            /** @description List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
-            acceptedBy: string[];
-            /** @description Roles that the user will have when accepting the invitation. Empty means the invitation does not specify any roles. */
-            roles: string[];
-            /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
-            teams: string[];
-            /**
-             * @description Activation status of the invitation.
-             * @enum {string}
-             */
-            status: "enabled" | "disabled";
-            /**
-             * Format: date-time
-             * @description Timestamp when the invitation was created.
-             */
-            createdAt: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the invitation was last updated.
-             */
-            updatedAt: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the invitation was deleted, if applicable.
-             */
-            deletedAt: string;
-          };
-        };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  updateInvitation: {
-    parameters: {
-      path: {
-        /** The ID of the invitation. */
-        invitationId: string;
-      };
-    };
-    responses: {
-      /** Invitation updated */
-      200: {
-        content: {
-          "application/json": {
-            /**
-             * Format: uuid
-             * @description Unique identifier for the invitation, also used as the invitation code.
-             */
-            id: string;
-            /**
-             * Format: uuid
-             * @description ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.
-             */
-            owner: string;
-            /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
-            isDefault?: boolean;
-            /** @description Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
-            name: string;
-            /** @description Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
-            description: string;
-            /** @description Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-            emails: string[];
-            /**
-             * Format: uuid
-             * @description ID of the organization to which the user is invited.
-             */
-            orgId: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.
-             */
-            expiresAt?: string;
-            /** @description Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
-            quota?: number;
-            /** @description List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
-            acceptedBy: string[];
-            /** @description Roles that the user will have when accepting the invitation. Empty means the invitation does not specify any roles. */
-            roles: string[];
-            /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
-            teams: string[];
-            /**
-             * @description Activation status of the invitation.
-             * @enum {string}
-             */
-            status: "enabled" | "disabled";
-            /**
-             * Format: date-time
-             * @description Timestamp when the invitation was created.
-             */
-            createdAt: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the invitation was last updated.
-             */
-            updatedAt: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the invitation was deleted, if applicable.
-             */
-            deletedAt: string;
-          };
-        };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": {
-          /**
-           * Format: uuid
-           * @description Existing invitation ID for updates; omit on create.
-           */
-          id?: string;
-          /**
-           * Format: uuid
-           * @description ID of the user who created the invitation.
-           */
-          owner?: string;
-          /** @description Indicates whether the invitation is a default invitation (open invite). */
-          isDefault?: boolean;
-          /** @description Name of the invitation. */
-          name: string;
-          /** @description Description of the invitation. */
-          description: string;
-          /** @description Email addresses or patterns this invitation is valid for. */
-          emails: string[];
-          /**
-           * Format: uuid
-           * @description ID of the organization to which the user is invited.
-           */
-          orgId: string;
-          /**
-           * Format: date-time
-           * @description Timestamp when the invitation expires, if applicable.
-           */
-          expiresAt?: string;
-          /** @description Quota for the invitation; limits the number of users that can accept it. */
-          quota?: number;
-          /** @description Roles that the user will have when accepting the invitation. */
-          roles: string[];
-          /** @description Teams that the user will be added to when accepting the invitation. */
-          teams: string[];
-          /**
-           * @description Activation status of the invitation.
-           * @enum {string}
-           */
-          status: "enabled" | "disabled";
-        };
-      };
-    };
-  };
-  deleteInvitation: {
-    parameters: {
-      path: {
-        /** The ID of the invitation. */
-        invitationId: string;
-      };
-    };
-    responses: {
-      /** Invitation deleted */
-      204: never;
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  getInvitations: {
-    responses: {
-      /** Invitations page */
-      200: {
-        content: {
-          "application/json": {
+        Uuid: string;
+        /** @description Paginated list of invitations for an organization. */
+        InvitationsPage: {
             /** @description Invitations returned on the current page. */
             data: {
-              /**
-               * Format: uuid
-               * @description Unique identifier for the invitation, also used as the invitation code.
-               */
-              id: string;
-              /**
-               * Format: uuid
-               * @description ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.
-               */
-              owner: string;
-              /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
-              isDefault?: boolean;
-              /** @description Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
-              name: string;
-              /** @description Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
-              description: string;
-              /** @description Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-              emails: string[];
-              /**
-               * Format: uuid
-               * @description ID of the organization to which the user is invited.
-               */
-              orgId: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.
-               */
-              expiresAt?: string;
-              /** @description Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
-              quota?: number;
-              /** @description List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
-              acceptedBy: string[];
-              /** @description Roles that the user will have when accepting the invitation. Empty means the invitation does not specify any roles. */
-              roles: string[];
-              /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
-              teams: string[];
-              /**
-               * @description Activation status of the invitation.
-               * @enum {string}
-               */
-              status: "enabled" | "disabled";
-              /**
-               * Format: date-time
-               * @description Timestamp when the invitation was created.
-               */
-              createdAt: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the invitation was last updated.
-               */
-              updatedAt: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the invitation was deleted, if applicable.
-               */
-              deletedAt: string;
+                /**
+                 * Format: uuid
+                 * @description Unique identifier for the invitation, also used as the invitation code.
+                 */
+                id: string;
+                /**
+                 * Format: uuid
+                 * @description ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.
+                 */
+                owner: string;
+                /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
+                isDefault?: boolean;
+                /** @description Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
+                name: string;
+                /** @description Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
+                description: string;
+                /** @description Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
+                emails: string[];
+                /**
+                 * Format: uuid
+                 * @description ID of the organization to which the user is invited.
+                 */
+                orgId: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.
+                 */
+                expiresAt?: string;
+                /** @description Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
+                quota?: number;
+                /** @description List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
+                acceptedBy: string[];
+                /** @description Roles that the user will have when accepting the invitation. Empty means the invitation does not specify any roles. */
+                roles: string[];
+                /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
+                teams: string[];
+                /**
+                 * @description Activation status of the invitation.
+                 * @enum {string}
+                 */
+                status: "enabled" | "disabled";
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the invitation was created.
+                 */
+                createdAt: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the invitation was last updated.
+                 */
+                updatedAt: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the invitation was deleted, if applicable.
+                 */
+                deletedAt: string;
             }[];
             /** @description Total number of invitations available. */
             total: number;
-          };
         };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
+        /** @description A signup request submitted for organization access. */
+        SignupRequest: {
+            [key: string]: unknown;
         };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  createInvitation: {
-    responses: {
-      /** Invitation created */
-      201: {
-        content: {
-          "application/json": {
-            /**
-             * Format: uuid
-             * @description Unique identifier for the invitation, also used as the invitation code.
-             */
-            id: string;
-            /**
-             * Format: uuid
-             * @description ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.
-             */
-            owner: string;
-            /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
-            isDefault?: boolean;
-            /** @description Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
-            name: string;
-            /** @description Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
-            description: string;
-            /** @description Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-            emails: string[];
-            /**
-             * Format: uuid
-             * @description ID of the organization to which the user is invited.
-             */
-            orgId: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.
-             */
-            expiresAt?: string;
-            /** @description Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
-            quota?: number;
-            /** @description List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
-            acceptedBy: string[];
-            /** @description Roles that the user will have when accepting the invitation. Empty means the invitation does not specify any roles. */
-            roles: string[];
-            /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
-            teams: string[];
-            /**
-             * @description Activation status of the invitation.
-             * @enum {string}
-             */
-            status: "enabled" | "disabled";
-            /**
-             * Format: date-time
-             * @description Timestamp when the invitation was created.
-             */
-            createdAt: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the invitation was last updated.
-             */
-            updatedAt: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the invitation was deleted, if applicable.
-             */
-            deletedAt: string;
-          };
-        };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": {
-          /**
-           * Format: uuid
-           * @description Existing invitation ID for updates; omit on create.
-           */
-          id?: string;
-          /**
-           * Format: uuid
-           * @description ID of the user who created the invitation.
-           */
-          owner?: string;
-          /** @description Indicates whether the invitation is a default invitation (open invite). */
-          isDefault?: boolean;
-          /** @description Name of the invitation. */
-          name: string;
-          /** @description Description of the invitation. */
-          description: string;
-          /** @description Email addresses or patterns this invitation is valid for. */
-          emails: string[];
-          /**
-           * Format: uuid
-           * @description ID of the organization to which the user is invited.
-           */
-          orgId: string;
-          /**
-           * Format: date-time
-           * @description Timestamp when the invitation expires, if applicable.
-           */
-          expiresAt?: string;
-          /** @description Quota for the invitation; limits the number of users that can accept it. */
-          quota?: number;
-          /** @description Roles that the user will have when accepting the invitation. */
-          roles: string[];
-          /** @description Teams that the user will be added to when accepting the invitation. */
-          teams: string[];
-          /**
-           * @description Activation status of the invitation.
-           * @enum {string}
-           */
-          status: "enabled" | "disabled";
-        };
-      };
-    };
-  };
-  acceptInvitation: {
-    parameters: {
-      path: {
-        /** The ID of the invitation. */
-        invitationId: string;
-      };
-    };
-    responses: {
-      /** Invitation accepted */
-      200: {
-        content: {
-          "application/json": {
-            /**
-             * Format: uuid
-             * @description Unique identifier for the invitation, also used as the invitation code.
-             */
-            id: string;
-            /**
-             * Format: uuid
-             * @description ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.
-             */
-            owner: string;
-            /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
-            isDefault?: boolean;
-            /** @description Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
-            name: string;
-            /** @description Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
-            description: string;
-            /** @description Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-            emails: string[];
-            /**
-             * Format: uuid
-             * @description ID of the organization to which the user is invited.
-             */
-            orgId: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.
-             */
-            expiresAt?: string;
-            /** @description Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
-            quota?: number;
-            /** @description List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
-            acceptedBy: string[];
-            /** @description Roles that the user will have when accepting the invitation. Empty means the invitation does not specify any roles. */
-            roles: string[];
-            /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
-            teams: string[];
-            /**
-             * @description Activation status of the invitation.
-             * @enum {string}
-             */
-            status: "enabled" | "disabled";
-            /**
-             * Format: date-time
-             * @description Timestamp when the invitation was created.
-             */
-            createdAt: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the invitation was last updated.
-             */
-            updatedAt: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the invitation was deleted, if applicable.
-             */
-            deletedAt: string;
-          };
-        };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  handleUserInvite: {
-    parameters: {
-      path: {
-        /** The ID of the organization. */
-        orgId: string;
-      };
-    };
-    responses: {
-      /** Invitation request accepted */
-      200: {
-        content: {
-          "application/json": { [key: string]: unknown };
-        };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": { [key: string]: unknown };
-      };
-    };
-  };
-  getSignupRequests: {
-    parameters: {
-      query: {
-        /** Get responses by page */
-        page?: string;
-        /** Get responses by pagesize */
-        pagesize?: string;
-        /** Get responses that match search param value */
-        search?: string;
-        /** Get ordered responses */
-        order?: string;
-        /** Get filtered reponses */
-        filter?: string;
-      };
-    };
-    responses: {
-      /** Signup requests page */
-      200: {
-        content: {
-          "application/json": {
+        /** @description Paginated list of signup requests. */
+        SignupRequestsPage: {
             /** @description Current page number of the result set. */
             page?: number;
             /** @description Number of items per page. */
@@ -924,137 +230,1198 @@ export interface operations {
             /** @description Total number of items available. */
             totalCount?: number;
             /** @description Signup requests returned on the current page. */
-            data?: { [key: string]: unknown }[];
-          };
+            data?: {
+                [key: string]: unknown;
+            }[];
         };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
+        /** @description Payload for creating or updating an invitation. */
+        InvitationPayload: {
+            /**
+             * Format: uuid
+             * @description Existing invitation ID for updates; omit on create.
+             */
+            id?: string;
+            /**
+             * Format: uuid
+             * @description ID of the user who created the invitation.
+             */
+            owner?: string;
+            /** @description Indicates whether the invitation is a default invitation (open invite). */
+            isDefault?: boolean;
+            /** @description Name of the invitation. */
+            name: string;
+            /** @description Description of the invitation. */
+            description: string;
+            /** @description Email addresses or patterns this invitation is valid for. */
+            emails: string[];
+            /**
+             * Format: uuid
+             * @description ID of the organization to which the user is invited.
+             */
+            orgId: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the invitation expires, if applicable.
+             */
+            expiresAt?: string;
+            /** @description Quota for the invitation; limits the number of users that can accept it. */
+            quota?: number;
+            /** @description Roles that the user will have when accepting the invitation. */
+            roles: string[];
+            /** @description Teams that the user will be added to when accepting the invitation. */
+            teams: string[];
+            /**
+             * @description Activation status of the invitation.
+             * @enum {string}
+             */
+            status: "enabled" | "disabled";
         };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
+        /**
+         * @description Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive. Disabled invitations can be re-enabled later.
+         * @enum {string}
+         */
+        InvitationStatus: "enabled" | "disabled";
+        /** @description Invitation entity schema. */
+        Invitation: {
+            /**
+             * Format: uuid
+             * @description Unique identifier for the invitation, also used as the invitation code.
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.
+             */
+            owner: string;
+            /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
+            isDefault?: boolean;
+            /** @description Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
+            name: string;
+            /** @description Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
+            description: string;
+            /** @description Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
+            emails: string[];
+            /**
+             * Format: uuid
+             * @description ID of the organization to which the user is invited.
+             */
+            orgId: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.
+             */
+            expiresAt?: string;
+            /** @description Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
+            quota?: number;
+            /** @description List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
+            acceptedBy: string[];
+            /** @description Roles that the user will have when accepting the invitation. Empty means the invitation does not specify any roles. */
+            roles: string[];
+            /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
+            teams: string[];
+            /**
+             * @description Activation status of the invitation.
+             * @enum {string}
+             */
+            status: "enabled" | "disabled";
+            /**
+             * Format: date-time
+             * @description Timestamp when the invitation was created.
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the invitation was last updated.
+             */
+            updatedAt: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the invitation was deleted, if applicable.
+             */
+            deletedAt: string;
         };
-      };
     };
-  };
-  signupRequest: {
     responses: {
-      /** Signup request created */
-      201: {
-        content: {
-          "application/json": { [key: string]: unknown };
+        /** @description Invalid request body or request param */
+        400: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
         };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
+        /** @description Expired JWT token used or insufficient privilege */
+        401: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
         };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
+        /** @description Result not found */
+        404: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
         };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
+        /** @description Internal server error */
+        500: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
         };
-      };
     };
-    requestBody: {
-      content: {
-        "application/json": { [key: string]: unknown };
-      };
+    parameters: {
+        /** @description The ID of the organization. */
+        orgId: string;
+        /** @description The ID of the invitation. */
+        invitationId: string;
     };
-  };
-  approveSignupRequest: {
-    responses: {
-      /** Signup request approved */
-      200: {
-        content: {
-          "application/json": { [key: string]: unknown };
-        };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  denySignupRequest: {
-    responses: {
-      /** Signup request denied */
-      200: {
-        content: {
-          "application/json": { [key: string]: unknown };
-        };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  getSignupRequestNotification: {
-    responses: {
-      /** Signup request notification payload */
-      200: {
-        content: {
-          "application/json": { [key: string]: unknown };
-        };
-      };
-      /** No pending signup request notifications */
-      204: never;
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
-
-export interface external {}
+export type $defs = Record<string, never>;
+export interface operations {
+    getInvitation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the invitation. */
+                invitationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Invitation fetched */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Unique identifier for the invitation, also used as the invitation code.
+                         */
+                        id: string;
+                        /**
+                         * Format: uuid
+                         * @description ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.
+                         */
+                        owner: string;
+                        /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
+                        isDefault?: boolean;
+                        /** @description Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
+                        name: string;
+                        /** @description Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
+                        description: string;
+                        /** @description Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
+                        emails: string[];
+                        /**
+                         * Format: uuid
+                         * @description ID of the organization to which the user is invited.
+                         */
+                        orgId: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.
+                         */
+                        expiresAt?: string;
+                        /** @description Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
+                        quota?: number;
+                        /** @description List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
+                        acceptedBy: string[];
+                        /** @description Roles that the user will have when accepting the invitation. Empty means the invitation does not specify any roles. */
+                        roles: string[];
+                        /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
+                        teams: string[];
+                        /**
+                         * @description Activation status of the invitation.
+                         * @enum {string}
+                         */
+                        status: "enabled" | "disabled";
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the invitation was created.
+                         */
+                        createdAt: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the invitation was last updated.
+                         */
+                        updatedAt: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the invitation was deleted, if applicable.
+                         */
+                        deletedAt: string;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    updateInvitation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the invitation. */
+                invitationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * Format: uuid
+                     * @description Existing invitation ID for updates; omit on create.
+                     */
+                    id?: string;
+                    /**
+                     * Format: uuid
+                     * @description ID of the user who created the invitation.
+                     */
+                    owner?: string;
+                    /** @description Indicates whether the invitation is a default invitation (open invite). */
+                    isDefault?: boolean;
+                    /** @description Name of the invitation. */
+                    name: string;
+                    /** @description Description of the invitation. */
+                    description: string;
+                    /** @description Email addresses or patterns this invitation is valid for. */
+                    emails: string[];
+                    /**
+                     * Format: uuid
+                     * @description ID of the organization to which the user is invited.
+                     */
+                    orgId: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the invitation expires, if applicable.
+                     */
+                    expiresAt?: string;
+                    /** @description Quota for the invitation; limits the number of users that can accept it. */
+                    quota?: number;
+                    /** @description Roles that the user will have when accepting the invitation. */
+                    roles: string[];
+                    /** @description Teams that the user will be added to when accepting the invitation. */
+                    teams: string[];
+                    /**
+                     * @description Activation status of the invitation.
+                     * @enum {string}
+                     */
+                    status: "enabled" | "disabled";
+                };
+            };
+        };
+        responses: {
+            /** @description Invitation updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Unique identifier for the invitation, also used as the invitation code.
+                         */
+                        id: string;
+                        /**
+                         * Format: uuid
+                         * @description ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.
+                         */
+                        owner: string;
+                        /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
+                        isDefault?: boolean;
+                        /** @description Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
+                        name: string;
+                        /** @description Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
+                        description: string;
+                        /** @description Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
+                        emails: string[];
+                        /**
+                         * Format: uuid
+                         * @description ID of the organization to which the user is invited.
+                         */
+                        orgId: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.
+                         */
+                        expiresAt?: string;
+                        /** @description Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
+                        quota?: number;
+                        /** @description List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
+                        acceptedBy: string[];
+                        /** @description Roles that the user will have when accepting the invitation. Empty means the invitation does not specify any roles. */
+                        roles: string[];
+                        /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
+                        teams: string[];
+                        /**
+                         * @description Activation status of the invitation.
+                         * @enum {string}
+                         */
+                        status: "enabled" | "disabled";
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the invitation was created.
+                         */
+                        createdAt: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the invitation was last updated.
+                         */
+                        updatedAt: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the invitation was deleted, if applicable.
+                         */
+                        deletedAt: string;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    deleteInvitation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the invitation. */
+                invitationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Invitation deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getInvitations: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Invitations page */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Invitations returned on the current page. */
+                        data: {
+                            /**
+                             * Format: uuid
+                             * @description Unique identifier for the invitation, also used as the invitation code.
+                             */
+                            id: string;
+                            /**
+                             * Format: uuid
+                             * @description ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.
+                             */
+                            owner: string;
+                            /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
+                            isDefault?: boolean;
+                            /** @description Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
+                            name: string;
+                            /** @description Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
+                            description: string;
+                            /** @description Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
+                            emails: string[];
+                            /**
+                             * Format: uuid
+                             * @description ID of the organization to which the user is invited.
+                             */
+                            orgId: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.
+                             */
+                            expiresAt?: string;
+                            /** @description Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
+                            quota?: number;
+                            /** @description List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
+                            acceptedBy: string[];
+                            /** @description Roles that the user will have when accepting the invitation. Empty means the invitation does not specify any roles. */
+                            roles: string[];
+                            /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
+                            teams: string[];
+                            /**
+                             * @description Activation status of the invitation.
+                             * @enum {string}
+                             */
+                            status: "enabled" | "disabled";
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the invitation was created.
+                             */
+                            createdAt: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the invitation was last updated.
+                             */
+                            updatedAt: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the invitation was deleted, if applicable.
+                             */
+                            deletedAt: string;
+                        }[];
+                        /** @description Total number of invitations available. */
+                        total: number;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    createInvitation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * Format: uuid
+                     * @description Existing invitation ID for updates; omit on create.
+                     */
+                    id?: string;
+                    /**
+                     * Format: uuid
+                     * @description ID of the user who created the invitation.
+                     */
+                    owner?: string;
+                    /** @description Indicates whether the invitation is a default invitation (open invite). */
+                    isDefault?: boolean;
+                    /** @description Name of the invitation. */
+                    name: string;
+                    /** @description Description of the invitation. */
+                    description: string;
+                    /** @description Email addresses or patterns this invitation is valid for. */
+                    emails: string[];
+                    /**
+                     * Format: uuid
+                     * @description ID of the organization to which the user is invited.
+                     */
+                    orgId: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the invitation expires, if applicable.
+                     */
+                    expiresAt?: string;
+                    /** @description Quota for the invitation; limits the number of users that can accept it. */
+                    quota?: number;
+                    /** @description Roles that the user will have when accepting the invitation. */
+                    roles: string[];
+                    /** @description Teams that the user will be added to when accepting the invitation. */
+                    teams: string[];
+                    /**
+                     * @description Activation status of the invitation.
+                     * @enum {string}
+                     */
+                    status: "enabled" | "disabled";
+                };
+            };
+        };
+        responses: {
+            /** @description Invitation created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Unique identifier for the invitation, also used as the invitation code.
+                         */
+                        id: string;
+                        /**
+                         * Format: uuid
+                         * @description ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.
+                         */
+                        owner: string;
+                        /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
+                        isDefault?: boolean;
+                        /** @description Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
+                        name: string;
+                        /** @description Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
+                        description: string;
+                        /** @description Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
+                        emails: string[];
+                        /**
+                         * Format: uuid
+                         * @description ID of the organization to which the user is invited.
+                         */
+                        orgId: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.
+                         */
+                        expiresAt?: string;
+                        /** @description Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
+                        quota?: number;
+                        /** @description List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
+                        acceptedBy: string[];
+                        /** @description Roles that the user will have when accepting the invitation. Empty means the invitation does not specify any roles. */
+                        roles: string[];
+                        /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
+                        teams: string[];
+                        /**
+                         * @description Activation status of the invitation.
+                         * @enum {string}
+                         */
+                        status: "enabled" | "disabled";
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the invitation was created.
+                         */
+                        createdAt: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the invitation was last updated.
+                         */
+                        updatedAt: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the invitation was deleted, if applicable.
+                         */
+                        deletedAt: string;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    acceptInvitation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the invitation. */
+                invitationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Invitation accepted */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Unique identifier for the invitation, also used as the invitation code.
+                         */
+                        id: string;
+                        /**
+                         * Format: uuid
+                         * @description ID of the user who created the invitation. Tracks who created the invitation for auditing purposes.
+                         */
+                        owner: string;
+                        /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
+                        isDefault?: boolean;
+                        /** @description Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
+                        name: string;
+                        /** @description Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
+                        description: string;
+                        /** @description Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
+                        emails: string[];
+                        /**
+                         * Format: uuid
+                         * @description ID of the organization to which the user is invited.
+                         */
+                        orgId: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.
+                         */
+                        expiresAt?: string;
+                        /** @description Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
+                        quota?: number;
+                        /** @description List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
+                        acceptedBy: string[];
+                        /** @description Roles that the user will have when accepting the invitation. Empty means the invitation does not specify any roles. */
+                        roles: string[];
+                        /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
+                        teams: string[];
+                        /**
+                         * @description Activation status of the invitation.
+                         * @enum {string}
+                         */
+                        status: "enabled" | "disabled";
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the invitation was created.
+                         */
+                        createdAt: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the invitation was last updated.
+                         */
+                        updatedAt: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the invitation was deleted, if applicable.
+                         */
+                        deletedAt: string;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    handleUserInvite: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the organization. */
+                orgId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    [key: string]: unknown;
+                };
+            };
+        };
+        responses: {
+            /** @description Invitation request accepted */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getSignupRequests: {
+        parameters: {
+            query?: {
+                /** @description Get responses by page */
+                page?: string;
+                /** @description Get responses by pagesize */
+                pagesize?: string;
+                /** @description Get responses that match search param value */
+                search?: string;
+                /** @description Get ordered responses */
+                order?: string;
+                /** @description Get filtered reponses */
+                filter?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Signup requests page */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Current page number of the result set. */
+                        page?: number;
+                        /** @description Number of items per page. */
+                        pageSize?: number;
+                        /** @description Total number of items available. */
+                        totalCount?: number;
+                        /** @description Signup requests returned on the current page. */
+                        data?: {
+                            [key: string]: unknown;
+                        }[];
+                    };
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    signupRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    [key: string]: unknown;
+                };
+            };
+        };
+        responses: {
+            /** @description Signup request created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    approveSignupRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Signup request approved */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    denySignupRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Signup request denied */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getSignupRequestNotification: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Signup request notification payload */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description No pending signup request notifications */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+}

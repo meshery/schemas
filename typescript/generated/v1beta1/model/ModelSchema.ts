@@ -1465,6 +1465,7 @@ const ModelSchema: Record<string, unknown> = {
         }
       },
       "ModelReference": {
+        "x-generate-db-helpers": true,
         "type": "object",
         "required": [
           "id",

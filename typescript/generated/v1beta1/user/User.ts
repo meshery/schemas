@@ -4,795 +4,273 @@
  */
 
 export interface paths {
-  "/api/identity/orgs/{orgId}/users": {
-    /** Returns organization users, optionally filtered by team membership. */
-    get: operations["getUsersForOrg"];
-  };
-  "/api/users": {
-    /** Returns publicly viewable user records. */
-    get: operations["getUsers"];
-  };
-  "/api/identity/users/profile/{id}": {
-    get: operations["getUserProfileById"];
-  };
-  "/api/identity/users/profile": {
-    get: operations["getUser"];
-  };
+    "/api/identity/orgs/{orgId}/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get organization users
+         * @description Returns organization users, optionally filtered by team membership.
+         */
+        get: operations["getUsersForOrg"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get public users
+         * @description Returns publicly viewable user records.
+         */
+        get: operations["getUsers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/users/profile/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get user profile by ID */
+        get: operations["getUserProfileById"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/users/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get current user profile */
+        get: operations["getUser"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
-
+export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    /** @description Represents a user */
-    User: {
-      /**
-       * Format: uuid
-       * @description Unique identifier for the user
-       */
-      id: string;
-      /** @description User identifier (username or external ID) */
-      user_id: string;
-      /**
-       * @description Authentication provider (e.g., Google, Github)
-       * @example [
-       *   "local",
-       *   "github",
-       *   "google",
-       *   "twitter"
-       * ]
-       */
-      provider: string;
-      /**
-       * Format: email
-       * @description User's email address
-       */
-      email: string;
-      /** @description User's first name */
-      first_name: string;
-      /** @description User's last name */
-      last_name: string;
-      /**
-       * Format: uri
-       * @description URL to user's avatar image
-       */
-      avatar_url?: string;
-      /**
-       * @description User account status
-       * @enum {string}
-       */
-      status: "active" | "inactive" | "pending" | "anonymous";
-      /**
-       * @description User's biography or description
-       * @default
-       */
-      bio?: string;
-      /** @description User's country information stored as JSONB */
-      country?: { [key: string]: unknown };
-      /** @description User's region information stored as JSONB */
-      region?: { [key: string]: unknown };
-      /** @description User preferences stored as JSONB */
-      preferences?: {
-        /** @description The mesh adapters of the preference. */
-        meshAdapters?: { [key: string]: unknown }[];
-        grafana?: {
-          /** @description Grafana URL for the user configuration. */
-          grafanaURL?: string;
-          /** @description Grafana API key for the user configuration. */
-          grafanaAPIKey?: string;
-          /** @description Selected Grafana board configurations for the user. */
-          selectedBoardsConfigs?: {
-            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-            board?: { [key: string]: unknown };
-            /** @description Panels selected for the Grafana board configuration. */
-            panels?: { [key: string]: unknown }[];
-            /** @description Template variables applied to the selected Grafana board configuration. */
-            templateVars?: string[];
-          }[];
-        };
-        prometheus?: {
-          /** @description The prometheus u r l of the prometheus. */
-          prometheusURL?: string;
-          /** @description The selected prometheus boards configs of the prometheus. */
-          selectedPrometheusBoardsConfigs?: {
-            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-            board?: { [key: string]: unknown };
-            /** @description Panels selected for the Grafana board configuration. */
-            panels?: { [key: string]: unknown }[];
-            /** @description Template variables applied to the selected Grafana board configuration. */
-            templateVars?: string[];
-          }[];
-        };
-        loadTestPrefs?: {
-          /** @description Concurrent requests */
-          c?: number;
-          /** @description Queries per second */
-          qps?: number;
-          /** @description Duration */
-          t?: string;
-          /** @description Load generator */
-          gen?: string;
-        };
-        /** @description The anonymous usage stats of the preference. */
-        anonymousUsageStats: boolean;
-        /** @description The anonymous perf results of the preference. */
-        anonymousPerfResults: boolean;
-        /**
-         * Format: date-time
-         * @description Timestamp of when the resource was last updated.
-         */
-        updated_at: string;
-        /** @description The dashboard preferences of the preference. */
-        dashboardPreferences: { [key: string]: unknown };
-        /**
-         * Format: uuid
-         * @description ID of the associated selectedOrganization.
-         */
-        selectedOrganizationId: string;
-        /** @description The selected workspace for organizations of the preference. */
-        selectedWorkspaceForOrganizations: { [key: string]: string };
-        /** @description The users extension preferences of the preference. */
-        usersExtensionPreferences: { [key: string]: unknown };
-        /** @description The remote provider preferences of the preference. */
-        remoteProviderPreferences: { [key: string]: unknown };
-      };
-      /**
-       * Format: date-time
-       * @description Timestamp when user accepted terms and conditions
-       */
-      accepted_terms_at?: string;
-      /**
-       * Format: date-time
-       * @description Timestamp of user's first login
-       */
-      first_login_time?: string;
-      /**
-       * Format: date-time
-       * @description Timestamp of user's most recent login
-       */
-      last_login_time: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the user record was created
-       */
-      created_at: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the user record was last updated
-       */
-      updated_at: string;
-      /** @description Various online profiles associated with the user account */
-      socials?: {
-        /** @description The site of the social. */
-        site: string;
-        /**
-         * Format: uri
-         * @description The link of the social.
-         */
-        link: string;
-      }[];
-      /**
-       * Format: date-time
-       * @description Timestamp when the user record was soft-deleted (null if not deleted)
-       */
-      deleted_at: string | null;
-      /**
-       * @description List of global roles assigned to the user
-       * @example [
-       *   "admin",
-       *   "meshmap"
-       * ]
-       */
-      role_names?: (
-        | "admin"
-        | "meshmap"
-        | "curator"
-        | "team admin"
-        | "workspace admin"
-        | "workspace manager"
-        | "organization admin"
-        | "user"
-      )[];
-      /** @description Teams the user belongs to with role information */
-      teams?: {
-        /** @description Team memberships for the user with their assigned roles. */
-        teams_with_roles?: { [key: string]: unknown }[];
-        /** @description Total number of team memberships returned for the user. */
-        total_count?: number;
-      };
-      /** @description Organizations the user belongs to with role information */
-      organizations?: {
-        /** @description Organization memberships for the user with their assigned roles. */
-        organizations_with_roles?: { [key: string]: unknown }[];
-        /** @description Total number of organization memberships returned for the user. */
-        total_count?: number;
-      };
-    };
-    /** @description Paginated list of users with organization and team role context */
-    UsersPageForAdmin: {
-      /** @description Current page number of the result set. */
-      page?: number;
-      /** @description Number of items per page. */
-      page_size?: number;
-      /** @description Total number of items available. */
-      total_count?: number;
-      /** @description The data of the userspageforadmin. */
-      data?: {
-        /**
-         * Format: uuid
-         * @description Unique identifier for the user
-         */
-        id: string;
-        /** @description User identifier (username or external ID) */
-        user_id: string;
-        /**
-         * @description Authentication provider (e.g., Google, Github)
-         * @example [
-         *   "local",
-         *   "github",
-         *   "google",
-         *   "twitter"
-         * ]
-         */
-        provider: string;
-        /**
-         * Format: email
-         * @description User's email address
-         */
-        email: string;
-        /** @description User's first name */
-        first_name: string;
-        /** @description User's last name */
-        last_name: string;
-        /**
-         * Format: uri
-         * @description URL to user's avatar image
-         */
-        avatar_url?: string;
-        /**
-         * @description User account status
-         * @enum {string}
-         */
-        status: "active" | "inactive" | "pending" | "anonymous";
-        /**
-         * @description User's biography or description
-         * @default
-         */
-        bio?: string;
-        /** @description User's country information stored as JSONB */
-        country?: { [key: string]: unknown };
-        /** @description User's region information stored as JSONB */
-        region?: { [key: string]: unknown };
-        /** @description User preferences stored as JSONB */
-        preferences?: {
-          /** @description The mesh adapters of the preference. */
-          meshAdapters?: { [key: string]: unknown }[];
-          grafana?: {
-            /** @description Grafana URL for the user configuration. */
-            grafanaURL?: string;
-            /** @description Grafana API key for the user configuration. */
-            grafanaAPIKey?: string;
-            /** @description Selected Grafana board configurations for the user. */
-            selectedBoardsConfigs?: {
-              /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-              board?: { [key: string]: unknown };
-              /** @description Panels selected for the Grafana board configuration. */
-              panels?: { [key: string]: unknown }[];
-              /** @description Template variables applied to the selected Grafana board configuration. */
-              templateVars?: string[];
+    schemas: {
+        /** @description Represents a user */
+        User: {
+            /**
+             * Format: uuid
+             * @description Unique identifier for the user
+             */
+            id: string;
+            /** @description User identifier (username or external ID) */
+            user_id: string;
+            /**
+             * @description Authentication provider (e.g., Google, Github)
+             * @example [
+             *       "local",
+             *       "github",
+             *       "google",
+             *       "twitter"
+             *     ]
+             */
+            provider: string;
+            /**
+             * Format: email
+             * @description User's email address
+             */
+            email: string;
+            /** @description User's first name */
+            first_name: string;
+            /** @description User's last name */
+            last_name: string;
+            /**
+             * Format: uri
+             * @description URL to user's avatar image
+             */
+            avatar_url?: string;
+            /**
+             * @description User account status
+             * @enum {string}
+             */
+            status: "active" | "inactive" | "pending" | "anonymous";
+            /**
+             * @description User's biography or description
+             * @default
+             */
+            bio: string;
+            /** @description User's country information stored as JSONB */
+            country?: {
+                [key: string]: unknown;
+            };
+            /** @description User's region information stored as JSONB */
+            region?: {
+                [key: string]: unknown;
+            };
+            /** @description User preferences stored as JSONB */
+            preferences?: {
+                /** @description The mesh adapters of the preference. */
+                meshAdapters?: Record<string, never>[];
+                grafana?: {
+                    /** @description Grafana URL for the user configuration. */
+                    grafanaURL?: string;
+                    /** @description Grafana API key for the user configuration. */
+                    grafanaAPIKey?: string;
+                    /** @description Selected Grafana board configurations for the user. */
+                    selectedBoardsConfigs?: {
+                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                        board?: Record<string, never>;
+                        /** @description Panels selected for the Grafana board configuration. */
+                        panels?: Record<string, never>[];
+                        /** @description Template variables applied to the selected Grafana board configuration. */
+                        templateVars?: string[];
+                    }[];
+                };
+                prometheus?: {
+                    /** @description The prometheus u r l of the prometheus. */
+                    prometheusURL?: string;
+                    /** @description The selected prometheus boards configs of the prometheus. */
+                    selectedPrometheusBoardsConfigs?: {
+                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                        board?: Record<string, never>;
+                        /** @description Panels selected for the Grafana board configuration. */
+                        panels?: Record<string, never>[];
+                        /** @description Template variables applied to the selected Grafana board configuration. */
+                        templateVars?: string[];
+                    }[];
+                };
+                loadTestPrefs?: {
+                    /** @description Concurrent requests */
+                    c?: number;
+                    /** @description Queries per second */
+                    qps?: number;
+                    /** @description Duration */
+                    t?: string;
+                    /** @description Load generator */
+                    gen?: string;
+                };
+                /** @description The anonymous usage stats of the preference. */
+                anonymousUsageStats: boolean;
+                /** @description The anonymous perf results of the preference. */
+                anonymousPerfResults: boolean;
+                /**
+                 * Format: date-time
+                 * @description Timestamp of when the resource was last updated.
+                 */
+                updated_at: string;
+                /** @description The dashboard preferences of the preference. */
+                dashboardPreferences: {
+                    [key: string]: unknown;
+                };
+                /**
+                 * Format: uuid
+                 * @description ID of the associated selectedOrganization.
+                 */
+                selectedOrganizationId: string;
+                /** @description The selected workspace for organizations of the preference. */
+                selectedWorkspaceForOrganizations: {
+                    [key: string]: string;
+                };
+                /** @description The users extension preferences of the preference. */
+                usersExtensionPreferences: {
+                    [key: string]: unknown;
+                };
+                /** @description The remote provider preferences of the preference. */
+                remoteProviderPreferences: {
+                    [key: string]: unknown;
+                };
+            };
+            /**
+             * Format: date-time
+             * @description Timestamp when user accepted terms and conditions
+             */
+            accepted_terms_at?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp of user's first login
+             */
+            first_login_time?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp of user's most recent login
+             */
+            last_login_time: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the user record was created
+             */
+            created_at: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the user record was last updated
+             */
+            updated_at: string;
+            /** @description Various online profiles associated with the user account */
+            socials?: {
+                /** @description The site of the social. */
+                site: string;
+                /**
+                 * Format: uri
+                 * @description The link of the social.
+                 */
+                link: string;
             }[];
-          };
-          prometheus?: {
-            /** @description The prometheus u r l of the prometheus. */
-            prometheusURL?: string;
-            /** @description The selected prometheus boards configs of the prometheus. */
-            selectedPrometheusBoardsConfigs?: {
-              /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-              board?: { [key: string]: unknown };
-              /** @description Panels selected for the Grafana board configuration. */
-              panels?: { [key: string]: unknown }[];
-              /** @description Template variables applied to the selected Grafana board configuration. */
-              templateVars?: string[];
-            }[];
-          };
-          loadTestPrefs?: {
-            /** @description Concurrent requests */
-            c?: number;
-            /** @description Queries per second */
-            qps?: number;
-            /** @description Duration */
-            t?: string;
-            /** @description Load generator */
-            gen?: string;
-          };
-          /** @description The anonymous usage stats of the preference. */
-          anonymousUsageStats: boolean;
-          /** @description The anonymous perf results of the preference. */
-          anonymousPerfResults: boolean;
-          /**
-           * Format: date-time
-           * @description Timestamp of when the resource was last updated.
-           */
-          updated_at: string;
-          /** @description The dashboard preferences of the preference. */
-          dashboardPreferences: { [key: string]: unknown };
-          /**
-           * Format: uuid
-           * @description ID of the associated selectedOrganization.
-           */
-          selectedOrganizationId: string;
-          /** @description The selected workspace for organizations of the preference. */
-          selectedWorkspaceForOrganizations: { [key: string]: string };
-          /** @description The users extension preferences of the preference. */
-          usersExtensionPreferences: { [key: string]: unknown };
-          /** @description The remote provider preferences of the preference. */
-          remoteProviderPreferences: { [key: string]: unknown };
+            /**
+             * Format: date-time
+             * @description Timestamp when the user record was soft-deleted (null if not deleted)
+             */
+            deleted_at: string | null;
+            /**
+             * @description List of global roles assigned to the user
+             * @example [
+             *       "admin",
+             *       "meshmap"
+             *     ]
+             */
+            role_names?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
+            /** @description Teams the user belongs to with role information */
+            teams?: {
+                /** @description Team memberships for the user with their assigned roles. */
+                teams_with_roles?: Record<string, never>[];
+                /** @description Total number of team memberships returned for the user. */
+                total_count?: number;
+            };
+            /** @description Organizations the user belongs to with role information */
+            organizations?: {
+                /** @description Organization memberships for the user with their assigned roles. */
+                organizations_with_roles?: Record<string, never>[];
+                /** @description Total number of organization memberships returned for the user. */
+                total_count?: number;
+            };
         };
-        /**
-         * Format: date-time
-         * @description Timestamp when user accepted terms and conditions
-         */
-        accepted_terms_at?: string;
-        /**
-         * Format: date-time
-         * @description Timestamp of user's first login
-         */
-        first_login_time?: string;
-        /**
-         * Format: date-time
-         * @description Timestamp of user's most recent login
-         */
-        last_login_time: string;
-        /**
-         * Format: date-time
-         * @description Timestamp when the user record was created
-         */
-        created_at: string;
-        /**
-         * Format: date-time
-         * @description Timestamp when the user record was last updated
-         */
-        updated_at: string;
-        /** @description Various online profiles associated with the user account */
-        socials?: {
-          /** @description The site of the social. */
-          site: string;
-          /**
-           * Format: uri
-           * @description The link of the social.
-           */
-          link: string;
-        }[];
-        /**
-         * Format: date-time
-         * @description Timestamp when the user record was soft-deleted (null if not deleted)
-         */
-        deleted_at: string | null;
-        /**
-         * @description List of global roles assigned to the user
-         * @example [
-         *   "admin",
-         *   "meshmap"
-         * ]
-         */
-        role_names?: (
-          | "admin"
-          | "meshmap"
-          | "curator"
-          | "team admin"
-          | "workspace admin"
-          | "workspace manager"
-          | "organization admin"
-          | "user"
-        )[];
-        /** @description Teams the user belongs to with role information */
-        teams?: {
-          /** @description Team memberships for the user with their assigned roles. */
-          teams_with_roles?: { [key: string]: unknown }[];
-          /** @description Total number of team memberships returned for the user. */
-          total_count?: number;
-        };
-        /** @description Organizations the user belongs to with role information */
-        organizations?: {
-          /** @description Organization memberships for the user with their assigned roles. */
-          organizations_with_roles?: { [key: string]: unknown }[];
-          /** @description Total number of organization memberships returned for the user. */
-          total_count?: number;
-        };
-      }[];
-    };
-    /** @description Paginated list of public user records */
-    UsersPageForNonAdmin: {
-      /** @description Current page number of the result set. */
-      page?: number;
-      /** @description Number of items per page. */
-      page_size?: number;
-      /** @description Total number of items available. */
-      total_count?: number;
-      /** @description The data of the userspagefornonadmin. */
-      data?: {
-        /**
-         * Format: uuid
-         * @description Unique identifier for the user
-         */
-        id: string;
-        /** @description User identifier (username or external ID) */
-        user_id: string;
-        /**
-         * @description Authentication provider (e.g., Google, Github)
-         * @example [
-         *   "local",
-         *   "github",
-         *   "google",
-         *   "twitter"
-         * ]
-         */
-        provider: string;
-        /**
-         * Format: email
-         * @description User's email address
-         */
-        email: string;
-        /** @description User's first name */
-        first_name: string;
-        /** @description User's last name */
-        last_name: string;
-        /**
-         * Format: uri
-         * @description URL to user's avatar image
-         */
-        avatar_url?: string;
-        /**
-         * @description User account status
-         * @enum {string}
-         */
-        status: "active" | "inactive" | "pending" | "anonymous";
-        /**
-         * @description User's biography or description
-         * @default
-         */
-        bio?: string;
-        /** @description User's country information stored as JSONB */
-        country?: { [key: string]: unknown };
-        /** @description User's region information stored as JSONB */
-        region?: { [key: string]: unknown };
-        /** @description User preferences stored as JSONB */
-        preferences?: {
-          /** @description The mesh adapters of the preference. */
-          meshAdapters?: { [key: string]: unknown }[];
-          grafana?: {
-            /** @description Grafana URL for the user configuration. */
-            grafanaURL?: string;
-            /** @description Grafana API key for the user configuration. */
-            grafanaAPIKey?: string;
-            /** @description Selected Grafana board configurations for the user. */
-            selectedBoardsConfigs?: {
-              /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-              board?: { [key: string]: unknown };
-              /** @description Panels selected for the Grafana board configuration. */
-              panels?: { [key: string]: unknown }[];
-              /** @description Template variables applied to the selected Grafana board configuration. */
-              templateVars?: string[];
-            }[];
-          };
-          prometheus?: {
-            /** @description The prometheus u r l of the prometheus. */
-            prometheusURL?: string;
-            /** @description The selected prometheus boards configs of the prometheus. */
-            selectedPrometheusBoardsConfigs?: {
-              /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-              board?: { [key: string]: unknown };
-              /** @description Panels selected for the Grafana board configuration. */
-              panels?: { [key: string]: unknown }[];
-              /** @description Template variables applied to the selected Grafana board configuration. */
-              templateVars?: string[];
-            }[];
-          };
-          loadTestPrefs?: {
-            /** @description Concurrent requests */
-            c?: number;
-            /** @description Queries per second */
-            qps?: number;
-            /** @description Duration */
-            t?: string;
-            /** @description Load generator */
-            gen?: string;
-          };
-          /** @description The anonymous usage stats of the preference. */
-          anonymousUsageStats: boolean;
-          /** @description The anonymous perf results of the preference. */
-          anonymousPerfResults: boolean;
-          /**
-           * Format: date-time
-           * @description Timestamp of when the resource was last updated.
-           */
-          updated_at: string;
-          /** @description The dashboard preferences of the preference. */
-          dashboardPreferences: { [key: string]: unknown };
-          /**
-           * Format: uuid
-           * @description ID of the associated selectedOrganization.
-           */
-          selectedOrganizationId: string;
-          /** @description The selected workspace for organizations of the preference. */
-          selectedWorkspaceForOrganizations: { [key: string]: string };
-          /** @description The users extension preferences of the preference. */
-          usersExtensionPreferences: { [key: string]: unknown };
-          /** @description The remote provider preferences of the preference. */
-          remoteProviderPreferences: { [key: string]: unknown };
-        };
-        /**
-         * Format: date-time
-         * @description Timestamp when user accepted terms and conditions
-         */
-        accepted_terms_at?: string;
-        /**
-         * Format: date-time
-         * @description Timestamp of user's first login
-         */
-        first_login_time?: string;
-        /**
-         * Format: date-time
-         * @description Timestamp of user's most recent login
-         */
-        last_login_time: string;
-        /**
-         * Format: date-time
-         * @description Timestamp when the user record was created
-         */
-        created_at: string;
-        /**
-         * Format: date-time
-         * @description Timestamp when the user record was last updated
-         */
-        updated_at: string;
-        /** @description Various online profiles associated with the user account */
-        socials?: {
-          /** @description The site of the social. */
-          site: string;
-          /**
-           * Format: uri
-           * @description The link of the social.
-           */
-          link: string;
-        }[];
-        /**
-         * Format: date-time
-         * @description Timestamp when the user record was soft-deleted (null if not deleted)
-         */
-        deleted_at: string | null;
-        /**
-         * @description List of global roles assigned to the user
-         * @example [
-         *   "admin",
-         *   "meshmap"
-         * ]
-         */
-        role_names?: (
-          | "admin"
-          | "meshmap"
-          | "curator"
-          | "team admin"
-          | "workspace admin"
-          | "workspace manager"
-          | "organization admin"
-          | "user"
-        )[];
-        /** @description Teams the user belongs to with role information */
-        teams?: {
-          /** @description Team memberships for the user with their assigned roles. */
-          teams_with_roles?: { [key: string]: unknown }[];
-          /** @description Total number of team memberships returned for the user. */
-          total_count?: number;
-        };
-        /** @description Organizations the user belongs to with role information */
-        organizations?: {
-          /** @description Organization memberships for the user with their assigned roles. */
-          organizations_with_roles?: { [key: string]: unknown }[];
-          /** @description Total number of organization memberships returned for the user. */
-          total_count?: number;
-        };
-      }[];
-    };
-    Preference: {
-      /** @description The mesh adapters of the preference. */
-      meshAdapters?: { [key: string]: unknown }[];
-      grafana?: {
-        /** @description Grafana URL for the user configuration. */
-        grafanaURL?: string;
-        /** @description Grafana API key for the user configuration. */
-        grafanaAPIKey?: string;
-        /** @description Selected Grafana board configurations for the user. */
-        selectedBoardsConfigs?: {
-          /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-          board?: { [key: string]: unknown };
-          /** @description Panels selected for the Grafana board configuration. */
-          panels?: { [key: string]: unknown }[];
-          /** @description Template variables applied to the selected Grafana board configuration. */
-          templateVars?: string[];
-        }[];
-      };
-      prometheus?: {
-        /** @description The prometheus u r l of the prometheus. */
-        prometheusURL?: string;
-        /** @description The selected prometheus boards configs of the prometheus. */
-        selectedPrometheusBoardsConfigs?: {
-          /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-          board?: { [key: string]: unknown };
-          /** @description Panels selected for the Grafana board configuration. */
-          panels?: { [key: string]: unknown }[];
-          /** @description Template variables applied to the selected Grafana board configuration. */
-          templateVars?: string[];
-        }[];
-      };
-      loadTestPrefs?: {
-        /** @description Concurrent requests */
-        c?: number;
-        /** @description Queries per second */
-        qps?: number;
-        /** @description Duration */
-        t?: string;
-        /** @description Load generator */
-        gen?: string;
-      };
-      /** @description The anonymous usage stats of the preference. */
-      anonymousUsageStats: boolean;
-      /** @description The anonymous perf results of the preference. */
-      anonymousPerfResults: boolean;
-      /**
-       * Format: date-time
-       * @description Timestamp of when the resource was last updated.
-       */
-      updated_at: string;
-      /** @description The dashboard preferences of the preference. */
-      dashboardPreferences: { [key: string]: unknown };
-      /**
-       * Format: uuid
-       * @description ID of the associated selectedOrganization.
-       */
-      selectedOrganizationId: string;
-      /** @description The selected workspace for organizations of the preference. */
-      selectedWorkspaceForOrganizations: { [key: string]: string };
-      /** @description The users extension preferences of the preference. */
-      usersExtensionPreferences: { [key: string]: unknown };
-      /** @description The remote provider preferences of the preference. */
-      remoteProviderPreferences: { [key: string]: unknown };
-    };
-    /** @description Placeholder for Adapter struct definition. */
-    Adapter: { [key: string]: unknown };
-    Grafana: {
-      /** @description Grafana URL for the user configuration. */
-      grafanaURL?: string;
-      /** @description Grafana API key for the user configuration. */
-      grafanaAPIKey?: string;
-      /** @description Selected Grafana board configurations for the user. */
-      selectedBoardsConfigs?: {
-        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-        board?: { [key: string]: unknown };
-        /** @description Panels selected for the Grafana board configuration. */
-        panels?: { [key: string]: unknown }[];
-        /** @description Template variables applied to the selected Grafana board configuration. */
-        templateVars?: string[];
-      }[];
-    };
-    SelectedGrafanaConfig: {
-      /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-      board?: { [key: string]: unknown };
-      /** @description Panels selected for the Grafana board configuration. */
-      panels?: { [key: string]: unknown }[];
-      /** @description Template variables applied to the selected Grafana board configuration. */
-      templateVars?: string[];
-    };
-    /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-    GrafanaBoard: { [key: string]: unknown };
-    /** @description Grafana panel structure imported from github.com/grafana-tools/sdk */
-    Panel: { [key: string]: unknown };
-    Prometheus: {
-      /** @description The prometheus u r l of the prometheus. */
-      prometheusURL?: string;
-      /** @description The selected prometheus boards configs of the prometheus. */
-      selectedPrometheusBoardsConfigs?: {
-        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-        board?: { [key: string]: unknown };
-        /** @description Panels selected for the Grafana board configuration. */
-        panels?: { [key: string]: unknown }[];
-        /** @description Template variables applied to the selected Grafana board configuration. */
-        templateVars?: string[];
-      }[];
-    };
-    LoadTestPreferences: {
-      /** @description Concurrent requests */
-      c?: number;
-      /** @description Queries per second */
-      qps?: number;
-      /** @description Duration */
-      t?: string;
-      /** @description Load generator */
-      gen?: string;
-    };
-    /** @description Various online profiles associated with the user account, like GitHub, LinkedIn, X, and so on. */
-    Social: {
-      /** @description The site of the social. */
-      site: string;
-      /**
-       * Format: uri
-       * @description The link of the social.
-       */
-      link: string;
-    };
-  };
-  responses: {
-    /** Invalid request body or request param */
-    400: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Expired JWT token used or insufficient privilege */
-    401: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Result not found */
-    404: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Internal server error */
-    500: {
-      content: {
-        "text/plain": string;
-      };
-    };
-  };
-  parameters: {
-    /** @description User ID */
-    id: string;
-    /** @description Organization ID */
-    orgId: string;
-    /** @description Get responses by page */
-    page: string;
-    /** @description Get responses by pagesize */
-    pagesize: string;
-    /** @description Get responses that match search param value */
-    search: string;
-    /** @description Get ordered responses */
-    order: string;
-    /** @description Get filtered reponses */
-    filter: string;
-    /** @description Optional team filter when listing organization users */
-    teamId: string;
-  };
-}
-
-export interface operations {
-  /** Returns organization users, optionally filtered by team membership. */
-  getUsersForOrg: {
-    parameters: {
-      path: {
-        /** Organization ID */
-        orgId: string;
-      };
-      query: {
-        /** Get responses by page */
-        page?: string;
-        /** Get responses by pagesize */
-        pagesize?: string;
-        /** Get responses that match search param value */
-        search?: string;
-        /** Get ordered responses */
-        order?: string;
-        /** Get filtered reponses */
-        filter?: string;
-        /** Optional team filter when listing organization users */
-        teamId?: string;
-      };
-    };
-    responses: {
-      /** Paginated list of organization users */
-      200: {
-        content: {
-          "application/json": {
+        /** @description Paginated list of users with organization and team role context */
+        UsersPageForAdmin: {
             /** @description Current page number of the result set. */
             page?: number;
             /** @description Number of items per page. */
@@ -801,238 +279,194 @@ export interface operations {
             total_count?: number;
             /** @description The data of the userspageforadmin. */
             data?: {
-              /**
-               * Format: uuid
-               * @description Unique identifier for the user
-               */
-              id: string;
-              /** @description User identifier (username or external ID) */
-              user_id: string;
-              /**
-               * @description Authentication provider (e.g., Google, Github)
-               * @example [
-               *   "local",
-               *   "github",
-               *   "google",
-               *   "twitter"
-               * ]
-               */
-              provider: string;
-              /**
-               * Format: email
-               * @description User's email address
-               */
-              email: string;
-              /** @description User's first name */
-              first_name: string;
-              /** @description User's last name */
-              last_name: string;
-              /**
-               * Format: uri
-               * @description URL to user's avatar image
-               */
-              avatar_url?: string;
-              /**
-               * @description User account status
-               * @enum {string}
-               */
-              status: "active" | "inactive" | "pending" | "anonymous";
-              /**
-               * @description User's biography or description
-               * @default
-               */
-              bio?: string;
-              /** @description User's country information stored as JSONB */
-              country?: { [key: string]: unknown };
-              /** @description User's region information stored as JSONB */
-              region?: { [key: string]: unknown };
-              /** @description User preferences stored as JSONB */
-              preferences?: {
-                /** @description The mesh adapters of the preference. */
-                meshAdapters?: { [key: string]: unknown }[];
-                grafana?: {
-                  /** @description Grafana URL for the user configuration. */
-                  grafanaURL?: string;
-                  /** @description Grafana API key for the user configuration. */
-                  grafanaAPIKey?: string;
-                  /** @description Selected Grafana board configurations for the user. */
-                  selectedBoardsConfigs?: {
-                    /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                    board?: { [key: string]: unknown };
-                    /** @description Panels selected for the Grafana board configuration. */
-                    panels?: { [key: string]: unknown }[];
-                    /** @description Template variables applied to the selected Grafana board configuration. */
-                    templateVars?: string[];
-                  }[];
-                };
-                prometheus?: {
-                  /** @description The prometheus u r l of the prometheus. */
-                  prometheusURL?: string;
-                  /** @description The selected prometheus boards configs of the prometheus. */
-                  selectedPrometheusBoardsConfigs?: {
-                    /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                    board?: { [key: string]: unknown };
-                    /** @description Panels selected for the Grafana board configuration. */
-                    panels?: { [key: string]: unknown }[];
-                    /** @description Template variables applied to the selected Grafana board configuration. */
-                    templateVars?: string[];
-                  }[];
-                };
-                loadTestPrefs?: {
-                  /** @description Concurrent requests */
-                  c?: number;
-                  /** @description Queries per second */
-                  qps?: number;
-                  /** @description Duration */
-                  t?: string;
-                  /** @description Load generator */
-                  gen?: string;
-                };
-                /** @description The anonymous usage stats of the preference. */
-                anonymousUsageStats: boolean;
-                /** @description The anonymous perf results of the preference. */
-                anonymousPerfResults: boolean;
-                /**
-                 * Format: date-time
-                 * @description Timestamp of when the resource was last updated.
-                 */
-                updated_at: string;
-                /** @description The dashboard preferences of the preference. */
-                dashboardPreferences: { [key: string]: unknown };
                 /**
                  * Format: uuid
-                 * @description ID of the associated selectedOrganization.
+                 * @description Unique identifier for the user
                  */
-                selectedOrganizationId: string;
-                /** @description The selected workspace for organizations of the preference. */
-                selectedWorkspaceForOrganizations: { [key: string]: string };
-                /** @description The users extension preferences of the preference. */
-                usersExtensionPreferences: { [key: string]: unknown };
-                /** @description The remote provider preferences of the preference. */
-                remoteProviderPreferences: { [key: string]: unknown };
-              };
-              /**
-               * Format: date-time
-               * @description Timestamp when user accepted terms and conditions
-               */
-              accepted_terms_at?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp of user's first login
-               */
-              first_login_time?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp of user's most recent login
-               */
-              last_login_time: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the user record was created
-               */
-              created_at: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the user record was last updated
-               */
-              updated_at: string;
-              /** @description Various online profiles associated with the user account */
-              socials?: {
-                /** @description The site of the social. */
-                site: string;
+                id: string;
+                /** @description User identifier (username or external ID) */
+                user_id: string;
+                /**
+                 * @description Authentication provider (e.g., Google, Github)
+                 * @example [
+                 *       "local",
+                 *       "github",
+                 *       "google",
+                 *       "twitter"
+                 *     ]
+                 */
+                provider: string;
+                /**
+                 * Format: email
+                 * @description User's email address
+                 */
+                email: string;
+                /** @description User's first name */
+                first_name: string;
+                /** @description User's last name */
+                last_name: string;
                 /**
                  * Format: uri
-                 * @description The link of the social.
+                 * @description URL to user's avatar image
                  */
-                link: string;
-              }[];
-              /**
-               * Format: date-time
-               * @description Timestamp when the user record was soft-deleted (null if not deleted)
-               */
-              deleted_at: string | null;
-              /**
-               * @description List of global roles assigned to the user
-               * @example [
-               *   "admin",
-               *   "meshmap"
-               * ]
-               */
-              role_names?: (
-                | "admin"
-                | "meshmap"
-                | "curator"
-                | "team admin"
-                | "workspace admin"
-                | "workspace manager"
-                | "organization admin"
-                | "user"
-              )[];
-              /** @description Teams the user belongs to with role information */
-              teams?: {
-                /** @description Team memberships for the user with their assigned roles. */
-                teams_with_roles?: { [key: string]: unknown }[];
-                /** @description Total number of team memberships returned for the user. */
-                total_count?: number;
-              };
-              /** @description Organizations the user belongs to with role information */
-              organizations?: {
-                /** @description Organization memberships for the user with their assigned roles. */
-                organizations_with_roles?: { [key: string]: unknown }[];
-                /** @description Total number of organization memberships returned for the user. */
-                total_count?: number;
-              };
+                avatar_url?: string;
+                /**
+                 * @description User account status
+                 * @enum {string}
+                 */
+                status: "active" | "inactive" | "pending" | "anonymous";
+                /**
+                 * @description User's biography or description
+                 * @default
+                 */
+                bio: string;
+                /** @description User's country information stored as JSONB */
+                country?: {
+                    [key: string]: unknown;
+                };
+                /** @description User's region information stored as JSONB */
+                region?: {
+                    [key: string]: unknown;
+                };
+                /** @description User preferences stored as JSONB */
+                preferences?: {
+                    /** @description The mesh adapters of the preference. */
+                    meshAdapters?: Record<string, never>[];
+                    grafana?: {
+                        /** @description Grafana URL for the user configuration. */
+                        grafanaURL?: string;
+                        /** @description Grafana API key for the user configuration. */
+                        grafanaAPIKey?: string;
+                        /** @description Selected Grafana board configurations for the user. */
+                        selectedBoardsConfigs?: {
+                            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                            board?: Record<string, never>;
+                            /** @description Panels selected for the Grafana board configuration. */
+                            panels?: Record<string, never>[];
+                            /** @description Template variables applied to the selected Grafana board configuration. */
+                            templateVars?: string[];
+                        }[];
+                    };
+                    prometheus?: {
+                        /** @description The prometheus u r l of the prometheus. */
+                        prometheusURL?: string;
+                        /** @description The selected prometheus boards configs of the prometheus. */
+                        selectedPrometheusBoardsConfigs?: {
+                            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                            board?: Record<string, never>;
+                            /** @description Panels selected for the Grafana board configuration. */
+                            panels?: Record<string, never>[];
+                            /** @description Template variables applied to the selected Grafana board configuration. */
+                            templateVars?: string[];
+                        }[];
+                    };
+                    loadTestPrefs?: {
+                        /** @description Concurrent requests */
+                        c?: number;
+                        /** @description Queries per second */
+                        qps?: number;
+                        /** @description Duration */
+                        t?: string;
+                        /** @description Load generator */
+                        gen?: string;
+                    };
+                    /** @description The anonymous usage stats of the preference. */
+                    anonymousUsageStats: boolean;
+                    /** @description The anonymous perf results of the preference. */
+                    anonymousPerfResults: boolean;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp of when the resource was last updated.
+                     */
+                    updated_at: string;
+                    /** @description The dashboard preferences of the preference. */
+                    dashboardPreferences: {
+                        [key: string]: unknown;
+                    };
+                    /**
+                     * Format: uuid
+                     * @description ID of the associated selectedOrganization.
+                     */
+                    selectedOrganizationId: string;
+                    /** @description The selected workspace for organizations of the preference. */
+                    selectedWorkspaceForOrganizations: {
+                        [key: string]: string;
+                    };
+                    /** @description The users extension preferences of the preference. */
+                    usersExtensionPreferences: {
+                        [key: string]: unknown;
+                    };
+                    /** @description The remote provider preferences of the preference. */
+                    remoteProviderPreferences: {
+                        [key: string]: unknown;
+                    };
+                };
+                /**
+                 * Format: date-time
+                 * @description Timestamp when user accepted terms and conditions
+                 */
+                accepted_terms_at?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp of user's first login
+                 */
+                first_login_time?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp of user's most recent login
+                 */
+                last_login_time: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the user record was created
+                 */
+                created_at: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the user record was last updated
+                 */
+                updated_at: string;
+                /** @description Various online profiles associated with the user account */
+                socials?: {
+                    /** @description The site of the social. */
+                    site: string;
+                    /**
+                     * Format: uri
+                     * @description The link of the social.
+                     */
+                    link: string;
+                }[];
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the user record was soft-deleted (null if not deleted)
+                 */
+                deleted_at: string | null;
+                /**
+                 * @description List of global roles assigned to the user
+                 * @example [
+                 *       "admin",
+                 *       "meshmap"
+                 *     ]
+                 */
+                role_names?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
+                /** @description Teams the user belongs to with role information */
+                teams?: {
+                    /** @description Team memberships for the user with their assigned roles. */
+                    teams_with_roles?: Record<string, never>[];
+                    /** @description Total number of team memberships returned for the user. */
+                    total_count?: number;
+                };
+                /** @description Organizations the user belongs to with role information */
+                organizations?: {
+                    /** @description Organization memberships for the user with their assigned roles. */
+                    organizations_with_roles?: Record<string, never>[];
+                    /** @description Total number of organization memberships returned for the user. */
+                    total_count?: number;
+                };
             }[];
-          };
         };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  /** Returns publicly viewable user records. */
-  getUsers: {
-    parameters: {
-      query: {
-        /** Get responses by page */
-        page?: string;
-        /** Get responses by pagesize */
-        pagesize?: string;
-        /** Get responses that match search param value */
-        search?: string;
-        /** Get ordered responses */
-        order?: string;
-        /** Get filtered reponses */
-        filter?: string;
-      };
-    };
-    responses: {
-      /** Paginated list of public users */
-      200: {
-        content: {
-          "application/json": {
+        /** @description Paginated list of public user records */
+        UsersPageForNonAdmin: {
             /** @description Current page number of the result set. */
             page?: number;
             /** @description Number of items per page. */
@@ -1041,637 +475,1372 @@ export interface operations {
             total_count?: number;
             /** @description The data of the userspagefornonadmin. */
             data?: {
-              /**
-               * Format: uuid
-               * @description Unique identifier for the user
-               */
-              id: string;
-              /** @description User identifier (username or external ID) */
-              user_id: string;
-              /**
-               * @description Authentication provider (e.g., Google, Github)
-               * @example [
-               *   "local",
-               *   "github",
-               *   "google",
-               *   "twitter"
-               * ]
-               */
-              provider: string;
-              /**
-               * Format: email
-               * @description User's email address
-               */
-              email: string;
-              /** @description User's first name */
-              first_name: string;
-              /** @description User's last name */
-              last_name: string;
-              /**
-               * Format: uri
-               * @description URL to user's avatar image
-               */
-              avatar_url?: string;
-              /**
-               * @description User account status
-               * @enum {string}
-               */
-              status: "active" | "inactive" | "pending" | "anonymous";
-              /**
-               * @description User's biography or description
-               * @default
-               */
-              bio?: string;
-              /** @description User's country information stored as JSONB */
-              country?: { [key: string]: unknown };
-              /** @description User's region information stored as JSONB */
-              region?: { [key: string]: unknown };
-              /** @description User preferences stored as JSONB */
-              preferences?: {
-                /** @description The mesh adapters of the preference. */
-                meshAdapters?: { [key: string]: unknown }[];
-                grafana?: {
-                  /** @description Grafana URL for the user configuration. */
-                  grafanaURL?: string;
-                  /** @description Grafana API key for the user configuration. */
-                  grafanaAPIKey?: string;
-                  /** @description Selected Grafana board configurations for the user. */
-                  selectedBoardsConfigs?: {
-                    /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                    board?: { [key: string]: unknown };
-                    /** @description Panels selected for the Grafana board configuration. */
-                    panels?: { [key: string]: unknown }[];
-                    /** @description Template variables applied to the selected Grafana board configuration. */
-                    templateVars?: string[];
-                  }[];
-                };
-                prometheus?: {
-                  /** @description The prometheus u r l of the prometheus. */
-                  prometheusURL?: string;
-                  /** @description The selected prometheus boards configs of the prometheus. */
-                  selectedPrometheusBoardsConfigs?: {
-                    /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                    board?: { [key: string]: unknown };
-                    /** @description Panels selected for the Grafana board configuration. */
-                    panels?: { [key: string]: unknown }[];
-                    /** @description Template variables applied to the selected Grafana board configuration. */
-                    templateVars?: string[];
-                  }[];
-                };
-                loadTestPrefs?: {
-                  /** @description Concurrent requests */
-                  c?: number;
-                  /** @description Queries per second */
-                  qps?: number;
-                  /** @description Duration */
-                  t?: string;
-                  /** @description Load generator */
-                  gen?: string;
-                };
-                /** @description The anonymous usage stats of the preference. */
-                anonymousUsageStats: boolean;
-                /** @description The anonymous perf results of the preference. */
-                anonymousPerfResults: boolean;
-                /**
-                 * Format: date-time
-                 * @description Timestamp of when the resource was last updated.
-                 */
-                updated_at: string;
-                /** @description The dashboard preferences of the preference. */
-                dashboardPreferences: { [key: string]: unknown };
                 /**
                  * Format: uuid
-                 * @description ID of the associated selectedOrganization.
+                 * @description Unique identifier for the user
                  */
-                selectedOrganizationId: string;
-                /** @description The selected workspace for organizations of the preference. */
-                selectedWorkspaceForOrganizations: { [key: string]: string };
-                /** @description The users extension preferences of the preference. */
-                usersExtensionPreferences: { [key: string]: unknown };
-                /** @description The remote provider preferences of the preference. */
-                remoteProviderPreferences: { [key: string]: unknown };
-              };
-              /**
-               * Format: date-time
-               * @description Timestamp when user accepted terms and conditions
-               */
-              accepted_terms_at?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp of user's first login
-               */
-              first_login_time?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp of user's most recent login
-               */
-              last_login_time: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the user record was created
-               */
-              created_at: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the user record was last updated
-               */
-              updated_at: string;
-              /** @description Various online profiles associated with the user account */
-              socials?: {
-                /** @description The site of the social. */
-                site: string;
+                id: string;
+                /** @description User identifier (username or external ID) */
+                user_id: string;
+                /**
+                 * @description Authentication provider (e.g., Google, Github)
+                 * @example [
+                 *       "local",
+                 *       "github",
+                 *       "google",
+                 *       "twitter"
+                 *     ]
+                 */
+                provider: string;
+                /**
+                 * Format: email
+                 * @description User's email address
+                 */
+                email: string;
+                /** @description User's first name */
+                first_name: string;
+                /** @description User's last name */
+                last_name: string;
                 /**
                  * Format: uri
-                 * @description The link of the social.
+                 * @description URL to user's avatar image
                  */
-                link: string;
-              }[];
-              /**
-               * Format: date-time
-               * @description Timestamp when the user record was soft-deleted (null if not deleted)
-               */
-              deleted_at: string | null;
-              /**
-               * @description List of global roles assigned to the user
-               * @example [
-               *   "admin",
-               *   "meshmap"
-               * ]
-               */
-              role_names?: (
-                | "admin"
-                | "meshmap"
-                | "curator"
-                | "team admin"
-                | "workspace admin"
-                | "workspace manager"
-                | "organization admin"
-                | "user"
-              )[];
-              /** @description Teams the user belongs to with role information */
-              teams?: {
-                /** @description Team memberships for the user with their assigned roles. */
-                teams_with_roles?: { [key: string]: unknown }[];
-                /** @description Total number of team memberships returned for the user. */
-                total_count?: number;
-              };
-              /** @description Organizations the user belongs to with role information */
-              organizations?: {
-                /** @description Organization memberships for the user with their assigned roles. */
-                organizations_with_roles?: { [key: string]: unknown }[];
-                /** @description Total number of organization memberships returned for the user. */
-                total_count?: number;
-              };
+                avatar_url?: string;
+                /**
+                 * @description User account status
+                 * @enum {string}
+                 */
+                status: "active" | "inactive" | "pending" | "anonymous";
+                /**
+                 * @description User's biography or description
+                 * @default
+                 */
+                bio: string;
+                /** @description User's country information stored as JSONB */
+                country?: {
+                    [key: string]: unknown;
+                };
+                /** @description User's region information stored as JSONB */
+                region?: {
+                    [key: string]: unknown;
+                };
+                /** @description User preferences stored as JSONB */
+                preferences?: {
+                    /** @description The mesh adapters of the preference. */
+                    meshAdapters?: Record<string, never>[];
+                    grafana?: {
+                        /** @description Grafana URL for the user configuration. */
+                        grafanaURL?: string;
+                        /** @description Grafana API key for the user configuration. */
+                        grafanaAPIKey?: string;
+                        /** @description Selected Grafana board configurations for the user. */
+                        selectedBoardsConfigs?: {
+                            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                            board?: Record<string, never>;
+                            /** @description Panels selected for the Grafana board configuration. */
+                            panels?: Record<string, never>[];
+                            /** @description Template variables applied to the selected Grafana board configuration. */
+                            templateVars?: string[];
+                        }[];
+                    };
+                    prometheus?: {
+                        /** @description The prometheus u r l of the prometheus. */
+                        prometheusURL?: string;
+                        /** @description The selected prometheus boards configs of the prometheus. */
+                        selectedPrometheusBoardsConfigs?: {
+                            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                            board?: Record<string, never>;
+                            /** @description Panels selected for the Grafana board configuration. */
+                            panels?: Record<string, never>[];
+                            /** @description Template variables applied to the selected Grafana board configuration. */
+                            templateVars?: string[];
+                        }[];
+                    };
+                    loadTestPrefs?: {
+                        /** @description Concurrent requests */
+                        c?: number;
+                        /** @description Queries per second */
+                        qps?: number;
+                        /** @description Duration */
+                        t?: string;
+                        /** @description Load generator */
+                        gen?: string;
+                    };
+                    /** @description The anonymous usage stats of the preference. */
+                    anonymousUsageStats: boolean;
+                    /** @description The anonymous perf results of the preference. */
+                    anonymousPerfResults: boolean;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp of when the resource was last updated.
+                     */
+                    updated_at: string;
+                    /** @description The dashboard preferences of the preference. */
+                    dashboardPreferences: {
+                        [key: string]: unknown;
+                    };
+                    /**
+                     * Format: uuid
+                     * @description ID of the associated selectedOrganization.
+                     */
+                    selectedOrganizationId: string;
+                    /** @description The selected workspace for organizations of the preference. */
+                    selectedWorkspaceForOrganizations: {
+                        [key: string]: string;
+                    };
+                    /** @description The users extension preferences of the preference. */
+                    usersExtensionPreferences: {
+                        [key: string]: unknown;
+                    };
+                    /** @description The remote provider preferences of the preference. */
+                    remoteProviderPreferences: {
+                        [key: string]: unknown;
+                    };
+                };
+                /**
+                 * Format: date-time
+                 * @description Timestamp when user accepted terms and conditions
+                 */
+                accepted_terms_at?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp of user's first login
+                 */
+                first_login_time?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp of user's most recent login
+                 */
+                last_login_time: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the user record was created
+                 */
+                created_at: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the user record was last updated
+                 */
+                updated_at: string;
+                /** @description Various online profiles associated with the user account */
+                socials?: {
+                    /** @description The site of the social. */
+                    site: string;
+                    /**
+                     * Format: uri
+                     * @description The link of the social.
+                     */
+                    link: string;
+                }[];
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the user record was soft-deleted (null if not deleted)
+                 */
+                deleted_at: string | null;
+                /**
+                 * @description List of global roles assigned to the user
+                 * @example [
+                 *       "admin",
+                 *       "meshmap"
+                 *     ]
+                 */
+                role_names?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
+                /** @description Teams the user belongs to with role information */
+                teams?: {
+                    /** @description Team memberships for the user with their assigned roles. */
+                    teams_with_roles?: Record<string, never>[];
+                    /** @description Total number of team memberships returned for the user. */
+                    total_count?: number;
+                };
+                /** @description Organizations the user belongs to with role information */
+                organizations?: {
+                    /** @description Organization memberships for the user with their assigned roles. */
+                    organizations_with_roles?: Record<string, never>[];
+                    /** @description Total number of organization memberships returned for the user. */
+                    total_count?: number;
+                };
             }[];
-          };
         };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
+        Preference: {
+            /** @description The mesh adapters of the preference. */
+            meshAdapters?: Record<string, never>[];
+            grafana?: {
+                /** @description Grafana URL for the user configuration. */
+                grafanaURL?: string;
+                /** @description Grafana API key for the user configuration. */
+                grafanaAPIKey?: string;
+                /** @description Selected Grafana board configurations for the user. */
+                selectedBoardsConfigs?: {
+                    /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                    board?: Record<string, never>;
+                    /** @description Panels selected for the Grafana board configuration. */
+                    panels?: Record<string, never>[];
+                    /** @description Template variables applied to the selected Grafana board configuration. */
+                    templateVars?: string[];
+                }[];
+            };
+            prometheus?: {
+                /** @description The prometheus u r l of the prometheus. */
+                prometheusURL?: string;
+                /** @description The selected prometheus boards configs of the prometheus. */
+                selectedPrometheusBoardsConfigs?: {
+                    /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                    board?: Record<string, never>;
+                    /** @description Panels selected for the Grafana board configuration. */
+                    panels?: Record<string, never>[];
+                    /** @description Template variables applied to the selected Grafana board configuration. */
+                    templateVars?: string[];
+                }[];
+            };
+            loadTestPrefs?: {
+                /** @description Concurrent requests */
+                c?: number;
+                /** @description Queries per second */
+                qps?: number;
+                /** @description Duration */
+                t?: string;
+                /** @description Load generator */
+                gen?: string;
+            };
+            /** @description The anonymous usage stats of the preference. */
+            anonymousUsageStats: boolean;
+            /** @description The anonymous perf results of the preference. */
+            anonymousPerfResults: boolean;
+            /**
+             * Format: date-time
+             * @description Timestamp of when the resource was last updated.
+             */
+            updated_at: string;
+            /** @description The dashboard preferences of the preference. */
+            dashboardPreferences: {
+                [key: string]: unknown;
+            };
+            /**
+             * Format: uuid
+             * @description ID of the associated selectedOrganization.
+             */
+            selectedOrganizationId: string;
+            /** @description The selected workspace for organizations of the preference. */
+            selectedWorkspaceForOrganizations: {
+                [key: string]: string;
+            };
+            /** @description The users extension preferences of the preference. */
+            usersExtensionPreferences: {
+                [key: string]: unknown;
+            };
+            /** @description The remote provider preferences of the preference. */
+            remoteProviderPreferences: {
+                [key: string]: unknown;
+            };
         };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
+        /** @description Placeholder for Adapter struct definition. */
+        Adapter: Record<string, never>;
+        Grafana: {
+            /** @description Grafana URL for the user configuration. */
+            grafanaURL?: string;
+            /** @description Grafana API key for the user configuration. */
+            grafanaAPIKey?: string;
+            /** @description Selected Grafana board configurations for the user. */
+            selectedBoardsConfigs?: {
+                /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                board?: Record<string, never>;
+                /** @description Panels selected for the Grafana board configuration. */
+                panels?: Record<string, never>[];
+                /** @description Template variables applied to the selected Grafana board configuration. */
+                templateVars?: string[];
+            }[];
         };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
+        SelectedGrafanaConfig: {
+            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+            board?: Record<string, never>;
+            /** @description Panels selected for the Grafana board configuration. */
+            panels?: Record<string, never>[];
+            /** @description Template variables applied to the selected Grafana board configuration. */
+            templateVars?: string[];
         };
-      };
+        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+        GrafanaBoard: Record<string, never>;
+        /** @description Grafana panel structure imported from github.com/grafana-tools/sdk */
+        Panel: Record<string, never>;
+        Prometheus: {
+            /** @description The prometheus u r l of the prometheus. */
+            prometheusURL?: string;
+            /** @description The selected prometheus boards configs of the prometheus. */
+            selectedPrometheusBoardsConfigs?: {
+                /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                board?: Record<string, never>;
+                /** @description Panels selected for the Grafana board configuration. */
+                panels?: Record<string, never>[];
+                /** @description Template variables applied to the selected Grafana board configuration. */
+                templateVars?: string[];
+            }[];
+        };
+        LoadTestPreferences: {
+            /** @description Concurrent requests */
+            c?: number;
+            /** @description Queries per second */
+            qps?: number;
+            /** @description Duration */
+            t?: string;
+            /** @description Load generator */
+            gen?: string;
+        };
+        /** @description Various online profiles associated with the user account, like GitHub, LinkedIn, X, and so on. */
+        Social: {
+            /** @description The site of the social. */
+            site: string;
+            /**
+             * Format: uri
+             * @description The link of the social.
+             */
+            link: string;
+        };
     };
-  };
-  getUserProfileById: {
+    responses: {
+        /** @description Invalid request body or request param */
+        400: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Expired JWT token used or insufficient privilege */
+        401: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Result not found */
+        404: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Internal server error */
+        500: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+    };
     parameters: {
-      path: {
-        /** User ID */
+        /** @description User ID */
         id: string;
-      };
+        /** @description Organization ID */
+        orgId: string;
+        /** @description Get responses by page */
+        page: string;
+        /** @description Get responses by pagesize */
+        pagesize: string;
+        /** @description Get responses that match search param value */
+        search: string;
+        /** @description Get ordered responses */
+        order: string;
+        /** @description Get filtered reponses */
+        filter: string;
+        /** @description Optional team filter when listing organization users */
+        teamId: string;
     };
-    responses: {
-      /** User profile for the requested ID */
-      200: {
-        content: {
-          "application/json": {
-            /**
-             * Format: uuid
-             * @description Unique identifier for the user
-             */
-            id: string;
-            /** @description User identifier (username or external ID) */
-            user_id: string;
-            /**
-             * @description Authentication provider (e.g., Google, Github)
-             * @example [
-             *   "local",
-             *   "github",
-             *   "google",
-             *   "twitter"
-             * ]
-             */
-            provider: string;
-            /**
-             * Format: email
-             * @description User's email address
-             */
-            email: string;
-            /** @description User's first name */
-            first_name: string;
-            /** @description User's last name */
-            last_name: string;
-            /**
-             * Format: uri
-             * @description URL to user's avatar image
-             */
-            avatar_url?: string;
-            /**
-             * @description User account status
-             * @enum {string}
-             */
-            status: "active" | "inactive" | "pending" | "anonymous";
-            /**
-             * @description User's biography or description
-             * @default
-             */
-            bio?: string;
-            /** @description User's country information stored as JSONB */
-            country?: { [key: string]: unknown };
-            /** @description User's region information stored as JSONB */
-            region?: { [key: string]: unknown };
-            /** @description User preferences stored as JSONB */
-            preferences?: {
-              /** @description The mesh adapters of the preference. */
-              meshAdapters?: { [key: string]: unknown }[];
-              grafana?: {
-                /** @description Grafana URL for the user configuration. */
-                grafanaURL?: string;
-                /** @description Grafana API key for the user configuration. */
-                grafanaAPIKey?: string;
-                /** @description Selected Grafana board configurations for the user. */
-                selectedBoardsConfigs?: {
-                  /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                  board?: { [key: string]: unknown };
-                  /** @description Panels selected for the Grafana board configuration. */
-                  panels?: { [key: string]: unknown }[];
-                  /** @description Template variables applied to the selected Grafana board configuration. */
-                  templateVars?: string[];
-                }[];
-              };
-              prometheus?: {
-                /** @description The prometheus u r l of the prometheus. */
-                prometheusURL?: string;
-                /** @description The selected prometheus boards configs of the prometheus. */
-                selectedPrometheusBoardsConfigs?: {
-                  /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                  board?: { [key: string]: unknown };
-                  /** @description Panels selected for the Grafana board configuration. */
-                  panels?: { [key: string]: unknown }[];
-                  /** @description Template variables applied to the selected Grafana board configuration. */
-                  templateVars?: string[];
-                }[];
-              };
-              loadTestPrefs?: {
-                /** @description Concurrent requests */
-                c?: number;
-                /** @description Queries per second */
-                qps?: number;
-                /** @description Duration */
-                t?: string;
-                /** @description Load generator */
-                gen?: string;
-              };
-              /** @description The anonymous usage stats of the preference. */
-              anonymousUsageStats: boolean;
-              /** @description The anonymous perf results of the preference. */
-              anonymousPerfResults: boolean;
-              /**
-               * Format: date-time
-               * @description Timestamp of when the resource was last updated.
-               */
-              updated_at: string;
-              /** @description The dashboard preferences of the preference. */
-              dashboardPreferences: { [key: string]: unknown };
-              /**
-               * Format: uuid
-               * @description ID of the associated selectedOrganization.
-               */
-              selectedOrganizationId: string;
-              /** @description The selected workspace for organizations of the preference. */
-              selectedWorkspaceForOrganizations: { [key: string]: string };
-              /** @description The users extension preferences of the preference. */
-              usersExtensionPreferences: { [key: string]: unknown };
-              /** @description The remote provider preferences of the preference. */
-              remoteProviderPreferences: { [key: string]: unknown };
-            };
-            /**
-             * Format: date-time
-             * @description Timestamp when user accepted terms and conditions
-             */
-            accepted_terms_at?: string;
-            /**
-             * Format: date-time
-             * @description Timestamp of user's first login
-             */
-            first_login_time?: string;
-            /**
-             * Format: date-time
-             * @description Timestamp of user's most recent login
-             */
-            last_login_time: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the user record was created
-             */
-            created_at: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the user record was last updated
-             */
-            updated_at: string;
-            /** @description Various online profiles associated with the user account */
-            socials?: {
-              /** @description The site of the social. */
-              site: string;
-              /**
-               * Format: uri
-               * @description The link of the social.
-               */
-              link: string;
-            }[];
-            /**
-             * Format: date-time
-             * @description Timestamp when the user record was soft-deleted (null if not deleted)
-             */
-            deleted_at: string | null;
-            /**
-             * @description List of global roles assigned to the user
-             * @example [
-             *   "admin",
-             *   "meshmap"
-             * ]
-             */
-            role_names?: (
-              | "admin"
-              | "meshmap"
-              | "curator"
-              | "team admin"
-              | "workspace admin"
-              | "workspace manager"
-              | "organization admin"
-              | "user"
-            )[];
-            /** @description Teams the user belongs to with role information */
-            teams?: {
-              /** @description Team memberships for the user with their assigned roles. */
-              teams_with_roles?: { [key: string]: unknown }[];
-              /** @description Total number of team memberships returned for the user. */
-              total_count?: number;
-            };
-            /** @description Organizations the user belongs to with role information */
-            organizations?: {
-              /** @description Organization memberships for the user with their assigned roles. */
-              organizations_with_roles?: { [key: string]: unknown }[];
-              /** @description Total number of organization memberships returned for the user. */
-              total_count?: number;
-            };
-          };
-        };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  getUser: {
-    responses: {
-      /** Current user profile and role context */
-      200: {
-        content: {
-          "application/json": {
-            /**
-             * Format: uuid
-             * @description Unique identifier for the user
-             */
-            id: string;
-            /** @description User identifier (username or external ID) */
-            user_id: string;
-            /**
-             * @description Authentication provider (e.g., Google, Github)
-             * @example [
-             *   "local",
-             *   "github",
-             *   "google",
-             *   "twitter"
-             * ]
-             */
-            provider: string;
-            /**
-             * Format: email
-             * @description User's email address
-             */
-            email: string;
-            /** @description User's first name */
-            first_name: string;
-            /** @description User's last name */
-            last_name: string;
-            /**
-             * Format: uri
-             * @description URL to user's avatar image
-             */
-            avatar_url?: string;
-            /**
-             * @description User account status
-             * @enum {string}
-             */
-            status: "active" | "inactive" | "pending" | "anonymous";
-            /**
-             * @description User's biography or description
-             * @default
-             */
-            bio?: string;
-            /** @description User's country information stored as JSONB */
-            country?: { [key: string]: unknown };
-            /** @description User's region information stored as JSONB */
-            region?: { [key: string]: unknown };
-            /** @description User preferences stored as JSONB */
-            preferences?: {
-              /** @description The mesh adapters of the preference. */
-              meshAdapters?: { [key: string]: unknown }[];
-              grafana?: {
-                /** @description Grafana URL for the user configuration. */
-                grafanaURL?: string;
-                /** @description Grafana API key for the user configuration. */
-                grafanaAPIKey?: string;
-                /** @description Selected Grafana board configurations for the user. */
-                selectedBoardsConfigs?: {
-                  /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                  board?: { [key: string]: unknown };
-                  /** @description Panels selected for the Grafana board configuration. */
-                  panels?: { [key: string]: unknown }[];
-                  /** @description Template variables applied to the selected Grafana board configuration. */
-                  templateVars?: string[];
-                }[];
-              };
-              prometheus?: {
-                /** @description The prometheus u r l of the prometheus. */
-                prometheusURL?: string;
-                /** @description The selected prometheus boards configs of the prometheus. */
-                selectedPrometheusBoardsConfigs?: {
-                  /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
-                  board?: { [key: string]: unknown };
-                  /** @description Panels selected for the Grafana board configuration. */
-                  panels?: { [key: string]: unknown }[];
-                  /** @description Template variables applied to the selected Grafana board configuration. */
-                  templateVars?: string[];
-                }[];
-              };
-              loadTestPrefs?: {
-                /** @description Concurrent requests */
-                c?: number;
-                /** @description Queries per second */
-                qps?: number;
-                /** @description Duration */
-                t?: string;
-                /** @description Load generator */
-                gen?: string;
-              };
-              /** @description The anonymous usage stats of the preference. */
-              anonymousUsageStats: boolean;
-              /** @description The anonymous perf results of the preference. */
-              anonymousPerfResults: boolean;
-              /**
-               * Format: date-time
-               * @description Timestamp of when the resource was last updated.
-               */
-              updated_at: string;
-              /** @description The dashboard preferences of the preference. */
-              dashboardPreferences: { [key: string]: unknown };
-              /**
-               * Format: uuid
-               * @description ID of the associated selectedOrganization.
-               */
-              selectedOrganizationId: string;
-              /** @description The selected workspace for organizations of the preference. */
-              selectedWorkspaceForOrganizations: { [key: string]: string };
-              /** @description The users extension preferences of the preference. */
-              usersExtensionPreferences: { [key: string]: unknown };
-              /** @description The remote provider preferences of the preference. */
-              remoteProviderPreferences: { [key: string]: unknown };
-            };
-            /**
-             * Format: date-time
-             * @description Timestamp when user accepted terms and conditions
-             */
-            accepted_terms_at?: string;
-            /**
-             * Format: date-time
-             * @description Timestamp of user's first login
-             */
-            first_login_time?: string;
-            /**
-             * Format: date-time
-             * @description Timestamp of user's most recent login
-             */
-            last_login_time: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the user record was created
-             */
-            created_at: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the user record was last updated
-             */
-            updated_at: string;
-            /** @description Various online profiles associated with the user account */
-            socials?: {
-              /** @description The site of the social. */
-              site: string;
-              /**
-               * Format: uri
-               * @description The link of the social.
-               */
-              link: string;
-            }[];
-            /**
-             * Format: date-time
-             * @description Timestamp when the user record was soft-deleted (null if not deleted)
-             */
-            deleted_at: string | null;
-            /**
-             * @description List of global roles assigned to the user
-             * @example [
-             *   "admin",
-             *   "meshmap"
-             * ]
-             */
-            role_names?: (
-              | "admin"
-              | "meshmap"
-              | "curator"
-              | "team admin"
-              | "workspace admin"
-              | "workspace manager"
-              | "organization admin"
-              | "user"
-            )[];
-            /** @description Teams the user belongs to with role information */
-            teams?: {
-              /** @description Team memberships for the user with their assigned roles. */
-              teams_with_roles?: { [key: string]: unknown }[];
-              /** @description Total number of team memberships returned for the user. */
-              total_count?: number;
-            };
-            /** @description Organizations the user belongs to with role information */
-            organizations?: {
-              /** @description Organization memberships for the user with their assigned roles. */
-              organizations_with_roles?: { [key: string]: unknown }[];
-              /** @description Total number of organization memberships returned for the user. */
-              total_count?: number;
-            };
-          };
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
-
-export interface external {}
+export type $defs = Record<string, never>;
+export interface operations {
+    getUsersForOrg: {
+        parameters: {
+            query?: {
+                /** @description Get responses by page */
+                page?: string;
+                /** @description Get responses by pagesize */
+                pagesize?: string;
+                /** @description Get responses that match search param value */
+                search?: string;
+                /** @description Get ordered responses */
+                order?: string;
+                /** @description Get filtered reponses */
+                filter?: string;
+                /** @description Optional team filter when listing organization users */
+                teamId?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Organization ID */
+                orgId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated list of organization users */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Current page number of the result set. */
+                        page?: number;
+                        /** @description Number of items per page. */
+                        page_size?: number;
+                        /** @description Total number of items available. */
+                        total_count?: number;
+                        /** @description The data of the userspageforadmin. */
+                        data?: {
+                            /**
+                             * Format: uuid
+                             * @description Unique identifier for the user
+                             */
+                            id: string;
+                            /** @description User identifier (username or external ID) */
+                            user_id: string;
+                            /**
+                             * @description Authentication provider (e.g., Google, Github)
+                             * @example [
+                             *       "local",
+                             *       "github",
+                             *       "google",
+                             *       "twitter"
+                             *     ]
+                             */
+                            provider: string;
+                            /**
+                             * Format: email
+                             * @description User's email address
+                             */
+                            email: string;
+                            /** @description User's first name */
+                            first_name: string;
+                            /** @description User's last name */
+                            last_name: string;
+                            /**
+                             * Format: uri
+                             * @description URL to user's avatar image
+                             */
+                            avatar_url?: string;
+                            /**
+                             * @description User account status
+                             * @enum {string}
+                             */
+                            status: "active" | "inactive" | "pending" | "anonymous";
+                            /**
+                             * @description User's biography or description
+                             * @default
+                             */
+                            bio: string;
+                            /** @description User's country information stored as JSONB */
+                            country?: {
+                                [key: string]: unknown;
+                            };
+                            /** @description User's region information stored as JSONB */
+                            region?: {
+                                [key: string]: unknown;
+                            };
+                            /** @description User preferences stored as JSONB */
+                            preferences?: {
+                                /** @description The mesh adapters of the preference. */
+                                meshAdapters?: Record<string, never>[];
+                                grafana?: {
+                                    /** @description Grafana URL for the user configuration. */
+                                    grafanaURL?: string;
+                                    /** @description Grafana API key for the user configuration. */
+                                    grafanaAPIKey?: string;
+                                    /** @description Selected Grafana board configurations for the user. */
+                                    selectedBoardsConfigs?: {
+                                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                        board?: Record<string, never>;
+                                        /** @description Panels selected for the Grafana board configuration. */
+                                        panels?: Record<string, never>[];
+                                        /** @description Template variables applied to the selected Grafana board configuration. */
+                                        templateVars?: string[];
+                                    }[];
+                                };
+                                prometheus?: {
+                                    /** @description The prometheus u r l of the prometheus. */
+                                    prometheusURL?: string;
+                                    /** @description The selected prometheus boards configs of the prometheus. */
+                                    selectedPrometheusBoardsConfigs?: {
+                                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                        board?: Record<string, never>;
+                                        /** @description Panels selected for the Grafana board configuration. */
+                                        panels?: Record<string, never>[];
+                                        /** @description Template variables applied to the selected Grafana board configuration. */
+                                        templateVars?: string[];
+                                    }[];
+                                };
+                                loadTestPrefs?: {
+                                    /** @description Concurrent requests */
+                                    c?: number;
+                                    /** @description Queries per second */
+                                    qps?: number;
+                                    /** @description Duration */
+                                    t?: string;
+                                    /** @description Load generator */
+                                    gen?: string;
+                                };
+                                /** @description The anonymous usage stats of the preference. */
+                                anonymousUsageStats: boolean;
+                                /** @description The anonymous perf results of the preference. */
+                                anonymousPerfResults: boolean;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp of when the resource was last updated.
+                                 */
+                                updated_at: string;
+                                /** @description The dashboard preferences of the preference. */
+                                dashboardPreferences: {
+                                    [key: string]: unknown;
+                                };
+                                /**
+                                 * Format: uuid
+                                 * @description ID of the associated selectedOrganization.
+                                 */
+                                selectedOrganizationId: string;
+                                /** @description The selected workspace for organizations of the preference. */
+                                selectedWorkspaceForOrganizations: {
+                                    [key: string]: string;
+                                };
+                                /** @description The users extension preferences of the preference. */
+                                usersExtensionPreferences: {
+                                    [key: string]: unknown;
+                                };
+                                /** @description The remote provider preferences of the preference. */
+                                remoteProviderPreferences: {
+                                    [key: string]: unknown;
+                                };
+                            };
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when user accepted terms and conditions
+                             */
+                            accepted_terms_at?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of user's first login
+                             */
+                            first_login_time?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of user's most recent login
+                             */
+                            last_login_time: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was created
+                             */
+                            created_at: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was last updated
+                             */
+                            updated_at: string;
+                            /** @description Various online profiles associated with the user account */
+                            socials?: {
+                                /** @description The site of the social. */
+                                site: string;
+                                /**
+                                 * Format: uri
+                                 * @description The link of the social.
+                                 */
+                                link: string;
+                            }[];
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was soft-deleted (null if not deleted)
+                             */
+                            deleted_at: string | null;
+                            /**
+                             * @description List of global roles assigned to the user
+                             * @example [
+                             *       "admin",
+                             *       "meshmap"
+                             *     ]
+                             */
+                            role_names?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
+                            /** @description Teams the user belongs to with role information */
+                            teams?: {
+                                /** @description Team memberships for the user with their assigned roles. */
+                                teams_with_roles?: Record<string, never>[];
+                                /** @description Total number of team memberships returned for the user. */
+                                total_count?: number;
+                            };
+                            /** @description Organizations the user belongs to with role information */
+                            organizations?: {
+                                /** @description Organization memberships for the user with their assigned roles. */
+                                organizations_with_roles?: Record<string, never>[];
+                                /** @description Total number of organization memberships returned for the user. */
+                                total_count?: number;
+                            };
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getUsers: {
+        parameters: {
+            query?: {
+                /** @description Get responses by page */
+                page?: string;
+                /** @description Get responses by pagesize */
+                pagesize?: string;
+                /** @description Get responses that match search param value */
+                search?: string;
+                /** @description Get ordered responses */
+                order?: string;
+                /** @description Get filtered reponses */
+                filter?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated list of public users */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Current page number of the result set. */
+                        page?: number;
+                        /** @description Number of items per page. */
+                        page_size?: number;
+                        /** @description Total number of items available. */
+                        total_count?: number;
+                        /** @description The data of the userspagefornonadmin. */
+                        data?: {
+                            /**
+                             * Format: uuid
+                             * @description Unique identifier for the user
+                             */
+                            id: string;
+                            /** @description User identifier (username or external ID) */
+                            user_id: string;
+                            /**
+                             * @description Authentication provider (e.g., Google, Github)
+                             * @example [
+                             *       "local",
+                             *       "github",
+                             *       "google",
+                             *       "twitter"
+                             *     ]
+                             */
+                            provider: string;
+                            /**
+                             * Format: email
+                             * @description User's email address
+                             */
+                            email: string;
+                            /** @description User's first name */
+                            first_name: string;
+                            /** @description User's last name */
+                            last_name: string;
+                            /**
+                             * Format: uri
+                             * @description URL to user's avatar image
+                             */
+                            avatar_url?: string;
+                            /**
+                             * @description User account status
+                             * @enum {string}
+                             */
+                            status: "active" | "inactive" | "pending" | "anonymous";
+                            /**
+                             * @description User's biography or description
+                             * @default
+                             */
+                            bio: string;
+                            /** @description User's country information stored as JSONB */
+                            country?: {
+                                [key: string]: unknown;
+                            };
+                            /** @description User's region information stored as JSONB */
+                            region?: {
+                                [key: string]: unknown;
+                            };
+                            /** @description User preferences stored as JSONB */
+                            preferences?: {
+                                /** @description The mesh adapters of the preference. */
+                                meshAdapters?: Record<string, never>[];
+                                grafana?: {
+                                    /** @description Grafana URL for the user configuration. */
+                                    grafanaURL?: string;
+                                    /** @description Grafana API key for the user configuration. */
+                                    grafanaAPIKey?: string;
+                                    /** @description Selected Grafana board configurations for the user. */
+                                    selectedBoardsConfigs?: {
+                                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                        board?: Record<string, never>;
+                                        /** @description Panels selected for the Grafana board configuration. */
+                                        panels?: Record<string, never>[];
+                                        /** @description Template variables applied to the selected Grafana board configuration. */
+                                        templateVars?: string[];
+                                    }[];
+                                };
+                                prometheus?: {
+                                    /** @description The prometheus u r l of the prometheus. */
+                                    prometheusURL?: string;
+                                    /** @description The selected prometheus boards configs of the prometheus. */
+                                    selectedPrometheusBoardsConfigs?: {
+                                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                        board?: Record<string, never>;
+                                        /** @description Panels selected for the Grafana board configuration. */
+                                        panels?: Record<string, never>[];
+                                        /** @description Template variables applied to the selected Grafana board configuration. */
+                                        templateVars?: string[];
+                                    }[];
+                                };
+                                loadTestPrefs?: {
+                                    /** @description Concurrent requests */
+                                    c?: number;
+                                    /** @description Queries per second */
+                                    qps?: number;
+                                    /** @description Duration */
+                                    t?: string;
+                                    /** @description Load generator */
+                                    gen?: string;
+                                };
+                                /** @description The anonymous usage stats of the preference. */
+                                anonymousUsageStats: boolean;
+                                /** @description The anonymous perf results of the preference. */
+                                anonymousPerfResults: boolean;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp of when the resource was last updated.
+                                 */
+                                updated_at: string;
+                                /** @description The dashboard preferences of the preference. */
+                                dashboardPreferences: {
+                                    [key: string]: unknown;
+                                };
+                                /**
+                                 * Format: uuid
+                                 * @description ID of the associated selectedOrganization.
+                                 */
+                                selectedOrganizationId: string;
+                                /** @description The selected workspace for organizations of the preference. */
+                                selectedWorkspaceForOrganizations: {
+                                    [key: string]: string;
+                                };
+                                /** @description The users extension preferences of the preference. */
+                                usersExtensionPreferences: {
+                                    [key: string]: unknown;
+                                };
+                                /** @description The remote provider preferences of the preference. */
+                                remoteProviderPreferences: {
+                                    [key: string]: unknown;
+                                };
+                            };
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when user accepted terms and conditions
+                             */
+                            accepted_terms_at?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of user's first login
+                             */
+                            first_login_time?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of user's most recent login
+                             */
+                            last_login_time: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was created
+                             */
+                            created_at: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was last updated
+                             */
+                            updated_at: string;
+                            /** @description Various online profiles associated with the user account */
+                            socials?: {
+                                /** @description The site of the social. */
+                                site: string;
+                                /**
+                                 * Format: uri
+                                 * @description The link of the social.
+                                 */
+                                link: string;
+                            }[];
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was soft-deleted (null if not deleted)
+                             */
+                            deleted_at: string | null;
+                            /**
+                             * @description List of global roles assigned to the user
+                             * @example [
+                             *       "admin",
+                             *       "meshmap"
+                             *     ]
+                             */
+                            role_names?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
+                            /** @description Teams the user belongs to with role information */
+                            teams?: {
+                                /** @description Team memberships for the user with their assigned roles. */
+                                teams_with_roles?: Record<string, never>[];
+                                /** @description Total number of team memberships returned for the user. */
+                                total_count?: number;
+                            };
+                            /** @description Organizations the user belongs to with role information */
+                            organizations?: {
+                                /** @description Organization memberships for the user with their assigned roles. */
+                                organizations_with_roles?: Record<string, never>[];
+                                /** @description Total number of organization memberships returned for the user. */
+                                total_count?: number;
+                            };
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getUserProfileById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description User ID */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description User profile for the requested ID */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Unique identifier for the user
+                         */
+                        id: string;
+                        /** @description User identifier (username or external ID) */
+                        user_id: string;
+                        /**
+                         * @description Authentication provider (e.g., Google, Github)
+                         * @example [
+                         *       "local",
+                         *       "github",
+                         *       "google",
+                         *       "twitter"
+                         *     ]
+                         */
+                        provider: string;
+                        /**
+                         * Format: email
+                         * @description User's email address
+                         */
+                        email: string;
+                        /** @description User's first name */
+                        first_name: string;
+                        /** @description User's last name */
+                        last_name: string;
+                        /**
+                         * Format: uri
+                         * @description URL to user's avatar image
+                         */
+                        avatar_url?: string;
+                        /**
+                         * @description User account status
+                         * @enum {string}
+                         */
+                        status: "active" | "inactive" | "pending" | "anonymous";
+                        /**
+                         * @description User's biography or description
+                         * @default
+                         */
+                        bio: string;
+                        /** @description User's country information stored as JSONB */
+                        country?: {
+                            [key: string]: unknown;
+                        };
+                        /** @description User's region information stored as JSONB */
+                        region?: {
+                            [key: string]: unknown;
+                        };
+                        /** @description User preferences stored as JSONB */
+                        preferences?: {
+                            /** @description The mesh adapters of the preference. */
+                            meshAdapters?: Record<string, never>[];
+                            grafana?: {
+                                /** @description Grafana URL for the user configuration. */
+                                grafanaURL?: string;
+                                /** @description Grafana API key for the user configuration. */
+                                grafanaAPIKey?: string;
+                                /** @description Selected Grafana board configurations for the user. */
+                                selectedBoardsConfigs?: {
+                                    /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                    board?: Record<string, never>;
+                                    /** @description Panels selected for the Grafana board configuration. */
+                                    panels?: Record<string, never>[];
+                                    /** @description Template variables applied to the selected Grafana board configuration. */
+                                    templateVars?: string[];
+                                }[];
+                            };
+                            prometheus?: {
+                                /** @description The prometheus u r l of the prometheus. */
+                                prometheusURL?: string;
+                                /** @description The selected prometheus boards configs of the prometheus. */
+                                selectedPrometheusBoardsConfigs?: {
+                                    /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                    board?: Record<string, never>;
+                                    /** @description Panels selected for the Grafana board configuration. */
+                                    panels?: Record<string, never>[];
+                                    /** @description Template variables applied to the selected Grafana board configuration. */
+                                    templateVars?: string[];
+                                }[];
+                            };
+                            loadTestPrefs?: {
+                                /** @description Concurrent requests */
+                                c?: number;
+                                /** @description Queries per second */
+                                qps?: number;
+                                /** @description Duration */
+                                t?: string;
+                                /** @description Load generator */
+                                gen?: string;
+                            };
+                            /** @description The anonymous usage stats of the preference. */
+                            anonymousUsageStats: boolean;
+                            /** @description The anonymous perf results of the preference. */
+                            anonymousPerfResults: boolean;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of when the resource was last updated.
+                             */
+                            updated_at: string;
+                            /** @description The dashboard preferences of the preference. */
+                            dashboardPreferences: {
+                                [key: string]: unknown;
+                            };
+                            /**
+                             * Format: uuid
+                             * @description ID of the associated selectedOrganization.
+                             */
+                            selectedOrganizationId: string;
+                            /** @description The selected workspace for organizations of the preference. */
+                            selectedWorkspaceForOrganizations: {
+                                [key: string]: string;
+                            };
+                            /** @description The users extension preferences of the preference. */
+                            usersExtensionPreferences: {
+                                [key: string]: unknown;
+                            };
+                            /** @description The remote provider preferences of the preference. */
+                            remoteProviderPreferences: {
+                                [key: string]: unknown;
+                            };
+                        };
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when user accepted terms and conditions
+                         */
+                        accepted_terms_at?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp of user's first login
+                         */
+                        first_login_time?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp of user's most recent login
+                         */
+                        last_login_time: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the user record was created
+                         */
+                        created_at: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the user record was last updated
+                         */
+                        updated_at: string;
+                        /** @description Various online profiles associated with the user account */
+                        socials?: {
+                            /** @description The site of the social. */
+                            site: string;
+                            /**
+                             * Format: uri
+                             * @description The link of the social.
+                             */
+                            link: string;
+                        }[];
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the user record was soft-deleted (null if not deleted)
+                         */
+                        deleted_at: string | null;
+                        /**
+                         * @description List of global roles assigned to the user
+                         * @example [
+                         *       "admin",
+                         *       "meshmap"
+                         *     ]
+                         */
+                        role_names?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
+                        /** @description Teams the user belongs to with role information */
+                        teams?: {
+                            /** @description Team memberships for the user with their assigned roles. */
+                            teams_with_roles?: Record<string, never>[];
+                            /** @description Total number of team memberships returned for the user. */
+                            total_count?: number;
+                        };
+                        /** @description Organizations the user belongs to with role information */
+                        organizations?: {
+                            /** @description Organization memberships for the user with their assigned roles. */
+                            organizations_with_roles?: Record<string, never>[];
+                            /** @description Total number of organization memberships returned for the user. */
+                            total_count?: number;
+                        };
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Current user profile and role context */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Unique identifier for the user
+                         */
+                        id: string;
+                        /** @description User identifier (username or external ID) */
+                        user_id: string;
+                        /**
+                         * @description Authentication provider (e.g., Google, Github)
+                         * @example [
+                         *       "local",
+                         *       "github",
+                         *       "google",
+                         *       "twitter"
+                         *     ]
+                         */
+                        provider: string;
+                        /**
+                         * Format: email
+                         * @description User's email address
+                         */
+                        email: string;
+                        /** @description User's first name */
+                        first_name: string;
+                        /** @description User's last name */
+                        last_name: string;
+                        /**
+                         * Format: uri
+                         * @description URL to user's avatar image
+                         */
+                        avatar_url?: string;
+                        /**
+                         * @description User account status
+                         * @enum {string}
+                         */
+                        status: "active" | "inactive" | "pending" | "anonymous";
+                        /**
+                         * @description User's biography or description
+                         * @default
+                         */
+                        bio: string;
+                        /** @description User's country information stored as JSONB */
+                        country?: {
+                            [key: string]: unknown;
+                        };
+                        /** @description User's region information stored as JSONB */
+                        region?: {
+                            [key: string]: unknown;
+                        };
+                        /** @description User preferences stored as JSONB */
+                        preferences?: {
+                            /** @description The mesh adapters of the preference. */
+                            meshAdapters?: Record<string, never>[];
+                            grafana?: {
+                                /** @description Grafana URL for the user configuration. */
+                                grafanaURL?: string;
+                                /** @description Grafana API key for the user configuration. */
+                                grafanaAPIKey?: string;
+                                /** @description Selected Grafana board configurations for the user. */
+                                selectedBoardsConfigs?: {
+                                    /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                    board?: Record<string, never>;
+                                    /** @description Panels selected for the Grafana board configuration. */
+                                    panels?: Record<string, never>[];
+                                    /** @description Template variables applied to the selected Grafana board configuration. */
+                                    templateVars?: string[];
+                                }[];
+                            };
+                            prometheus?: {
+                                /** @description The prometheus u r l of the prometheus. */
+                                prometheusURL?: string;
+                                /** @description The selected prometheus boards configs of the prometheus. */
+                                selectedPrometheusBoardsConfigs?: {
+                                    /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                    board?: Record<string, never>;
+                                    /** @description Panels selected for the Grafana board configuration. */
+                                    panels?: Record<string, never>[];
+                                    /** @description Template variables applied to the selected Grafana board configuration. */
+                                    templateVars?: string[];
+                                }[];
+                            };
+                            loadTestPrefs?: {
+                                /** @description Concurrent requests */
+                                c?: number;
+                                /** @description Queries per second */
+                                qps?: number;
+                                /** @description Duration */
+                                t?: string;
+                                /** @description Load generator */
+                                gen?: string;
+                            };
+                            /** @description The anonymous usage stats of the preference. */
+                            anonymousUsageStats: boolean;
+                            /** @description The anonymous perf results of the preference. */
+                            anonymousPerfResults: boolean;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of when the resource was last updated.
+                             */
+                            updated_at: string;
+                            /** @description The dashboard preferences of the preference. */
+                            dashboardPreferences: {
+                                [key: string]: unknown;
+                            };
+                            /**
+                             * Format: uuid
+                             * @description ID of the associated selectedOrganization.
+                             */
+                            selectedOrganizationId: string;
+                            /** @description The selected workspace for organizations of the preference. */
+                            selectedWorkspaceForOrganizations: {
+                                [key: string]: string;
+                            };
+                            /** @description The users extension preferences of the preference. */
+                            usersExtensionPreferences: {
+                                [key: string]: unknown;
+                            };
+                            /** @description The remote provider preferences of the preference. */
+                            remoteProviderPreferences: {
+                                [key: string]: unknown;
+                            };
+                        };
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when user accepted terms and conditions
+                         */
+                        accepted_terms_at?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp of user's first login
+                         */
+                        first_login_time?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp of user's most recent login
+                         */
+                        last_login_time: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the user record was created
+                         */
+                        created_at: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the user record was last updated
+                         */
+                        updated_at: string;
+                        /** @description Various online profiles associated with the user account */
+                        socials?: {
+                            /** @description The site of the social. */
+                            site: string;
+                            /**
+                             * Format: uri
+                             * @description The link of the social.
+                             */
+                            link: string;
+                        }[];
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the user record was soft-deleted (null if not deleted)
+                         */
+                        deleted_at: string | null;
+                        /**
+                         * @description List of global roles assigned to the user
+                         * @example [
+                         *       "admin",
+                         *       "meshmap"
+                         *     ]
+                         */
+                        role_names?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
+                        /** @description Teams the user belongs to with role information */
+                        teams?: {
+                            /** @description Team memberships for the user with their assigned roles. */
+                            teams_with_roles?: Record<string, never>[];
+                            /** @description Total number of team memberships returned for the user. */
+                            total_count?: number;
+                        };
+                        /** @description Organizations the user belongs to with role information */
+                        organizations?: {
+                            /** @description Organization memberships for the user with their assigned roles. */
+                            organizations_with_roles?: Record<string, never>[];
+                            /** @description Total number of organization memberships returned for the user. */
+                            total_count?: number;
+                        };
+                    };
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+}

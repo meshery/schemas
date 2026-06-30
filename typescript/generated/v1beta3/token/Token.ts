@@ -4,407 +4,80 @@
  */
 
 export interface paths {
-  "/api/identity/tokens": {
-    /** Retrieves tokens associated with the authenticated user. */
-    get: operations["getUserTokens"];
-    /** Generates a token for the authenticated user. */
-    post: operations["generateToken"];
-    /** Deletes a specific token for the authenticated user. */
-    delete: operations["deleteUserToken"];
-  };
-  "/api/identity/tokens/{tokenId}": {
-    /** Retrieves a specific token by its ID. */
-    get: operations["getUserTokensById"];
-  };
-  "/api/identity/tokens/infinite": {
-    /** Creates a non-expiring user token for provider admin use cases. */
-    get: operations["issueIndefiniteLifetimeToken"];
-  };
+    "/api/identity/tokens": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get tokens
+         * @description Retrieves tokens associated with the authenticated user.
+         */
+        get: operations["getUserTokens"];
+        put?: never;
+        /**
+         * Generate token
+         * @description Generates a token for the authenticated user.
+         */
+        post: operations["generateToken"];
+        /**
+         * Delete token
+         * @description Deletes a specific token for the authenticated user.
+         */
+        delete: operations["deleteUserToken"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/tokens/{tokenId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get token by ID
+         * @description Retrieves a specific token by its ID.
+         */
+        get: operations["getUserTokensById"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/tokens/infinite": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Issue indefinite lifetime token
+         * @description Creates a non-expiring user token for provider admin use cases.
+         */
+        get: operations["issueIndefiniteLifetimeToken"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
-
+export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    /** @description Represents a user-owned API token or OAuth session. */
-    UserToken: {
-      /**
-       * Format: uuid
-       * @description Unique identifier for the token.
-       */
-      id: string;
-      /**
-       * Format: uuid
-       * @description UUID of the user who owns the token.
-       */
-      owner: string;
-      /** @description Authentication provider associated with the token. */
-      provider: string;
-      /** @description Access token value. */
-      accessToken?: string;
-      /** @description Refresh token value when applicable. */
-      refreshToken?: string;
-      /** @description Human-readable token name. */
-      name?: string;
-      /** @description Purpose for which the token was created. */
-      purpose?: string;
-      /** @description Whether this entry represents an OAuth session. */
-      isOauth?: boolean;
-      /**
-       * Format: date-time
-       * @description Timestamp when the token was created.
-       */
-      createdAt?: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the token was last updated.
-       */
-      updatedAt?: string;
-    };
-    /** @description A paginated list of tokens. */
-    TokenPage: {
-      /** @description Tokens returned on the current page. */
-      tokens: {
-        /**
-         * Format: uuid
-         * @description Unique identifier for the token.
-         */
-        id: string;
-        /**
-         * Format: uuid
-         * @description UUID of the user who owns the token.
-         */
-        owner: string;
-        /** @description Authentication provider associated with the token. */
-        provider: string;
-        /** @description Access token value. */
-        accessToken?: string;
-        /** @description Refresh token value when applicable. */
-        refreshToken?: string;
-        /** @description Human-readable token name. */
-        name?: string;
-        /** @description Purpose for which the token was created. */
-        purpose?: string;
-        /** @description Whether this entry represents an OAuth session. */
-        isOauth?: boolean;
-        /**
-         * Format: date-time
-         * @description Timestamp when the token was created.
-         */
-        createdAt?: string;
-        /**
-         * Format: date-time
-         * @description Timestamp when the token was last updated.
-         */
-        updatedAt?: string;
-      }[];
-      /** @description Total number of tokens across all pages. */
-      totalCount: number;
-      /** @description Current page number (zero-based). */
-      page: number;
-      /** @description Number of tokens per page. */
-      pageSize: number;
-    };
-  };
-  responses: {
-    /** Invalid request body or request param */
-    400: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Expired JWT token used or insufficient privilege */
-    401: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Result not found */
-    404: {
-      content: {
-        "text/plain": string;
-      };
-    };
-    /** Internal server error */
-    500: {
-      content: {
-        "text/plain": string;
-      };
-    };
-  };
-  parameters: {
-    /** @description Token ID */
-    tokenId: string;
-    /** @description ID of the token to delete. */
-    tokenIdQuery: string;
-    /** @description UUID of the user to issue the indefinite token for. */
-    ownerQuery: string;
-    /** @description Authentication provider to associate with the indefinite token. */
-    providerQuery: string;
-    /** @description Get responses by page */
-    page: string;
-    /** @description Get responses by pagesize */
-    pagesize: string;
-    /** @description Get responses that match search param value */
-    search: string;
-    /** @description Get ordered responses */
-    order: string;
-    /** @description Whether to retrieve OAuth-backed sessions instead of API tokens. */
-    isOauth: boolean;
-    /** @description Name of the token. */
-    name: string;
-    /** @description Purpose for which the token is generated. */
-    purpose: string;
-  };
-}
-
-export interface operations {
-  /** Retrieves tokens associated with the authenticated user. */
-  getUserTokens: {
-    parameters: {
-      query: {
-        /** Whether to retrieve OAuth-backed sessions instead of API tokens. */
-        isOauth?: boolean;
-        /** Get responses by page */
-        page?: string;
-        /** Get responses by pagesize */
-        pagesize?: string;
-        /** Get responses that match search param value */
-        search?: string;
-        /** Get ordered responses */
-        order?: string;
-      };
-    };
-    responses: {
-      /** Tokens response */
-      200: {
-        content: {
-          "application/json": {
-            /** @description Tokens returned on the current page. */
-            tokens: {
-              /**
-               * Format: uuid
-               * @description Unique identifier for the token.
-               */
-              id: string;
-              /**
-               * Format: uuid
-               * @description UUID of the user who owns the token.
-               */
-              owner: string;
-              /** @description Authentication provider associated with the token. */
-              provider: string;
-              /** @description Access token value. */
-              accessToken?: string;
-              /** @description Refresh token value when applicable. */
-              refreshToken?: string;
-              /** @description Human-readable token name. */
-              name?: string;
-              /** @description Purpose for which the token was created. */
-              purpose?: string;
-              /** @description Whether this entry represents an OAuth session. */
-              isOauth?: boolean;
-              /**
-               * Format: date-time
-               * @description Timestamp when the token was created.
-               */
-              createdAt?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the token was last updated.
-               */
-              updatedAt?: string;
-            }[];
-            /** @description Total number of tokens across all pages. */
-            totalCount: number;
-            /** @description Current page number (zero-based). */
-            page: number;
-            /** @description Number of tokens per page. */
-            pageSize: number;
-          };
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  /** Generates a token for the authenticated user. */
-  generateToken: {
-    parameters: {
-      query: {
-        /** Name of the token. */
-        name: string;
-        /** Purpose for which the token is generated. */
-        purpose?: string;
-      };
-    };
-    responses: {
-      /** Token generated */
-      201: {
-        content: {
-          "application/json": {
-            /** @description Tokens returned on the current page. */
-            tokens: {
-              /**
-               * Format: uuid
-               * @description Unique identifier for the token.
-               */
-              id: string;
-              /**
-               * Format: uuid
-               * @description UUID of the user who owns the token.
-               */
-              owner: string;
-              /** @description Authentication provider associated with the token. */
-              provider: string;
-              /** @description Access token value. */
-              accessToken?: string;
-              /** @description Refresh token value when applicable. */
-              refreshToken?: string;
-              /** @description Human-readable token name. */
-              name?: string;
-              /** @description Purpose for which the token was created. */
-              purpose?: string;
-              /** @description Whether this entry represents an OAuth session. */
-              isOauth?: boolean;
-              /**
-               * Format: date-time
-               * @description Timestamp when the token was created.
-               */
-              createdAt?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the token was last updated.
-               */
-              updatedAt?: string;
-            }[];
-            /** @description Total number of tokens across all pages. */
-            totalCount: number;
-            /** @description Current page number (zero-based). */
-            page: number;
-            /** @description Number of tokens per page. */
-            pageSize: number;
-          };
-        };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  /** Deletes a specific token for the authenticated user. */
-  deleteUserToken: {
-    parameters: {
-      query: {
-        /** ID of the token to delete. */
-        tokenId: string;
-      };
-    };
-    responses: {
-      /** Token deleted */
-      200: {
-        content: {
-          "application/json": {
-            /** @description Tokens returned on the current page. */
-            tokens: {
-              /**
-               * Format: uuid
-               * @description Unique identifier for the token.
-               */
-              id: string;
-              /**
-               * Format: uuid
-               * @description UUID of the user who owns the token.
-               */
-              owner: string;
-              /** @description Authentication provider associated with the token. */
-              provider: string;
-              /** @description Access token value. */
-              accessToken?: string;
-              /** @description Refresh token value when applicable. */
-              refreshToken?: string;
-              /** @description Human-readable token name. */
-              name?: string;
-              /** @description Purpose for which the token was created. */
-              purpose?: string;
-              /** @description Whether this entry represents an OAuth session. */
-              isOauth?: boolean;
-              /**
-               * Format: date-time
-               * @description Timestamp when the token was created.
-               */
-              createdAt?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the token was last updated.
-               */
-              updatedAt?: string;
-            }[];
-            /** @description Total number of tokens across all pages. */
-            totalCount: number;
-            /** @description Current page number (zero-based). */
-            page: number;
-            /** @description Number of tokens per page. */
-            pageSize: number;
-          };
-        };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  /** Retrieves a specific token by its ID. */
-  getUserTokensById: {
-    parameters: {
-      path: {
-        /** Token ID */
-        tokenId: string;
-      };
-    };
-    responses: {
-      /** Token response */
-      200: {
-        content: {
-          "application/json": {
+    schemas: {
+        /** @description Represents a user-owned API token or OAuth session. */
+        UserToken: {
             /**
              * Format: uuid
              * @description Unique identifier for the token.
@@ -437,78 +110,43 @@ export interface operations {
              * @description Timestamp when the token was last updated.
              */
             updatedAt?: string;
-          };
         };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  /** Creates a non-expiring user token for provider admin use cases. */
-  issueIndefiniteLifetimeToken: {
-    parameters: {
-      query: {
-        /** UUID of the user to issue the indefinite token for. */
-        owner: string;
-        /** Authentication provider to associate with the indefinite token. */
-        provider: string;
-      };
-    };
-    responses: {
-      /** Token generated */
-      200: {
-        content: {
-          "application/json": {
+        /** @description A paginated list of tokens. */
+        TokenPage: {
             /** @description Tokens returned on the current page. */
             tokens: {
-              /**
-               * Format: uuid
-               * @description Unique identifier for the token.
-               */
-              id: string;
-              /**
-               * Format: uuid
-               * @description UUID of the user who owns the token.
-               */
-              owner: string;
-              /** @description Authentication provider associated with the token. */
-              provider: string;
-              /** @description Access token value. */
-              accessToken?: string;
-              /** @description Refresh token value when applicable. */
-              refreshToken?: string;
-              /** @description Human-readable token name. */
-              name?: string;
-              /** @description Purpose for which the token was created. */
-              purpose?: string;
-              /** @description Whether this entry represents an OAuth session. */
-              isOauth?: boolean;
-              /**
-               * Format: date-time
-               * @description Timestamp when the token was created.
-               */
-              createdAt?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the token was last updated.
-               */
-              updatedAt?: string;
+                /**
+                 * Format: uuid
+                 * @description Unique identifier for the token.
+                 */
+                id: string;
+                /**
+                 * Format: uuid
+                 * @description UUID of the user who owns the token.
+                 */
+                owner: string;
+                /** @description Authentication provider associated with the token. */
+                provider: string;
+                /** @description Access token value. */
+                accessToken?: string;
+                /** @description Refresh token value when applicable. */
+                refreshToken?: string;
+                /** @description Human-readable token name. */
+                name?: string;
+                /** @description Purpose for which the token was created. */
+                purpose?: string;
+                /** @description Whether this entry represents an OAuth session. */
+                isOauth?: boolean;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the token was created.
+                 */
+                createdAt?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the token was last updated.
+                 */
+                updatedAt?: string;
             }[];
             /** @description Total number of tokens across all pages. */
             totalCount: number;
@@ -516,29 +154,528 @@ export interface operations {
             page: number;
             /** @description Number of tokens per page. */
             pageSize: number;
-          };
         };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
     };
-  };
+    responses: {
+        /** @description Invalid request body or request param */
+        400: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Expired JWT token used or insufficient privilege */
+        401: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Result not found */
+        404: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Internal server error */
+        500: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+    };
+    parameters: {
+        /** @description Token ID */
+        tokenId: string;
+        /** @description ID of the token to delete. */
+        tokenIdQuery: string;
+        /** @description UUID of the user to issue the indefinite token for. */
+        ownerQuery: string;
+        /** @description Authentication provider to associate with the indefinite token. */
+        providerQuery: string;
+        /** @description Get responses by page */
+        page: string;
+        /** @description Get responses by pagesize */
+        pagesize: string;
+        /** @description Get responses that match search param value */
+        search: string;
+        /** @description Get ordered responses */
+        order: string;
+        /** @description Whether to retrieve OAuth-backed sessions instead of API tokens. */
+        isOauth: boolean;
+        /** @description Name of the token. */
+        name: string;
+        /** @description Purpose for which the token is generated. */
+        purpose: string;
+    };
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
-
-export interface external {}
+export type $defs = Record<string, never>;
+export interface operations {
+    getUserTokens: {
+        parameters: {
+            query?: {
+                /** @description Whether to retrieve OAuth-backed sessions instead of API tokens. */
+                isOauth?: boolean;
+                /** @description Get responses by page */
+                page?: string;
+                /** @description Get responses by pagesize */
+                pagesize?: string;
+                /** @description Get responses that match search param value */
+                search?: string;
+                /** @description Get ordered responses */
+                order?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Tokens response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Tokens returned on the current page. */
+                        tokens: {
+                            /**
+                             * Format: uuid
+                             * @description Unique identifier for the token.
+                             */
+                            id: string;
+                            /**
+                             * Format: uuid
+                             * @description UUID of the user who owns the token.
+                             */
+                            owner: string;
+                            /** @description Authentication provider associated with the token. */
+                            provider: string;
+                            /** @description Access token value. */
+                            accessToken?: string;
+                            /** @description Refresh token value when applicable. */
+                            refreshToken?: string;
+                            /** @description Human-readable token name. */
+                            name?: string;
+                            /** @description Purpose for which the token was created. */
+                            purpose?: string;
+                            /** @description Whether this entry represents an OAuth session. */
+                            isOauth?: boolean;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the token was created.
+                             */
+                            createdAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the token was last updated.
+                             */
+                            updatedAt?: string;
+                        }[];
+                        /** @description Total number of tokens across all pages. */
+                        totalCount: number;
+                        /** @description Current page number (zero-based). */
+                        page: number;
+                        /** @description Number of tokens per page. */
+                        pageSize: number;
+                    };
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    generateToken: {
+        parameters: {
+            query: {
+                /** @description Name of the token. */
+                name: string;
+                /** @description Purpose for which the token is generated. */
+                purpose?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Token generated */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Tokens returned on the current page. */
+                        tokens: {
+                            /**
+                             * Format: uuid
+                             * @description Unique identifier for the token.
+                             */
+                            id: string;
+                            /**
+                             * Format: uuid
+                             * @description UUID of the user who owns the token.
+                             */
+                            owner: string;
+                            /** @description Authentication provider associated with the token. */
+                            provider: string;
+                            /** @description Access token value. */
+                            accessToken?: string;
+                            /** @description Refresh token value when applicable. */
+                            refreshToken?: string;
+                            /** @description Human-readable token name. */
+                            name?: string;
+                            /** @description Purpose for which the token was created. */
+                            purpose?: string;
+                            /** @description Whether this entry represents an OAuth session. */
+                            isOauth?: boolean;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the token was created.
+                             */
+                            createdAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the token was last updated.
+                             */
+                            updatedAt?: string;
+                        }[];
+                        /** @description Total number of tokens across all pages. */
+                        totalCount: number;
+                        /** @description Current page number (zero-based). */
+                        page: number;
+                        /** @description Number of tokens per page. */
+                        pageSize: number;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    deleteUserToken: {
+        parameters: {
+            query: {
+                /** @description ID of the token to delete. */
+                tokenId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Token deleted */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Tokens returned on the current page. */
+                        tokens: {
+                            /**
+                             * Format: uuid
+                             * @description Unique identifier for the token.
+                             */
+                            id: string;
+                            /**
+                             * Format: uuid
+                             * @description UUID of the user who owns the token.
+                             */
+                            owner: string;
+                            /** @description Authentication provider associated with the token. */
+                            provider: string;
+                            /** @description Access token value. */
+                            accessToken?: string;
+                            /** @description Refresh token value when applicable. */
+                            refreshToken?: string;
+                            /** @description Human-readable token name. */
+                            name?: string;
+                            /** @description Purpose for which the token was created. */
+                            purpose?: string;
+                            /** @description Whether this entry represents an OAuth session. */
+                            isOauth?: boolean;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the token was created.
+                             */
+                            createdAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the token was last updated.
+                             */
+                            updatedAt?: string;
+                        }[];
+                        /** @description Total number of tokens across all pages. */
+                        totalCount: number;
+                        /** @description Current page number (zero-based). */
+                        page: number;
+                        /** @description Number of tokens per page. */
+                        pageSize: number;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getUserTokensById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Token ID */
+                tokenId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Token response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Unique identifier for the token.
+                         */
+                        id: string;
+                        /**
+                         * Format: uuid
+                         * @description UUID of the user who owns the token.
+                         */
+                        owner: string;
+                        /** @description Authentication provider associated with the token. */
+                        provider: string;
+                        /** @description Access token value. */
+                        accessToken?: string;
+                        /** @description Refresh token value when applicable. */
+                        refreshToken?: string;
+                        /** @description Human-readable token name. */
+                        name?: string;
+                        /** @description Purpose for which the token was created. */
+                        purpose?: string;
+                        /** @description Whether this entry represents an OAuth session. */
+                        isOauth?: boolean;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the token was created.
+                         */
+                        createdAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the token was last updated.
+                         */
+                        updatedAt?: string;
+                    };
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    issueIndefiniteLifetimeToken: {
+        parameters: {
+            query: {
+                /** @description UUID of the user to issue the indefinite token for. */
+                owner: string;
+                /** @description Authentication provider to associate with the indefinite token. */
+                provider: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Token generated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Tokens returned on the current page. */
+                        tokens: {
+                            /**
+                             * Format: uuid
+                             * @description Unique identifier for the token.
+                             */
+                            id: string;
+                            /**
+                             * Format: uuid
+                             * @description UUID of the user who owns the token.
+                             */
+                            owner: string;
+                            /** @description Authentication provider associated with the token. */
+                            provider: string;
+                            /** @description Access token value. */
+                            accessToken?: string;
+                            /** @description Refresh token value when applicable. */
+                            refreshToken?: string;
+                            /** @description Human-readable token name. */
+                            name?: string;
+                            /** @description Purpose for which the token was created. */
+                            purpose?: string;
+                            /** @description Whether this entry represents an OAuth session. */
+                            isOauth?: boolean;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the token was created.
+                             */
+                            createdAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the token was last updated.
+                             */
+                            updatedAt?: string;
+                        }[];
+                        /** @description Total number of tokens across all pages. */
+                        totalCount: number;
+                        /** @description Current page number (zero-based). */
+                        page: number;
+                        /** @description Number of tokens per page. */
+                        pageSize: number;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+}

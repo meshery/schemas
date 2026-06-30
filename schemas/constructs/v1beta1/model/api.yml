@@ -129,6 +129,7 @@ components:
           maxLength: 255
 
     ModelReference:
+      x-generate-db-helpers: true
       type: "object"
       "required":
         ["id", "name", "version", "displayName", "model", "registrant"]

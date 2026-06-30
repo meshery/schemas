@@ -1,0 +1,240 @@
+[
+  {
+    "construct": "academy",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/academy/academy.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "badge",
+    "version": "v1beta2",
+    "href": "/schemas/constructs/v1beta2/badge/api.yml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "capability",
+    "version": "v1beta1",
+    "href": "/schemas/constructs/v1beta1/capability/capability.yaml",
+    "core": false,
+    "extension": false
+  },
+  {
+    "construct": "catalog",
+    "version": "v1beta2",
+    "href": "/schemas/constructs/v1beta2/catalog/catalog.yaml",
+    "core": false,
+    "extension": false
+  },
+  {
+    "construct": "category",
+    "version": "v1beta1",
+    "href": "/schemas/constructs/v1beta1/category/category.yaml",
+    "core": false,
+    "extension": false
+  },
+  {
+    "construct": "component",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/component/component.yaml",
+    "core": false,
+    "extension": false
+  },
+  {
+    "construct": "connection",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/connection/connection.yaml",
+    "core": true,
+    "extension": true
+  },
+  {
+    "construct": "core",
+    "version": "v1beta2",
+    "href": "/schemas/constructs/v1beta2/core/api.yml",
+    "core": false,
+    "extension": false
+  },
+  {
+    "construct": "credential",
+    "version": "v1beta2",
+    "href": "/schemas/constructs/v1beta2/credential/api.yml",
+    "core": true,
+    "extension": true
+  },
+  {
+    "construct": "design",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/design/design.yaml",
+    "core": true,
+    "extension": true
+  },
+  {
+    "construct": "environment",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/environment/environment.yaml",
+    "core": true,
+    "extension": true
+  },
+  {
+    "construct": "evaluation",
+    "version": "v1beta1",
+    "href": "/schemas/constructs/v1beta1/evaluation/api.yml",
+    "core": true,
+    "extension": false
+  },
+  {
+    "construct": "event",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/event/event.yaml",
+    "core": true,
+    "extension": true
+  },
+  {
+    "construct": "feature",
+    "version": "v1beta1",
+    "href": "/schemas/constructs/v1beta1/feature/feature.yaml",
+    "core": false,
+    "extension": false
+  },
+  {
+    "construct": "filter",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/filter/filter.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "invitation",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/invitation/invitation.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "key",
+    "version": "v1beta2",
+    "href": "/schemas/constructs/v1beta2/key/key.yaml",
+    "core": true,
+    "extension": true
+  },
+  {
+    "construct": "keychain",
+    "version": "v1beta2",
+    "href": "/schemas/constructs/v1beta2/keychain/keychain.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "model",
+    "version": "v1beta2",
+    "href": "/schemas/constructs/v1beta2/model/model.yaml",
+    "core": true,
+    "extension": true
+  },
+  {
+    "construct": "organization",
+    "version": "v1beta2",
+    "href": "/schemas/constructs/v1beta2/organization/organization.yaml",
+    "core": true,
+    "extension": true
+  },
+  {
+    "construct": "performance_profile",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/performance_profile/performance_profile.yaml",
+    "core": true,
+    "extension": true
+  },
+  {
+    "construct": "plan",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/plan/plan.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "relationship",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/relationship/relationship.yaml",
+    "core": false,
+    "extension": false
+  },
+  {
+    "construct": "role",
+    "version": "v1beta2",
+    "href": "/schemas/constructs/v1beta2/role/api.yml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "schedule",
+    "version": "v1beta2",
+    "href": "/schemas/constructs/v1beta2/schedule/api.yml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "subcategory",
+    "version": "v1beta1",
+    "href": "/schemas/constructs/v1beta1/subcategory/subcategory.yaml",
+    "core": false,
+    "extension": false
+  },
+  {
+    "construct": "subscription",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/subscription/subscription.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "support",
+    "version": "v1beta1",
+    "href": "/schemas/constructs/v1beta1/support/api.yml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "system",
+    "version": "v1beta1",
+    "href": "/schemas/constructs/v1beta1/system/api.yml",
+    "core": true,
+    "extension": true
+  },
+  {
+    "construct": "team",
+    "version": "v1beta2",
+    "href": "/schemas/constructs/v1beta2/team/team.yaml",
+    "core": true,
+    "extension": true
+  },
+  {
+    "construct": "token",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/token/token.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "user",
+    "version": "v1beta2",
+    "href": "/schemas/constructs/v1beta2/user/api.yml",
+    "core": true,
+    "extension": true
+  },
+  {
+    "construct": "view",
+    "version": "v1beta2",
+    "href": "/schemas/constructs/v1beta2/view/view.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
+    "construct": "workspace",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/workspace/workspace.yaml",
+    "core": true,
+    "extension": true
+  }
+]
