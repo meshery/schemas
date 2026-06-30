@@ -77,6 +77,10 @@ function parsePermissions(csvContent, options = {}) {
       name: constantName,
       uuid: keyId,
       feature: feature,
+      category: category,
+      subcategory: fields[1] || "",
+      function: func,
+      description: feature,
     });
   }
 
@@ -219,6 +223,17 @@ function generateTypeScriptFile(permissions, indexId) {
     "export type PermissionKey = string & { readonly __brand: 'PermissionKey' };",
     "",
     "/**",
+    " * Interface representing a Key conforming to the Key schema.",
+    " */",
+    "export interface Key {",
+    "  readonly id: PermissionKey;",
+    "  readonly category: string;",
+    "  readonly subcategory: string;",
+    "  readonly function: string;",
+    "  readonly description: string;",
+    "}",
+    "",
+    "/**",
     " * Permissions Index ID used for this generated file.",
     " */",
     `export const PERMISSIONS_INDEX_ID = "${indexId}" as const;`,
@@ -233,10 +248,9 @@ function generateTypeScriptFile(permissions, indexId) {
     "}",
     "",
     "/**",
-    " * Permission key constants.",
-    " * Each key represents a unique permission identified by its UUID.",
+    " * Keys conforming to the Key schema.",
     " */",
-    "export const PermissionKeys = {",
+    "export const Keys = {",
   ];
 
   for (let i = 0; i < permissions.length; i++) {
@@ -246,7 +260,37 @@ function generateTypeScriptFile(permissions, indexId) {
 
     lines.push(`  /**`);
     lines.push(
-      `   * ${escapeJSDocComment(perm.feature || "No description available")}`,
+      `   * ${escapeJSDocComment(perm.description || perm.feature || "No description available")}`,
+    );
+    lines.push(`   */`);
+    lines.push(`  ${perm.name}: {`);
+    lines.push(`    id: "${perm.uuid}" as PermissionKey,`);
+    lines.push(`    category: "${perm.category ? perm.category.replace(/"/g, '\\"') : ""}",`);
+    lines.push(`    subcategory: "${perm.subcategory ? perm.subcategory.replace(/"/g, '\\"') : ""}",`);
+    lines.push(`    function: "${perm.function ? perm.function.replace(/"/g, '\\"') : ""}",`);
+    lines.push(`    description: "${perm.description || perm.feature ? (perm.description || perm.feature).replace(/"/g, '\\"') : ""}"`);
+    lines.push(`  }${comma}`);
+    if (!isLast) {
+      lines.push("");
+    }
+  }
+
+  lines.push("} as const;");
+  lines.push("");
+  lines.push("/**");
+  lines.push(" * Permission key constants.");
+  lines.push(" * Each key represents a unique permission identified by its UUID.");
+  lines.push(" */");
+  lines.push("export const PermissionKeys = {");
+
+  for (let i = 0; i < permissions.length; i++) {
+    const perm = permissions[i];
+    const isLast = i === permissions.length - 1;
+    const comma = isLast ? "" : ",";
+
+    lines.push(`  /**`);
+    lines.push(
+      `   * ${escapeJSDocComment(perm.description || perm.feature || "No description available")}`,
     );
     lines.push(`   */`);
     lines.push(`  ${perm.name}: "${perm.uuid}" as PermissionKey${comma}`);
@@ -315,6 +359,10 @@ function buildIndex(permissions) {
       name: p.name,
       uuid: p.uuid,
       feature: p.feature,
+      category: p.category,
+      subcategory: p.subcategory,
+      function: p.function,
+      description: p.description,
     })),
   };
 }
