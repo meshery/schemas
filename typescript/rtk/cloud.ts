@@ -60,6 +60,10 @@ const injectedRtkApi = api
         query: () => ({ url: `/api/system/version` }),
         providesTags: ["System_API_System"],
       }),
+      sendTestEmail: build.mutation<SendTestEmailApiResponse, SendTestEmailApiArg>({
+        query: (queryArg) => ({ url: `/api/system/email/test`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["System_API_System"],
+      }),
       deleteBadgeById: build.mutation<DeleteBadgeByIdApiResponse, DeleteBadgeByIdApiArg>({
         query: (queryArg) => ({ url: `/api/organizations/badges/${queryArg.badgeId}`, method: "DELETE" }),
         invalidatesTags: ["Badge_Badge"],
@@ -1705,6 +1709,25 @@ export type GetSystemVersionApiResponse = /** status 200 Server version metadata
   releaseChannel?: string;
 };
 export type GetSystemVersionApiArg = void;
+export type SendTestEmailApiResponse = /** status 200 Test email sent */ {
+  /** Outcome status of the send attempt (e.g. `success`). */
+  status: string;
+  /** Human-readable result message. */
+  message: string;
+  /** Unix-epoch seconds, as a decimal string, when the test email was sent. */
+  timestamp: string;
+  /** Recipient address the test email was sent to. */
+  sentTo: string;
+};
+export type SendTestEmailApiArg = {
+  /** Recipient and optional subject for the test email. */
+  body: {
+    /** Recipient email address for the test message. */
+    to: string;
+    /** Subject line for the test message. A default subject is used when omitted. */
+    subject?: string;
+  };
+};
 export type DeleteBadgeByIdApiResponse = unknown;
 export type DeleteBadgeByIdApiArg = {
   /** Badge ID */
@@ -2372,6 +2395,25 @@ export type GetOrgsApiResponse = /** status 200 Organizations response */ {
         dashboard: {
           [key: string]: any;
         };
+        /** Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+        authBranding?: {
+          /** Ordered slides rendered in the auth-page feature carousel. */
+          carousel?: {
+            /** URL of the slide image asset. */
+            imageUrl: string;
+            /** Slide title. */
+            title: string;
+            /** Slide description text. */
+            description: string;
+          }[];
+          /** FAQ entries rendered on the auth pages. */
+          faqs?: {
+            /** The question text. */
+            question: string;
+            /** The answer text. */
+            answer: string;
+          }[];
+        };
         /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
         links?: {
           /** URL of the organization's Terms of Service page. */
@@ -2476,6 +2518,25 @@ export type CreateOrgApiResponse = /** status 201 Single-organization page respo
         dashboard: {
           [key: string]: any;
         };
+        /** Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+        authBranding?: {
+          /** Ordered slides rendered in the auth-page feature carousel. */
+          carousel?: {
+            /** URL of the slide image asset. */
+            imageUrl: string;
+            /** Slide title. */
+            title: string;
+            /** Slide description text. */
+            description: string;
+          }[];
+          /** FAQ entries rendered on the auth pages. */
+          faqs?: {
+            /** The question text. */
+            question: string;
+            /** The answer text. */
+            answer: string;
+          }[];
+        };
         /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
         links?: {
           /** URL of the organization's Terms of Service page. */
@@ -2557,6 +2618,25 @@ export type CreateOrgApiArg = {
       /** Preferences specific to dashboard behavior. */
       dashboard: {
         [key: string]: any;
+      };
+      /** Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+      authBranding?: {
+        /** Ordered slides rendered in the auth-page feature carousel. */
+        carousel?: {
+          /** URL of the slide image asset. */
+          imageUrl: string;
+          /** Slide title. */
+          title: string;
+          /** Slide description text. */
+          description: string;
+        }[];
+        /** FAQ entries rendered on the auth pages. */
+        faqs?: {
+          /** The question text. */
+          question: string;
+          /** The answer text. */
+          answer: string;
+        }[];
       };
       /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
       links?: {
@@ -2671,6 +2751,25 @@ export type GetOrgApiResponse = /** status 200 Single-organization page response
         dashboard: {
           [key: string]: any;
         };
+        /** Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+        authBranding?: {
+          /** Ordered slides rendered in the auth-page feature carousel. */
+          carousel?: {
+            /** URL of the slide image asset. */
+            imageUrl: string;
+            /** Slide title. */
+            title: string;
+            /** Slide description text. */
+            description: string;
+          }[];
+          /** FAQ entries rendered on the auth pages. */
+          faqs?: {
+            /** The question text. */
+            question: string;
+            /** The answer text. */
+            answer: string;
+          }[];
+        };
         /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
         links?: {
           /** URL of the organization's Terms of Service page. */
@@ -2772,6 +2871,25 @@ export type UpdateOrgApiResponse = /** status 200 Single-organization page respo
         dashboard: {
           [key: string]: any;
         };
+        /** Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+        authBranding?: {
+          /** Ordered slides rendered in the auth-page feature carousel. */
+          carousel?: {
+            /** URL of the slide image asset. */
+            imageUrl: string;
+            /** Slide title. */
+            title: string;
+            /** Slide description text. */
+            description: string;
+          }[];
+          /** FAQ entries rendered on the auth pages. */
+          faqs?: {
+            /** The question text. */
+            question: string;
+            /** The answer text. */
+            answer: string;
+          }[];
+        };
         /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
         links?: {
           /** URL of the organization's Terms of Service page. */
@@ -2856,6 +2974,25 @@ export type UpdateOrgApiArg = {
       dashboard: {
         [key: string]: any;
       };
+      /** Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+      authBranding?: {
+        /** Ordered slides rendered in the auth-page feature carousel. */
+        carousel?: {
+          /** URL of the slide image asset. */
+          imageUrl: string;
+          /** Slide title. */
+          title: string;
+          /** Slide description text. */
+          description: string;
+        }[];
+        /** FAQ entries rendered on the auth pages. */
+        faqs?: {
+          /** The question text. */
+          question: string;
+          /** The answer text. */
+          answer: string;
+        }[];
+      };
       /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
       links?: {
         /** URL of the organization's Terms of Service page. */
@@ -2918,6 +3055,25 @@ export type GetOrgPreferencesApiResponse = /** status 200 Organization metadata,
     /** Preferences specific to dashboard behavior. */
     dashboard: {
       [key: string]: any;
+    };
+    /** Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+    authBranding?: {
+      /** Ordered slides rendered in the auth-page feature carousel. */
+      carousel?: {
+        /** URL of the slide image asset. */
+        imageUrl: string;
+        /** Slide title. */
+        title: string;
+        /** Slide description text. */
+        description: string;
+      }[];
+      /** FAQ entries rendered on the auth pages. */
+      faqs?: {
+        /** The question text. */
+        question: string;
+        /** The answer text. */
+        answer: string;
+      }[];
     };
     /** Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
     links?: {
@@ -7759,7 +7915,45 @@ export type DeleteMesheryConnectionApiArg = {
   /** Meshery server ID */
   mesheryServerId: string;
 };
-export type GetKubernetesContextApiResponse = /** status 200 Kubernetes context */ object;
+export type GetKubernetesContextApiResponse = /** status 200 Kubernetes context */ {
+  /** Zero-based page index returned in this response. */
+  page: number;
+  /** Maximum number of items returned on each page. */
+  pageSize: number;
+  /** Total number of items across all pages. */
+  totalCount: number;
+  /** Kubernetes contexts in this page. */
+  contexts: {
+    /** Stable identifier of the Kubernetes context, assigned when the context is registered. Not a UUID; carried in connection metadata. */
+    id?: string;
+    /** Human-readable name of the Kubernetes context. */
+    name?: string;
+    /** Authentication material for the context (token or kubeconfig reference), sourced from the connection's credential secret. */
+    auth?: object;
+    /** Cluster definition for the context (certificate authority and server details), sourced from the connection's credential secret. */
+    cluster?: object;
+    /** API server URL of the Kubernetes cluster. */
+    server?: string;
+    /** ID of the user who owns the underlying connection. */
+    owner?: string;
+    /** ID of the user who registered the context. */
+    createdBy?: string;
+    /** ID of the Meshery instance the context is registered with. */
+    mesheryInstanceId?: string;
+    /** ID of the Kubernetes server associated with the context. */
+    kubernetesServerId?: string;
+    /** How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster). */
+    deploymentType?: string;
+    /** Kubernetes server version of the cluster. */
+    version?: string;
+    /** Timestamp when the underlying connection was created. */
+    createdAt?: string;
+    /** Timestamp when the underlying connection was last updated. */
+    updatedAt?: string;
+    /** ID of the connection this context was projected from. */
+    connectionId?: string;
+  }[];
+};
 export type GetKubernetesContextApiArg = {
   /** Connection ID */
   connectionId: string;
@@ -13309,6 +13503,7 @@ export const {
   useGetFeaturesByOrganizationQuery,
   useSubmitSupportRequestMutation,
   useGetSystemVersionQuery,
+  useSendTestEmailMutation,
   useDeleteBadgeByIdMutation,
   useGetBadgeByIdQuery,
   useCreateOrUpdateBadgeMutation,

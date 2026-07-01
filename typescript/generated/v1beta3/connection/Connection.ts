@@ -1469,6 +1469,119 @@ export interface components {
             /** @description Whether to check compatibility */
             checkCompatibility?: boolean;
         };
+        /** @description Kubernetes-specific authentication context projected from a kubernetes connection and its credential. Connection metadata supplies the context identity (id, name, server, version, deployment type, instance and server IDs); the credential secret supplies the auth and cluster material. This is a response projection, not a stored table row. */
+        K8sContext: {
+            /** @description Stable identifier of the Kubernetes context, assigned when the context is registered. Not a UUID; carried in connection metadata. */
+            id?: string;
+            /** @description Human-readable name of the Kubernetes context. */
+            name?: string;
+            /** @description Authentication material for the context (token or kubeconfig reference), sourced from the connection's credential secret. */
+            auth?: Record<string, never>;
+            /** @description Cluster definition for the context (certificate authority and server details), sourced from the connection's credential secret. */
+            cluster?: Record<string, never>;
+            /** @description API server URL of the Kubernetes cluster. */
+            server?: string;
+            /**
+             * Format: uuid
+             * @description ID of the user who owns the underlying connection.
+             */
+            owner?: string;
+            /**
+             * Format: uuid
+             * @description ID of the user who registered the context.
+             */
+            createdBy?: string;
+            /**
+             * Format: uuid
+             * @description ID of the Meshery instance the context is registered with.
+             */
+            mesheryInstanceId?: string;
+            /**
+             * Format: uuid
+             * @description ID of the Kubernetes server associated with the context.
+             */
+            kubernetesServerId?: string;
+            /** @description How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster). */
+            deploymentType?: string;
+            /** @description Kubernetes server version of the cluster. */
+            version?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the underlying connection was created.
+             */
+            createdAt?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the underlying connection was last updated.
+             */
+            updatedAt?: string;
+            /**
+             * Format: uuid
+             * @description ID of the connection this context was projected from.
+             */
+            connectionId?: string;
+        };
+        /** @description Paginated list of Kubernetes contexts. */
+        K8sContextPage: {
+            /** @description Zero-based page index returned in this response. */
+            page: number;
+            /** @description Maximum number of items returned on each page. */
+            pageSize: number;
+            /** @description Total number of items across all pages. */
+            totalCount: number;
+            /** @description Kubernetes contexts in this page. */
+            contexts: {
+                /** @description Stable identifier of the Kubernetes context, assigned when the context is registered. Not a UUID; carried in connection metadata. */
+                id?: string;
+                /** @description Human-readable name of the Kubernetes context. */
+                name?: string;
+                /** @description Authentication material for the context (token or kubeconfig reference), sourced from the connection's credential secret. */
+                auth?: Record<string, never>;
+                /** @description Cluster definition for the context (certificate authority and server details), sourced from the connection's credential secret. */
+                cluster?: Record<string, never>;
+                /** @description API server URL of the Kubernetes cluster. */
+                server?: string;
+                /**
+                 * Format: uuid
+                 * @description ID of the user who owns the underlying connection.
+                 */
+                owner?: string;
+                /**
+                 * Format: uuid
+                 * @description ID of the user who registered the context.
+                 */
+                createdBy?: string;
+                /**
+                 * Format: uuid
+                 * @description ID of the Meshery instance the context is registered with.
+                 */
+                mesheryInstanceId?: string;
+                /**
+                 * Format: uuid
+                 * @description ID of the Kubernetes server associated with the context.
+                 */
+                kubernetesServerId?: string;
+                /** @description How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster). */
+                deploymentType?: string;
+                /** @description Kubernetes server version of the cluster. */
+                version?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the underlying connection was created.
+                 */
+                createdAt?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the underlying connection was last updated.
+                 */
+                updatedAt?: string;
+                /**
+                 * Format: uuid
+                 * @description ID of the connection this context was projected from.
+                 */
+                connectionId?: string;
+            }[];
+        };
     };
     responses: {
         /** @description Invalid request body or request param */
@@ -3632,7 +3745,66 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        /** @description Zero-based page index returned in this response. */
+                        page: number;
+                        /** @description Maximum number of items returned on each page. */
+                        pageSize: number;
+                        /** @description Total number of items across all pages. */
+                        totalCount: number;
+                        /** @description Kubernetes contexts in this page. */
+                        contexts: {
+                            /** @description Stable identifier of the Kubernetes context, assigned when the context is registered. Not a UUID; carried in connection metadata. */
+                            id?: string;
+                            /** @description Human-readable name of the Kubernetes context. */
+                            name?: string;
+                            /** @description Authentication material for the context (token or kubeconfig reference), sourced from the connection's credential secret. */
+                            auth?: Record<string, never>;
+                            /** @description Cluster definition for the context (certificate authority and server details), sourced from the connection's credential secret. */
+                            cluster?: Record<string, never>;
+                            /** @description API server URL of the Kubernetes cluster. */
+                            server?: string;
+                            /**
+                             * Format: uuid
+                             * @description ID of the user who owns the underlying connection.
+                             */
+                            owner?: string;
+                            /**
+                             * Format: uuid
+                             * @description ID of the user who registered the context.
+                             */
+                            createdBy?: string;
+                            /**
+                             * Format: uuid
+                             * @description ID of the Meshery instance the context is registered with.
+                             */
+                            mesheryInstanceId?: string;
+                            /**
+                             * Format: uuid
+                             * @description ID of the Kubernetes server associated with the context.
+                             */
+                            kubernetesServerId?: string;
+                            /** @description How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster). */
+                            deploymentType?: string;
+                            /** @description Kubernetes server version of the cluster. */
+                            version?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the underlying connection was created.
+                             */
+                            createdAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the underlying connection was last updated.
+                             */
+                            updatedAt?: string;
+                            /**
+                             * Format: uuid
+                             * @description ID of the connection this context was projected from.
+                             */
+                            connectionId?: string;
+                        }[];
+                    };
                 };
             };
             /** @description Expired JWT token used or insufficient privilege */

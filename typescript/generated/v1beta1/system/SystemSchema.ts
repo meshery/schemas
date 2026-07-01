@@ -303,6 +303,111 @@ const SystemSchema: Record<string, unknown> = {
         }
       }
     },
+    "/api/system/email/test": {
+      "post": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "System"
+        ],
+        "summary": "Send a test email",
+        "description": "Sends a test email through the configured SMTP provider to verify the email configuration. Restricted to provider administrators.",
+        "operationId": "sendTestEmail",
+        "requestBody": {
+          "description": "Recipient and optional subject for the test email.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "Request body for sending a test email through the configured SMTP provider.",
+                "additionalProperties": false,
+                "required": [
+                  "to"
+                ],
+                "properties": {
+                  "to": {
+                    "type": "string",
+                    "description": "Recipient email address for the test message.",
+                    "format": "email",
+                    "maxLength": 320
+                  },
+                  "subject": {
+                    "type": "string",
+                    "description": "Subject line for the test message. A default subject is used when omitted.",
+                    "maxLength": 998,
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "subject,omitempty"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Test email sent",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Result of a test email send attempt.",
+                  "additionalProperties": false,
+                  "required": [
+                    "status",
+                    "message",
+                    "timestamp",
+                    "sentTo"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "description": "Outcome status of the send attempt (e.g. `success`).",
+                      "maxLength": 64
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Human-readable result message.",
+                      "maxLength": 1024
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "description": "Unix-epoch seconds, as a decimal string, when the test email was sent.",
+                      "pattern": "^[0-9]+$",
+                      "maxLength": 20
+                    },
+                    "sentTo": {
+                      "type": "string",
+                      "description": "Recipient address the test email was sent to.",
+                      "format": "email",
+                      "maxLength": 320
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload or malformed recipient email address."
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Email configuration validation failed or the send attempt errored."
+          }
+        }
+      }
+    },
     "/api/system/sync": {
       "get": {
         "x-internal": [
@@ -433,6 +538,65 @@ const SystemSchema: Record<string, unknown> = {
       }
     },
     "schemas": {
+      "EmailTestRequest": {
+        "type": "object",
+        "description": "Request body for sending a test email through the configured SMTP provider.",
+        "additionalProperties": false,
+        "required": [
+          "to"
+        ],
+        "properties": {
+          "to": {
+            "type": "string",
+            "description": "Recipient email address for the test message.",
+            "format": "email",
+            "maxLength": 320
+          },
+          "subject": {
+            "type": "string",
+            "description": "Subject line for the test message. A default subject is used when omitted.",
+            "maxLength": 998,
+            "x-oapi-codegen-extra-tags": {
+              "json": "subject,omitempty"
+            }
+          }
+        }
+      },
+      "EmailTestResponse": {
+        "type": "object",
+        "description": "Result of a test email send attempt.",
+        "additionalProperties": false,
+        "required": [
+          "status",
+          "message",
+          "timestamp",
+          "sentTo"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Outcome status of the send attempt (e.g. `success`).",
+            "maxLength": 64
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable result message.",
+            "maxLength": 1024
+          },
+          "timestamp": {
+            "type": "string",
+            "description": "Unix-epoch seconds, as a decimal string, when the test email was sent.",
+            "pattern": "^[0-9]+$",
+            "maxLength": 20
+          },
+          "sentTo": {
+            "type": "string",
+            "description": "Recipient address the test email was sent to.",
+            "format": "email",
+            "maxLength": 320
+          }
+        }
+      },
       "SystemMessageResponse": {
         "type": "object",
         "description": "Status message response.",
