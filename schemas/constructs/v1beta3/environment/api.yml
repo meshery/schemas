@@ -133,7 +133,7 @@ components:
           type: string
           description: Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
           x-go-type-skip-optional-pointer: true
-          x-go-name: OrgId
+          x-go-name: OrgID
           x-oapi-codegen-extra-tags:
             json: organizationId
           maxLength: 500
