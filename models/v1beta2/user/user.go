@@ -20,6 +20,60 @@ const (
 	Pending   UserStatus = "pending"
 )
 
+// AccountDeletionEligibility Pre-check result returned before an account self-deletion is confirmed. Describes whether deleting the caller's account would also require or permit hard-deleting their organization and quantifies the blast radius. All fields are always present so the client can render the confirmation state deterministically.
+type AccountDeletionEligibility struct {
+	// CrossTenantSharedResourceCount Count of resources reachable from this organization that are also shared into a different, surviving organization; destroying them affects other tenants. When greater than zero the client must set confirmSharedResourceDestruction to proceed.
+	CrossTenantSharedResourceCount int `json:"crossTenantSharedResourceCount" yaml:"crossTenantSharedResourceCount"`
+
+	// HasActivePaidSubscription True when the organization has an active paid (non-"Personal"/free) plan subscription that must be cancelled before the organization can be hard-deleted.
+	HasActivePaidSubscription bool `json:"hasActivePaidSubscription" yaml:"hasActivePaidSubscription"`
+
+	// Impact Per-resource counts of the objects that would be destroyed when an organization is hard-deleted alongside the account.
+	Impact AccountDeletionImpact `json:"impact" yaml:"impact"`
+
+	// IsProviderOrg True when this is the shared Layer5 provider organization, which is never deletable regardless of membership.
+	IsProviderOrg bool `json:"isProviderOrg" yaml:"isProviderOrg"`
+
+	// IsSoleActiveMember True when the caller is the only active member of the organization, so deleting their account would leave the organization without any active members.
+	IsSoleActiveMember bool `json:"isSoleActiveMember" yaml:"isSoleActiveMember"`
+
+	// OrganizationId Unique identifier of the organization evaluated for deletion.
+	OrganizationId uuid.UUID `json:"organizationId" yaml:"organizationId"`
+
+	// OrganizationName Human-readable name of the organization evaluated for deletion. The client echoes this value back as organizationNameConfirmation when requesting deletion.
+	OrganizationName string `json:"organizationName" yaml:"organizationName"`
+}
+
+// AccountDeletionImpact Per-resource counts of the objects that would be destroyed when an organization is hard-deleted alongside the account.
+type AccountDeletionImpact struct {
+	// AcademyRecords Number of academy records (challenges, certifications) that would be destroyed.
+	AcademyRecords int `json:"academyRecords" yaml:"academyRecords"`
+
+	// Connections Number of connections that would be destroyed.
+	Connections int `json:"connections" yaml:"connections"`
+
+	// Credentials Number of credentials that would be destroyed.
+	Credentials int `json:"credentials" yaml:"credentials"`
+
+	// Designs Number of designs that would be destroyed.
+	Designs int `json:"designs" yaml:"designs"`
+
+	// Environments Number of environments that would be destroyed.
+	Environments int `json:"environments" yaml:"environments"`
+
+	// Invitations Number of pending invitations that would be revoked.
+	Invitations int `json:"invitations" yaml:"invitations"`
+
+	// Members Number of organization members that would lose access.
+	Members int `json:"members" yaml:"members"`
+
+	// Views Number of views that would be destroyed.
+	Views int `json:"views" yaml:"views"`
+
+	// Workspaces Number of workspaces that would be destroyed.
+	Workspaces int `json:"workspaces" yaml:"workspaces"`
+}
+
 // Adapter Placeholder for Adapter struct definition.
 type Adapter = map[string]interface{}
 
