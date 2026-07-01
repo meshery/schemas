@@ -282,5 +282,5 @@ components:
         models:
           type: array
           items:
-            $ref: "#/components/schemas/Model"
+            $ref: "#/components/schemas/ModelDefinition"
           description: The models matching the list-endpoint query.
