@@ -495,7 +495,7 @@ const TeamSchema: Record<string, unknown> = {
           },
           "user_id": {
             "x-oapi-codegen-extra-tags": {
-              "db": "user_id"
+              "db": "owner"
             },
             "type": "string",
             "description": "user's email or username",
@@ -596,7 +596,7 @@ const TeamSchema: Record<string, unknown> = {
                 },
                 "user_id": {
                   "x-oapi-codegen-extra-tags": {
-                    "db": "user_id"
+                    "db": "owner"
                   },
                   "type": "string",
                   "description": "user's email or username",
@@ -1872,7 +1872,7 @@ const TeamSchema: Record<string, unknown> = {
                           },
                           "user_id": {
                             "x-oapi-codegen-extra-tags": {
-                              "db": "user_id"
+                              "db": "owner"
                             },
                             "type": "string",
                             "description": "user's email or username",
@@ -2073,7 +2073,7 @@ const TeamSchema: Record<string, unknown> = {
                     },
                     "user_id": {
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id"
+                        "db": "owner"
                       },
                       "type": "string",
                       "description": "user's email or username",

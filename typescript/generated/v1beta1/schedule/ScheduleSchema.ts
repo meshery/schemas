@@ -163,7 +163,7 @@ const ScheduleSchema: Record<string, unknown> = {
                             "description": "UUID of the user who owns this schedule.",
                             "x-order": 3,
                             "x-oapi-codegen-extra-tags": {
-                              "db": "user_id"
+                              "db": "owner"
                             },
                             "type": "string",
                             "format": "uuid",
@@ -289,7 +289,7 @@ const ScheduleSchema: Record<string, unknown> = {
                     "description": "UUID of the user who owns this schedule.",
                     "x-order": 3,
                     "x-oapi-codegen-extra-tags": {
-                      "db": "user_id"
+                      "db": "owner"
                     },
                     "type": "string",
                     "format": "uuid",
@@ -379,7 +379,7 @@ const ScheduleSchema: Record<string, unknown> = {
                       "description": "UUID of the user who owns this schedule.",
                       "x-order": 3,
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id"
+                        "db": "owner"
                       },
                       "type": "string",
                       "format": "uuid",
@@ -530,7 +530,7 @@ const ScheduleSchema: Record<string, unknown> = {
                       "description": "UUID of the user who owns this schedule.",
                       "x-order": 3,
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id"
+                        "db": "owner"
                       },
                       "type": "string",
                       "format": "uuid",
@@ -812,7 +812,7 @@ const ScheduleSchema: Record<string, unknown> = {
             "description": "UUID of the user who owns this schedule.",
             "x-order": 3,
             "x-oapi-codegen-extra-tags": {
-              "db": "user_id"
+              "db": "owner"
             },
             "type": "string",
             "format": "uuid",
@@ -924,7 +924,7 @@ const ScheduleSchema: Record<string, unknown> = {
                   "description": "UUID of the user who owns this schedule.",
                   "x-order": 3,
                   "x-oapi-codegen-extra-tags": {
-                    "db": "user_id"
+                    "db": "owner"
                   },
                   "type": "string",
                   "format": "uuid",
