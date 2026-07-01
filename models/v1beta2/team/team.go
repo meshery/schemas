@@ -49,10 +49,10 @@ type TeamMembersPage struct {
 	Page *int `json:"page,omitempty" yaml:"page,omitempty"`
 
 	// PageSize Number of items per page.
-	PageSize *int `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	PageSize *int `json:"pageSize,omitempty" yaml:"pageSize,omitempty"`
 
 	// TotalCount Total number of items available.
-	TotalCount *int `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+	TotalCount *int `json:"totalCount,omitempty" yaml:"totalCount,omitempty"`
 }
 
 // TeamPage Paginated list of teams
@@ -61,13 +61,13 @@ type TeamPage struct {
 	Page *int `json:"page,omitempty" yaml:"page,omitempty"`
 
 	// PageSize Number of items per page.
-	PageSize *int `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	PageSize *int `json:"pageSize,omitempty" yaml:"pageSize,omitempty"`
 
 	// Teams The teams of the teampage.
 	Teams []Team `json:"teams,omitempty" yaml:"teams,omitempty"`
 
 	// TotalCount Total number of items available.
-	TotalCount *int `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+	TotalCount *int `json:"totalCount,omitempty" yaml:"totalCount,omitempty"`
 }
 
 // TeamPayload Payload for creating a new team
@@ -113,10 +113,10 @@ type UsersTeamsMappingPage struct {
 	Page *int `json:"page,omitempty" yaml:"page,omitempty"`
 
 	// PageSize Number of items per page.
-	PageSize *int `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	PageSize *int `json:"pageSize,omitempty" yaml:"pageSize,omitempty"`
 
 	// TotalCount Total number of items available.
-	TotalCount *int `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+	TotalCount *int `json:"totalCount,omitempty" yaml:"totalCount,omitempty"`
 
 	// UsersTeamsMapping The user-team mappings on the current page.
 	UsersTeamsMapping []UsersTeamsMapping `json:"usersTeamsMapping,omitempty" yaml:"usersTeamsMapping,omitempty"`
@@ -130,6 +130,9 @@ type OrgId = core.OrganizationId
 
 // Page defines model for page.
 type Page = string
+
+// PageSize defines model for pageSize.
+type PageSize = int
 
 // Pagesize defines model for pagesize.
 type Pagesize = string
