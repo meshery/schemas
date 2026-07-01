@@ -321,7 +321,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ConnectionDefinition"
+              $ref: "#/components/schemas/ConnectionDefinitionPayload"
       responses:
         "201":
           description: Connection definition registered
@@ -374,7 +374,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ConnectionDefinition"
+              $ref: "#/components/schemas/ConnectionDefinitionPayload"
       responses:
         "200":
           description: Connection definition updated
@@ -573,6 +573,129 @@ components:
             json: pageSize
           x-order: 4
           minimum: 1
+
+    ConnectionDefinitionPayload:
+      type: object
+      description: Payload for registering (creating) or updating a connection definition. Contains only client-settable fields; server-generated fields such as createdAt, updatedAt, and deletedAt are excluded.
+      required:
+        - name
+        - kind
+        - type
+        - subType
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Existing connection definition ID for updates; omit on create.
+          x-go-name: ID
+          x-oapi-codegen-extra-tags:
+            json: "id,omitempty"
+        schemaVersion:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/VersionString
+          description: Specifies the version of the schema the definition conforms to.
+          default: connections.meshery.io/v1beta3
+          x-oapi-codegen-extra-tags:
+            json: "schemaVersion,omitempty"
+        name:
+          type: string
+          description: Connection definition name
+          minLength: 1
+          maxLength: 255
+          x-oapi-codegen-extra-tags:
+            json: "name"
+        description:
+          type: string
+          description: Human-readable description of the connection definition and its purpose.
+          maxLength: 1000
+          x-oapi-codegen-extra-tags:
+            json: "description,omitempty"
+        url:
+          type: string
+          format: uri
+          description: URL of the remote resource connections of this kind point to.
+          maxLength: 2048
+          x-oapi-codegen-extra-tags:
+            json: "url,omitempty"
+        kind:
+          type: string
+          description: Connection kind (e.g., kubernetes, prometheus, grafana)
+          maxLength: 255
+          x-oapi-codegen-extra-tags:
+            json: "kind"
+        type:
+          type: string
+          description: Connection type (platform, telemetry, collaboration)
+          maxLength: 255
+          x-oapi-codegen-extra-tags:
+            json: "type"
+        subType:
+          type: string
+          description: Connection sub-type (cloud, identity, metrics, chat, git, orchestration)
+          maxLength: 255
+          x-oapi-codegen-extra-tags:
+            json: "subType"
+        status:
+          $ref: "#/components/schemas/ConnectionStatusValue"
+          description: Initial status for connections instantiated from this definition.
+          x-go-name: Status
+          x-oapi-codegen-extra-tags:
+            json: "status"
+        modelReference:
+          $ref: ../../v1beta1/model/api.yml#/components/schemas/ModelReference
+          x-go-type: modelv1beta1.ModelReference
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/v1beta1/model
+            name: modelv1beta1
+          description: Reference to the registered model that owns this connection definition.
+          x-oapi-codegen-extra-tags:
+            json: "modelReference,omitempty"
+        metadata:
+          type: object
+          description: Kind-specific connection metadata
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "metadata"
+        credentialSchema:
+          type: object
+          description: Schema for the credential associated with connections of this kind.
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "credentialSchema"
+        connectionSchema:
+          type: object
+          description: Schema for connections of this kind.
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "connectionSchema"
+        styles:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/ComponentStyles
+          x-go-type: core.ComponentStyles
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
+          description: Visualization styles for the connection, including svgColor and svgWhite used for UI representation.
+          x-oapi-codegen-extra-tags:
+            json: "styles,omitempty"
+        transitionMap:
+          type: object
+          description: Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status.
+          additionalProperties:
+            type: array
+            items:
+              $ref: "#/components/schemas/ConnectionStateTransition"
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "transitionMap,omitempty"
 
     ConnectionPage:
       description: Represents a page of connections with meta information about connections count

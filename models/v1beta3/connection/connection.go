@@ -118,6 +118,54 @@ type ConnectionDefinitionPage struct {
 	PageSize int `json:"pageSize" yaml:"pageSize"`
 }
 
+// ConnectionDefinitionPayload Payload for registering (creating) or updating a connection definition. Contains only client-settable fields; server-generated fields such as createdAt, updatedAt, and deletedAt are excluded.
+type ConnectionDefinitionPayload struct {
+	// ConnectionSchema Schema for connections of this kind.
+	ConnectionSchema core.Map `json:"connectionSchema" yaml:"connectionSchema"`
+
+	// CredentialSchema Schema for the credential associated with connections of this kind.
+	CredentialSchema core.Map `json:"credentialSchema" yaml:"credentialSchema"`
+
+	// Description Human-readable description of the connection definition and its purpose.
+	Description *string `json:"description,omitempty" yaml:"description,omitempty"`
+
+	// ID Existing connection definition ID for updates; omit on create.
+	ID *uuid.UUID `json:"id,omitempty" yaml:"id,omitempty"`
+
+	// Kind Connection kind (e.g., kubernetes, prometheus, grafana)
+	Kind string `json:"kind" yaml:"kind"`
+
+	// Metadata Kind-specific connection metadata
+	Metadata core.Map `json:"metadata" yaml:"metadata"`
+
+	// ModelReference Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
+	ModelReference *modelv1beta1.ModelReference `json:"modelReference,omitempty" yaml:"modelReference,omitempty"`
+
+	// Name Connection definition name
+	Name string `json:"name" yaml:"name"`
+
+	// SchemaVersion API version of the object, optionally prefixed with an API group (e.g. "group.example.io/v1beta1" or bare "v1beta1").
+	SchemaVersion *core.VersionString `json:"schemaVersion,omitempty" yaml:"schemaVersion,omitempty"`
+
+	// ConnectionStatusValue Connection Status Value
+	Status ConnectionStatusValue `json:"status" yaml:"status"`
+
+	// Styles Visualization styles for a component
+	Styles *core.ComponentStyles `json:"styles,omitempty" yaml:"styles,omitempty"`
+
+	// SubType Connection sub-type (cloud, identity, metrics, chat, git, orchestration)
+	SubType string `json:"subType" yaml:"subType"`
+
+	// TransitionMap Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status.
+	TransitionMap map[string][]ConnectionStateTransition `json:"transitionMap,omitempty" yaml:"transitionMap,omitempty"`
+
+	// Type Connection type (platform, telemetry, collaboration)
+	Type string `json:"type" yaml:"type"`
+
+	// Url URL of the remote resource connections of this kind point to.
+	Url *string `json:"url,omitempty" yaml:"url,omitempty"`
+}
+
 // ConnectionPage Represents a page of connections with meta information about connections count
 type ConnectionPage struct {
 	// Connections List of connections on this page
