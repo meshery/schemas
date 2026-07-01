@@ -699,3 +699,31 @@ func checkRule47(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 	}
 	return out
 }
+
+func checkRule48(
+	filePath string,
+	loadErr error,
+	opts AuditOptions,
+) []Violation {
+
+	if loadErr == nil {
+		return nil
+	}
+
+	msg := loadErr.Error()
+
+	if strings.Contains(msg, "map key") &&
+		strings.Contains(msg, "not found") {
+
+		return []Violation{
+			{
+				File:       filePath,
+				Message:    fmt.Sprintf("Broken $ref detected: %s", msg),
+				Severity:   SeverityBlocking,
+				RuleNumber: 48,
+			},
+		}
+	}
+
+	return nil
+}

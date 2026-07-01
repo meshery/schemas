@@ -162,7 +162,7 @@ func Audit(opts AuditOptions) AuditResult {
 		// auditAPISpec handles nil docs by reporting a blocking violation.
 		if spec.APIExists {
 			auditAPISpec(spec.APIYMLPath, spec.ConstructDir, opts, baseline, &result,
-				fingerprints, enumBaselineRef, spec.Doc)
+				fingerprints, enumBaselineRef, spec.Doc, spec.LoadErr)
 			// Collect Rule 46 cross-file parity candidates from this
 			// api.yml. The file's version prefix (e.g. "v1beta1") defines
 			// the comparison group.
@@ -336,18 +336,36 @@ func auditTemplateFiles(constructDir, constructName string, opts AuditOptions,
 func auditAPISpec(apiYmlPath, constructDir string, opts AuditOptions,
 	baseline map[string]bool, result *AuditResult,
 	fingerprints map[string][]schemaLocation, enumBaselineRef string,
-	doc *openapi3.T) {
+	doc *openapi3.T, loadErr error) {
 
 	relPath := relativeToRoot(apiYmlPath, opts.RootDir)
 
 	if doc == nil {
 		// Structural load failure — report as blocking.
+		rule48 := checkRule48(
+			relPath,
+			loadErr,
+			opts,
+		)
+
+		if len(rule48) > 0 {
+			for _, v := range rule48 {
+				addViolation(result, v, baseline)
+			}
+			return
+		}
+
+		msg := "Failed to load api.yml"
+		if loadErr != nil {
+			msg += ": " + loadErr.Error()
+		}
 		addViolation(result, Violation{
 			File:       relPath,
-			Message:    "Failed to load api.yml",
+			Message:    msg,
 			Severity:   SeverityBlocking,
 			RuleNumber: 12,
 		}, baseline)
+
 		return
 	}
 
