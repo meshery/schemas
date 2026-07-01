@@ -98,7 +98,13 @@ paths:
       operationId: getInvitations
       tags:
       - Invitation
-      summary: Get all invitations for the organization
+      summary: Get a paginated list of invitations for the organization
+      parameters:
+      - $ref: ../../v1beta2/core/api.yml#/components/parameters/page
+      - $ref: ../../v1beta2/core/api.yml#/components/parameters/pagesize
+      - $ref: ../../v1beta2/core/api.yml#/components/parameters/search
+      - $ref: ../../v1beta2/core/api.yml#/components/parameters/order
+      - $ref: ../../v1beta2/core/api.yml#/components/parameters/filter
       responses:
         '200':
           description: Invitations page
@@ -354,10 +360,26 @@ components:
     InvitationsPage:
       type: object
       description: Paginated list of invitations for an organization.
-      required:
-      - data
-      - total
       properties:
+        page:
+          type: integer
+          description: Current page number of the result set.
+          minimum: 0
+          x-go-type-skip-optional-pointer: true
+        pageSize:
+          type: integer
+          description: Number of items per page.
+          minimum: 1
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: pageSize
+        totalCount:
+          type: integer
+          description: Total number of items available.
+          minimum: 0
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: totalCount
         data:
           type: array
           items:
@@ -366,12 +388,6 @@ components:
           description: Invitations returned on the current page.
           x-oapi-codegen-extra-tags:
             json: data
-        total:
-          type: integer
-          description: Total number of invitations available.
-          x-oapi-codegen-extra-tags:
-            json: total
-          minimum: 0
     SignupRequest:
       type: object
       description: A signup request submitted for organization access.
