@@ -161,6 +161,12 @@ export interface components {
             name: string;
             /** @description A detailed description of the team's purpose and responsibilities. */
             description?: string;
+            /** @description Whether to notify team members when the team is created or updated. */
+            notifyTeamUpdate?: boolean;
+            /** @description Additional client-supplied metadata for the team. */
+            metadata?: {
+                [key: string]: unknown;
+            };
         };
         /** @description Payload for updating an existing team */
         TeamUpdatePayload: {
@@ -393,6 +399,12 @@ export interface components {
                     name: string;
                     /** @description A detailed description of the team's purpose and responsibilities. */
                     description?: string;
+                    /** @description Whether to notify team members when the team is created or updated. */
+                    notifyTeamUpdate?: boolean;
+                    /** @description Additional client-supplied metadata for the team. */
+                    metadata?: {
+                        [key: string]: unknown;
+                    };
                 };
             };
         };
@@ -531,6 +543,12 @@ export interface operations {
                     name: string;
                     /** @description A detailed description of the team's purpose and responsibilities. */
                     description?: string;
+                    /** @description Whether to notify team members when the team is created or updated. */
+                    notifyTeamUpdate?: boolean;
+                    /** @description Additional client-supplied metadata for the team. */
+                    metadata?: {
+                        [key: string]: unknown;
+                    };
                 };
             };
         };

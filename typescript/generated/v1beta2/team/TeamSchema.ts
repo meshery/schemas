@@ -311,6 +311,15 @@ const TeamSchema: Record<string, unknown> = {
             "description": "A detailed description of the team's purpose and responsibilities.",
             "type": "string",
             "x-go-type-skip-optional-pointer": true
+          },
+          "notifyTeamUpdate": {
+            "type": "boolean",
+            "description": "Whether to notify team members when the team is created or updated."
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Additional client-supplied metadata for the team."
           }
         }
       },
@@ -755,6 +764,15 @@ const TeamSchema: Record<string, unknown> = {
                   "description": "A detailed description of the team's purpose and responsibilities.",
                   "type": "string",
                   "x-go-type-skip-optional-pointer": true
+                },
+                "notifyTeamUpdate": {
+                  "type": "boolean",
+                  "description": "Whether to notify team members when the team is created or updated."
+                },
+                "metadata": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "description": "Additional client-supplied metadata for the team."
                 }
               }
             }
@@ -1080,6 +1098,15 @@ const TeamSchema: Record<string, unknown> = {
                     "description": "A detailed description of the team's purpose and responsibilities.",
                     "type": "string",
                     "x-go-type-skip-optional-pointer": true
+                  },
+                  "notifyTeamUpdate": {
+                    "type": "boolean",
+                    "description": "Whether to notify team members when the team is created or updated."
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "additionalProperties": true,
+                    "description": "Additional client-supplied metadata for the team."
                   }
                 }
               }

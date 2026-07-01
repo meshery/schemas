@@ -462,9 +462,10 @@ export interface components {
             page_size?: number;
             /** @description Total number of items available. */
             total_count?: number;
-            /** @description The models of the meshmodelmodelspage. */
+            /** @description The models matching the list-endpoint query. */
             models?: {
-                [key: string]: unknown;
+                /** @description Version of the model as defined by the registrant. */
+                version: string;
             }[];
         };
     };
@@ -605,9 +606,10 @@ export interface operations {
                         page_size?: number;
                         /** @description Total number of items available. */
                         total_count?: number;
-                        /** @description The models of the meshmodelmodelspage. */
+                        /** @description The models matching the list-endpoint query. */
                         models?: {
-                            [key: string]: unknown;
+                            /** @description Version of the model as defined by the registrant. */
+                            version: string;
                         }[];
                     };
                 };

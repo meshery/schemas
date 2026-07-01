@@ -3808,6 +3808,12 @@ export type CreateTeamApiArg = {
     name: string;
     /** A detailed description of the team's purpose and responsibilities. */
     description?: string;
+    /** Whether to notify team members when the team is created or updated. */
+    notifyTeamUpdate?: boolean;
+    /** Additional client-supplied metadata for the team. */
+    metadata?: {
+      [key: string]: any;
+    };
   };
 };
 export type GetTeamUsersApiResponse = /** status 200 Team users mapping */ {

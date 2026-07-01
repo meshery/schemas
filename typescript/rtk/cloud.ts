@@ -2256,9 +2256,10 @@ export type GetMeshModelModelsApiResponse = /** status 200 Model and capabilitie
   pageSize?: number;
   /** Total number of items available. */
   totalCount?: number;
-  /** The models of the meshmodelmodelspage. */
+  /** The models matching the list-endpoint query. */
   models?: {
-    [key: string]: any;
+    /** Version of the model as defined by the registrant. */
+    version: string;
   }[];
 };
 export type GetMeshModelModelsApiArg = {
@@ -3408,6 +3409,12 @@ export type CreateTeamApiArg = {
     name: string;
     /** A detailed description of the team's purpose and responsibilities. */
     description?: string;
+    /** Whether to notify team members when the team is created or updated. */
+    notifyTeamUpdate?: boolean;
+    /** Additional client-supplied metadata for the team. */
+    metadata?: {
+      [key: string]: any;
+    };
   };
 };
 export type GetTeamUsersApiResponse = /** status 200 Team users mapping */ {
