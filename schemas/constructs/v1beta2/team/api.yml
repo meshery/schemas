@@ -91,6 +91,13 @@ components:
         description:
           $ref: ../../v1alpha1/core/api.yml#/components/schemas/Text
           description: A detailed description of the team's purpose and responsibilities.
+        notifyTeamUpdate:
+          type: boolean
+          description: Whether to notify team members when the team is created or updated.
+        metadata:
+          type: object
+          additionalProperties: true
+          description: Additional client-supplied metadata for the team.
 
     TeamUpdatePayload:
       type: object

@@ -935,6 +935,9 @@ type Os = string
 // Page defines model for page.
 type Page = string
 
+// PageSize defines model for pageSize.
+type PageSize = int
+
 // Pagesize defines model for pagesize.
 type Pagesize = string
 
