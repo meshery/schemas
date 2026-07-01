@@ -1254,7 +1254,7 @@ components:
           type: array
           items:
             $ref: "../../v1beta2/user/api.yml#/components/schemas/User"
-          description: The users of the resourceaccessactorsresponse.
+          description: The users with access to this resource.
 
     ContentSharePayload:
       type: object
