@@ -3394,7 +3394,12 @@ const UserSchema: Record<string, unknown> = {
             "description": "Organization to evaluate for deletion alongside the account. When omitted, the caller's currently selected organization is evaluated.",
             "schema": {
               "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              }
             }
           }
         ],
@@ -3424,7 +3429,11 @@ const UserSchema: Record<string, unknown> = {
                     "organizationId": {
                       "type": "string",
                       "format": "uuid",
-                      "description": "Unique identifier of the organization evaluated for deletion."
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
                     },
                     "organizationName": {
                       "type": "string",
@@ -3583,7 +3592,12 @@ const UserSchema: Record<string, unknown> = {
             "description": "Identifier of the organization to hard-delete. Required by the server when deleteOrganization is true.",
             "schema": {
               "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              }
             }
           },
           {
@@ -3640,7 +3654,7 @@ const UserSchema: Record<string, unknown> = {
             }
           },
           "409": {
-            "description": "Publish request already exists",
+            "description": "Deletion preconditions were not met. Returned when the target organization is the shared Layer5 provider organization, has an active paid subscription, the caller is not its sole active member, the typed organizationNameConfirmation did not match, or destruction of shared resources was required but not confirmed.",
             "content": {
               "text/plain": {
                 "schema": {
@@ -3707,6 +3721,16 @@ const UserSchema: Record<string, unknown> = {
       },
       "500": {
         "description": "Internal server error",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "AccountDeletionConflict": {
+        "description": "Deletion preconditions were not met. Returned when the target organization is the shared Layer5 provider organization, has an active paid subscription, the caller is not its sole active member, the typed organizationNameConfirmation did not match, or destruction of shared resources was required but not confirmed.",
         "content": {
           "text/plain": {
             "schema": {
@@ -6671,7 +6695,11 @@ const UserSchema: Record<string, unknown> = {
           "organizationId": {
             "type": "string",
             "format": "uuid",
-            "description": "Unique identifier of the organization evaluated for deletion."
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
           },
           "organizationName": {
             "type": "string",

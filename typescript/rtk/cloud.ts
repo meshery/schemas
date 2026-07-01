@@ -4242,7 +4242,7 @@ export type GetUserApiArg = void;
 export type GetAccountDeletionEligibilityApiResponse = /** status 200 Account deletion eligibility for the caller */ {
   /** True when the caller is the only active member of the organization, so deleting their account would leave the organization without any active members. */
   isSoleActiveMember: boolean;
-  /** Unique identifier of the organization evaluated for deletion. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   organizationId: string;
   /** Human-readable name of the organization evaluated for deletion. The client echoes this value back as organizationNameConfirmation when requesting deletion. */
   organizationName: string;

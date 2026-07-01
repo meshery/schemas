@@ -1133,7 +1133,7 @@ export interface components {
             isSoleActiveMember: boolean;
             /**
              * Format: uuid
-             * @description Unique identifier of the organization evaluated for deletion.
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             organizationId: string;
             /** @description Human-readable name of the organization evaluated for deletion. The client echoes this value back as organizationNameConfirmation when requesting deletion. */
@@ -1227,6 +1227,15 @@ export interface components {
         };
         /** @description Internal server error */
         500: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Deletion preconditions were not met. Returned when the target organization is the shared Layer5 provider organization, has an active paid subscription, the caller is not its sole active member, the typed organizationNameConfirmation did not match, or destruction of shared resources was required but not confirmed. */
+        AccountDeletionConflict: {
             headers: {
                 [name: string]: unknown;
             };
@@ -2555,7 +2564,7 @@ export interface operations {
                         isSoleActiveMember: boolean;
                         /**
                          * Format: uuid
-                         * @description Unique identifier of the organization evaluated for deletion.
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         organizationId: string;
                         /** @description Human-readable name of the organization evaluated for deletion. The client echoes this value back as organizationNameConfirmation when requesting deletion. */
@@ -2680,7 +2689,7 @@ export interface operations {
                     "text/plain": string;
                 };
             };
-            /** @description Publish request already exists */
+            /** @description Deletion preconditions were not met. Returned when the target organization is the shared Layer5 provider organization, has an active paid subscription, the caller is not its sole active member, the typed organizationNameConfirmation did not match, or destruction of shared resources was required but not confirmed. */
             409: {
                 headers: {
                     [name: string]: unknown;

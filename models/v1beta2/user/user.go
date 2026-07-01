@@ -37,8 +37,8 @@ type AccountDeletionEligibility struct {
 	// IsSoleActiveMember True when the caller is the only active member of the organization, so deleting their account would leave the organization without any active members.
 	IsSoleActiveMember bool `json:"isSoleActiveMember" yaml:"isSoleActiveMember"`
 
-	// OrganizationId Unique identifier of the organization evaluated for deletion.
-	OrganizationId uuid.UUID `json:"organizationId" yaml:"organizationId"`
+	// OrganizationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	OrganizationId core.Uuid `json:"organizationId" yaml:"organizationId"`
 
 	// OrganizationName Human-readable name of the organization evaluated for deletion. The client echoes this value back as organizationNameConfirmation when requesting deletion.
 	OrganizationName string `json:"organizationName" yaml:"organizationName"`
