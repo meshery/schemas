@@ -493,6 +493,31 @@ const injectedRtkApi = api
         query: () => ({ url: `/api/identity/users/profile` }),
         providesTags: ["User_users"],
       }),
+      getAccountDeletionEligibility: build.query<
+        GetAccountDeletionEligibilityApiResponse,
+        GetAccountDeletionEligibilityApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/identity/users/self/account-deletion-eligibility`,
+          params: {
+            organizationId: queryArg?.organizationId,
+          },
+        }),
+        providesTags: ["User_users"],
+      }),
+      deleteUserAccount: build.mutation<DeleteUserAccountApiResponse, DeleteUserAccountApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/users/self`,
+          method: "DELETE",
+          params: {
+            deleteOrganization: queryArg?.deleteOrganization,
+            organizationId: queryArg?.organizationId,
+            organizationNameConfirmation: queryArg?.organizationNameConfirmation,
+            confirmSharedResourceDestruction: queryArg?.confirmSharedResourceDestruction,
+          },
+        }),
+        invalidatesTags: ["User_users"],
+      }),
       createView: build.mutation<CreateViewApiResponse, CreateViewApiArg>({
         query: (queryArg) => ({ url: `/api/content/views`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["View_views"],
@@ -4214,6 +4239,56 @@ export type GetUserApiResponse = /** status 200 Current user profile and role co
   };
 };
 export type GetUserApiArg = void;
+export type GetAccountDeletionEligibilityApiResponse = /** status 200 Account deletion eligibility for the caller */ {
+  /** True when the caller is the only active member of the organization, so deleting their account would leave the organization without any active members. */
+  isSoleActiveMember: boolean;
+  /** Unique identifier of the organization evaluated for deletion. */
+  organizationId: string;
+  /** Human-readable name of the organization evaluated for deletion. The client echoes this value back as organizationNameConfirmation when requesting deletion. */
+  organizationName: string;
+  /** True when this is the shared Layer5 provider organization, which is never deletable regardless of membership. */
+  isProviderOrg: boolean;
+  /** True when the organization has an active paid (non-"Personal"/free) plan subscription that must be cancelled before the organization can be hard-deleted. */
+  hasActivePaidSubscription: boolean;
+  /** Count of resources reachable from this organization that are also shared into a different, surviving organization; destroying them affects other tenants. When greater than zero the client must set confirmSharedResourceDestruction to proceed. */
+  crossTenantSharedResourceCount: number;
+  /** Per-resource counts of the objects that would be destroyed when an organization is hard-deleted alongside the account. */
+  impact: {
+    /** Number of workspaces that would be destroyed. */
+    workspaces: number;
+    /** Number of environments that would be destroyed. */
+    environments: number;
+    /** Number of designs that would be destroyed. */
+    designs: number;
+    /** Number of views that would be destroyed. */
+    views: number;
+    /** Number of connections that would be destroyed. */
+    connections: number;
+    /** Number of credentials that would be destroyed. */
+    credentials: number;
+    /** Number of organization members that would lose access. */
+    members: number;
+    /** Number of pending invitations that would be revoked. */
+    invitations: number;
+    /** Number of academy records (challenges, certifications) that would be destroyed. */
+    academyRecords: number;
+  };
+};
+export type GetAccountDeletionEligibilityApiArg = {
+  /** Organization to evaluate for deletion alongside the account. When omitted, the caller's currently selected organization is evaluated. */
+  organizationId?: string;
+};
+export type DeleteUserAccountApiResponse = unknown;
+export type DeleteUserAccountApiArg = {
+  /** When true, hard-delete the caller's organization along with the account. Defaults to false (delete only the account). */
+  deleteOrganization?: boolean;
+  /** Identifier of the organization to hard-delete. Required by the server when deleteOrganization is true. */
+  organizationId?: string;
+  /** User-typed organization name. The server re-validates this against the stored organization name when deleteOrganization is true and rejects the request on mismatch. */
+  organizationNameConfirmation?: string;
+  /** Explicit acknowledgement that resources shared into other surviving organizations will be destroyed. Required by the server when the organization's crossTenantSharedResourceCount is greater than zero. */
+  confirmSharedResourceDestruction?: boolean;
+};
 export type CreateViewApiResponse = /** status 201 Created view */ {
   /** Unique identifier for the view. */
   id: string;
@@ -12739,6 +12814,8 @@ export const {
   useGetUsersQuery,
   useGetUserProfileByIdQuery,
   useGetUserQuery,
+  useGetAccountDeletionEligibilityQuery,
+  useDeleteUserAccountMutation,
   useCreateViewMutation,
   useGetViewsQuery,
   useShareViewMutation,
