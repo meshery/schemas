@@ -3017,7 +3017,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                   },
                                                   "x-go-name": "UserID",
                                                   "x-oapi-codegen-extra-tags": {
-                                                    "db": "user_id",
+                                                    "db": "owner",
                                                     "yaml": "user_id"
                                                   },
                                                   "x-order": 9
@@ -7713,7 +7713,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "x-go-name": "UserID",
                             "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
-                              "db": "user_id",
+                              "db": "owner",
                               "json": "user_id,omitempty"
                             }
                           },
@@ -10333,7 +10333,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                         },
                                         "x-go-name": "UserID",
                                         "x-oapi-codegen-extra-tags": {
-                                          "db": "user_id",
+                                          "db": "owner",
                                           "yaml": "user_id"
                                         },
                                         "x-order": 9
@@ -14568,7 +14568,7 @@ const WorkspaceSchema: Record<string, unknown> = {
             "x-go-name": "UserID",
             "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
-              "db": "user_id",
+              "db": "owner",
               "json": "user_id,omitempty"
             }
           },
@@ -14760,7 +14760,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "x-go-name": "UserID",
                   "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
-                    "db": "user_id",
+                    "db": "owner",
                     "json": "user_id,omitempty"
                   }
                 },

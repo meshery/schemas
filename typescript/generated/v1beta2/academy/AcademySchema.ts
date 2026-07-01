@@ -2696,7 +2696,7 @@ const AcademySchema: Record<string, unknown> = {
                         "path": "github.com/gofrs/uuid"
                       },
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id"
+                        "db": "owner"
                       }
                     },
                     "status": {
@@ -2975,7 +2975,7 @@ const AcademySchema: Record<string, unknown> = {
                         "path": "github.com/gofrs/uuid"
                       },
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id"
+                        "db": "owner"
                       }
                     },
                     "status": {
@@ -5101,7 +5101,7 @@ const AcademySchema: Record<string, unknown> = {
                         "path": "github.com/gofrs/uuid"
                       },
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id"
+                        "db": "owner"
                       }
                     },
                     "status": {
@@ -12584,7 +12584,7 @@ const AcademySchema: Record<string, unknown> = {
               "path": "github.com/gofrs/uuid"
             },
             "x-oapi-codegen-extra-tags": {
-              "db": "user_id"
+              "db": "owner"
             }
           },
           "status": {
@@ -13723,7 +13723,7 @@ const AcademySchema: Record<string, unknown> = {
                     "path": "github.com/gofrs/uuid"
                   },
                   "x-oapi-codegen-extra-tags": {
-                    "db": "user_id"
+                    "db": "owner"
                   }
                 },
                 "status": {
@@ -15257,7 +15257,7 @@ const AcademySchema: Record<string, unknown> = {
               "path": "github.com/gofrs/uuid"
             },
             "x-oapi-codegen-extra-tags": {
-              "db": "user_id"
+              "db": "owner"
             }
           },
           "created_at": {

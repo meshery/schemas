@@ -789,7 +789,7 @@ components:
           $ref: "../../v1beta2/core/api.yml#/components/schemas/Id"
           description: Owning user ID.
           x-oapi-codegen-extra-tags:
-            db: user_id
+            db: owner
         user:
           $ref: "../../v1beta2/user/api.yml#/components/schemas/User"
           description: >

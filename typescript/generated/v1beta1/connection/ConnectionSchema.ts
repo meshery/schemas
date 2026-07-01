@@ -285,7 +285,7 @@ const ConnectionSchema: Record<string, unknown> = {
                           "user_id": {
                             "x-go-name": "UserID",
                             "x-oapi-codegen-extra-tags": {
-                              "db": "user_id",
+                              "db": "owner",
                               "yaml": "user_id"
                             },
                             "x-order": 9,
@@ -844,7 +844,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "user_id": {
                       "x-go-name": "UserID",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id",
+                        "db": "owner",
                         "yaml": "user_id"
                       },
                       "x-order": 9,
@@ -1285,7 +1285,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "user_id": {
                       "x-go-name": "UserID",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id",
+                        "db": "owner",
                         "yaml": "user_id"
                       },
                       "x-order": 9,
@@ -1822,7 +1822,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "user_id": {
                       "x-go-name": "UserID",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id",
+                        "db": "owner",
                         "yaml": "user_id"
                       },
                       "x-order": 9,
@@ -2703,7 +2703,7 @@ const ConnectionSchema: Record<string, unknown> = {
           "user_id": {
             "x-go-name": "UserID",
             "x-oapi-codegen-extra-tags": {
-              "db": "user_id",
+              "db": "owner",
               "yaml": "user_id"
             },
             "x-order": 9,
@@ -3096,7 +3096,7 @@ const ConnectionSchema: Record<string, unknown> = {
                 "user_id": {
                   "x-go-name": "UserID",
                   "x-oapi-codegen-extra-tags": {
-                    "db": "user_id",
+                    "db": "owner",
                     "yaml": "user_id"
                   },
                   "x-order": 9,

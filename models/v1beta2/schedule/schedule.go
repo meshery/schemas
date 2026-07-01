@@ -16,7 +16,7 @@ type Schedule struct {
 	Name string `db:"name" json:"name" yaml:"name"`
 
 	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	UserId core.Uuid `db:"user_id" json:"userId" yaml:"userId"`
+	UserId core.Uuid `db:"owner" json:"userId" yaml:"userId"`
 
 	// CronExpression Cron expression defining the schedule's recurrence (e.g. "0 0 * * *" for daily at midnight).
 	CronExpression string `db:"cron_expression" json:"cronExpression" yaml:"cronExpression"`
