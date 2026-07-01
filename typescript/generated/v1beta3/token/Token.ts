@@ -40,10 +40,10 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get token by ID
-         * @description Retrieves a specific token by its ID.
+         * Download token
+         * @description Downloads a specific token by its ID for use as a local credential file (e.g. mesheryctl's auth.json). Gated by the Download Token permission and recorded as a distinct audit event from viewing or listing tokens.
          */
-        get: operations["getUserTokensById"];
+        get: operations["downloadToken"];
         put?: never;
         post?: never;
         delete?: never;
@@ -91,25 +91,25 @@ export interface components {
             /** @description Authentication provider associated with the token. */
             provider: string;
             /** @description Access token value. */
-            accessToken?: string;
+            accessToken: string;
             /** @description Refresh token value when applicable. */
             refreshToken?: string;
             /** @description Human-readable token name. */
-            name?: string;
+            name: string;
             /** @description Purpose for which the token was created. */
-            purpose?: string;
+            purpose: string;
             /** @description Whether this entry represents an OAuth session. */
-            isOauth?: boolean;
+            isOauth: boolean;
             /**
              * Format: date-time
              * @description Timestamp when the token was created.
              */
-            createdAt?: string;
+            createdAt: string;
             /**
              * Format: date-time
              * @description Timestamp when the token was last updated.
              */
-            updatedAt?: string;
+            updatedAt: string;
         };
         /** @description A paginated list of tokens. */
         TokenPage: {
@@ -128,25 +128,25 @@ export interface components {
                 /** @description Authentication provider associated with the token. */
                 provider: string;
                 /** @description Access token value. */
-                accessToken?: string;
+                accessToken: string;
                 /** @description Refresh token value when applicable. */
                 refreshToken?: string;
                 /** @description Human-readable token name. */
-                name?: string;
+                name: string;
                 /** @description Purpose for which the token was created. */
-                purpose?: string;
+                purpose: string;
                 /** @description Whether this entry represents an OAuth session. */
-                isOauth?: boolean;
+                isOauth: boolean;
                 /**
                  * Format: date-time
                  * @description Timestamp when the token was created.
                  */
-                createdAt?: string;
+                createdAt: string;
                 /**
                  * Format: date-time
                  * @description Timestamp when the token was last updated.
                  */
-                updatedAt?: string;
+                updatedAt: string;
             }[];
             /** @description Total number of tokens across all pages. */
             totalCount: number;
@@ -266,25 +266,25 @@ export interface operations {
                             /** @description Authentication provider associated with the token. */
                             provider: string;
                             /** @description Access token value. */
-                            accessToken?: string;
+                            accessToken: string;
                             /** @description Refresh token value when applicable. */
                             refreshToken?: string;
                             /** @description Human-readable token name. */
-                            name?: string;
+                            name: string;
                             /** @description Purpose for which the token was created. */
-                            purpose?: string;
+                            purpose: string;
                             /** @description Whether this entry represents an OAuth session. */
-                            isOauth?: boolean;
+                            isOauth: boolean;
                             /**
                              * Format: date-time
                              * @description Timestamp when the token was created.
                              */
-                            createdAt?: string;
+                            createdAt: string;
                             /**
                              * Format: date-time
                              * @description Timestamp when the token was last updated.
                              */
-                            updatedAt?: string;
+                            updatedAt: string;
                         }[];
                         /** @description Total number of tokens across all pages. */
                         totalCount: number;
@@ -351,25 +351,25 @@ export interface operations {
                             /** @description Authentication provider associated with the token. */
                             provider: string;
                             /** @description Access token value. */
-                            accessToken?: string;
+                            accessToken: string;
                             /** @description Refresh token value when applicable. */
                             refreshToken?: string;
                             /** @description Human-readable token name. */
-                            name?: string;
+                            name: string;
                             /** @description Purpose for which the token was created. */
-                            purpose?: string;
+                            purpose: string;
                             /** @description Whether this entry represents an OAuth session. */
-                            isOauth?: boolean;
+                            isOauth: boolean;
                             /**
                              * Format: date-time
                              * @description Timestamp when the token was created.
                              */
-                            createdAt?: string;
+                            createdAt: string;
                             /**
                              * Format: date-time
                              * @description Timestamp when the token was last updated.
                              */
-                            updatedAt?: string;
+                            updatedAt: string;
                         }[];
                         /** @description Total number of tokens across all pages. */
                         totalCount: number;
@@ -443,25 +443,25 @@ export interface operations {
                             /** @description Authentication provider associated with the token. */
                             provider: string;
                             /** @description Access token value. */
-                            accessToken?: string;
+                            accessToken: string;
                             /** @description Refresh token value when applicable. */
                             refreshToken?: string;
                             /** @description Human-readable token name. */
-                            name?: string;
+                            name: string;
                             /** @description Purpose for which the token was created. */
-                            purpose?: string;
+                            purpose: string;
                             /** @description Whether this entry represents an OAuth session. */
-                            isOauth?: boolean;
+                            isOauth: boolean;
                             /**
                              * Format: date-time
                              * @description Timestamp when the token was created.
                              */
-                            createdAt?: string;
+                            createdAt: string;
                             /**
                              * Format: date-time
                              * @description Timestamp when the token was last updated.
                              */
-                            updatedAt?: string;
+                            updatedAt: string;
                         }[];
                         /** @description Total number of tokens across all pages. */
                         totalCount: number;
@@ -501,7 +501,7 @@ export interface operations {
             };
         };
     };
-    getUserTokensById: {
+    downloadToken: {
         parameters: {
             query?: never;
             header?: never;
@@ -533,25 +533,25 @@ export interface operations {
                         /** @description Authentication provider associated with the token. */
                         provider: string;
                         /** @description Access token value. */
-                        accessToken?: string;
+                        accessToken: string;
                         /** @description Refresh token value when applicable. */
                         refreshToken?: string;
                         /** @description Human-readable token name. */
-                        name?: string;
+                        name: string;
                         /** @description Purpose for which the token was created. */
-                        purpose?: string;
+                        purpose: string;
                         /** @description Whether this entry represents an OAuth session. */
-                        isOauth?: boolean;
+                        isOauth: boolean;
                         /**
                          * Format: date-time
                          * @description Timestamp when the token was created.
                          */
-                        createdAt?: string;
+                        createdAt: string;
                         /**
                          * Format: date-time
                          * @description Timestamp when the token was last updated.
                          */
-                        updatedAt?: string;
+                        updatedAt: string;
                     };
                 };
             };
@@ -620,25 +620,25 @@ export interface operations {
                             /** @description Authentication provider associated with the token. */
                             provider: string;
                             /** @description Access token value. */
-                            accessToken?: string;
+                            accessToken: string;
                             /** @description Refresh token value when applicable. */
                             refreshToken?: string;
                             /** @description Human-readable token name. */
-                            name?: string;
+                            name: string;
                             /** @description Purpose for which the token was created. */
-                            purpose?: string;
+                            purpose: string;
                             /** @description Whether this entry represents an OAuth session. */
-                            isOauth?: boolean;
+                            isOauth: boolean;
                             /**
                              * Format: date-time
                              * @description Timestamp when the token was created.
                              */
-                            createdAt?: string;
+                            createdAt: string;
                             /**
                              * Format: date-time
                              * @description Timestamp when the token was last updated.
                              */
-                            updatedAt?: string;
+                            updatedAt: string;
                         }[];
                         /** @description Total number of tokens across all pages. */
                         totalCount: number;

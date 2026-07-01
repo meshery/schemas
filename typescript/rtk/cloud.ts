@@ -1404,7 +1404,7 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["token_tokens"],
       }),
-      getUserTokensById: build.query<GetUserTokensByIdApiResponse, GetUserTokensByIdApiArg>({
+      downloadToken: build.query<DownloadTokenApiResponse, DownloadTokenApiArg>({
         query: (queryArg) => ({ url: `/api/identity/tokens/${queryArg.tokenId}` }),
         providesTags: ["token_tokens"],
       }),
@@ -11159,19 +11159,19 @@ export type GetUserTokensApiResponse = /** status 200 Tokens response */ {
     /** Authentication provider associated with the token. */
     provider: string;
     /** Access token value. */
-    accessToken?: string;
+    accessToken: string;
     /** Refresh token value when applicable. */
     refreshToken?: string;
     /** Human-readable token name. */
-    name?: string;
+    name: string;
     /** Purpose for which the token was created. */
-    purpose?: string;
+    purpose: string;
     /** Whether this entry represents an OAuth session. */
-    isOauth?: boolean;
+    isOauth: boolean;
     /** Timestamp when the token was created. */
-    createdAt?: string;
+    createdAt: string;
     /** Timestamp when the token was last updated. */
-    updatedAt?: string;
+    updatedAt: string;
   }[];
   /** Total number of tokens across all pages. */
   totalCount: number;
@@ -11202,19 +11202,19 @@ export type GenerateTokenApiResponse = /** status 201 Token generated */ {
     /** Authentication provider associated with the token. */
     provider: string;
     /** Access token value. */
-    accessToken?: string;
+    accessToken: string;
     /** Refresh token value when applicable. */
     refreshToken?: string;
     /** Human-readable token name. */
-    name?: string;
+    name: string;
     /** Purpose for which the token was created. */
-    purpose?: string;
+    purpose: string;
     /** Whether this entry represents an OAuth session. */
-    isOauth?: boolean;
+    isOauth: boolean;
     /** Timestamp when the token was created. */
-    createdAt?: string;
+    createdAt: string;
     /** Timestamp when the token was last updated. */
-    updatedAt?: string;
+    updatedAt: string;
   }[];
   /** Total number of tokens across all pages. */
   totalCount: number;
@@ -11239,19 +11239,19 @@ export type DeleteUserTokenApiResponse = /** status 200 Token deleted */ {
     /** Authentication provider associated with the token. */
     provider: string;
     /** Access token value. */
-    accessToken?: string;
+    accessToken: string;
     /** Refresh token value when applicable. */
     refreshToken?: string;
     /** Human-readable token name. */
-    name?: string;
+    name: string;
     /** Purpose for which the token was created. */
-    purpose?: string;
+    purpose: string;
     /** Whether this entry represents an OAuth session. */
-    isOauth?: boolean;
+    isOauth: boolean;
     /** Timestamp when the token was created. */
-    createdAt?: string;
+    createdAt: string;
     /** Timestamp when the token was last updated. */
-    updatedAt?: string;
+    updatedAt: string;
   }[];
   /** Total number of tokens across all pages. */
   totalCount: number;
@@ -11264,7 +11264,7 @@ export type DeleteUserTokenApiArg = {
   /** ID of the token to delete. */
   tokenId: string;
 };
-export type GetUserTokensByIdApiResponse = /** status 200 Token response */ {
+export type DownloadTokenApiResponse = /** status 200 Token response */ {
   /** Unique identifier for the token. */
   id: string;
   /** UUID of the user who owns the token. */
@@ -11272,21 +11272,21 @@ export type GetUserTokensByIdApiResponse = /** status 200 Token response */ {
   /** Authentication provider associated with the token. */
   provider: string;
   /** Access token value. */
-  accessToken?: string;
+  accessToken: string;
   /** Refresh token value when applicable. */
   refreshToken?: string;
   /** Human-readable token name. */
-  name?: string;
+  name: string;
   /** Purpose for which the token was created. */
-  purpose?: string;
+  purpose: string;
   /** Whether this entry represents an OAuth session. */
-  isOauth?: boolean;
+  isOauth: boolean;
   /** Timestamp when the token was created. */
-  createdAt?: string;
+  createdAt: string;
   /** Timestamp when the token was last updated. */
-  updatedAt?: string;
+  updatedAt: string;
 };
-export type GetUserTokensByIdApiArg = {
+export type DownloadTokenApiArg = {
   /** Token ID */
   tokenId: string;
 };
@@ -11300,19 +11300,19 @@ export type IssueIndefiniteLifetimeTokenApiResponse = /** status 200 Token gener
     /** Authentication provider associated with the token. */
     provider: string;
     /** Access token value. */
-    accessToken?: string;
+    accessToken: string;
     /** Refresh token value when applicable. */
     refreshToken?: string;
     /** Human-readable token name. */
-    name?: string;
+    name: string;
     /** Purpose for which the token was created. */
-    purpose?: string;
+    purpose: string;
     /** Whether this entry represents an OAuth session. */
-    isOauth?: boolean;
+    isOauth: boolean;
     /** Timestamp when the token was created. */
-    createdAt?: string;
+    createdAt: string;
     /** Timestamp when the token was last updated. */
-    updatedAt?: string;
+    updatedAt: string;
   }[];
   /** Total number of tokens across all pages. */
   totalCount: number;
@@ -12955,7 +12955,7 @@ export const {
   useGetUserTokensQuery,
   useGenerateTokenMutation,
   useDeleteUserTokenMutation,
-  useGetUserTokensByIdQuery,
+  useDownloadTokenQuery,
   useIssueIndefiniteLifetimeTokenQuery,
   useGetWorkspacesQuery,
   useCreateWorkspaceMutation,

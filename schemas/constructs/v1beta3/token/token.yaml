@@ -5,6 +5,12 @@ required:
 - id
 - owner
 - provider
+- accessToken
+- name
+- purpose
+- isOauth
+- createdAt
+- updatedAt
 properties:
   id:
     $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
