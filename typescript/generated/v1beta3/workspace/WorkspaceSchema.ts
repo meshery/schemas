@@ -227,7 +227,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                           },
                           "ownerId": {
                             "description": "User ID of the workspace owner.",
-                            "x-go-name": "OwnerId",
+                            "x-go-name": "OwnerID",
                             "x-oapi-codegen-extra-tags": {
                               "db": "owner_id",
                               "json": "ownerId,omitempty"
@@ -271,7 +271,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                           },
                           "organizationId": {
                             "description": "Organization to which this workspace belongs.",
-                            "x-go-name": "OrganizationId",
+                            "x-go-name": "OrganizationID",
                             "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "organization_id",
@@ -8793,7 +8793,7 @@ const WorkspaceSchema: Record<string, unknown> = {
           },
           "ownerId": {
             "description": "User ID of the workspace owner.",
-            "x-go-name": "OwnerId",
+            "x-go-name": "OwnerID",
             "x-oapi-codegen-extra-tags": {
               "db": "owner_id",
               "json": "ownerId,omitempty"
@@ -8837,7 +8837,7 @@ const WorkspaceSchema: Record<string, unknown> = {
           },
           "organizationId": {
             "description": "Organization to which this workspace belongs.",
-            "x-go-name": "OrganizationId",
+            "x-go-name": "OrganizationID",
             "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "organization_id",
@@ -9081,7 +9081,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                 },
                 "ownerId": {
                   "description": "User ID of the workspace owner.",
-                  "x-go-name": "OwnerId",
+                  "x-go-name": "OwnerID",
                   "x-oapi-codegen-extra-tags": {
                     "db": "owner_id",
                     "json": "ownerId,omitempty"
@@ -9125,7 +9125,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                 },
                 "organizationId": {
                   "description": "Organization to which this workspace belongs.",
-                  "x-go-name": "OrganizationId",
+                  "x-go-name": "OrganizationID",
                   "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "organization_id",
