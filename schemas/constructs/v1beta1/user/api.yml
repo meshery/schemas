@@ -370,7 +370,7 @@ components:
               type: array
               description: Team memberships for the user with their assigned roles.
               items:
-                type: object
+                $ref: "#/components/schemas/TeamWithRoles"
               x-oapi-codegen-extra-tags:
                 db: "teams_with_roles"
                 json: "teams_with_roles"
@@ -392,7 +392,7 @@ components:
               type: array
               description: Organization memberships for the user with their assigned roles.
               items:
-                type: object
+                $ref: "#/components/schemas/OrganizationWithRoles"
               x-oapi-codegen-extra-tags:
                 db: "organizations_with_roles"
                 json: "organizations_with_roles"
@@ -404,6 +404,126 @@ components:
                 db: "total_count"
                 json: "total_count"
       additionalProperties: false
+
+    TeamWithRoles:
+      type: object
+      additionalProperties: false
+      description: >-
+        A team the user is a member of, together with the names of the roles
+        assigned to that user within the team. Returned as an item of
+        User.teams.teams_with_roles. The role names are dynamic,
+        user-generated values (no fixed enumeration).
+      required:
+        - id
+        - name
+        - role_names
+      properties:
+        id:
+          $ref: "../core/api.yml#/components/schemas/uuid"
+          description: Unique identifier of the team.
+          x-oapi-codegen-extra-tags:
+            db: "id"
+            json: "id"
+        name:
+          type: string
+          description: Name of the team.
+          x-oapi-codegen-extra-tags:
+            db: "name"
+            json: "name"
+        description:
+          type: string
+          description: Human readable description of the team.
+          x-oapi-codegen-extra-tags:
+            db: "description"
+            json: "description"
+        owner:
+          $ref: "../core/api.yml#/components/schemas/uuid"
+          description: Identifier of the team owner.
+          x-oapi-codegen-extra-tags:
+            db: "owner"
+            json: "owner"
+        created_at:
+          $ref: "../core/api.yml#/components/schemas/Time"
+          description: Timestamp when the team was created.
+          x-oapi-codegen-extra-tags:
+            db: "created_at"
+            json: "created_at"
+        updated_at:
+          $ref: "../core/api.yml#/components/schemas/Time"
+          description: Timestamp when the team was last updated.
+          x-oapi-codegen-extra-tags:
+            db: "updated_at"
+            json: "updated_at"
+        role_names:
+          type: array
+          items:
+            type: string
+          description: >-
+            Names of the roles assigned to the user within this team.
+            Free-form, user-generated role names; not a fixed enumeration.
+          x-oapi-codegen-extra-tags:
+            db: "role_names"
+            json: "role_names"
+
+    OrganizationWithRoles:
+      type: object
+      additionalProperties: false
+      description: >-
+        An organization the user is a member of, together with the names of
+        the roles assigned to that user within the organization. Returned as
+        an item of User.organizations.organizations_with_roles. The role
+        names are dynamic, user-generated values (no fixed enumeration).
+      required:
+        - id
+        - name
+        - role_names
+      properties:
+        id:
+          $ref: "../core/api.yml#/components/schemas/uuid"
+          description: Unique identifier of the organization.
+          x-oapi-codegen-extra-tags:
+            db: "id"
+            json: "id"
+        name:
+          type: string
+          description: Name of the organization.
+          x-oapi-codegen-extra-tags:
+            db: "name"
+            json: "name"
+        description:
+          type: string
+          description: Human readable description of the organization.
+          x-oapi-codegen-extra-tags:
+            db: "description"
+            json: "description"
+        owner:
+          $ref: "../core/api.yml#/components/schemas/uuid"
+          description: Identifier of the organization owner.
+          x-oapi-codegen-extra-tags:
+            db: "owner"
+            json: "owner"
+        created_at:
+          $ref: "../core/api.yml#/components/schemas/Time"
+          description: Timestamp when the organization was created.
+          x-oapi-codegen-extra-tags:
+            db: "created_at"
+            json: "created_at"
+        updated_at:
+          $ref: "../core/api.yml#/components/schemas/Time"
+          description: Timestamp when the organization was last updated.
+          x-oapi-codegen-extra-tags:
+            db: "updated_at"
+            json: "updated_at"
+        role_names:
+          type: array
+          items:
+            type: string
+          description: >-
+            Names of the roles assigned to the user within this organization.
+            Free-form, user-generated role names; not a fixed enumeration.
+          x-oapi-codegen-extra-tags:
+            db: "role_names"
+            json: "role_names"
 
     UsersPageForAdmin:
       type: object
