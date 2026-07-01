@@ -528,6 +528,268 @@ export interface components {
             /** @description Number of elements per page */
             pageSize: number;
         };
+        /** @description Payload for registering (creating) or updating a connection definition. Contains only client-settable fields; server-generated fields such as createdAt, updatedAt, and deletedAt are excluded. */
+        ConnectionDefinitionPayload: {
+            /**
+             * Format: uuid
+             * @description Existing connection definition ID for updates; omit on create.
+             */
+            id?: string;
+            /**
+             * @description Specifies the version of the schema the definition conforms to.
+             * @default connections.meshery.io/v1beta3
+             * @example [
+             *       "v1",
+             *       "v1alpha1",
+             *       "v2beta3",
+             *       "v1.custom-suffix",
+             *       "models.meshery.io/v1beta1",
+             *       "capability.meshery.io/v1alpha1"
+             *     ]
+             */
+            schemaVersion: string;
+            /** @description Connection definition name */
+            name: string;
+            /** @description Human-readable description of the connection definition and its purpose. */
+            description?: string;
+            /**
+             * Format: uri
+             * @description URL of the remote resource connections of this kind point to.
+             */
+            url?: string;
+            /** @description Connection kind (e.g., kubernetes, prometheus, grafana) */
+            kind: string;
+            /** @description Connection type (platform, telemetry, collaboration) */
+            type: string;
+            /** @description Connection sub-type (cloud, identity, metrics, chat, git, orchestration) */
+            subType: string;
+            /**
+             * @description Connection Status Value
+             * @enum {string}
+             */
+            status: "discovered" | "registered" | "connected" | "ignored" | "maintenance" | "disconnected" | "deleted" | "not found";
+            /** @description Reference to the registered model that owns this connection definition. */
+            modelReference?: {
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                id: string;
+                /**
+                 * @description The unique name for the model within the scope of a registrant.
+                 * @example cert-manager
+                 */
+                name: string;
+                /** @description Version of the model definition. */
+                version: string;
+                /**
+                 * @description Human-readable name for the model.
+                 * @example Cert Manager
+                 */
+                displayName: string;
+                /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+                model: {
+                    /** @description Version of the model as defined by the registrant. */
+                    version: string;
+                };
+                registrant: {
+                    /** @description Kind of the registrant. */
+                    kind: string;
+                };
+            };
+            /** @description Kind-specific connection metadata */
+            metadata?: Record<string, never>;
+            /** @description Schema for the credential associated with connections of this kind. */
+            credentialSchema?: Record<string, never>;
+            /** @description Schema for connections of this kind. */
+            connectionSchema?: Record<string, never>;
+            /** @description Visualization styles for the connection, including svgColor and svgWhite used for UI representation. */
+            styles?: ({
+                /** @description Primary color of the component used for UI representation. */
+                primaryColor: string;
+                /** @description Secondary color of the entity used for UI representation. */
+                secondaryColor?: string;
+                /** @description White SVG of the entity used for UI representation on dark background. */
+                svgWhite: string;
+                /** @description Colored SVG of the entity used for UI representation on light background. */
+                svgColor: string;
+                /** @description Complete SVG of the entity used for UI representation, often inclusive of background. */
+                svgComplete: string;
+                /** @description The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+                color?: string;
+                /** @description The opacity of the label text, including its outline. */
+                textOpacity?: number;
+                /** @description A comma-separated list of font names to use on the label text. */
+                fontFamily?: string;
+                /** @description The size of the label text. */
+                fontSize?: string;
+                /** @description A CSS font style to be applied to the label text. */
+                fontStyle?: string;
+                /** @description A CSS font weight to be applied to the label text. */
+                fontWeight?: string;
+                /**
+                 * @description A transformation to apply to the label text
+                 * @enum {string}
+                 */
+                textTransform?: "none" | "uppercase" | "lowercase";
+                /** @description The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+                opacity?: number;
+                /** @description An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+                zIndex?: number;
+                /** @description The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+                label?: string;
+                /** @description The animation to apply to the element. example ripple,bounce,etc */
+                animation?: Record<string, never>;
+            } & {
+                [key: string]: unknown;
+            }) & {
+                /**
+                 * @description The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
+                 * @enum {string}
+                 */
+                shape: "ellipse" | "triangle" | "round-triangle" | "rectangle" | "round-rectangle" | "bottom-round-rectangle" | "cut-rectangle" | "barrel" | "rhomboid" | "diamond" | "round-diamond" | "pentagon" | "round-pentagon" | "hexagon" | "round-hexagon" | "concave-hexagon" | "heptagon" | "round-heptagon" | "octagon" | "round-octagon" | "star" | "tag" | "round-tag" | "vee" | "polygon";
+                /** @description The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+                position?: {
+                    /** @description The x-coordinate of the node. */
+                    x: number;
+                    /** @description The y-coordinate of the node. */
+                    y: number;
+                };
+                /** @description The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+                bodyText?: string;
+                /**
+                 * @description How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'.
+                 * @enum {string}
+                 */
+                bodyTextWrap?: "none" | "wrap" | "ellipsis";
+                /** @description The maximum width for wrapping text in the node. */
+                bodyTextMaxWidth?: string;
+                /** @description The opacity of the node's body text, including its outline. */
+                bodyTextOpacity?: number;
+                /** @description The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+                bodyTextBackgroundColor?: string;
+                /** @description The size of the node's body text. */
+                bodyTextFontSize?: number;
+                /** @description The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+                bodyTextColor?: string;
+                /** @description A CSS font weight to be applied to the node's body text. */
+                bodyTextFontWeight?: string;
+                /** @description A CSS horizontal alignment to be applied to the node's body text. */
+                bodyTextHorizontalAlign?: string;
+                /** @description A CSS text decoration to be applied to the node's body text. */
+                bodyTextDecoration?: string;
+                /** @description A CSS vertical alignment to be applied to the node's body text. */
+                bodyTextVerticalAlign?: string;
+                /** @description The width of the node's body or the width of an edge's line. */
+                width?: number;
+                /** @description The height of the node's body */
+                height?: number;
+                /**
+                 * Format: uri
+                 * @description The URL that points to the image to show in the node.
+                 */
+                backgroundImage?: string;
+                /** @description The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+                backgroundColor?: string;
+                /** @description Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+                backgroundBlacken?: number;
+                /** @description The opacity level of the node's background colour */
+                backgroundOpacity?: number;
+                /** @description The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+                backgroundPositionX?: string;
+                /** @description The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+                backgroundPositionY?: string;
+                /** @description The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+                backgroundOffsetX?: string;
+                /** @description The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+                backgroundOffsetY?: string;
+                /**
+                 * @description How the background image is fit to the node. Can be 'none', 'contain', or 'cover'.
+                 * @enum {string}
+                 */
+                backgroundFit?: "none" | "contain" | "cover";
+                /**
+                 * @description How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'.
+                 * @enum {string}
+                 */
+                backgroundClip?: "none" | "node" | "node-border";
+                /**
+                 * @description How the background image's width is determined. Can be 'none', 'inner', or 'outer'.
+                 * @enum {string}
+                 */
+                backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+                /**
+                 * @description How the background image's height is determined. Can be 'none', 'inner', or 'outer'.
+                 * @enum {string}
+                 */
+                backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+                /** @description The size of the node's border. */
+                borderWidth?: number;
+                /**
+                 * @description The style of the node's border
+                 * @enum {string}
+                 */
+                borderStyle?: "solid" | "dotted" | "dashed" | "double";
+                /** @description The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+                borderColor?: string;
+                /** @description The opacity of the node's border */
+                borderOpacity?: number;
+                /** @description The amount of padding around all sides of the node. */
+                padding?: number;
+                /**
+                 * @description The horizontal alignment of a node's label
+                 * @enum {string}
+                 */
+                textHalign?: "left" | "center" | "right";
+                /**
+                 * @description The vertical alignment of a node's label
+                 * @enum {string}
+                 */
+                textValign?: "top" | "center" | "bottom";
+                /**
+                 * @description Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset.
+                 * @default no
+                 * @enum {string}
+                 */
+                ghost: "yes" | "no";
+                /** @description The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+                activeBgColor?: string;
+                /** @description The opacity of the active background indicator. Selector needs to be *core*. */
+                activeBgOpacity?: string;
+                /** @description The opacity of the active background indicator. Selector needs to be *core*. */
+                activeBgSize?: string;
+                /** @description The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+                selectionBoxColor?: string;
+                /** @description The size of the border on the selection box. Selector needs to be *core* */
+                selectionBoxBorderWidth?: number;
+                /** @description The opacity of the selection box. Selector needs to be *core* */
+                selectionBoxOpacity?: number;
+                /** @description The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+                outsideTextureBgColor?: string;
+                /** @description The opacity of the area outside the viewport texture. Selector needs to be *core* */
+                outsideTextureBgOpacity?: number;
+                /** @description An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+                shapePolygonPoints?: string;
+                /** @description The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+                menuBackgroundColor?: string;
+                /** @description The opacity of the background of the component menu. */
+                menuBackgroundOpacity?: number;
+                /** @description The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+                menuForgroundColor?: string;
+            };
+            /** @description Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status. */
+            transitionMap?: {
+                [key: string]: {
+                    /**
+                     * @description Connection Status Value
+                     * @enum {string}
+                     */
+                    nextState: "discovered" | "registered" | "connected" | "ignored" | "maintenance" | "disconnected" | "deleted" | "not found";
+                    /** @description Human-readable explanation of when or why this transition occurs. */
+                    description?: string;
+                }[];
+            };
+        };
         /** @description Represents a page of connections with meta information about connections count */
         ConnectionPage: {
             /** @description List of connections on this page */
@@ -3580,7 +3842,267 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": unknown;
+                "application/json": {
+                    /**
+                     * Format: uuid
+                     * @description Existing connection definition ID for updates; omit on create.
+                     */
+                    id?: string;
+                    /**
+                     * @description Specifies the version of the schema the definition conforms to.
+                     * @default connections.meshery.io/v1beta3
+                     * @example [
+                     *       "v1",
+                     *       "v1alpha1",
+                     *       "v2beta3",
+                     *       "v1.custom-suffix",
+                     *       "models.meshery.io/v1beta1",
+                     *       "capability.meshery.io/v1alpha1"
+                     *     ]
+                     */
+                    schemaVersion?: string;
+                    /** @description Connection definition name */
+                    name: string;
+                    /** @description Human-readable description of the connection definition and its purpose. */
+                    description?: string;
+                    /**
+                     * Format: uri
+                     * @description URL of the remote resource connections of this kind point to.
+                     */
+                    url?: string;
+                    /** @description Connection kind (e.g., kubernetes, prometheus, grafana) */
+                    kind: string;
+                    /** @description Connection type (platform, telemetry, collaboration) */
+                    type: string;
+                    /** @description Connection sub-type (cloud, identity, metrics, chat, git, orchestration) */
+                    subType: string;
+                    /**
+                     * @description Connection Status Value
+                     * @enum {string}
+                     */
+                    status: "discovered" | "registered" | "connected" | "ignored" | "maintenance" | "disconnected" | "deleted" | "not found";
+                    /** @description Reference to the registered model that owns this connection definition. */
+                    modelReference?: {
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        id: string;
+                        /**
+                         * @description The unique name for the model within the scope of a registrant.
+                         * @example cert-manager
+                         */
+                        name: string;
+                        /** @description Version of the model definition. */
+                        version: string;
+                        /**
+                         * @description Human-readable name for the model.
+                         * @example Cert Manager
+                         */
+                        displayName: string;
+                        /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+                        model: {
+                            /** @description Version of the model as defined by the registrant. */
+                            version: string;
+                        };
+                        registrant: {
+                            /** @description Kind of the registrant. */
+                            kind: string;
+                        };
+                    };
+                    /** @description Kind-specific connection metadata */
+                    metadata?: Record<string, never>;
+                    /** @description Schema for the credential associated with connections of this kind. */
+                    credentialSchema?: Record<string, never>;
+                    /** @description Schema for connections of this kind. */
+                    connectionSchema?: Record<string, never>;
+                    /** @description Visualization styles for the connection, including svgColor and svgWhite used for UI representation. */
+                    styles?: ({
+                        /** @description Primary color of the component used for UI representation. */
+                        primaryColor: string;
+                        /** @description Secondary color of the entity used for UI representation. */
+                        secondaryColor?: string;
+                        /** @description White SVG of the entity used for UI representation on dark background. */
+                        svgWhite: string;
+                        /** @description Colored SVG of the entity used for UI representation on light background. */
+                        svgColor: string;
+                        /** @description Complete SVG of the entity used for UI representation, often inclusive of background. */
+                        svgComplete: string;
+                        /** @description The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+                        color?: string;
+                        /** @description The opacity of the label text, including its outline. */
+                        textOpacity?: number;
+                        /** @description A comma-separated list of font names to use on the label text. */
+                        fontFamily?: string;
+                        /** @description The size of the label text. */
+                        fontSize?: string;
+                        /** @description A CSS font style to be applied to the label text. */
+                        fontStyle?: string;
+                        /** @description A CSS font weight to be applied to the label text. */
+                        fontWeight?: string;
+                        /**
+                         * @description A transformation to apply to the label text
+                         * @enum {string}
+                         */
+                        textTransform?: "none" | "uppercase" | "lowercase";
+                        /** @description The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+                        opacity?: number;
+                        /** @description An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+                        zIndex?: number;
+                        /** @description The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+                        label?: string;
+                        /** @description The animation to apply to the element. example ripple,bounce,etc */
+                        animation?: Record<string, never>;
+                    } & {
+                        [key: string]: unknown;
+                    }) & {
+                        /**
+                         * @description The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
+                         * @enum {string}
+                         */
+                        shape: "ellipse" | "triangle" | "round-triangle" | "rectangle" | "round-rectangle" | "bottom-round-rectangle" | "cut-rectangle" | "barrel" | "rhomboid" | "diamond" | "round-diamond" | "pentagon" | "round-pentagon" | "hexagon" | "round-hexagon" | "concave-hexagon" | "heptagon" | "round-heptagon" | "octagon" | "round-octagon" | "star" | "tag" | "round-tag" | "vee" | "polygon";
+                        /** @description The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+                        position?: {
+                            /** @description The x-coordinate of the node. */
+                            x: number;
+                            /** @description The y-coordinate of the node. */
+                            y: number;
+                        };
+                        /** @description The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+                        bodyText?: string;
+                        /**
+                         * @description How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'.
+                         * @enum {string}
+                         */
+                        bodyTextWrap?: "none" | "wrap" | "ellipsis";
+                        /** @description The maximum width for wrapping text in the node. */
+                        bodyTextMaxWidth?: string;
+                        /** @description The opacity of the node's body text, including its outline. */
+                        bodyTextOpacity?: number;
+                        /** @description The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+                        bodyTextBackgroundColor?: string;
+                        /** @description The size of the node's body text. */
+                        bodyTextFontSize?: number;
+                        /** @description The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+                        bodyTextColor?: string;
+                        /** @description A CSS font weight to be applied to the node's body text. */
+                        bodyTextFontWeight?: string;
+                        /** @description A CSS horizontal alignment to be applied to the node's body text. */
+                        bodyTextHorizontalAlign?: string;
+                        /** @description A CSS text decoration to be applied to the node's body text. */
+                        bodyTextDecoration?: string;
+                        /** @description A CSS vertical alignment to be applied to the node's body text. */
+                        bodyTextVerticalAlign?: string;
+                        /** @description The width of the node's body or the width of an edge's line. */
+                        width?: number;
+                        /** @description The height of the node's body */
+                        height?: number;
+                        /**
+                         * Format: uri
+                         * @description The URL that points to the image to show in the node.
+                         */
+                        backgroundImage?: string;
+                        /** @description The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+                        backgroundColor?: string;
+                        /** @description Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+                        backgroundBlacken?: number;
+                        /** @description The opacity level of the node's background colour */
+                        backgroundOpacity?: number;
+                        /** @description The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+                        backgroundPositionX?: string;
+                        /** @description The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+                        backgroundPositionY?: string;
+                        /** @description The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+                        backgroundOffsetX?: string;
+                        /** @description The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+                        backgroundOffsetY?: string;
+                        /**
+                         * @description How the background image is fit to the node. Can be 'none', 'contain', or 'cover'.
+                         * @enum {string}
+                         */
+                        backgroundFit?: "none" | "contain" | "cover";
+                        /**
+                         * @description How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'.
+                         * @enum {string}
+                         */
+                        backgroundClip?: "none" | "node" | "node-border";
+                        /**
+                         * @description How the background image's width is determined. Can be 'none', 'inner', or 'outer'.
+                         * @enum {string}
+                         */
+                        backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+                        /**
+                         * @description How the background image's height is determined. Can be 'none', 'inner', or 'outer'.
+                         * @enum {string}
+                         */
+                        backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+                        /** @description The size of the node's border. */
+                        borderWidth?: number;
+                        /**
+                         * @description The style of the node's border
+                         * @enum {string}
+                         */
+                        borderStyle?: "solid" | "dotted" | "dashed" | "double";
+                        /** @description The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+                        borderColor?: string;
+                        /** @description The opacity of the node's border */
+                        borderOpacity?: number;
+                        /** @description The amount of padding around all sides of the node. */
+                        padding?: number;
+                        /**
+                         * @description The horizontal alignment of a node's label
+                         * @enum {string}
+                         */
+                        textHalign?: "left" | "center" | "right";
+                        /**
+                         * @description The vertical alignment of a node's label
+                         * @enum {string}
+                         */
+                        textValign?: "top" | "center" | "bottom";
+                        /**
+                         * @description Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset.
+                         * @default no
+                         * @enum {string}
+                         */
+                        ghost?: "yes" | "no";
+                        /** @description The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+                        activeBgColor?: string;
+                        /** @description The opacity of the active background indicator. Selector needs to be *core*. */
+                        activeBgOpacity?: string;
+                        /** @description The opacity of the active background indicator. Selector needs to be *core*. */
+                        activeBgSize?: string;
+                        /** @description The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+                        selectionBoxColor?: string;
+                        /** @description The size of the border on the selection box. Selector needs to be *core* */
+                        selectionBoxBorderWidth?: number;
+                        /** @description The opacity of the selection box. Selector needs to be *core* */
+                        selectionBoxOpacity?: number;
+                        /** @description The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+                        outsideTextureBgColor?: string;
+                        /** @description The opacity of the area outside the viewport texture. Selector needs to be *core* */
+                        outsideTextureBgOpacity?: number;
+                        /** @description An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+                        shapePolygonPoints?: string;
+                        /** @description The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+                        menuBackgroundColor?: string;
+                        /** @description The opacity of the background of the component menu. */
+                        menuBackgroundOpacity?: number;
+                        /** @description The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+                        menuForgroundColor?: string;
+                    };
+                    /** @description Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status. */
+                    transitionMap?: {
+                        [key: string]: {
+                            /**
+                             * @description Connection Status Value
+                             * @enum {string}
+                             */
+                            nextState: "discovered" | "registered" | "connected" | "ignored" | "maintenance" | "disconnected" | "deleted" | "not found";
+                            /** @description Human-readable explanation of when or why this transition occurs. */
+                            description?: string;
+                        }[];
+                    };
+                };
             };
         };
         responses: {
@@ -3684,7 +4206,267 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": unknown;
+                "application/json": {
+                    /**
+                     * Format: uuid
+                     * @description Existing connection definition ID for updates; omit on create.
+                     */
+                    id?: string;
+                    /**
+                     * @description Specifies the version of the schema the definition conforms to.
+                     * @default connections.meshery.io/v1beta3
+                     * @example [
+                     *       "v1",
+                     *       "v1alpha1",
+                     *       "v2beta3",
+                     *       "v1.custom-suffix",
+                     *       "models.meshery.io/v1beta1",
+                     *       "capability.meshery.io/v1alpha1"
+                     *     ]
+                     */
+                    schemaVersion?: string;
+                    /** @description Connection definition name */
+                    name: string;
+                    /** @description Human-readable description of the connection definition and its purpose. */
+                    description?: string;
+                    /**
+                     * Format: uri
+                     * @description URL of the remote resource connections of this kind point to.
+                     */
+                    url?: string;
+                    /** @description Connection kind (e.g., kubernetes, prometheus, grafana) */
+                    kind: string;
+                    /** @description Connection type (platform, telemetry, collaboration) */
+                    type: string;
+                    /** @description Connection sub-type (cloud, identity, metrics, chat, git, orchestration) */
+                    subType: string;
+                    /**
+                     * @description Connection Status Value
+                     * @enum {string}
+                     */
+                    status: "discovered" | "registered" | "connected" | "ignored" | "maintenance" | "disconnected" | "deleted" | "not found";
+                    /** @description Reference to the registered model that owns this connection definition. */
+                    modelReference?: {
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        id: string;
+                        /**
+                         * @description The unique name for the model within the scope of a registrant.
+                         * @example cert-manager
+                         */
+                        name: string;
+                        /** @description Version of the model definition. */
+                        version: string;
+                        /**
+                         * @description Human-readable name for the model.
+                         * @example Cert Manager
+                         */
+                        displayName: string;
+                        /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+                        model: {
+                            /** @description Version of the model as defined by the registrant. */
+                            version: string;
+                        };
+                        registrant: {
+                            /** @description Kind of the registrant. */
+                            kind: string;
+                        };
+                    };
+                    /** @description Kind-specific connection metadata */
+                    metadata?: Record<string, never>;
+                    /** @description Schema for the credential associated with connections of this kind. */
+                    credentialSchema?: Record<string, never>;
+                    /** @description Schema for connections of this kind. */
+                    connectionSchema?: Record<string, never>;
+                    /** @description Visualization styles for the connection, including svgColor and svgWhite used for UI representation. */
+                    styles?: ({
+                        /** @description Primary color of the component used for UI representation. */
+                        primaryColor: string;
+                        /** @description Secondary color of the entity used for UI representation. */
+                        secondaryColor?: string;
+                        /** @description White SVG of the entity used for UI representation on dark background. */
+                        svgWhite: string;
+                        /** @description Colored SVG of the entity used for UI representation on light background. */
+                        svgColor: string;
+                        /** @description Complete SVG of the entity used for UI representation, often inclusive of background. */
+                        svgComplete: string;
+                        /** @description The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+                        color?: string;
+                        /** @description The opacity of the label text, including its outline. */
+                        textOpacity?: number;
+                        /** @description A comma-separated list of font names to use on the label text. */
+                        fontFamily?: string;
+                        /** @description The size of the label text. */
+                        fontSize?: string;
+                        /** @description A CSS font style to be applied to the label text. */
+                        fontStyle?: string;
+                        /** @description A CSS font weight to be applied to the label text. */
+                        fontWeight?: string;
+                        /**
+                         * @description A transformation to apply to the label text
+                         * @enum {string}
+                         */
+                        textTransform?: "none" | "uppercase" | "lowercase";
+                        /** @description The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+                        opacity?: number;
+                        /** @description An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+                        zIndex?: number;
+                        /** @description The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+                        label?: string;
+                        /** @description The animation to apply to the element. example ripple,bounce,etc */
+                        animation?: Record<string, never>;
+                    } & {
+                        [key: string]: unknown;
+                    }) & {
+                        /**
+                         * @description The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
+                         * @enum {string}
+                         */
+                        shape: "ellipse" | "triangle" | "round-triangle" | "rectangle" | "round-rectangle" | "bottom-round-rectangle" | "cut-rectangle" | "barrel" | "rhomboid" | "diamond" | "round-diamond" | "pentagon" | "round-pentagon" | "hexagon" | "round-hexagon" | "concave-hexagon" | "heptagon" | "round-heptagon" | "octagon" | "round-octagon" | "star" | "tag" | "round-tag" | "vee" | "polygon";
+                        /** @description The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+                        position?: {
+                            /** @description The x-coordinate of the node. */
+                            x: number;
+                            /** @description The y-coordinate of the node. */
+                            y: number;
+                        };
+                        /** @description The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+                        bodyText?: string;
+                        /**
+                         * @description How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'.
+                         * @enum {string}
+                         */
+                        bodyTextWrap?: "none" | "wrap" | "ellipsis";
+                        /** @description The maximum width for wrapping text in the node. */
+                        bodyTextMaxWidth?: string;
+                        /** @description The opacity of the node's body text, including its outline. */
+                        bodyTextOpacity?: number;
+                        /** @description The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+                        bodyTextBackgroundColor?: string;
+                        /** @description The size of the node's body text. */
+                        bodyTextFontSize?: number;
+                        /** @description The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+                        bodyTextColor?: string;
+                        /** @description A CSS font weight to be applied to the node's body text. */
+                        bodyTextFontWeight?: string;
+                        /** @description A CSS horizontal alignment to be applied to the node's body text. */
+                        bodyTextHorizontalAlign?: string;
+                        /** @description A CSS text decoration to be applied to the node's body text. */
+                        bodyTextDecoration?: string;
+                        /** @description A CSS vertical alignment to be applied to the node's body text. */
+                        bodyTextVerticalAlign?: string;
+                        /** @description The width of the node's body or the width of an edge's line. */
+                        width?: number;
+                        /** @description The height of the node's body */
+                        height?: number;
+                        /**
+                         * Format: uri
+                         * @description The URL that points to the image to show in the node.
+                         */
+                        backgroundImage?: string;
+                        /** @description The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+                        backgroundColor?: string;
+                        /** @description Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+                        backgroundBlacken?: number;
+                        /** @description The opacity level of the node's background colour */
+                        backgroundOpacity?: number;
+                        /** @description The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+                        backgroundPositionX?: string;
+                        /** @description The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+                        backgroundPositionY?: string;
+                        /** @description The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+                        backgroundOffsetX?: string;
+                        /** @description The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+                        backgroundOffsetY?: string;
+                        /**
+                         * @description How the background image is fit to the node. Can be 'none', 'contain', or 'cover'.
+                         * @enum {string}
+                         */
+                        backgroundFit?: "none" | "contain" | "cover";
+                        /**
+                         * @description How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'.
+                         * @enum {string}
+                         */
+                        backgroundClip?: "none" | "node" | "node-border";
+                        /**
+                         * @description How the background image's width is determined. Can be 'none', 'inner', or 'outer'.
+                         * @enum {string}
+                         */
+                        backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+                        /**
+                         * @description How the background image's height is determined. Can be 'none', 'inner', or 'outer'.
+                         * @enum {string}
+                         */
+                        backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+                        /** @description The size of the node's border. */
+                        borderWidth?: number;
+                        /**
+                         * @description The style of the node's border
+                         * @enum {string}
+                         */
+                        borderStyle?: "solid" | "dotted" | "dashed" | "double";
+                        /** @description The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+                        borderColor?: string;
+                        /** @description The opacity of the node's border */
+                        borderOpacity?: number;
+                        /** @description The amount of padding around all sides of the node. */
+                        padding?: number;
+                        /**
+                         * @description The horizontal alignment of a node's label
+                         * @enum {string}
+                         */
+                        textHalign?: "left" | "center" | "right";
+                        /**
+                         * @description The vertical alignment of a node's label
+                         * @enum {string}
+                         */
+                        textValign?: "top" | "center" | "bottom";
+                        /**
+                         * @description Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset.
+                         * @default no
+                         * @enum {string}
+                         */
+                        ghost?: "yes" | "no";
+                        /** @description The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+                        activeBgColor?: string;
+                        /** @description The opacity of the active background indicator. Selector needs to be *core*. */
+                        activeBgOpacity?: string;
+                        /** @description The opacity of the active background indicator. Selector needs to be *core*. */
+                        activeBgSize?: string;
+                        /** @description The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+                        selectionBoxColor?: string;
+                        /** @description The size of the border on the selection box. Selector needs to be *core* */
+                        selectionBoxBorderWidth?: number;
+                        /** @description The opacity of the selection box. Selector needs to be *core* */
+                        selectionBoxOpacity?: number;
+                        /** @description The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+                        outsideTextureBgColor?: string;
+                        /** @description The opacity of the area outside the viewport texture. Selector needs to be *core* */
+                        outsideTextureBgOpacity?: number;
+                        /** @description An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+                        shapePolygonPoints?: string;
+                        /** @description The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+                        menuBackgroundColor?: string;
+                        /** @description The opacity of the background of the component menu. */
+                        menuBackgroundOpacity?: number;
+                        /** @description The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+                        menuForgroundColor?: string;
+                    };
+                    /** @description Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status. */
+                    transitionMap?: {
+                        [key: string]: {
+                            /**
+                             * @description Connection Status Value
+                             * @enum {string}
+                             */
+                            nextState: "discovered" | "registered" | "connected" | "ignored" | "maintenance" | "disconnected" | "deleted" | "not found";
+                            /** @description Human-readable explanation of when or why this transition occurs. */
+                            description?: string;
+                        }[];
+                    };
+                };
             };
         };
         responses: {
