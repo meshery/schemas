@@ -227,7 +227,7 @@ paths:
         "404":
           $ref: "#/components/responses/404"
         "409":
-          $ref: "#/components/responses/409"
+          $ref: "#/components/responses/AccountDeletionConflict"
         "500":
           $ref: "#/components/responses/500"
 components:
@@ -239,6 +239,10 @@ components:
     404:
       $ref: "../core/api.yml#/components/responses/404"
     409:
+      $ref: "../core/api.yml#/components/responses/409"
+    500:
+      $ref: "../core/api.yml#/components/responses/500"
+    AccountDeletionConflict:
       description: >-
         Deletion preconditions were not met. Returned when the target
         organization is the shared Layer5 provider organization, has an active
@@ -249,8 +253,6 @@ components:
         text/plain:
           schema:
             type: string
-    500:
-      $ref: "../core/api.yml#/components/responses/500"
 
   parameters:
     id:
