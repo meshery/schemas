@@ -32,6 +32,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/orgId"
         - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/pagesize"
       responses:
         "200":
@@ -55,6 +56,7 @@ paths:
       operationId: getKeys
       parameters:
         - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/pagesize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
@@ -169,8 +171,15 @@ components:
         $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
     page:
       $ref: ../../v1alpha1/core/api.yml#/components/parameters/page
+    pageSize:
+      $ref: ../core/api.yml#/components/parameters/pageSize
     pagesize:
-      $ref: ../../v1alpha1/core/api.yml#/components/parameters/pagesize
+      name: pagesize
+      in: query
+      description: Get responses by pagesize. Deprecated alias of pageSize.
+      deprecated: true
+      schema:
+        type: string
     order:
       $ref: ../../v1alpha1/core/api.yml#/components/parameters/order
     search:

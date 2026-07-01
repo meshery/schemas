@@ -47,8 +47,15 @@ components:
       $ref: ../../v1alpha1/core/api.yml#/components/parameters/order
     page:
       $ref: ../../v1alpha1/core/api.yml#/components/parameters/page
+    pageSize:
+      $ref: ../../v1beta2/core/api.yml#/components/parameters/pageSize
     pagesize:
-      $ref: ../../v1alpha1/core/api.yml#/components/parameters/pagesize
+      name: pagesize
+      in: query
+      description: Get responses by pagesize. Deprecated alias of pageSize.
+      deprecated: true
+      schema:
+        type: string
     orgIdQuery:
       name: orgId
       in: query
@@ -230,6 +237,7 @@ paths:
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
         - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/pagesize"
         - $ref: "#/components/parameters/orgIdQuery"
       responses:
@@ -326,6 +334,7 @@ paths:
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
         - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/pagesize"
         - name: filter
           in: query

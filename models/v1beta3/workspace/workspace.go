@@ -268,6 +268,9 @@ type OrgIdQuery = uuid.UUID
 // CorePage defines model for page.
 type CorePage = string
 
+// PageSize defines model for pageSize.
+type PageSize = int
+
 // Pagesize defines model for pagesize.
 type Pagesize = string
 
