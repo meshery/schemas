@@ -128,7 +128,7 @@ components:
         user_id:
           $ref: ../core/api.yml#/components/schemas/user_id
           x-oapi-codegen-extra-tags:
-            db: user_id
+            db: owner
         created_at:
           $ref: ../core/api.yml#/components/schemas/created_at
         updated_at:

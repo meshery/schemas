@@ -202,7 +202,7 @@ type AcademyRegistration struct {
 	UpdatedAt core.Time         `db:"updated_at" json:"updated_at" yaml:"updated_at"`
 
 	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	UserId core.Uuid `db:"user_id" json:"user_id" yaml:"user_id"`
+	UserId core.Uuid `db:"owner" json:"user_id" yaml:"user_id"`
 }
 
 // AcademyRegistrationStatus Status of the user's course registration
@@ -708,7 +708,7 @@ type TestSubmission struct {
 	UpdatedAt *time.Time `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 
 	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	UserId core.Uuid `db:"user_id" json:"user_id" yaml:"user_id"`
+	UserId core.Uuid `db:"owner" json:"user_id" yaml:"user_id"`
 }
 
 // TestSubmissionStatus defines model for TestSubmissionStatus.

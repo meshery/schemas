@@ -62,7 +62,7 @@ type Connection struct {
 	Status ConnectionStatus `db:"status" json:"status" yaml:"status"`
 
 	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	UserID    *core.Uuid `db:"user_id" json:"user_id,omitempty" yaml:"user_id"`
+	UserID    *core.Uuid `db:"owner" json:"user_id,omitempty" yaml:"user_id"`
 	CreatedAt core.Time  `db:"created_at" json:"created_at,omitempty" yaml:"created_at"`
 	UpdatedAt core.Time  `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at"`
 

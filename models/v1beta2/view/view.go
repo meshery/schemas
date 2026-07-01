@@ -57,7 +57,7 @@ type MesheryView struct {
 	Metadata core.Map `db:"metadata" json:"metadata" yaml:"metadata"`
 
 	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	UserID core.Uuid `db:"user_id" json:"userId" yaml:"userId"`
+	UserID core.Uuid `db:"owner" json:"userId" yaml:"userId"`
 
 	// CreatedAt Timestamp when the view was created.
 	CreatedAt time.Time `db:"created_at" json:"createdAt" yaml:"createdAt"`
@@ -112,7 +112,7 @@ type MesheryViewWithLocation struct {
 	UpdatedAt time.Time `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
 
 	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	UserID *core.Uuid `db:"user_id" json:"userId,omitempty" yaml:"userId,omitempty"`
+	UserID *core.Uuid `db:"owner" json:"userId,omitempty" yaml:"userId,omitempty"`
 
 	// Visibility Visibility level of the view.
 	Visibility string `db:"visibility" json:"visibility,omitempty" yaml:"visibility,omitempty"`
