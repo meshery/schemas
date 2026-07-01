@@ -42,13 +42,13 @@ type CredentialPage struct {
 	Credentials []Credential `json:"credentials" yaml:"credentials"`
 
 	// TotalCount Total number of credentials across all pages.
-	TotalCount int `json:"total_count" yaml:"total_count"`
+	TotalCount int `json:"totalCount" yaml:"totalCount"`
 
 	// Page Current page number (zero-based).
 	Page int `json:"page" yaml:"page"`
 
 	// PageSize Number of credentials per page.
-	PageSize int `json:"page_size" yaml:"page_size"`
+	PageSize int `json:"pageSize" yaml:"pageSize"`
 }
 
 // CredentialPayload Payload for creating or updating a credential.
@@ -80,6 +80,9 @@ type Order = string
 
 // Page defines model for page.
 type Page = string
+
+// PageSize defines model for pageSize.
+type PageSize = int
 
 // Pagesize defines model for pagesize.
 type Pagesize = string

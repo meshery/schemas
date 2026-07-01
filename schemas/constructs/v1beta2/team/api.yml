@@ -66,8 +66,15 @@ components:
       $ref: ../../v1alpha1/core/api.yml#/components/parameters/order
     page:
       $ref: ../../v1alpha1/core/api.yml#/components/parameters/page
+    pageSize:
+      $ref: ../core/api.yml#/components/parameters/pageSize
     pagesize:
-      $ref: ../../v1alpha1/core/api.yml#/components/parameters/pagesize
+      name: pagesize
+      in: query
+      description: Get responses by pagesize. Deprecated alias of pageSize.
+      deprecated: true
+      schema:
+        type: string
 
   securitySchemes:
     jwt:
@@ -118,11 +125,11 @@ components:
           type: integer
           description: Current page number of the result set.
           minimum: 0
-        page_size:
+        pageSize:
           type: integer
           description: Number of items per page.
           minimum: 1
-        total_count:
+        totalCount:
           type: integer
           description: Total number of items available.
           minimum: 0
@@ -194,11 +201,11 @@ components:
           type: integer
           description: Current page number of the result set.
           minimum: 0
-        page_size:
+        pageSize:
           type: integer
           description: Number of items per page.
           minimum: 1
-        total_count:
+        totalCount:
           type: integer
           description: Total number of items available.
           minimum: 0
@@ -239,11 +246,11 @@ components:
           type: integer
           description: Current page number of the result set.
           minimum: 0
-        page_size:
+        pageSize:
           type: integer
           description: Number of items per page.
           minimum: 1
-        total_count:
+        totalCount:
           type: integer
           description: Total number of items available.
           minimum: 0
@@ -283,6 +290,7 @@ paths:
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
         - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/pagesize"
       responses:
         "200":
@@ -412,6 +420,7 @@ paths:
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
         - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/pagesize"
       responses:
         "200":
@@ -492,6 +501,7 @@ paths:
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
         - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/pagesize"
       responses:
         "200":
