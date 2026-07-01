@@ -273,9 +273,12 @@ ifeq (,$(findstring $(GOVERSION), $(INSTALLED_GO_VERSION)))
 endif
 
 # oapi-codegen
+# Pinned to the same version installed by CI (see .github/workflows/generate-artifacts-from-schemas.yml
+# and publish-openapi-docs.yml). Using @latest here would let a newer codegen version regenerate
+# every committed model with an unrelated diff on any contributor's machine that lacks a local install.
 ifeq (,$(shell command -v oapi-codegen))
 	@echo "Dependency missing: oapi-codegen. Install oapi-codegen"
 	@echo "installing oapi-codegen"
 	# for the binary install
-	go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
+	go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.5.1
 endif

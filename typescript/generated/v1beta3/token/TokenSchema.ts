@@ -123,7 +123,13 @@ const TokenSchema: Record<string, unknown> = {
                         "required": [
                           "id",
                           "owner",
-                          "provider"
+                          "provider",
+                          "accessToken",
+                          "name",
+                          "purpose",
+                          "isOauth",
+                          "createdAt",
+                          "updatedAt"
                         ],
                         "properties": {
                           "id": {
@@ -356,7 +362,13 @@ const TokenSchema: Record<string, unknown> = {
                         "required": [
                           "id",
                           "owner",
-                          "provider"
+                          "provider",
+                          "accessToken",
+                          "name",
+                          "purpose",
+                          "isOauth",
+                          "createdAt",
+                          "updatedAt"
                         ],
                         "properties": {
                           "id": {
@@ -594,7 +606,13 @@ const TokenSchema: Record<string, unknown> = {
                         "required": [
                           "id",
                           "owner",
-                          "provider"
+                          "provider",
+                          "accessToken",
+                          "name",
+                          "purpose",
+                          "isOauth",
+                          "createdAt",
+                          "updatedAt"
                         ],
                         "properties": {
                           "id": {
@@ -789,9 +807,9 @@ const TokenSchema: Record<string, unknown> = {
         "tags": [
           "tokens"
         ],
-        "summary": "Get token by ID",
-        "operationId": "getUserTokensById",
-        "description": "Retrieves a specific token by its ID.",
+        "summary": "Download token",
+        "operationId": "downloadToken",
+        "description": "Downloads a specific token by its ID for use as a local credential file (e.g. mesheryctl's auth.json). Gated by the Download Token permission and recorded as a distinct audit event from viewing or listing tokens.",
         "parameters": [
           {
             "name": "tokenId",
@@ -821,7 +839,13 @@ const TokenSchema: Record<string, unknown> = {
                   "required": [
                     "id",
                     "owner",
-                    "provider"
+                    "provider",
+                    "accessToken",
+                    "name",
+                    "purpose",
+                    "isOauth",
+                    "createdAt",
+                    "updatedAt"
                   ],
                   "properties": {
                     "id": {
@@ -1039,7 +1063,13 @@ const TokenSchema: Record<string, unknown> = {
                         "required": [
                           "id",
                           "owner",
-                          "provider"
+                          "provider",
+                          "accessToken",
+                          "name",
+                          "purpose",
+                          "isOauth",
+                          "createdAt",
+                          "updatedAt"
                         ],
                         "properties": {
                           "id": {
@@ -1402,7 +1432,13 @@ const TokenSchema: Record<string, unknown> = {
         "required": [
           "id",
           "owner",
-          "provider"
+          "provider",
+          "accessToken",
+          "name",
+          "purpose",
+          "isOauth",
+          "createdAt",
+          "updatedAt"
         ],
         "properties": {
           "id": {
@@ -1541,7 +1577,13 @@ const TokenSchema: Record<string, unknown> = {
               "required": [
                 "id",
                 "owner",
-                "provider"
+                "provider",
+                "accessToken",
+                "name",
+                "purpose",
+                "isOauth",
+                "createdAt",
+                "updatedAt"
               ],
               "properties": {
                 "id": {
