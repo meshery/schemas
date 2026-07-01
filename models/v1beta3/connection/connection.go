@@ -253,6 +253,66 @@ type ConnectionsStatusPage struct {
 	TotalCount int `json:"totalCount" yaml:"totalCount"`
 }
 
+// K8sContext Kubernetes-specific authentication context projected from a kubernetes connection and its credential. Connection metadata supplies the context identity (id, name, server, version, deployment type, instance and server IDs); the credential secret supplies the auth and cluster material. This is a response projection, not a stored table row.
+type K8sContext struct {
+	// Auth Authentication material for the context (token or kubeconfig reference), sourced from the connection's credential secret.
+	Auth core.Map `json:"auth,omitempty" yaml:"auth,omitempty"`
+
+	// Cluster Cluster definition for the context (certificate authority and server details), sourced from the connection's credential secret.
+	Cluster core.Map `json:"cluster,omitempty" yaml:"cluster,omitempty"`
+
+	// ConnectionId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ConnectionID *core.Uuid `json:"connectionId,omitempty" yaml:"connectionId,omitempty"`
+
+	// CreatedAt Timestamp when the underlying connection was created.
+	CreatedAt time.Time `json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
+
+	// CreatedBy A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	CreatedBy *core.Uuid `json:"createdBy,omitempty" yaml:"createdBy,omitempty"`
+
+	// DeploymentType How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster).
+	DeploymentType string `json:"deploymentType" yaml:"deploymentType"`
+
+	// ID Stable identifier of the Kubernetes context, assigned when the context is registered. Not a UUID; carried in connection metadata.
+	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+
+	// KubernetesServerId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	KubernetesServerID *core.Uuid `json:"kubernetesServerId,omitempty" yaml:"kubernetesServerId,omitempty"`
+
+	// MesheryInstanceId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	MesheryInstanceID *core.Uuid `json:"mesheryInstanceId,omitempty" yaml:"mesheryInstanceId,omitempty"`
+
+	// Name Human-readable name of the Kubernetes context.
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+
+	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	Owner *core.Uuid `json:"owner,omitempty" yaml:"owner,omitempty"`
+
+	// Server API server URL of the Kubernetes cluster.
+	Server string `json:"server,omitempty" yaml:"server,omitempty"`
+
+	// UpdatedAt Timestamp when the underlying connection was last updated.
+	UpdatedAt time.Time `json:"updatedAt,omitempty" yaml:"updatedAt,omitempty"`
+
+	// Version Kubernetes server version of the cluster.
+	Version string `json:"version" yaml:"version"`
+}
+
+// K8sContextPage Paginated list of Kubernetes contexts.
+type K8sContextPage struct {
+	// Contexts Kubernetes contexts in this page.
+	Contexts []K8sContext `json:"contexts" yaml:"contexts"`
+
+	// Page Zero-based page index returned in this response.
+	Page int `json:"page" yaml:"page"`
+
+	// PageSize Maximum number of items returned on each page.
+	PageSize int `json:"pageSize" yaml:"pageSize"`
+
+	// TotalCount Total number of items across all pages.
+	TotalCount int `json:"totalCount" yaml:"totalCount"`
+}
+
 // MesheryCompatibility Meshery version compatibility check
 type MesheryCompatibility struct {
 	// CheckCompatibility Whether to check compatibility

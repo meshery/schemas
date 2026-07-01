@@ -217,7 +217,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                $ref: "#/components/schemas/K8sContextPage"
         "401":
           $ref: "#/components/responses/401"
         "404":
@@ -1040,3 +1040,152 @@ components:
           description: Whether to check compatibility
           x-oapi-codegen-extra-tags:
             json: "checkCompatibility,omitempty"
+
+    K8sContext:
+      type: object
+      description: >-
+        Kubernetes-specific authentication context projected from a kubernetes
+        connection and its credential. Connection metadata supplies the context
+        identity (id, name, server, version, deployment type, instance and
+        server IDs); the credential secret supplies the auth and cluster
+        material. This is a response projection, not a stored table row.
+      properties:
+        id:
+          type: string
+          description: >-
+            Stable identifier of the Kubernetes context, assigned when the
+            context is registered. Not a UUID; carried in connection metadata.
+          x-id-format: external
+          maxLength: 255
+          x-go-name: ID
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "id,omitempty"
+        name:
+          type: string
+          description: Human-readable name of the Kubernetes context.
+          maxLength: 255
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "name,omitempty"
+        auth:
+          type: object
+          description: >-
+            Authentication material for the context (token or kubeconfig
+            reference), sourced from the connection's credential secret.
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "auth,omitempty"
+        cluster:
+          type: object
+          description: >-
+            Cluster definition for the context (certificate authority and
+            server details), sourced from the connection's credential secret.
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "cluster,omitempty"
+        server:
+          type: string
+          description: API server URL of the Kubernetes cluster.
+          maxLength: 2048
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "server,omitempty"
+        owner:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+          description: ID of the user who owns the underlying connection.
+          x-oapi-codegen-extra-tags:
+            json: "owner,omitempty"
+        createdBy:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+          description: ID of the user who registered the context.
+          x-oapi-codegen-extra-tags:
+            json: "createdBy,omitempty"
+        mesheryInstanceId:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+          description: ID of the Meshery instance the context is registered with.
+          x-go-name: MesheryInstanceID
+          x-oapi-codegen-extra-tags:
+            json: "mesheryInstanceId,omitempty"
+        kubernetesServerId:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+          description: ID of the Kubernetes server associated with the context.
+          x-go-name: KubernetesServerID
+          x-oapi-codegen-extra-tags:
+            json: "kubernetesServerId,omitempty"
+        deploymentType:
+          type: string
+          description: How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster).
+          maxLength: 64
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "deploymentType"
+        version:
+          type: string
+          description: Kubernetes server version of the cluster.
+          maxLength: 64
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "version"
+        createdAt:
+          type: string
+          description: Timestamp when the underlying connection was created.
+          format: date-time
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "createdAt,omitempty"
+        updatedAt:
+          type: string
+          description: Timestamp when the underlying connection was last updated.
+          format: date-time
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "updatedAt,omitempty"
+        connectionId:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+          description: ID of the connection this context was projected from.
+          x-go-name: ConnectionID
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "connectionId,omitempty"
+
+    K8sContextPage:
+      type: object
+      description: Paginated list of Kubernetes contexts.
+      required:
+        - page
+        - pageSize
+        - totalCount
+        - contexts
+      properties:
+        page:
+          type: integer
+          description: Zero-based page index returned in this response.
+          minimum: 0
+          x-oapi-codegen-extra-tags:
+            json: "page"
+        pageSize:
+          type: integer
+          description: Maximum number of items returned on each page.
+          minimum: 1
+          x-oapi-codegen-extra-tags:
+            json: "pageSize"
+        totalCount:
+          type: integer
+          description: Total number of items across all pages.
+          minimum: 0
+          x-oapi-codegen-extra-tags:
+            json: "totalCount"
+        contexts:
+          type: array
+          description: Kubernetes contexts in this page.
+          items:
+            $ref: "#/components/schemas/K8sContext"
+          x-oapi-codegen-extra-tags:
+            json: "contexts"
