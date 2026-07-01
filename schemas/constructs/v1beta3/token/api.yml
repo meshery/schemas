@@ -35,6 +35,7 @@ paths:
       parameters:
       - $ref: '#/components/parameters/isOauth'
       - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/pageSize'
       - $ref: '#/components/parameters/pagesize'
       - $ref: '#/components/parameters/search'
       - $ref: '#/components/parameters/order'
@@ -192,8 +193,15 @@ components:
         maxLength: 500
     page:
       $ref: ../../v1beta2/core/api.yml#/components/parameters/page
+    pageSize:
+      $ref: ../../v1beta2/core/api.yml#/components/parameters/pageSize
     pagesize:
-      $ref: ../../v1beta2/core/api.yml#/components/parameters/pagesize
+      name: pagesize
+      in: query
+      description: Get responses by pagesize. Deprecated alias of pageSize.
+      deprecated: true
+      schema:
+        type: string
     search:
       $ref: ../../v1beta2/core/api.yml#/components/parameters/search
     order:
