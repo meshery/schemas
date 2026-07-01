@@ -19,6 +19,27 @@ import (
 	"github.com/gofrs/uuid"
 )
 
+// Defines values for CatalogContentType.
+const (
+	CatalogContentTypeFilter  CatalogContentType = "filter"
+	CatalogContentTypePattern CatalogContentType = "pattern"
+)
+
+// Defines values for CatalogRequestContentClass.
+const (
+	CatalogContentClassCommunity CatalogRequestContentClass = "community"
+	CatalogContentClassOfficial  CatalogRequestContentClass = "official"
+	CatalogContentClassProject   CatalogRequestContentClass = "project"
+	CatalogContentClassVerified  CatalogRequestContentClass = "verified"
+)
+
+// Defines values for CatalogRequestStatus.
+const (
+	CatalogRequestStatusApproved CatalogRequestStatus = "approved"
+	CatalogRequestStatusDenied   CatalogRequestStatus = "denied"
+	CatalogRequestStatusPending  CatalogRequestStatus = "pending"
+)
+
 // Defines values for ContentSharePayloadContentType.
 const (
 	Filter  ContentSharePayloadContentType = "filter"
@@ -105,8 +126,67 @@ type CatalogContentPage struct {
 	TotalCount *int `json:"totalCount,omitempty" yaml:"totalCount,omitempty"`
 }
 
-// CatalogRequest defines model for CatalogRequest.
-type CatalogRequest map[string]interface{}
+// CatalogContentType Kind of catalog content a publish request refers to. Matches the
+// `content_type` column of the meshery-cloud `catalog_requests`
+// table.
+type CatalogContentType string
+
+// CatalogRequest Server-returned catalog publish request as persisted by
+// meshery-cloud (`catalog_requests` table). Records a user's
+// request to publish a design or filter to the catalog, along
+// with the reviewer-visible requester identity and the request's
+// approval status.
+type CatalogRequest struct {
+	// ContentClass Support-level classification of the content, stored in the
+	// `content_class` column (a Postgres enum). Nullable — legacy
+	// requests predate the column.
+	ContentClass *CatalogRequestContentClass `db:"content_class" json:"contentClass" yaml:"contentClass"`
+
+	// ContentId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ContentID core.Uuid `db:"content_id" json:"contentId" yaml:"contentId"`
+
+	// ContentName Human-readable name of the content at request time.
+	ContentName string `db:"content_name" json:"contentName" yaml:"contentName"`
+
+	// ContentType Kind of catalog content a publish request refers to. Matches the
+	// `content_type` column of the meshery-cloud `catalog_requests`
+	// table.
+	ContentType CatalogContentType `db:"content_type" json:"contentType" yaml:"contentType"`
+	CreatedAt   core.Time  `db:"created_at" json:"createdAt" yaml:"createdAt"`
+
+	// Email Requesting user's email address at request time.
+	Email openapi_types.Email `json:"email" yaml:"email"`
+
+	// FirstName Requesting user's first name at request time.
+	FirstName string `db:"first_name" json:"firstName" yaml:"firstName"`
+
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID core.Uuid `json:"id" yaml:"id"`
+
+	// LastName Requesting user's last name at request time.
+	LastName string `db:"last_name" json:"lastName" yaml:"lastName"`
+
+	// Status Lifecycle status of a catalog publish request. Requests are
+	// created `pending`; approving or denying a request is terminal —
+	// a request that is no longer pending cannot be re-approved or
+	// re-denied.
+	Status    CatalogRequestStatus `json:"status" yaml:"status"`
+	UpdatedAt core.Time    `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
+
+	// User Represents a user
+	User *userV1beta.User `db:"-" json:"user,omitempty" yaml:"user,omitempty"`
+}
+
+// CatalogRequestContentClass Support-level classification of the content, stored in the
+// `content_class` column (a Postgres enum). Nullable — legacy
+// requests predate the column.
+type CatalogRequestContentClass string
+
+// CatalogRequestStatus Lifecycle status of a catalog publish request. Requests are
+// created `pending`; approving or denying a request is terminal —
+// a request that is no longer pending cannot be re-approved or
+// re-denied.
+type CatalogRequestStatus string
 
 // CatalogRequestsPage Paginated catalog-request listing (pending publish approvals).
 type CatalogRequestsPage struct {

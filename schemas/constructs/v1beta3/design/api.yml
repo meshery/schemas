@@ -130,79 +130,6 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  /api/content/patterns/resource:
-    get:
-      x-internal: ["cloud"]
-      tags:
-        - designs
-      summary: Get pattern resources
-      operationId: getPatternResources
-      description: Returns pattern resource definitions.
-      parameters:
-        - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pageSize"
-        - $ref: "#/components/parameters/search"
-        - $ref: "#/components/parameters/order"
-      responses:
-        "200":
-          description: Pattern resources response
-        "401":
-          $ref: "#/components/responses/401"
-        "500":
-          $ref: "#/components/responses/500"
-    post:
-      x-internal: ["cloud"]
-      tags:
-        - designs
-      summary: Save pattern resource
-      operationId: upsertPatternResource
-      description: Creates or updates a pattern resource definition.
-      responses:
-        "200":
-          description: Pattern resource saved
-        "400":
-          $ref: "#/components/responses/400"
-        "401":
-          $ref: "#/components/responses/401"
-        "500":
-          $ref: "#/components/responses/500"
-
-  /api/content/patterns/resource/{designId}:
-    get:
-      x-internal: ["cloud"]
-      tags:
-        - designs
-      summary: Get pattern resource by ID
-      operationId: getPatternResource
-      parameters:
-        - $ref: "#/components/parameters/designId"
-      responses:
-        "200":
-          description: Pattern resource response
-        "401":
-          $ref: "#/components/responses/401"
-        "404":
-          $ref: "#/components/responses/404"
-        "500":
-          $ref: "#/components/responses/500"
-    delete:
-      x-internal: ["cloud"]
-      tags:
-        - designs
-      summary: Delete pattern resource
-      operationId: deletePatternResource
-      parameters:
-        - $ref: "#/components/parameters/designId"
-      responses:
-        "204":
-          description: Pattern resource deleted
-        "401":
-          $ref: "#/components/responses/401"
-        "404":
-          $ref: "#/components/responses/404"
-        "500":
-          $ref: "#/components/responses/500"
-
   /api/content/patterns/{designId}:
     get:
       x-internal: ["cloud"]
@@ -1204,9 +1131,143 @@ components:
             additionalProperties: true
           description: Category-by-count aggregates for the catalog page.
 
+    CatalogContentType:
+      type: string
+      description: |
+        Kind of catalog content a publish request refers to. Matches the
+        `content_type` column of the meshery-cloud `catalog_requests`
+        table.
+      enum:
+        - pattern
+        - filter
+      x-enum-varnames:
+        - CatalogContentTypePattern
+        - CatalogContentTypeFilter
+
+    CatalogRequestStatus:
+      type: string
+      description: |
+        Lifecycle status of a catalog publish request. Requests are
+        created `pending`; approving or denying a request is terminal —
+        a request that is no longer pending cannot be re-approved or
+        re-denied.
+      enum:
+        - pending
+        - approved
+        - denied
+      x-enum-varnames:
+        - CatalogRequestStatusPending
+        - CatalogRequestStatusApproved
+        - CatalogRequestStatusDenied
+
     CatalogRequest:
       type: object
-      additionalProperties: true
+      description: |
+        Server-returned catalog publish request as persisted by
+        meshery-cloud (`catalog_requests` table). Records a user's
+        request to publish a design or filter to the catalog, along
+        with the reviewer-visible requester identity and the request's
+        approval status.
+      additionalProperties: false
+      required:
+        - id
+        - contentId
+        - contentName
+        - contentType
+        - firstName
+        - lastName
+        - email
+        - status
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: Server-generated catalog request ID.
+        contentId:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: ID of the design or filter the request refers to.
+          x-go-name: ContentID
+          x-oapi-codegen-extra-tags:
+            db: content_id
+        contentName:
+          type: string
+          description: Human-readable name of the content at request time.
+          minLength: 1
+          maxLength: 300
+          x-oapi-codegen-extra-tags:
+            db: content_name
+        contentType:
+          $ref: "#/components/schemas/CatalogContentType"
+          description: Kind of catalog content the request refers to.
+          x-go-type: CatalogContentType
+          x-oapi-codegen-extra-tags:
+            db: content_type
+        contentClass:
+          type: string
+          description: |
+            Support-level classification of the content, stored in the
+            `content_class` column (a Postgres enum). Nullable — legacy
+            requests predate the column.
+          nullable: true
+          enum:
+            - official
+            - verified
+            - project
+            - community
+          x-enum-varnames:
+            - CatalogContentClassOfficial
+            - CatalogContentClassVerified
+            - CatalogContentClassProject
+            - CatalogContentClassCommunity
+          x-oapi-codegen-extra-tags:
+            db: content_class
+        firstName:
+          type: string
+          description: Requesting user's first name at request time.
+          maxLength: 200
+          x-oapi-codegen-extra-tags:
+            db: first_name
+        lastName:
+          type: string
+          description: Requesting user's last name at request time.
+          maxLength: 300
+          x-oapi-codegen-extra-tags:
+            db: last_name
+        email:
+          type: string
+          format: email
+          description: Requesting user's email address at request time.
+          maxLength: 300
+        user:
+          $ref: "../../v1beta2/user/api.yml#/components/schemas/User"
+          description: >
+            Requesting user record, joined inline by the catalog-request
+            list handler when shaping responses. Server-projected from
+            the users table; not a column on the catalog_requests table
+            itself, so the generated Go field is tagged `db:"-"` to keep
+            it out of ORM column scans.
+          nullable: true
+          x-go-type: "*userV1beta.User"
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/v1beta2/user
+            name: userV1beta
+          x-oapi-codegen-extra-tags:
+            db: "-"
+        status:
+          $ref: "#/components/schemas/CatalogRequestStatus"
+          description: Approval status of the request.
+          x-go-type: CatalogRequestStatus
+        createdAt:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Time"
+          description: Timestamp of request creation.
+          x-oapi-codegen-extra-tags:
+            db: created_at
+        updatedAt:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Time"
+          description: Timestamp of last request modification (approval or denial).
+          x-oapi-codegen-extra-tags:
+            db: updated_at
 
     CatalogRequestsPage:
       type: object
@@ -1228,6 +1289,7 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/CatalogRequest"
+            x-go-type: CatalogRequest
           description: Catalog requests included on this page.
 
     CatalogContentClass:
