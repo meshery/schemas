@@ -95,7 +95,7 @@
     "version": "v1beta1",
     "href": "/schemas/constructs/v1beta1/feature/feature.yaml",
     "core": false,
-    "extension": false
+    "extension": true
   },
   {
     "construct": "filter",

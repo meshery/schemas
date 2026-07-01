@@ -753,7 +753,7 @@ var (
 	// KanvasResetCommentStyles - Kanvas’s Designer enables users to place comments “inline” within designs. Comments can be used to offer feedback to team members, take detailed design notes, capture helpful tips for team members, and include justification as to infrastructure and application configuration decisions. This permission grants the user the ability to reset the styles of a comment on canvas.
 	KanvasResetCommentStyles = PermissionKey(uuid.Must(uuid.FromString("c9c6d2bf-e566-49c8-bee0-bc6cf84cb8a8")))
 
-	// KanvasViewViews - See all views withing a workspace
+	// KanvasViewViews - See all views within a workspace
 	KanvasViewViews = PermissionKey(uuid.Must(uuid.FromString("93cba7f8-82ec-4a64-b384-f81d6acc8db3")))
 
 	// KanvasCreateView - Create a new view
