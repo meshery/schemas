@@ -16,13 +16,13 @@ The skill will guide you through the proper release procedure.
 
 Releasing meshery/schemas requires strict adherence to procedure:
 
-1. **Wait for "Generate artifacts from schemas" workflow** — This generates and commits Go structs, TypeScript types, and RTK Query clients. Releases without these artifacts are incomplete.
+1. **Wait for `generate-artifacts-from-schemas.yml` to finish** — This workflow generates the repo's Go and TypeScript artifacts and normally self-commits them back to `master`. Releases without that completed artifact pass are incomplete.
 
-2. **Use release-drafter automation** — The `release-drafter` workflow auto-generates versioning and release notes. Manual releases bypass this and cause errors.
+2. **Wait for `release-drafter.yml` after the artifact self-commit** — Release drafter must refresh the draft release from the final `master` head, not from the pre-artifact commit.
 
-3. **Publish immediately** — Once artifacts are generated, publish the release as Latest. Do not leave it as a draft.
+3. **Let `publish-schemas.yml` handle npm publication** — Publishing the GitHub release triggers the repo's publication workflow, which performs the npm publish through automation.
 
-4. **Notify downstream repos** — The `notify-dependents` workflow automatically creates issues in meshery/meshery, meshery/meshkit, and layer5io/meshery-cloud.
+4. **Use release automation end-to-end** — Manual release creation or manual npm publishing bypasses required automation and can publish stale bundles.
 
 ## Procedure Overview
 
@@ -36,26 +36,38 @@ git commit -s -m "feat: description of change"
 git push origin master
 ```
 
-### 2. Wait for Artifact Generation (2-5 minutes)
+### 2. Wait for Artifact Generation and Self-Commit (2-5 minutes)
 
-The `generate-artifacts-from-schemas` workflow automatically runs on push. It:
+The `generate-artifacts-from-schemas.yml` workflow automatically runs on push. It:
 - Runs `make build`
-- Commits generated code: "Generate build artifacts from schemas"
+- Generates the repo's Go and TypeScript artifacts
+- Self-commits generated code to `master` with `Generate build artifacts from schemas`
 
 **Verify completion:**
 ```bash
 gh run list --workflow generate-artifacts-from-schemas.yml --limit 1
 # Expected: status = completed, result = success
+
+gh api repos/meshery/schemas/commits/master --jq '.commit.message'
+# Expected: Generate build artifacts from schemas
 ```
 
-### 3. Release-Drafter Auto-Creates Draft (2-5 minutes)
+Do **not** publish a release before this workflow has completed its generation and self-commit step.
 
-The `release-drafter` workflow creates a draft release:
+### 3. Wait for Release-Drafter to Refresh the Draft (2-5 minutes)
+
+After the artifact self-commit lands on `master`, `release-drafter.yml` must run again and update the draft release from that latest repo state. It:
 - Auto-increments patch version (e.g., v1.3.9 → v1.3.10)
 - Categorizes commits (features, bugs, chores, docs, security)
 - Generates release notes from commit messages
 
-**Verify draft was created:**
+**Verify the release-drafter update completed:**
+```bash
+gh run list --workflow release-drafter.yml --limit 1
+# Expected: status = completed, result = success
+```
+
+**Then verify a draft release exists:**
 ```bash
 gh release list --limit 1
 # Expected: status = Draft, version = vX.X.(X+1)
@@ -69,17 +81,17 @@ Review the auto-generated release notes:
 gh release view <TAG> --json name,body
 ```
 
-The release-drafter template should have properly categorized your commits. Do NOT hand-edit the notes.
+The release-drafter template should have properly categorized your commits. Do NOT hand-edit the notes or publish a draft that predates the artifact self-commit.
 
-### 5. Publish as Latest
+### 5. Publish the Draft Release
 
-Publish the draft release immediately:
+Publish the draft release after both prior workflows have completed:
 
 ```bash
 gh release edit <TAG> --draft=false
 ```
 
-The release is now Latest and visible to all consumers.
+The release is now published and visible to consumers.
 
 ### 6. Verify Downstream Workflows
 
@@ -93,7 +105,7 @@ gh run list --workflow notify-dependents.yml --limit 1
 # Expected: status = completed
 ```
 
-The `notify-dependents` workflow creates issues in downstream repos with change notifications.
+`publish-schemas.yml` updates the base schema version files, invokes `publish-npm-package.yml` for the npm publish, then fans out to the downstream notification and docs workflows.
 
 ## What NOT to Do
 
@@ -106,15 +118,18 @@ The `notify-dependents` workflow creates issues in downstream repos with change 
 - Let release-drafter template generate them from commit messages
 - Edited notes can cause confusion about what changed
 
-❌ **Never publish before artifact generation completes**
-- Release will be incomplete (missing Go/TypeScript artifacts)
-- Downstream repos will receive broken imports
+❌ **Never publish before artifact generation completes and self-commits**
+- Release will be incomplete or may lag generated Go/TypeScript artifacts
+- Release drafter may still be working from the wrong repo head
 - Verify with: `gh run list --workflow generate-artifacts-from-schemas.yml`
 
-❌ **Never leave release as draft**
-- Downstream workflows don't trigger on draft releases
-- Notification issues won't be created
-- Publish immediately: `gh release edit <TAG> --draft=false`
+❌ **Never publish before release-drafter finishes its post-artifact update**
+- The draft release can lag the final `master` state
+- Verify with: `gh run list --workflow release-drafter.yml`
+
+❌ **Never run `npm publish` manually**
+- `publish-schemas.yml` triggers the npm publish automatically
+- Manual npm publishing bypasses the repository release flow
 
 ## Troubleshooting
 
@@ -131,6 +146,16 @@ If missing, manually trigger:
 ```bash
 gh workflow run generate-artifacts-from-schemas.yml
 ```
+
+### Release-drafter has not updated after the artifact self-commit
+
+If the artifact self-commit is on `master` but the draft still reflects the older head:
+
+```bash
+gh run list --workflow release-drafter.yml --limit 3
+```
+
+Wait for the newest run to finish. If needed, re-run `release-drafter.yml`. Do not publish until it completes successfully for the latest `master` head.
 
 ### Release-drafter created wrong version
 
@@ -163,6 +188,7 @@ Contact the team if the error is not obvious.
 - **Workflows**:
   - `.github/workflows/generate-artifacts-from-schemas.yml` - Generates artifacts
   - `.github/workflows/release-drafter.yml` - Creates draft release
-  - `.github/workflows/publish-schemas.yml` - Updates versions, publishes
+  - `.github/workflows/publish-schemas.yml` - Updates versions and triggers npm publish
   - `.github/workflows/publish-npm-package.yml` - Publishes to npm
   - `.github/workflows/notify-dependents.yml` - Notifies downstream repos
+  - `.github/skills/meshery-schemas-release/SKILL.md` - Canonical skill instructions
