@@ -8,7 +8,32 @@ import (
 	"fmt"
 
 	core "github.com/meshery/schemas/models/core"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
+
+// EmailTestRequest Request body for sending a test email through the configured SMTP provider.
+type EmailTestRequest struct {
+	// Subject Subject line for the test message. A default subject is used when omitted.
+	Subject *string `json:"subject,omitempty" yaml:"subject,omitempty"`
+
+	// To Recipient email address for the test message.
+	To openapi_types.Email `json:"to" yaml:"to"`
+}
+
+// EmailTestResponse Result of a test email send attempt.
+type EmailTestResponse struct {
+	// Message Human-readable result message.
+	Message string `json:"message" yaml:"message"`
+
+	// SentTo Recipient address the test email was sent to.
+	SentTo openapi_types.Email `json:"sentTo" yaml:"sentTo"`
+
+	// Status Outcome status of the send attempt (e.g. `success`).
+	Status string `json:"status" yaml:"status"`
+
+	// Timestamp Unix-epoch seconds, as a decimal string, when the test email was sent.
+	Timestamp string `json:"timestamp" yaml:"timestamp"`
+}
 
 // SystemDatabaseSummary Paginated summary of the Meshery server's embedded database.
 type SystemDatabaseSummary struct {
