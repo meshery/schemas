@@ -291,9 +291,25 @@ const ModelSchema: Record<string, unknown> = {
                       "type": "array",
                       "items": {
                         "type": "object",
-                        "additionalProperties": true
+                        "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31).",
+                        "required": [
+                          "version"
+                        ],
+                        "properties": {
+                          "version": {
+                            "description": "Version of the model as defined by the registrant.",
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "version"
+                            },
+                            "x-order": 1,
+                            "type": "string",
+                            "minLength": 5,
+                            "maxLength": 100,
+                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                          }
+                        }
                       },
-                      "description": "The models of the meshmodelmodelspage."
+                      "description": "The models matching the list-endpoint query."
                     }
                   }
                 }
@@ -1337,10 +1353,6 @@ const ModelSchema: Record<string, unknown> = {
             "additionalProperties": true
           },
           "model": {
-            "x-oapi-codegen-extra-tags": {
-              "gorm": "type:bytes;serializer:json"
-            },
-            "x-order": 12,
             "type": "object",
             "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31).",
             "required": [
@@ -1358,7 +1370,11 @@ const ModelSchema: Record<string, unknown> = {
                 "maxLength": 100,
                 "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
               }
-            }
+            },
+            "x-oapi-codegen-extra-tags": {
+              "gorm": "type:bytes;serializer:json"
+            },
+            "x-order": 12
           },
           "relationships": {
             "type": "array",
@@ -1808,9 +1824,25 @@ const ModelSchema: Record<string, unknown> = {
             "type": "array",
             "items": {
               "type": "object",
-              "additionalProperties": true
+              "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31).",
+              "required": [
+                "version"
+              ],
+              "properties": {
+                "version": {
+                  "description": "Version of the model as defined by the registrant.",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "version"
+                  },
+                  "x-order": 1,
+                  "type": "string",
+                  "minLength": 5,
+                  "maxLength": 100,
+                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                }
+              }
             },
-            "description": "The models of the meshmodelmodelspage."
+            "description": "The models matching the list-endpoint query."
           }
         }
       }

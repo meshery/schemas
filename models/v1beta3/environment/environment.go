@@ -85,8 +85,8 @@ type EnvironmentPayload struct {
 	Description core.Text `json:"description,omitempty" yaml:"description,omitempty"`
 	Name        core.Text `json:"name" yaml:"name"`
 
-	// OrgId Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
-	OrgId uuid.UUID `json:"organizationId" yaml:"organizationId"`
+	// OrgID Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
+	OrgID uuid.UUID `json:"organizationId" yaml:"organizationId"`
 }
 
 // EnvironmentId defines model for environmentId.
@@ -100,6 +100,9 @@ type OrgIdQuery = uuid.UUID
 
 // Page defines model for page.
 type Page = string
+
+// PageSize defines model for pageSize.
+type PageSize = int
 
 // Pagesize defines model for pagesize.
 type Pagesize = string

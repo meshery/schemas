@@ -78,6 +78,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/identity/users/self/account-deletion-eligibility": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get account deletion eligibility
+         * @description Pre-check evaluated before an account self-deletion is confirmed. Reports whether deleting the caller's account would also require or permit hard-deleting their organization, whether that organization is the shared Layer5 provider organization or carries an active paid subscription, how many of its resources are also shared into other surviving organizations, and the per-resource blast radius of the deletion.
+         */
+        get: operations["getAccountDeletionEligibility"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/users/self": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete the caller's own account
+         * @description Soft-deletes the caller's Layer5 Cloud user record and hard-deletes the backing identity. When deleteOrganization is true, the caller's organization is hard-deleted in the same operation, subject to server-side re-validation: the organization must not be the shared Layer5 provider organization, must not have an active paid subscription, and organizationNameConfirmation must match the stored organization name. When the organization shares resources into other surviving organizations, confirmSharedResourceDestruction must also be true. Inputs are passed as query parameters because DELETE request bodies are unreliable across the extension proxy and intermediate HTTP clients.
+         */
+        delete: operations["deleteUserAccount"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1087,6 +1127,66 @@ export interface components {
              */
             link: string;
         };
+        /** @description Pre-check result returned before an account self-deletion is confirmed. Describes whether deleting the caller's account would also require or permit hard-deleting their organization and quantifies the blast radius. All fields are always present so the client can render the confirmation state deterministically. */
+        AccountDeletionEligibility: {
+            /** @description True when the caller is the only active member of the organization, so deleting their account would leave the organization without any active members. */
+            isSoleActiveMember: boolean;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            organizationId: string;
+            /** @description Human-readable name of the organization evaluated for deletion. The client echoes this value back as organizationNameConfirmation when requesting deletion. */
+            organizationName: string;
+            /** @description True when this is the shared Layer5 provider organization, which is never deletable regardless of membership. */
+            isProviderOrg: boolean;
+            /** @description True when the organization has an active paid (non-"Personal"/free) plan subscription that must be cancelled before the organization can be hard-deleted. */
+            hasActivePaidSubscription: boolean;
+            /** @description Count of resources reachable from this organization that are also shared into a different, surviving organization; destroying them affects other tenants. When greater than zero the client must set confirmSharedResourceDestruction to proceed. */
+            crossTenantSharedResourceCount: number;
+            /** @description Per-resource counts of the objects that would be destroyed when an organization is hard-deleted alongside the account. */
+            impact: {
+                /** @description Number of workspaces that would be destroyed. */
+                workspaces: number;
+                /** @description Number of environments that would be destroyed. */
+                environments: number;
+                /** @description Number of designs that would be destroyed. */
+                designs: number;
+                /** @description Number of views that would be destroyed. */
+                views: number;
+                /** @description Number of connections that would be destroyed. */
+                connections: number;
+                /** @description Number of credentials that would be destroyed. */
+                credentials: number;
+                /** @description Number of organization members that would lose access. */
+                members: number;
+                /** @description Number of pending invitations that would be revoked. */
+                invitations: number;
+                /** @description Number of academy records (challenges, certifications) that would be destroyed. */
+                academyRecords: number;
+            };
+        };
+        /** @description Per-resource counts of the objects that would be destroyed when an organization is hard-deleted alongside the account. */
+        AccountDeletionImpact: {
+            /** @description Number of workspaces that would be destroyed. */
+            workspaces: number;
+            /** @description Number of environments that would be destroyed. */
+            environments: number;
+            /** @description Number of designs that would be destroyed. */
+            designs: number;
+            /** @description Number of views that would be destroyed. */
+            views: number;
+            /** @description Number of connections that would be destroyed. */
+            connections: number;
+            /** @description Number of credentials that would be destroyed. */
+            credentials: number;
+            /** @description Number of organization members that would lose access. */
+            members: number;
+            /** @description Number of pending invitations that would be revoked. */
+            invitations: number;
+            /** @description Number of academy records (challenges, certifications) that would be destroyed. */
+            academyRecords: number;
+        };
     };
     responses: {
         /** @description Invalid request body or request param */
@@ -1116,8 +1216,26 @@ export interface components {
                 "text/plain": string;
             };
         };
+        /** @description Publish request already exists */
+        409: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
         /** @description Internal server error */
         500: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Deletion preconditions were not met. Returned when the target organization is the shared Layer5 provider organization, has an active paid subscription, the caller is not its sole active member, the typed organizationNameConfirmation did not match, or destruction of shared resources was required but not confirmed. */
+        AccountDeletionConflict: {
             headers: {
                 [name: string]: unknown;
             };
@@ -2405,6 +2523,174 @@ export interface operations {
             };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getAccountDeletionEligibility: {
+        parameters: {
+            query?: {
+                /** @description Organization to evaluate for deletion alongside the account. When omitted, the caller's currently selected organization is evaluated. */
+                organizationId?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Account deletion eligibility for the caller */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description True when the caller is the only active member of the organization, so deleting their account would leave the organization without any active members. */
+                        isSoleActiveMember: boolean;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        organizationId: string;
+                        /** @description Human-readable name of the organization evaluated for deletion. The client echoes this value back as organizationNameConfirmation when requesting deletion. */
+                        organizationName: string;
+                        /** @description True when this is the shared Layer5 provider organization, which is never deletable regardless of membership. */
+                        isProviderOrg: boolean;
+                        /** @description True when the organization has an active paid (non-"Personal"/free) plan subscription that must be cancelled before the organization can be hard-deleted. */
+                        hasActivePaidSubscription: boolean;
+                        /** @description Count of resources reachable from this organization that are also shared into a different, surviving organization; destroying them affects other tenants. When greater than zero the client must set confirmSharedResourceDestruction to proceed. */
+                        crossTenantSharedResourceCount: number;
+                        /** @description Per-resource counts of the objects that would be destroyed when an organization is hard-deleted alongside the account. */
+                        impact: {
+                            /** @description Number of workspaces that would be destroyed. */
+                            workspaces: number;
+                            /** @description Number of environments that would be destroyed. */
+                            environments: number;
+                            /** @description Number of designs that would be destroyed. */
+                            designs: number;
+                            /** @description Number of views that would be destroyed. */
+                            views: number;
+                            /** @description Number of connections that would be destroyed. */
+                            connections: number;
+                            /** @description Number of credentials that would be destroyed. */
+                            credentials: number;
+                            /** @description Number of organization members that would lose access. */
+                            members: number;
+                            /** @description Number of pending invitations that would be revoked. */
+                            invitations: number;
+                            /** @description Number of academy records (challenges, certifications) that would be destroyed. */
+                            academyRecords: number;
+                        };
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    deleteUserAccount: {
+        parameters: {
+            query?: {
+                /** @description When true, hard-delete the caller's organization along with the account. Defaults to false (delete only the account). */
+                deleteOrganization?: boolean;
+                /** @description Identifier of the organization to hard-delete. Required by the server when deleteOrganization is true. */
+                organizationId?: string;
+                /** @description User-typed organization name. The server re-validates this against the stored organization name when deleteOrganization is true and rejects the request on mismatch. */
+                organizationNameConfirmation?: string;
+                /** @description Explicit acknowledgement that resources shared into other surviving organizations will be destroyed. Required by the server when the organization's crossTenantSharedResourceCount is greater than zero. */
+                confirmSharedResourceDestruction?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Account (and organization, when requested) deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Deletion preconditions were not met. Returned when the target organization is the shared Layer5 provider organization, has an active paid subscription, the caller is not its sole active member, the typed organizationNameConfirmation did not match, or destruction of shared resources was required but not confirmed. */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };

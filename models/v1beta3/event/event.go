@@ -170,8 +170,14 @@ type Order = string
 // Page defines model for page.
 type Page = string
 
+// PageSize defines model for pageSize.
+type PageSize = int
+
 // Pagesize defines model for pagesize.
 type Pagesize = string
+
+// PagesizeLegacy defines model for pagesizeLegacy.
+type PagesizeLegacy = string
 
 // Search defines model for search.
 type Search = string

@@ -33,7 +33,7 @@ type AvailableWorkspace struct {
 	OrgName string `db:"org_name" json:"orgName,omitempty" yaml:"orgName,omitempty"`
 
 	// OrganizationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	OrganizationId *core.Uuid `db:"organization_id" json:"organizationId,omitempty" yaml:"organizationId,omitempty"`
+	OrganizationID *core.Uuid `db:"organization_id" json:"organizationId,omitempty" yaml:"organizationId,omitempty"`
 
 	// Owner Display name of the workspace owner.
 	Owner *string `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
@@ -45,7 +45,7 @@ type AvailableWorkspace struct {
 	OwnerEmail *openapi_types.Email `db:"owner_email" json:"ownerEmail,omitempty" yaml:"ownerEmail,omitempty"`
 
 	// OwnerId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	OwnerId *core.Uuid `db:"owner_id" json:"ownerId,omitempty" yaml:"ownerId,omitempty"`
+	OwnerID *core.Uuid `db:"owner_id" json:"ownerId,omitempty" yaml:"ownerId,omitempty"`
 
 	// UpdatedAt Timestamp when the resource was updated.
 	UpdatedAt core.UpdatedAt `db:"updated_at" json:"updatedAt,omitempty" yaml:"updatedAt,omitempty"`
@@ -267,6 +267,9 @@ type OrgIdQuery = uuid.UUID
 
 // CorePage defines model for page.
 type CorePage = string
+
+// PageSize defines model for pageSize.
+type PageSize = int
 
 // Pagesize defines model for pagesize.
 type Pagesize = string

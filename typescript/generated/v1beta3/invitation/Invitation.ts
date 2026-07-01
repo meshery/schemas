@@ -30,7 +30,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get all invitations for the organization */
+        /** Get a paginated list of invitations for the organization */
         get: operations["getInvitations"];
         put?: never;
         /** Create a new invitation for the organization */
@@ -155,8 +155,14 @@ export interface components {
         Uuid: string;
         /** @description Paginated list of invitations for an organization. */
         InvitationsPage: {
+            /** @description Current page number of the result set. */
+            page?: number;
+            /** @description Number of items per page. */
+            pageSize?: number;
+            /** @description Total number of items available. */
+            totalCount?: number;
             /** @description Invitations returned on the current page. */
-            data: {
+            data?: {
                 /**
                  * Format: uuid
                  * @description Unique identifier for the invitation, also used as the invitation code.
@@ -214,8 +220,6 @@ export interface components {
                  */
                 deletedAt: string;
             }[];
-            /** @description Total number of invitations available. */
-            total: number;
         };
         /** @description A signup request submitted for organization access. */
         SignupRequest: {
@@ -726,7 +730,18 @@ export interface operations {
     };
     getInvitations: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Get responses by page */
+                page?: string;
+                /** @description Get responses by pagesize */
+                pagesize?: string;
+                /** @description Get responses that match search param value */
+                search?: string;
+                /** @description Get ordered responses */
+                order?: string;
+                /** @description Get filtered reponses */
+                filter?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -740,8 +755,14 @@ export interface operations {
                 };
                 content: {
                     "application/json": {
+                        /** @description Current page number of the result set. */
+                        page?: number;
+                        /** @description Number of items per page. */
+                        pageSize?: number;
+                        /** @description Total number of items available. */
+                        totalCount?: number;
                         /** @description Invitations returned on the current page. */
-                        data: {
+                        data?: {
                             /**
                              * Format: uuid
                              * @description Unique identifier for the invitation, also used as the invitation code.
@@ -799,8 +820,6 @@ export interface operations {
                              */
                             deletedAt: string;
                         }[];
-                        /** @description Total number of invitations available. */
-                        total: number;
                     };
                 };
             };

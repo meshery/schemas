@@ -733,6 +733,8 @@ export interface components {
         pagesize: string;
         /** @description Get responses by pagesize (pass all to get all responses) */
         pagesizeWithAll: string;
+        /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+        pageSize: number;
         /** @description Get ordered responses */
         order: string;
         /** @description Get responses based on visibility - private, public or published */

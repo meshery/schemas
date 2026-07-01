@@ -113,10 +113,16 @@ type InvitationStatus string
 // InvitationsPage Paginated list of invitations for an organization.
 type InvitationsPage struct {
 	// Data Invitations returned on the current page.
-	Data []Invitation `json:"data" yaml:"data"`
+	Data *[]Invitation `json:"data" yaml:"data"`
 
-	// Total Total number of invitations available.
-	Total int `json:"total" yaml:"total"`
+	// Page Current page number of the result set.
+	Page int `json:"page,omitempty" yaml:"page,omitempty"`
+
+	// PageSize Number of items per page.
+	PageSize int `json:"pageSize" yaml:"pageSize"`
+
+	// TotalCount Total number of items available.
+	TotalCount int `json:"totalCount" yaml:"totalCount"`
 }
 
 // SignupRequest A signup request submitted for organization access.

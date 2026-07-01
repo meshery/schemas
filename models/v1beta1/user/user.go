@@ -64,6 +64,27 @@ type LoadTestPreferences struct {
 	T *string `json:"t,omitempty" yaml:"t,omitempty"`
 }
 
+// OrganizationWithRoles An organization the user is a member of, together with the names of the roles assigned to that user within the organization. Returned as an item of User.organizations.organizations_with_roles. The role names are dynamic, user-generated values (no fixed enumeration).
+type OrganizationWithRoles struct {
+	CreatedAt core.Time `db:"created_at" json:"created_at" yaml:"created_at,omitempty"`
+
+	// Description Human readable description of the organization.
+	Description *string `db:"description" json:"description" yaml:"description"`
+
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID core.Uuid `db:"id" json:"id" yaml:"id"`
+
+	// Name Name of the organization.
+	Name string `db:"name" json:"name" yaml:"name"`
+
+	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	Owner *core.Uuid `db:"owner" json:"owner" yaml:"owner,omitempty"`
+
+	// RoleNames Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.
+	RoleNames []string          `db:"role_names" json:"role_names" yaml:"role_names"`
+	UpdatedAt core.Time `db:"updated_at" json:"updated_at" yaml:"updated_at,omitempty"`
+}
+
 // Panel Grafana panel structure imported from github.com/grafana-tools/sdk
 type Panel = map[string]interface{}
 
@@ -130,6 +151,27 @@ type Social struct {
 	Site string `json:"site" yaml:"site"`
 }
 
+// TeamWithRoles A team the user is a member of, together with the names of the roles assigned to that user within the team. Returned as an item of User.teams.teams_with_roles. The role names are dynamic, user-generated values (no fixed enumeration).
+type TeamWithRoles struct {
+	CreatedAt core.Time `db:"created_at" json:"created_at" yaml:"created_at,omitempty"`
+
+	// Description Human readable description of the team.
+	Description *string `db:"description" json:"description" yaml:"description"`
+
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID core.Uuid `db:"id" json:"id" yaml:"id"`
+
+	// Name Name of the team.
+	Name string `db:"name" json:"name" yaml:"name"`
+
+	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	Owner *core.Uuid `db:"owner" json:"owner" yaml:"owner,omitempty"`
+
+	// RoleNames Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.
+	RoleNames []string          `db:"role_names" json:"role_names" yaml:"role_names"`
+	UpdatedAt core.Time `db:"updated_at" json:"updated_at" yaml:"updated_at,omitempty"`
+}
+
 // User Represents a user
 type User struct {
 	AcceptedTermsAt core.Time `db:"accepted_terms_at" json:"accepted_terms_at" yaml:"accepted_terms_at,omitempty"`
@@ -164,7 +206,7 @@ type User struct {
 	// Organizations Organizations the user belongs to with role information
 	Organizations *struct {
 		// OrganizationsWithRoles Organization memberships for the user with their assigned roles.
-		OrganizationsWithRoles *[]map[string]interface{} `db:"organizations_with_roles" json:"organizations_with_roles" yaml:"organizations_with_roles"`
+		OrganizationsWithRoles *[]OrganizationWithRoles `db:"organizations_with_roles" json:"organizations_with_roles" yaml:"organizations_with_roles"`
 
 		// TotalCount Total number of organization memberships returned for the user.
 		TotalCount *int `db:"total_count" json:"total_count" yaml:"total_count"`
@@ -189,7 +231,7 @@ type User struct {
 	// Teams Teams the user belongs to with role information
 	Teams *struct {
 		// TeamsWithRoles Team memberships for the user with their assigned roles.
-		TeamsWithRoles *[]map[string]interface{} `db:"teams_with_roles" json:"teams_with_roles" yaml:"teams_with_roles"`
+		TeamsWithRoles *[]TeamWithRoles `db:"teams_with_roles" json:"teams_with_roles" yaml:"teams_with_roles"`
 
 		// TotalCount Total number of team memberships returned for the user.
 		TotalCount *int `db:"total_count" json:"total_count" yaml:"total_count"`

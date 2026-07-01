@@ -129,10 +129,20 @@ const EnvironmentSchema: Record<string, unknown> = {
           "type": "string"
         }
       },
+      "pageSize": {
+        "name": "pageSize",
+        "in": "query",
+        "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
       "pagesize": {
         "name": "pagesize",
         "in": "query",
-        "description": "Get responses by pagesize",
+        "description": "Get responses by pagesize. Deprecated alias of pageSize.",
+        "deprecated": true,
         "schema": {
           "type": "string"
         }
@@ -430,7 +440,7 @@ const EnvironmentSchema: Record<string, unknown> = {
             "type": "string",
             "description": "Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.",
             "x-go-type-skip-optional-pointer": true,
-            "x-go-name": "OrgId",
+            "x-go-name": "OrgID",
             "x-oapi-codegen-extra-tags": {
               "json": "organizationId"
             },
@@ -707,7 +717,7 @@ const EnvironmentSchema: Record<string, unknown> = {
                   "type": "string",
                   "description": "Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.",
                   "x-go-type-skip-optional-pointer": true,
-                  "x-go-name": "OrgId",
+                  "x-go-name": "OrgID",
                   "x-oapi-codegen-extra-tags": {
                     "json": "organizationId"
                   },
@@ -761,7 +771,7 @@ const EnvironmentSchema: Record<string, unknown> = {
                     "type": "string",
                     "description": "Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.",
                     "x-go-type-skip-optional-pointer": true,
-                    "x-go-name": "OrgId",
+                    "x-go-name": "OrgID",
                     "x-oapi-codegen-extra-tags": {
                       "json": "organizationId"
                     },
@@ -1018,9 +1028,19 @@ const EnvironmentSchema: Record<string, unknown> = {
             }
           },
           {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
             "name": "pagesize",
             "in": "query",
-            "description": "Get responses by pagesize",
+            "description": "Get responses by pagesize. Deprecated alias of pageSize.",
+            "deprecated": true,
             "schema": {
               "type": "string"
             }
@@ -1619,7 +1639,7 @@ const EnvironmentSchema: Record<string, unknown> = {
                     "type": "string",
                     "description": "Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.",
                     "x-go-type-skip-optional-pointer": true,
-                    "x-go-name": "OrgId",
+                    "x-go-name": "OrgID",
                     "x-oapi-codegen-extra-tags": {
                       "json": "organizationId"
                     },
@@ -2011,9 +2031,19 @@ const EnvironmentSchema: Record<string, unknown> = {
             }
           },
           {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
             "name": "pagesize",
             "in": "query",
-            "description": "Get responses by pagesize",
+            "description": "Get responses by pagesize. Deprecated alias of pageSize.",
+            "deprecated": true,
             "schema": {
               "type": "string"
             }

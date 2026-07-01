@@ -4787,6 +4787,11 @@ export interface operations {
                 /** @description Order of sorting (asc or desc) */
                 order?: "asc" | "desc";
                 /** @description Number of results per page */
+                pageSize?: number;
+                /**
+                 * @deprecated
+                 * @description Number of results per page. Deprecated alias of pageSize.
+                 */
                 pagesize?: number;
                 /** @description Page number */
                 page?: number;
@@ -8146,6 +8151,11 @@ export interface operations {
         parameters: {
             query?: {
                 /** @description Number of results per page */
+                pageSize?: number;
+                /**
+                 * @deprecated
+                 * @description Number of results per page. Deprecated alias of pageSize.
+                 */
                 pagesize?: number;
                 /** @description Page number */
                 page?: number;

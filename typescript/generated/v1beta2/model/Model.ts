@@ -314,7 +314,7 @@ export interface components {
             } & {
                 [key: string]: unknown;
             };
-            /** @description Registrant-defined data associated with the model. */
+            /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
             model: {
                 /** @description Version of the model as defined by the registrant. */
                 version: string;
@@ -463,9 +463,10 @@ export interface components {
             pageSize?: number;
             /** @description Total number of items available. */
             totalCount?: number;
-            /** @description The models of the meshmodelmodelspage. */
+            /** @description The models matching the list-endpoint query. */
             models?: {
-                [key: string]: unknown;
+                /** @description Version of the model as defined by the registrant. */
+                version: string;
             }[];
         };
         /** @description Flat canonical representation of the model import form that combines the UI-level uploadType discriminator with the union of fields from the ImportBody oneOf variants. This schema is the authoritative source for the canonical RJSF form schema at schemas/constructs/v1beta2/model/forms/import.json. The server receives an ImportRequest; this form schema captures the superset of user-facing fields so the form schema can be validated as a subset of this canonical type. */
@@ -643,9 +644,10 @@ export interface operations {
                         pageSize?: number;
                         /** @description Total number of items available. */
                         totalCount?: number;
-                        /** @description The models of the meshmodelmodelspage. */
+                        /** @description The models matching the list-endpoint query. */
                         models?: {
-                            [key: string]: unknown;
+                            /** @description Version of the model as defined by the registrant. */
+                            version: string;
                         }[];
                     };
                 };

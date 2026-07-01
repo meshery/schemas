@@ -124,6 +124,7 @@ const injectedRtkApi = api
           url: `/api/identity/orgs/${queryArg.orgId}/users/keys`,
           params: {
             page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
           },
         }),
@@ -134,6 +135,7 @@ const injectedRtkApi = api
           url: `/api/auth/keys`,
           params: {
             page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
             search: queryArg?.search,
             order: queryArg?.order,
@@ -158,6 +160,7 @@ const injectedRtkApi = api
           url: `/api/auth/keychains`,
           params: {
             page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
             search: queryArg?.search,
             order: queryArg?.order,
@@ -201,6 +204,7 @@ const injectedRtkApi = api
           url: `/api/auth/keychains/${queryArg.keychainId}/keys`,
           params: {
             page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
             search: queryArg?.search,
             order: queryArg?.order,
@@ -493,6 +497,31 @@ const injectedRtkApi = api
         query: () => ({ url: `/api/identity/users/profile` }),
         providesTags: ["User_users"],
       }),
+      getAccountDeletionEligibility: build.query<
+        GetAccountDeletionEligibilityApiResponse,
+        GetAccountDeletionEligibilityApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/identity/users/self/account-deletion-eligibility`,
+          params: {
+            organizationId: queryArg?.organizationId,
+          },
+        }),
+        providesTags: ["User_users"],
+      }),
+      deleteUserAccount: build.mutation<DeleteUserAccountApiResponse, DeleteUserAccountApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/users/self`,
+          method: "DELETE",
+          params: {
+            deleteOrganization: queryArg?.deleteOrganization,
+            organizationId: queryArg?.organizationId,
+            organizationNameConfirmation: queryArg?.organizationNameConfirmation,
+            confirmSharedResourceDestruction: queryArg?.confirmSharedResourceDestruction,
+          },
+        }),
+        invalidatesTags: ["User_users"],
+      }),
       createView: build.mutation<CreateViewApiResponse, CreateViewApiArg>({
         query: (queryArg) => ({ url: `/api/content/views`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["View_views"],
@@ -504,6 +533,7 @@ const injectedRtkApi = api
             search: queryArg?.search,
             order: queryArg?.order,
             page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
             filter: queryArg?.filter,
             shared: queryArg?.shared,
@@ -557,6 +587,7 @@ const injectedRtkApi = api
             search: queryArg?.search,
             sort: queryArg?.sort,
             order: queryArg?.order,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
             page: queryArg?.page,
           },
@@ -669,6 +700,7 @@ const injectedRtkApi = api
         query: (queryArg) => ({
           url: `/api/academy/admin/registrations`,
           params: {
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
             page: queryArg?.page,
             contentType: queryArg?.contentType,
@@ -974,6 +1006,7 @@ const injectedRtkApi = api
             search: queryArg?.search,
             order: queryArg?.order,
             page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
             orgId: queryArg?.orgId,
           },
@@ -1008,6 +1041,7 @@ const injectedRtkApi = api
             search: queryArg?.search,
             order: queryArg?.order,
             page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
             filter: queryArg?.filter,
           },
@@ -1039,6 +1073,7 @@ const injectedRtkApi = api
           url: `/api/workspaces/${queryArg.workspaceId}/events`,
           params: {
             page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
             search: queryArg?.search,
             order: queryArg?.order,
@@ -1086,6 +1121,7 @@ const injectedRtkApi = api
           url: `/api/events/types`,
           params: {
             page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
           },
         }),
@@ -1155,7 +1191,16 @@ const injectedRtkApi = api
         invalidatesTags: ["Invitation_Invitation"],
       }),
       getInvitations: build.query<GetInvitationsApiResponse, GetInvitationsApiArg>({
-        query: () => ({ url: `/api/organizations/invitations` }),
+        query: (queryArg) => ({
+          url: `/api/organizations/invitations`,
+          params: {
+            page: queryArg?.page,
+            pagesize: queryArg?.pagesize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            filter: queryArg?.filter,
+          },
+        }),
         providesTags: ["Invitation_Invitation"],
       }),
       createInvitation: build.mutation<CreateInvitationApiResponse, CreateInvitationApiArg>({
@@ -1342,6 +1387,7 @@ const injectedRtkApi = api
           params: {
             isOauth: queryArg?.isOauth,
             page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
             search: queryArg?.search,
             order: queryArg?.order,
@@ -1370,7 +1416,7 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["token_tokens"],
       }),
-      getUserTokensById: build.query<GetUserTokensByIdApiResponse, GetUserTokensByIdApiArg>({
+      downloadToken: build.query<DownloadTokenApiResponse, DownloadTokenApiArg>({
         query: (queryArg) => ({ url: `/api/identity/tokens/${queryArg.tokenId}` }),
         providesTags: ["token_tokens"],
       }),
@@ -1395,6 +1441,7 @@ const injectedRtkApi = api
             search: queryArg?.search,
             order: queryArg?.order,
             page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
             filter: queryArg?.filter,
           },
@@ -1424,6 +1471,7 @@ const injectedRtkApi = api
             search: queryArg?.search,
             order: queryArg?.order,
             page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
             filter: queryArg?.filter,
           },
@@ -1451,6 +1499,7 @@ const injectedRtkApi = api
             search: queryArg?.search,
             order: queryArg?.order,
             page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
             filter: queryArg?.filter,
           },
@@ -1484,6 +1533,7 @@ const injectedRtkApi = api
             search: queryArg?.search,
             order: queryArg?.order,
             page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
             filter: queryArg?.filter,
           },
@@ -1514,6 +1564,7 @@ const injectedRtkApi = api
             search: queryArg?.search,
             order: queryArg?.order,
             page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
             filter: queryArg?.filter,
           },
@@ -1919,7 +1970,9 @@ export type GetUserKeysApiArg = {
   orgId: string;
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
   pagesize?: string;
 };
 export type GetKeysApiResponse = /** status 200 Keys fetched */ {
@@ -1954,7 +2007,9 @@ export type GetKeysApiResponse = /** status 200 Keys fetched */ {
 export type GetKeysApiArg = {
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
   pagesize?: string;
   /** Get responses that match search param value */
   search?: string;
@@ -2050,7 +2105,9 @@ export type GetKeychainsApiResponse = /** status 200 Keychain(s) fetched */ {
 export type GetKeychainsApiArg = {
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
   pagesize?: string;
   /** Get responses that match search param value */
   search?: string;
@@ -2174,7 +2231,9 @@ export type GetKeysOfKeychainApiArg = {
   keychainId: string;
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
   pagesize?: string;
   /** Get responses that match search param value */
   search?: string;
@@ -2222,9 +2281,10 @@ export type GetMeshModelModelsApiResponse = /** status 200 Model and capabilitie
   pageSize?: number;
   /** Total number of items available. */
   totalCount?: number;
-  /** The models of the meshmodelmodelspage. */
+  /** The models matching the list-endpoint query. */
   models?: {
-    [key: string]: any;
+    /** Version of the model as defined by the registrant. */
+    version: string;
   }[];
 };
 export type GetMeshModelModelsApiArg = {
@@ -3374,6 +3434,12 @@ export type CreateTeamApiArg = {
     name: string;
     /** A detailed description of the team's purpose and responsibilities. */
     description?: string;
+    /** Whether to notify team members when the team is created or updated. */
+    notifyTeamUpdate?: boolean;
+    /** Additional client-supplied metadata for the team. */
+    metadata?: {
+      [key: string]: any;
+    };
   };
 };
 export type GetTeamUsersApiResponse = /** status 200 Team users mapping */ {
@@ -4214,6 +4280,56 @@ export type GetUserApiResponse = /** status 200 Current user profile and role co
   };
 };
 export type GetUserApiArg = void;
+export type GetAccountDeletionEligibilityApiResponse = /** status 200 Account deletion eligibility for the caller */ {
+  /** True when the caller is the only active member of the organization, so deleting their account would leave the organization without any active members. */
+  isSoleActiveMember: boolean;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  organizationId: string;
+  /** Human-readable name of the organization evaluated for deletion. The client echoes this value back as organizationNameConfirmation when requesting deletion. */
+  organizationName: string;
+  /** True when this is the shared Layer5 provider organization, which is never deletable regardless of membership. */
+  isProviderOrg: boolean;
+  /** True when the organization has an active paid (non-"Personal"/free) plan subscription that must be cancelled before the organization can be hard-deleted. */
+  hasActivePaidSubscription: boolean;
+  /** Count of resources reachable from this organization that are also shared into a different, surviving organization; destroying them affects other tenants. When greater than zero the client must set confirmSharedResourceDestruction to proceed. */
+  crossTenantSharedResourceCount: number;
+  /** Per-resource counts of the objects that would be destroyed when an organization is hard-deleted alongside the account. */
+  impact: {
+    /** Number of workspaces that would be destroyed. */
+    workspaces: number;
+    /** Number of environments that would be destroyed. */
+    environments: number;
+    /** Number of designs that would be destroyed. */
+    designs: number;
+    /** Number of views that would be destroyed. */
+    views: number;
+    /** Number of connections that would be destroyed. */
+    connections: number;
+    /** Number of credentials that would be destroyed. */
+    credentials: number;
+    /** Number of organization members that would lose access. */
+    members: number;
+    /** Number of pending invitations that would be revoked. */
+    invitations: number;
+    /** Number of academy records (challenges, certifications) that would be destroyed. */
+    academyRecords: number;
+  };
+};
+export type GetAccountDeletionEligibilityApiArg = {
+  /** Organization to evaluate for deletion alongside the account. When omitted, the caller's currently selected organization is evaluated. */
+  organizationId?: string;
+};
+export type DeleteUserAccountApiResponse = unknown;
+export type DeleteUserAccountApiArg = {
+  /** When true, hard-delete the caller's organization along with the account. Defaults to false (delete only the account). */
+  deleteOrganization?: boolean;
+  /** Identifier of the organization to hard-delete. Required by the server when deleteOrganization is true. */
+  organizationId?: string;
+  /** User-typed organization name. The server re-validates this against the stored organization name when deleteOrganization is true and rejects the request on mismatch. */
+  organizationNameConfirmation?: string;
+  /** Explicit acknowledgement that resources shared into other surviving organizations will be destroyed. Required by the server when the organization's crossTenantSharedResourceCount is greater than zero. */
+  confirmSharedResourceDestruction?: boolean;
+};
 export type CreateViewApiResponse = /** status 201 Created view */ {
   /** Unique identifier for the view. */
   id: string;
@@ -4290,7 +4406,9 @@ export type GetViewsApiArg = {
   order?: string;
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
   pagesize?: string;
   /** JSON-encoded filter string for assignment and soft-delete filters. */
   filter?: string;
@@ -4770,6 +4888,8 @@ export type GetAcademyCurriculaApiArg = {
   /** Order of sorting (asc or desc) */
   order?: "asc" | "desc";
   /** Number of results per page */
+  pageSize?: number;
+  /** Number of results per page. Deprecated alias of pageSize. */
   pagesize?: number;
   /** Page number */
   page?: number;
@@ -6098,6 +6218,8 @@ export type GetAcademyAdminRegistrationsApiResponse = /** status 200 List of reg
 };
 export type GetAcademyAdminRegistrationsApiArg = {
   /** Number of results per page */
+  pageSize?: number;
+  /** Number of results per page. Deprecated alias of pageSize. */
   pagesize?: number;
   /** Page number */
   page?: number;
@@ -7670,7 +7792,238 @@ export type ListConnectionDefinitionsApiArg = {
 };
 export type RegisterConnectionDefinitionApiResponse = /** status 201 Connection definition registered */ any;
 export type RegisterConnectionDefinitionApiArg = {
-  body: any;
+  body: {
+    /** Existing connection definition ID for updates; omit on create. */
+    id?: string;
+    /** Specifies the version of the schema the definition conforms to. */
+    schemaVersion?: string;
+    /** Connection definition name */
+    name: string;
+    /** Human-readable description of the connection definition and its purpose. */
+    description?: string;
+    /** URL of the remote resource connections of this kind point to. */
+    url?: string;
+    /** Connection kind (e.g., kubernetes, prometheus, grafana) */
+    kind: string;
+    /** Connection type (platform, telemetry, collaboration) */
+    type: string;
+    /** Connection sub-type (cloud, identity, metrics, chat, git, orchestration) */
+    subType: string;
+    /** Connection Status Value */
+    status:
+      | "discovered"
+      | "registered"
+      | "connected"
+      | "ignored"
+      | "maintenance"
+      | "disconnected"
+      | "deleted"
+      | "not found";
+    /** Reference to the registered model that owns this connection definition. */
+    modelReference?: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** The unique name for the model within the scope of a registrant. */
+      name: string;
+      /** Version of the model definition. */
+      version: string;
+      /** Human-readable name for the model. */
+      displayName: string;
+      /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+      model: {
+        /** Version of the model as defined by the registrant. */
+        version: string;
+      };
+      registrant: {
+        /** Kind of the registrant. */
+        kind: string;
+      };
+    };
+    /** Kind-specific connection metadata */
+    metadata?: object;
+    /** Schema for the credential associated with connections of this kind. */
+    credentialSchema?: object;
+    /** Schema for connections of this kind. */
+    connectionSchema?: object;
+    /** Visualization styles for the connection, including svgColor and svgWhite used for UI representation. */
+    styles?: {
+      /** Primary color of the component used for UI representation. */
+      primaryColor: string;
+      /** Secondary color of the entity used for UI representation. */
+      secondaryColor?: string;
+      /** White SVG of the entity used for UI representation on dark background. */
+      svgWhite: string;
+      /** Colored SVG of the entity used for UI representation on light background. */
+      svgColor: string;
+      /** Complete SVG of the entity used for UI representation, often inclusive of background. */
+      svgComplete: string;
+      /** The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+      color?: string;
+      /** The opacity of the label text, including its outline. */
+      textOpacity?: number;
+      /** A comma-separated list of font names to use on the label text. */
+      fontFamily?: string;
+      /** The size of the label text. */
+      fontSize?: string;
+      /** A CSS font style to be applied to the label text. */
+      fontStyle?: string;
+      /** A CSS font weight to be applied to the label text. */
+      fontWeight?: string;
+      /** A transformation to apply to the label text */
+      textTransform?: "none" | "uppercase" | "lowercase";
+      /** The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+      opacity?: number;
+      /** An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+      zIndex?: number;
+      /** The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+      label?: string;
+      /** The animation to apply to the element. example ripple,bounce,etc */
+      animation?: object;
+      [key: string]: any;
+    } & {
+      /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+      shape:
+        | "ellipse"
+        | "triangle"
+        | "round-triangle"
+        | "rectangle"
+        | "round-rectangle"
+        | "bottom-round-rectangle"
+        | "cut-rectangle"
+        | "barrel"
+        | "rhomboid"
+        | "diamond"
+        | "round-diamond"
+        | "pentagon"
+        | "round-pentagon"
+        | "hexagon"
+        | "round-hexagon"
+        | "concave-hexagon"
+        | "heptagon"
+        | "round-heptagon"
+        | "octagon"
+        | "round-octagon"
+        | "star"
+        | "tag"
+        | "round-tag"
+        | "vee"
+        | "polygon";
+      /** The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+      position?: {
+        /** The x-coordinate of the node. */
+        x: number;
+        /** The y-coordinate of the node. */
+        y: number;
+      };
+      /** The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+      bodyText?: string;
+      /** How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
+      bodyTextWrap?: "none" | "wrap" | "ellipsis";
+      /** The maximum width for wrapping text in the node. */
+      bodyTextMaxWidth?: string;
+      /** The opacity of the node's body text, including its outline. */
+      bodyTextOpacity?: number;
+      /** The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+      bodyTextBackgroundColor?: string;
+      /** The size of the node's body text. */
+      bodyTextFontSize?: number;
+      /** The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+      bodyTextColor?: string;
+      /** A CSS font weight to be applied to the node's body text. */
+      bodyTextFontWeight?: string;
+      /** A CSS horizontal alignment to be applied to the node's body text. */
+      bodyTextHorizontalAlign?: string;
+      /** A CSS text decoration to be applied to the node's body text. */
+      bodyTextDecoration?: string;
+      /** A CSS vertical alignment to be applied to the node's body text. */
+      bodyTextVerticalAlign?: string;
+      /** The width of the node's body or the width of an edge's line. */
+      width?: number;
+      /** The height of the node's body */
+      height?: number;
+      /** The URL that points to the image to show in the node. */
+      backgroundImage?: string;
+      /** The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+      backgroundColor?: string;
+      /** Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+      backgroundBlacken?: number;
+      /** The opacity level of the node's background colour */
+      backgroundOpacity?: number;
+      /** The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundPositionX?: string;
+      /** The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundPositionY?: string;
+      /** The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundOffsetX?: string;
+      /** The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundOffsetY?: string;
+      /** How the background image is fit to the node. Can be 'none', 'contain', or 'cover'. */
+      backgroundFit?: "none" | "contain" | "cover";
+      /** How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'. */
+      backgroundClip?: "none" | "node" | "node-border";
+      /** How the background image's width is determined. Can be 'none', 'inner', or 'outer'. */
+      backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+      /** How the background image's height is determined. Can be 'none', 'inner', or 'outer'. */
+      backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+      /** The size of the node's border. */
+      borderWidth?: number;
+      /** The style of the node's border */
+      borderStyle?: "solid" | "dotted" | "dashed" | "double";
+      /** The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+      borderColor?: string;
+      /** The opacity of the node's border */
+      borderOpacity?: number;
+      /** The amount of padding around all sides of the node. */
+      padding?: number;
+      /** The horizontal alignment of a node's label */
+      textHalign?: "left" | "center" | "right";
+      /** The vertical alignment of a node's label */
+      textValign?: "top" | "center" | "bottom";
+      /** Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset. */
+      ghost?: "yes" | "no";
+      /** The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      activeBgColor?: string;
+      /** The opacity of the active background indicator. Selector needs to be *core*. */
+      activeBgOpacity?: string;
+      /** The opacity of the active background indicator. Selector needs to be *core*. */
+      activeBgSize?: string;
+      /** The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      selectionBoxColor?: string;
+      /** The size of the border on the selection box. Selector needs to be *core* */
+      selectionBoxBorderWidth?: number;
+      /** The opacity of the selection box. Selector needs to be *core* */
+      selectionBoxOpacity?: number;
+      /** The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      outsideTextureBgColor?: string;
+      /** The opacity of the area outside the viewport texture. Selector needs to be *core* */
+      outsideTextureBgOpacity?: number;
+      /** An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+      shapePolygonPoints?: string;
+      /** The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+      menuBackgroundColor?: string;
+      /** The opacity of the background of the component menu. */
+      menuBackgroundOpacity?: number;
+      /** The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+      menuForgroundColor?: string;
+    };
+    /** Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status. */
+    transitionMap?: {
+      [key: string]: {
+        /** Connection Status Value */
+        nextState:
+          | "discovered"
+          | "registered"
+          | "connected"
+          | "ignored"
+          | "maintenance"
+          | "disconnected"
+          | "deleted"
+          | "not found";
+        /** Human-readable explanation of when or why this transition occurs. */
+        description?: string;
+      }[];
+    };
+  };
 };
 export type GetConnectionDefinitionApiResponse = /** status 200 Connection definition details */ any;
 export type GetConnectionDefinitionApiArg = {
@@ -7681,7 +8034,238 @@ export type UpdateConnectionDefinitionApiResponse = /** status 200 Connection de
 export type UpdateConnectionDefinitionApiArg = {
   /** Connection definition ID */
   connectionDefinitionId: string;
-  body: any;
+  body: {
+    /** Existing connection definition ID for updates; omit on create. */
+    id?: string;
+    /** Specifies the version of the schema the definition conforms to. */
+    schemaVersion?: string;
+    /** Connection definition name */
+    name: string;
+    /** Human-readable description of the connection definition and its purpose. */
+    description?: string;
+    /** URL of the remote resource connections of this kind point to. */
+    url?: string;
+    /** Connection kind (e.g., kubernetes, prometheus, grafana) */
+    kind: string;
+    /** Connection type (platform, telemetry, collaboration) */
+    type: string;
+    /** Connection sub-type (cloud, identity, metrics, chat, git, orchestration) */
+    subType: string;
+    /** Connection Status Value */
+    status:
+      | "discovered"
+      | "registered"
+      | "connected"
+      | "ignored"
+      | "maintenance"
+      | "disconnected"
+      | "deleted"
+      | "not found";
+    /** Reference to the registered model that owns this connection definition. */
+    modelReference?: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** The unique name for the model within the scope of a registrant. */
+      name: string;
+      /** Version of the model definition. */
+      version: string;
+      /** Human-readable name for the model. */
+      displayName: string;
+      /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+      model: {
+        /** Version of the model as defined by the registrant. */
+        version: string;
+      };
+      registrant: {
+        /** Kind of the registrant. */
+        kind: string;
+      };
+    };
+    /** Kind-specific connection metadata */
+    metadata?: object;
+    /** Schema for the credential associated with connections of this kind. */
+    credentialSchema?: object;
+    /** Schema for connections of this kind. */
+    connectionSchema?: object;
+    /** Visualization styles for the connection, including svgColor and svgWhite used for UI representation. */
+    styles?: {
+      /** Primary color of the component used for UI representation. */
+      primaryColor: string;
+      /** Secondary color of the entity used for UI representation. */
+      secondaryColor?: string;
+      /** White SVG of the entity used for UI representation on dark background. */
+      svgWhite: string;
+      /** Colored SVG of the entity used for UI representation on light background. */
+      svgColor: string;
+      /** Complete SVG of the entity used for UI representation, often inclusive of background. */
+      svgComplete: string;
+      /** The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+      color?: string;
+      /** The opacity of the label text, including its outline. */
+      textOpacity?: number;
+      /** A comma-separated list of font names to use on the label text. */
+      fontFamily?: string;
+      /** The size of the label text. */
+      fontSize?: string;
+      /** A CSS font style to be applied to the label text. */
+      fontStyle?: string;
+      /** A CSS font weight to be applied to the label text. */
+      fontWeight?: string;
+      /** A transformation to apply to the label text */
+      textTransform?: "none" | "uppercase" | "lowercase";
+      /** The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+      opacity?: number;
+      /** An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+      zIndex?: number;
+      /** The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+      label?: string;
+      /** The animation to apply to the element. example ripple,bounce,etc */
+      animation?: object;
+      [key: string]: any;
+    } & {
+      /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+      shape:
+        | "ellipse"
+        | "triangle"
+        | "round-triangle"
+        | "rectangle"
+        | "round-rectangle"
+        | "bottom-round-rectangle"
+        | "cut-rectangle"
+        | "barrel"
+        | "rhomboid"
+        | "diamond"
+        | "round-diamond"
+        | "pentagon"
+        | "round-pentagon"
+        | "hexagon"
+        | "round-hexagon"
+        | "concave-hexagon"
+        | "heptagon"
+        | "round-heptagon"
+        | "octagon"
+        | "round-octagon"
+        | "star"
+        | "tag"
+        | "round-tag"
+        | "vee"
+        | "polygon";
+      /** The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+      position?: {
+        /** The x-coordinate of the node. */
+        x: number;
+        /** The y-coordinate of the node. */
+        y: number;
+      };
+      /** The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+      bodyText?: string;
+      /** How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
+      bodyTextWrap?: "none" | "wrap" | "ellipsis";
+      /** The maximum width for wrapping text in the node. */
+      bodyTextMaxWidth?: string;
+      /** The opacity of the node's body text, including its outline. */
+      bodyTextOpacity?: number;
+      /** The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+      bodyTextBackgroundColor?: string;
+      /** The size of the node's body text. */
+      bodyTextFontSize?: number;
+      /** The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+      bodyTextColor?: string;
+      /** A CSS font weight to be applied to the node's body text. */
+      bodyTextFontWeight?: string;
+      /** A CSS horizontal alignment to be applied to the node's body text. */
+      bodyTextHorizontalAlign?: string;
+      /** A CSS text decoration to be applied to the node's body text. */
+      bodyTextDecoration?: string;
+      /** A CSS vertical alignment to be applied to the node's body text. */
+      bodyTextVerticalAlign?: string;
+      /** The width of the node's body or the width of an edge's line. */
+      width?: number;
+      /** The height of the node's body */
+      height?: number;
+      /** The URL that points to the image to show in the node. */
+      backgroundImage?: string;
+      /** The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+      backgroundColor?: string;
+      /** Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+      backgroundBlacken?: number;
+      /** The opacity level of the node's background colour */
+      backgroundOpacity?: number;
+      /** The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundPositionX?: string;
+      /** The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundPositionY?: string;
+      /** The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundOffsetX?: string;
+      /** The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundOffsetY?: string;
+      /** How the background image is fit to the node. Can be 'none', 'contain', or 'cover'. */
+      backgroundFit?: "none" | "contain" | "cover";
+      /** How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'. */
+      backgroundClip?: "none" | "node" | "node-border";
+      /** How the background image's width is determined. Can be 'none', 'inner', or 'outer'. */
+      backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+      /** How the background image's height is determined. Can be 'none', 'inner', or 'outer'. */
+      backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+      /** The size of the node's border. */
+      borderWidth?: number;
+      /** The style of the node's border */
+      borderStyle?: "solid" | "dotted" | "dashed" | "double";
+      /** The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+      borderColor?: string;
+      /** The opacity of the node's border */
+      borderOpacity?: number;
+      /** The amount of padding around all sides of the node. */
+      padding?: number;
+      /** The horizontal alignment of a node's label */
+      textHalign?: "left" | "center" | "right";
+      /** The vertical alignment of a node's label */
+      textValign?: "top" | "center" | "bottom";
+      /** Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset. */
+      ghost?: "yes" | "no";
+      /** The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      activeBgColor?: string;
+      /** The opacity of the active background indicator. Selector needs to be *core*. */
+      activeBgOpacity?: string;
+      /** The opacity of the active background indicator. Selector needs to be *core*. */
+      activeBgSize?: string;
+      /** The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      selectionBoxColor?: string;
+      /** The size of the border on the selection box. Selector needs to be *core* */
+      selectionBoxBorderWidth?: number;
+      /** The opacity of the selection box. Selector needs to be *core* */
+      selectionBoxOpacity?: number;
+      /** The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      outsideTextureBgColor?: string;
+      /** The opacity of the area outside the viewport texture. Selector needs to be *core* */
+      outsideTextureBgOpacity?: number;
+      /** An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+      shapePolygonPoints?: string;
+      /** The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+      menuBackgroundColor?: string;
+      /** The opacity of the background of the component menu. */
+      menuBackgroundOpacity?: number;
+      /** The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+      menuForgroundColor?: string;
+    };
+    /** Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status. */
+    transitionMap?: {
+      [key: string]: {
+        /** Connection Status Value */
+        nextState:
+          | "discovered"
+          | "registered"
+          | "connected"
+          | "ignored"
+          | "maintenance"
+          | "disconnected"
+          | "deleted"
+          | "not found";
+        /** Human-readable explanation of when or why this transition occurs. */
+        description?: string;
+      }[];
+    };
+  };
 };
 export type DeleteConnectionDefinitionApiResponse = unknown;
 export type DeleteConnectionDefinitionApiArg = {
@@ -9341,7 +9925,9 @@ export type GetEnvironmentsApiArg = {
   order?: string;
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
   pagesize?: string;
   /** User's organization ID */
   orgId: string;
@@ -9453,7 +10039,9 @@ export type GetEnvironmentConnectionsApiArg = {
   order?: string;
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
   pagesize?: string;
   /** JSON-encoded filter string used to scope the connection listing. */
   filter?: string;
@@ -9551,7 +10139,9 @@ export type GetEventsOfWorkspaceApiArg = {
   workspaceId: string;
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
   pagesize?: string;
   /** Get responses that match search param value */
   search?: string;
@@ -9643,7 +10233,9 @@ export type GetEventTypesApiResponse = /** status 200 Event types */ {
 export type GetEventTypesApiArg = {
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
   pagesize?: string;
 };
 export type GetFiltersApiResponse = /** status 200 Filters response */ {
@@ -10212,8 +10804,14 @@ export type UpdateInvitationApiArg = {
   };
 };
 export type GetInvitationsApiResponse = /** status 200 Invitations page */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
   /** Invitations returned on the current page. */
-  data: {
+  data?: {
     /** Unique identifier for the invitation, also used as the invitation code. */
     id: string;
     /** ID of the user who created the invitation. Tracks who created the invitation for auditing purposes. */
@@ -10247,10 +10845,19 @@ export type GetInvitationsApiResponse = /** status 200 Invitations page */ {
     /** Timestamp when the invitation was deleted, if applicable. */
     deletedAt: string;
   }[];
-  /** Total number of invitations available. */
-  total: number;
 };
-export type GetInvitationsApiArg = void;
+export type GetInvitationsApiArg = {
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get filtered reponses */
+  filter?: string;
+};
 export type CreateInvitationApiResponse = /** status 201 Invitation created */ {
   /** Unique identifier for the invitation, also used as the invitation code. */
   id: string;
@@ -11060,19 +11667,19 @@ export type GetUserTokensApiResponse = /** status 200 Tokens response */ {
     /** Authentication provider associated with the token. */
     provider: string;
     /** Access token value. */
-    accessToken?: string;
+    accessToken: string;
     /** Refresh token value when applicable. */
     refreshToken?: string;
     /** Human-readable token name. */
-    name?: string;
+    name: string;
     /** Purpose for which the token was created. */
-    purpose?: string;
+    purpose: string;
     /** Whether this entry represents an OAuth session. */
-    isOauth?: boolean;
+    isOauth: boolean;
     /** Timestamp when the token was created. */
-    createdAt?: string;
+    createdAt: string;
     /** Timestamp when the token was last updated. */
-    updatedAt?: string;
+    updatedAt: string;
   }[];
   /** Total number of tokens across all pages. */
   totalCount: number;
@@ -11086,7 +11693,9 @@ export type GetUserTokensApiArg = {
   isOauth?: boolean;
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
   pagesize?: string;
   /** Get responses that match search param value */
   search?: string;
@@ -11103,19 +11712,19 @@ export type GenerateTokenApiResponse = /** status 201 Token generated */ {
     /** Authentication provider associated with the token. */
     provider: string;
     /** Access token value. */
-    accessToken?: string;
+    accessToken: string;
     /** Refresh token value when applicable. */
     refreshToken?: string;
     /** Human-readable token name. */
-    name?: string;
+    name: string;
     /** Purpose for which the token was created. */
-    purpose?: string;
+    purpose: string;
     /** Whether this entry represents an OAuth session. */
-    isOauth?: boolean;
+    isOauth: boolean;
     /** Timestamp when the token was created. */
-    createdAt?: string;
+    createdAt: string;
     /** Timestamp when the token was last updated. */
-    updatedAt?: string;
+    updatedAt: string;
   }[];
   /** Total number of tokens across all pages. */
   totalCount: number;
@@ -11140,19 +11749,19 @@ export type DeleteUserTokenApiResponse = /** status 200 Token deleted */ {
     /** Authentication provider associated with the token. */
     provider: string;
     /** Access token value. */
-    accessToken?: string;
+    accessToken: string;
     /** Refresh token value when applicable. */
     refreshToken?: string;
     /** Human-readable token name. */
-    name?: string;
+    name: string;
     /** Purpose for which the token was created. */
-    purpose?: string;
+    purpose: string;
     /** Whether this entry represents an OAuth session. */
-    isOauth?: boolean;
+    isOauth: boolean;
     /** Timestamp when the token was created. */
-    createdAt?: string;
+    createdAt: string;
     /** Timestamp when the token was last updated. */
-    updatedAt?: string;
+    updatedAt: string;
   }[];
   /** Total number of tokens across all pages. */
   totalCount: number;
@@ -11165,7 +11774,7 @@ export type DeleteUserTokenApiArg = {
   /** ID of the token to delete. */
   tokenId: string;
 };
-export type GetUserTokensByIdApiResponse = /** status 200 Token response */ {
+export type DownloadTokenApiResponse = /** status 200 Token response */ {
   /** Unique identifier for the token. */
   id: string;
   /** UUID of the user who owns the token. */
@@ -11173,21 +11782,21 @@ export type GetUserTokensByIdApiResponse = /** status 200 Token response */ {
   /** Authentication provider associated with the token. */
   provider: string;
   /** Access token value. */
-  accessToken?: string;
+  accessToken: string;
   /** Refresh token value when applicable. */
   refreshToken?: string;
   /** Human-readable token name. */
-  name?: string;
+  name: string;
   /** Purpose for which the token was created. */
-  purpose?: string;
+  purpose: string;
   /** Whether this entry represents an OAuth session. */
-  isOauth?: boolean;
+  isOauth: boolean;
   /** Timestamp when the token was created. */
-  createdAt?: string;
+  createdAt: string;
   /** Timestamp when the token was last updated. */
-  updatedAt?: string;
+  updatedAt: string;
 };
-export type GetUserTokensByIdApiArg = {
+export type DownloadTokenApiArg = {
   /** Token ID */
   tokenId: string;
 };
@@ -11201,19 +11810,19 @@ export type IssueIndefiniteLifetimeTokenApiResponse = /** status 200 Token gener
     /** Authentication provider associated with the token. */
     provider: string;
     /** Access token value. */
-    accessToken?: string;
+    accessToken: string;
     /** Refresh token value when applicable. */
     refreshToken?: string;
     /** Human-readable token name. */
-    name?: string;
+    name: string;
     /** Purpose for which the token was created. */
-    purpose?: string;
+    purpose: string;
     /** Whether this entry represents an OAuth session. */
-    isOauth?: boolean;
+    isOauth: boolean;
     /** Timestamp when the token was created. */
-    createdAt?: string;
+    createdAt: string;
     /** Timestamp when the token was last updated. */
-    updatedAt?: string;
+    updatedAt: string;
   }[];
   /** Total number of tokens across all pages. */
   totalCount: number;
@@ -11273,7 +11882,9 @@ export type GetWorkspacesApiArg = {
   order?: string;
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
   pagesize?: string;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;
@@ -11403,7 +12014,9 @@ export type GetTeamsOfWorkspaceApiArg = {
   order?: string;
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
   pagesize?: string;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;
@@ -11483,7 +12096,9 @@ export type GetEnvironmentsOfWorkspaceApiArg = {
   order?: string;
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
   pagesize?: string;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;
@@ -12551,7 +13166,9 @@ export type GetDesignsOfWorkspaceApiArg = {
   order?: string;
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
   pagesize?: string;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;
@@ -12633,7 +13250,9 @@ export type GetViewsOfWorkspaceApiArg = {
   order?: string;
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
   pagesize?: string;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;
@@ -12739,6 +13358,8 @@ export const {
   useGetUsersQuery,
   useGetUserProfileByIdQuery,
   useGetUserQuery,
+  useGetAccountDeletionEligibilityQuery,
+  useDeleteUserAccountMutation,
   useCreateViewMutation,
   useGetViewsQuery,
   useShareViewMutation,
@@ -12854,7 +13475,7 @@ export const {
   useGetUserTokensQuery,
   useGenerateTokenMutation,
   useDeleteUserTokenMutation,
-  useGetUserTokensByIdQuery,
+  useDownloadTokenQuery,
   useIssueIndefiniteLifetimeTokenQuery,
   useGetWorkspacesQuery,
   useCreateWorkspaceMutation,

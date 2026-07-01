@@ -60,7 +60,7 @@ function parseLatestConstructs(output) {
 }
 
 function loadLatestConstructs(repoRoot) {
-  const output = execFileSync("make", ["schemas-versions-latest"], {
+  const output = execFileSync("make", ["--no-print-directory", "schemas-versions-latest"], {
     cwd: repoRoot,
     encoding: "utf8",
   });

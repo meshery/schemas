@@ -152,7 +152,8 @@ paths:
       parameters:
       - $ref: '#/components/parameters/workspaceId'
       - $ref: '#/components/parameters/page'
-      - $ref: '#/components/parameters/pagesize'
+      - $ref: '#/components/parameters/pageSize'
+      - $ref: '#/components/parameters/pagesizeLegacy'
       - $ref: '#/components/parameters/search'
       - $ref: '#/components/parameters/order'
       responses:
@@ -261,7 +262,8 @@ paths:
       summary: Get event types
       parameters:
       - $ref: '#/components/parameters/page'
-      - $ref: '#/components/parameters/pagesize'
+      - $ref: '#/components/parameters/pageSize'
+      - $ref: '#/components/parameters/pagesizeLegacy'
       responses:
         '200':
           description: Event types
@@ -305,8 +307,17 @@ components:
       required: true
     page:
       $ref: ../../v1beta2/core/api.yml#/components/parameters/page
+    pageSize:
+      $ref: ../../v1beta2/core/api.yml#/components/parameters/pageSize
     pagesize:
       $ref: ../../v1beta2/core/api.yml#/components/parameters/pagesize
+    pagesizeLegacy:
+      name: pagesize
+      in: query
+      description: Get responses by pagesize. Deprecated alias of pageSize.
+      deprecated: true
+      schema:
+        type: string
     search:
       $ref: ../../v1beta2/core/api.yml#/components/parameters/search
     order:

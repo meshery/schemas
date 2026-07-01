@@ -102,9 +102,19 @@ const WorkspaceSchema: Record<string, unknown> = {
             }
           },
           {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
             "name": "pagesize",
             "in": "query",
-            "description": "Get responses by pagesize",
+            "description": "Get responses by pagesize. Deprecated alias of pageSize.",
+            "deprecated": true,
             "schema": {
               "type": "string"
             }
@@ -217,7 +227,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                           },
                           "ownerId": {
                             "description": "User ID of the workspace owner.",
-                            "x-go-name": "OwnerId",
+                            "x-go-name": "OwnerID",
                             "x-oapi-codegen-extra-tags": {
                               "db": "owner_id",
                               "json": "ownerId,omitempty"
@@ -261,7 +271,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                           },
                           "organizationId": {
                             "description": "Organization to which this workspace belongs.",
-                            "x-go-name": "OrganizationId",
+                            "x-go-name": "OrganizationID",
                             "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "organization_id",
@@ -1207,9 +1217,19 @@ const WorkspaceSchema: Record<string, unknown> = {
             }
           },
           {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
             "name": "pagesize",
             "in": "query",
-            "description": "Get responses by pagesize",
+            "description": "Get responses by pagesize. Deprecated alias of pageSize.",
+            "deprecated": true,
             "schema": {
               "type": "string"
             }
@@ -1802,9 +1822,19 @@ const WorkspaceSchema: Record<string, unknown> = {
             }
           },
           {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
             "name": "pagesize",
             "in": "query",
-            "description": "Get responses by pagesize",
+            "description": "Get responses by pagesize. Deprecated alias of pageSize.",
+            "deprecated": true,
             "schema": {
               "type": "string"
             }
@@ -2468,9 +2498,19 @@ const WorkspaceSchema: Record<string, unknown> = {
             }
           },
           {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
             "name": "pagesize",
             "in": "query",
-            "description": "Get responses by pagesize",
+            "description": "Get responses by pagesize. Deprecated alias of pageSize.",
+            "deprecated": true,
             "schema": {
               "type": "string"
             }
@@ -7730,9 +7770,19 @@ const WorkspaceSchema: Record<string, unknown> = {
             }
           },
           {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
             "name": "pagesize",
             "in": "query",
-            "description": "Get responses by pagesize",
+            "description": "Get responses by pagesize. Deprecated alias of pageSize.",
+            "deprecated": true,
             "schema": {
               "type": "string"
             }
@@ -8519,10 +8569,20 @@ const WorkspaceSchema: Record<string, unknown> = {
           "type": "string"
         }
       },
+      "pageSize": {
+        "name": "pageSize",
+        "in": "query",
+        "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
       "pagesize": {
         "name": "pagesize",
         "in": "query",
-        "description": "Get responses by pagesize",
+        "description": "Get responses by pagesize. Deprecated alias of pageSize.",
+        "deprecated": true,
         "schema": {
           "type": "string"
         }
@@ -8733,7 +8793,7 @@ const WorkspaceSchema: Record<string, unknown> = {
           },
           "ownerId": {
             "description": "User ID of the workspace owner.",
-            "x-go-name": "OwnerId",
+            "x-go-name": "OwnerID",
             "x-oapi-codegen-extra-tags": {
               "db": "owner_id",
               "json": "ownerId,omitempty"
@@ -8777,7 +8837,7 @@ const WorkspaceSchema: Record<string, unknown> = {
           },
           "organizationId": {
             "description": "Organization to which this workspace belongs.",
-            "x-go-name": "OrganizationId",
+            "x-go-name": "OrganizationID",
             "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "organization_id",
@@ -9021,7 +9081,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                 },
                 "ownerId": {
                   "description": "User ID of the workspace owner.",
-                  "x-go-name": "OwnerId",
+                  "x-go-name": "OwnerID",
                   "x-oapi-codegen-extra-tags": {
                     "db": "owner_id",
                     "json": "ownerId,omitempty"
@@ -9065,7 +9125,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                 },
                 "organizationId": {
                   "description": "Organization to which this workspace belongs.",
-                  "x-go-name": "OrganizationId",
+                  "x-go-name": "OrganizationID",
                   "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "organization_id",

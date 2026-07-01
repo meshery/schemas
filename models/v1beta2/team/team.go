@@ -73,7 +73,13 @@ type TeamPage struct {
 // TeamPayload Payload for creating a new team
 type TeamPayload struct {
 	Description core.Text `json:"description,omitempty" yaml:"description,omitempty"`
-	Name        core.Text `json:"name" yaml:"name"`
+
+	// Metadata Additional client-supplied metadata for the team.
+	Metadata *map[string]interface{} `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Name     core.Text       `json:"name" yaml:"name"`
+
+	// NotifyTeamUpdate Whether to notify team members when the team is created or updated.
+	NotifyTeamUpdate *bool `json:"notifyTeamUpdate,omitempty" yaml:"notifyTeamUpdate,omitempty"`
 }
 
 // TeamUpdatePayload Payload for updating an existing team
