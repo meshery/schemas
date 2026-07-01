@@ -187,7 +187,7 @@ type MesheryPattern struct {
 
 	// User Represents a user
 	User   *userV1beta.User `db:"-" json:"user,omitempty" yaml:"user,omitempty"`
-	UserId core.Id    `db:"user_id" json:"userId,omitempty" yaml:"userId,omitempty"`
+	UserId core.Id    `db:"owner" json:"userId,omitempty" yaml:"userId,omitempty"`
 
 	// ViewCount Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
 	ViewCount *int `db:"view_count" json:"viewCount,omitempty" yaml:"viewCount,omitempty"`

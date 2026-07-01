@@ -28,7 +28,7 @@ type UserToken struct {
 	ID core.Uuid `db:"id" json:"id" yaml:"id"`
 
 	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	UserId core.Uuid `db:"user_id" json:"user_id" yaml:"user_id"`
+	UserId core.Uuid `db:"owner" json:"user_id" yaml:"user_id"`
 
 	// Provider Authentication provider associated with the token.
 	Provider string `db:"provider" json:"provider" yaml:"provider"`
