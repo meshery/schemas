@@ -8,6 +8,7 @@ import (
 
 	"github.com/lib/pq"
 	"github.com/meshery/schemas/models/core"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 	"github.com/gofrs/uuid"
 )
 
@@ -125,8 +126,56 @@ type InvitationsPage struct {
 	TotalCount int `json:"totalCount" yaml:"totalCount"`
 }
 
+// SignupData A signup request record as persisted in the signup_data table. Captures the requester's identity, the product form the request originated from (for example playground, meshmap, docker-extension), the moderation status, and the tracking task created for the request. Also embedded in signup webhook and notification payloads, where only a subset of fields may be populated.
+type SignupData struct {
+	CreatedAt core.Time `db:"created_at" json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
+
+	// Email Email address of the requester.
+	Email *openapi_types.Email `db:"email" json:"email,omitempty" yaml:"email,omitempty"`
+
+	// FirstName First name of the requester.
+	FirstName *string `db:"first_name" json:"firstName,omitempty" yaml:"firstName,omitempty"`
+
+	// FormType Product form the signup request originated from. Known values include playground, meshmap, docker-extension, epsma-book, content, contact and event; the set is open-ended.
+	FormType *string `db:"form_type" json:"formType,omitempty" yaml:"formType,omitempty"`
+
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID *core.Uuid `db:"id" json:"id,omitempty" yaml:"id,omitempty"`
+
+	// LastName Last name of the requester.
+	LastName *string `db:"last_name" json:"lastName,omitempty" yaml:"lastName,omitempty"`
+
+	// Occupation Occupation stated by the requester.
+	Occupation *string `db:"occupation" json:"occupation,omitempty" yaml:"occupation,omitempty"`
+
+	// Organization Organization stated by the requester.
+	Organization *string `db:"organization" json:"organization,omitempty" yaml:"organization,omitempty"`
+
+	// Role Role stated by the requester within their organization.
+	Role *string `db:"role" json:"role,omitempty" yaml:"role,omitempty"`
+
+	// Status Moderation status of the signup request.
+	Status *string `db:"status" json:"status,omitempty" yaml:"status,omitempty"`
+
+	// TaskID Identifier of the tracking task created for this request in the external task system.
+	TaskID *string `db:"task_id" json:"taskId,omitempty" yaml:"taskId,omitempty"`
+
+	// TaskLink Link to the tracking task created for this request.
+	TaskLink  *string           `db:"task_link" json:"taskLink,omitempty" yaml:"taskLink,omitempty"`
+	UpdatedAt core.Time `db:"updated_at" json:"updatedAt,omitempty" yaml:"updatedAt,omitempty"`
+}
+
 // SignupRequest A signup request submitted for organization access.
 type SignupRequest map[string]interface{}
+
+// SignupRequestNotification Notification about the most recent signup request awaiting moderator action, served by getSignupRequestNotification.
+type SignupRequestNotification struct {
+	// PreProcessed Whether the signup request was automatically processed before moderator review.
+	PreProcessed bool `json:"preProcessed" yaml:"preProcessed"`
+
+	// SignupData A signup request record as persisted in the signup_data table. Captures the requester's identity, the product form the request originated from (for example playground, meshmap, docker-extension), the moderation status, and the tracking task created for the request. Also embedded in signup webhook and notification payloads, where only a subset of fields may be populated.
+	SignupData SignupData `json:"signupData" yaml:"signupData"`
+}
 
 // SignupRequestsPage Paginated list of signup requests.
 type SignupRequestsPage struct {
@@ -141,6 +190,15 @@ type SignupRequestsPage struct {
 
 	// TotalCount Total number of items available.
 	TotalCount int `json:"totalCount" yaml:"totalCount"`
+}
+
+// SignupWebhookPayload Outbound webhook body that Cloud POSTs to the configured signup and entitlement webhooks (WEBHOOK_SIGNUP_REQUEST, WEBHOOK_KANVAS_ENTITLEMENT) when a signup request is processed. Emitted by Cloud; not served by any Cloud endpoint.
+type SignupWebhookPayload struct {
+	// NewUser Whether the requester is a newly created user.
+	NewUser bool `json:"newUser" yaml:"newUser"`
+
+	// SignupData A signup request record as persisted in the signup_data table. Captures the requester's identity, the product form the request originated from (for example playground, meshmap, docker-extension), the moderation status, and the tracking task created for the request. Also embedded in signup webhook and notification payloads, where only a subset of fields may be populated.
+	SignupData SignupData `json:"signupData" yaml:"signupData"`
 }
 
 // Uuid A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
