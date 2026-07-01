@@ -148,7 +148,8 @@ func walkSchemaConstraints(filePath, scope string, schema *openapi3.Schema, opts
 			if p.Type != nil && (p.Type.Is("integer") || p.Type.Is("number")) {
 				_, hasConst := p.Extensions["const"]
 				hasBound := p.Min != nil || p.Max != nil ||
-					p.ExclusiveMin.IsSet() || p.ExclusiveMax.IsSet() ||
+					p.ExclusiveMin.IsTrue() || p.ExclusiveMin.Value != nil ||
+					p.ExclusiveMax.IsTrue() || p.ExclusiveMax.Value != nil ||
 					len(p.Enum) > 0 || hasConst
 				if !hasBound {
 					*out = append(*out, Violation{File: filePath,
