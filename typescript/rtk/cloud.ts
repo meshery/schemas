@@ -1180,7 +1180,16 @@ const injectedRtkApi = api
         invalidatesTags: ["Invitation_Invitation"],
       }),
       getInvitations: build.query<GetInvitationsApiResponse, GetInvitationsApiArg>({
-        query: () => ({ url: `/api/organizations/invitations` }),
+        query: (queryArg) => ({
+          url: `/api/organizations/invitations`,
+          params: {
+            page: queryArg?.page,
+            pagesize: queryArg?.pagesize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            filter: queryArg?.filter,
+          },
+        }),
         providesTags: ["Invitation_Invitation"],
       }),
       createInvitation: build.mutation<CreateInvitationApiResponse, CreateInvitationApiArg>({
@@ -10287,8 +10296,14 @@ export type UpdateInvitationApiArg = {
   };
 };
 export type GetInvitationsApiResponse = /** status 200 Invitations page */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
   /** Invitations returned on the current page. */
-  data: {
+  data?: {
     /** Unique identifier for the invitation, also used as the invitation code. */
     id: string;
     /** ID of the user who created the invitation. Tracks who created the invitation for auditing purposes. */
@@ -10322,10 +10337,19 @@ export type GetInvitationsApiResponse = /** status 200 Invitations page */ {
     /** Timestamp when the invitation was deleted, if applicable. */
     deletedAt: string;
   }[];
-  /** Total number of invitations available. */
-  total: number;
 };
-export type GetInvitationsApiArg = void;
+export type GetInvitationsApiArg = {
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get filtered reponses */
+  filter?: string;
+};
 export type CreateInvitationApiResponse = /** status 201 Invitation created */ {
   /** Unique identifier for the invitation, also used as the invitation code. */
   id: string;

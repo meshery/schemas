@@ -771,7 +771,49 @@ const InvitationSchema: Record<string, unknown> = {
         "tags": [
           "Invitation"
         ],
-        "summary": "Get all invitations for the organization",
+        "summary": "Get a paginated list of invitations for the organization",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Get responses by page",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pagesize",
+            "in": "query",
+            "description": "Get responses by pagesize",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Get responses that match search param value",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "Get ordered responses",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "Get filtered reponses",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Invitations page",
@@ -780,11 +822,31 @@ const InvitationSchema: Record<string, unknown> = {
                 "schema": {
                   "type": "object",
                   "description": "Paginated list of invitations for an organization.",
-                  "required": [
-                    "data",
-                    "total"
-                  ],
                   "properties": {
+                    "page": {
+                      "type": "integer",
+                      "description": "Current page number of the result set.",
+                      "minimum": 0,
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "pageSize": {
+                      "type": "integer",
+                      "description": "Number of items per page.",
+                      "minimum": 1,
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "pageSize"
+                      }
+                    },
+                    "totalCount": {
+                      "type": "integer",
+                      "description": "Total number of items available.",
+                      "minimum": 0,
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "totalCount"
+                      }
+                    },
                     "data": {
                       "type": "array",
                       "items": {
@@ -982,14 +1044,6 @@ const InvitationSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "json": "data"
                       }
-                    },
-                    "total": {
-                      "type": "integer",
-                      "description": "Total number of invitations available.",
-                      "x-oapi-codegen-extra-tags": {
-                        "json": "total"
-                      },
-                      "minimum": 0
                     }
                   }
                 }
@@ -2190,11 +2244,31 @@ const InvitationSchema: Record<string, unknown> = {
       "InvitationsPage": {
         "type": "object",
         "description": "Paginated list of invitations for an organization.",
-        "required": [
-          "data",
-          "total"
-        ],
         "properties": {
+          "page": {
+            "type": "integer",
+            "description": "Current page number of the result set.",
+            "minimum": 0,
+            "x-go-type-skip-optional-pointer": true
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Number of items per page.",
+            "minimum": 1,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "pageSize"
+            }
+          },
+          "totalCount": {
+            "type": "integer",
+            "description": "Total number of items available.",
+            "minimum": 0,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "totalCount"
+            }
+          },
           "data": {
             "type": "array",
             "items": {
@@ -2392,14 +2466,6 @@ const InvitationSchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "json": "data"
             }
-          },
-          "total": {
-            "type": "integer",
-            "description": "Total number of invitations available.",
-            "x-oapi-codegen-extra-tags": {
-              "json": "total"
-            },
-            "minimum": 0
           }
         }
       },
