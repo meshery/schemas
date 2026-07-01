@@ -86,7 +86,7 @@ type ImportRequestUploadType string
 // MeshModelModelsPage defines model for MeshModelModelsPage.
 type MeshModelModelsPage struct {
 	// Models The models matching the list-endpoint query.
-	Models *[]Model `json:"models,omitempty" yaml:"models,omitempty"`
+	Models *[]ModelDefinition `json:"models,omitempty" yaml:"models,omitempty"`
 
 	// Page Current page number of the result set.
 	Page *int `json:"page,omitempty" yaml:"page,omitempty"`
