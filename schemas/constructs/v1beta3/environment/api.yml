@@ -189,7 +189,9 @@ components:
         connections:
           type: array
           items:
-            $ref: "../connection/api.yml#/components/schemas/Connection"
+            type: object
+            additionalProperties: true
+            description: "Connection object (relaxed schema due to environment_persister query behavior)."
           description: The connections associated with the environment.
 
   requestBodies:
