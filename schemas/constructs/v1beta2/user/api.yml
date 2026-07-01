@@ -147,8 +147,7 @@ paths:
             Organization to evaluate for deletion alongside the account. When
             omitted, the caller's currently selected organization is evaluated.
           schema:
-            type: string
-            format: uuid
+            $ref: "../core/api.yml#/components/schemas/Uuid"
       responses:
         "200":
           description: Account deletion eligibility for the caller
@@ -199,8 +198,7 @@ paths:
             Identifier of the organization to hard-delete. Required by the
             server when deleteOrganization is true.
           schema:
-            type: string
-            format: uuid
+            $ref: "../core/api.yml#/components/schemas/Uuid"
         - name: organizationNameConfirmation
           in: query
           required: false
@@ -241,7 +239,16 @@ components:
     404:
       $ref: "../core/api.yml#/components/responses/404"
     409:
-      $ref: "../core/api.yml#/components/responses/409"
+      description: >-
+        Deletion preconditions were not met. Returned when the target
+        organization is the shared Layer5 provider organization, has an active
+        paid subscription, the caller is not its sole active member, the typed
+        organizationNameConfirmation did not match, or destruction of shared
+        resources was required but not confirmed.
+      content:
+        text/plain:
+          schema:
+            type: string
     500:
       $ref: "../core/api.yml#/components/responses/500"
 
@@ -937,8 +944,7 @@ components:
             so deleting their account would leave the organization without any
             active members.
         organizationId:
-          type: string
-          format: uuid
+          $ref: "../core/api.yml#/components/schemas/Uuid"
           description: Unique identifier of the organization evaluated for deletion.
         organizationName:
           type: string
