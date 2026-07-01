@@ -90,6 +90,7 @@ const injectedRtkApi = api
           url: `/api/integrations/credentials`,
           params: {
             page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
             search: queryArg?.search,
             order: queryArg?.order,
@@ -411,6 +412,7 @@ const injectedRtkApi = api
             search: queryArg?.search,
             order: queryArg?.order,
             page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
           },
         }),
@@ -431,6 +433,7 @@ const injectedRtkApi = api
             search: queryArg?.search,
             order: queryArg?.order,
             page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
           },
         }),
@@ -457,6 +460,7 @@ const injectedRtkApi = api
             search: queryArg?.search,
             order: queryArg?.order,
             page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
           },
         }),
@@ -1829,16 +1833,18 @@ export type GetUserCredentialsApiResponse = /** status 200 Credentials response 
     deletedAt?: string;
   }[];
   /** Total number of credentials across all pages. */
-  total_count: number;
+  totalCount: number;
   /** Current page number (zero-based). */
   page: number;
   /** Number of credentials per page. */
-  page_size: number;
+  pageSize: number;
 };
 export type GetUserCredentialsApiArg = {
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
   pagesize?: string;
   /** Get responses that match search param value */
   search?: string;
@@ -3372,9 +3378,9 @@ export type GetTeamsApiResponse = /** status 200 Teams */ {
   /** Current page number of the result set. */
   page?: number;
   /** Number of items per page. */
-  page_size?: number;
+  pageSize?: number;
   /** Total number of items available. */
-  total_count?: number;
+  totalCount?: number;
   /** The teams of the teampage. */
   teams?: {
     /** Team ID */
@@ -3404,7 +3410,9 @@ export type GetTeamsApiArg = {
   order?: string;
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
   pagesize?: string;
 };
 export type CreateTeamApiResponse = /** status 201 Created team */ {
@@ -3446,9 +3454,9 @@ export type GetTeamUsersApiResponse = /** status 200 Team users mapping */ {
   /** Current page number of the result set. */
   page?: number;
   /** Number of items per page. */
-  page_size?: number;
+  pageSize?: number;
   /** Total number of items available. */
-  total_count?: number;
+  totalCount?: number;
   /** The user-team mappings on the current page. */
   usersTeamsMapping?: {
     id?: string;
@@ -3476,7 +3484,9 @@ export type GetTeamUsersApiArg = {
   order?: string;
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
   pagesize?: string;
 };
 export type AddUserToTeamApiResponse = /** status 201 User added to team */ {
@@ -3516,9 +3526,9 @@ export type ListUsersNotInTeamApiResponse = /** status 200 Users not currently i
   /** Current page number of the result set. */
   page?: number;
   /** Number of items per page. */
-  page_size?: number;
+  pageSize?: number;
   /** Total number of items available. */
-  total_count?: number;
+  totalCount?: number;
   /** The data of the teammemberspage. */
   data?: {
     /** Timestamp when the user joined the team. Server-computed from the earliest matching row in `users_teams_mapping` for this (team, user) pair. Server-managed; clients cannot set this.
@@ -3538,7 +3548,9 @@ export type ListUsersNotInTeamApiArg = {
   order?: string;
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
   pagesize?: string;
 };
 export type GetUsersForOrgApiResponse = /** status 200 Paginated list of organization users */ {

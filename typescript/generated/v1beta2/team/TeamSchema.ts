@@ -173,10 +173,20 @@ const TeamSchema: Record<string, unknown> = {
           "type": "string"
         }
       },
+      "pageSize": {
+        "name": "pageSize",
+        "in": "query",
+        "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
       "pagesize": {
         "name": "pagesize",
         "in": "query",
-        "description": "Get responses by pagesize",
+        "description": "Get responses by pagesize. Deprecated alias of pageSize.",
+        "deprecated": true,
         "schema": {
           "type": "string"
         }
@@ -348,12 +358,12 @@ const TeamSchema: Record<string, unknown> = {
             "description": "Current page number of the result set.",
             "minimum": 0
           },
-          "page_size": {
+          "pageSize": {
             "type": "integer",
             "description": "Number of items per page.",
             "minimum": 1
           },
-          "total_count": {
+          "totalCount": {
             "type": "integer",
             "description": "Total number of items available.",
             "minimum": 0
@@ -571,12 +581,12 @@ const TeamSchema: Record<string, unknown> = {
             "description": "Current page number of the result set.",
             "minimum": 0
           },
-          "page_size": {
+          "pageSize": {
             "type": "integer",
             "description": "Number of items per page.",
             "minimum": 1
           },
-          "total_count": {
+          "totalCount": {
             "type": "integer",
             "description": "Total number of items available.",
             "minimum": 0
@@ -707,12 +717,12 @@ const TeamSchema: Record<string, unknown> = {
             "description": "Current page number of the result set.",
             "minimum": 0
           },
-          "page_size": {
+          "pageSize": {
             "type": "integer",
             "description": "Number of items per page.",
             "minimum": 1
           },
-          "total_count": {
+          "totalCount": {
             "type": "integer",
             "description": "Total number of items available.",
             "minimum": 0
@@ -864,9 +874,19 @@ const TeamSchema: Record<string, unknown> = {
             }
           },
           {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
             "name": "pagesize",
             "in": "query",
-            "description": "Get responses by pagesize",
+            "description": "Get responses by pagesize. Deprecated alias of pageSize.",
+            "deprecated": true,
             "schema": {
               "type": "string"
             }
@@ -886,12 +906,12 @@ const TeamSchema: Record<string, unknown> = {
                       "description": "Current page number of the result set.",
                       "minimum": 0
                     },
-                    "page_size": {
+                    "pageSize": {
                       "type": "integer",
                       "description": "Number of items per page.",
                       "minimum": 1
                     },
-                    "total_count": {
+                    "totalCount": {
                       "type": "integer",
                       "description": "Total number of items available.",
                       "minimum": 0
@@ -1868,9 +1888,19 @@ const TeamSchema: Record<string, unknown> = {
             }
           },
           {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
             "name": "pagesize",
             "in": "query",
-            "description": "Get responses by pagesize",
+            "description": "Get responses by pagesize. Deprecated alias of pageSize.",
+            "deprecated": true,
             "schema": {
               "type": "string"
             }
@@ -1890,12 +1920,12 @@ const TeamSchema: Record<string, unknown> = {
                       "description": "Current page number of the result set.",
                       "minimum": 0
                     },
-                    "page_size": {
+                    "pageSize": {
                       "type": "integer",
                       "description": "Number of items per page.",
                       "minimum": 1
                     },
-                    "total_count": {
+                    "totalCount": {
                       "type": "integer",
                       "description": "Total number of items available.",
                       "minimum": 0
@@ -2439,9 +2469,19 @@ const TeamSchema: Record<string, unknown> = {
             }
           },
           {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
             "name": "pagesize",
             "in": "query",
-            "description": "Get responses by pagesize",
+            "description": "Get responses by pagesize. Deprecated alias of pageSize.",
+            "deprecated": true,
             "schema": {
               "type": "string"
             }
@@ -2461,12 +2501,12 @@ const TeamSchema: Record<string, unknown> = {
                       "description": "Current page number of the result set.",
                       "minimum": 0
                     },
-                    "page_size": {
+                    "pageSize": {
                       "type": "integer",
                       "description": "Number of items per page.",
                       "minimum": 1
                     },
-                    "total_count": {
+                    "totalCount": {
                       "type": "integer",
                       "description": "Total number of items available.",
                       "minimum": 0

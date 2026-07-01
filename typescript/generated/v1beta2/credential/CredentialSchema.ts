@@ -67,9 +67,19 @@ const CredentialSchema: Record<string, unknown> = {
             }
           },
           {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
             "name": "pagesize",
             "in": "query",
-            "description": "Get responses by pagesize",
+            "description": "Get responses by pagesize. Deprecated alias of pageSize.",
+            "deprecated": true,
             "schema": {
               "type": "string"
             }
@@ -101,9 +111,9 @@ const CredentialSchema: Record<string, unknown> = {
                   "description": "A paginated list of credentials.",
                   "required": [
                     "credentials",
-                    "total_count",
+                    "totalCount",
                     "page",
-                    "page_size"
+                    "pageSize"
                   ],
                   "properties": {
                     "credentials": {
@@ -221,7 +231,7 @@ const CredentialSchema: Record<string, unknown> = {
                       "x-order": 1,
                       "description": "The credentials returned on the current page."
                     },
-                    "total_count": {
+                    "totalCount": {
                       "type": "integer",
                       "description": "Total number of credentials across all pages.",
                       "x-order": 2,
@@ -233,7 +243,7 @@ const CredentialSchema: Record<string, unknown> = {
                       "x-order": 3,
                       "minimum": 0
                     },
-                    "page_size": {
+                    "pageSize": {
                       "type": "integer",
                       "description": "Number of credentials per page.",
                       "x-order": 4,
@@ -1072,10 +1082,20 @@ const CredentialSchema: Record<string, unknown> = {
           "type": "string"
         }
       },
+      "pageSize": {
+        "name": "pageSize",
+        "in": "query",
+        "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
       "pagesize": {
         "name": "pagesize",
         "in": "query",
-        "description": "Get responses by pagesize",
+        "description": "Get responses by pagesize. Deprecated alias of pageSize.",
+        "deprecated": true,
         "schema": {
           "type": "string"
         }
@@ -1271,9 +1291,9 @@ const CredentialSchema: Record<string, unknown> = {
         "description": "A paginated list of credentials.",
         "required": [
           "credentials",
-          "total_count",
+          "totalCount",
           "page",
-          "page_size"
+          "pageSize"
         ],
         "properties": {
           "credentials": {
@@ -1391,7 +1411,7 @@ const CredentialSchema: Record<string, unknown> = {
             "x-order": 1,
             "description": "The credentials returned on the current page."
           },
-          "total_count": {
+          "totalCount": {
             "type": "integer",
             "description": "Total number of credentials across all pages.",
             "x-order": 2,
@@ -1403,7 +1423,7 @@ const CredentialSchema: Record<string, unknown> = {
             "x-order": 3,
             "minimum": 0
           },
-          "page_size": {
+          "pageSize": {
             "type": "integer",
             "description": "Number of credentials per page.",
             "x-order": 4,
