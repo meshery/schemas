@@ -6,7 +6,7 @@ require (
 	github.com/getkin/kin-openapi v0.133.0
 	github.com/gofrs/uuid v4.4.0+incompatible
 	github.com/lib/pq v1.12.3
-	github.com/meshery/meshkit v1.0.11
+	github.com/meshery/meshkit v1.0.19
 	github.com/oapi-codegen/runtime v1.4.1
 	github.com/pkg/errors v0.9.1
 	github.com/rodaine/table v1.3.1

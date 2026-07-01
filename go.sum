@@ -127,8 +127,8 @@ github.com/mattn/go-runewidth v0.0.21 h1:jJKAZiQH+2mIinzCJIaIG9Be1+0NR+5sz/lYEEj
 github.com/mattn/go-runewidth v0.0.21/go.mod h1:XBkDxAl56ILZc9knddidhrOlY5R/pDhgLpndooCuJAs=
 github.com/mattn/go-sqlite3 v1.14.32 h1:JD12Ag3oLy1zQA+BNn74xRgaBbdhbNIDYvQUEuuErjs=
 github.com/mattn/go-sqlite3 v1.14.32/go.mod h1:Uh1q+B4BYcTPb+yiD3kU8Ct7aC0hY9fxUwlHK0RXw+Y=
-github.com/meshery/meshkit v1.0.11 h1:jzxad9v6YB3xX9LJdqJ6/+ENAouXaoFRG2i9h1vY3Ys=
-github.com/meshery/meshkit v1.0.11/go.mod h1:V2CJjEniGWHdp88R4BW8ittzX/juxKcUCWkJUguTvxY=
+github.com/meshery/meshkit v1.0.19 h1:24/JpLoPnWXKEriYhkWdaEQXfoVQlBKSQPgoe7nE4z8=
+github.com/meshery/meshkit v1.0.19/go.mod h1:pChQu1xqvr0oNjIfVEzakaKmrqMSgiYu7wq7YPREhT4=
 github.com/mitchellh/go-wordwrap v1.0.1 h1:TLuKupo69TCn6TQSyGxwI1EblZZEsQ0vMlAFQflz0v0=
 github.com/mitchellh/go-wordwrap v1.0.1/go.mod h1:R62XHJLzvMFRBbcrT7m7WgmE1eOyTSsCt+hzestvNj0=
 github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=
