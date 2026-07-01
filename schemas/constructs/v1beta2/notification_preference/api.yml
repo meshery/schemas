@@ -1,0 +1,143 @@
+openapi: 3.0.0
+info:
+  title: Notification Preference
+  description: OpenAPI schema for notification preference management in Meshery Cloud.
+  version: v1beta2
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  x-internal: ["cloud"]
+
+security:
+  - jwt: []
+
+tags:
+  - name: NotificationPreference
+    description: Operations related to user notification preferences
+
+paths:
+  /api/identity/users/notifications/preferences:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - NotificationPreference
+      operationId: getNotificationPreferences
+      summary: Get available notification preferences
+      description: >-
+        Returns the catalog of notification preferences a user can subscribe
+        to, keyed by preference label.
+      security: []
+      responses:
+        "200":
+          description: Available notification preferences
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AvailableNotificationPreferences"
+        "500":
+          $ref: "#/components/responses/500"
+    put:
+      x-internal: ["cloud"]
+      tags:
+        - NotificationPreference
+      operationId: updateNotificationPreferences
+      summary: Update a user's notification preferences
+      description: >-
+        Replaces the target user's set of enabled notification preferences
+        with the labels supplied in the request. Labels omitted from the
+        request are unsubscribed; labels present are subscribed.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NotificationPreferenceRequest"
+      responses:
+        "204":
+          description: Notification preferences updated
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+components:
+  responses:
+    400:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/400"
+    401:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
+    500:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
+
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    NotificationPreference:
+      $ref: "./notification_preference.yaml"
+
+    AvailableNotificationPreferences:
+      type: object
+      description: >-
+        Catalog of notification preferences available for subscription,
+        keyed by preference label.
+      required:
+        - notificationPreferences
+        - totalCount
+      properties:
+        notificationPreferences:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/NotificationPreference"
+          description: Available notification preferences, keyed by preference label.
+          x-order: 1
+          x-oapi-codegen-extra-tags:
+            json: notificationPreferences
+        totalCount:
+          type: integer
+          description: Total number of available notification preferences.
+          minimum: 0
+          x-go-type-skip-optional-pointer: true
+          x-order: 2
+          x-oapi-codegen-extra-tags:
+            json: totalCount
+
+    NotificationPreferenceRequest:
+      type: object
+      description: >-
+        Payload for replacing a user's enabled notification preferences. The
+        supplied labels become the user's complete enabled set.
+      required:
+        - notificationPreferences
+        - userId
+      properties:
+        notificationPreferences:
+          type: array
+          items:
+            type: string
+            description: Notification preference label (see NotificationPreference.label) to enable.
+            minLength: 1
+            maxLength: 255
+          description: >-
+            Labels of the notification preferences the user is subscribed to.
+            Any available preference label not present in this list is
+            unsubscribed.
+          x-order: 1
+          x-oapi-codegen-extra-tags:
+            json: notificationPreferences
+        userId:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+          description: ID of the user whose notification preferences are being updated.
+          x-go-name: UserID
+          x-order: 2
+          x-oapi-codegen-extra-tags:
+            json: userId

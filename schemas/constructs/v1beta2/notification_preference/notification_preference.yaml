@@ -1,0 +1,113 @@
+type: object
+additionalProperties: false
+description: >
+  A notification preference definition. Each row describes one kind of
+  notification a user can opt in or out of (e.g. organization updates,
+  workspace activity). The set of enabled preference labels for a given
+  user is stored on the user's remote-provider preferences under the
+  notificationPreferences key.
+required:
+  - id
+  - name
+  - description
+  - category
+  - subcategory
+  - label
+  - createdAt
+  - updatedAt
+properties:
+  id:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    description: Unique identifier for the notification preference.
+    x-go-name: ID
+    x-oapi-codegen-extra-tags:
+      db: id
+      json: id
+    x-order: 1
+  name:
+    type: string
+    description: Human-readable name of the notification preference.
+    minLength: 1
+    maxLength: 255
+    example: Organization update
+    x-oapi-codegen-extra-tags:
+      db: name
+      json: name
+    x-order: 2
+  description:
+    type: string
+    description: Description of the events this notification preference covers.
+    maxLength: 255
+    example: Receive an email when your organization details are updated.
+    x-oapi-codegen-extra-tags:
+      db: description
+      json: description
+    x-order: 3
+  category:
+    type: string
+    description: >-
+      Top-level grouping used to organize notification preferences in the
+      preference management UI (e.g. organization, workspace).
+    maxLength: 255
+    example: organization
+    x-oapi-codegen-extra-tags:
+      db: category
+      json: category
+    x-order: 4
+  subcategory:
+    type: string
+    description: >-
+      Second-level grouping within a category used to organize notification
+      preferences in the preference management UI.
+    maxLength: 255
+    example: activity
+    x-oapi-codegen-extra-tags:
+      db: subcategory
+      json: subcategory
+    x-order: 5
+  label:
+    type: string
+    description: >-
+      Stable slug-style identifier for the notification preference. Used as
+      the map key in listings and as the value persisted in a user's enabled
+      notificationPreferences set.
+    minLength: 1
+    maxLength: 255
+    example: notification-organization-update
+    x-oapi-codegen-extra-tags:
+      db: label
+      json: label
+    x-order: 6
+  createdAt:
+    type: string
+    format: date-time
+    description: Timestamp when the notification preference was created.
+    x-go-type: time.Time
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: created_at
+      json: createdAt
+    x-order: 7
+  updatedAt:
+    type: string
+    format: date-time
+    description: Timestamp when the notification preference was last updated.
+    x-go-type: time.Time
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: updated_at
+      json: updatedAt
+    x-order: 8
+  deletedAt:
+    type: string
+    format: date-time
+    description: Timestamp when the notification preference was soft-deleted.
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-oapi-codegen-extra-tags:
+      db: deleted_at
+      json: "deletedAt,omitempty"
+    x-order: 9
