@@ -1374,7 +1374,7 @@ components:
           type: array
           description: List of child nodes (sub-courses or modules)
           items:
-            $ref: '#/components/schemas/ChildNode'
+            $ref: "#/components/schemas/ChildNode"
             x-go-type: "ChildNode"
 
       required:
