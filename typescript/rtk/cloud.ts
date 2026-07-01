@@ -124,6 +124,7 @@ const injectedRtkApi = api
           url: `/api/identity/orgs/${queryArg.orgId}/users/keys`,
           params: {
             page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
           },
         }),
@@ -134,6 +135,7 @@ const injectedRtkApi = api
           url: `/api/auth/keys`,
           params: {
             page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
             search: queryArg?.search,
             order: queryArg?.order,
@@ -158,6 +160,7 @@ const injectedRtkApi = api
           url: `/api/auth/keychains`,
           params: {
             page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
             search: queryArg?.search,
             order: queryArg?.order,
@@ -201,6 +204,7 @@ const injectedRtkApi = api
           url: `/api/auth/keychains/${queryArg.keychainId}/keys`,
           params: {
             page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
             search: queryArg?.search,
             order: queryArg?.order,
@@ -529,6 +533,7 @@ const injectedRtkApi = api
             search: queryArg?.search,
             order: queryArg?.order,
             page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
             filter: queryArg?.filter,
             shared: queryArg?.shared,
@@ -582,6 +587,7 @@ const injectedRtkApi = api
             search: queryArg?.search,
             sort: queryArg?.sort,
             order: queryArg?.order,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
             page: queryArg?.page,
           },
@@ -694,6 +700,7 @@ const injectedRtkApi = api
         query: (queryArg) => ({
           url: `/api/academy/admin/registrations`,
           params: {
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
             page: queryArg?.page,
             contentType: queryArg?.contentType,
@@ -999,6 +1006,7 @@ const injectedRtkApi = api
             search: queryArg?.search,
             order: queryArg?.order,
             page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
             orgId: queryArg?.orgId,
           },
@@ -1033,6 +1041,7 @@ const injectedRtkApi = api
             search: queryArg?.search,
             order: queryArg?.order,
             page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
             filter: queryArg?.filter,
           },
@@ -1064,6 +1073,7 @@ const injectedRtkApi = api
           url: `/api/workspaces/${queryArg.workspaceId}/events`,
           params: {
             page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
             search: queryArg?.search,
             order: queryArg?.order,
@@ -1111,6 +1121,7 @@ const injectedRtkApi = api
           url: `/api/events/types`,
           params: {
             page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
           },
         }),
@@ -1376,6 +1387,7 @@ const injectedRtkApi = api
           params: {
             isOauth: queryArg?.isOauth,
             page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
             search: queryArg?.search,
             order: queryArg?.order,
@@ -1429,6 +1441,7 @@ const injectedRtkApi = api
             search: queryArg?.search,
             order: queryArg?.order,
             page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
             filter: queryArg?.filter,
           },
@@ -1458,6 +1471,7 @@ const injectedRtkApi = api
             search: queryArg?.search,
             order: queryArg?.order,
             page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
             filter: queryArg?.filter,
           },
@@ -1485,6 +1499,7 @@ const injectedRtkApi = api
             search: queryArg?.search,
             order: queryArg?.order,
             page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
             filter: queryArg?.filter,
           },
@@ -1518,6 +1533,7 @@ const injectedRtkApi = api
             search: queryArg?.search,
             order: queryArg?.order,
             page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
             filter: queryArg?.filter,
           },
@@ -1548,6 +1564,7 @@ const injectedRtkApi = api
             search: queryArg?.search,
             order: queryArg?.order,
             page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
             pagesize: queryArg?.pagesize,
             filter: queryArg?.filter,
           },
@@ -1953,7 +1970,9 @@ export type GetUserKeysApiArg = {
   orgId: string;
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
   pagesize?: string;
 };
 export type GetKeysApiResponse = /** status 200 Keys fetched */ {
@@ -1988,7 +2007,9 @@ export type GetKeysApiResponse = /** status 200 Keys fetched */ {
 export type GetKeysApiArg = {
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
   pagesize?: string;
   /** Get responses that match search param value */
   search?: string;
@@ -2084,7 +2105,9 @@ export type GetKeychainsApiResponse = /** status 200 Keychain(s) fetched */ {
 export type GetKeychainsApiArg = {
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
   pagesize?: string;
   /** Get responses that match search param value */
   search?: string;
@@ -2208,7 +2231,9 @@ export type GetKeysOfKeychainApiArg = {
   keychainId: string;
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
   pagesize?: string;
   /** Get responses that match search param value */
   search?: string;
@@ -4381,7 +4406,9 @@ export type GetViewsApiArg = {
   order?: string;
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
   pagesize?: string;
   /** JSON-encoded filter string for assignment and soft-delete filters. */
   filter?: string;
@@ -4861,6 +4888,8 @@ export type GetAcademyCurriculaApiArg = {
   /** Order of sorting (asc or desc) */
   order?: "asc" | "desc";
   /** Number of results per page */
+  pageSize?: number;
+  /** Number of results per page. Deprecated alias of pageSize. */
   pagesize?: number;
   /** Page number */
   page?: number;
@@ -6189,6 +6218,8 @@ export type GetAcademyAdminRegistrationsApiResponse = /** status 200 List of reg
 };
 export type GetAcademyAdminRegistrationsApiArg = {
   /** Number of results per page */
+  pageSize?: number;
+  /** Number of results per page. Deprecated alias of pageSize. */
   pagesize?: number;
   /** Page number */
   page?: number;
@@ -9432,7 +9463,9 @@ export type GetEnvironmentsApiArg = {
   order?: string;
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
   pagesize?: string;
   /** User's organization ID */
   orgId: string;
@@ -9544,7 +9577,9 @@ export type GetEnvironmentConnectionsApiArg = {
   order?: string;
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
   pagesize?: string;
   /** JSON-encoded filter string used to scope the connection listing. */
   filter?: string;
@@ -9642,7 +9677,9 @@ export type GetEventsOfWorkspaceApiArg = {
   workspaceId: string;
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
   pagesize?: string;
   /** Get responses that match search param value */
   search?: string;
@@ -9734,7 +9771,9 @@ export type GetEventTypesApiResponse = /** status 200 Event types */ {
 export type GetEventTypesApiArg = {
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
   pagesize?: string;
 };
 export type GetFiltersApiResponse = /** status 200 Filters response */ {
@@ -11192,7 +11231,9 @@ export type GetUserTokensApiArg = {
   isOauth?: boolean;
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
   pagesize?: string;
   /** Get responses that match search param value */
   search?: string;
@@ -11379,7 +11420,9 @@ export type GetWorkspacesApiArg = {
   order?: string;
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
   pagesize?: string;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;
@@ -11509,7 +11552,9 @@ export type GetTeamsOfWorkspaceApiArg = {
   order?: string;
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
   pagesize?: string;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;
@@ -11589,7 +11634,9 @@ export type GetEnvironmentsOfWorkspaceApiArg = {
   order?: string;
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
   pagesize?: string;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;
@@ -12657,7 +12704,9 @@ export type GetDesignsOfWorkspaceApiArg = {
   order?: string;
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
   pagesize?: string;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;
@@ -12739,7 +12788,9 @@ export type GetViewsOfWorkspaceApiArg = {
   order?: string;
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses by pagesize. Deprecated alias of pageSize. */
   pagesize?: string;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;

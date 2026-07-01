@@ -74,9 +74,19 @@ const TokenSchema: Record<string, unknown> = {
             }
           },
           {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
             "name": "pagesize",
             "in": "query",
-            "description": "Get responses by pagesize",
+            "description": "Get responses by pagesize. Deprecated alias of pageSize.",
+            "deprecated": true,
             "schema": {
               "type": "string"
             }
@@ -1371,10 +1381,20 @@ const TokenSchema: Record<string, unknown> = {
           "type": "string"
         }
       },
+      "pageSize": {
+        "name": "pageSize",
+        "in": "query",
+        "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
       "pagesize": {
         "name": "pagesize",
         "in": "query",
-        "description": "Get responses by pagesize",
+        "description": "Get responses by pagesize. Deprecated alias of pageSize.",
+        "deprecated": true,
         "schema": {
           "type": "string"
         }
