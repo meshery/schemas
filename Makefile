@@ -18,19 +18,31 @@ include build/Makefile.show-help.mk
 #-----------------------------------------------------------------------------
 # Schemas Site and public reference
 #-----------------------------------------------------------------------------
-.PHONY: site generate-site-index
+.PHONY: site site-data-test test-site-data site-data-generate generate-site-data generate-site-index
 
 jekyll = bundle exec jekyll
 
 ## Build and run schemas.meshery.io website
-site:
-	node build/generate-site-index.js
+site: site-data-generate
 	bundle install
 	$(jekyll) serve --drafts --incremental --livereload
 
-## Generate the plain schemas index page from latest construct versions
-generate-site-index:
-	node build/generate-site-index.js
+## Run site data generation regression tests
+site-data-test:
+	node --test tests/generate-site-data.test.js
+
+## Backward-compatible alias for site data tests
+test-site-data: site-data-test
+
+## Capture the latest schema versions for the Jekyll site data
+site-data-generate:
+	node build/generate-site-data.js
+
+## Backward-compatible alias for generating schemas site data
+generate-site-data: site-data-generate
+
+## Backward-compatible alias for generating schemas site data
+generate-site-index: site-data-generate
 
 #-----------------------------------------------------------------------------
 # OpenAPI spec
@@ -261,9 +273,12 @@ ifeq (,$(findstring $(GOVERSION), $(INSTALLED_GO_VERSION)))
 endif
 
 # oapi-codegen
+# Pinned to the same version installed by CI (see .github/workflows/generate-artifacts-from-schemas.yml
+# and publish-openapi-docs.yml). Using @latest here would let a newer codegen version regenerate
+# every committed model with an unrelated diff on any contributor's machine that lacks a local install.
 ifeq (,$(shell command -v oapi-codegen))
 	@echo "Dependency missing: oapi-codegen. Install oapi-codegen"
 	@echo "installing oapi-codegen"
 	# for the binary install
-	go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
+	go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.5.1
 endif

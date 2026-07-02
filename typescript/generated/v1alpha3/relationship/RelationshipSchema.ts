@@ -715,6 +715,7 @@ const RelationshipSchema: Record<string, unknown> = {
               "json": "model",
               "gorm": "type:bytes;serializer:json"
             },
+            "x-generate-db-helpers": true,
             "type": "object",
             "required": [
               "id",
@@ -1063,6 +1064,7 @@ const RelationshipSchema: Record<string, unknown> = {
                               "yaml": "model",
                               "json": "model,omitempty"
                             },
+                            "x-generate-db-helpers": true,
                             "type": "object",
                             "required": [
                               "id",
@@ -1419,6 +1421,7 @@ const RelationshipSchema: Record<string, unknown> = {
                               "yaml": "model",
                               "json": "model,omitempty"
                             },
+                            "x-generate-db-helpers": true,
                             "type": "object",
                             "required": [
                               "id",
@@ -1790,6 +1793,7 @@ const RelationshipSchema: Record<string, unknown> = {
                               "yaml": "model",
                               "json": "model,omitempty"
                             },
+                            "x-generate-db-helpers": true,
                             "type": "object",
                             "required": [
                               "id",
@@ -2146,6 +2150,7 @@ const RelationshipSchema: Record<string, unknown> = {
                               "yaml": "model",
                               "json": "model,omitempty"
                             },
+                            "x-generate-db-helpers": true,
                             "type": "object",
                             "required": [
                               "id",
@@ -2771,6 +2776,7 @@ const RelationshipSchema: Record<string, unknown> = {
               "yaml": "model",
               "json": "model,omitempty"
             },
+            "x-generate-db-helpers": true,
             "type": "object",
             "required": [
               "id",
@@ -3130,6 +3136,7 @@ const RelationshipSchema: Record<string, unknown> = {
                     "yaml": "model",
                     "json": "model,omitempty"
                   },
+                  "x-generate-db-helpers": true,
                   "type": "object",
                   "required": [
                     "id",
@@ -3486,6 +3493,7 @@ const RelationshipSchema: Record<string, unknown> = {
                     "yaml": "model",
                     "json": "model,omitempty"
                   },
+                  "x-generate-db-helpers": true,
                   "type": "object",
                   "required": [
                     "id",
@@ -3864,6 +3872,7 @@ const RelationshipSchema: Record<string, unknown> = {
                         "yaml": "model",
                         "json": "model,omitempty"
                       },
+                      "x-generate-db-helpers": true,
                       "type": "object",
                       "required": [
                         "id",
@@ -4220,6 +4229,7 @@ const RelationshipSchema: Record<string, unknown> = {
                         "yaml": "model",
                         "json": "model,omitempty"
                       },
+                      "x-generate-db-helpers": true,
                       "type": "object",
                       "required": [
                         "id",
@@ -4591,6 +4601,7 @@ const RelationshipSchema: Record<string, unknown> = {
                         "yaml": "model",
                         "json": "model,omitempty"
                       },
+                      "x-generate-db-helpers": true,
                       "type": "object",
                       "required": [
                         "id",
@@ -4947,6 +4958,7 @@ const RelationshipSchema: Record<string, unknown> = {
                         "yaml": "model",
                         "json": "model,omitempty"
                       },
+                      "x-generate-db-helpers": true,
                       "type": "object",
                       "required": [
                         "id",
@@ -5333,6 +5345,7 @@ const RelationshipSchema: Record<string, unknown> = {
                           "yaml": "model",
                           "json": "model,omitempty"
                         },
+                        "x-generate-db-helpers": true,
                         "type": "object",
                         "required": [
                           "id",
@@ -5689,6 +5702,7 @@ const RelationshipSchema: Record<string, unknown> = {
                           "yaml": "model",
                           "json": "model,omitempty"
                         },
+                        "x-generate-db-helpers": true,
                         "type": "object",
                         "required": [
                           "id",
@@ -6060,6 +6074,7 @@ const RelationshipSchema: Record<string, unknown> = {
                           "yaml": "model",
                           "json": "model,omitempty"
                         },
+                        "x-generate-db-helpers": true,
                         "type": "object",
                         "required": [
                           "id",
@@ -6416,6 +6431,7 @@ const RelationshipSchema: Record<string, unknown> = {
                           "yaml": "model",
                           "json": "model,omitempty"
                         },
+                        "x-generate-db-helpers": true,
                         "type": "object",
                         "required": [
                           "id",

@@ -294,9 +294,8 @@ components:
         models:
           type: array
           items:
-            type: object
-            additionalProperties: true
-          description: The models of the meshmodelmodelspage.
+            $ref: "#/components/schemas/ModelDefinition"
+          description: The models matching the list-endpoint query.
 
     MesheryModelImportFormPayload:
       type: object

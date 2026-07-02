@@ -553,7 +553,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                           },
                                           "x-go-name": "UserID",
                                           "x-oapi-codegen-extra-tags": {
-                                            "db": "user_id",
+                                            "db": "owner",
                                             "yaml": "user_id"
                                           },
                                           "x-order": 9
@@ -1408,6 +1408,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                   "x-oapi-codegen-extra-tags": {
                                     "gorm": "-"
                                   },
+                                  "x-generate-db-helpers": true,
                                   "type": "object",
                                   "required": [
                                     "id",
@@ -3079,6 +3080,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                     "json": "model",
                                     "gorm": "type:bytes;serializer:json"
                                   },
+                                  "x-generate-db-helpers": true,
                                   "type": "object",
                                   "required": [
                                     "id",
@@ -3427,6 +3429,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                                     "yaml": "model",
                                                     "json": "model,omitempty"
                                                   },
+                                                  "x-generate-db-helpers": true,
                                                   "type": "object",
                                                   "required": [
                                                     "id",
@@ -3783,6 +3786,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                                     "yaml": "model",
                                                     "json": "model,omitempty"
                                                   },
+                                                  "x-generate-db-helpers": true,
                                                   "type": "object",
                                                   "required": [
                                                     "id",
@@ -4154,6 +4158,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                                     "yaml": "model",
                                                     "json": "model,omitempty"
                                                   },
+                                                  "x-generate-db-helpers": true,
                                                   "type": "object",
                                                   "required": [
                                                     "id",
@@ -4510,6 +4515,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                                     "yaml": "model",
                                                     "json": "model,omitempty"
                                                   },
+                                                  "x-generate-db-helpers": true,
                                                   "type": "object",
                                                   "required": [
                                                     "id",
@@ -5216,7 +5222,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                             },
                                             "x-go-name": "UserID",
                                             "x-oapi-codegen-extra-tags": {
-                                              "db": "user_id",
+                                              "db": "owner",
                                               "yaml": "user_id"
                                             },
                                             "x-order": 9
@@ -6071,6 +6077,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                     "x-oapi-codegen-extra-tags": {
                                       "gorm": "-"
                                     },
+                                    "x-generate-db-helpers": true,
                                     "type": "object",
                                     "required": [
                                       "id",
@@ -7742,6 +7749,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                       "json": "model",
                                       "gorm": "type:bytes;serializer:json"
                                     },
+                                    "x-generate-db-helpers": true,
                                     "type": "object",
                                     "required": [
                                       "id",
@@ -8090,6 +8098,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                                       "yaml": "model",
                                                       "json": "model,omitempty"
                                                     },
+                                                    "x-generate-db-helpers": true,
                                                     "type": "object",
                                                     "required": [
                                                       "id",
@@ -8446,6 +8455,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                                       "yaml": "model",
                                                       "json": "model,omitempty"
                                                     },
+                                                    "x-generate-db-helpers": true,
                                                     "type": "object",
                                                     "required": [
                                                       "id",
@@ -8817,6 +8827,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                                       "yaml": "model",
                                                       "json": "model,omitempty"
                                                     },
+                                                    "x-generate-db-helpers": true,
                                                     "type": "object",
                                                     "required": [
                                                       "id",
@@ -9173,6 +9184,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                                       "yaml": "model",
                                                       "json": "model,omitempty"
                                                     },
+                                                    "x-generate-db-helpers": true,
                                                     "type": "object",
                                                     "required": [
                                                       "id",
@@ -9934,7 +9946,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                   },
                                   "x-go-name": "UserID",
                                   "x-oapi-codegen-extra-tags": {
-                                    "db": "user_id",
+                                    "db": "owner",
                                     "yaml": "user_id"
                                   },
                                   "x-order": 9
@@ -10789,6 +10801,7 @@ const EvaluationSchema: Record<string, unknown> = {
                           "x-oapi-codegen-extra-tags": {
                             "gorm": "-"
                           },
+                          "x-generate-db-helpers": true,
                           "type": "object",
                           "required": [
                             "id",
@@ -12460,6 +12473,7 @@ const EvaluationSchema: Record<string, unknown> = {
                             "json": "model",
                             "gorm": "type:bytes;serializer:json"
                           },
+                          "x-generate-db-helpers": true,
                           "type": "object",
                           "required": [
                             "id",
@@ -12808,6 +12822,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                             "yaml": "model",
                                             "json": "model,omitempty"
                                           },
+                                          "x-generate-db-helpers": true,
                                           "type": "object",
                                           "required": [
                                             "id",
@@ -13164,6 +13179,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                             "yaml": "model",
                                             "json": "model,omitempty"
                                           },
+                                          "x-generate-db-helpers": true,
                                           "type": "object",
                                           "required": [
                                             "id",
@@ -13535,6 +13551,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                             "yaml": "model",
                                             "json": "model,omitempty"
                                           },
+                                          "x-generate-db-helpers": true,
                                           "type": "object",
                                           "required": [
                                             "id",
@@ -13891,6 +13908,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                             "yaml": "model",
                                             "json": "model,omitempty"
                                           },
+                                          "x-generate-db-helpers": true,
                                           "type": "object",
                                           "required": [
                                             "id",
@@ -14589,7 +14607,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                   },
                                   "x-go-name": "UserID",
                                   "x-oapi-codegen-extra-tags": {
-                                    "db": "user_id",
+                                    "db": "owner",
                                     "yaml": "user_id"
                                   },
                                   "x-order": 9
@@ -15444,6 +15462,7 @@ const EvaluationSchema: Record<string, unknown> = {
                           "x-oapi-codegen-extra-tags": {
                             "gorm": "-"
                           },
+                          "x-generate-db-helpers": true,
                           "type": "object",
                           "required": [
                             "id",
@@ -17115,6 +17134,7 @@ const EvaluationSchema: Record<string, unknown> = {
                             "json": "model",
                             "gorm": "type:bytes;serializer:json"
                           },
+                          "x-generate-db-helpers": true,
                           "type": "object",
                           "required": [
                             "id",
@@ -17463,6 +17483,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                             "yaml": "model",
                                             "json": "model,omitempty"
                                           },
+                                          "x-generate-db-helpers": true,
                                           "type": "object",
                                           "required": [
                                             "id",
@@ -17819,6 +17840,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                             "yaml": "model",
                                             "json": "model,omitempty"
                                           },
+                                          "x-generate-db-helpers": true,
                                           "type": "object",
                                           "required": [
                                             "id",
@@ -18190,6 +18212,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                             "yaml": "model",
                                             "json": "model,omitempty"
                                           },
+                                          "x-generate-db-helpers": true,
                                           "type": "object",
                                           "required": [
                                             "id",
@@ -18546,6 +18569,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                             "yaml": "model",
                                             "json": "model,omitempty"
                                           },
+                                          "x-generate-db-helpers": true,
                                           "type": "object",
                                           "required": [
                                             "id",

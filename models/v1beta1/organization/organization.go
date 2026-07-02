@@ -5,7 +5,7 @@ package organization
 
 import (
 	core "github.com/meshery/schemas/models/core"
-	openapi_types "github.com/oapi-codegen/runtime/types"
+	"github.com/gofrs/uuid"
 )
 
 // Defines values for OrgTeamActionPayloadAction.
@@ -204,7 +204,7 @@ type Text = core.Text
 // Theme defines model for Theme.
 type Theme struct {
 	// Id Theme ID.
-	ID   openapi_types.UUID `json:"id" yaml:"id"`
+	ID   uuid.UUID `json:"id" yaml:"id"`
 	Logo Logo               `json:"logo" yaml:"logo"`
 
 	// Vars The vars of the theme.

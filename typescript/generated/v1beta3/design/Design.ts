@@ -48,48 +48,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/content/patterns/resource": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get pattern resources
-         * @description Returns pattern resource definitions.
-         */
-        get: operations["getPatternResources"];
-        put?: never;
-        /**
-         * Save pattern resource
-         * @description Creates or updates a pattern resource definition.
-         */
-        post: operations["upsertPatternResource"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/content/patterns/resource/{designId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get pattern resource by ID */
-        get: operations["getPatternResource"];
-        put?: never;
-        post?: never;
-        /** Delete pattern resource */
-        delete: operations["deletePatternResource"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/content/patterns/{designId}": {
         parameters: {
             query?: never;
@@ -1999,24 +1957,96 @@ export interface components {
                  */
                 deletedAt: string | null;
                 /**
-                 * @description List of global roles assigned to the user
+                 * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
                  * @example [
-                 *       "admin",
-                 *       "meshmap"
+                 *       "organization admin",
+                 *       "user"
                  *     ]
                  */
-                roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
+                roleNames?: string[];
                 /** @description Teams the user belongs to with role information */
                 teams?: {
                     /** @description Team memberships for the user with their assigned roles. */
-                    teamsWithRoles?: Record<string, never>[];
+                    teamsWithRoles?: {
+                        /**
+                         * Format: uuid
+                         * @description Unique identifier of the team.
+                         */
+                        id: string;
+                        /** @description Name of the team. */
+                        name: string;
+                        /** @description Human readable description of the team. */
+                        description?: string;
+                        /**
+                         * Format: uuid
+                         * @description Identifier of the team owner.
+                         */
+                        owner?: string;
+                        /** @description Free-form metadata associated with the team. */
+                        metadata?: {
+                            [key: string]: unknown;
+                        };
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the team was created.
+                         */
+                        createdAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the team was last updated.
+                         */
+                        updatedAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the team was soft-deleted (null if not deleted).
+                         */
+                        deletedAt?: string | null;
+                        /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+                        roleNames: string[];
+                    }[];
                     /** @description Total number of team memberships returned for the user. */
                     totalCount?: number;
                 };
                 /** @description Organizations the user belongs to with role information */
                 organizations?: {
                     /** @description Organization memberships for the user with their assigned roles. */
-                    organizationsWithRoles?: Record<string, never>[];
+                    organizationsWithRoles?: {
+                        /**
+                         * Format: uuid
+                         * @description Unique identifier of the organization.
+                         */
+                        id: string;
+                        /** @description Name of the organization. */
+                        name: string;
+                        /** @description Human readable description of the organization. */
+                        description?: string;
+                        /** @description Country associated with the organization. */
+                        country?: string;
+                        /** @description Region associated with the organization. */
+                        region?: string;
+                        /**
+                         * Format: uuid
+                         * @description Identifier of the organization owner.
+                         */
+                        owner?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the organization was created.
+                         */
+                        createdAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the organization was last updated.
+                         */
+                        updatedAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the organization was soft-deleted (null if not deleted).
+                         */
+                        deletedAt?: string | null;
+                        /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+                        roleNames: string[];
+                    }[];
                     /** @description Total number of organization memberships returned for the user. */
                     totalCount?: number;
                 };
@@ -2296,24 +2326,96 @@ export interface components {
                      */
                     deletedAt: string | null;
                     /**
-                     * @description List of global roles assigned to the user
+                     * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
                      * @example [
-                     *       "admin",
-                     *       "meshmap"
+                     *       "organization admin",
+                     *       "user"
                      *     ]
                      */
-                    roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
+                    roleNames?: string[];
                     /** @description Teams the user belongs to with role information */
                     teams?: {
                         /** @description Team memberships for the user with their assigned roles. */
-                        teamsWithRoles?: Record<string, never>[];
+                        teamsWithRoles?: {
+                            /**
+                             * Format: uuid
+                             * @description Unique identifier of the team.
+                             */
+                            id: string;
+                            /** @description Name of the team. */
+                            name: string;
+                            /** @description Human readable description of the team. */
+                            description?: string;
+                            /**
+                             * Format: uuid
+                             * @description Identifier of the team owner.
+                             */
+                            owner?: string;
+                            /** @description Free-form metadata associated with the team. */
+                            metadata?: {
+                                [key: string]: unknown;
+                            };
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the team was created.
+                             */
+                            createdAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the team was last updated.
+                             */
+                            updatedAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the team was soft-deleted (null if not deleted).
+                             */
+                            deletedAt?: string | null;
+                            /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+                            roleNames: string[];
+                        }[];
                         /** @description Total number of team memberships returned for the user. */
                         totalCount?: number;
                     };
                     /** @description Organizations the user belongs to with role information */
                     organizations?: {
                         /** @description Organization memberships for the user with their assigned roles. */
-                        organizationsWithRoles?: Record<string, never>[];
+                        organizationsWithRoles?: {
+                            /**
+                             * Format: uuid
+                             * @description Unique identifier of the organization.
+                             */
+                            id: string;
+                            /** @description Name of the organization. */
+                            name: string;
+                            /** @description Human readable description of the organization. */
+                            description?: string;
+                            /** @description Country associated with the organization. */
+                            country?: string;
+                            /** @description Region associated with the organization. */
+                            region?: string;
+                            /**
+                             * Format: uuid
+                             * @description Identifier of the organization owner.
+                             */
+                            owner?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the organization was created.
+                             */
+                            createdAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the organization was last updated.
+                             */
+                            updatedAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the organization was soft-deleted (null if not deleted).
+                             */
+                            deletedAt?: string | null;
+                            /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+                            roleNames: string[];
+                        }[];
                         /** @description Total number of organization memberships returned for the user. */
                         totalCount?: number;
                     };
@@ -2839,24 +2941,96 @@ export interface components {
                      */
                     deletedAt: string | null;
                     /**
-                     * @description List of global roles assigned to the user
+                     * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
                      * @example [
-                     *       "admin",
-                     *       "meshmap"
+                     *       "organization admin",
+                     *       "user"
                      *     ]
                      */
-                    roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
+                    roleNames?: string[];
                     /** @description Teams the user belongs to with role information */
                     teams?: {
                         /** @description Team memberships for the user with their assigned roles. */
-                        teamsWithRoles?: Record<string, never>[];
+                        teamsWithRoles?: {
+                            /**
+                             * Format: uuid
+                             * @description Unique identifier of the team.
+                             */
+                            id: string;
+                            /** @description Name of the team. */
+                            name: string;
+                            /** @description Human readable description of the team. */
+                            description?: string;
+                            /**
+                             * Format: uuid
+                             * @description Identifier of the team owner.
+                             */
+                            owner?: string;
+                            /** @description Free-form metadata associated with the team. */
+                            metadata?: {
+                                [key: string]: unknown;
+                            };
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the team was created.
+                             */
+                            createdAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the team was last updated.
+                             */
+                            updatedAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the team was soft-deleted (null if not deleted).
+                             */
+                            deletedAt?: string | null;
+                            /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+                            roleNames: string[];
+                        }[];
                         /** @description Total number of team memberships returned for the user. */
                         totalCount?: number;
                     };
                     /** @description Organizations the user belongs to with role information */
                     organizations?: {
                         /** @description Organization memberships for the user with their assigned roles. */
-                        organizationsWithRoles?: Record<string, never>[];
+                        organizationsWithRoles?: {
+                            /**
+                             * Format: uuid
+                             * @description Unique identifier of the organization.
+                             */
+                            id: string;
+                            /** @description Name of the organization. */
+                            name: string;
+                            /** @description Human readable description of the organization. */
+                            description?: string;
+                            /** @description Country associated with the organization. */
+                            country?: string;
+                            /** @description Region associated with the organization. */
+                            region?: string;
+                            /**
+                             * Format: uuid
+                             * @description Identifier of the organization owner.
+                             */
+                            owner?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the organization was created.
+                             */
+                            createdAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the organization was last updated.
+                             */
+                            updatedAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the organization was soft-deleted (null if not deleted).
+                             */
+                            deletedAt?: string | null;
+                            /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+                            roleNames: string[];
+                        }[];
                         /** @description Total number of organization memberships returned for the user. */
                         totalCount?: number;
                     };
@@ -3004,8 +3178,336 @@ export interface components {
                 [key: string]: unknown;
             }[];
         };
+        /**
+         * @description Kind of catalog content a publish request refers to. Matches the
+         *     `content_type` column of the meshery-cloud `catalog_requests`
+         *     table.
+         * @enum {string}
+         */
+        CatalogContentType: "pattern" | "filter";
+        /**
+         * @description Lifecycle status of a catalog publish request. Requests are
+         *     created `pending`; approving or denying a request is terminal —
+         *     a request that is no longer pending cannot be re-approved or
+         *     re-denied.
+         * @enum {string}
+         */
+        CatalogRequestStatus: "pending" | "approved" | "denied";
+        /**
+         * @description Server-returned catalog publish request as persisted by
+         *     meshery-cloud (`catalog_requests` table). Records a user's
+         *     request to publish a design or filter to the catalog, along
+         *     with the reviewer-visible requester identity and the request's
+         *     approval status.
+         */
         CatalogRequest: {
-            [key: string]: unknown;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            contentId: string;
+            /** @description Human-readable name of the content at request time. */
+            contentName: string;
+            /**
+             * @description Kind of catalog content the request refers to.
+             * @enum {string}
+             */
+            contentType: "pattern" | "filter";
+            /**
+             * @description Support-level classification of the content, stored in the
+             *     `content_class` column (a Postgres enum). Nullable — legacy
+             *     requests predate the column.
+             * @enum {string|null}
+             */
+            contentClass?: "official" | "verified" | "project" | "community" | null;
+            /** @description Requesting user's first name at request time. */
+            firstName: string;
+            /** @description Requesting user's last name at request time. */
+            lastName: string;
+            /**
+             * Format: email
+             * @description Requesting user's email address at request time.
+             */
+            email: string;
+            /** @description Requesting user record, joined inline by the catalog-request list handler when shaping responses. Server-projected from the users table; not a column on the catalog_requests table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
+            user?: {
+                /**
+                 * Format: uuid
+                 * @description Unique identifier for the user
+                 */
+                id: string;
+                /** @description User identifier (username or external ID) */
+                userId: string;
+                /**
+                 * @description Authentication provider (e.g., Google, Github)
+                 * @example [
+                 *       "local",
+                 *       "github",
+                 *       "google",
+                 *       "twitter"
+                 *     ]
+                 */
+                provider: string;
+                /**
+                 * Format: email
+                 * @description User's email address
+                 */
+                email: string;
+                /** @description User's first name */
+                firstName: string;
+                /** @description User's last name */
+                lastName: string;
+                /**
+                 * Format: uri
+                 * @description URL to user's avatar image
+                 */
+                avatarUrl?: string;
+                /**
+                 * @description User account status
+                 * @enum {string}
+                 */
+                status: "active" | "inactive" | "pending" | "anonymous";
+                /**
+                 * @description User's biography or description
+                 * @default
+                 */
+                bio: string;
+                /** @description User's country information stored as JSONB */
+                country?: {
+                    [key: string]: unknown;
+                };
+                /** @description User's region information stored as JSONB */
+                region?: {
+                    [key: string]: unknown;
+                };
+                /** @description User preferences stored as JSONB */
+                preferences?: {
+                    /** @description The mesh adapters of the preference. */
+                    meshAdapters?: Record<string, never>[];
+                    grafana?: {
+                        /** @description Grafana URL for the user configuration. */
+                        grafanaUrl?: string;
+                        /** @description Grafana API key for the user configuration. */
+                        grafanaApiKey?: string;
+                        /** @description Selected Grafana board configurations for the user. */
+                        selectedBoardsConfigs?: {
+                            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                            board?: Record<string, never>;
+                            /** @description Panels selected for the Grafana board configuration. */
+                            panels?: Record<string, never>[];
+                            /** @description Template variables applied to the selected Grafana board configuration. */
+                            templateVars?: string[];
+                        }[];
+                    };
+                    prometheus?: {
+                        /** @description The prometheus URL of the prometheus. */
+                        prometheusUrl?: string;
+                        /** @description The selected prometheus boards configs of the prometheus. */
+                        selectedPrometheusBoardsConfigs?: {
+                            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                            board?: Record<string, never>;
+                            /** @description Panels selected for the Grafana board configuration. */
+                            panels?: Record<string, never>[];
+                            /** @description Template variables applied to the selected Grafana board configuration. */
+                            templateVars?: string[];
+                        }[];
+                    };
+                    loadTestPrefs?: {
+                        /** @description Concurrent requests */
+                        c?: number;
+                        /** @description Queries per second */
+                        qps?: number;
+                        /** @description Duration */
+                        t?: string;
+                        /** @description Load generator */
+                        gen?: string;
+                    };
+                    /** @description The anonymous usage stats of the preference. */
+                    anonymousUsageStats: boolean;
+                    /** @description The anonymous perf results of the preference. */
+                    anonymousPerfResults: boolean;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp of when the resource was last updated.
+                     */
+                    updatedAt: string;
+                    /** @description The dashboard preferences of the preference. */
+                    dashboardPreferences: {
+                        [key: string]: unknown;
+                    };
+                    /**
+                     * Format: uuid
+                     * @description ID of the associated selectedOrganization.
+                     */
+                    selectedOrganizationId: string;
+                    /** @description The selected workspace for organizations of the preference. */
+                    selectedWorkspaceForOrganizations: {
+                        [key: string]: string;
+                    };
+                    /** @description The users extension preferences of the preference. */
+                    usersExtensionPreferences: {
+                        [key: string]: unknown;
+                    };
+                    /** @description The remote provider preferences of the preference. */
+                    remoteProviderPreferences: {
+                        [key: string]: unknown;
+                    };
+                };
+                /**
+                 * Format: date-time
+                 * @description Timestamp when user accepted terms and conditions
+                 */
+                acceptedTermsAt?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp of user's first login
+                 */
+                firstLoginTime?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp of user's most recent login
+                 */
+                lastLoginTime: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the user record was created
+                 */
+                createdAt: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the user record was last updated
+                 */
+                updatedAt: string;
+                /** @description Various online profiles associated with the user account */
+                socials?: {
+                    /** @description The site of the social. */
+                    site: string;
+                    /**
+                     * Format: uri
+                     * @description The link of the social.
+                     */
+                    link: string;
+                }[];
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the user record was soft-deleted (null if not deleted)
+                 */
+                deletedAt: string | null;
+                /**
+                 * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
+                 * @example [
+                 *       "organization admin",
+                 *       "user"
+                 *     ]
+                 */
+                roleNames?: string[];
+                /** @description Teams the user belongs to with role information */
+                teams?: {
+                    /** @description Team memberships for the user with their assigned roles. */
+                    teamsWithRoles?: {
+                        /**
+                         * Format: uuid
+                         * @description Unique identifier of the team.
+                         */
+                        id: string;
+                        /** @description Name of the team. */
+                        name: string;
+                        /** @description Human readable description of the team. */
+                        description?: string;
+                        /**
+                         * Format: uuid
+                         * @description Identifier of the team owner.
+                         */
+                        owner?: string;
+                        /** @description Free-form metadata associated with the team. */
+                        metadata?: {
+                            [key: string]: unknown;
+                        };
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the team was created.
+                         */
+                        createdAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the team was last updated.
+                         */
+                        updatedAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the team was soft-deleted (null if not deleted).
+                         */
+                        deletedAt?: string | null;
+                        /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+                        roleNames: string[];
+                    }[];
+                    /** @description Total number of team memberships returned for the user. */
+                    totalCount?: number;
+                };
+                /** @description Organizations the user belongs to with role information */
+                organizations?: {
+                    /** @description Organization memberships for the user with their assigned roles. */
+                    organizationsWithRoles?: {
+                        /**
+                         * Format: uuid
+                         * @description Unique identifier of the organization.
+                         */
+                        id: string;
+                        /** @description Name of the organization. */
+                        name: string;
+                        /** @description Human readable description of the organization. */
+                        description?: string;
+                        /** @description Country associated with the organization. */
+                        country?: string;
+                        /** @description Region associated with the organization. */
+                        region?: string;
+                        /**
+                         * Format: uuid
+                         * @description Identifier of the organization owner.
+                         */
+                        owner?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the organization was created.
+                         */
+                        createdAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the organization was last updated.
+                         */
+                        updatedAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the organization was soft-deleted (null if not deleted).
+                         */
+                        deletedAt?: string | null;
+                        /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+                        roleNames: string[];
+                    }[];
+                    /** @description Total number of organization memberships returned for the user. */
+                    totalCount?: number;
+                };
+            } | null;
+            /**
+             * @description Approval status of the request.
+             * @enum {string}
+             */
+            status: "pending" | "approved" | "denied";
+            /**
+             * Format: date-time
+             * @description Timestamp of request creation.
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description Timestamp of last request modification (approval or denial).
+             */
+            updatedAt: string;
         };
         /** @description Paginated catalog-request listing (pending publish approvals). */
         CatalogRequestsPage: {
@@ -3017,7 +3519,313 @@ export interface components {
             totalCount?: number;
             /** @description Catalog requests included on this page. */
             catalogRequests?: {
-                [key: string]: unknown;
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                id: string;
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                contentId: string;
+                /** @description Human-readable name of the content at request time. */
+                contentName: string;
+                /**
+                 * @description Kind of catalog content the request refers to.
+                 * @enum {string}
+                 */
+                contentType: "pattern" | "filter";
+                /**
+                 * @description Support-level classification of the content, stored in the
+                 *     `content_class` column (a Postgres enum). Nullable — legacy
+                 *     requests predate the column.
+                 * @enum {string|null}
+                 */
+                contentClass?: "official" | "verified" | "project" | "community" | null;
+                /** @description Requesting user's first name at request time. */
+                firstName: string;
+                /** @description Requesting user's last name at request time. */
+                lastName: string;
+                /**
+                 * Format: email
+                 * @description Requesting user's email address at request time.
+                 */
+                email: string;
+                /** @description Requesting user record, joined inline by the catalog-request list handler when shaping responses. Server-projected from the users table; not a column on the catalog_requests table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
+                user?: {
+                    /**
+                     * Format: uuid
+                     * @description Unique identifier for the user
+                     */
+                    id: string;
+                    /** @description User identifier (username or external ID) */
+                    userId: string;
+                    /**
+                     * @description Authentication provider (e.g., Google, Github)
+                     * @example [
+                     *       "local",
+                     *       "github",
+                     *       "google",
+                     *       "twitter"
+                     *     ]
+                     */
+                    provider: string;
+                    /**
+                     * Format: email
+                     * @description User's email address
+                     */
+                    email: string;
+                    /** @description User's first name */
+                    firstName: string;
+                    /** @description User's last name */
+                    lastName: string;
+                    /**
+                     * Format: uri
+                     * @description URL to user's avatar image
+                     */
+                    avatarUrl?: string;
+                    /**
+                     * @description User account status
+                     * @enum {string}
+                     */
+                    status: "active" | "inactive" | "pending" | "anonymous";
+                    /**
+                     * @description User's biography or description
+                     * @default
+                     */
+                    bio: string;
+                    /** @description User's country information stored as JSONB */
+                    country?: {
+                        [key: string]: unknown;
+                    };
+                    /** @description User's region information stored as JSONB */
+                    region?: {
+                        [key: string]: unknown;
+                    };
+                    /** @description User preferences stored as JSONB */
+                    preferences?: {
+                        /** @description The mesh adapters of the preference. */
+                        meshAdapters?: Record<string, never>[];
+                        grafana?: {
+                            /** @description Grafana URL for the user configuration. */
+                            grafanaUrl?: string;
+                            /** @description Grafana API key for the user configuration. */
+                            grafanaApiKey?: string;
+                            /** @description Selected Grafana board configurations for the user. */
+                            selectedBoardsConfigs?: {
+                                /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                board?: Record<string, never>;
+                                /** @description Panels selected for the Grafana board configuration. */
+                                panels?: Record<string, never>[];
+                                /** @description Template variables applied to the selected Grafana board configuration. */
+                                templateVars?: string[];
+                            }[];
+                        };
+                        prometheus?: {
+                            /** @description The prometheus URL of the prometheus. */
+                            prometheusUrl?: string;
+                            /** @description The selected prometheus boards configs of the prometheus. */
+                            selectedPrometheusBoardsConfigs?: {
+                                /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                board?: Record<string, never>;
+                                /** @description Panels selected for the Grafana board configuration. */
+                                panels?: Record<string, never>[];
+                                /** @description Template variables applied to the selected Grafana board configuration. */
+                                templateVars?: string[];
+                            }[];
+                        };
+                        loadTestPrefs?: {
+                            /** @description Concurrent requests */
+                            c?: number;
+                            /** @description Queries per second */
+                            qps?: number;
+                            /** @description Duration */
+                            t?: string;
+                            /** @description Load generator */
+                            gen?: string;
+                        };
+                        /** @description The anonymous usage stats of the preference. */
+                        anonymousUsageStats: boolean;
+                        /** @description The anonymous perf results of the preference. */
+                        anonymousPerfResults: boolean;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp of when the resource was last updated.
+                         */
+                        updatedAt: string;
+                        /** @description The dashboard preferences of the preference. */
+                        dashboardPreferences: {
+                            [key: string]: unknown;
+                        };
+                        /**
+                         * Format: uuid
+                         * @description ID of the associated selectedOrganization.
+                         */
+                        selectedOrganizationId: string;
+                        /** @description The selected workspace for organizations of the preference. */
+                        selectedWorkspaceForOrganizations: {
+                            [key: string]: string;
+                        };
+                        /** @description The users extension preferences of the preference. */
+                        usersExtensionPreferences: {
+                            [key: string]: unknown;
+                        };
+                        /** @description The remote provider preferences of the preference. */
+                        remoteProviderPreferences: {
+                            [key: string]: unknown;
+                        };
+                    };
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when user accepted terms and conditions
+                     */
+                    acceptedTermsAt?: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp of user's first login
+                     */
+                    firstLoginTime?: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp of user's most recent login
+                     */
+                    lastLoginTime: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the user record was created
+                     */
+                    createdAt: string;
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the user record was last updated
+                     */
+                    updatedAt: string;
+                    /** @description Various online profiles associated with the user account */
+                    socials?: {
+                        /** @description The site of the social. */
+                        site: string;
+                        /**
+                         * Format: uri
+                         * @description The link of the social.
+                         */
+                        link: string;
+                    }[];
+                    /**
+                     * Format: date-time
+                     * @description Timestamp when the user record was soft-deleted (null if not deleted)
+                     */
+                    deletedAt: string | null;
+                    /**
+                     * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
+                     * @example [
+                     *       "organization admin",
+                     *       "user"
+                     *     ]
+                     */
+                    roleNames?: string[];
+                    /** @description Teams the user belongs to with role information */
+                    teams?: {
+                        /** @description Team memberships for the user with their assigned roles. */
+                        teamsWithRoles?: {
+                            /**
+                             * Format: uuid
+                             * @description Unique identifier of the team.
+                             */
+                            id: string;
+                            /** @description Name of the team. */
+                            name: string;
+                            /** @description Human readable description of the team. */
+                            description?: string;
+                            /**
+                             * Format: uuid
+                             * @description Identifier of the team owner.
+                             */
+                            owner?: string;
+                            /** @description Free-form metadata associated with the team. */
+                            metadata?: {
+                                [key: string]: unknown;
+                            };
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the team was created.
+                             */
+                            createdAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the team was last updated.
+                             */
+                            updatedAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the team was soft-deleted (null if not deleted).
+                             */
+                            deletedAt?: string | null;
+                            /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+                            roleNames: string[];
+                        }[];
+                        /** @description Total number of team memberships returned for the user. */
+                        totalCount?: number;
+                    };
+                    /** @description Organizations the user belongs to with role information */
+                    organizations?: {
+                        /** @description Organization memberships for the user with their assigned roles. */
+                        organizationsWithRoles?: {
+                            /**
+                             * Format: uuid
+                             * @description Unique identifier of the organization.
+                             */
+                            id: string;
+                            /** @description Name of the organization. */
+                            name: string;
+                            /** @description Human readable description of the organization. */
+                            description?: string;
+                            /** @description Country associated with the organization. */
+                            country?: string;
+                            /** @description Region associated with the organization. */
+                            region?: string;
+                            /**
+                             * Format: uuid
+                             * @description Identifier of the organization owner.
+                             */
+                            owner?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the organization was created.
+                             */
+                            createdAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the organization was last updated.
+                             */
+                            updatedAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the organization was soft-deleted (null if not deleted).
+                             */
+                            deletedAt?: string | null;
+                            /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+                            roleNames: string[];
+                        }[];
+                        /** @description Total number of organization memberships returned for the user. */
+                        totalCount?: number;
+                    };
+                } | null;
+                /**
+                 * @description Approval status of the request.
+                 * @enum {string}
+                 */
+                status: "pending" | "approved" | "denied";
+                /**
+                 * Format: date-time
+                 * @description Timestamp of request creation.
+                 */
+                createdAt: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp of last request modification (approval or denial).
+                 */
+                updatedAt: string;
             }[];
         };
         CatalogContentClass: {
@@ -3419,24 +4227,96 @@ export interface operations {
                                  */
                                 deletedAt: string | null;
                                 /**
-                                 * @description List of global roles assigned to the user
+                                 * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
                                  * @example [
-                                 *       "admin",
-                                 *       "meshmap"
+                                 *       "organization admin",
+                                 *       "user"
                                  *     ]
                                  */
-                                roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
+                                roleNames?: string[];
                                 /** @description Teams the user belongs to with role information */
                                 teams?: {
                                     /** @description Team memberships for the user with their assigned roles. */
-                                    teamsWithRoles?: Record<string, never>[];
+                                    teamsWithRoles?: {
+                                        /**
+                                         * Format: uuid
+                                         * @description Unique identifier of the team.
+                                         */
+                                        id: string;
+                                        /** @description Name of the team. */
+                                        name: string;
+                                        /** @description Human readable description of the team. */
+                                        description?: string;
+                                        /**
+                                         * Format: uuid
+                                         * @description Identifier of the team owner.
+                                         */
+                                        owner?: string;
+                                        /** @description Free-form metadata associated with the team. */
+                                        metadata?: {
+                                            [key: string]: unknown;
+                                        };
+                                        /**
+                                         * Format: date-time
+                                         * @description Timestamp when the team was created.
+                                         */
+                                        createdAt?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Timestamp when the team was last updated.
+                                         */
+                                        updatedAt?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Timestamp when the team was soft-deleted (null if not deleted).
+                                         */
+                                        deletedAt?: string | null;
+                                        /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+                                        roleNames: string[];
+                                    }[];
                                     /** @description Total number of team memberships returned for the user. */
                                     totalCount?: number;
                                 };
                                 /** @description Organizations the user belongs to with role information */
                                 organizations?: {
                                     /** @description Organization memberships for the user with their assigned roles. */
-                                    organizationsWithRoles?: Record<string, never>[];
+                                    organizationsWithRoles?: {
+                                        /**
+                                         * Format: uuid
+                                         * @description Unique identifier of the organization.
+                                         */
+                                        id: string;
+                                        /** @description Name of the organization. */
+                                        name: string;
+                                        /** @description Human readable description of the organization. */
+                                        description?: string;
+                                        /** @description Country associated with the organization. */
+                                        country?: string;
+                                        /** @description Region associated with the organization. */
+                                        region?: string;
+                                        /**
+                                         * Format: uuid
+                                         * @description Identifier of the organization owner.
+                                         */
+                                        owner?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Timestamp when the organization was created.
+                                         */
+                                        createdAt?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Timestamp when the organization was last updated.
+                                         */
+                                        updatedAt?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Timestamp when the organization was soft-deleted (null if not deleted).
+                                         */
+                                        deletedAt?: string | null;
+                                        /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+                                        roleNames: string[];
+                                    }[];
                                     /** @description Total number of organization memberships returned for the user. */
                                     totalCount?: number;
                                 };
@@ -3825,24 +4705,96 @@ export interface operations {
                              */
                             deletedAt: string | null;
                             /**
-                             * @description List of global roles assigned to the user
+                             * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
                              * @example [
-                             *       "admin",
-                             *       "meshmap"
+                             *       "organization admin",
+                             *       "user"
                              *     ]
                              */
-                            roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
+                            roleNames?: string[];
                             /** @description Teams the user belongs to with role information */
                             teams?: {
                                 /** @description Team memberships for the user with their assigned roles. */
-                                teamsWithRoles?: Record<string, never>[];
+                                teamsWithRoles?: {
+                                    /**
+                                     * Format: uuid
+                                     * @description Unique identifier of the team.
+                                     */
+                                    id: string;
+                                    /** @description Name of the team. */
+                                    name: string;
+                                    /** @description Human readable description of the team. */
+                                    description?: string;
+                                    /**
+                                     * Format: uuid
+                                     * @description Identifier of the team owner.
+                                     */
+                                    owner?: string;
+                                    /** @description Free-form metadata associated with the team. */
+                                    metadata?: {
+                                        [key: string]: unknown;
+                                    };
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the team was created.
+                                     */
+                                    createdAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the team was last updated.
+                                     */
+                                    updatedAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the team was soft-deleted (null if not deleted).
+                                     */
+                                    deletedAt?: string | null;
+                                    /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+                                    roleNames: string[];
+                                }[];
                                 /** @description Total number of team memberships returned for the user. */
                                 totalCount?: number;
                             };
                             /** @description Organizations the user belongs to with role information */
                             organizations?: {
                                 /** @description Organization memberships for the user with their assigned roles. */
-                                organizationsWithRoles?: Record<string, never>[];
+                                organizationsWithRoles?: {
+                                    /**
+                                     * Format: uuid
+                                     * @description Unique identifier of the organization.
+                                     */
+                                    id: string;
+                                    /** @description Name of the organization. */
+                                    name: string;
+                                    /** @description Human readable description of the organization. */
+                                    description?: string;
+                                    /** @description Country associated with the organization. */
+                                    country?: string;
+                                    /** @description Region associated with the organization. */
+                                    region?: string;
+                                    /**
+                                     * Format: uuid
+                                     * @description Identifier of the organization owner.
+                                     */
+                                    owner?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the organization was created.
+                                     */
+                                    createdAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the organization was last updated.
+                                     */
+                                    updatedAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the organization was soft-deleted (null if not deleted).
+                                     */
+                                    deletedAt?: string | null;
+                                    /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+                                    roleNames: string[];
+                                }[];
                                 /** @description Total number of organization memberships returned for the user. */
                                 totalCount?: number;
                             };
@@ -3977,192 +4929,6 @@ export interface operations {
             };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    getPatternResources: {
-        parameters: {
-            query?: {
-                /** @description Get responses by page */
-                page?: string;
-                /** @description Number of items per page (canonical camelCase form). */
-                pageSize?: number;
-                /** @description Get responses that match search param value */
-                search?: string;
-                /** @description Get ordered responses */
-                order?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Pattern resources response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    upsertPatternResource: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Pattern resource saved */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    getPatternResource: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Design (Pattern) ID */
-                designId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Pattern resource response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    deletePatternResource: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Design (Pattern) ID */
-                designId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Pattern resource deleted */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4408,24 +5174,96 @@ export interface operations {
                              */
                             deletedAt: string | null;
                             /**
-                             * @description List of global roles assigned to the user
+                             * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
                              * @example [
-                             *       "admin",
-                             *       "meshmap"
+                             *       "organization admin",
+                             *       "user"
                              *     ]
                              */
-                            roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
+                            roleNames?: string[];
                             /** @description Teams the user belongs to with role information */
                             teams?: {
                                 /** @description Team memberships for the user with their assigned roles. */
-                                teamsWithRoles?: Record<string, never>[];
+                                teamsWithRoles?: {
+                                    /**
+                                     * Format: uuid
+                                     * @description Unique identifier of the team.
+                                     */
+                                    id: string;
+                                    /** @description Name of the team. */
+                                    name: string;
+                                    /** @description Human readable description of the team. */
+                                    description?: string;
+                                    /**
+                                     * Format: uuid
+                                     * @description Identifier of the team owner.
+                                     */
+                                    owner?: string;
+                                    /** @description Free-form metadata associated with the team. */
+                                    metadata?: {
+                                        [key: string]: unknown;
+                                    };
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the team was created.
+                                     */
+                                    createdAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the team was last updated.
+                                     */
+                                    updatedAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the team was soft-deleted (null if not deleted).
+                                     */
+                                    deletedAt?: string | null;
+                                    /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+                                    roleNames: string[];
+                                }[];
                                 /** @description Total number of team memberships returned for the user. */
                                 totalCount?: number;
                             };
                             /** @description Organizations the user belongs to with role information */
                             organizations?: {
                                 /** @description Organization memberships for the user with their assigned roles. */
-                                organizationsWithRoles?: Record<string, never>[];
+                                organizationsWithRoles?: {
+                                    /**
+                                     * Format: uuid
+                                     * @description Unique identifier of the organization.
+                                     */
+                                    id: string;
+                                    /** @description Name of the organization. */
+                                    name: string;
+                                    /** @description Human readable description of the organization. */
+                                    description?: string;
+                                    /** @description Country associated with the organization. */
+                                    country?: string;
+                                    /** @description Region associated with the organization. */
+                                    region?: string;
+                                    /**
+                                     * Format: uuid
+                                     * @description Identifier of the organization owner.
+                                     */
+                                    owner?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the organization was created.
+                                     */
+                                    createdAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the organization was last updated.
+                                     */
+                                    updatedAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the organization was soft-deleted (null if not deleted).
+                                     */
+                                    deletedAt?: string | null;
+                                    /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+                                    roleNames: string[];
+                                }[];
                                 /** @description Total number of organization memberships returned for the user. */
                                 totalCount?: number;
                             };
@@ -4793,24 +5631,96 @@ export interface operations {
                              */
                             deletedAt: string | null;
                             /**
-                             * @description List of global roles assigned to the user
+                             * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
                              * @example [
-                             *       "admin",
-                             *       "meshmap"
+                             *       "organization admin",
+                             *       "user"
                              *     ]
                              */
-                            roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
+                            roleNames?: string[];
                             /** @description Teams the user belongs to with role information */
                             teams?: {
                                 /** @description Team memberships for the user with their assigned roles. */
-                                teamsWithRoles?: Record<string, never>[];
+                                teamsWithRoles?: {
+                                    /**
+                                     * Format: uuid
+                                     * @description Unique identifier of the team.
+                                     */
+                                    id: string;
+                                    /** @description Name of the team. */
+                                    name: string;
+                                    /** @description Human readable description of the team. */
+                                    description?: string;
+                                    /**
+                                     * Format: uuid
+                                     * @description Identifier of the team owner.
+                                     */
+                                    owner?: string;
+                                    /** @description Free-form metadata associated with the team. */
+                                    metadata?: {
+                                        [key: string]: unknown;
+                                    };
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the team was created.
+                                     */
+                                    createdAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the team was last updated.
+                                     */
+                                    updatedAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the team was soft-deleted (null if not deleted).
+                                     */
+                                    deletedAt?: string | null;
+                                    /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+                                    roleNames: string[];
+                                }[];
                                 /** @description Total number of team memberships returned for the user. */
                                 totalCount?: number;
                             };
                             /** @description Organizations the user belongs to with role information */
                             organizations?: {
                                 /** @description Organization memberships for the user with their assigned roles. */
-                                organizationsWithRoles?: Record<string, never>[];
+                                organizationsWithRoles?: {
+                                    /**
+                                     * Format: uuid
+                                     * @description Unique identifier of the organization.
+                                     */
+                                    id: string;
+                                    /** @description Name of the organization. */
+                                    name: string;
+                                    /** @description Human readable description of the organization. */
+                                    description?: string;
+                                    /** @description Country associated with the organization. */
+                                    country?: string;
+                                    /** @description Region associated with the organization. */
+                                    region?: string;
+                                    /**
+                                     * Format: uuid
+                                     * @description Identifier of the organization owner.
+                                     */
+                                    owner?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the organization was created.
+                                     */
+                                    createdAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the organization was last updated.
+                                     */
+                                    updatedAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the organization was soft-deleted (null if not deleted).
+                                     */
+                                    deletedAt?: string | null;
+                                    /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+                                    roleNames: string[];
+                                }[];
                                 /** @description Total number of organization memberships returned for the user. */
                                 totalCount?: number;
                             };
@@ -5348,24 +6258,96 @@ export interface operations {
                                  */
                                 deletedAt: string | null;
                                 /**
-                                 * @description List of global roles assigned to the user
+                                 * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
                                  * @example [
-                                 *       "admin",
-                                 *       "meshmap"
+                                 *       "organization admin",
+                                 *       "user"
                                  *     ]
                                  */
-                                roleNames?: ("admin" | "meshmap" | "curator" | "team admin" | "workspace admin" | "workspace manager" | "organization admin" | "user")[];
+                                roleNames?: string[];
                                 /** @description Teams the user belongs to with role information */
                                 teams?: {
                                     /** @description Team memberships for the user with their assigned roles. */
-                                    teamsWithRoles?: Record<string, never>[];
+                                    teamsWithRoles?: {
+                                        /**
+                                         * Format: uuid
+                                         * @description Unique identifier of the team.
+                                         */
+                                        id: string;
+                                        /** @description Name of the team. */
+                                        name: string;
+                                        /** @description Human readable description of the team. */
+                                        description?: string;
+                                        /**
+                                         * Format: uuid
+                                         * @description Identifier of the team owner.
+                                         */
+                                        owner?: string;
+                                        /** @description Free-form metadata associated with the team. */
+                                        metadata?: {
+                                            [key: string]: unknown;
+                                        };
+                                        /**
+                                         * Format: date-time
+                                         * @description Timestamp when the team was created.
+                                         */
+                                        createdAt?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Timestamp when the team was last updated.
+                                         */
+                                        updatedAt?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Timestamp when the team was soft-deleted (null if not deleted).
+                                         */
+                                        deletedAt?: string | null;
+                                        /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+                                        roleNames: string[];
+                                    }[];
                                     /** @description Total number of team memberships returned for the user. */
                                     totalCount?: number;
                                 };
                                 /** @description Organizations the user belongs to with role information */
                                 organizations?: {
                                     /** @description Organization memberships for the user with their assigned roles. */
-                                    organizationsWithRoles?: Record<string, never>[];
+                                    organizationsWithRoles?: {
+                                        /**
+                                         * Format: uuid
+                                         * @description Unique identifier of the organization.
+                                         */
+                                        id: string;
+                                        /** @description Name of the organization. */
+                                        name: string;
+                                        /** @description Human readable description of the organization. */
+                                        description?: string;
+                                        /** @description Country associated with the organization. */
+                                        country?: string;
+                                        /** @description Region associated with the organization. */
+                                        region?: string;
+                                        /**
+                                         * Format: uuid
+                                         * @description Identifier of the organization owner.
+                                         */
+                                        owner?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Timestamp when the organization was created.
+                                         */
+                                        createdAt?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Timestamp when the organization was last updated.
+                                         */
+                                        updatedAt?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Timestamp when the organization was soft-deleted (null if not deleted).
+                                         */
+                                        deletedAt?: string | null;
+                                        /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+                                        roleNames: string[];
+                                    }[];
                                     /** @description Total number of organization memberships returned for the user. */
                                     totalCount?: number;
                                 };
@@ -5559,7 +6541,313 @@ export interface operations {
                 };
                 content: {
                     "application/json": {
-                        [key: string]: unknown;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        id: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        contentId: string;
+                        /** @description Human-readable name of the content at request time. */
+                        contentName: string;
+                        /**
+                         * @description Kind of catalog content the request refers to.
+                         * @enum {string}
+                         */
+                        contentType: "pattern" | "filter";
+                        /**
+                         * @description Support-level classification of the content, stored in the
+                         *     `content_class` column (a Postgres enum). Nullable — legacy
+                         *     requests predate the column.
+                         * @enum {string|null}
+                         */
+                        contentClass?: "official" | "verified" | "project" | "community" | null;
+                        /** @description Requesting user's first name at request time. */
+                        firstName: string;
+                        /** @description Requesting user's last name at request time. */
+                        lastName: string;
+                        /**
+                         * Format: email
+                         * @description Requesting user's email address at request time.
+                         */
+                        email: string;
+                        /** @description Requesting user record, joined inline by the catalog-request list handler when shaping responses. Server-projected from the users table; not a column on the catalog_requests table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
+                        user?: {
+                            /**
+                             * Format: uuid
+                             * @description Unique identifier for the user
+                             */
+                            id: string;
+                            /** @description User identifier (username or external ID) */
+                            userId: string;
+                            /**
+                             * @description Authentication provider (e.g., Google, Github)
+                             * @example [
+                             *       "local",
+                             *       "github",
+                             *       "google",
+                             *       "twitter"
+                             *     ]
+                             */
+                            provider: string;
+                            /**
+                             * Format: email
+                             * @description User's email address
+                             */
+                            email: string;
+                            /** @description User's first name */
+                            firstName: string;
+                            /** @description User's last name */
+                            lastName: string;
+                            /**
+                             * Format: uri
+                             * @description URL to user's avatar image
+                             */
+                            avatarUrl?: string;
+                            /**
+                             * @description User account status
+                             * @enum {string}
+                             */
+                            status: "active" | "inactive" | "pending" | "anonymous";
+                            /**
+                             * @description User's biography or description
+                             * @default
+                             */
+                            bio: string;
+                            /** @description User's country information stored as JSONB */
+                            country?: {
+                                [key: string]: unknown;
+                            };
+                            /** @description User's region information stored as JSONB */
+                            region?: {
+                                [key: string]: unknown;
+                            };
+                            /** @description User preferences stored as JSONB */
+                            preferences?: {
+                                /** @description The mesh adapters of the preference. */
+                                meshAdapters?: Record<string, never>[];
+                                grafana?: {
+                                    /** @description Grafana URL for the user configuration. */
+                                    grafanaUrl?: string;
+                                    /** @description Grafana API key for the user configuration. */
+                                    grafanaApiKey?: string;
+                                    /** @description Selected Grafana board configurations for the user. */
+                                    selectedBoardsConfigs?: {
+                                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                        board?: Record<string, never>;
+                                        /** @description Panels selected for the Grafana board configuration. */
+                                        panels?: Record<string, never>[];
+                                        /** @description Template variables applied to the selected Grafana board configuration. */
+                                        templateVars?: string[];
+                                    }[];
+                                };
+                                prometheus?: {
+                                    /** @description The prometheus URL of the prometheus. */
+                                    prometheusUrl?: string;
+                                    /** @description The selected prometheus boards configs of the prometheus. */
+                                    selectedPrometheusBoardsConfigs?: {
+                                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                        board?: Record<string, never>;
+                                        /** @description Panels selected for the Grafana board configuration. */
+                                        panels?: Record<string, never>[];
+                                        /** @description Template variables applied to the selected Grafana board configuration. */
+                                        templateVars?: string[];
+                                    }[];
+                                };
+                                loadTestPrefs?: {
+                                    /** @description Concurrent requests */
+                                    c?: number;
+                                    /** @description Queries per second */
+                                    qps?: number;
+                                    /** @description Duration */
+                                    t?: string;
+                                    /** @description Load generator */
+                                    gen?: string;
+                                };
+                                /** @description The anonymous usage stats of the preference. */
+                                anonymousUsageStats: boolean;
+                                /** @description The anonymous perf results of the preference. */
+                                anonymousPerfResults: boolean;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp of when the resource was last updated.
+                                 */
+                                updatedAt: string;
+                                /** @description The dashboard preferences of the preference. */
+                                dashboardPreferences: {
+                                    [key: string]: unknown;
+                                };
+                                /**
+                                 * Format: uuid
+                                 * @description ID of the associated selectedOrganization.
+                                 */
+                                selectedOrganizationId: string;
+                                /** @description The selected workspace for organizations of the preference. */
+                                selectedWorkspaceForOrganizations: {
+                                    [key: string]: string;
+                                };
+                                /** @description The users extension preferences of the preference. */
+                                usersExtensionPreferences: {
+                                    [key: string]: unknown;
+                                };
+                                /** @description The remote provider preferences of the preference. */
+                                remoteProviderPreferences: {
+                                    [key: string]: unknown;
+                                };
+                            };
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when user accepted terms and conditions
+                             */
+                            acceptedTermsAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of user's first login
+                             */
+                            firstLoginTime?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of user's most recent login
+                             */
+                            lastLoginTime: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was created
+                             */
+                            createdAt: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was last updated
+                             */
+                            updatedAt: string;
+                            /** @description Various online profiles associated with the user account */
+                            socials?: {
+                                /** @description The site of the social. */
+                                site: string;
+                                /**
+                                 * Format: uri
+                                 * @description The link of the social.
+                                 */
+                                link: string;
+                            }[];
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was soft-deleted (null if not deleted)
+                             */
+                            deletedAt: string | null;
+                            /**
+                             * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
+                             * @example [
+                             *       "organization admin",
+                             *       "user"
+                             *     ]
+                             */
+                            roleNames?: string[];
+                            /** @description Teams the user belongs to with role information */
+                            teams?: {
+                                /** @description Team memberships for the user with their assigned roles. */
+                                teamsWithRoles?: {
+                                    /**
+                                     * Format: uuid
+                                     * @description Unique identifier of the team.
+                                     */
+                                    id: string;
+                                    /** @description Name of the team. */
+                                    name: string;
+                                    /** @description Human readable description of the team. */
+                                    description?: string;
+                                    /**
+                                     * Format: uuid
+                                     * @description Identifier of the team owner.
+                                     */
+                                    owner?: string;
+                                    /** @description Free-form metadata associated with the team. */
+                                    metadata?: {
+                                        [key: string]: unknown;
+                                    };
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the team was created.
+                                     */
+                                    createdAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the team was last updated.
+                                     */
+                                    updatedAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the team was soft-deleted (null if not deleted).
+                                     */
+                                    deletedAt?: string | null;
+                                    /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+                                    roleNames: string[];
+                                }[];
+                                /** @description Total number of team memberships returned for the user. */
+                                totalCount?: number;
+                            };
+                            /** @description Organizations the user belongs to with role information */
+                            organizations?: {
+                                /** @description Organization memberships for the user with their assigned roles. */
+                                organizationsWithRoles?: {
+                                    /**
+                                     * Format: uuid
+                                     * @description Unique identifier of the organization.
+                                     */
+                                    id: string;
+                                    /** @description Name of the organization. */
+                                    name: string;
+                                    /** @description Human readable description of the organization. */
+                                    description?: string;
+                                    /** @description Country associated with the organization. */
+                                    country?: string;
+                                    /** @description Region associated with the organization. */
+                                    region?: string;
+                                    /**
+                                     * Format: uuid
+                                     * @description Identifier of the organization owner.
+                                     */
+                                    owner?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the organization was created.
+                                     */
+                                    createdAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the organization was last updated.
+                                     */
+                                    updatedAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the organization was soft-deleted (null if not deleted).
+                                     */
+                                    deletedAt?: string | null;
+                                    /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+                                    roleNames: string[];
+                                }[];
+                                /** @description Total number of organization memberships returned for the user. */
+                                totalCount?: number;
+                            };
+                        } | null;
+                        /**
+                         * @description Approval status of the request.
+                         * @enum {string}
+                         */
+                        status: "pending" | "approved" | "denied";
+                        /**
+                         * Format: date-time
+                         * @description Timestamp of request creation.
+                         */
+                        createdAt: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp of last request modification (approval or denial).
+                         */
+                        updatedAt: string;
                     };
                 };
             };
@@ -5632,7 +6920,313 @@ export interface operations {
                 };
                 content: {
                     "application/json": {
-                        [key: string]: unknown;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        id: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        contentId: string;
+                        /** @description Human-readable name of the content at request time. */
+                        contentName: string;
+                        /**
+                         * @description Kind of catalog content the request refers to.
+                         * @enum {string}
+                         */
+                        contentType: "pattern" | "filter";
+                        /**
+                         * @description Support-level classification of the content, stored in the
+                         *     `content_class` column (a Postgres enum). Nullable — legacy
+                         *     requests predate the column.
+                         * @enum {string|null}
+                         */
+                        contentClass?: "official" | "verified" | "project" | "community" | null;
+                        /** @description Requesting user's first name at request time. */
+                        firstName: string;
+                        /** @description Requesting user's last name at request time. */
+                        lastName: string;
+                        /**
+                         * Format: email
+                         * @description Requesting user's email address at request time.
+                         */
+                        email: string;
+                        /** @description Requesting user record, joined inline by the catalog-request list handler when shaping responses. Server-projected from the users table; not a column on the catalog_requests table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
+                        user?: {
+                            /**
+                             * Format: uuid
+                             * @description Unique identifier for the user
+                             */
+                            id: string;
+                            /** @description User identifier (username or external ID) */
+                            userId: string;
+                            /**
+                             * @description Authentication provider (e.g., Google, Github)
+                             * @example [
+                             *       "local",
+                             *       "github",
+                             *       "google",
+                             *       "twitter"
+                             *     ]
+                             */
+                            provider: string;
+                            /**
+                             * Format: email
+                             * @description User's email address
+                             */
+                            email: string;
+                            /** @description User's first name */
+                            firstName: string;
+                            /** @description User's last name */
+                            lastName: string;
+                            /**
+                             * Format: uri
+                             * @description URL to user's avatar image
+                             */
+                            avatarUrl?: string;
+                            /**
+                             * @description User account status
+                             * @enum {string}
+                             */
+                            status: "active" | "inactive" | "pending" | "anonymous";
+                            /**
+                             * @description User's biography or description
+                             * @default
+                             */
+                            bio: string;
+                            /** @description User's country information stored as JSONB */
+                            country?: {
+                                [key: string]: unknown;
+                            };
+                            /** @description User's region information stored as JSONB */
+                            region?: {
+                                [key: string]: unknown;
+                            };
+                            /** @description User preferences stored as JSONB */
+                            preferences?: {
+                                /** @description The mesh adapters of the preference. */
+                                meshAdapters?: Record<string, never>[];
+                                grafana?: {
+                                    /** @description Grafana URL for the user configuration. */
+                                    grafanaUrl?: string;
+                                    /** @description Grafana API key for the user configuration. */
+                                    grafanaApiKey?: string;
+                                    /** @description Selected Grafana board configurations for the user. */
+                                    selectedBoardsConfigs?: {
+                                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                        board?: Record<string, never>;
+                                        /** @description Panels selected for the Grafana board configuration. */
+                                        panels?: Record<string, never>[];
+                                        /** @description Template variables applied to the selected Grafana board configuration. */
+                                        templateVars?: string[];
+                                    }[];
+                                };
+                                prometheus?: {
+                                    /** @description The prometheus URL of the prometheus. */
+                                    prometheusUrl?: string;
+                                    /** @description The selected prometheus boards configs of the prometheus. */
+                                    selectedPrometheusBoardsConfigs?: {
+                                        /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                        board?: Record<string, never>;
+                                        /** @description Panels selected for the Grafana board configuration. */
+                                        panels?: Record<string, never>[];
+                                        /** @description Template variables applied to the selected Grafana board configuration. */
+                                        templateVars?: string[];
+                                    }[];
+                                };
+                                loadTestPrefs?: {
+                                    /** @description Concurrent requests */
+                                    c?: number;
+                                    /** @description Queries per second */
+                                    qps?: number;
+                                    /** @description Duration */
+                                    t?: string;
+                                    /** @description Load generator */
+                                    gen?: string;
+                                };
+                                /** @description The anonymous usage stats of the preference. */
+                                anonymousUsageStats: boolean;
+                                /** @description The anonymous perf results of the preference. */
+                                anonymousPerfResults: boolean;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp of when the resource was last updated.
+                                 */
+                                updatedAt: string;
+                                /** @description The dashboard preferences of the preference. */
+                                dashboardPreferences: {
+                                    [key: string]: unknown;
+                                };
+                                /**
+                                 * Format: uuid
+                                 * @description ID of the associated selectedOrganization.
+                                 */
+                                selectedOrganizationId: string;
+                                /** @description The selected workspace for organizations of the preference. */
+                                selectedWorkspaceForOrganizations: {
+                                    [key: string]: string;
+                                };
+                                /** @description The users extension preferences of the preference. */
+                                usersExtensionPreferences: {
+                                    [key: string]: unknown;
+                                };
+                                /** @description The remote provider preferences of the preference. */
+                                remoteProviderPreferences: {
+                                    [key: string]: unknown;
+                                };
+                            };
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when user accepted terms and conditions
+                             */
+                            acceptedTermsAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of user's first login
+                             */
+                            firstLoginTime?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of user's most recent login
+                             */
+                            lastLoginTime: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was created
+                             */
+                            createdAt: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was last updated
+                             */
+                            updatedAt: string;
+                            /** @description Various online profiles associated with the user account */
+                            socials?: {
+                                /** @description The site of the social. */
+                                site: string;
+                                /**
+                                 * Format: uri
+                                 * @description The link of the social.
+                                 */
+                                link: string;
+                            }[];
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was soft-deleted (null if not deleted)
+                             */
+                            deletedAt: string | null;
+                            /**
+                             * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
+                             * @example [
+                             *       "organization admin",
+                             *       "user"
+                             *     ]
+                             */
+                            roleNames?: string[];
+                            /** @description Teams the user belongs to with role information */
+                            teams?: {
+                                /** @description Team memberships for the user with their assigned roles. */
+                                teamsWithRoles?: {
+                                    /**
+                                     * Format: uuid
+                                     * @description Unique identifier of the team.
+                                     */
+                                    id: string;
+                                    /** @description Name of the team. */
+                                    name: string;
+                                    /** @description Human readable description of the team. */
+                                    description?: string;
+                                    /**
+                                     * Format: uuid
+                                     * @description Identifier of the team owner.
+                                     */
+                                    owner?: string;
+                                    /** @description Free-form metadata associated with the team. */
+                                    metadata?: {
+                                        [key: string]: unknown;
+                                    };
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the team was created.
+                                     */
+                                    createdAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the team was last updated.
+                                     */
+                                    updatedAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the team was soft-deleted (null if not deleted).
+                                     */
+                                    deletedAt?: string | null;
+                                    /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+                                    roleNames: string[];
+                                }[];
+                                /** @description Total number of team memberships returned for the user. */
+                                totalCount?: number;
+                            };
+                            /** @description Organizations the user belongs to with role information */
+                            organizations?: {
+                                /** @description Organization memberships for the user with their assigned roles. */
+                                organizationsWithRoles?: {
+                                    /**
+                                     * Format: uuid
+                                     * @description Unique identifier of the organization.
+                                     */
+                                    id: string;
+                                    /** @description Name of the organization. */
+                                    name: string;
+                                    /** @description Human readable description of the organization. */
+                                    description?: string;
+                                    /** @description Country associated with the organization. */
+                                    country?: string;
+                                    /** @description Region associated with the organization. */
+                                    region?: string;
+                                    /**
+                                     * Format: uuid
+                                     * @description Identifier of the organization owner.
+                                     */
+                                    owner?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the organization was created.
+                                     */
+                                    createdAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the organization was last updated.
+                                     */
+                                    updatedAt?: string;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp when the organization was soft-deleted (null if not deleted).
+                                     */
+                                    deletedAt?: string | null;
+                                    /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+                                    roleNames: string[];
+                                }[];
+                                /** @description Total number of organization memberships returned for the user. */
+                                totalCount?: number;
+                            };
+                        } | null;
+                        /**
+                         * @description Approval status of the request.
+                         * @enum {string}
+                         */
+                        status: "pending" | "approved" | "denied";
+                        /**
+                         * Format: date-time
+                         * @description Timestamp of request creation.
+                         */
+                        createdAt: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp of last request modification (approval or denial).
+                         */
+                        updatedAt: string;
                     };
                 };
             };
@@ -6098,7 +7692,313 @@ export interface operations {
                         totalCount?: number;
                         /** @description Catalog requests included on this page. */
                         catalogRequests?: {
-                            [key: string]: unknown;
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            id: string;
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            contentId: string;
+                            /** @description Human-readable name of the content at request time. */
+                            contentName: string;
+                            /**
+                             * @description Kind of catalog content the request refers to.
+                             * @enum {string}
+                             */
+                            contentType: "pattern" | "filter";
+                            /**
+                             * @description Support-level classification of the content, stored in the
+                             *     `content_class` column (a Postgres enum). Nullable — legacy
+                             *     requests predate the column.
+                             * @enum {string|null}
+                             */
+                            contentClass?: "official" | "verified" | "project" | "community" | null;
+                            /** @description Requesting user's first name at request time. */
+                            firstName: string;
+                            /** @description Requesting user's last name at request time. */
+                            lastName: string;
+                            /**
+                             * Format: email
+                             * @description Requesting user's email address at request time.
+                             */
+                            email: string;
+                            /** @description Requesting user record, joined inline by the catalog-request list handler when shaping responses. Server-projected from the users table; not a column on the catalog_requests table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans. */
+                            user?: {
+                                /**
+                                 * Format: uuid
+                                 * @description Unique identifier for the user
+                                 */
+                                id: string;
+                                /** @description User identifier (username or external ID) */
+                                userId: string;
+                                /**
+                                 * @description Authentication provider (e.g., Google, Github)
+                                 * @example [
+                                 *       "local",
+                                 *       "github",
+                                 *       "google",
+                                 *       "twitter"
+                                 *     ]
+                                 */
+                                provider: string;
+                                /**
+                                 * Format: email
+                                 * @description User's email address
+                                 */
+                                email: string;
+                                /** @description User's first name */
+                                firstName: string;
+                                /** @description User's last name */
+                                lastName: string;
+                                /**
+                                 * Format: uri
+                                 * @description URL to user's avatar image
+                                 */
+                                avatarUrl?: string;
+                                /**
+                                 * @description User account status
+                                 * @enum {string}
+                                 */
+                                status: "active" | "inactive" | "pending" | "anonymous";
+                                /**
+                                 * @description User's biography or description
+                                 * @default
+                                 */
+                                bio: string;
+                                /** @description User's country information stored as JSONB */
+                                country?: {
+                                    [key: string]: unknown;
+                                };
+                                /** @description User's region information stored as JSONB */
+                                region?: {
+                                    [key: string]: unknown;
+                                };
+                                /** @description User preferences stored as JSONB */
+                                preferences?: {
+                                    /** @description The mesh adapters of the preference. */
+                                    meshAdapters?: Record<string, never>[];
+                                    grafana?: {
+                                        /** @description Grafana URL for the user configuration. */
+                                        grafanaUrl?: string;
+                                        /** @description Grafana API key for the user configuration. */
+                                        grafanaApiKey?: string;
+                                        /** @description Selected Grafana board configurations for the user. */
+                                        selectedBoardsConfigs?: {
+                                            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                            board?: Record<string, never>;
+                                            /** @description Panels selected for the Grafana board configuration. */
+                                            panels?: Record<string, never>[];
+                                            /** @description Template variables applied to the selected Grafana board configuration. */
+                                            templateVars?: string[];
+                                        }[];
+                                    };
+                                    prometheus?: {
+                                        /** @description The prometheus URL of the prometheus. */
+                                        prometheusUrl?: string;
+                                        /** @description The selected prometheus boards configs of the prometheus. */
+                                        selectedPrometheusBoardsConfigs?: {
+                                            /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                                            board?: Record<string, never>;
+                                            /** @description Panels selected for the Grafana board configuration. */
+                                            panels?: Record<string, never>[];
+                                            /** @description Template variables applied to the selected Grafana board configuration. */
+                                            templateVars?: string[];
+                                        }[];
+                                    };
+                                    loadTestPrefs?: {
+                                        /** @description Concurrent requests */
+                                        c?: number;
+                                        /** @description Queries per second */
+                                        qps?: number;
+                                        /** @description Duration */
+                                        t?: string;
+                                        /** @description Load generator */
+                                        gen?: string;
+                                    };
+                                    /** @description The anonymous usage stats of the preference. */
+                                    anonymousUsageStats: boolean;
+                                    /** @description The anonymous perf results of the preference. */
+                                    anonymousPerfResults: boolean;
+                                    /**
+                                     * Format: date-time
+                                     * @description Timestamp of when the resource was last updated.
+                                     */
+                                    updatedAt: string;
+                                    /** @description The dashboard preferences of the preference. */
+                                    dashboardPreferences: {
+                                        [key: string]: unknown;
+                                    };
+                                    /**
+                                     * Format: uuid
+                                     * @description ID of the associated selectedOrganization.
+                                     */
+                                    selectedOrganizationId: string;
+                                    /** @description The selected workspace for organizations of the preference. */
+                                    selectedWorkspaceForOrganizations: {
+                                        [key: string]: string;
+                                    };
+                                    /** @description The users extension preferences of the preference. */
+                                    usersExtensionPreferences: {
+                                        [key: string]: unknown;
+                                    };
+                                    /** @description The remote provider preferences of the preference. */
+                                    remoteProviderPreferences: {
+                                        [key: string]: unknown;
+                                    };
+                                };
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when user accepted terms and conditions
+                                 */
+                                acceptedTermsAt?: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp of user's first login
+                                 */
+                                firstLoginTime?: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp of user's most recent login
+                                 */
+                                lastLoginTime: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the user record was created
+                                 */
+                                createdAt: string;
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the user record was last updated
+                                 */
+                                updatedAt: string;
+                                /** @description Various online profiles associated with the user account */
+                                socials?: {
+                                    /** @description The site of the social. */
+                                    site: string;
+                                    /**
+                                     * Format: uri
+                                     * @description The link of the social.
+                                     */
+                                    link: string;
+                                }[];
+                                /**
+                                 * Format: date-time
+                                 * @description Timestamp when the user record was soft-deleted (null if not deleted)
+                                 */
+                                deletedAt: string | null;
+                                /**
+                                 * @description Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
+                                 * @example [
+                                 *       "organization admin",
+                                 *       "user"
+                                 *     ]
+                                 */
+                                roleNames?: string[];
+                                /** @description Teams the user belongs to with role information */
+                                teams?: {
+                                    /** @description Team memberships for the user with their assigned roles. */
+                                    teamsWithRoles?: {
+                                        /**
+                                         * Format: uuid
+                                         * @description Unique identifier of the team.
+                                         */
+                                        id: string;
+                                        /** @description Name of the team. */
+                                        name: string;
+                                        /** @description Human readable description of the team. */
+                                        description?: string;
+                                        /**
+                                         * Format: uuid
+                                         * @description Identifier of the team owner.
+                                         */
+                                        owner?: string;
+                                        /** @description Free-form metadata associated with the team. */
+                                        metadata?: {
+                                            [key: string]: unknown;
+                                        };
+                                        /**
+                                         * Format: date-time
+                                         * @description Timestamp when the team was created.
+                                         */
+                                        createdAt?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Timestamp when the team was last updated.
+                                         */
+                                        updatedAt?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Timestamp when the team was soft-deleted (null if not deleted).
+                                         */
+                                        deletedAt?: string | null;
+                                        /** @description Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+                                        roleNames: string[];
+                                    }[];
+                                    /** @description Total number of team memberships returned for the user. */
+                                    totalCount?: number;
+                                };
+                                /** @description Organizations the user belongs to with role information */
+                                organizations?: {
+                                    /** @description Organization memberships for the user with their assigned roles. */
+                                    organizationsWithRoles?: {
+                                        /**
+                                         * Format: uuid
+                                         * @description Unique identifier of the organization.
+                                         */
+                                        id: string;
+                                        /** @description Name of the organization. */
+                                        name: string;
+                                        /** @description Human readable description of the organization. */
+                                        description?: string;
+                                        /** @description Country associated with the organization. */
+                                        country?: string;
+                                        /** @description Region associated with the organization. */
+                                        region?: string;
+                                        /**
+                                         * Format: uuid
+                                         * @description Identifier of the organization owner.
+                                         */
+                                        owner?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Timestamp when the organization was created.
+                                         */
+                                        createdAt?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Timestamp when the organization was last updated.
+                                         */
+                                        updatedAt?: string;
+                                        /**
+                                         * Format: date-time
+                                         * @description Timestamp when the organization was soft-deleted (null if not deleted).
+                                         */
+                                        deletedAt?: string | null;
+                                        /** @description Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+                                        roleNames: string[];
+                                    }[];
+                                    /** @description Total number of organization memberships returned for the user. */
+                                    totalCount?: number;
+                                };
+                            } | null;
+                            /**
+                             * @description Approval status of the request.
+                             * @enum {string}
+                             */
+                            status: "pending" | "approved" | "denied";
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of request creation.
+                             */
+                            createdAt: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp of last request modification (approval or denial).
+                             */
+                            updatedAt: string;
                         }[];
                     };
                 };

@@ -35,6 +35,7 @@ paths:
       parameters:
       - $ref: '#/components/parameters/isOauth'
       - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/pageSize'
       - $ref: '#/components/parameters/pagesize'
       - $ref: '#/components/parameters/search'
       - $ref: '#/components/parameters/order'
@@ -102,9 +103,9 @@ paths:
       - cloud
       tags:
       - tokens
-      summary: Get token by ID
-      operationId: getUserTokensById
-      description: Retrieves a specific token by its ID.
+      summary: Download token
+      operationId: downloadToken
+      description: Downloads a specific token by its ID for use as a local credential file (e.g. mesheryctl's auth.json). Gated by the Download Token permission and recorded as a distinct audit event from viewing or listing tokens.
       parameters:
       - $ref: '#/components/parameters/tokenId'
       responses:
@@ -192,8 +193,15 @@ components:
         maxLength: 500
     page:
       $ref: ../../v1beta2/core/api.yml#/components/parameters/page
+    pageSize:
+      $ref: ../../v1beta2/core/api.yml#/components/parameters/pageSize
     pagesize:
-      $ref: ../../v1beta2/core/api.yml#/components/parameters/pagesize
+      name: pagesize
+      in: query
+      description: Get responses by pagesize. Deprecated alias of pageSize.
+      deprecated: true
+      schema:
+        type: string
     search:
       $ref: ../../v1beta2/core/api.yml#/components/parameters/search
     order:

@@ -4,7 +4,6 @@ package model
 
 import (
 	"crypto/md5"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"path/filepath"
@@ -58,7 +57,7 @@ func (m *ModelDefinition) GenerateID() (uuid.UUID, error) {
 	}
 
 	hash := md5.Sum(byt)
-	return uuid.FromString(hex.EncodeToString(hash[:]))
+	return uuid.UUID(hash), nil
 }
 
 func (m ModelDefinition) GetID() uuid.UUID {

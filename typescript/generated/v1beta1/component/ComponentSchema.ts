@@ -364,7 +364,7 @@ const ComponentSchema: Record<string, unknown> = {
                   "user_id": {
                     "x-go-name": "UserID",
                     "x-oapi-codegen-extra-tags": {
-                      "db": "user_id",
+                      "db": "owner",
                       "yaml": "user_id"
                     },
                     "x-order": 9,
@@ -1226,6 +1226,7 @@ const ComponentSchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "gorm": "-"
             },
+            "x-generate-db-helpers": true,
             "type": "object",
             "required": [
               "id",

@@ -278,6 +278,47 @@ export interface components {
                 [key: string]: string;
             };
         };
+        /** @description A single slide in the auth-page feature carousel. */
+        CarouselSlide: {
+            /**
+             * Format: uri
+             * @description URL of the slide image asset.
+             */
+            imageUrl: string;
+            /** @description Slide title. */
+            title: string;
+            /** @description Slide description text. */
+            description: string;
+        };
+        /** @description A single question/answer pair for the auth-page FAQ section. */
+        FAQ: {
+            /** @description The question text. */
+            question: string;
+            /** @description The answer text. */
+            answer: string;
+        };
+        /** @description Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+        AuthBranding: {
+            /** @description Ordered slides rendered in the auth-page feature carousel. */
+            carousel?: {
+                /**
+                 * Format: uri
+                 * @description URL of the slide image asset.
+                 */
+                imageUrl: string;
+                /** @description Slide title. */
+                title: string;
+                /** @description Slide description text. */
+                description: string;
+            }[];
+            /** @description FAQ entries rendered on the auth pages. */
+            faqs?: {
+                /** @description The question text. */
+                question: string;
+                /** @description The answer text. */
+                answer: string;
+            }[];
+        };
         /** @description Organization-level user experience preferences. */
         Preferences: {
             /** @description UI theme configured for an organization. */
@@ -326,6 +367,28 @@ export interface components {
             /** @description Preferences specific to dashboard behavior. */
             dashboard: {
                 [key: string]: unknown;
+            };
+            /** @description Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+            authBranding?: {
+                /** @description Ordered slides rendered in the auth-page feature carousel. */
+                carousel?: {
+                    /**
+                     * Format: uri
+                     * @description URL of the slide image asset.
+                     */
+                    imageUrl: string;
+                    /** @description Slide title. */
+                    title: string;
+                    /** @description Slide description text. */
+                    description: string;
+                }[];
+                /** @description FAQ entries rendered on the auth pages. */
+                faqs?: {
+                    /** @description The question text. */
+                    question: string;
+                    /** @description The answer text. */
+                    answer: string;
+                }[];
             };
             /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
             links?: {
@@ -400,6 +463,28 @@ export interface components {
                 /** @description Preferences specific to dashboard behavior. */
                 dashboard: {
                     [key: string]: unknown;
+                };
+                /** @description Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+                authBranding?: {
+                    /** @description Ordered slides rendered in the auth-page feature carousel. */
+                    carousel?: {
+                        /**
+                         * Format: uri
+                         * @description URL of the slide image asset.
+                         */
+                        imageUrl: string;
+                        /** @description Slide title. */
+                        title: string;
+                        /** @description Slide description text. */
+                        description: string;
+                    }[];
+                    /** @description FAQ entries rendered on the auth pages. */
+                    faqs?: {
+                        /** @description The question text. */
+                        question: string;
+                        /** @description The answer text. */
+                        answer: string;
+                    }[];
                 };
                 /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
                 links?: {
@@ -533,6 +618,28 @@ export interface components {
                     dashboard: {
                         [key: string]: unknown;
                     };
+                    /** @description Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+                    authBranding?: {
+                        /** @description Ordered slides rendered in the auth-page feature carousel. */
+                        carousel?: {
+                            /**
+                             * Format: uri
+                             * @description URL of the slide image asset.
+                             */
+                            imageUrl: string;
+                            /** @description Slide title. */
+                            title: string;
+                            /** @description Slide description text. */
+                            description: string;
+                        }[];
+                        /** @description FAQ entries rendered on the auth pages. */
+                        faqs?: {
+                            /** @description The question text. */
+                            question: string;
+                            /** @description The answer text. */
+                            answer: string;
+                        }[];
+                    };
                     /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
                     links?: {
                         /**
@@ -648,6 +755,28 @@ export interface components {
                         /** @description Preferences specific to dashboard behavior. */
                         dashboard: {
                             [key: string]: unknown;
+                        };
+                        /** @description Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+                        authBranding?: {
+                            /** @description Ordered slides rendered in the auth-page feature carousel. */
+                            carousel?: {
+                                /**
+                                 * Format: uri
+                                 * @description URL of the slide image asset.
+                                 */
+                                imageUrl: string;
+                                /** @description Slide title. */
+                                title: string;
+                                /** @description Slide description text. */
+                                description: string;
+                            }[];
+                            /** @description FAQ entries rendered on the auth pages. */
+                            faqs?: {
+                                /** @description The question text. */
+                                question: string;
+                                /** @description The answer text. */
+                                answer: string;
+                            }[];
                         };
                         /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
                         links?: {
@@ -766,6 +895,28 @@ export interface components {
                         dashboard: {
                             [key: string]: unknown;
                         };
+                        /** @description Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+                        authBranding?: {
+                            /** @description Ordered slides rendered in the auth-page feature carousel. */
+                            carousel?: {
+                                /**
+                                 * Format: uri
+                                 * @description URL of the slide image asset.
+                                 */
+                                imageUrl: string;
+                                /** @description Slide title. */
+                                title: string;
+                                /** @description Slide description text. */
+                                description: string;
+                            }[];
+                            /** @description FAQ entries rendered on the auth pages. */
+                            faqs?: {
+                                /** @description The question text. */
+                                question: string;
+                                /** @description The answer text. */
+                                answer: string;
+                            }[];
+                        };
                         /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
                         links?: {
                             /**
@@ -867,6 +1018,28 @@ export interface components {
                 /** @description Preferences specific to dashboard behavior. */
                 dashboard: {
                     [key: string]: unknown;
+                };
+                /** @description Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+                authBranding?: {
+                    /** @description Ordered slides rendered in the auth-page feature carousel. */
+                    carousel?: {
+                        /**
+                         * Format: uri
+                         * @description URL of the slide image asset.
+                         */
+                        imageUrl: string;
+                        /** @description Slide title. */
+                        title: string;
+                        /** @description Slide description text. */
+                        description: string;
+                    }[];
+                    /** @description FAQ entries rendered on the auth pages. */
+                    faqs?: {
+                        /** @description The question text. */
+                        question: string;
+                        /** @description The answer text. */
+                        answer: string;
+                    }[];
                 };
                 /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
                 links?: {
@@ -1042,6 +1215,91 @@ export interface components {
                 deletedAt?: string;
             }[];
         };
+        /** @description Junction record linking a user to an organization, optionally carrying the role the user holds in that organization. Backed by the users_organizations_mappings table, whose user foreign-key column is named owner. */
+        UsersOrganizationsMapping: {
+            /**
+             * Format: uuid
+             * @description Mapping record ID.
+             */
+            id?: string;
+            /**
+             * Format: uuid
+             * @description User ID for this mapping. Stored in the owner column.
+             */
+            userId?: string;
+            /**
+             * Format: uuid
+             * @description Organization ID for this mapping.
+             */
+            organizationId?: string;
+            /**
+             * Format: uuid
+             * @description Role the user holds within the organization; omitted when no explicit role is assigned.
+             */
+            roleId?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the mapping was created.
+             */
+            createdAt?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the mapping was last updated.
+             */
+            updatedAt?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the mapping was soft-deleted.
+             */
+            deletedAt?: string;
+        };
+        /** @description Paginated list of user-organization mappings. */
+        UsersOrganizationsMappingPage: {
+            /** @description Zero-based page index returned in this response. */
+            page?: number;
+            /** @description Maximum number of items returned on each page. */
+            pageSize?: number;
+            /** @description Total number of items across all pages. */
+            totalCount?: number;
+            /** @description User-organization mapping entries. */
+            data?: {
+                /**
+                 * Format: uuid
+                 * @description Mapping record ID.
+                 */
+                id?: string;
+                /**
+                 * Format: uuid
+                 * @description User ID for this mapping. Stored in the owner column.
+                 */
+                userId?: string;
+                /**
+                 * Format: uuid
+                 * @description Organization ID for this mapping.
+                 */
+                organizationId?: string;
+                /**
+                 * Format: uuid
+                 * @description Role the user holds within the organization; omitted when no explicit role is assigned.
+                 */
+                roleId?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the mapping was created.
+                 */
+                createdAt?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the mapping was last updated.
+                 */
+                updatedAt?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the mapping was soft-deleted.
+                 */
+                deletedAt?: string;
+            }[];
+        };
     };
     responses: {
         /** @description Invalid request body or request param */
@@ -1162,6 +1420,28 @@ export interface components {
                         /** @description Preferences specific to dashboard behavior. */
                         dashboard: {
                             [key: string]: unknown;
+                        };
+                        /** @description Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+                        authBranding?: {
+                            /** @description Ordered slides rendered in the auth-page feature carousel. */
+                            carousel?: {
+                                /**
+                                 * Format: uri
+                                 * @description URL of the slide image asset.
+                                 */
+                                imageUrl: string;
+                                /** @description Slide title. */
+                                title: string;
+                                /** @description Slide description text. */
+                                description: string;
+                            }[];
+                            /** @description FAQ entries rendered on the auth pages. */
+                            faqs?: {
+                                /** @description The question text. */
+                                question: string;
+                                /** @description The answer text. */
+                                answer: string;
+                            }[];
                         };
                         /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
                         links?: {
@@ -1295,6 +1575,28 @@ export interface operations {
                                     /** @description Preferences specific to dashboard behavior. */
                                     dashboard: {
                                         [key: string]: unknown;
+                                    };
+                                    /** @description Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+                                    authBranding?: {
+                                        /** @description Ordered slides rendered in the auth-page feature carousel. */
+                                        carousel?: {
+                                            /**
+                                             * Format: uri
+                                             * @description URL of the slide image asset.
+                                             */
+                                            imageUrl: string;
+                                            /** @description Slide title. */
+                                            title: string;
+                                            /** @description Slide description text. */
+                                            description: string;
+                                        }[];
+                                        /** @description FAQ entries rendered on the auth pages. */
+                                        faqs?: {
+                                            /** @description The question text. */
+                                            question: string;
+                                            /** @description The answer text. */
+                                            answer: string;
+                                        }[];
                                     };
                                     /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
                                     links?: {
@@ -1436,6 +1738,28 @@ export interface operations {
                         dashboard: {
                             [key: string]: unknown;
                         };
+                        /** @description Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+                        authBranding?: {
+                            /** @description Ordered slides rendered in the auth-page feature carousel. */
+                            carousel?: {
+                                /**
+                                 * Format: uri
+                                 * @description URL of the slide image asset.
+                                 */
+                                imageUrl: string;
+                                /** @description Slide title. */
+                                title: string;
+                                /** @description Slide description text. */
+                                description: string;
+                            }[];
+                            /** @description FAQ entries rendered on the auth pages. */
+                            faqs?: {
+                                /** @description The question text. */
+                                question: string;
+                                /** @description The answer text. */
+                                answer: string;
+                            }[];
+                        };
                         /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
                         links?: {
                             /**
@@ -1543,6 +1867,28 @@ export interface operations {
                                     /** @description Preferences specific to dashboard behavior. */
                                     dashboard: {
                                         [key: string]: unknown;
+                                    };
+                                    /** @description Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+                                    authBranding?: {
+                                        /** @description Ordered slides rendered in the auth-page feature carousel. */
+                                        carousel?: {
+                                            /**
+                                             * Format: uri
+                                             * @description URL of the slide image asset.
+                                             */
+                                            imageUrl: string;
+                                            /** @description Slide title. */
+                                            title: string;
+                                            /** @description Slide description text. */
+                                            description: string;
+                                        }[];
+                                        /** @description FAQ entries rendered on the auth pages. */
+                                        faqs?: {
+                                            /** @description The question text. */
+                                            question: string;
+                                            /** @description The answer text. */
+                                            answer: string;
+                                        }[];
                                     };
                                     /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
                                     links?: {
@@ -1793,6 +2139,28 @@ export interface operations {
                                     dashboard: {
                                         [key: string]: unknown;
                                     };
+                                    /** @description Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+                                    authBranding?: {
+                                        /** @description Ordered slides rendered in the auth-page feature carousel. */
+                                        carousel?: {
+                                            /**
+                                             * Format: uri
+                                             * @description URL of the slide image asset.
+                                             */
+                                            imageUrl: string;
+                                            /** @description Slide title. */
+                                            title: string;
+                                            /** @description Slide description text. */
+                                            description: string;
+                                        }[];
+                                        /** @description FAQ entries rendered on the auth pages. */
+                                        faqs?: {
+                                            /** @description The question text. */
+                                            question: string;
+                                            /** @description The answer text. */
+                                            answer: string;
+                                        }[];
+                                    };
                                     /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
                                     links?: {
                                         /**
@@ -1938,6 +2306,28 @@ export interface operations {
                         dashboard: {
                             [key: string]: unknown;
                         };
+                        /** @description Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+                        authBranding?: {
+                            /** @description Ordered slides rendered in the auth-page feature carousel. */
+                            carousel?: {
+                                /**
+                                 * Format: uri
+                                 * @description URL of the slide image asset.
+                                 */
+                                imageUrl: string;
+                                /** @description Slide title. */
+                                title: string;
+                                /** @description Slide description text. */
+                                description: string;
+                            }[];
+                            /** @description FAQ entries rendered on the auth pages. */
+                            faqs?: {
+                                /** @description The question text. */
+                                question: string;
+                                /** @description The answer text. */
+                                answer: string;
+                            }[];
+                        };
                         /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
                         links?: {
                             /**
@@ -2045,6 +2435,28 @@ export interface operations {
                                     /** @description Preferences specific to dashboard behavior. */
                                     dashboard: {
                                         [key: string]: unknown;
+                                    };
+                                    /** @description Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+                                    authBranding?: {
+                                        /** @description Ordered slides rendered in the auth-page feature carousel. */
+                                        carousel?: {
+                                            /**
+                                             * Format: uri
+                                             * @description URL of the slide image asset.
+                                             */
+                                            imageUrl: string;
+                                            /** @description Slide title. */
+                                            title: string;
+                                            /** @description Slide description text. */
+                                            description: string;
+                                        }[];
+                                        /** @description FAQ entries rendered on the auth pages. */
+                                        faqs?: {
+                                            /** @description The question text. */
+                                            question: string;
+                                            /** @description The answer text. */
+                                            answer: string;
+                                        }[];
                                     };
                                     /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
                                     links?: {
@@ -2251,6 +2663,28 @@ export interface operations {
                             /** @description Preferences specific to dashboard behavior. */
                             dashboard: {
                                 [key: string]: unknown;
+                            };
+                            /** @description Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults. */
+                            authBranding?: {
+                                /** @description Ordered slides rendered in the auth-page feature carousel. */
+                                carousel?: {
+                                    /**
+                                     * Format: uri
+                                     * @description URL of the slide image asset.
+                                     */
+                                    imageUrl: string;
+                                    /** @description Slide title. */
+                                    title: string;
+                                    /** @description Slide description text. */
+                                    description: string;
+                                }[];
+                                /** @description FAQ entries rendered on the auth pages. */
+                                faqs?: {
+                                    /** @description The question text. */
+                                    question: string;
+                                    /** @description The answer text. */
+                                    answer: string;
+                                }[];
                             };
                             /** @description Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults. */
                             links?: {

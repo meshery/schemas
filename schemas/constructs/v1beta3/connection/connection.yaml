@@ -77,18 +77,7 @@ properties:
     type: string
     description: Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github)
     maxLength: 255
-  model:
-    $ref: ../../v1beta1/model/api.yml#/components/schemas/ModelDefinition
-    x-go-type: "*modelv1beta1.ModelDefinition"
-    x-go-type-import:
-      path: github.com/meshery/schemas/models/v1beta1/model
-      name: modelv1beta1
-    x-order: 7
-    description: Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
-    x-oapi-codegen-extra-tags:
-      gorm: foreignKey:ModelID;references:ID
-      json: model
-      yaml: model
+
   modelReference:
     $ref: ../../v1beta1/model/api.yml#/components/schemas/ModelReference
     x-go-type: modelv1beta1.ModelReference
@@ -98,16 +87,10 @@ properties:
     x-order: 8
     description: Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
     x-oapi-codegen-extra-tags:
-      gorm: "-"
-  modelId:
-    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
-    description: Foreign key to the model to which the component belongs. Populated by the ORM from the `model_id` column and suppressed on the JSON wire; consumers use the nested `model` object for wire-level access.
-    x-go-name: ModelID
-    x-oapi-codegen-extra-tags:
-      gorm: column:model_id
-      db: model_id
-      yaml: "-"
-      json: "-"
+      gorm: "model_reference"
+      db: "model_reference"
+      json: "modelReference"
+      yaml: "modelReference"
 
   metadata:
     x-oapi-codegen-extra-tags:
@@ -145,6 +128,7 @@ properties:
     $ref: ../../v1beta2/core/api.yml#/components/schemas/ComponentStyles
     x-oapi-codegen-extra-tags:
       gorm: type:bytes;serializer:json
+      db: "-"
       yaml: styles
       json: styles
     x-go-type: core.ComponentStyles
@@ -178,6 +162,7 @@ properties:
     x-go-type-skip-optional-pointer: true
     x-oapi-codegen-extra-tags:
       gorm: type:bytes;serializer:json
+      db: "-"
       json: "transitionMap,omitempty"
     x-order: 18
   owner:

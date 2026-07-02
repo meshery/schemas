@@ -150,11 +150,11 @@ export interface components {
                 deletedAt?: string;
             }[];
             /** @description Total number of credentials across all pages. */
-            total_count: number;
+            totalCount: number;
             /** @description Current page number (zero-based). */
             page: number;
             /** @description Number of credentials per page. */
-            page_size: number;
+            pageSize: number;
         };
     };
     responses: {
@@ -202,7 +202,12 @@ export interface components {
         credentialIdQuery: string;
         /** @description Get responses by page */
         page: string;
-        /** @description Get responses by pagesize */
+        /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+        pageSize: number;
+        /**
+         * @deprecated
+         * @description Get responses by pagesize. Deprecated alias of pageSize.
+         */
         pagesize: string;
         /** @description Get responses that match search param value */
         search: string;
@@ -220,7 +225,12 @@ export interface operations {
             query?: {
                 /** @description Get responses by page */
                 page?: string;
-                /** @description Get responses by pagesize */
+                /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+                pageSize?: number;
+                /**
+                 * @deprecated
+                 * @description Get responses by pagesize. Deprecated alias of pageSize.
+                 */
                 pagesize?: string;
                 /** @description Get responses that match search param value */
                 search?: string;
@@ -275,11 +285,11 @@ export interface operations {
                             deletedAt?: string;
                         }[];
                         /** @description Total number of credentials across all pages. */
-                        total_count: number;
+                        totalCount: number;
                         /** @description Current page number (zero-based). */
                         page: number;
                         /** @description Number of credentials per page. */
-                        page_size: number;
+                        pageSize: number;
                     };
                 };
             };

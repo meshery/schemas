@@ -1545,10 +1545,21 @@ const AcademySchema: Record<string, unknown> = {
             }
           },
           {
-            "name": "pagesize",
+            "name": "pageSize",
             "in": "query",
             "description": "Number of results per page",
             "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "pagesize",
+            "in": "query",
+            "description": "Number of results per page. Deprecated alias of pageSize.",
+            "required": false,
+            "deprecated": true,
             "schema": {
               "type": "integer"
             }
@@ -2698,7 +2709,7 @@ const AcademySchema: Record<string, unknown> = {
                         "path": "github.com/gofrs/uuid"
                       },
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id"
+                        "db": "owner"
                       }
                     },
                     "status": {
@@ -2977,7 +2988,7 @@ const AcademySchema: Record<string, unknown> = {
                         "path": "github.com/gofrs/uuid"
                       },
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id"
+                        "db": "owner"
                       }
                     },
                     "status": {
@@ -5119,7 +5130,7 @@ const AcademySchema: Record<string, unknown> = {
                         "path": "github.com/gofrs/uuid"
                       },
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id"
+                        "db": "owner"
                       }
                     },
                     "status": {
@@ -7959,10 +7970,21 @@ const AcademySchema: Record<string, unknown> = {
         "description": "Returns a list of academy registrations with user, curricula, and pagination details.",
         "parameters": [
           {
-            "name": "pagesize",
+            "name": "pageSize",
             "in": "query",
             "required": false,
             "description": "Number of results per page",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "pagesize",
+            "in": "query",
+            "required": false,
+            "description": "Number of results per page. Deprecated alias of pageSize.",
+            "deprecated": true,
             "schema": {
               "type": "integer"
             }
@@ -12616,7 +12638,7 @@ const AcademySchema: Record<string, unknown> = {
               "path": "github.com/gofrs/uuid"
             },
             "x-oapi-codegen-extra-tags": {
-              "db": "user_id"
+              "db": "owner"
             }
           },
           "status": {
@@ -13755,7 +13777,7 @@ const AcademySchema: Record<string, unknown> = {
                     "path": "github.com/gofrs/uuid"
                   },
                   "x-oapi-codegen-extra-tags": {
-                    "db": "user_id"
+                    "db": "owner"
                   }
                 },
                 "status": {
@@ -15289,7 +15311,7 @@ const AcademySchema: Record<string, unknown> = {
               "path": "github.com/gofrs/uuid"
             },
             "x-oapi-codegen-extra-tags": {
-              "db": "user_id"
+              "db": "owner"
             }
           },
           "createdAt": {

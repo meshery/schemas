@@ -207,7 +207,12 @@ export interface components {
         keyId: string;
         /** @description Get responses by page */
         page: string;
-        /** @description Get responses by pagesize */
+        /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+        pageSize: number;
+        /**
+         * @deprecated
+         * @description Get responses by pagesize. Deprecated alias of pageSize.
+         */
         pagesize: string;
         /** @description Get ordered responses */
         order: string;
@@ -225,7 +230,12 @@ export interface operations {
             query?: {
                 /** @description Get responses by page */
                 page?: string;
-                /** @description Get responses by pagesize */
+                /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+                pageSize?: number;
+                /**
+                 * @deprecated
+                 * @description Get responses by pagesize. Deprecated alias of pageSize.
+                 */
                 pagesize?: string;
             };
             header?: never;
@@ -323,7 +333,12 @@ export interface operations {
             query?: {
                 /** @description Get responses by page */
                 page?: string;
-                /** @description Get responses by pagesize */
+                /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+                pageSize?: number;
+                /**
+                 * @deprecated
+                 * @description Get responses by pagesize. Deprecated alias of pageSize.
+                 */
                 pagesize?: string;
                 /** @description Get responses that match search param value */
                 search?: string;

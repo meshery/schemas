@@ -597,7 +597,89 @@ const UserSchema: Record<string, unknown> = {
                                 "type": "array",
                                 "description": "Team memberships for the user with their assigned roles.",
                                 "items": {
-                                  "type": "object"
+                                  "type": "object",
+                                  "additionalProperties": false,
+                                  "description": "A team the user is a member of, together with the names of the roles assigned to that user within the team. Returned as an item of User.teams.teams_with_roles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                                  "required": [
+                                    "id",
+                                    "name",
+                                    "role_names"
+                                  ],
+                                  "properties": {
+                                    "id": {
+                                      "description": "Unique identifier of the team.",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "id",
+                                        "json": "id"
+                                      },
+                                      "type": "string",
+                                      "format": "uuid",
+                                      "x-go-type": "uuid.UUID",
+                                      "x-go-type-import": {
+                                        "path": "github.com/gofrs/uuid"
+                                      }
+                                    },
+                                    "name": {
+                                      "type": "string",
+                                      "description": "Name of the team.",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "name",
+                                        "json": "name"
+                                      }
+                                    },
+                                    "description": {
+                                      "type": "string",
+                                      "description": "Human readable description of the team.",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "description",
+                                        "json": "description"
+                                      }
+                                    },
+                                    "owner": {
+                                      "description": "Identifier of the team owner.",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "owner",
+                                        "json": "owner"
+                                      },
+                                      "type": "string",
+                                      "format": "uuid",
+                                      "x-go-type": "uuid.UUID",
+                                      "x-go-type-import": {
+                                        "path": "github.com/gofrs/uuid"
+                                      }
+                                    },
+                                    "created_at": {
+                                      "description": "Timestamp when the team was created.",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "created_at",
+                                        "json": "created_at"
+                                      },
+                                      "type": "string",
+                                      "format": "date-time",
+                                      "x-go-type-skip-optional-pointer": true
+                                    },
+                                    "updated_at": {
+                                      "description": "Timestamp when the team was last updated.",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "updated_at",
+                                        "json": "updated_at"
+                                      },
+                                      "type": "string",
+                                      "format": "date-time",
+                                      "x-go-type-skip-optional-pointer": true
+                                    },
+                                    "role_names": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      },
+                                      "description": "Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "role_names",
+                                        "json": "role_names"
+                                      }
+                                    }
+                                  }
                                 },
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "teams_with_roles",
@@ -627,7 +709,89 @@ const UserSchema: Record<string, unknown> = {
                                 "type": "array",
                                 "description": "Organization memberships for the user with their assigned roles.",
                                 "items": {
-                                  "type": "object"
+                                  "type": "object",
+                                  "additionalProperties": false,
+                                  "description": "An organization the user is a member of, together with the names of the roles assigned to that user within the organization. Returned as an item of User.organizations.organizations_with_roles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                                  "required": [
+                                    "id",
+                                    "name",
+                                    "role_names"
+                                  ],
+                                  "properties": {
+                                    "id": {
+                                      "description": "Unique identifier of the organization.",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "id",
+                                        "json": "id"
+                                      },
+                                      "type": "string",
+                                      "format": "uuid",
+                                      "x-go-type": "uuid.UUID",
+                                      "x-go-type-import": {
+                                        "path": "github.com/gofrs/uuid"
+                                      }
+                                    },
+                                    "name": {
+                                      "type": "string",
+                                      "description": "Name of the organization.",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "name",
+                                        "json": "name"
+                                      }
+                                    },
+                                    "description": {
+                                      "type": "string",
+                                      "description": "Human readable description of the organization.",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "description",
+                                        "json": "description"
+                                      }
+                                    },
+                                    "owner": {
+                                      "description": "Identifier of the organization owner.",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "owner",
+                                        "json": "owner"
+                                      },
+                                      "type": "string",
+                                      "format": "uuid",
+                                      "x-go-type": "uuid.UUID",
+                                      "x-go-type-import": {
+                                        "path": "github.com/gofrs/uuid"
+                                      }
+                                    },
+                                    "created_at": {
+                                      "description": "Timestamp when the organization was created.",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "created_at",
+                                        "json": "created_at"
+                                      },
+                                      "type": "string",
+                                      "format": "date-time",
+                                      "x-go-type-skip-optional-pointer": true
+                                    },
+                                    "updated_at": {
+                                      "description": "Timestamp when the organization was last updated.",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "updated_at",
+                                        "json": "updated_at"
+                                      },
+                                      "type": "string",
+                                      "format": "date-time",
+                                      "x-go-type-skip-optional-pointer": true
+                                    },
+                                    "role_names": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      },
+                                      "description": "Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "role_names",
+                                        "json": "role_names"
+                                      }
+                                    }
+                                  }
                                 },
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "organizations_with_roles",
@@ -1229,7 +1393,89 @@ const UserSchema: Record<string, unknown> = {
                                 "type": "array",
                                 "description": "Team memberships for the user with their assigned roles.",
                                 "items": {
-                                  "type": "object"
+                                  "type": "object",
+                                  "additionalProperties": false,
+                                  "description": "A team the user is a member of, together with the names of the roles assigned to that user within the team. Returned as an item of User.teams.teams_with_roles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                                  "required": [
+                                    "id",
+                                    "name",
+                                    "role_names"
+                                  ],
+                                  "properties": {
+                                    "id": {
+                                      "description": "Unique identifier of the team.",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "id",
+                                        "json": "id"
+                                      },
+                                      "type": "string",
+                                      "format": "uuid",
+                                      "x-go-type": "uuid.UUID",
+                                      "x-go-type-import": {
+                                        "path": "github.com/gofrs/uuid"
+                                      }
+                                    },
+                                    "name": {
+                                      "type": "string",
+                                      "description": "Name of the team.",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "name",
+                                        "json": "name"
+                                      }
+                                    },
+                                    "description": {
+                                      "type": "string",
+                                      "description": "Human readable description of the team.",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "description",
+                                        "json": "description"
+                                      }
+                                    },
+                                    "owner": {
+                                      "description": "Identifier of the team owner.",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "owner",
+                                        "json": "owner"
+                                      },
+                                      "type": "string",
+                                      "format": "uuid",
+                                      "x-go-type": "uuid.UUID",
+                                      "x-go-type-import": {
+                                        "path": "github.com/gofrs/uuid"
+                                      }
+                                    },
+                                    "created_at": {
+                                      "description": "Timestamp when the team was created.",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "created_at",
+                                        "json": "created_at"
+                                      },
+                                      "type": "string",
+                                      "format": "date-time",
+                                      "x-go-type-skip-optional-pointer": true
+                                    },
+                                    "updated_at": {
+                                      "description": "Timestamp when the team was last updated.",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "updated_at",
+                                        "json": "updated_at"
+                                      },
+                                      "type": "string",
+                                      "format": "date-time",
+                                      "x-go-type-skip-optional-pointer": true
+                                    },
+                                    "role_names": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      },
+                                      "description": "Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "role_names",
+                                        "json": "role_names"
+                                      }
+                                    }
+                                  }
                                 },
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "teams_with_roles",
@@ -1259,7 +1505,89 @@ const UserSchema: Record<string, unknown> = {
                                 "type": "array",
                                 "description": "Organization memberships for the user with their assigned roles.",
                                 "items": {
-                                  "type": "object"
+                                  "type": "object",
+                                  "additionalProperties": false,
+                                  "description": "An organization the user is a member of, together with the names of the roles assigned to that user within the organization. Returned as an item of User.organizations.organizations_with_roles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                                  "required": [
+                                    "id",
+                                    "name",
+                                    "role_names"
+                                  ],
+                                  "properties": {
+                                    "id": {
+                                      "description": "Unique identifier of the organization.",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "id",
+                                        "json": "id"
+                                      },
+                                      "type": "string",
+                                      "format": "uuid",
+                                      "x-go-type": "uuid.UUID",
+                                      "x-go-type-import": {
+                                        "path": "github.com/gofrs/uuid"
+                                      }
+                                    },
+                                    "name": {
+                                      "type": "string",
+                                      "description": "Name of the organization.",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "name",
+                                        "json": "name"
+                                      }
+                                    },
+                                    "description": {
+                                      "type": "string",
+                                      "description": "Human readable description of the organization.",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "description",
+                                        "json": "description"
+                                      }
+                                    },
+                                    "owner": {
+                                      "description": "Identifier of the organization owner.",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "owner",
+                                        "json": "owner"
+                                      },
+                                      "type": "string",
+                                      "format": "uuid",
+                                      "x-go-type": "uuid.UUID",
+                                      "x-go-type-import": {
+                                        "path": "github.com/gofrs/uuid"
+                                      }
+                                    },
+                                    "created_at": {
+                                      "description": "Timestamp when the organization was created.",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "created_at",
+                                        "json": "created_at"
+                                      },
+                                      "type": "string",
+                                      "format": "date-time",
+                                      "x-go-type-skip-optional-pointer": true
+                                    },
+                                    "updated_at": {
+                                      "description": "Timestamp when the organization was last updated.",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "updated_at",
+                                        "json": "updated_at"
+                                      },
+                                      "type": "string",
+                                      "format": "date-time",
+                                      "x-go-type-skip-optional-pointer": true
+                                    },
+                                    "role_names": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      },
+                                      "description": "Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "role_names",
+                                        "json": "role_names"
+                                      }
+                                    }
+                                  }
                                 },
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "organizations_with_roles",
@@ -1803,7 +2131,89 @@ const UserSchema: Record<string, unknown> = {
                           "type": "array",
                           "description": "Team memberships for the user with their assigned roles.",
                           "items": {
-                            "type": "object"
+                            "type": "object",
+                            "additionalProperties": false,
+                            "description": "A team the user is a member of, together with the names of the roles assigned to that user within the team. Returned as an item of User.teams.teams_with_roles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                            "required": [
+                              "id",
+                              "name",
+                              "role_names"
+                            ],
+                            "properties": {
+                              "id": {
+                                "description": "Unique identifier of the team.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "id",
+                                  "json": "id"
+                                },
+                                "type": "string",
+                                "format": "uuid",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                }
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "Name of the team.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "name",
+                                  "json": "name"
+                                }
+                              },
+                              "description": {
+                                "type": "string",
+                                "description": "Human readable description of the team.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "description",
+                                  "json": "description"
+                                }
+                              },
+                              "owner": {
+                                "description": "Identifier of the team owner.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "owner",
+                                  "json": "owner"
+                                },
+                                "type": "string",
+                                "format": "uuid",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                }
+                              },
+                              "created_at": {
+                                "description": "Timestamp when the team was created.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "created_at",
+                                  "json": "created_at"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "updated_at": {
+                                "description": "Timestamp when the team was last updated.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "updated_at",
+                                  "json": "updated_at"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "role_names": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "description": "Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "role_names",
+                                  "json": "role_names"
+                                }
+                              }
+                            }
                           },
                           "x-oapi-codegen-extra-tags": {
                             "db": "teams_with_roles",
@@ -1833,7 +2243,89 @@ const UserSchema: Record<string, unknown> = {
                           "type": "array",
                           "description": "Organization memberships for the user with their assigned roles.",
                           "items": {
-                            "type": "object"
+                            "type": "object",
+                            "additionalProperties": false,
+                            "description": "An organization the user is a member of, together with the names of the roles assigned to that user within the organization. Returned as an item of User.organizations.organizations_with_roles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                            "required": [
+                              "id",
+                              "name",
+                              "role_names"
+                            ],
+                            "properties": {
+                              "id": {
+                                "description": "Unique identifier of the organization.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "id",
+                                  "json": "id"
+                                },
+                                "type": "string",
+                                "format": "uuid",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                }
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "Name of the organization.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "name",
+                                  "json": "name"
+                                }
+                              },
+                              "description": {
+                                "type": "string",
+                                "description": "Human readable description of the organization.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "description",
+                                  "json": "description"
+                                }
+                              },
+                              "owner": {
+                                "description": "Identifier of the organization owner.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "owner",
+                                  "json": "owner"
+                                },
+                                "type": "string",
+                                "format": "uuid",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                }
+                              },
+                              "created_at": {
+                                "description": "Timestamp when the organization was created.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "created_at",
+                                  "json": "created_at"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "updated_at": {
+                                "description": "Timestamp when the organization was last updated.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "updated_at",
+                                  "json": "updated_at"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "role_names": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "description": "Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "role_names",
+                                  "json": "role_names"
+                                }
+                              }
+                            }
                           },
                           "x-oapi-codegen-extra-tags": {
                             "db": "organizations_with_roles",
@@ -2366,7 +2858,89 @@ const UserSchema: Record<string, unknown> = {
                           "type": "array",
                           "description": "Team memberships for the user with their assigned roles.",
                           "items": {
-                            "type": "object"
+                            "type": "object",
+                            "additionalProperties": false,
+                            "description": "A team the user is a member of, together with the names of the roles assigned to that user within the team. Returned as an item of User.teams.teams_with_roles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                            "required": [
+                              "id",
+                              "name",
+                              "role_names"
+                            ],
+                            "properties": {
+                              "id": {
+                                "description": "Unique identifier of the team.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "id",
+                                  "json": "id"
+                                },
+                                "type": "string",
+                                "format": "uuid",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                }
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "Name of the team.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "name",
+                                  "json": "name"
+                                }
+                              },
+                              "description": {
+                                "type": "string",
+                                "description": "Human readable description of the team.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "description",
+                                  "json": "description"
+                                }
+                              },
+                              "owner": {
+                                "description": "Identifier of the team owner.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "owner",
+                                  "json": "owner"
+                                },
+                                "type": "string",
+                                "format": "uuid",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                }
+                              },
+                              "created_at": {
+                                "description": "Timestamp when the team was created.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "created_at",
+                                  "json": "created_at"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "updated_at": {
+                                "description": "Timestamp when the team was last updated.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "updated_at",
+                                  "json": "updated_at"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "role_names": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "description": "Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "role_names",
+                                  "json": "role_names"
+                                }
+                              }
+                            }
                           },
                           "x-oapi-codegen-extra-tags": {
                             "db": "teams_with_roles",
@@ -2396,7 +2970,89 @@ const UserSchema: Record<string, unknown> = {
                           "type": "array",
                           "description": "Organization memberships for the user with their assigned roles.",
                           "items": {
-                            "type": "object"
+                            "type": "object",
+                            "additionalProperties": false,
+                            "description": "An organization the user is a member of, together with the names of the roles assigned to that user within the organization. Returned as an item of User.organizations.organizations_with_roles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                            "required": [
+                              "id",
+                              "name",
+                              "role_names"
+                            ],
+                            "properties": {
+                              "id": {
+                                "description": "Unique identifier of the organization.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "id",
+                                  "json": "id"
+                                },
+                                "type": "string",
+                                "format": "uuid",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                }
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "Name of the organization.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "name",
+                                  "json": "name"
+                                }
+                              },
+                              "description": {
+                                "type": "string",
+                                "description": "Human readable description of the organization.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "description",
+                                  "json": "description"
+                                }
+                              },
+                              "owner": {
+                                "description": "Identifier of the organization owner.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "owner",
+                                  "json": "owner"
+                                },
+                                "type": "string",
+                                "format": "uuid",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                }
+                              },
+                              "created_at": {
+                                "description": "Timestamp when the organization was created.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "created_at",
+                                  "json": "created_at"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "updated_at": {
+                                "description": "Timestamp when the organization was last updated.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "updated_at",
+                                  "json": "updated_at"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "role_names": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "description": "Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "role_names",
+                                  "json": "role_names"
+                                }
+                              }
+                            }
                           },
                           "x-oapi-codegen-extra-tags": {
                             "db": "organizations_with_roles",
@@ -3042,7 +3698,89 @@ const UserSchema: Record<string, unknown> = {
                 "type": "array",
                 "description": "Team memberships for the user with their assigned roles.",
                 "items": {
-                  "type": "object"
+                  "type": "object",
+                  "additionalProperties": false,
+                  "description": "A team the user is a member of, together with the names of the roles assigned to that user within the team. Returned as an item of User.teams.teams_with_roles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                  "required": [
+                    "id",
+                    "name",
+                    "role_names"
+                  ],
+                  "properties": {
+                    "id": {
+                      "description": "Unique identifier of the team.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "id",
+                        "json": "id"
+                      },
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Name of the team.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "name",
+                        "json": "name"
+                      }
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "Human readable description of the team.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "description",
+                        "json": "description"
+                      }
+                    },
+                    "owner": {
+                      "description": "Identifier of the team owner.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "owner",
+                        "json": "owner"
+                      },
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    },
+                    "created_at": {
+                      "description": "Timestamp when the team was created.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at",
+                        "json": "created_at"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "updated_at": {
+                      "description": "Timestamp when the team was last updated.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at",
+                        "json": "updated_at"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "role_names": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "role_names",
+                        "json": "role_names"
+                      }
+                    }
+                  }
                 },
                 "x-oapi-codegen-extra-tags": {
                   "db": "teams_with_roles",
@@ -3072,7 +3810,89 @@ const UserSchema: Record<string, unknown> = {
                 "type": "array",
                 "description": "Organization memberships for the user with their assigned roles.",
                 "items": {
-                  "type": "object"
+                  "type": "object",
+                  "additionalProperties": false,
+                  "description": "An organization the user is a member of, together with the names of the roles assigned to that user within the organization. Returned as an item of User.organizations.organizations_with_roles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                  "required": [
+                    "id",
+                    "name",
+                    "role_names"
+                  ],
+                  "properties": {
+                    "id": {
+                      "description": "Unique identifier of the organization.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "id",
+                        "json": "id"
+                      },
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Name of the organization.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "name",
+                        "json": "name"
+                      }
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "Human readable description of the organization.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "description",
+                        "json": "description"
+                      }
+                    },
+                    "owner": {
+                      "description": "Identifier of the organization owner.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "owner",
+                        "json": "owner"
+                      },
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    },
+                    "created_at": {
+                      "description": "Timestamp when the organization was created.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at",
+                        "json": "created_at"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "updated_at": {
+                      "description": "Timestamp when the organization was last updated.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at",
+                        "json": "updated_at"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "role_names": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "role_names",
+                        "json": "role_names"
+                      }
+                    }
+                  }
                 },
                 "x-oapi-codegen-extra-tags": {
                   "db": "organizations_with_roles",
@@ -3092,6 +3912,176 @@ const UserSchema: Record<string, unknown> = {
           }
         },
         "additionalProperties": false
+      },
+      "TeamWithRoles": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "A team the user is a member of, together with the names of the roles assigned to that user within the team. Returned as an item of User.teams.teams_with_roles. The role names are dynamic, user-generated values (no fixed enumeration).",
+        "required": [
+          "id",
+          "name",
+          "role_names"
+        ],
+        "properties": {
+          "id": {
+            "description": "Unique identifier of the team.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "id",
+              "json": "id"
+            },
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the team.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "name",
+              "json": "name"
+            }
+          },
+          "description": {
+            "type": "string",
+            "description": "Human readable description of the team.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "description",
+              "json": "description"
+            }
+          },
+          "owner": {
+            "description": "Identifier of the team owner.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "owner",
+              "json": "owner"
+            },
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
+          "created_at": {
+            "description": "Timestamp when the team was created.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "created_at",
+              "json": "created_at"
+            },
+            "type": "string",
+            "format": "date-time",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "updated_at": {
+            "description": "Timestamp when the team was last updated.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "updated_at",
+              "json": "updated_at"
+            },
+            "type": "string",
+            "format": "date-time",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "role_names": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "role_names",
+              "json": "role_names"
+            }
+          }
+        }
+      },
+      "OrganizationWithRoles": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "An organization the user is a member of, together with the names of the roles assigned to that user within the organization. Returned as an item of User.organizations.organizations_with_roles. The role names are dynamic, user-generated values (no fixed enumeration).",
+        "required": [
+          "id",
+          "name",
+          "role_names"
+        ],
+        "properties": {
+          "id": {
+            "description": "Unique identifier of the organization.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "id",
+              "json": "id"
+            },
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the organization.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "name",
+              "json": "name"
+            }
+          },
+          "description": {
+            "type": "string",
+            "description": "Human readable description of the organization.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "description",
+              "json": "description"
+            }
+          },
+          "owner": {
+            "description": "Identifier of the organization owner.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "owner",
+              "json": "owner"
+            },
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
+          "created_at": {
+            "description": "Timestamp when the organization was created.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "created_at",
+              "json": "created_at"
+            },
+            "type": "string",
+            "format": "date-time",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "updated_at": {
+            "description": "Timestamp when the organization was last updated.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "updated_at",
+              "json": "updated_at"
+            },
+            "type": "string",
+            "format": "date-time",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "role_names": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "role_names",
+              "json": "role_names"
+            }
+          }
+        }
       },
       "UsersPageForAdmin": {
         "type": "object",
@@ -3564,7 +4554,89 @@ const UserSchema: Record<string, unknown> = {
                       "type": "array",
                       "description": "Team memberships for the user with their assigned roles.",
                       "items": {
-                        "type": "object"
+                        "type": "object",
+                        "additionalProperties": false,
+                        "description": "A team the user is a member of, together with the names of the roles assigned to that user within the team. Returned as an item of User.teams.teams_with_roles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                        "required": [
+                          "id",
+                          "name",
+                          "role_names"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "Unique identifier of the team.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "id",
+                              "json": "id"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Name of the team.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "name",
+                              "json": "name"
+                            }
+                          },
+                          "description": {
+                            "type": "string",
+                            "description": "Human readable description of the team.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "description",
+                              "json": "description"
+                            }
+                          },
+                          "owner": {
+                            "description": "Identifier of the team owner.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "owner",
+                              "json": "owner"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "created_at": {
+                            "description": "Timestamp when the team was created.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at",
+                              "json": "created_at"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "updated_at": {
+                            "description": "Timestamp when the team was last updated.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at",
+                              "json": "updated_at"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "role_names": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "role_names",
+                              "json": "role_names"
+                            }
+                          }
+                        }
                       },
                       "x-oapi-codegen-extra-tags": {
                         "db": "teams_with_roles",
@@ -3594,7 +4666,89 @@ const UserSchema: Record<string, unknown> = {
                       "type": "array",
                       "description": "Organization memberships for the user with their assigned roles.",
                       "items": {
-                        "type": "object"
+                        "type": "object",
+                        "additionalProperties": false,
+                        "description": "An organization the user is a member of, together with the names of the roles assigned to that user within the organization. Returned as an item of User.organizations.organizations_with_roles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                        "required": [
+                          "id",
+                          "name",
+                          "role_names"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "Unique identifier of the organization.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "id",
+                              "json": "id"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Name of the organization.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "name",
+                              "json": "name"
+                            }
+                          },
+                          "description": {
+                            "type": "string",
+                            "description": "Human readable description of the organization.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "description",
+                              "json": "description"
+                            }
+                          },
+                          "owner": {
+                            "description": "Identifier of the organization owner.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "owner",
+                              "json": "owner"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "created_at": {
+                            "description": "Timestamp when the organization was created.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at",
+                              "json": "created_at"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "updated_at": {
+                            "description": "Timestamp when the organization was last updated.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at",
+                              "json": "updated_at"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "role_names": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "role_names",
+                              "json": "role_names"
+                            }
+                          }
+                        }
                       },
                       "x-oapi-codegen-extra-tags": {
                         "db": "organizations_with_roles",
@@ -4090,7 +5244,89 @@ const UserSchema: Record<string, unknown> = {
                       "type": "array",
                       "description": "Team memberships for the user with their assigned roles.",
                       "items": {
-                        "type": "object"
+                        "type": "object",
+                        "additionalProperties": false,
+                        "description": "A team the user is a member of, together with the names of the roles assigned to that user within the team. Returned as an item of User.teams.teams_with_roles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                        "required": [
+                          "id",
+                          "name",
+                          "role_names"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "Unique identifier of the team.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "id",
+                              "json": "id"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Name of the team.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "name",
+                              "json": "name"
+                            }
+                          },
+                          "description": {
+                            "type": "string",
+                            "description": "Human readable description of the team.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "description",
+                              "json": "description"
+                            }
+                          },
+                          "owner": {
+                            "description": "Identifier of the team owner.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "owner",
+                              "json": "owner"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "created_at": {
+                            "description": "Timestamp when the team was created.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at",
+                              "json": "created_at"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "updated_at": {
+                            "description": "Timestamp when the team was last updated.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at",
+                              "json": "updated_at"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "role_names": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "role_names",
+                              "json": "role_names"
+                            }
+                          }
+                        }
                       },
                       "x-oapi-codegen-extra-tags": {
                         "db": "teams_with_roles",
@@ -4120,7 +5356,89 @@ const UserSchema: Record<string, unknown> = {
                       "type": "array",
                       "description": "Organization memberships for the user with their assigned roles.",
                       "items": {
-                        "type": "object"
+                        "type": "object",
+                        "additionalProperties": false,
+                        "description": "An organization the user is a member of, together with the names of the roles assigned to that user within the organization. Returned as an item of User.organizations.organizations_with_roles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                        "required": [
+                          "id",
+                          "name",
+                          "role_names"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "Unique identifier of the organization.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "id",
+                              "json": "id"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Name of the organization.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "name",
+                              "json": "name"
+                            }
+                          },
+                          "description": {
+                            "type": "string",
+                            "description": "Human readable description of the organization.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "description",
+                              "json": "description"
+                            }
+                          },
+                          "owner": {
+                            "description": "Identifier of the organization owner.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "owner",
+                              "json": "owner"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "created_at": {
+                            "description": "Timestamp when the organization was created.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at",
+                              "json": "created_at"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "updated_at": {
+                            "description": "Timestamp when the organization was last updated.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at",
+                              "json": "updated_at"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "role_names": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "role_names",
+                              "json": "role_names"
+                            }
+                          }
+                        }
                       },
                       "x-oapi-codegen-extra-tags": {
                         "db": "organizations_with_roles",

@@ -52,8 +52,15 @@ components:
       $ref: "../../v1alpha1/core/api.yml#/components/parameters/order"
     page:
       $ref: "../../v1alpha1/core/api.yml#/components/parameters/page"
+    pageSize:
+      $ref: "../core/api.yml#/components/parameters/pageSize"
     pagesize:
-      $ref: "../../v1alpha1/core/api.yml#/components/parameters/pagesize"
+      name: pagesize
+      in: query
+      description: Get responses by pagesize. Deprecated alias of pageSize.
+      deprecated: true
+      schema:
+        type: string
     orgIdQuery:
       name: orgId
       in: query
@@ -132,7 +139,7 @@ components:
           x-go-name: UserID
           x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
-            db: user_id
+            db: owner
             json: "userId,omitempty"
         workspaceName:
           type: string
@@ -358,6 +365,7 @@ paths:
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
         - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/pagesize"
         - name: filter
           in: query

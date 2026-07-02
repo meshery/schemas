@@ -8,6 +8,7 @@ const TokenSchema: Record<string, unknown> = {
   "info": {
     "title": "token",
     "x-deprecated": true,
+    "x-superseded-by": "v1beta3",
     "description": "Documentation for Meshery Cloud REST APIs for user tokens and sessions",
     "contact": {
       "name": "Meshery Maintainers",
@@ -139,7 +140,7 @@ const TokenSchema: Record<string, unknown> = {
                             "description": "UUID of the user who owns the token.",
                             "x-order": 2,
                             "x-oapi-codegen-extra-tags": {
-                              "db": "user_id"
+                              "db": "owner"
                             },
                             "type": "string",
                             "format": "uuid",
@@ -352,7 +353,7 @@ const TokenSchema: Record<string, unknown> = {
                             "description": "UUID of the user who owns the token.",
                             "x-order": 2,
                             "x-oapi-codegen-extra-tags": {
-                              "db": "user_id"
+                              "db": "owner"
                             },
                             "type": "string",
                             "format": "uuid",
@@ -573,7 +574,7 @@ const TokenSchema: Record<string, unknown> = {
                             "description": "UUID of the user who owns the token.",
                             "x-order": 2,
                             "x-oapi-codegen-extra-tags": {
-                              "db": "user_id"
+                              "db": "owner"
                             },
                             "type": "string",
                             "format": "uuid",
@@ -783,7 +784,7 @@ const TokenSchema: Record<string, unknown> = {
                       "description": "UUID of the user who owns the token.",
                       "x-order": 2,
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id"
+                        "db": "owner"
                       },
                       "type": "string",
                       "format": "uuid",
@@ -992,7 +993,7 @@ const TokenSchema: Record<string, unknown> = {
                             "description": "UUID of the user who owns the token.",
                             "x-order": 2,
                             "x-oapi-codegen-extra-tags": {
-                              "db": "user_id"
+                              "db": "owner"
                             },
                             "type": "string",
                             "format": "uuid",
@@ -1334,7 +1335,7 @@ const TokenSchema: Record<string, unknown> = {
             "description": "UUID of the user who owns the token.",
             "x-order": 2,
             "x-oapi-codegen-extra-tags": {
-              "db": "user_id"
+              "db": "owner"
             },
             "type": "string",
             "format": "uuid",
@@ -1465,7 +1466,7 @@ const TokenSchema: Record<string, unknown> = {
                   "description": "UUID of the user who owns the token.",
                   "x-order": 2,
                   "x-oapi-codegen-extra-tags": {
-                    "db": "user_id"
+                    "db": "owner"
                   },
                   "type": "string",
                   "format": "uuid",

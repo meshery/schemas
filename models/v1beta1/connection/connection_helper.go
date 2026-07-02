@@ -4,7 +4,6 @@ package connection
 
 import (
 	"crypto/md5"
-	"encoding/hex"
 	"encoding/json"
 	"sync"
 
@@ -23,7 +22,7 @@ func (h *Connection) GenerateID() (uuid.UUID, error) {
 	}
 
 	hash := md5.Sum(byt)
-	return uuid.FromString(hex.EncodeToString(hash[:]))
+	return uuid.UUID(hash), nil
 }
 
 func (h *Connection) Create(db *database.Handler) (uuid.UUID, error) {

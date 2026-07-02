@@ -7,7 +7,7 @@ import (
 	"time"
 
 	core "github.com/meshery/schemas/models/core"
-	openapi_types "github.com/oapi-codegen/runtime/types"
+	"github.com/gofrs/uuid"
 )
 
 // Badge Badge entity — a named recognition issued within an organization.
@@ -49,7 +49,7 @@ type BadgeAssignmentPayload struct {
 	Notify *bool `json:"notify,omitempty" yaml:"notify,omitempty"`
 
 	// UserID ID of the user to receive the badges.
-	UserID openapi_types.UUID `json:"userId" yaml:"userId"`
+	UserID uuid.UUID `json:"userId" yaml:"userId"`
 }
 
 // BadgePayload Payload for creating or updating a badge.
@@ -83,4 +83,4 @@ type BadgesPage struct {
 type BadgeId = core.Uuid
 
 // OrgIdQuery defines model for orgIdQuery.
-type OrgIdQuery = openapi_types.UUID
+type OrgIdQuery = uuid.UUID

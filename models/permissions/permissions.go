@@ -5,7 +5,7 @@ package permissions
 import "github.com/gofrs/uuid"
 
 // Index ID used to generate this file
-const IndexID = "bd27d055e4e03465590fe03b3c10ab61dadbec9fe1fe43b128260ae673d55044"
+const IndexID = "8d7905beb07904185485104a47bb9916237daee1dc5573a431103fa4391a8170"
 
 
 // PermissionKey represents a permission key identifier.
@@ -153,9 +153,6 @@ var (
 	// CatalogManagementDeleteWasmFilter - Delete WASM filter permanently from catalog.
 	CatalogManagementDeleteWasmFilter = PermissionKey(uuid.Must(uuid.FromString("9225d5a7-7255-49be-9233-daeabefae306")))
 
-	// CatalogManagementWasmFilterAndFilter - Import, Unpublish, Publish, Download, Edit, Clone, Delete, Details of WASM Filter
-	CatalogManagementWasmFilterAndFilter = PermissionKey(uuid.Must(uuid.FromString("61a6f8f6-75f0-4bf6-9b04-09062f5731cc")))
-
 	// CollaborationInviteAnyMesheryCloudUserOrAllMesheryUsers - Invite any Meshery Cloud user, or all Meshery users, to work with you on a public design that control – including making changes and releasing new versions.
 	CollaborationInviteAnyMesheryCloudUserOrAllMesheryUsers = PermissionKey(uuid.Must(uuid.FromString("ccc4bc8d-f484-42b3-8a62-2667284605c3")))
 
@@ -250,13 +247,13 @@ var (
 	GitopsBitbucket = PermissionKey(uuid.Must(uuid.FromString("9f236c99-b2ec-4474-9ec8-7c3f8a09e63e")))
 
 	// GitopsGithub - Initiate deployment with creation of pull request
-	GitopsGithub = PermissionKey(uuid.Must(uuid.FromString("9f236c99-b2ec-4474-9ec8-7c3f8a09e63e")))
+	GitopsGithub = PermissionKey(uuid.Must(uuid.FromString("9f236c99-b2ec-4474-9ec8-7c3f8a09e6aa")))
 
 	// GitopsGitlab - Initiate deployment with creation of pull request
-	GitopsGitlab = PermissionKey(uuid.Must(uuid.FromString("9f236c99-b2ec-4474-9ec8-7c3f8a09e63e")))
+	GitopsGitlab = PermissionKey(uuid.Must(uuid.FromString("9f236c99-b2ec-4474-9ec8-7c3f8a09e6bb")))
 
 	// GitopsArgoevents - Initiate deployment with creation of pull request
-	GitopsArgoevents = PermissionKey(uuid.Must(uuid.FromString("81287ea7-5e3f-480c-8b2e-211d62d08797")))
+	GitopsArgoevents = PermissionKey(uuid.Must(uuid.FromString("81287ea7-5e3f-480c-8b2e-211d62d087c7")))
 
 	// GitopsWebhook - Signal pass or fail: to proceed or rollback a deployment
 	GitopsWebhook = PermissionKey(uuid.Must(uuid.FromString("b2b183bd-9aff-469e-9c65-8027b75999aa")))
@@ -420,6 +417,9 @@ var (
 	// IdentityAccessManagementManageInvitations - Create, update , delete and manage invitations to your organization
 	IdentityAccessManagementManageInvitations = PermissionKey(uuid.Must(uuid.FromString("0204fb47-b120-4074-83db-984d595d9f69")))
 
+	// IdentityAccessManagementAllOrgSelector - Ability to use all selector to filter view
+	IdentityAccessManagementAllOrgSelector = PermissionKey(uuid.Must(uuid.FromString("17447fb0-be46-1497-1366-c34e24920f22")))
+
 	// IdentityAccessManagementRoles - No description available
 	IdentityAccessManagementRoles = PermissionKey(uuid.Must(uuid.FromString("9a84a5d0-0a16-11ee-be56-0242ac120002")))
 
@@ -509,6 +509,9 @@ var (
 
 	// LifecycleManagementDeleteAConnection - Delete a connection
 	LifecycleManagementDeleteAConnection = PermissionKey(uuid.Must(uuid.FromString("61afb8c2-cda6-4175-aad9-74ff87fed323")))
+
+	// LifecycleManagementEditConnection - Reconfigure the existing connection or edit the connection information
+	LifecycleManagementEditConnection = PermissionKey(uuid.Must(uuid.FromString("5385852a-8cb7-498c-b3a6-9a0059c25017")))
 
 	// MesherySystemStreamlinedCi - No description available
 	MesherySystemStreamlinedCi = PermissionKey(uuid.Must(uuid.FromString("ff2ea71f-2e28-4b21-89ef-352c509b1247")))
@@ -604,7 +607,7 @@ var (
 	KanvasResetComponentStyles = PermissionKey(uuid.Must(uuid.FromString("faa0cb66-af78-4a6f-84f0-3bfae7254276")))
 
 	// KanvasResizeComponents - A Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to reset a component to it's initial style.
-	KanvasResizeComponents = PermissionKey(uuid.Must(uuid.FromString("e542cb49-ba5a-43b7-bca2-bce4554ee54d")))
+	KanvasResizeComponents = PermissionKey(uuid.Must(uuid.FromString("faa0cb66-af78-4a6f-84f0-3bfae72542aa")))
 
 	// KanvasDeleteShapes - Kanvas Designer allows users to draw shapes, lines, text, add custom styles, images and icons to represent the components and relationships of Kubernetes clusters as they see fit. This permission grants the user the ability to delete a shape from canvas.
 	KanvasDeleteShapes = PermissionKey(uuid.Must(uuid.FromString("436d24e5-4a0d-4298-b94d-394d6e489ec3")))
@@ -750,7 +753,7 @@ var (
 	// KanvasResetCommentStyles - Kanvas’s Designer enables users to place comments “inline” within designs. Comments can be used to offer feedback to team members, take detailed design notes, capture helpful tips for team members, and include justification as to infrastructure and application configuration decisions. This permission grants the user the ability to reset the styles of a comment on canvas.
 	KanvasResetCommentStyles = PermissionKey(uuid.Must(uuid.FromString("c9c6d2bf-e566-49c8-bee0-bc6cf84cb8a8")))
 
-	// KanvasViewViews - See all views withing a workspace
+	// KanvasViewViews - See all views within a workspace
 	KanvasViewViews = PermissionKey(uuid.Must(uuid.FromString("93cba7f8-82ec-4a64-b384-f81d6acc8db3")))
 
 	// KanvasCreateView - Create a new view
@@ -787,10 +790,10 @@ var (
 	KanvasCloneViews = PermissionKey(uuid.Must(uuid.FromString("258c7e18-9ac4-41d7-a637-7f12a7f24df7")))
 
 	// KanvasWebBasedTerminal - Direct terminal access to one ore more pods/containers simultaneously. Integrated experience.
-	KanvasWebBasedTerminal = PermissionKey(uuid.Must(uuid.FromString("48483d03-a41f-41c4-a016-b5756bfecde3")))
+	KanvasWebBasedTerminal = PermissionKey(uuid.Must(uuid.FromString("4726da45-2108-409b-b94f-45bd1e199a78")))
 
 	// KanvasViewInteractiveTerminal - View Interactive Terminal
-	KanvasViewInteractiveTerminal = PermissionKey(uuid.Must(uuid.FromString("4726da45-2108-409b-b94f-45bd1e199a78")))
+	KanvasViewInteractiveTerminal = PermissionKey(uuid.Must(uuid.FromString("4726da45-2108-409b-b94f-45bd1e199c78")))
 
 	// KanvasViewComponentDetails - View managed infrastructure resources details in Kanvas Operator
 	KanvasViewComponentDetails = PermissionKey(uuid.Must(uuid.FromString("5d1e226b-cc0c-407c-8fa7-37159d06698d")))
@@ -925,10 +928,10 @@ var (
 	PerformanceManagementAnalysis = PermissionKey(uuid.Must(uuid.FromString("d9e286d5-54f1-446f-9c1a-ece361e5aca1")))
 
 	// PerformanceManagementMesheryAdapterForNighthawk - Creation of Meshery Nighthawk Adapter. Refactoring of Nighhawk and decoupling it from Meshery container. Lifecycle management of adapter. Definition and registration of adapter capabilities.
-	PerformanceManagementMesheryAdapterForNighthawk = PermissionKey(uuid.Must(uuid.FromString("72066352-d09b-494a-b02e-846676bd7a0a")))
+	PerformanceManagementMesheryAdapterForNighthawk = PermissionKey(uuid.Must(uuid.FromString("72066352-d09b-aa4a-b02e-846676bd7aca")))
 
 	// PerformanceManagementDistributedTests - Allow users to identity Kubernetes clusters
-	PerformanceManagementDistributedTests = PermissionKey(uuid.Must(uuid.FromString("72066352-d09b-494a-b02e-846676bd7a0a")))
+	PerformanceManagementDistributedTests = PermissionKey(uuid.Must(uuid.FromString("72066352-d09b-bb4a-b02e-846676bd7ada")))
 
 	// PerformanceManagementAddPerformaceProfile - Add a new performace profile
 	PerformanceManagementAddPerformaceProfile = PermissionKey(uuid.Must(uuid.FromString("b2861578-c573-45fe-a95e-0356d56e1d1b")))
@@ -1001,6 +1004,9 @@ var (
 
 	// SecurityManagementCreateToken - No description available
 	SecurityManagementCreateToken = PermissionKey(uuid.Must(uuid.FromString("8aa0df56-57e8-44b7-9d6e-7df413048ed5")))
+
+	// SecurityManagementDeleteToken - Delete a Token
+	SecurityManagementDeleteToken = PermissionKey(uuid.Must(uuid.FromString("ddba5064-ac3c-470e-b405-d2a0e99db477")))
 
 	// SecurityManagementViewKeys - No description available
 	SecurityManagementViewKeys = PermissionKey(uuid.Must(uuid.FromString("3cf506df-8398-49d2-b4e2-f06e3a0f87f0")))
@@ -1080,6 +1086,9 @@ var (
 	// WorkspaceManagementConnectGithubAccountToWorkspace - No description available
 	WorkspaceManagementConnectGithubAccountToWorkspace = PermissionKey(uuid.Must(uuid.FromString("410b2d3c-8194-44d1-9f80-7b5fea689b4f")))
 
+	// WorkspaceManagementConnectGoogleAccountToWorkspace - Connect Google Account to Workspace
+	WorkspaceManagementConnectGoogleAccountToWorkspace = PermissionKey(uuid.Must(uuid.FromString("69179641-6c41-40d8-87a0-81dd99bcb396")))
+
 	// WorkspaceManagementViewConnections - View all connections within an environment
 	WorkspaceManagementViewConnections = PermissionKey(uuid.Must(uuid.FromString("b35c9ce0-e787-4de6-8560-631007b0b947")))
 
@@ -1100,6 +1109,9 @@ var (
 
 	// WorkspaceManagementRemoveConnectionsFromEnvironments - Remove connections from environment, 
 	WorkspaceManagementRemoveConnectionsFromEnvironments = PermissionKey(uuid.Must(uuid.FromString("65648682-e47f-43d7-a5ad-dc042803f951")))
+
+	// WorkspaceManagementViewProjects - View all of your projects
+	WorkspaceManagementViewProjects = PermissionKey(uuid.Must(uuid.FromString("141a5f3d-b5e2-4f36-8f83-df7f73744ee1")))
 
 	// CatalogManagementViewCatalog - View all items in catalog
 	CatalogManagementViewCatalog = PermissionKey(uuid.Must(uuid.FromString("0cd05106-36b6-4393-a08e-4222fc10c8de")))
@@ -1129,7 +1141,7 @@ var (
 	AcademyAccessTheAcademyConsole = PermissionKey(uuid.Must(uuid.FromString("045fad17-d2cc-46e8-bb10-f9ee026c799f")))
 
 	// AcademyAComprehensiveGuideToUsingTheInstructorConsoleLearnHowToTrackLearnerProgressAnalyzeTestPerformanceAndManageYourAcademySContentAndMetrics - No description available
-	AcademyAComprehensiveGuideToUsingTheInstructorConsoleLearnHowToTrackLearnerProgressAnalyzeTestPerformanceAndManageYourAcademySContentAndMetrics = PermissionKey(uuid.Must(uuid.FromString("41f12d9a-c585-4c91-9cc2-8c878a84f1ef")))
+	AcademyAComprehensiveGuideToUsingTheInstructorConsoleLearnHowToTrackLearnerProgressAnalyzeTestPerformanceAndManageYourAcademySContentAndMetrics = PermissionKey(uuid.Must(uuid.FromString("045fad17-d2cc-46e8-bb10-f9ee026c79cf")))
 
 	// LearningPathManagementViewLearningPaths - View all learning paths
 	LearningPathManagementViewLearningPaths = PermissionKey(uuid.Must(uuid.FromString("7116c095-d7b4-4ab8-9d55-f33bf9d13ecd")))
@@ -1210,7 +1222,7 @@ var (
 	ConfigurationManagementProprietaryListOfBestPracticesForIstio = PermissionKey(uuid.Must(uuid.FromString("46f00b76-06ae-4b5c-9df5-3311e9fc4823")))
 
 	// ConfigurationManagementVirtualservice - VirtualService
-	ConfigurationManagementVirtualservice = PermissionKey(uuid.Must(uuid.FromString("84e64b66-49d6-485d-b333-8194655195bc")))
+	ConfigurationManagementVirtualservice = PermissionKey(uuid.Must(uuid.FromString("9a84a5d0-0a16-11ee-be56-0242ac12fff2")))
 
 	// ConfigurationManagementDestinationrule - DestinationRule
 	ConfigurationManagementDestinationrule = PermissionKey(uuid.Must(uuid.FromString("12c5dbca-cdb4-4554-8a71-8c67c118071d")))
@@ -1340,20 +1352,5 @@ var (
 
 	// ChaosManagementAsDaemonsets - No description available
 	ChaosManagementAsDaemonsets = PermissionKey(uuid.Must(uuid.FromString("b73d71ec-f5b2-4d0b-83de-6e2dccff5041")))
-
-	// WorkspaceManagementViewProjects - View all of your projects
-	WorkspaceManagementViewProjects = PermissionKey(uuid.Must(uuid.FromString("141a5f3d-b5e2-4f36-8f83-df7f73744ee1")))
-
-	// IdentityAccessManagementAllOrgSelector - Ability to use all selector to filter view
-	IdentityAccessManagementAllOrgSelector = PermissionKey(uuid.Must(uuid.FromString("17447fb0-be46-1497-1366-c34e24920f22")))
-
-	// LifecycleManagementEditConnection - Reconfigure the existing connection or edit the connection information
-	LifecycleManagementEditConnection = PermissionKey(uuid.Must(uuid.FromString("5385852a-8cb7-498c-b3a6-9a0059c25017")))
-
-	// WorkspaceManagementConnectGoogleAccountToWorkspace - Connect Google Account to Workspace
-	WorkspaceManagementConnectGoogleAccountToWorkspace = PermissionKey(uuid.Must(uuid.FromString("69179641-6c41-40d8-87a0-81dd99bcb396")))
-
-	// SecurityManagementDeleteToken - Delete a Token
-	SecurityManagementDeleteToken = PermissionKey(uuid.Must(uuid.FromString("ddba5064-ac3c-470e-b405-d2a0e99db477")))
 
 )

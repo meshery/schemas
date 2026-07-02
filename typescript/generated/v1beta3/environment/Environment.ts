@@ -254,6 +254,48 @@ export interface components {
                 [key: string]: unknown;
             }[];
         };
+        /** @description Paginated list of environment-to-connection mapping records, returned when a connection is assigned to or unassigned from an environment. Distinct from EnvironmentConnectionsPage, which lists the connections themselves rather than the junction records. */
+        EnvironmentConnectionMappingPage: {
+            /** @description Zero-based page index returned in this response. */
+            page: number;
+            /** @description Maximum number of items returned on each page. */
+            pageSize: number;
+            /** @description Total number of items across all pages. */
+            totalCount: number;
+            /** @description Environment-to-connection mapping records in this page. */
+            environmentConnectionMapping: {
+                /**
+                 * Format: uuid
+                 * @description Mapping record ID.
+                 */
+                id?: string;
+                /**
+                 * Format: uuid
+                 * @description ID of the associated environment.
+                 */
+                environmentId?: string;
+                /**
+                 * Format: uuid
+                 * @description ID of the associated connection.
+                 */
+                connectionId?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the mapping was created.
+                 */
+                createdAt?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the mapping was last updated.
+                 */
+                updatedAt?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the mapping was soft-deleted. Null while the mapping remains active.
+                 */
+                deletedAt?: string;
+            }[];
+        };
     };
     responses: {
         /** @description ok */
@@ -311,7 +353,12 @@ export interface components {
         order: string;
         /** @description Get responses by page */
         page: string;
-        /** @description Get responses by pagesize */
+        /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+        pageSize: number;
+        /**
+         * @deprecated
+         * @description Get responses by pagesize. Deprecated alias of pageSize.
+         */
         pagesize: string;
         /** @description User's organization ID */
         orgIdQuery: string;
@@ -348,7 +395,12 @@ export interface operations {
                 order?: string;
                 /** @description Get responses by page */
                 page?: string;
-                /** @description Get responses by pagesize */
+                /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+                pageSize?: number;
+                /**
+                 * @deprecated
+                 * @description Get responses by pagesize. Deprecated alias of pageSize.
+                 */
                 pagesize?: string;
                 /** @description User's organization ID */
                 orgId: string;
@@ -879,7 +931,12 @@ export interface operations {
                 order?: string;
                 /** @description Get responses by page */
                 page?: string;
-                /** @description Get responses by pagesize */
+                /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+                pageSize?: number;
+                /**
+                 * @deprecated
+                 * @description Get responses by pagesize. Deprecated alias of pageSize.
+                 */
                 pagesize?: string;
                 /** @description JSON-encoded filter string used to scope the connection listing. */
                 filter?: string;

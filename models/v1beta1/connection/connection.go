@@ -6,7 +6,7 @@ package connection
 import (
 	"github.com/meshery/schemas/models/core"
 	environmentv1beta1 "github.com/meshery/schemas/models/v1beta1/environment"
-	openapi_types "github.com/oapi-codegen/runtime/types"
+	"github.com/gofrs/uuid"
 )
 
 // Defines values for ConnectionStatus.
@@ -60,7 +60,7 @@ type Connection struct {
 	Status ConnectionStatus `db:"status" json:"status" yaml:"status"`
 
 	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	UserID    *core.Uuid `db:"user_id" json:"user_id,omitempty" yaml:"user_id"`
+	UserID    *core.Uuid `db:"owner" json:"user_id,omitempty" yaml:"user_id"`
 	CreatedAt core.Time  `db:"created_at" json:"created_at,omitempty" yaml:"created_at"`
 	UpdatedAt core.Time  `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at"`
 
@@ -98,13 +98,13 @@ type ConnectionPage struct {
 // ConnectionPayload Payload for creating or updating a connection
 type ConnectionPayload struct {
 	// CredentialID Associated credential ID
-	CredentialID *openapi_types.UUID `json:"credentialId,omitempty" yaml:"credentialId,omitempty"`
+	CredentialID *uuid.UUID `json:"credentialId,omitempty" yaml:"credentialId,omitempty"`
 
 	// CredentialSecret Credential secret data
 	CredentialSecret core.Map `json:"credentialSecret" yaml:"credentialSecret"`
 
 	// ConnectionID Connection ID
-	ConnectionID *openapi_types.UUID `json:"id,omitempty" yaml:"id,omitempty"`
+	ConnectionID *uuid.UUID `json:"id,omitempty" yaml:"id,omitempty"`
 
 	// Kind Connection kind
 	Kind string `json:"kind" yaml:"kind"`
@@ -207,13 +207,13 @@ type MesheryInstancePage struct {
 }
 
 // ConnectionId defines model for connectionId.
-type ConnectionId = openapi_types.UUID
+type ConnectionId = uuid.UUID
 
 // ConnectionKind defines model for connectionKind.
 type ConnectionKind = string
 
 // EnvironmentId defines model for environmentId.
-type EnvironmentId = openapi_types.UUID
+type EnvironmentId = uuid.UUID
 
 // Order defines model for order.
 type Order = string

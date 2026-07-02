@@ -213,16 +213,17 @@ Long-form reference material has been moved to `docs/` to keep this file concise
 
 ### Proper Release Flow
 
-1. **Push commits to master** — your changes trigger the `release-drafter` workflow
-2. **Draft release created automatically** — release-drafter generates a draft release using the configured template
+1. **Push commits to master** — your changes trigger the automation chain on `master`
+2. **Wait for `generate-artifacts-from-schemas.yml` to complete** — it runs `make build`, generates the repo's Go and TypeScript artifacts, and self-commits them back to `master`
+3. **Wait for `release-drafter.yml` to complete after that artifact self-commit** — release drafter must refresh the draft release from the final `master` head
    - Reads commit messages for categorization (features, bugs, chores, docs, security)
    - Auto-increments version using `$NEXT_PATCH_VERSION` (bugfix version)
    - Generates release notes from commit categories
-3. **Review draft release** — visit GitHub Releases tab to review generated notes
-4. **Publish the draft** — manually click "Publish release" on the draft
-5. **Automated workflows trigger** on publish:
+4. **Review draft release** — visit GitHub Releases tab to review generated notes
+5. **Publish the draft** — manually click "Publish release" on the draft
+6. **Automated workflows trigger** on publish:
    - `publish-schemas.yml` updates schema versions in `base_cloud.yml` and `base_meshery.yml`
-   - Publishes to npm
+   - Performs the npm publish through `publish-npm-package.yml`
    - Notifies downstream repositories
    - Publishes OpenAPI documentation
 
@@ -231,7 +232,8 @@ Long-form reference material has been moved to `docs/` to keep this file concise
 - ❌ Do NOT use `gh release create` manually
 - ❌ Do NOT hand-edit release notes (let release-drafter template handle it)
 - ❌ Do NOT bump minor/major versions manually (use `$NEXT_PATCH_VERSION` only)
-- ❌ Do NOT publish releases without awaiting workflow completion
+- ❌ Do NOT publish releases before `generate-artifacts-from-schemas.yml` finishes self-committing and `release-drafter.yml` finishes its update
+- ❌ Do NOT run `npm publish` manually; `publish-schemas.yml` handles it
 - ❌ Do NOT create releases before downstream PR feedback is resolved
 
 ### Versioning
