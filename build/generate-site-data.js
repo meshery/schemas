@@ -8,7 +8,7 @@ const yaml = require("js-yaml");
 
 const paths = require("./lib/paths");
 
-const DEFAULT_OUTPUT_RELATIVE_PATH = path.join("_data", "latest_schema_versions.json");
+const DEFAULT_OUTPUT_RELATIVE_PATH = path.join("site", "_data", "latest_schema_versions.json");
 
 // OpenAPI operation keys whose `x-internal` arrays classify a construct.
 const OPENAPI_OPERATION_METHODS = [
