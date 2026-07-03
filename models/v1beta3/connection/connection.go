@@ -24,6 +24,17 @@ const (
 	ConnectionStatusRegistered   ConnectionStatus = "registered"
 )
 
+// Defines values for ConnectionActionRequestAction.
+const (
+	SetMeshsyncMode ConnectionActionRequestAction = "setMeshsyncMode"
+)
+
+// Defines values for ConnectionActionRequestMode.
+const (
+	Embedded ConnectionActionRequestMode = "embedded"
+	Operator ConnectionActionRequestMode = "operator"
+)
+
 // Defines values for ConnectionStatusValue.
 const (
 	ConnectionStatusValueConnected    ConnectionStatusValue = "connected"
@@ -100,6 +111,21 @@ type Connection struct {
 
 // ConnectionStatus Connection Status
 type ConnectionStatus string
+
+// ConnectionActionRequest A side-effecting operation to perform on a connection via POST /api/integrations/connections/{connectionId}/actions. The `action` field selects the operation; operation-specific fields carry its parameters. Unlike PUT (which updates resource fields), the server owns any resulting metadata merge and cluster-side effects.
+type ConnectionActionRequest struct {
+	// Action The operation to perform on the connection.
+	Action ConnectionActionRequestAction `json:"action" yaml:"action"`
+
+	// Mode Target MeshSync deployment mode. Required when `action` is `setMeshsyncMode`; the server redeploys MeshSync (operator vs embedded) for the connection's cluster.
+	Mode *ConnectionActionRequestMode `json:"mode,omitempty" yaml:"mode,omitempty"`
+}
+
+// ConnectionActionRequestAction The operation to perform on the connection.
+type ConnectionActionRequestAction string
+
+// ConnectionActionRequestMode Target MeshSync deployment mode. Required when `action` is `setMeshsyncMode`; the server redeploys MeshSync (operator vs embedded) for the connection's cluster.
+type ConnectionActionRequestMode string
 
 // ConnectionDefinition A connection definition is an uninitialized connection, authored per-model (in a model's `connections/` folder) and registered into the registry alongside components and relationships. It conforms to the connection schema; the dynamic, kind-specific shape is carried in `metadata`. The `model` association scopes the definition to its owning model.
 // type ConnectionDefinition — defined in manual helper file

@@ -53,6 +53,57 @@ const injectedRtkApi = api
         query: () => ({ url: `/api/system/sync` }),
         providesTags: ["System_API_System"],
       }),
+      getOperatorControllerStatus: build.query<
+        GetOperatorControllerStatusApiResponse,
+        GetOperatorControllerStatusApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/system/controllers/operator/status`,
+          params: {
+            connectionId: queryArg?.connectionId,
+          },
+        }),
+        providesTags: ["System_API_System"],
+      }),
+      getMeshsyncControllerStatus: build.query<
+        GetMeshsyncControllerStatusApiResponse,
+        GetMeshsyncControllerStatusApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/system/controllers/meshsync/status`,
+          params: {
+            connectionId: queryArg?.connectionId,
+          },
+        }),
+        providesTags: ["System_API_System"],
+      }),
+      getBrokerControllerStatus: build.query<GetBrokerControllerStatusApiResponse, GetBrokerControllerStatusApiArg>({
+        query: (queryArg) => ({
+          url: `/api/system/controllers/broker/status`,
+          params: {
+            connectionId: queryArg?.connectionId,
+          },
+        }),
+        providesTags: ["System_API_System"],
+      }),
+      getControllerDiagnostics: build.query<GetControllerDiagnosticsApiResponse, GetControllerDiagnosticsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/system/controllers/diagnostics`,
+          params: {
+            connectionId: queryArg?.connectionId,
+          },
+        }),
+        providesTags: ["System_API_System"],
+      }),
+      subscribeControllersStatus: build.query<SubscribeControllersStatusApiResponse, SubscribeControllersStatusApiArg>({
+        query: (queryArg) => ({
+          url: `/api/system/controllers/status/subscribe`,
+          params: {
+            connectionIds: queryArg?.connectionIds,
+          },
+        }),
+        providesTags: ["System_API_System"],
+      }),
       getUserCredentials: build.query<GetUserCredentialsApiResponse, GetUserCredentialsApiArg>({
         query: (queryArg) => ({
           url: `/api/integrations/credentials`,
@@ -322,6 +373,14 @@ const injectedRtkApi = api
       }),
       deleteConnection: build.mutation<DeleteConnectionApiResponse, DeleteConnectionApiArg>({
         query: (queryArg) => ({ url: `/api/integrations/connections/${queryArg.connectionId}`, method: "DELETE" }),
+        invalidatesTags: ["Connection_API_Connections"],
+      }),
+      performConnectionAction: build.mutation<PerformConnectionActionApiResponse, PerformConnectionActionApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/connections/${queryArg.connectionId}/actions`,
+          method: "POST",
+          body: queryArg.body,
+        }),
         invalidatesTags: ["Connection_API_Connections"],
       }),
       deleteMesheryConnection: build.mutation<DeleteMesheryConnectionApiResponse, DeleteMesheryConnectionApiArg>({
@@ -2750,6 +2809,80 @@ export type GetSystemSyncApiResponse = /** status 200 Session sync payload */ {
   [key: string]: any;
 };
 export type GetSystemSyncApiArg = void;
+export type GetOperatorControllerStatusApiResponse = /** status 200 Operator controller status */ {
+  /** The kubernetes connection ID this status belongs to. */
+  connectionId: string;
+  /** The controller this status describes. */
+  controller: "OPERATOR" | "MESHSYNC" | "BROKER";
+  /** Current controller status (e.g. DEPLOYED, NOTDEPLOYED, RUNNING, CONNECTED, UNKOWN). */
+  status: string;
+  /** Deployed controller version, when known. */
+  version: string;
+};
+export type GetOperatorControllerStatusApiArg = {
+  /** The kubernetes connection ID whose operator status is requested. */
+  connectionId: string;
+};
+export type GetMeshsyncControllerStatusApiResponse = /** status 200 MeshSync controller status */ {
+  /** Controller name (e.g. MeshSync, MesheryBroker). */
+  name: string;
+  /** Deployed controller version, when known. */
+  version: string;
+  /** Current controller status. May be composed, e.g. "Connected <endpoint>". */
+  status: string;
+  /** The kubernetes connection ID this status belongs to. */
+  connectionId: string;
+};
+export type GetMeshsyncControllerStatusApiArg = {
+  /** The kubernetes connection ID whose MeshSync status is requested. */
+  connectionId: string;
+};
+export type GetBrokerControllerStatusApiResponse = /** status 200 Broker controller status */ {
+  /** Controller name (e.g. MeshSync, MesheryBroker). */
+  name: string;
+  /** Deployed controller version, when known. */
+  version: string;
+  /** Current controller status. May be composed, e.g. "Connected <endpoint>". */
+  status: string;
+  /** The kubernetes connection ID this status belongs to. */
+  connectionId: string;
+};
+export type GetBrokerControllerStatusApiArg = {
+  /** The kubernetes connection ID whose broker status is requested. */
+  connectionId: string;
+};
+export type GetControllerDiagnosticsApiResponse = /** status 200 Connection controller diagnostics */ {
+  /** The kubernetes connection ID these diagnostics belong to. */
+  connectionId: string;
+  /** True when no warning/error diagnostics were detected (informational diagnostics do not affect health). */
+  healthy: boolean;
+  /** The diagnostics detected for this connection (possibly empty). */
+  diagnostics: {
+    /** How serious the diagnostic is. */
+    severity: "info" | "warning" | "error";
+    /** The controller this diagnostic concerns, when applicable. */
+    controller?: "OPERATOR" | "MESHSYNC" | "BROKER";
+    /** Stable machine-readable code for this diagnostic (e.g. `broker_unreachable`), for the UI to key on. */
+    code: string;
+    /** Short, human-readable title for the diagnostic. */
+    summary: string;
+    /** A fuller explanation of what is wrong and why. */
+    description?: string;
+    /** Ordered, concrete steps the user can take to resolve the issue. */
+    remediation?: string[];
+    /** A relevant endpoint for the diagnostic, when applicable (e.g. the broker's published address the user needs to make reachable). */
+    endpoint?: string;
+  }[];
+};
+export type GetControllerDiagnosticsApiArg = {
+  /** The kubernetes connection ID whose diagnostics are requested. */
+  connectionId: string;
+};
+export type SubscribeControllersStatusApiResponse = unknown;
+export type SubscribeControllersStatusApiArg = {
+  /** Kubernetes connection IDs to watch. Repeatable (connectionIds=<id>&connectionIds=<id>). */
+  connectionIds?: string[];
+};
 export type GetUserCredentialsApiResponse = /** status 200 Credentials response */ {
   /** The credentials returned on the current page. */
   credentials: {
@@ -6290,6 +6423,282 @@ export type DeleteConnectionApiArg = {
   /** Connection ID */
   connectionId: string;
 };
+export type PerformConnectionActionApiResponse =
+  /** status 200 The updated connection after the action was applied. */ {
+    /** Connection ID */
+    id: string;
+    /** Connection Name */
+    name: string;
+    /** Human-readable description of the connection and its purpose. */
+    description?: string;
+    /** URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL). */
+    url?: string;
+    /** Associated Credential ID */
+    credentialId?: string;
+    /** Connection Type (platform, telemetry, collaboration) */
+    type: string;
+    /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+    subType: string;
+    /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+    kind: string;
+    /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+    modelReference?: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** The unique name for the model within the scope of a registrant. */
+      name: string;
+      /** Version of the model definition. */
+      version: string;
+      /** Human-readable name for the model. */
+      displayName: string;
+      /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+      model: {
+        /** Version of the model as defined by the registrant. */
+        version: string;
+      };
+      registrant: {
+        /** Kind of the registrant. */
+        kind: string;
+      };
+    };
+    /** Additional connection metadata */
+    metadata?: object;
+    /** Schema for the credential Associated with the connection */
+    credentialSchema?: object;
+    /** Schema for the connection */
+    connectionSchema?: object;
+    /** Visualization styles for the connection, including svgColor and svgWhite used for UI representation. */
+    styles?: {
+      /** Primary color of the component used for UI representation. */
+      primaryColor: string;
+      /** Secondary color of the entity used for UI representation. */
+      secondaryColor?: string;
+      /** White SVG of the entity used for UI representation on dark background. */
+      svgWhite: string;
+      /** Colored SVG of the entity used for UI representation on light background. */
+      svgColor: string;
+      /** Complete SVG of the entity used for UI representation, often inclusive of background. */
+      svgComplete: string;
+      /** The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+      color?: string;
+      /** The opacity of the label text, including its outline. */
+      textOpacity?: number;
+      /** A comma-separated list of font names to use on the label text. */
+      fontFamily?: string;
+      /** The size of the label text. */
+      fontSize?: string;
+      /** A CSS font style to be applied to the label text. */
+      fontStyle?: string;
+      /** A CSS font weight to be applied to the label text. */
+      fontWeight?: string;
+      /** A transformation to apply to the label text */
+      textTransform?: "none" | "uppercase" | "lowercase";
+      /** The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+      opacity?: number;
+      /** An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+      zIndex?: number;
+      /** The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+      label?: string;
+      /** The animation to apply to the element. example ripple,bounce,etc */
+      animation?: object;
+      [key: string]: any;
+    } & {
+      /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+      shape:
+        | "ellipse"
+        | "triangle"
+        | "round-triangle"
+        | "rectangle"
+        | "round-rectangle"
+        | "bottom-round-rectangle"
+        | "cut-rectangle"
+        | "barrel"
+        | "rhomboid"
+        | "diamond"
+        | "round-diamond"
+        | "pentagon"
+        | "round-pentagon"
+        | "hexagon"
+        | "round-hexagon"
+        | "concave-hexagon"
+        | "heptagon"
+        | "round-heptagon"
+        | "octagon"
+        | "round-octagon"
+        | "star"
+        | "tag"
+        | "round-tag"
+        | "vee"
+        | "polygon";
+      /** The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+      position?: {
+        /** The x-coordinate of the node. */
+        x: number;
+        /** The y-coordinate of the node. */
+        y: number;
+      };
+      /** The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+      bodyText?: string;
+      /** How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
+      bodyTextWrap?: "none" | "wrap" | "ellipsis";
+      /** The maximum width for wrapping text in the node. */
+      bodyTextMaxWidth?: string;
+      /** The opacity of the node's body text, including its outline. */
+      bodyTextOpacity?: number;
+      /** The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+      bodyTextBackgroundColor?: string;
+      /** The size of the node's body text. */
+      bodyTextFontSize?: number;
+      /** The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+      bodyTextColor?: string;
+      /** A CSS font weight to be applied to the node's body text. */
+      bodyTextFontWeight?: string;
+      /** A CSS horizontal alignment to be applied to the node's body text. */
+      bodyTextHorizontalAlign?: string;
+      /** A CSS text decoration to be applied to the node's body text. */
+      bodyTextDecoration?: string;
+      /** A CSS vertical alignment to be applied to the node's body text. */
+      bodyTextVerticalAlign?: string;
+      /** The width of the node's body or the width of an edge's line. */
+      width?: number;
+      /** The height of the node's body */
+      height?: number;
+      /** The URL that points to the image to show in the node. */
+      backgroundImage?: string;
+      /** The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+      backgroundColor?: string;
+      /** Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+      backgroundBlacken?: number;
+      /** The opacity level of the node's background colour */
+      backgroundOpacity?: number;
+      /** The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundPositionX?: string;
+      /** The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundPositionY?: string;
+      /** The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundOffsetX?: string;
+      /** The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundOffsetY?: string;
+      /** How the background image is fit to the node. Can be 'none', 'contain', or 'cover'. */
+      backgroundFit?: "none" | "contain" | "cover";
+      /** How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'. */
+      backgroundClip?: "none" | "node" | "node-border";
+      /** How the background image's width is determined. Can be 'none', 'inner', or 'outer'. */
+      backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+      /** How the background image's height is determined. Can be 'none', 'inner', or 'outer'. */
+      backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+      /** The size of the node's border. */
+      borderWidth?: number;
+      /** The style of the node's border */
+      borderStyle?: "solid" | "dotted" | "dashed" | "double";
+      /** The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+      borderColor?: string;
+      /** The opacity of the node's border */
+      borderOpacity?: number;
+      /** The amount of padding around all sides of the node. */
+      padding?: number;
+      /** The horizontal alignment of a node's label */
+      textHalign?: "left" | "center" | "right";
+      /** The vertical alignment of a node's label */
+      textValign?: "top" | "center" | "bottom";
+      /** Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset. */
+      ghost?: "yes" | "no";
+      /** The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      activeBgColor?: string;
+      /** The opacity of the active background indicator. Selector needs to be *core*. */
+      activeBgOpacity?: string;
+      /** The opacity of the active background indicator. Selector needs to be *core*. */
+      activeBgSize?: string;
+      /** The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      selectionBoxColor?: string;
+      /** The size of the border on the selection box. Selector needs to be *core* */
+      selectionBoxBorderWidth?: number;
+      /** The opacity of the selection box. Selector needs to be *core* */
+      selectionBoxOpacity?: number;
+      /** The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      outsideTextureBgColor?: string;
+      /** The opacity of the area outside the viewport texture. Selector needs to be *core* */
+      outsideTextureBgOpacity?: number;
+      /** An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+      shapePolygonPoints?: string;
+      /** The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+      menuBackgroundColor?: string;
+      /** The opacity of the background of the component menu. */
+      menuBackgroundOpacity?: number;
+      /** The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+      menuForgroundColor?: string;
+    };
+    /** Connection Status */
+    status:
+      | "discovered"
+      | "registered"
+      | "connected"
+      | "ignored"
+      | "maintenance"
+      | "disconnected"
+      | "deleted"
+      | "not found";
+    /** Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status, along with a description of each transition. */
+    transitionMap?: {
+      [key: string]: {
+        /** Connection Status Value */
+        nextState:
+          | "discovered"
+          | "registered"
+          | "connected"
+          | "ignored"
+          | "maintenance"
+          | "disconnected"
+          | "deleted"
+          | "not found";
+        /** Human-readable explanation of when or why this transition occurs. */
+        description?: string;
+      }[];
+    };
+    /** User ID who owns this connection */
+    owner?: string;
+    /** Timestamp when the connection was created. */
+    createdAt?: string;
+    /** Timestamp when the connection was last updated. */
+    updatedAt?: string;
+    /** Timestamp when the connection was soft-deleted, if applicable. */
+    deletedAt?: string;
+    /** Associated environments for this connection */
+    environments?: {
+      /** ID */
+      id: string;
+      /** Specifies the version of the schema to which the environment conforms. */
+      schemaVersion: string;
+      /** Environment name */
+      name: string;
+      /** Environment description */
+      description: string;
+      /** Environment organization ID */
+      organizationId: string;
+      /** Environment owner */
+      owner?: string;
+      /** Timestamp when the environment was created. */
+      createdAt?: string;
+      /** Additional metadata associated with the environment. */
+      metadata?: object;
+      /** Timestamp when the environment was last updated. */
+      updatedAt?: string;
+      /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+      deletedAt?: string | null;
+    }[];
+    /** Specifies the version of the schema used for the definition. */
+    schemaVersion: string;
+  };
+export type PerformConnectionActionApiArg = {
+  /** Connection ID */
+  connectionId: string;
+  body: {
+    /** The operation to perform on the connection. */
+    action: "setMeshsyncMode";
+    /** Target MeshSync deployment mode. Required when `action` is `setMeshsyncMode`; the server redeploys MeshSync (operator vs embedded) for the connection's cluster. */
+    mode?: "operator" | "embedded";
+  };
+};
 export type DeleteMesheryConnectionApiResponse = unknown;
 export type DeleteMesheryConnectionApiArg = {
   /** Meshery server ID */
@@ -8968,6 +9377,11 @@ export const {
   useResetSystemDatabaseMutation,
   useGetSystemVersionQuery,
   useGetSystemSyncQuery,
+  useGetOperatorControllerStatusQuery,
+  useGetMeshsyncControllerStatusQuery,
+  useGetBrokerControllerStatusQuery,
+  useGetControllerDiagnosticsQuery,
+  useSubscribeControllersStatusQuery,
   useGetUserCredentialsQuery,
   useSaveUserCredentialMutation,
   useUpdateUserCredentialMutation,
@@ -9004,6 +9418,7 @@ export const {
   useGetConnectionByIdQuery,
   useUpdateConnectionMutation,
   useDeleteConnectionMutation,
+  usePerformConnectionActionMutation,
   useDeleteMesheryConnectionMutation,
   useGetKubernetesContextQuery,
   useAddConnectionToEnvironmentMutation,
