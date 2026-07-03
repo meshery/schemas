@@ -99,7 +99,7 @@ Before opening a PR that adds an entity schema, walk the "(New entity)" and "(Ne
 
 ## Casing rules at a glance
 
-(The ecosystem's identifier naming conventions. Downstream repos cite this section as 'AGENTS.md § Casing rules at a glance' - do not rename it.)
+(The ecosystem's identifier naming conventions. Downstream repos cite this section as `meshery/schemas/AGENTS.md § Casing rules at a glance` - do not rename it.)
 
 > **Casing is the single most error-prone area.** The full authority - the
 > per-layer casing table and its compatibility caveats - lives in
