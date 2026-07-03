@@ -120,9 +120,9 @@ func TestFormSchemasAreSubsetOfCanonical(t *testing.T) {
 
 func absRepoPath(repoRoot, rel string) string {
 	if idx := strings.Index(rel, "#"); idx != -1 {
-		return filepath.Join(repoRoot, filepath.FromSlash(rel[:idx])) + rel[idx:]
+		return filepath.Join(repoRoot, rel[:idx]) + rel[idx:]
 	}
-	return filepath.Join(repoRoot, filepath.FromSlash(rel))
+	return filepath.Join(repoRoot, rel)
 }
 
 // formJsonFiles walks `schemas/constructs/<v>/<c>/forms/` and returns
