@@ -6,7 +6,7 @@
 > with before/after and do/don't examples), see
 > [`identifier-naming-contributor-guide.md`](identifier-naming-contributor-guide.md).
 
-Within a given API version / resource version, every element has exactly one correct casing. The table below is the single authoritative reference for **newly authored (canonical-casing) API versions.** Already-published legacy API versions retain their published wire casing until the resource receives its next canonical-casing version bump — do not recase their fields in-place.
+Within a given API version / resource version, every element has exactly one correct casing. The table below is the single authoritative reference for **newly authored (canonical-casing) API versions.** Already-published legacy API versions retain their published wire casing until the resource receives its next canonical-casing version bump - do not recase their fields in-place.
 
 **The one-sentence rule (target state):** *Wire is camelCase everywhere; DB is snake_case; Go fields follow Go idiom; the ORM layer is the sole translation boundary.*
 
@@ -24,10 +24,10 @@ Within a given API version / resource version, every element has exactly one cor
 | Shared pagination/search/sort/filter query params | `camelCase` | `?page=…`, `?pageSize=…`, `?search=…`, `?order=…`, `?filter=…` | ~~`?pagesize=…`~~, ~~`?page_size=…`~~ |
 | `operationId` | lower camelCase verbNoun | `getAllRoles`, `createWorkspace`, `getWorkspaces` | ~~`GetAllRoles`~~, ~~`get_all_roles`~~ |
 | TypeScript property / RTK arg | camelCase | `response.userId`, `queryArg.orgId` | ~~`response.user_id`~~, ~~`queryArg.orgID`~~ |
-| Go type names | PascalCase (generated) | `Connection`, `KeychainPayload` | — |
-| TypeScript type names | PascalCase (generated) | `Connection`, `KeychainPayload` | — |
+| Go type names | PascalCase (generated) | `Connection`, `KeychainPayload` | - |
+| TypeScript type names | PascalCase (generated) | `Connection`, `KeychainPayload` | - |
 
-**The database naming is the ORM boundary, not a wire-format dictator.** In newly authored (canonical-casing) API versions, every JSON tag / schema property name — DB-backed or not — is camelCase. For legacy published API versions that publish snake_case on the wire, retain the published wire casing until that resource receives its next API-version bump; do not "fix" snake_case wire properties in-place. In canonical-casing versions, when a property is DB-backed, the snake_case DB column name lives *only* in `x-oapi-codegen-extra-tags.db` (and in the generated Go field's `db:` struct tag); it does not propagate to the JSON tag, the OpenAPI schema property name, URL parameters, or any other wire form. On DB-backed fields the `json:` and `db:` tags differ by design.
+**The database naming is the ORM boundary, not a wire-format dictator.** In newly authored (canonical-casing) API versions, every JSON tag / schema property name - DB-backed or not - is camelCase. For legacy published API versions that publish snake_case on the wire, retain the published wire casing until that resource receives its next API-version bump; do not "fix" snake_case wire properties in-place. In canonical-casing versions, when a property is DB-backed, the snake_case DB column name lives *only* in `x-oapi-codegen-extra-tags.db` (and in the generated Go field's `db:` struct tag); it does not propagate to the JSON tag, the OpenAPI schema property name, URL parameters, or any other wire form. On DB-backed fields the `json:` and `db:` tags differ by design.
 
 **Partial casing migrations are forbidden.** Do not rename selected fields within the same resource from snake_case to camelCase while leaving other published fields unchanged. If the wire format must change, introduce a new API version and migrate the resource consistently there.
 
