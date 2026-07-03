@@ -140,6 +140,13 @@
     "extension": true
   },
   {
+    "construct": "pattern_resource",
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/pattern_resource/pattern_resource.yaml",
+    "core": false,
+    "extension": true
+  },
+  {
     "construct": "performance_profile",
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/performance_profile/performance_profile.yaml",

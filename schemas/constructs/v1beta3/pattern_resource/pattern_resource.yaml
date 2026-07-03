@@ -1,0 +1,89 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: Pattern Resource Schema
+description: |
+  Server-returned Meshery pattern resource as persisted by meshery-cloud
+  (`meshery_pattern_resources` table). A pattern resource records the
+  Kubernetes-addressable identity (name, namespace, type, OAM type) of a
+  resource provisioned from a design, and is used by the design engine to
+  deduplicate provisioned resources. This v1beta3 shape supersedes the
+  legacy v1alpha2 snake_case wire form and corrects its `Namepace` typo
+  to `namespace`.
+type: object
+additionalProperties: false
+required:
+  - id
+  - userId
+  - name
+  - namespace
+  - type
+  - oamType
+  - deleted
+  - createdAt
+  - updatedAt
+properties:
+  id:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Server-generated pattern resource ID.
+    x-order: 1
+  userId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: |
+      Owning user ID. Persisted in the `owner` column of the
+      `meshery_pattern_resources` table (confirmed against the
+      production schema dump); the wire identifier stays camelCase
+      `userId` per the identifier-naming contract.
+    x-go-name: UserID
+    x-oapi-codegen-extra-tags:
+      db: owner
+    x-order: 2
+  name:
+    type: string
+    description: Name of the provisioned resource.
+    minLength: 1
+    maxLength: 255
+    x-order: 3
+  namespace:
+    type: string
+    description: |
+      Kubernetes namespace the resource was provisioned into. Corrects
+      the legacy v1alpha2 `Namepace` typo.
+    minLength: 1
+    maxLength: 255
+    x-order: 4
+  type:
+    type: string
+    description: Resource type discriminator (e.g. the Kubernetes kind).
+    minLength: 1
+    maxLength: 255
+    x-order: 5
+  oamType:
+    type: string
+    description: |
+      OAM (Open Application Model) categorization of the resource,
+      stored in the `oam_type` column (e.g. `workload`, `trait`,
+      `scope`).
+    minLength: 1
+    maxLength: 255
+    x-go-name: OAMType
+    x-oapi-codegen-extra-tags:
+      db: oam_type
+    x-order: 6
+  deleted:
+    type: boolean
+    description: |
+      Soft-delete marker. Server-managed; rows are flagged rather than
+      removed so the design engine can reconcile prior provisions.
+    default: false
+    x-order: 7
+  createdAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of pattern resource creation.
+    x-oapi-codegen-extra-tags:
+      db: created_at
+    x-order: 8
+  updatedAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of last pattern resource modification.
+    x-oapi-codegen-extra-tags:
+      db: updated_at
+    x-order: 9

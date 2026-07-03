@@ -78,6 +78,86 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/identity/users/profile/details": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get profile overview counts for the current user
+         * @description Returns the aggregate counts shown on the caller's profile overview: the number of Kubernetes contexts and the number of designs owned by the caller.
+         */
+        get: operations["getUserProfileOverview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/users/{userId}/profile/activity": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get recent activity for a user's public profile
+         * @description Returns the recent-activity feed shown on a user's public profile. Accessible without authentication; sensitive event categories are filtered out and email addresses are redacted unless the caller is a provider admin or is viewing their own profile. Pagination beyond the first page requires provider-admin privileges.
+         */
+        get: operations["getUserRecentActivities"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/users/notify/comment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Notify users mentioned in a design comment
+         * @description Sends email notifications to the users mentioned in a design comment, to the comment thread participants, and to the design owner, and records a user event for the comment.
+         */
+        post: operations["notifyMentionUsers"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/users/anonymous": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create an anonymous user and issue a session token
+         * @description Mints a synthetic anonymous user account, registers the calling Meshery instance as a connection, and returns an access token together with the capability document for the anonymous session. Authenticated with the shared anonymous-results publishing token rather than a user JWT.
+         */
+        post: operations["createAnonymousUserSession"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/identity/users/self/account-deletion-eligibility": {
         parameters: {
             query?: never;
@@ -1127,6 +1207,156 @@ export interface components {
              */
             link: string;
         };
+        /** @description Aggregate counts shown on the current user's profile overview. */
+        ProfileOverview: {
+            /** @description Number of Kubernetes contexts owned by the user. */
+            k8sCount: number;
+            /** @description Number of designs owned by the user. */
+            patternCount: number;
+        };
+        /** @description A single entry in a user's recent-activity feed. A narrow projection of the stored event record (id, category, action, description, owner and timestamps). The pre-migration meshery-cloud serialization emitted additional zero-valued event fields; those disappear once the server consumes this generated type. */
+        UserActivity: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            id?: string;
+            /** @description Resource category on which the activity occurred. */
+            category?: string;
+            /** @description Action recorded by the activity. */
+            action?: string;
+            /** @description Human-readable description of the activity. Email addresses are redacted for non-privileged viewers. */
+            description?: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            owner?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the activity was recorded.
+             */
+            createdAt?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the activity was last updated.
+             */
+            updatedAt?: string;
+        };
+        /** @description Paginated recent-activity feed for a user's public profile. */
+        RecentActivityPage: {
+            /** @description Current page number of the result set. */
+            page?: number;
+            /** @description Number of items per page. */
+            pageSize?: number;
+            /** @description Total number of items available. */
+            totalCount?: number;
+            /** @description The activity entries on the current page. */
+            activities?: {
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                id?: string;
+                /** @description Resource category on which the activity occurred. */
+                category?: string;
+                /** @description Action recorded by the activity. */
+                action?: string;
+                /** @description Human-readable description of the activity. Email addresses are redacted for non-privileged viewers. */
+                description?: string;
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                owner?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the activity was recorded.
+                 */
+                createdAt?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the activity was last updated.
+                 */
+                updatedAt?: string;
+            }[];
+        };
+        /** @description A single comment message included in a mention notification. */
+        MentionMessage: {
+            /** @description First name of the comment author. */
+            firstName?: string;
+            /** @description Last name of the comment author. */
+            lastName?: string;
+            /**
+             * Format: uri
+             * @description URL to the comment author's avatar image.
+             */
+            avatarUrl?: string;
+            /** @description Text of the comment message. */
+            message?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the comment message was written.
+             */
+            timestamp?: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            userId?: string;
+        };
+        /** @description Request body for notifying users about a design comment: the users mentioned in the comment, the thread participants, and the comment messages to include in the notification email. */
+        MentionNotificationPayload: {
+            /** @description IDs of the users explicitly mentioned in the comment. */
+            mentionUsers?: string[];
+            /** @description IDs of the users participating in the comment thread. */
+            participants?: string[];
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            designId: string;
+            /** @description IDs of the users who opted out of mention notifications. */
+            usersOptedOutOfNotifications?: string[];
+            /** @description The comment messages to include in the notification email. */
+            messages?: {
+                /** @description First name of the comment author. */
+                firstName?: string;
+                /** @description Last name of the comment author. */
+                lastName?: string;
+                /**
+                 * Format: uri
+                 * @description URL to the comment author's avatar image.
+                 */
+                avatarUrl?: string;
+                /** @description Text of the comment message. */
+                message?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the comment message was written.
+                 */
+                timestamp?: string;
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                userId?: string;
+            }[];
+        };
+        /** @description Response returned after minting an anonymous user session: the session access token, the ID of the synthetic anonymous user, and the capability document for the session. */
+        AnonymousFlowResponse: {
+            /** @description JWT access token for the anonymous session. */
+            accessToken: string;
+            /** @description Capability document for the anonymous session. Untyped pending the provider-capabilities schema tracked separately in the identifier-uniformity program. */
+            capability?: {
+                [key: string]: unknown;
+            };
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            userId: string;
+        };
         /** @description Pre-check result returned before an account self-deletion is confirmed. Describes whether deleting the caller's account would also require or permit hard-deleting their organization and quantifies the blast radius. All fields are always present so the client can render the confirmation state deterministically. */
         AccountDeletionEligibility: {
             /** @description True when the caller is the only active member of the organization, so deleting their account would leave the organization without any active members. */
@@ -1249,6 +1479,8 @@ export interface components {
         id: string;
         /** @description Organization ID */
         orgId: string;
+        /** @description ID of the user whose recent activity is requested */
+        userId: string;
         /** @description Get responses by page */
         page: string;
         /** @description Get responses by page size */
@@ -2518,6 +2750,469 @@ export interface operations {
                             /** @description Total number of organization memberships returned for the user. */
                             totalCount?: number;
                         };
+                    };
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getUserProfileOverview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Profile overview counts for the caller */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Number of Kubernetes contexts owned by the user. */
+                        k8sCount: number;
+                        /** @description Number of designs owned by the user. */
+                        patternCount: number;
+                    };
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getUserRecentActivities: {
+        parameters: {
+            query?: {
+                /** @description Zero-based page index of the activity feed. */
+                page?: number;
+                /** @description Number of activity entries per page. */
+                pageSize?: number;
+                /**
+                 * @deprecated
+                 * @description Deprecated lowercase alias of pageSize, kept while existing clients migrate to the canonical camelCase parameter.
+                 */
+                pagesize?: number;
+                /** @description Get ordered responses */
+                order?: string;
+                /** @description Get filtered reponses */
+                filter?: string;
+            };
+            header?: never;
+            path: {
+                /** @description ID of the user whose recent activity is requested */
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Recent-activity page for the requested user */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Current page number of the result set. */
+                        page?: number;
+                        /** @description Number of items per page. */
+                        pageSize?: number;
+                        /** @description Total number of items available. */
+                        totalCount?: number;
+                        /** @description The activity entries on the current page. */
+                        activities?: {
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            id?: string;
+                            /** @description Resource category on which the activity occurred. */
+                            category?: string;
+                            /** @description Action recorded by the activity. */
+                            action?: string;
+                            /** @description Human-readable description of the activity. Email addresses are redacted for non-privileged viewers. */
+                            description?: string;
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            owner?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the activity was recorded.
+                             */
+                            createdAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the activity was last updated.
+                             */
+                            updatedAt?: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    notifyMentionUsers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description IDs of the users explicitly mentioned in the comment. */
+                    mentionUsers?: string[];
+                    /** @description IDs of the users participating in the comment thread. */
+                    participants?: string[];
+                    /**
+                     * Format: uuid
+                     * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                     */
+                    designId: string;
+                    /** @description IDs of the users who opted out of mention notifications. */
+                    usersOptedOutOfNotifications?: string[];
+                    /** @description The comment messages to include in the notification email. */
+                    messages?: {
+                        /** @description First name of the comment author. */
+                        firstName?: string;
+                        /** @description Last name of the comment author. */
+                        lastName?: string;
+                        /**
+                         * Format: uri
+                         * @description URL to the comment author's avatar image.
+                         */
+                        avatarUrl?: string;
+                        /** @description Text of the comment message. */
+                        message?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the comment message was written.
+                         */
+                        timestamp?: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        userId?: string;
+                    }[];
+                };
+            };
+        };
+        responses: {
+            /** @description Mention notifications dispatched */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    createAnonymousUserSession: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * Format: uuid
+                     * @description Connection ID
+                     */
+                    id?: string;
+                    /** @description Connection name */
+                    name: string;
+                    /** @description Connection kind */
+                    kind: string;
+                    /** @description Connection type */
+                    type: string;
+                    /** @description Connection sub-type */
+                    subType: string;
+                    /** @description Credential secret data */
+                    credentialSecret?: Record<string, never>;
+                    /** @description Connection metadata */
+                    metadata?: Record<string, never>;
+                    /** @description Visualization styles for the connection, including svgColor and svgWhite used for UI representation. */
+                    styles?: ({
+                        /** @description Primary color of the component used for UI representation. */
+                        primaryColor: string;
+                        /** @description Secondary color of the entity used for UI representation. */
+                        secondaryColor?: string;
+                        /** @description White SVG of the entity used for UI representation on dark background. */
+                        svgWhite: string;
+                        /** @description Colored SVG of the entity used for UI representation on light background. */
+                        svgColor: string;
+                        /** @description Complete SVG of the entity used for UI representation, often inclusive of background. */
+                        svgComplete: string;
+                        /** @description The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+                        color?: string;
+                        /** @description The opacity of the label text, including its outline. */
+                        textOpacity?: number;
+                        /** @description A comma-separated list of font names to use on the label text. */
+                        fontFamily?: string;
+                        /** @description The size of the label text. */
+                        fontSize?: string;
+                        /** @description A CSS font style to be applied to the label text. */
+                        fontStyle?: string;
+                        /** @description A CSS font weight to be applied to the label text. */
+                        fontWeight?: string;
+                        /**
+                         * @description A transformation to apply to the label text
+                         * @enum {string}
+                         */
+                        textTransform?: "none" | "uppercase" | "lowercase";
+                        /** @description The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+                        opacity?: number;
+                        /** @description An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+                        zIndex?: number;
+                        /** @description The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+                        label?: string;
+                        /** @description The animation to apply to the element. example ripple,bounce,etc */
+                        animation?: Record<string, never>;
+                    } & {
+                        [key: string]: unknown;
+                    }) & {
+                        /**
+                         * @description The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
+                         * @enum {string}
+                         */
+                        shape: "ellipse" | "triangle" | "round-triangle" | "rectangle" | "round-rectangle" | "bottom-round-rectangle" | "cut-rectangle" | "barrel" | "rhomboid" | "diamond" | "round-diamond" | "pentagon" | "round-pentagon" | "hexagon" | "round-hexagon" | "concave-hexagon" | "heptagon" | "round-heptagon" | "octagon" | "round-octagon" | "star" | "tag" | "round-tag" | "vee" | "polygon";
+                        /** @description The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+                        position?: {
+                            /** @description The x-coordinate of the node. */
+                            x: number;
+                            /** @description The y-coordinate of the node. */
+                            y: number;
+                        };
+                        /** @description The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+                        bodyText?: string;
+                        /**
+                         * @description How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'.
+                         * @enum {string}
+                         */
+                        bodyTextWrap?: "none" | "wrap" | "ellipsis";
+                        /** @description The maximum width for wrapping text in the node. */
+                        bodyTextMaxWidth?: string;
+                        /** @description The opacity of the node's body text, including its outline. */
+                        bodyTextOpacity?: number;
+                        /** @description The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+                        bodyTextBackgroundColor?: string;
+                        /** @description The size of the node's body text. */
+                        bodyTextFontSize?: number;
+                        /** @description The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+                        bodyTextColor?: string;
+                        /** @description A CSS font weight to be applied to the node's body text. */
+                        bodyTextFontWeight?: string;
+                        /** @description A CSS horizontal alignment to be applied to the node's body text. */
+                        bodyTextHorizontalAlign?: string;
+                        /** @description A CSS text decoration to be applied to the node's body text. */
+                        bodyTextDecoration?: string;
+                        /** @description A CSS vertical alignment to be applied to the node's body text. */
+                        bodyTextVerticalAlign?: string;
+                        /** @description The width of the node's body or the width of an edge's line. */
+                        width?: number;
+                        /** @description The height of the node's body */
+                        height?: number;
+                        /**
+                         * Format: uri
+                         * @description The URL that points to the image to show in the node.
+                         */
+                        backgroundImage?: string;
+                        /** @description The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+                        backgroundColor?: string;
+                        /** @description Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+                        backgroundBlacken?: number;
+                        /** @description The opacity level of the node's background colour */
+                        backgroundOpacity?: number;
+                        /** @description The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+                        backgroundPositionX?: string;
+                        /** @description The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+                        backgroundPositionY?: string;
+                        /** @description The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+                        backgroundOffsetX?: string;
+                        /** @description The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+                        backgroundOffsetY?: string;
+                        /**
+                         * @description How the background image is fit to the node. Can be 'none', 'contain', or 'cover'.
+                         * @enum {string}
+                         */
+                        backgroundFit?: "none" | "contain" | "cover";
+                        /**
+                         * @description How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'.
+                         * @enum {string}
+                         */
+                        backgroundClip?: "none" | "node" | "node-border";
+                        /**
+                         * @description How the background image's width is determined. Can be 'none', 'inner', or 'outer'.
+                         * @enum {string}
+                         */
+                        backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+                        /**
+                         * @description How the background image's height is determined. Can be 'none', 'inner', or 'outer'.
+                         * @enum {string}
+                         */
+                        backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+                        /** @description The size of the node's border. */
+                        borderWidth?: number;
+                        /**
+                         * @description The style of the node's border
+                         * @enum {string}
+                         */
+                        borderStyle?: "solid" | "dotted" | "dashed" | "double";
+                        /** @description The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+                        borderColor?: string;
+                        /** @description The opacity of the node's border */
+                        borderOpacity?: number;
+                        /** @description The amount of padding around all sides of the node. */
+                        padding?: number;
+                        /**
+                         * @description The horizontal alignment of a node's label
+                         * @enum {string}
+                         */
+                        textHalign?: "left" | "center" | "right";
+                        /**
+                         * @description The vertical alignment of a node's label
+                         * @enum {string}
+                         */
+                        textValign?: "top" | "center" | "bottom";
+                        /**
+                         * @description Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset.
+                         * @default no
+                         * @enum {string}
+                         */
+                        ghost?: "yes" | "no";
+                        /** @description The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+                        activeBgColor?: string;
+                        /** @description The opacity of the active background indicator. Selector needs to be *core*. */
+                        activeBgOpacity?: string;
+                        /** @description The opacity of the active background indicator. Selector needs to be *core*. */
+                        activeBgSize?: string;
+                        /** @description The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+                        selectionBoxColor?: string;
+                        /** @description The size of the border on the selection box. Selector needs to be *core* */
+                        selectionBoxBorderWidth?: number;
+                        /** @description The opacity of the selection box. Selector needs to be *core* */
+                        selectionBoxOpacity?: number;
+                        /** @description The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+                        outsideTextureBgColor?: string;
+                        /** @description The opacity of the area outside the viewport texture. Selector needs to be *core* */
+                        outsideTextureBgOpacity?: number;
+                        /** @description An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+                        shapePolygonPoints?: string;
+                        /** @description The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+                        menuBackgroundColor?: string;
+                        /** @description The opacity of the background of the component menu. */
+                        menuBackgroundOpacity?: number;
+                        /** @description The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+                        menuForgroundColor?: string;
+                    };
+                    /** @description Connection status */
+                    status: string;
+                    /**
+                     * Format: uuid
+                     * @description Associated credential ID
+                     */
+                    credentialId?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Anonymous session issued */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description JWT access token for the anonymous session. */
+                        accessToken: string;
+                        /** @description Capability document for the anonymous session. Untyped pending the provider-capabilities schema tracked separately in the identifier-uniformity program. */
+                        capability?: {
+                            [key: string]: unknown;
+                        };
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        userId: string;
                     };
                 };
             };

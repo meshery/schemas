@@ -302,6 +302,78 @@ const OrganizationSchema: Record<string, unknown> = {
                                     "description": "Preferences specific to dashboard behavior.",
                                     "additionalProperties": true
                                   },
+                                  "authBranding": {
+                                    "x-go-type": "AuthBranding",
+                                    "type": "object",
+                                    "x-internal": [
+                                      "cloud"
+                                    ],
+                                    "description": "Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults.",
+                                    "properties": {
+                                      "carousel": {
+                                        "type": "array",
+                                        "description": "Ordered slides rendered in the auth-page feature carousel.",
+                                        "items": {
+                                          "type": "object",
+                                          "x-internal": [
+                                            "cloud"
+                                          ],
+                                          "description": "A single slide in the auth-page feature carousel.",
+                                          "required": [
+                                            "imageUrl",
+                                            "title",
+                                            "description"
+                                          ],
+                                          "properties": {
+                                            "imageUrl": {
+                                              "type": "string",
+                                              "format": "uri",
+                                              "maxLength": 2048,
+                                              "description": "URL of the slide image asset.",
+                                              "x-go-name": "ImageURL"
+                                            },
+                                            "title": {
+                                              "type": "string",
+                                              "maxLength": 500,
+                                              "description": "Slide title."
+                                            },
+                                            "description": {
+                                              "type": "string",
+                                              "maxLength": 2048,
+                                              "description": "Slide description text."
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "faqs": {
+                                        "type": "array",
+                                        "description": "FAQ entries rendered on the auth pages.",
+                                        "items": {
+                                          "type": "object",
+                                          "x-internal": [
+                                            "cloud"
+                                          ],
+                                          "description": "A single question/answer pair for the auth-page FAQ section.",
+                                          "required": [
+                                            "question",
+                                            "answer"
+                                          ],
+                                          "properties": {
+                                            "question": {
+                                              "type": "string",
+                                              "maxLength": 500,
+                                              "description": "The question text."
+                                            },
+                                            "answer": {
+                                              "type": "string",
+                                              "maxLength": 5000,
+                                              "description": "The answer text."
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
                                   "links": {
                                     "x-go-type": "Links",
                                     "type": "object",
@@ -587,6 +659,78 @@ const OrganizationSchema: Record<string, unknown> = {
                         "description": "Preferences specific to dashboard behavior.",
                         "additionalProperties": true
                       },
+                      "authBranding": {
+                        "x-go-type": "AuthBranding",
+                        "type": "object",
+                        "x-internal": [
+                          "cloud"
+                        ],
+                        "description": "Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults.",
+                        "properties": {
+                          "carousel": {
+                            "type": "array",
+                            "description": "Ordered slides rendered in the auth-page feature carousel.",
+                            "items": {
+                              "type": "object",
+                              "x-internal": [
+                                "cloud"
+                              ],
+                              "description": "A single slide in the auth-page feature carousel.",
+                              "required": [
+                                "imageUrl",
+                                "title",
+                                "description"
+                              ],
+                              "properties": {
+                                "imageUrl": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "maxLength": 2048,
+                                  "description": "URL of the slide image asset.",
+                                  "x-go-name": "ImageURL"
+                                },
+                                "title": {
+                                  "type": "string",
+                                  "maxLength": 500,
+                                  "description": "Slide title."
+                                },
+                                "description": {
+                                  "type": "string",
+                                  "maxLength": 2048,
+                                  "description": "Slide description text."
+                                }
+                              }
+                            }
+                          },
+                          "faqs": {
+                            "type": "array",
+                            "description": "FAQ entries rendered on the auth pages.",
+                            "items": {
+                              "type": "object",
+                              "x-internal": [
+                                "cloud"
+                              ],
+                              "description": "A single question/answer pair for the auth-page FAQ section.",
+                              "required": [
+                                "question",
+                                "answer"
+                              ],
+                              "properties": {
+                                "question": {
+                                  "type": "string",
+                                  "maxLength": 500,
+                                  "description": "The question text."
+                                },
+                                "answer": {
+                                  "type": "string",
+                                  "maxLength": 5000,
+                                  "description": "The answer text."
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
                       "links": {
                         "x-go-type": "Links",
                         "type": "object",
@@ -844,6 +988,78 @@ const OrganizationSchema: Record<string, unknown> = {
                                     "type": "object",
                                     "description": "Preferences specific to dashboard behavior.",
                                     "additionalProperties": true
+                                  },
+                                  "authBranding": {
+                                    "x-go-type": "AuthBranding",
+                                    "type": "object",
+                                    "x-internal": [
+                                      "cloud"
+                                    ],
+                                    "description": "Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults.",
+                                    "properties": {
+                                      "carousel": {
+                                        "type": "array",
+                                        "description": "Ordered slides rendered in the auth-page feature carousel.",
+                                        "items": {
+                                          "type": "object",
+                                          "x-internal": [
+                                            "cloud"
+                                          ],
+                                          "description": "A single slide in the auth-page feature carousel.",
+                                          "required": [
+                                            "imageUrl",
+                                            "title",
+                                            "description"
+                                          ],
+                                          "properties": {
+                                            "imageUrl": {
+                                              "type": "string",
+                                              "format": "uri",
+                                              "maxLength": 2048,
+                                              "description": "URL of the slide image asset.",
+                                              "x-go-name": "ImageURL"
+                                            },
+                                            "title": {
+                                              "type": "string",
+                                              "maxLength": 500,
+                                              "description": "Slide title."
+                                            },
+                                            "description": {
+                                              "type": "string",
+                                              "maxLength": 2048,
+                                              "description": "Slide description text."
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "faqs": {
+                                        "type": "array",
+                                        "description": "FAQ entries rendered on the auth pages.",
+                                        "items": {
+                                          "type": "object",
+                                          "x-internal": [
+                                            "cloud"
+                                          ],
+                                          "description": "A single question/answer pair for the auth-page FAQ section.",
+                                          "required": [
+                                            "question",
+                                            "answer"
+                                          ],
+                                          "properties": {
+                                            "question": {
+                                              "type": "string",
+                                              "maxLength": 500,
+                                              "description": "The question text."
+                                            },
+                                            "answer": {
+                                              "type": "string",
+                                              "maxLength": 5000,
+                                              "description": "The answer text."
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
                                   },
                                   "links": {
                                     "x-go-type": "Links",
@@ -1399,6 +1615,78 @@ const OrganizationSchema: Record<string, unknown> = {
                                     "description": "Preferences specific to dashboard behavior.",
                                     "additionalProperties": true
                                   },
+                                  "authBranding": {
+                                    "x-go-type": "AuthBranding",
+                                    "type": "object",
+                                    "x-internal": [
+                                      "cloud"
+                                    ],
+                                    "description": "Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults.",
+                                    "properties": {
+                                      "carousel": {
+                                        "type": "array",
+                                        "description": "Ordered slides rendered in the auth-page feature carousel.",
+                                        "items": {
+                                          "type": "object",
+                                          "x-internal": [
+                                            "cloud"
+                                          ],
+                                          "description": "A single slide in the auth-page feature carousel.",
+                                          "required": [
+                                            "imageUrl",
+                                            "title",
+                                            "description"
+                                          ],
+                                          "properties": {
+                                            "imageUrl": {
+                                              "type": "string",
+                                              "format": "uri",
+                                              "maxLength": 2048,
+                                              "description": "URL of the slide image asset.",
+                                              "x-go-name": "ImageURL"
+                                            },
+                                            "title": {
+                                              "type": "string",
+                                              "maxLength": 500,
+                                              "description": "Slide title."
+                                            },
+                                            "description": {
+                                              "type": "string",
+                                              "maxLength": 2048,
+                                              "description": "Slide description text."
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "faqs": {
+                                        "type": "array",
+                                        "description": "FAQ entries rendered on the auth pages.",
+                                        "items": {
+                                          "type": "object",
+                                          "x-internal": [
+                                            "cloud"
+                                          ],
+                                          "description": "A single question/answer pair for the auth-page FAQ section.",
+                                          "required": [
+                                            "question",
+                                            "answer"
+                                          ],
+                                          "properties": {
+                                            "question": {
+                                              "type": "string",
+                                              "maxLength": 500,
+                                              "description": "The question text."
+                                            },
+                                            "answer": {
+                                              "type": "string",
+                                              "maxLength": 5000,
+                                              "description": "The answer text."
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
                                   "links": {
                                     "x-go-type": "Links",
                                     "type": "object",
@@ -1797,6 +2085,78 @@ const OrganizationSchema: Record<string, unknown> = {
                         "description": "Preferences specific to dashboard behavior.",
                         "additionalProperties": true
                       },
+                      "authBranding": {
+                        "x-go-type": "AuthBranding",
+                        "type": "object",
+                        "x-internal": [
+                          "cloud"
+                        ],
+                        "description": "Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults.",
+                        "properties": {
+                          "carousel": {
+                            "type": "array",
+                            "description": "Ordered slides rendered in the auth-page feature carousel.",
+                            "items": {
+                              "type": "object",
+                              "x-internal": [
+                                "cloud"
+                              ],
+                              "description": "A single slide in the auth-page feature carousel.",
+                              "required": [
+                                "imageUrl",
+                                "title",
+                                "description"
+                              ],
+                              "properties": {
+                                "imageUrl": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "maxLength": 2048,
+                                  "description": "URL of the slide image asset.",
+                                  "x-go-name": "ImageURL"
+                                },
+                                "title": {
+                                  "type": "string",
+                                  "maxLength": 500,
+                                  "description": "Slide title."
+                                },
+                                "description": {
+                                  "type": "string",
+                                  "maxLength": 2048,
+                                  "description": "Slide description text."
+                                }
+                              }
+                            }
+                          },
+                          "faqs": {
+                            "type": "array",
+                            "description": "FAQ entries rendered on the auth pages.",
+                            "items": {
+                              "type": "object",
+                              "x-internal": [
+                                "cloud"
+                              ],
+                              "description": "A single question/answer pair for the auth-page FAQ section.",
+                              "required": [
+                                "question",
+                                "answer"
+                              ],
+                              "properties": {
+                                "question": {
+                                  "type": "string",
+                                  "maxLength": 500,
+                                  "description": "The question text."
+                                },
+                                "answer": {
+                                  "type": "string",
+                                  "maxLength": 5000,
+                                  "description": "The answer text."
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
                       "links": {
                         "x-go-type": "Links",
                         "type": "object",
@@ -2054,6 +2414,78 @@ const OrganizationSchema: Record<string, unknown> = {
                                     "type": "object",
                                     "description": "Preferences specific to dashboard behavior.",
                                     "additionalProperties": true
+                                  },
+                                  "authBranding": {
+                                    "x-go-type": "AuthBranding",
+                                    "type": "object",
+                                    "x-internal": [
+                                      "cloud"
+                                    ],
+                                    "description": "Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults.",
+                                    "properties": {
+                                      "carousel": {
+                                        "type": "array",
+                                        "description": "Ordered slides rendered in the auth-page feature carousel.",
+                                        "items": {
+                                          "type": "object",
+                                          "x-internal": [
+                                            "cloud"
+                                          ],
+                                          "description": "A single slide in the auth-page feature carousel.",
+                                          "required": [
+                                            "imageUrl",
+                                            "title",
+                                            "description"
+                                          ],
+                                          "properties": {
+                                            "imageUrl": {
+                                              "type": "string",
+                                              "format": "uri",
+                                              "maxLength": 2048,
+                                              "description": "URL of the slide image asset.",
+                                              "x-go-name": "ImageURL"
+                                            },
+                                            "title": {
+                                              "type": "string",
+                                              "maxLength": 500,
+                                              "description": "Slide title."
+                                            },
+                                            "description": {
+                                              "type": "string",
+                                              "maxLength": 2048,
+                                              "description": "Slide description text."
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "faqs": {
+                                        "type": "array",
+                                        "description": "FAQ entries rendered on the auth pages.",
+                                        "items": {
+                                          "type": "object",
+                                          "x-internal": [
+                                            "cloud"
+                                          ],
+                                          "description": "A single question/answer pair for the auth-page FAQ section.",
+                                          "required": [
+                                            "question",
+                                            "answer"
+                                          ],
+                                          "properties": {
+                                            "question": {
+                                              "type": "string",
+                                              "maxLength": 500,
+                                              "description": "The question text."
+                                            },
+                                            "answer": {
+                                              "type": "string",
+                                              "maxLength": 5000,
+                                              "description": "The answer text."
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
                                   },
                                   "links": {
                                     "x-go-type": "Links",
@@ -2360,6 +2792,78 @@ const OrganizationSchema: Record<string, unknown> = {
                           "type": "object",
                           "description": "Preferences specific to dashboard behavior.",
                           "additionalProperties": true
+                        },
+                        "authBranding": {
+                          "x-go-type": "AuthBranding",
+                          "type": "object",
+                          "x-internal": [
+                            "cloud"
+                          ],
+                          "description": "Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults.",
+                          "properties": {
+                            "carousel": {
+                              "type": "array",
+                              "description": "Ordered slides rendered in the auth-page feature carousel.",
+                              "items": {
+                                "type": "object",
+                                "x-internal": [
+                                  "cloud"
+                                ],
+                                "description": "A single slide in the auth-page feature carousel.",
+                                "required": [
+                                  "imageUrl",
+                                  "title",
+                                  "description"
+                                ],
+                                "properties": {
+                                  "imageUrl": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "maxLength": 2048,
+                                    "description": "URL of the slide image asset.",
+                                    "x-go-name": "ImageURL"
+                                  },
+                                  "title": {
+                                    "type": "string",
+                                    "maxLength": 500,
+                                    "description": "Slide title."
+                                  },
+                                  "description": {
+                                    "type": "string",
+                                    "maxLength": 2048,
+                                    "description": "Slide description text."
+                                  }
+                                }
+                              }
+                            },
+                            "faqs": {
+                              "type": "array",
+                              "description": "FAQ entries rendered on the auth pages.",
+                              "items": {
+                                "type": "object",
+                                "x-internal": [
+                                  "cloud"
+                                ],
+                                "description": "A single question/answer pair for the auth-page FAQ section.",
+                                "required": [
+                                  "question",
+                                  "answer"
+                                ],
+                                "properties": {
+                                  "question": {
+                                    "type": "string",
+                                    "maxLength": 500,
+                                    "description": "The question text."
+                                  },
+                                  "answer": {
+                                    "type": "string",
+                                    "maxLength": 5000,
+                                    "description": "The answer text."
+                                  }
+                                }
+                              }
+                            }
+                          }
                         },
                         "links": {
                           "x-go-type": "Links",
@@ -3458,6 +3962,78 @@ const OrganizationSchema: Record<string, unknown> = {
                       "description": "Preferences specific to dashboard behavior.",
                       "additionalProperties": true
                     },
+                    "authBranding": {
+                      "x-go-type": "AuthBranding",
+                      "type": "object",
+                      "x-internal": [
+                        "cloud"
+                      ],
+                      "description": "Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults.",
+                      "properties": {
+                        "carousel": {
+                          "type": "array",
+                          "description": "Ordered slides rendered in the auth-page feature carousel.",
+                          "items": {
+                            "type": "object",
+                            "x-internal": [
+                              "cloud"
+                            ],
+                            "description": "A single slide in the auth-page feature carousel.",
+                            "required": [
+                              "imageUrl",
+                              "title",
+                              "description"
+                            ],
+                            "properties": {
+                              "imageUrl": {
+                                "type": "string",
+                                "format": "uri",
+                                "maxLength": 2048,
+                                "description": "URL of the slide image asset.",
+                                "x-go-name": "ImageURL"
+                              },
+                              "title": {
+                                "type": "string",
+                                "maxLength": 500,
+                                "description": "Slide title."
+                              },
+                              "description": {
+                                "type": "string",
+                                "maxLength": 2048,
+                                "description": "Slide description text."
+                              }
+                            }
+                          }
+                        },
+                        "faqs": {
+                          "type": "array",
+                          "description": "FAQ entries rendered on the auth pages.",
+                          "items": {
+                            "type": "object",
+                            "x-internal": [
+                              "cloud"
+                            ],
+                            "description": "A single question/answer pair for the auth-page FAQ section.",
+                            "required": [
+                              "question",
+                              "answer"
+                            ],
+                            "properties": {
+                              "question": {
+                                "type": "string",
+                                "maxLength": 500,
+                                "description": "The question text."
+                              },
+                              "answer": {
+                                "type": "string",
+                                "maxLength": 5000,
+                                "description": "The answer text."
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
                     "links": {
                       "x-go-type": "Links",
                       "type": "object",
@@ -3817,6 +4393,131 @@ const OrganizationSchema: Record<string, unknown> = {
           }
         }
       },
+      "CarouselSlide": {
+        "type": "object",
+        "x-internal": [
+          "cloud"
+        ],
+        "description": "A single slide in the auth-page feature carousel.",
+        "required": [
+          "imageUrl",
+          "title",
+          "description"
+        ],
+        "properties": {
+          "imageUrl": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 2048,
+            "description": "URL of the slide image asset.",
+            "x-go-name": "ImageURL"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 500,
+            "description": "Slide title."
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2048,
+            "description": "Slide description text."
+          }
+        }
+      },
+      "FAQ": {
+        "type": "object",
+        "x-internal": [
+          "cloud"
+        ],
+        "description": "A single question/answer pair for the auth-page FAQ section.",
+        "required": [
+          "question",
+          "answer"
+        ],
+        "properties": {
+          "question": {
+            "type": "string",
+            "maxLength": 500,
+            "description": "The question text."
+          },
+          "answer": {
+            "type": "string",
+            "maxLength": 5000,
+            "description": "The answer text."
+          }
+        }
+      },
+      "AuthBranding": {
+        "type": "object",
+        "x-internal": [
+          "cloud"
+        ],
+        "description": "Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults.",
+        "properties": {
+          "carousel": {
+            "type": "array",
+            "description": "Ordered slides rendered in the auth-page feature carousel.",
+            "items": {
+              "type": "object",
+              "x-internal": [
+                "cloud"
+              ],
+              "description": "A single slide in the auth-page feature carousel.",
+              "required": [
+                "imageUrl",
+                "title",
+                "description"
+              ],
+              "properties": {
+                "imageUrl": {
+                  "type": "string",
+                  "format": "uri",
+                  "maxLength": 2048,
+                  "description": "URL of the slide image asset.",
+                  "x-go-name": "ImageURL"
+                },
+                "title": {
+                  "type": "string",
+                  "maxLength": 500,
+                  "description": "Slide title."
+                },
+                "description": {
+                  "type": "string",
+                  "maxLength": 2048,
+                  "description": "Slide description text."
+                }
+              }
+            }
+          },
+          "faqs": {
+            "type": "array",
+            "description": "FAQ entries rendered on the auth pages.",
+            "items": {
+              "type": "object",
+              "x-internal": [
+                "cloud"
+              ],
+              "description": "A single question/answer pair for the auth-page FAQ section.",
+              "required": [
+                "question",
+                "answer"
+              ],
+              "properties": {
+                "question": {
+                  "type": "string",
+                  "maxLength": 500,
+                  "description": "The question text."
+                },
+                "answer": {
+                  "type": "string",
+                  "maxLength": 5000,
+                  "description": "The answer text."
+                }
+              }
+            }
+          }
+        }
+      },
       "Preferences": {
         "type": "object",
         "description": "Organization-level user experience preferences.",
@@ -3949,6 +4650,78 @@ const OrganizationSchema: Record<string, unknown> = {
             "type": "object",
             "description": "Preferences specific to dashboard behavior.",
             "additionalProperties": true
+          },
+          "authBranding": {
+            "x-go-type": "AuthBranding",
+            "type": "object",
+            "x-internal": [
+              "cloud"
+            ],
+            "description": "Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults.",
+            "properties": {
+              "carousel": {
+                "type": "array",
+                "description": "Ordered slides rendered in the auth-page feature carousel.",
+                "items": {
+                  "type": "object",
+                  "x-internal": [
+                    "cloud"
+                  ],
+                  "description": "A single slide in the auth-page feature carousel.",
+                  "required": [
+                    "imageUrl",
+                    "title",
+                    "description"
+                  ],
+                  "properties": {
+                    "imageUrl": {
+                      "type": "string",
+                      "format": "uri",
+                      "maxLength": 2048,
+                      "description": "URL of the slide image asset.",
+                      "x-go-name": "ImageURL"
+                    },
+                    "title": {
+                      "type": "string",
+                      "maxLength": 500,
+                      "description": "Slide title."
+                    },
+                    "description": {
+                      "type": "string",
+                      "maxLength": 2048,
+                      "description": "Slide description text."
+                    }
+                  }
+                }
+              },
+              "faqs": {
+                "type": "array",
+                "description": "FAQ entries rendered on the auth pages.",
+                "items": {
+                  "type": "object",
+                  "x-internal": [
+                    "cloud"
+                  ],
+                  "description": "A single question/answer pair for the auth-page FAQ section.",
+                  "required": [
+                    "question",
+                    "answer"
+                  ],
+                  "properties": {
+                    "question": {
+                      "type": "string",
+                      "maxLength": 500,
+                      "description": "The question text."
+                    },
+                    "answer": {
+                      "type": "string",
+                      "maxLength": 5000,
+                      "description": "The answer text."
+                    }
+                  }
+                }
+              }
+            }
           },
           "links": {
             "x-go-type": "Links",
@@ -4127,6 +4900,78 @@ const OrganizationSchema: Record<string, unknown> = {
                 "type": "object",
                 "description": "Preferences specific to dashboard behavior.",
                 "additionalProperties": true
+              },
+              "authBranding": {
+                "x-go-type": "AuthBranding",
+                "type": "object",
+                "x-internal": [
+                  "cloud"
+                ],
+                "description": "Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults.",
+                "properties": {
+                  "carousel": {
+                    "type": "array",
+                    "description": "Ordered slides rendered in the auth-page feature carousel.",
+                    "items": {
+                      "type": "object",
+                      "x-internal": [
+                        "cloud"
+                      ],
+                      "description": "A single slide in the auth-page feature carousel.",
+                      "required": [
+                        "imageUrl",
+                        "title",
+                        "description"
+                      ],
+                      "properties": {
+                        "imageUrl": {
+                          "type": "string",
+                          "format": "uri",
+                          "maxLength": 2048,
+                          "description": "URL of the slide image asset.",
+                          "x-go-name": "ImageURL"
+                        },
+                        "title": {
+                          "type": "string",
+                          "maxLength": 500,
+                          "description": "Slide title."
+                        },
+                        "description": {
+                          "type": "string",
+                          "maxLength": 2048,
+                          "description": "Slide description text."
+                        }
+                      }
+                    }
+                  },
+                  "faqs": {
+                    "type": "array",
+                    "description": "FAQ entries rendered on the auth pages.",
+                    "items": {
+                      "type": "object",
+                      "x-internal": [
+                        "cloud"
+                      ],
+                      "description": "A single question/answer pair for the auth-page FAQ section.",
+                      "required": [
+                        "question",
+                        "answer"
+                      ],
+                      "properties": {
+                        "question": {
+                          "type": "string",
+                          "maxLength": 500,
+                          "description": "The question text."
+                        },
+                        "answer": {
+                          "type": "string",
+                          "maxLength": 5000,
+                          "description": "The answer text."
+                        }
+                      }
+                    }
+                  }
+                }
               },
               "links": {
                 "x-go-type": "Links",
@@ -4487,6 +5332,78 @@ const OrganizationSchema: Record<string, unknown> = {
                     "description": "Preferences specific to dashboard behavior.",
                     "additionalProperties": true
                   },
+                  "authBranding": {
+                    "x-go-type": "AuthBranding",
+                    "type": "object",
+                    "x-internal": [
+                      "cloud"
+                    ],
+                    "description": "Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults.",
+                    "properties": {
+                      "carousel": {
+                        "type": "array",
+                        "description": "Ordered slides rendered in the auth-page feature carousel.",
+                        "items": {
+                          "type": "object",
+                          "x-internal": [
+                            "cloud"
+                          ],
+                          "description": "A single slide in the auth-page feature carousel.",
+                          "required": [
+                            "imageUrl",
+                            "title",
+                            "description"
+                          ],
+                          "properties": {
+                            "imageUrl": {
+                              "type": "string",
+                              "format": "uri",
+                              "maxLength": 2048,
+                              "description": "URL of the slide image asset.",
+                              "x-go-name": "ImageURL"
+                            },
+                            "title": {
+                              "type": "string",
+                              "maxLength": 500,
+                              "description": "Slide title."
+                            },
+                            "description": {
+                              "type": "string",
+                              "maxLength": 2048,
+                              "description": "Slide description text."
+                            }
+                          }
+                        }
+                      },
+                      "faqs": {
+                        "type": "array",
+                        "description": "FAQ entries rendered on the auth pages.",
+                        "items": {
+                          "type": "object",
+                          "x-internal": [
+                            "cloud"
+                          ],
+                          "description": "A single question/answer pair for the auth-page FAQ section.",
+                          "required": [
+                            "question",
+                            "answer"
+                          ],
+                          "properties": {
+                            "question": {
+                              "type": "string",
+                              "maxLength": 500,
+                              "description": "The question text."
+                            },
+                            "answer": {
+                              "type": "string",
+                              "maxLength": 5000,
+                              "description": "The answer text."
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
                   "links": {
                     "x-go-type": "Links",
                     "type": "object",
@@ -4768,6 +5685,78 @@ const OrganizationSchema: Record<string, unknown> = {
                           "type": "object",
                           "description": "Preferences specific to dashboard behavior.",
                           "additionalProperties": true
+                        },
+                        "authBranding": {
+                          "x-go-type": "AuthBranding",
+                          "type": "object",
+                          "x-internal": [
+                            "cloud"
+                          ],
+                          "description": "Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults.",
+                          "properties": {
+                            "carousel": {
+                              "type": "array",
+                              "description": "Ordered slides rendered in the auth-page feature carousel.",
+                              "items": {
+                                "type": "object",
+                                "x-internal": [
+                                  "cloud"
+                                ],
+                                "description": "A single slide in the auth-page feature carousel.",
+                                "required": [
+                                  "imageUrl",
+                                  "title",
+                                  "description"
+                                ],
+                                "properties": {
+                                  "imageUrl": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "maxLength": 2048,
+                                    "description": "URL of the slide image asset.",
+                                    "x-go-name": "ImageURL"
+                                  },
+                                  "title": {
+                                    "type": "string",
+                                    "maxLength": 500,
+                                    "description": "Slide title."
+                                  },
+                                  "description": {
+                                    "type": "string",
+                                    "maxLength": 2048,
+                                    "description": "Slide description text."
+                                  }
+                                }
+                              }
+                            },
+                            "faqs": {
+                              "type": "array",
+                              "description": "FAQ entries rendered on the auth pages.",
+                              "items": {
+                                "type": "object",
+                                "x-internal": [
+                                  "cloud"
+                                ],
+                                "description": "A single question/answer pair for the auth-page FAQ section.",
+                                "required": [
+                                  "question",
+                                  "answer"
+                                ],
+                                "properties": {
+                                  "question": {
+                                    "type": "string",
+                                    "maxLength": 500,
+                                    "description": "The question text."
+                                  },
+                                  "answer": {
+                                    "type": "string",
+                                    "maxLength": 5000,
+                                    "description": "The answer text."
+                                  }
+                                }
+                              }
+                            }
+                          }
                         },
                         "links": {
                           "x-go-type": "Links",
@@ -5055,6 +6044,78 @@ const OrganizationSchema: Record<string, unknown> = {
                           "description": "Preferences specific to dashboard behavior.",
                           "additionalProperties": true
                         },
+                        "authBranding": {
+                          "x-go-type": "AuthBranding",
+                          "type": "object",
+                          "x-internal": [
+                            "cloud"
+                          ],
+                          "description": "Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults.",
+                          "properties": {
+                            "carousel": {
+                              "type": "array",
+                              "description": "Ordered slides rendered in the auth-page feature carousel.",
+                              "items": {
+                                "type": "object",
+                                "x-internal": [
+                                  "cloud"
+                                ],
+                                "description": "A single slide in the auth-page feature carousel.",
+                                "required": [
+                                  "imageUrl",
+                                  "title",
+                                  "description"
+                                ],
+                                "properties": {
+                                  "imageUrl": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "maxLength": 2048,
+                                    "description": "URL of the slide image asset.",
+                                    "x-go-name": "ImageURL"
+                                  },
+                                  "title": {
+                                    "type": "string",
+                                    "maxLength": 500,
+                                    "description": "Slide title."
+                                  },
+                                  "description": {
+                                    "type": "string",
+                                    "maxLength": 2048,
+                                    "description": "Slide description text."
+                                  }
+                                }
+                              }
+                            },
+                            "faqs": {
+                              "type": "array",
+                              "description": "FAQ entries rendered on the auth pages.",
+                              "items": {
+                                "type": "object",
+                                "x-internal": [
+                                  "cloud"
+                                ],
+                                "description": "A single question/answer pair for the auth-page FAQ section.",
+                                "required": [
+                                  "question",
+                                  "answer"
+                                ],
+                                "properties": {
+                                  "question": {
+                                    "type": "string",
+                                    "maxLength": 500,
+                                    "description": "The question text."
+                                  },
+                                  "answer": {
+                                    "type": "string",
+                                    "maxLength": 5000,
+                                    "description": "The answer text."
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
                         "links": {
                           "x-go-type": "Links",
                           "type": "object",
@@ -5290,6 +6351,78 @@ const OrganizationSchema: Record<string, unknown> = {
                 "type": "object",
                 "description": "Preferences specific to dashboard behavior.",
                 "additionalProperties": true
+              },
+              "authBranding": {
+                "x-go-type": "AuthBranding",
+                "type": "object",
+                "x-internal": [
+                  "cloud"
+                ],
+                "description": "Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults.",
+                "properties": {
+                  "carousel": {
+                    "type": "array",
+                    "description": "Ordered slides rendered in the auth-page feature carousel.",
+                    "items": {
+                      "type": "object",
+                      "x-internal": [
+                        "cloud"
+                      ],
+                      "description": "A single slide in the auth-page feature carousel.",
+                      "required": [
+                        "imageUrl",
+                        "title",
+                        "description"
+                      ],
+                      "properties": {
+                        "imageUrl": {
+                          "type": "string",
+                          "format": "uri",
+                          "maxLength": 2048,
+                          "description": "URL of the slide image asset.",
+                          "x-go-name": "ImageURL"
+                        },
+                        "title": {
+                          "type": "string",
+                          "maxLength": 500,
+                          "description": "Slide title."
+                        },
+                        "description": {
+                          "type": "string",
+                          "maxLength": 2048,
+                          "description": "Slide description text."
+                        }
+                      }
+                    }
+                  },
+                  "faqs": {
+                    "type": "array",
+                    "description": "FAQ entries rendered on the auth pages.",
+                    "items": {
+                      "type": "object",
+                      "x-internal": [
+                        "cloud"
+                      ],
+                      "description": "A single question/answer pair for the auth-page FAQ section.",
+                      "required": [
+                        "question",
+                        "answer"
+                      ],
+                      "properties": {
+                        "question": {
+                          "type": "string",
+                          "maxLength": 500,
+                          "description": "The question text."
+                        },
+                        "answer": {
+                          "type": "string",
+                          "maxLength": 5000,
+                          "description": "The answer text."
+                        }
+                      }
+                    }
+                  }
+                }
               },
               "links": {
                 "x-go-type": "Links",
@@ -5661,6 +6794,231 @@ const OrganizationSchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "team_id",
                     "json": "teamId"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "createdAt": {
+                  "description": "Timestamp when the mapping was created.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "created_at",
+                    "json": "createdAt,omitempty"
+                  },
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "updatedAt": {
+                  "description": "Timestamp when the mapping was last updated.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "updated_at",
+                    "json": "updatedAt,omitempty"
+                  },
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "deletedAt": {
+                  "description": "Timestamp when the mapping was soft-deleted.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "deleted_at",
+                    "json": "deletedAt,omitempty"
+                  },
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type": "sql.NullTime",
+                  "x-go-type-import": {
+                    "path": "database/sql"
+                  },
+                  "x-go-type-skip-optional-pointer": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "UsersOrganizationsMapping": {
+        "type": "object",
+        "description": "Junction record linking a user to an organization, optionally carrying the role the user holds in that organization. Backed by the users_organizations_mappings table, whose user foreign-key column is named owner.",
+        "properties": {
+          "id": {
+            "description": "Mapping record ID.",
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-oapi-codegen-extra-tags": {
+              "db": "id",
+              "json": "id"
+            },
+            "x-go-type-name": "GeneralId",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "userId": {
+            "description": "User ID for this mapping. Stored in the owner column.",
+            "x-go-name": "UserID",
+            "x-oapi-codegen-extra-tags": {
+              "db": "owner",
+              "json": "userId"
+            },
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
+          "organizationId": {
+            "description": "Organization ID for this mapping.",
+            "x-go-name": "OrganizationID",
+            "x-oapi-codegen-extra-tags": {
+              "db": "organization_id",
+              "json": "organizationId"
+            },
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
+          "roleId": {
+            "description": "Role the user holds within the organization; omitted when no explicit role is assigned.",
+            "x-go-name": "RoleID",
+            "x-oapi-codegen-extra-tags": {
+              "db": "role_id",
+              "json": "roleId,omitempty"
+            },
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
+          "createdAt": {
+            "description": "Timestamp when the mapping was created.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "created_at",
+              "json": "createdAt,omitempty"
+            },
+            "type": "string",
+            "format": "date-time",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "updatedAt": {
+            "description": "Timestamp when the mapping was last updated.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "updated_at",
+              "json": "updatedAt,omitempty"
+            },
+            "type": "string",
+            "format": "date-time",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "deletedAt": {
+            "description": "Timestamp when the mapping was soft-deleted.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "deleted_at",
+              "json": "deletedAt,omitempty"
+            },
+            "type": "string",
+            "format": "date-time",
+            "x-go-type": "sql.NullTime",
+            "x-go-type-import": {
+              "path": "database/sql"
+            },
+            "x-go-type-skip-optional-pointer": true
+          }
+        }
+      },
+      "UsersOrganizationsMappingPage": {
+        "type": "object",
+        "description": "Paginated list of user-organization mappings.",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "description": "Zero-based page index returned in this response.",
+            "minimum": 0
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Maximum number of items returned on each page.",
+            "minimum": 1,
+            "x-oapi-codegen-extra-tags": {
+              "json": "pageSize,omitempty"
+            }
+          },
+          "totalCount": {
+            "type": "integer",
+            "description": "Total number of items across all pages.",
+            "minimum": 0,
+            "x-oapi-codegen-extra-tags": {
+              "json": "totalCount,omitempty"
+            }
+          },
+          "data": {
+            "type": "array",
+            "description": "User-organization mapping entries.",
+            "items": {
+              "type": "object",
+              "description": "Junction record linking a user to an organization, optionally carrying the role the user holds in that organization. Backed by the users_organizations_mappings table, whose user foreign-key column is named owner.",
+              "properties": {
+                "id": {
+                  "description": "Mapping record ID.",
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "id",
+                    "json": "id"
+                  },
+                  "x-go-type-name": "GeneralId",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "userId": {
+                  "description": "User ID for this mapping. Stored in the owner column.",
+                  "x-go-name": "UserID",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "owner",
+                    "json": "userId"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "organizationId": {
+                  "description": "Organization ID for this mapping.",
+                  "x-go-name": "OrganizationID",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "organization_id",
+                    "json": "organizationId"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "roleId": {
+                  "description": "Role the user holds within the organization; omitted when no explicit role is assigned.",
+                  "x-go-name": "RoleID",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "role_id",
+                    "json": "roleId,omitempty"
                   },
                   "type": "string",
                   "format": "uuid",

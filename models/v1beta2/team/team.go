@@ -104,7 +104,7 @@ type UsersTeamsMapping struct {
 	UpdatedAt core.Time  `db:"updated_at" json:"updatedAt" yaml:"updatedAt,omitempty"`
 
 	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	UserId *core.Uuid `db:"user_id" json:"userId" yaml:"userId,omitempty"`
+	UserId *core.Uuid `db:"owner" json:"userId" yaml:"userId,omitempty"`
 }
 
 // UsersTeamsMappingPage Paginated list of user-team mappings

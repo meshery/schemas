@@ -516,7 +516,7 @@ const TeamSchema: Record<string, unknown> = {
           "userId": {
             "description": "User ID",
             "x-oapi-codegen-extra-tags": {
-              "db": "user_id",
+              "db": "owner",
               "json": "userId"
             },
             "type": "string",
@@ -630,7 +630,7 @@ const TeamSchema: Record<string, unknown> = {
                 "userId": {
                   "description": "User ID",
                   "x-oapi-codegen-extra-tags": {
-                    "db": "user_id",
+                    "db": "owner",
                     "json": "userId"
                   },
                   "type": "string",
@@ -1969,7 +1969,7 @@ const TeamSchema: Record<string, unknown> = {
                           "userId": {
                             "description": "User ID",
                             "x-oapi-codegen-extra-tags": {
-                              "db": "user_id",
+                              "db": "owner",
                               "json": "userId"
                             },
                             "type": "string",
@@ -2180,7 +2180,7 @@ const TeamSchema: Record<string, unknown> = {
                     "userId": {
                       "description": "User ID",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id",
+                        "db": "owner",
                         "json": "userId"
                       },
                       "type": "string",

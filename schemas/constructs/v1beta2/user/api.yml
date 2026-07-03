@@ -124,6 +124,135 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
+  /api/identity/users/profile/details:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - users
+      operationId: getUserProfileOverview
+      summary: Get profile overview counts for the current user
+      description: >-
+        Returns the aggregate counts shown on the caller's profile overview:
+        the number of Kubernetes contexts and the number of designs owned by
+        the caller.
+      responses:
+        "200":
+          description: Profile overview counts for the caller
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProfileOverview"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/users/{userId}/profile/activity:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - users
+      operationId: getUserRecentActivities
+      summary: Get recent activity for a user's public profile
+      description: >-
+        Returns the recent-activity feed shown on a user's public profile.
+        Accessible without authentication; sensitive event categories are
+        filtered out and email addresses are redacted unless the caller is a
+        provider admin or is viewing their own profile. Pagination beyond the
+        first page requires provider-admin privileges.
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/userId"
+        - name: page
+          in: query
+          description: Zero-based page index of the activity feed.
+          schema:
+            type: integer
+            minimum: 0
+        - name: pageSize
+          in: query
+          description: Number of activity entries per page.
+          schema:
+            type: integer
+            minimum: 1
+        - name: pagesize
+          in: query
+          deprecated: true
+          description: >-
+            Deprecated lowercase alias of pageSize, kept while existing clients
+            migrate to the canonical camelCase parameter.
+          schema:
+            type: integer
+            minimum: 1
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/filter"
+      responses:
+        "200":
+          description: Recent-activity page for the requested user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecentActivityPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/users/notify/comment:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - users
+      operationId: notifyMentionUsers
+      summary: Notify users mentioned in a design comment
+      description: >-
+        Sends email notifications to the users mentioned in a design comment,
+        to the comment thread participants, and to the design owner, and
+        records a user event for the comment.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MentionNotificationPayload"
+      responses:
+        "200":
+          description: Mention notifications dispatched
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/users/anonymous:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - users
+      operationId: createAnonymousUserSession
+      summary: Create an anonymous user and issue a session token
+      description: >-
+        Mints a synthetic anonymous user account, registers the calling Meshery
+        instance as a connection, and returns an access token together with the
+        capability document for the anonymous session. Authenticated with the
+        shared anonymous-results publishing token rather than a user JWT.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../../v1beta3/connection/api.yml#/components/schemas/ConnectionPayload"
+      responses:
+        "200":
+          description: Anonymous session issued
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnonymousFlowResponse"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
   /api/identity/users/self/account-deletion-eligibility:
     get:
       x-internal: ["cloud"]
@@ -270,6 +399,13 @@ components:
       schema:
         type: string
         format: uuid
+    userId:
+      name: userId
+      in: path
+      required: true
+      description: ID of the user whose recent activity is requested
+      schema:
+        $ref: "../core/api.yml#/components/schemas/Uuid"
     page:
       name: page
       in: query
@@ -920,6 +1056,204 @@ components:
           format: uri
           description: The link of the social.
       required: ["site", "link"]
+
+    ProfileOverview:
+      type: object
+      additionalProperties: false
+      description: Aggregate counts shown on the current user's profile overview.
+      required:
+        - k8sCount
+        - patternCount
+      properties:
+        k8sCount:
+          type: integer
+          minimum: 0
+          description: Number of Kubernetes contexts owned by the user.
+          x-go-name: KubernetesContexts
+        patternCount:
+          type: integer
+          minimum: 0
+          description: Number of designs owned by the user.
+          x-go-name: PatternsCount
+
+    UserActivity:
+      type: object
+      additionalProperties: false
+      description: >-
+        A single entry in a user's recent-activity feed. A narrow projection of
+        the stored event record (id, category, action, description, owner and
+        timestamps). The pre-migration meshery-cloud serialization emitted
+        additional zero-valued event fields; those disappear once the server
+        consumes this generated type.
+      properties:
+        id:
+          $ref: "../core/api.yml#/components/schemas/Uuid"
+          description: Unique identifier of the underlying event.
+          x-go-name: ID
+          x-oapi-codegen-extra-tags:
+            db: id
+            json: id
+        category:
+          type: string
+          maxLength: 500
+          description: Resource category on which the activity occurred.
+          x-oapi-codegen-extra-tags:
+            db: category
+            json: category
+        action:
+          type: string
+          maxLength: 500
+          description: Action recorded by the activity.
+          x-oapi-codegen-extra-tags:
+            db: action
+            json: action
+        description:
+          type: string
+          maxLength: 5000
+          description: >-
+            Human-readable description of the activity. Email addresses are
+            redacted for non-privileged viewers.
+          x-oapi-codegen-extra-tags:
+            db: description
+            json: description
+        owner:
+          $ref: "../core/api.yml#/components/schemas/Uuid"
+          description: ID of the user who performed the activity.
+          x-oapi-codegen-extra-tags:
+            db: owner
+            json: owner
+        createdAt:
+          $ref: "../core/api.yml#/components/schemas/Time"
+          description: Timestamp when the activity was recorded.
+          x-oapi-codegen-extra-tags:
+            db: created_at
+            json: createdAt
+        updatedAt:
+          $ref: "../core/api.yml#/components/schemas/Time"
+          description: Timestamp when the activity was last updated.
+          x-oapi-codegen-extra-tags:
+            db: updated_at
+            json: updatedAt
+
+    RecentActivityPage:
+      type: object
+      description: Paginated recent-activity feed for a user's public profile.
+      properties:
+        page:
+          type: integer
+          description: Current page number of the result set.
+          minimum: 0
+        pageSize:
+          type: integer
+          description: Number of items per page.
+          minimum: 1
+        totalCount:
+          type: integer
+          description: Total number of items available.
+          minimum: 0
+        activities:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserActivity"
+          description: The activity entries on the current page.
+
+    MentionMessage:
+      type: object
+      additionalProperties: false
+      description: A single comment message included in a mention notification.
+      properties:
+        firstName:
+          type: string
+          maxLength: 200
+          description: First name of the comment author.
+        lastName:
+          type: string
+          maxLength: 300
+          description: Last name of the comment author.
+        avatarUrl:
+          type: string
+          format: uri
+          maxLength: 500
+          description: URL to the comment author's avatar image.
+          x-go-name: AvatarURL
+        message:
+          type: string
+          maxLength: 5000
+          description: Text of the comment message.
+        timestamp:
+          $ref: "../core/api.yml#/components/schemas/Time"
+          description: Timestamp when the comment message was written.
+        userId:
+          $ref: "../core/api.yml#/components/schemas/Uuid"
+          description: ID of the comment author.
+          x-go-name: UserID
+
+    MentionNotificationPayload:
+      type: object
+      additionalProperties: false
+      description: >-
+        Request body for notifying users about a design comment: the users
+        mentioned in the comment, the thread participants, and the comment
+        messages to include in the notification email.
+      required:
+        - designId
+      properties:
+        mentionUsers:
+          type: array
+          items:
+            $ref: "../core/api.yml#/components/schemas/Uuid"
+          description: IDs of the users explicitly mentioned in the comment.
+        participants:
+          type: array
+          items:
+            $ref: "../core/api.yml#/components/schemas/Uuid"
+          description: IDs of the users participating in the comment thread.
+        designId:
+          $ref: "../core/api.yml#/components/schemas/Uuid"
+          description: ID of the design the comment was made on.
+          x-go-name: DesignID
+        usersOptedOutOfNotifications:
+          type: array
+          items:
+            $ref: "../core/api.yml#/components/schemas/Uuid"
+          description: IDs of the users who opted out of mention notifications.
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/MentionMessage"
+          description: The comment messages to include in the notification email.
+
+    AnonymousFlowResponse:
+      type: object
+      additionalProperties: false
+      description: >-
+        Response returned after minting an anonymous user session: the session
+        access token, the ID of the synthetic anonymous user, and the
+        capability document for the session.
+      required:
+        - accessToken
+        - userId
+      properties:
+        accessToken:
+          type: string
+          maxLength: 4096
+          description: JWT access token for the anonymous session.
+          x-oapi-codegen-extra-tags:
+            json: accessToken
+        capability:
+          type: object
+          additionalProperties: true
+          description: >-
+            Capability document for the anonymous session. Untyped pending the
+            provider-capabilities schema tracked separately in the
+            identifier-uniformity program.
+          x-go-name: Capabilities
+        userId:
+          $ref: "../core/api.yml#/components/schemas/Uuid"
+          description: ID of the newly minted anonymous user.
+          x-go-name: UserID
+          x-oapi-codegen-extra-tags:
+            json: userId
 
     AccountDeletionEligibility:
       type: object

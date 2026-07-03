@@ -193,6 +193,43 @@ components:
             additionalProperties: true
           description: The connections of the environmentconnectionspage.
 
+    EnvironmentConnectionMappingPage:
+      type: object
+      description: >-
+        Paginated list of environment-to-connection mapping records, returned
+        when a connection is assigned to or unassigned from an environment.
+        Distinct from EnvironmentConnectionsPage, which lists the connections
+        themselves rather than the junction records.
+      required:
+        - page
+        - pageSize
+        - totalCount
+        - environmentConnectionMapping
+      properties:
+        page:
+          type: integer
+          description: Zero-based page index returned in this response.
+          minimum: 0
+        pageSize:
+          type: integer
+          description: Maximum number of items returned on each page.
+          minimum: 1
+          x-oapi-codegen-extra-tags:
+            json: pageSize
+        totalCount:
+          type: integer
+          description: Total number of items across all pages.
+          minimum: 0
+          x-oapi-codegen-extra-tags:
+            json: totalCount
+        environmentConnectionMapping:
+          type: array
+          description: Environment-to-connection mapping records in this page.
+          x-oapi-codegen-extra-tags:
+            json: environmentConnectionMapping
+          items:
+            $ref: "#/components/schemas/EnvironmentConnectionMapping"
+
   requestBodies:
     environmentPayload:
       description: Body for creating environment

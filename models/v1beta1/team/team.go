@@ -84,7 +84,7 @@ type TeamsUsersMapping struct {
 	UpdatedAt core.UpdatedAt `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 
 	// UserId user's email or username
-	UserId core.UserId `db:"user_id" json:"user_id,omitempty" yaml:"user_id,omitempty"`
+	UserId core.UserId `db:"owner" json:"user_id,omitempty" yaml:"user_id,omitempty"`
 }
 
 // TeamsUsersMappingPage Paginated list of team-user mappings

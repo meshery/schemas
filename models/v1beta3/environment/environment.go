@@ -56,6 +56,21 @@ type EnvironmentConnectionMapping struct {
 	UpdatedAt     core.Time      `db:"updated_at" json:"updatedAt" yaml:"updatedAt,omitempty"`
 }
 
+// EnvironmentConnectionMappingPage Paginated list of environment-to-connection mapping records, returned when a connection is assigned to or unassigned from an environment. Distinct from EnvironmentConnectionsPage, which lists the connections themselves rather than the junction records.
+type EnvironmentConnectionMappingPage struct {
+	// EnvironmentConnectionMapping Environment-to-connection mapping records in this page.
+	EnvironmentConnectionMapping []EnvironmentConnectionMapping `json:"environmentConnectionMapping" yaml:"environmentConnectionMapping"`
+
+	// Page Zero-based page index returned in this response.
+	Page int `json:"page" yaml:"page"`
+
+	// PageSize Maximum number of items returned on each page.
+	PageSize int `json:"pageSize" yaml:"pageSize"`
+
+	// TotalCount Total number of items across all pages.
+	TotalCount int `json:"totalCount" yaml:"totalCount"`
+}
+
 // EnvironmentConnectionsPage Paginated list of connections associated with an environment.
 type EnvironmentConnectionsPage struct {
 	// Connections The connections of the environmentconnectionspage.

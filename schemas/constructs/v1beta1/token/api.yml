@@ -238,7 +238,7 @@ components:
           description: UUID of the user who owns the token.
           x-order: 2
           x-oapi-codegen-extra-tags:
-            db: "user_id"
+            db: "owner"
         provider:
           type: string
           description: Authentication provider associated with the token.

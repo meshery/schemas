@@ -15,6 +15,15 @@ const (
 	Delete OrgTeamActionPayloadAction = "delete"
 )
 
+// AuthBranding Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults.
+type AuthBranding struct {
+	// Carousel Ordered slides rendered in the auth-page feature carousel.
+	Carousel *[]CarouselSlide `json:"carousel,omitempty" yaml:"carousel,omitempty"`
+
+	// Faqs FAQ entries rendered on the auth pages.
+	Faqs *[]FAQ `json:"faqs,omitempty" yaml:"faqs,omitempty"`
+}
+
 // AvailableOrganization Organization listing record used in list and get responses.
 type AvailableOrganization struct {
 	Country     Text         `json:"country,omitempty" yaml:"country,omitempty"`
@@ -45,8 +54,29 @@ type AvailableTeam struct {
 	UpdatedAt   Time                   `json:"updatedAt,omitempty" yaml:"updatedAt,omitempty"`
 }
 
+// CarouselSlide A single slide in the auth-page feature carousel.
+type CarouselSlide struct {
+	// Description Slide description text.
+	Description string `json:"description" yaml:"description"`
+
+	// ImageURL URL of the slide image asset.
+	ImageURL string `json:"imageUrl" yaml:"imageUrl"`
+
+	// Title Slide title.
+	Title string `json:"title" yaml:"title"`
+}
+
 // DashboardPrefs Preferences specific to dashboard behavior.
 type DashboardPrefs map[string]interface{}
+
+// FAQ A single question/answer pair for the auth-page FAQ section.
+type FAQ struct {
+	// Answer The answer text.
+	Answer string `json:"answer" yaml:"answer"`
+
+	// Question The question text.
+	Question string `json:"question" yaml:"question"`
+}
 
 // Links Per-organization overrides for the legal and support links shown on the auth pages and the error page. termsOfService and privacy are the named legal links; support is an open-ended set of named support contacts/links. Empty or omitted fields fall back to the platform defaults.
 type Links struct {
@@ -187,6 +217,9 @@ type OrganizationsPage struct {
 
 // Preferences Organization-level user experience preferences.
 type Preferences struct {
+	// AuthBranding Optional per-organization branding overrides for the auth pages: carousel slides and FAQ entries. Stored as JSON inside organization.metadata.preferences, so no dedicated column backs it. Empty or omitted fields fall back to the platform defaults.
+	AuthBranding *AuthBranding `json:"authBranding,omitempty" yaml:"authBranding,omitempty"`
+
 	// Dashboard Preferences specific to dashboard behavior.
 	Dashboard DashboardPrefs `json:"dashboard" yaml:"dashboard"`
 
@@ -264,6 +297,38 @@ type Time = core.Time
 
 // UUID A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 type UUID = core.Uuid
+
+// UsersOrganizationsMapping Junction record linking a user to an organization, optionally carrying the role the user holds in that organization. Backed by the users_organizations_mappings table, whose user foreign-key column is named owner.
+type UsersOrganizationsMapping struct {
+	CreatedAt Time                   `db:"created_at" json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
+	DeletedAt NullableTime           `db:"deleted_at" json:"deletedAt,omitempty" yaml:"deletedAt,omitempty"`
+	ID        core.GeneralId `db:"id" json:"id" yaml:"id"`
+
+	// OrganizationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	OrganizationID *UUID `db:"organization_id" json:"organizationId" yaml:"organizationId,omitempty"`
+
+	// RoleId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	RoleID    *UUID `db:"role_id" json:"roleId,omitempty" yaml:"roleId,omitempty"`
+	UpdatedAt Time  `db:"updated_at" json:"updatedAt,omitempty" yaml:"updatedAt,omitempty"`
+
+	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	UserID *UUID `db:"owner" json:"userId" yaml:"userId,omitempty"`
+}
+
+// UsersOrganizationsMappingPage Paginated list of user-organization mappings.
+type UsersOrganizationsMappingPage struct {
+	// Data User-organization mapping entries.
+	Data *[]UsersOrganizationsMapping `json:"data,omitempty" yaml:"data,omitempty"`
+
+	// Page Zero-based page index returned in this response.
+	Page *int `json:"page,omitempty" yaml:"page,omitempty"`
+
+	// PageSize Maximum number of items returned on each page.
+	PageSize *int `json:"pageSize,omitempty" yaml:"pageSize,omitempty"`
+
+	// TotalCount Total number of items across all pages.
+	TotalCount *int `json:"totalCount,omitempty" yaml:"totalCount,omitempty"`
+}
 
 // All defines model for all.
 type All = bool
