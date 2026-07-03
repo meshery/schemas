@@ -229,7 +229,10 @@ export interface components {
              * @description Unique identifier for the user
              */
             id: string;
-            /** @description User identifier (username or external ID) */
+            /**
+             * @deprecated
+             * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+             */
             userId: string;
             /**
              * @description Authentication provider (e.g., Google, Github)
@@ -493,7 +496,10 @@ export interface components {
              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             userId: string;
-            /** Format: email */
+            /**
+             * Format: email
+             * @description The email address
+             */
             email: string;
             /**
              * @description Whether the address was verified (per Kratos verifiable addresses) at record time
@@ -611,7 +617,10 @@ export interface components {
                  * @description Unique identifier for the user
                  */
                 id: string;
-                /** @description User identifier (username or external ID) */
+                /**
+                 * @deprecated
+                 * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+                 */
                 userId: string;
                 /**
                  * @description Authentication provider (e.g., Google, Github)
@@ -879,7 +888,10 @@ export interface components {
                  * @description Unique identifier for the user
                  */
                 id: string;
-                /** @description User identifier (username or external ID) */
+                /**
+                 * @deprecated
+                 * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+                 */
                 userId: string;
                 /**
                  * @description Authentication provider (e.g., Google, Github)
@@ -1604,7 +1616,10 @@ export interface operations {
                              * @description Unique identifier for the user
                              */
                             id: string;
-                            /** @description User identifier (username or external ID) */
+                            /**
+                             * @deprecated
+                             * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+                             */
                             userId: string;
                             /**
                              * @description Authentication provider (e.g., Google, Github)
@@ -1937,7 +1952,10 @@ export interface operations {
                              * @description Unique identifier for the user
                              */
                             id: string;
-                            /** @description User identifier (username or external ID) */
+                            /**
+                             * @deprecated
+                             * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+                             */
                             userId: string;
                             /**
                              * @description Authentication provider (e.g., Google, Github)
@@ -2245,7 +2263,10 @@ export interface operations {
                          * @description Unique identifier for the user
                          */
                         id: string;
-                        /** @description User identifier (username or external ID) */
+                        /**
+                         * @deprecated
+                         * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+                         */
                         userId: string;
                         /**
                          * @description Authentication provider (e.g., Google, Github)
@@ -2558,7 +2579,10 @@ export interface operations {
                          * @description Unique identifier for the user
                          */
                         id: string;
-                        /** @description User identifier (username or external ID) */
+                        /**
+                         * @deprecated
+                         * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+                         */
                         userId: string;
                         /**
                          * @description Authentication provider (e.g., Google, Github)
@@ -3420,7 +3444,10 @@ export interface operations {
                          * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         userId: string;
-                        /** Format: email */
+                        /**
+                         * Format: email
+                         * @description The email address
+                         */
                         email: string;
                         /**
                          * @description Whether the address was verified (per Kratos verifiable addresses) at record time

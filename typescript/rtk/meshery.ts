@@ -4085,7 +4085,7 @@ export type GetUsersForOrgApiResponse = /** status 200 Paginated list of organiz
   data?: {
     /** Unique identifier for the user */
     id: string;
-    /** User identifier (username or external ID) */
+    /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
     userId: string;
     /** Authentication provider (e.g., Google, Github) */
     provider: string;
@@ -4282,7 +4282,7 @@ export type GetUsersApiResponse = /** status 200 Paginated list of public users 
   data?: {
     /** Unique identifier for the user */
     id: string;
-    /** User identifier (username or external ID) */
+    /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
     userId: string;
     /** Authentication provider (e.g., Google, Github) */
     provider: string;
@@ -4467,7 +4467,7 @@ export type GetUsersApiArg = {
 export type GetUserProfileByIdApiResponse = /** status 200 User profile for the requested ID */ {
   /** Unique identifier for the user */
   id: string;
-  /** User identifier (username or external ID) */
+  /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
   userId: string;
   /** Authentication provider (e.g., Google, Github) */
   provider: string;
@@ -4643,7 +4643,7 @@ export type GetUserProfileByIdApiArg = {
 export type GetUserApiResponse = /** status 200 Current user profile and role context */ {
   /** Unique identifier for the user */
   id: string;
-  /** User identifier (username or external ID) */
+  /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
   userId: string;
   /** Authentication provider (e.g., Google, Github) */
   provider: string;
@@ -4818,6 +4818,7 @@ export type GetUserEmailAddressesApiResponse = /** status 200 Email addresses as
   id: string;
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   userId: string;
+  /** The email address */
   email: string;
   /** Whether the address was verified (per Kratos verifiable addresses) at record time */
   verified: boolean;

@@ -1799,7 +1799,10 @@ export interface components {
                  * @description Unique identifier for the user
                  */
                 id: string;
-                /** @description User identifier (username or external ID) */
+                /**
+                 * @deprecated
+                 * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+                 */
                 userId: string;
                 /**
                  * @description Authentication provider (e.g., Google, Github)
@@ -2168,7 +2171,10 @@ export interface components {
                      * @description Unique identifier for the user
                      */
                     id: string;
-                    /** @description User identifier (username or external ID) */
+                    /**
+                     * @deprecated
+                     * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+                     */
                     userId: string;
                     /**
                      * @description Authentication provider (e.g., Google, Github)
@@ -2783,7 +2789,10 @@ export interface components {
                      * @description Unique identifier for the user
                      */
                     id: string;
-                    /** @description User identifier (username or external ID) */
+                    /**
+                     * @deprecated
+                     * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+                     */
                     userId: string;
                     /**
                      * @description Authentication provider (e.g., Google, Github)
@@ -3241,7 +3250,10 @@ export interface components {
                  * @description Unique identifier for the user
                  */
                 id: string;
-                /** @description User identifier (username or external ID) */
+                /**
+                 * @deprecated
+                 * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+                 */
                 userId: string;
                 /**
                  * @description Authentication provider (e.g., Google, Github)
@@ -3559,7 +3571,10 @@ export interface components {
                      * @description Unique identifier for the user
                      */
                     id: string;
-                    /** @description User identifier (username or external ID) */
+                    /**
+                     * @deprecated
+                     * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+                     */
                     userId: string;
                     /**
                      * @description Authentication provider (e.g., Google, Github)
@@ -4069,7 +4084,10 @@ export interface operations {
                                  * @description Unique identifier for the user
                                  */
                                 id: string;
-                                /** @description User identifier (username or external ID) */
+                                /**
+                                 * @deprecated
+                                 * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+                                 */
                                 userId: string;
                                 /**
                                  * @description Authentication provider (e.g., Google, Github)
@@ -4547,7 +4565,10 @@ export interface operations {
                              * @description Unique identifier for the user
                              */
                             id: string;
-                            /** @description User identifier (username or external ID) */
+                            /**
+                             * @deprecated
+                             * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+                             */
                             userId: string;
                             /**
                              * @description Authentication provider (e.g., Google, Github)
@@ -5016,7 +5037,10 @@ export interface operations {
                              * @description Unique identifier for the user
                              */
                             id: string;
-                            /** @description User identifier (username or external ID) */
+                            /**
+                             * @deprecated
+                             * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+                             */
                             userId: string;
                             /**
                              * @description Authentication provider (e.g., Google, Github)
@@ -5473,7 +5497,10 @@ export interface operations {
                              * @description Unique identifier for the user
                              */
                             id: string;
-                            /** @description User identifier (username or external ID) */
+                            /**
+                             * @deprecated
+                             * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+                             */
                             userId: string;
                             /**
                              * @description Authentication provider (e.g., Google, Github)
@@ -6100,7 +6127,10 @@ export interface operations {
                                  * @description Unique identifier for the user
                                  */
                                 id: string;
-                                /** @description User identifier (username or external ID) */
+                                /**
+                                 * @deprecated
+                                 * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+                                 */
                                 userId: string;
                                 /**
                                  * @description Authentication provider (e.g., Google, Github)
@@ -6581,7 +6611,10 @@ export interface operations {
                              * @description Unique identifier for the user
                              */
                             id: string;
-                            /** @description User identifier (username or external ID) */
+                            /**
+                             * @deprecated
+                             * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+                             */
                             userId: string;
                             /**
                              * @description Authentication provider (e.g., Google, Github)
@@ -6960,7 +6993,10 @@ export interface operations {
                              * @description Unique identifier for the user
                              */
                             id: string;
-                            /** @description User identifier (username or external ID) */
+                            /**
+                             * @deprecated
+                             * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+                             */
                             userId: string;
                             /**
                              * @description Authentication provider (e.g., Google, Github)
@@ -7732,7 +7768,10 @@ export interface operations {
                                  * @description Unique identifier for the user
                                  */
                                 id: string;
-                                /** @description User identifier (username or external ID) */
+                                /**
+                                 * @deprecated
+                                 * @description Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+                                 */
                                 userId: string;
                                 /**
                                  * @description Authentication provider (e.g., Google, Github)
