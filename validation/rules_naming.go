@@ -30,7 +30,7 @@ func checkRule3(filePath string, doc *openapi3.T, opts AuditOptions) []Violation
 			if !IsValidOperationID(opID) {
 				out = append(out, Violation{
 					File:       filePath,
-					Message:    fmt.Sprintf(`%s — operationId %q must use lower camelCase verbNoun (e.g. "getPatterns"). See AGENTS.md § "Naming conventions".`, label, opID),
+					Message:    fmt.Sprintf(`%s - operationId %q must use lower camelCase verbNoun (e.g. "getPatterns"). See AGENTS.md § "Casing rules at a glance".`, label, opID),
 					Severity:   *sev,
 					RuleNumber: 3,
 				})
@@ -38,7 +38,7 @@ func checkRule3(filePath string, doc *openapi3.T, opts AuditOptions) []Violation
 				suggestion := SuggestOperationID(opID)
 				out = append(out, Violation{
 					File:       filePath,
-					Message:    fmt.Sprintf(`%s — operationId %q uses "ID" suffix instead of "Id". Use: %q. See docs/casing-rules.md.`, label, opID, suggestion),
+					Message:    fmt.Sprintf(`%s - operationId %q uses "ID" suffix instead of "Id". Use: %q. See docs/casing-rules.md.`, label, opID, suggestion),
 					Severity:   *sev,
 					RuleNumber: 3,
 				})
@@ -55,12 +55,12 @@ func checkRule3(filePath string, doc *openapi3.T, opts AuditOptions) []Violation
 // block is declared. Query parameters are detected from every
 // `parameters: [{in: query, name: ...}]` block visible at either path-level or
 // operation-level, including entries resolved from `$ref` to
-// `components/parameters/*` — kin-openapi materialises the referenced
+// `components/parameters/*` - kin-openapi materialises the referenced
 // parameter into `p.Value` so inline and referenced forms are covered
 // uniformly (see `collectAllParams`).
 //
 // The canonical URL-parameter contract is camelCase with an `Id` suffix for
-// ID-like names (see docs/casing-rules.md — URL path params
+// ID-like names (see docs/casing-rules.md - URL path params
 // + ID-like query params). The same `IsBadPathParam`/`SuggestPathParam`
 // predicate governs both path and query parameters because they share the
 // same wire contract: both appear in the client-visible URL.
@@ -71,7 +71,7 @@ func checkRule3(filePath string, doc *openapi3.T, opts AuditOptions) []Violation
 // query + header parameter casing at a looser-but-broader layer (any non-
 // camelCase), so between the two rules: Rule 4 enforces the URL-parameter
 // `Id`-suffix convention across path+query, and Rule 9 enforces generic
-// camelCase for query+header. Overlap on query parameters is intentional —
+// camelCase for query+header. Overlap on query parameters is intentional -
 // each rule reports under a distinct RuleNumber so baseline tooling can
 // classify them separately, and the messages identify the parameter role
 // ("path parameter" vs "query parameter") so reviewers see where in the
@@ -96,7 +96,7 @@ func checkRule4(filePath string, doc *openapi3.T, opts AuditOptions) []Violation
 	for _, path := range paths {
 		item := pathsMap[path]
 
-		// Path parameters — detected from the path template. A single
+		// Path parameters - detected from the path template. A single
 		// placeholder appears once per template; no dedup needed.
 		matches := pathParamRE.FindAllStringSubmatch(path, -1)
 		for _, m := range matches {
@@ -105,14 +105,14 @@ func checkRule4(filePath string, doc *openapi3.T, opts AuditOptions) []Violation
 				suggestion := SuggestPathParam(param)
 				out = append(out, Violation{
 					File:       filePath,
-					Message:    fmt.Sprintf(`Path %q — path parameter {%s} uses incorrect casing. Use camelCase (and an "Id" suffix for id-like names): {%s}. See AGENTS.md § "Naming conventions".`, path, param, suggestion),
+					Message:    fmt.Sprintf(`Path %q - path parameter {%s} uses incorrect casing. Use camelCase (and an "Id" suffix for id-like names): {%s}. See AGENTS.md § "Casing rules at a glance".`, path, param, suggestion),
 					Severity:   *sev,
 					RuleNumber: 4,
 				})
 			}
 		}
 
-		// Query parameters — walked from every `parameters: [{in: query}]`
+		// Query parameters - walked from every `parameters: [{in: query}]`
 		// block on this path (path-level + every method). A single
 		// `components/parameters/*` reference used at both path-level and
 		// op-level would otherwise surface twice per path; dedupe by wire
@@ -142,7 +142,7 @@ func checkRule4(filePath string, doc *openapi3.T, opts AuditOptions) []Violation
 			suggestion := SuggestPathParam(name)
 			out = append(out, Violation{
 				File:       filePath,
-				Message:    fmt.Sprintf(`Path %q — query parameter %q uses incorrect casing. Use camelCase (and an "Id" suffix for id-like names): %q. See AGENTS.md § "Naming conventions".`, path, name, suggestion),
+				Message:    fmt.Sprintf(`Path %q - query parameter %q uses incorrect casing. Use camelCase (and an "Id" suffix for id-like names): %q. See AGENTS.md § "Casing rules at a glance".`, path, name, suggestion),
 				Severity:   *sev,
 				RuleNumber: 4,
 			})
@@ -156,7 +156,7 @@ func checkRule4(filePath string, doc *openapi3.T, opts AuditOptions) []Violation
 // Under the canonical identifier-naming contract (docs/schema-tooling.md §
 // Identifier-naming migration, docs/identifier-naming-migration.md §1), every schema
 // property name / JSON tag is camelCase regardless of DB backing. Rule 6 is
-// therefore unconditional — DB-mirrored fields are no longer exempt and are
+// therefore unconditional - DB-mirrored fields are no longer exempt and are
 // flagged through the same `--style-debt` severity path as any other
 // legacy snake_case wire identifier. Known legacy DB-mirrored names are
 // still tracked via the `dbMirroredFields` set in casing.go for use by
@@ -189,7 +189,7 @@ func checkRule6ForAPI(filePath string, doc *openapi3.T, opts AuditOptions) []Vio
 // (allOf / anyOf / oneOf) and array `items`, reporting Rule 6 camelCase
 // violations on every directly-declared property name it encounters.
 // Property iteration is alphabetised so that violation order is
-// deterministic across runs — baseline files rely on this.
+// deterministic across runs - baseline files rely on this.
 //
 // `$ref` pointers are not followed: referenced schemas are walked as their
 // own components by the outer checkRule6ForAPI loop, so following refs here
@@ -217,7 +217,7 @@ func checkPropertyNameCasing(filePath, schemaName string, schema *openapi3.Schem
 					descs[i] = iss.Description
 				}
 				suggestion := GetCamelCaseSuggestion(propName)
-				msg := fmt.Sprintf(`Schema %q — property %q %s.`, schemaName, propName, strings.Join(descs, "; "))
+				msg := fmt.Sprintf(`Schema %q - property %q %s.`, schemaName, propName, strings.Join(descs, "; "))
 				if suggestion != "" {
 					msg += fmt.Sprintf(` Use: %q.`, suggestion)
 				}
@@ -261,13 +261,13 @@ func checkPropertyNameCasing(filePath, schemaName string, schema *openapi3.Schem
 // the legacy-DB-mirrored migration hint (when the name is in the known
 // mirrored set) or a generic reminder that snake_case belongs only on the
 // `db:` tag (for other snake_case property names). Returns the empty
-// string when no DB-specific context applies — so that this helper can be
+// string when no DB-specific context applies - so that this helper can be
 // reused by Rule 6's entity path without pushing DB-specific wording into
 // GetCamelCaseIssues (which is shared with non-DB contexts such as
 // query/header parameter names).
 func schemaPropertyDBContext(propName string) string {
 	if dbMirroredFields[propName] {
-		return ` (legacy DB-mirrored name — migrate at the resource's next API-version bump per docs/identifier-naming-migration.md §9)`
+		return ` (legacy DB-mirrored name - migrate at the resource's next API-version bump per docs/identifier-naming-migration.md §9)`
 	}
 	if HasUnderscore(propName) {
 		return ` (snake_case belongs in the db: tag only)`
@@ -323,7 +323,7 @@ func checkRule9(filePath string, doc *openapi3.T, opts AuditOptions) []Violation
 					descs[i] = iss.Description
 				}
 				suggestion := GetCamelCaseSuggestion(name)
-				msg := fmt.Sprintf(`%s — %s parameter %q %s.`, path, p.Value.In, name, strings.Join(descs, "; "))
+				msg := fmt.Sprintf(`%s - %s parameter %q %s.`, path, p.Value.In, name, strings.Join(descs, "; "))
 				if suggestion != "" {
 					msg += fmt.Sprintf(` Use camelCase instead: %q.`, suggestion)
 				}
@@ -354,7 +354,7 @@ func checkRule10(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 				suggestion := toKebabCase(seg)
 				out = append(out, Violation{
 					File:       filePath,
-					Message:    fmt.Sprintf(`Path %q — segment %q must be kebab-case. Suggested: %q. See docs/casing-rules.md.`, path, seg, suggestion),
+					Message:    fmt.Sprintf(`Path %q - segment %q must be kebab-case. Suggested: %q. See docs/casing-rules.md.`, path, seg, suggestion),
 					Severity:   *sev,
 					RuleNumber: 10,
 				})
@@ -472,27 +472,27 @@ func getExtraTag(extensions map[string]any, tagName string) string {
 // Rule 45 flags `components/schemas/<Entity>` objects whose effective
 // wire-form property names (schema-property key, or the
 // `x-oapi-codegen-extra-tags.json` override when present) mix two or more
-// casing families — camel / snake / screaming. Under the canonical
+// casing families - camel / snake / screaming. Under the canonical
 // identifier-naming contract (docs/casing-rules.md,
 // docs/identifier-naming-migration.md §1), when a resource's wire format
 // changes, the change must land on a new API version and migrate *every*
 // property consistently. A struct that publishes `userId` + `user_id` +
 // `orgId` is the symptom of a partial migration that forgot some fields
-// — exactly the class of drift this rule catches (e.g., meshery/server
+// - exactly the class of drift this rule catches (e.g., meshery/server
 // `MesheryPattern` struct's `OrgID json:"orgId"` + `WorkspaceID
 // json:"workspace_id"` + `UserID json:"user_id"`).
 //
 // Casing families (see classifyCasingFamily for the full taxonomy):
-//   - camel     — starts lowercase, contains at least one uppercase, no
+//   - camel     - starts lowercase, contains at least one uppercase, no
 //                 consecutive-uppercase acronym run (`userId`, `orgId`).
-//   - snake     — contains an underscore (`user_id`, `created_at`).
-//   - screaming — all-uppercase, or contains a 2+ consecutive-uppercase
+//   - snake     - contains an underscore (`user_id`, `created_at`).
+//   - screaming - all-uppercase, or contains a 2+ consecutive-uppercase
 //                 acronym token (`ID`, `URL`, `orgID`, `pageURL`).
-//   - lowercase — single-word all-lowercase, no underscore, no uppercase
+//   - lowercase - single-word all-lowercase, no underscore, no uppercase
 //                 (`id`, `name`, `metadata`). Agnostic bucket: does NOT
 //                 count toward the mixed-family trigger.
 //
-// Pure-camel and pure-snake structs both pass — a fully-legacy-snake
+// Pure-camel and pure-snake structs both pass - a fully-legacy-snake
 // struct is caught by Rule 6 independently. The rule fires only when
 // two or more of {camel, snake, screaming} appear in the same struct;
 // a mix with only the agnostic `lowercase` bucket is not a drift.
@@ -503,10 +503,10 @@ func getExtraTag(extensions map[string]any, tagName string) string {
 //
 // Composition: inline `allOf`/`anyOf`/`oneOf` branches and array `items`
 // are walked as part of the *same* struct (their properties contribute to
-// the same family set). `$ref` pointers are not followed — referenced
+// the same family set). `$ref` pointers are not followed - referenced
 // components are walked as their own schemas by the outer loop.
 //
-// Severity is flag-gated via classifyStyleIssue — advisory under
+// Severity is flag-gated via classifyStyleIssue - advisory under
 // `--style-debt`, blocking under `--strict-consistency`, suppressed
 // otherwise. The current repo has many legacy mixed structs; Agent 1.G
 // will baseline them. Post-Phase-3, the rule should run clean.
@@ -587,7 +587,7 @@ func rule45Message(schemaName string, families map[string][]string) string {
 		parts = append(parts, fmt.Sprintf("%s: [%s]", f, strings.Join(out, ", ")))
 	}
 	return fmt.Sprintf(
-		`Schema %q mixes JSON-tag casing conventions across its properties — %s. Partial casing migrations are forbidden under the canonical identifier-naming contract. If the wire format must change, introduce a new API version and migrate every property consistently. See docs/casing-rules.md and docs/identifier-naming-migration.md §9.`,
+		`Schema %q mixes JSON-tag casing conventions across its properties - %s. Partial casing migrations are forbidden under the canonical identifier-naming contract. If the wire format must change, introduce a new API version and migrate every property consistently. See docs/casing-rules.md and docs/identifier-naming-migration.md §9.`,
 		schemaName, strings.Join(parts, "; "))
 }
 
@@ -614,7 +614,7 @@ func collectCasingFamilies(schema *openapi3.Schema, families map[string][]string
 			effective := effectiveWireName(propRef, propName)
 			if effective != "" {
 				// `json:"-"` properties return "" from effectiveWireName
-				// and are excluded from the wire-name set — they are
+				// and are excluded from the wire-name set - they are
 				// DB-only / internal and must not trigger Rule 45.
 				family := classifyCasingFamily(effective)
 				families[family] = append(families[family], effective)
@@ -651,22 +651,22 @@ func collectCasingFamilies(schema *openapi3.Schema, families map[string][]string
 // classifyCasingFamily returns the casing family for a wire-form
 // identifier. The buckets used by Rule 45 are:
 //
-//   - "camel"     — camelCase (starts lowercase, at least one uppercase,
+//   - "camel"     - camelCase (starts lowercase, at least one uppercase,
 //                   no consecutive uppercase acronym). Example: "userId".
-//   - "snake"     — contains an underscore. Example: "user_id".
-//   - "screaming" — entirely uppercase, OR contains a 2+ consecutive-
+//   - "snake"     - contains an underscore. Example: "user_id".
+//   - "screaming" - entirely uppercase, OR contains a 2+ consecutive-
 //                   uppercase acronym token (e.g. "ID" in "orgID",
 //                   "URL" in "pageURL", "HPA" in "HPAReplicas").
-//   - "lowercase" — all-lowercase single word with no underscore. This
+//   - "lowercase" - all-lowercase single word with no underscore. This
 //                   is an agnostic bucket: `id`, `name`, `owner`,
-//                   `metadata`, `status` — identifiers that are the
+//                   `metadata`, `status` - identifiers that are the
 //                   canonical single-word form for both camel and snake
 //                   traditions. Rule 45 treats this bucket as
 //                   non-conflicting: it does not count as "the camel
 //                   half of a snake/camel mix", because a legacy-snake
 //                   struct that uses `id` alongside `user_id` is not a
 //                   partial migration.
-//   - "other"     — empty input or a form that doesn't fit any bucket.
+//   - "other"     - empty input or a form that doesn't fit any bucket.
 func classifyCasingFamily(name string) string {
 	if name == "" {
 		return "other"
@@ -698,7 +698,7 @@ func classifyCasingFamily(name string) string {
 }
 
 // hasConsecutiveUppercase reports whether name contains a run of two or
-// more consecutive ASCII uppercase letters — a SCREAMING-acronym token
+// more consecutive ASCII uppercase letters - a SCREAMING-acronym token
 // such as "ID" in "orgID", "URL" in "pageURL", or "HPA" in "HPAReplicas".
 func hasConsecutiveUppercase(name string) bool {
 	run := 0
@@ -719,13 +719,13 @@ func hasConsecutiveUppercase(name string) bool {
 // effectiveWireName returns the wire-visible name of a property, or the
 // empty string when the property is not on the wire at all
 // (`x-oapi-codegen-extra-tags.json: "-"`). Callers treat the empty return
-// as "exclude from the wire-name set" — a `json:"-"` field must not
+// as "exclude from the wire-name set" - a `json:"-"` field must not
 // contribute to Rule 45's family set because it is DB-only / internal,
 // not part of the wire contract. The usual resolution is:
 //
 //   - If `json:"-"` is set, return "" (not on the wire).
 //   - Otherwise if `x-oapi-codegen-extra-tags.json` names the wire form,
-//     return that name (minus any `,omitempty` modifier — that's
+//     return that name (minus any `,omitempty` modifier - that's
 //     stripped by getExtraTag).
 //   - Otherwise fall back to the OpenAPI property key, which is the
 //     JSON tag by default.
