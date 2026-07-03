@@ -6,7 +6,6 @@ export const addTagTypes = [
   "Key_users",
   "Model_Models",
   "Organization_Organizations",
-  "Team_teams",
   "User_users",
   "Connection_API_Connections",
   "Connection_API_ConnectionDefinitions",
@@ -153,25 +152,6 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["Organization_Organizations"],
       }),
-      getTeamById: build.query<GetTeamByIdApiResponse, GetTeamByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}` }),
-        providesTags: ["Team_teams"],
-      }),
-      updateTeam: build.mutation<UpdateTeamApiResponse, UpdateTeamApiArg>({
-        query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}`,
-          method: "PUT",
-          body: queryArg.body,
-        }),
-        invalidatesTags: ["Team_teams"],
-      }),
-      deleteTeam: build.mutation<DeleteTeamApiResponse, DeleteTeamApiArg>({
-        query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}`,
-          method: "DELETE",
-        }),
-        invalidatesTags: ["Team_teams"],
-      }),
       removeTeamFromOrg: build.mutation<RemoveTeamFromOrgApiResponse, RemoveTeamFromOrgApiArg>({
         query: (queryArg) => ({
           url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}/remove`,
@@ -189,67 +169,6 @@ const injectedRtkApi = api
           method: "DELETE",
         }),
         invalidatesTags: ["Organization_Organizations"],
-      }),
-      getTeams: build.query<GetTeamsApiResponse, GetTeamsApiArg>({
-        query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/teams`,
-          params: {
-            search: queryArg?.search,
-            order: queryArg?.order,
-            page: queryArg?.page,
-            pageSize: queryArg?.pageSize,
-            pagesize: queryArg?.pagesize,
-          },
-        }),
-        providesTags: ["Team_teams"],
-      }),
-      createTeam: build.mutation<CreateTeamApiResponse, CreateTeamApiArg>({
-        query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/teams`,
-          method: "POST",
-          body: queryArg.body,
-        }),
-        invalidatesTags: ["Team_teams"],
-      }),
-      getTeamUsers: build.query<GetTeamUsersApiResponse, GetTeamUsersApiArg>({
-        query: (queryArg) => ({
-          url: `/api/identity/teams/${queryArg.teamId}/users`,
-          params: {
-            search: queryArg?.search,
-            order: queryArg?.order,
-            page: queryArg?.page,
-            pageSize: queryArg?.pageSize,
-            pagesize: queryArg?.pagesize,
-          },
-        }),
-        providesTags: ["Team_teams"],
-      }),
-      addUserToTeam: build.mutation<AddUserToTeamApiResponse, AddUserToTeamApiArg>({
-        query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}/users/${queryArg.userId}`,
-          method: "POST",
-        }),
-        invalidatesTags: ["Team_teams"],
-      }),
-      removeUserFromTeam: build.mutation<RemoveUserFromTeamApiResponse, RemoveUserFromTeamApiArg>({
-        query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}/users/${queryArg.userId}`,
-          method: "DELETE",
-        }),
-        invalidatesTags: ["Team_teams"],
-      }),
-      listUsersNotInTeam: build.query<ListUsersNotInTeamApiResponse, ListUsersNotInTeamApiArg>({
-        query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}/users`,
-          params: {
-            search: queryArg?.search,
-            order: queryArg?.order,
-            page: queryArg?.page,
-            pageSize: queryArg?.pageSize,
-            pagesize: queryArg?.pagesize,
-          },
-        }),
-        providesTags: ["Team_teams"],
       }),
       getUsersForOrg: build.query<GetUsersForOrgApiResponse, GetUsersForOrgApiArg>({
         query: (queryArg) => ({
@@ -3788,68 +3707,6 @@ export type AddTeamToOrgApiArg = {
     action?: "delete";
   };
 };
-export type GetTeamByIdApiResponse = /** status 200 Team */ {
-  /** Team ID */
-  id: string;
-  /** Team name */
-  name: string;
-  /** Team description */
-  description?: string;
-  /** User ID of the owner of the team */
-  owner?: string;
-  /** Additional metadata for the team */
-  metadata?: object;
-  /** Timestamp when the team was created. */
-  createdAt: string;
-  /** Timestamp when the team was last updated. */
-  updatedAt: string;
-  /** Timestamp when the team was soft-deleted, if applicable. */
-  deletedAt?: string;
-};
-export type GetTeamByIdApiArg = {
-  /** Organization ID */
-  orgId: string;
-  /** Team ID */
-  teamId: string;
-};
-export type UpdateTeamApiResponse = /** status 200 Updated team */ {
-  /** Team ID */
-  id: string;
-  /** Team name */
-  name: string;
-  /** Team description */
-  description?: string;
-  /** User ID of the owner of the team */
-  owner?: string;
-  /** Additional metadata for the team */
-  metadata?: object;
-  /** Timestamp when the team was created. */
-  createdAt: string;
-  /** Timestamp when the team was last updated. */
-  updatedAt: string;
-  /** Timestamp when the team was soft-deleted, if applicable. */
-  deletedAt?: string;
-};
-export type UpdateTeamApiArg = {
-  /** Organization ID */
-  orgId: string;
-  /** Team ID */
-  teamId: string;
-  /** Body for updating a team */
-  body: {
-    /** Updated team name */
-    name?: string;
-    /** Updated team description */
-    description?: string;
-  };
-};
-export type DeleteTeamApiResponse = unknown;
-export type DeleteTeamApiArg = {
-  /** Organization ID */
-  orgId: string;
-  /** Team ID */
-  teamId: string;
-};
 export type RemoveTeamFromOrgApiResponse = /** status 200 Team removed from organization */ {
   /** Zero-based page index returned in this response. */
   page?: number;
@@ -3894,185 +3751,6 @@ export type DeleteUserFromOrgApiArg = {
   orgId: string;
   /** User ID. */
   userId: string;
-};
-export type GetTeamsApiResponse = /** status 200 Teams */ {
-  /** Current page number of the result set. */
-  page?: number;
-  /** Number of items per page. */
-  pageSize?: number;
-  /** Total number of items available. */
-  totalCount?: number;
-  /** The teams of the teampage. */
-  teams?: {
-    /** Team ID */
-    id: string;
-    /** Team name */
-    name: string;
-    /** Team description */
-    description?: string;
-    /** User ID of the owner of the team */
-    owner?: string;
-    /** Additional metadata for the team */
-    metadata?: object;
-    /** Timestamp when the team was created. */
-    createdAt: string;
-    /** Timestamp when the team was last updated. */
-    updatedAt: string;
-    /** Timestamp when the team was soft-deleted, if applicable. */
-    deletedAt?: string;
-  }[];
-};
-export type GetTeamsApiArg = {
-  /** Organization ID */
-  orgId: string;
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-  /** Get responses by page */
-  page?: string;
-  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
-  pageSize?: number;
-  /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
-};
-export type CreateTeamApiResponse = /** status 201 Created team */ {
-  /** Team ID */
-  id: string;
-  /** Team name */
-  name: string;
-  /** Team description */
-  description?: string;
-  /** User ID of the owner of the team */
-  owner?: string;
-  /** Additional metadata for the team */
-  metadata?: object;
-  /** Timestamp when the team was created. */
-  createdAt: string;
-  /** Timestamp when the team was last updated. */
-  updatedAt: string;
-  /** Timestamp when the team was soft-deleted, if applicable. */
-  deletedAt?: string;
-};
-export type CreateTeamApiArg = {
-  /** Organization ID */
-  orgId: string;
-  /** Body for creating a team */
-  body: {
-    /** Team name. Provide a meaningful name that represents this team. */
-    name: string;
-    /** A detailed description of the team's purpose and responsibilities. */
-    description?: string;
-    /** Whether to notify team members when the team is created or updated. */
-    notifyTeamUpdate?: boolean;
-    /** Additional client-supplied metadata for the team. */
-    metadata?: {
-      [key: string]: any;
-    };
-  };
-};
-export type GetTeamUsersApiResponse = /** status 200 Team users mapping */ {
-  /** Current page number of the result set. */
-  page?: number;
-  /** Number of items per page. */
-  pageSize?: number;
-  /** Total number of items available. */
-  totalCount?: number;
-  /** The user-team mappings on the current page. */
-  usersTeamsMapping?: {
-    id?: string;
-    /** Team ID */
-    teamId?: string;
-    /** User ID */
-    userId?: string;
-    /** Optional role assigned to this team membership. Nullable because a membership may exist without an explicit role (e.g., team-admin assignments are stamped on insert; non-owner adds may leave `role_id` null until a role is assigned). References `roles.id`.
-     */
-    roleId?: string;
-    /** Timestamp when the mapping was created. */
-    createdAt?: string;
-    /** Timestamp when the mapping was last updated. */
-    updatedAt?: string;
-    /** Timestamp when the mapping was soft-deleted, if applicable. */
-    deletedAt?: string;
-  }[];
-};
-export type GetTeamUsersApiArg = {
-  /** Team ID */
-  teamId: string;
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-  /** Get responses by page */
-  page?: string;
-  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
-  pageSize?: number;
-  /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
-};
-export type AddUserToTeamApiResponse = /** status 201 User added to team */ {
-  id?: string;
-  /** Team ID */
-  teamId?: string;
-  /** User ID */
-  userId?: string;
-  /** Optional role assigned to this team membership. Nullable because a membership may exist without an explicit role (e.g., team-admin assignments are stamped on insert; non-owner adds may leave `role_id` null until a role is assigned). References `roles.id`.
-   */
-  roleId?: string;
-  /** Timestamp when the mapping was created. */
-  createdAt?: string;
-  /** Timestamp when the mapping was last updated. */
-  updatedAt?: string;
-  /** Timestamp when the mapping was soft-deleted, if applicable. */
-  deletedAt?: string;
-};
-export type AddUserToTeamApiArg = {
-  /** Organization ID */
-  orgId: string;
-  /** Team ID */
-  teamId: string;
-  /** User ID */
-  userId: string;
-};
-export type RemoveUserFromTeamApiResponse = unknown;
-export type RemoveUserFromTeamApiArg = {
-  /** Organization ID */
-  orgId: string;
-  /** Team ID */
-  teamId: string;
-  /** User ID */
-  userId: string;
-};
-export type ListUsersNotInTeamApiResponse = /** status 200 Users not currently in the team */ {
-  /** Current page number of the result set. */
-  page?: number;
-  /** Number of items per page. */
-  pageSize?: number;
-  /** Total number of items available. */
-  totalCount?: number;
-  /** The data of the teammemberspage. */
-  data?: {
-    /** Timestamp when the user joined the team. Server-computed from the earliest matching row in `users_teams_mapping` for this (team, user) pair. Server-managed; clients cannot set this.
-     */
-    joinedAt?: string;
-    [key: string]: any;
-  }[];
-};
-export type ListUsersNotInTeamApiArg = {
-  /** Organization ID */
-  orgId: string;
-  /** Team ID */
-  teamId: string;
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-  /** Get responses by page */
-  page?: string;
-  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
-  pageSize?: number;
-  /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
 };
 export type GetUsersForOrgApiResponse = /** status 200 Paginated list of organization users */ {
   /** Current page number of the result set. */
@@ -9009,18 +8687,9 @@ export const {
   useUpdateOrgMutation,
   useGetOrgPreferencesQuery,
   useAddTeamToOrgMutation,
-  useGetTeamByIdQuery,
-  useUpdateTeamMutation,
-  useDeleteTeamMutation,
   useRemoveTeamFromOrgMutation,
   useAddUserToOrgMutation,
   useDeleteUserFromOrgMutation,
-  useGetTeamsQuery,
-  useCreateTeamMutation,
-  useGetTeamUsersQuery,
-  useAddUserToTeamMutation,
-  useRemoveUserFromTeamMutation,
-  useListUsersNotInTeamQuery,
   useGetUsersForOrgQuery,
   useGetUsersQuery,
   useGetUserProfileByIdQuery,

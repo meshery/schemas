@@ -213,7 +213,7 @@
     "construct": "team",
     "version": "v1beta2",
     "href": "/schemas/constructs/v1beta2/team/team.yaml",
-    "core": true,
+    "core": false,
     "extension": true
   },
   {
