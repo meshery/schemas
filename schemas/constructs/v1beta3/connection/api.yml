@@ -181,6 +181,44 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
+  /api/integrations/connections/{connectionId}/actions:
+    post:
+      x-internal: ["meshery"]
+      tags:
+        - Connections
+      operationId: performConnectionAction
+      summary: Perform an action on a connection
+      description: >-
+        Perform a side-effecting operation on a connection (as opposed to a
+        field update via PUT). The action is selected by the `action`
+        discriminator in the request body. Currently supports switching the
+        MeshSync deployment mode for a kubernetes connection, which redeploys
+        MeshSync (operator vs embedded) for the connection's cluster; the server
+        owns the connection metadata merge so callers only send the intent.
+      parameters:
+        - $ref: "#/components/parameters/connectionId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConnectionActionRequest"
+      responses:
+        "200":
+          description: The updated connection after the action was applied.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Connection"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
   /api/integrations/connections/meshery/{mesheryServerId}:
     delete:
       x-internal: ["cloud", "meshery"]
@@ -776,6 +814,37 @@ components:
           x-oapi-codegen-extra-tags:
             json: "description,omitempty"
           x-order: 2
+
+    ConnectionActionRequest:
+      type: object
+      description: >-
+        A side-effecting operation to perform on a connection via
+        POST /api/integrations/connections/{connectionId}/actions. The `action`
+        field selects the operation; operation-specific fields carry its
+        parameters. Unlike PUT (which updates resource fields), the server owns
+        any resulting metadata merge and cluster-side effects.
+      additionalProperties: false
+      required:
+        - action
+      properties:
+        action:
+          type: string
+          description: The operation to perform on the connection.
+          enum:
+            - setMeshsyncMode
+          x-oapi-codegen-extra-tags:
+            json: "action"
+        mode:
+          type: string
+          description: >-
+            Target MeshSync deployment mode. Required when `action` is
+            `setMeshsyncMode`; the server redeploys MeshSync (operator vs
+            embedded) for the connection's cluster.
+          enum:
+            - operator
+            - embedded
+          x-oapi-codegen-extra-tags:
+            json: "mode,omitempty"
 
     ConnectionPayload:
       type: object
