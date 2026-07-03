@@ -1,6 +1,16 @@
-# Meshery Schemas Casing Rules — Definitive Reference
+# Meshery Schemas Casing Rules - Superseded Pre-Migration Reference
 
-This document is the single authoritative source for casing decisions across the Meshery schema ecosystem. It governs OpenAPI schema definitions, Go code generation (oapi-codegen), TypeScript type generation (openapi-typescript), and the two primary downstream ORM consumers: **GORM** (meshery/meshery) and **Buffalo Pop** (layer5io/meshery-cloud).
+> **SUPERSEDED.** This document describes the pre-migration casing
+> contract, under which DB-backed fields published snake_case on the
+> wire. The identifier-naming migration replaced that contract; the
+> current authority is [`docs/casing-rules.md`](../docs/casing-rules.md)
+> (wire is camelCase everywhere; snake_case lives only in the `db:`
+> tag). The rule descriptions below (Rules 6, 32, 33) no longer match
+> the validator: Rule 32 is a retired stub, Rule 33 now flags
+> `page_size`/`total_count` as legacy, and Rule 6 is unconditional
+> camelCase. Retained for historical context only.
+
+This document was the authoritative source for casing decisions across the Meshery schema ecosystem prior to the identifier-naming migration. It governed OpenAPI schema definitions, Go code generation (oapi-codegen), TypeScript type generation (openapi-typescript), and the two primary downstream ORM consumers: **GORM** (meshery/meshery) and **Buffalo Pop** (layer5io/meshery-cloud).
 
 ## The Core Principle
 
