@@ -1,8 +1,6 @@
 # Identifier Naming - Contributor Guide
 
 > The canonical, evergreen reference for identifier naming across every Meshery component and repository - Go, TypeScript, OpenAPI, SQL, URLs, file names, error codes. If you're contributing code or reviewing a PR in any repo, this document tells you the right form for every element type.
->
-> For a one-time announcement summarizing the migration that produced this convention (PR counts, releases cut, contributors, timeline), see [`identifier-naming-announcement-2026-04-24.md`](identifier-naming-announcement-2026-04-24.md).
 
 ---
 
@@ -146,7 +144,7 @@ Practically: they will remain until a future maintainer decision schedules their
 ### Don't
 
 - Don't re-case fields in-place on an already-published API version. That is a **partial-casing migration** and is forbidden by validator Rule 45. If the wire must change, introduce a new API version and migrate the resource consistently there.
-- Don't copy an existing legacy schema as a starting template if you can help it - prefer canonical-version files (anything under `v1beta3/` or the canonical-target `v1beta2/` directories named in `docs/identifier-naming-migration.md §9.1`).
+- Don't copy an existing legacy schema as a starting template if you can help it - prefer canonical-version files (anything under `v1beta3/`, or `v1beta2/` directories not marked `info.x-deprecated: true`).
 - Don't add a `DELETE` endpoint with a request body for bulk operations. REST clients and proxies silently strip `DELETE` bodies. Use `POST /api/{resources}/delete` (HTTP method cell #21 in the directory).
 - Don't return HTTP `200` from a `POST` that exclusively creates a new resource - use `201 Created`.
 - Don't add new dual-accept shims on new endpoints (see the [Dual-accept policy](#dual-accept-policy) above).
@@ -163,10 +161,9 @@ Practically: they will remain until a future maintainer decision schedules their
 
 | Document | Purpose |
 |---|---|
-| [`docs/identifier-naming-announcement-2026-04-24.md`](identifier-naming-announcement-2026-04-24.md) | One-time announcement of the migration (PR counts, releases, contributors, timeline). |
-| [`docs/identifier-naming-migration.md`](identifier-naming-migration.md) | The canonical migration plan (authored Phase 0; current status: Complete). |
-| [`docs/identifier-naming-impact-report.md`](identifier-naming-impact-report.md) | Measurements-focused before/after impact report (governance artifact for Agent 4.E). |
-| [`CLAUDE.md`](../CLAUDE.md) | Repo-specific conventions reference; Naming-conventions + Casing-rules-at-a-glance sections mirror this document. |
+| [`docs/casing-rules.md`](casing-rules.md) | Inline casing authority extracted from `AGENTS.md`; the per-layer table for canonical API versions. |
+| [`docs/schema-tooling.md`](schema-tooling.md) | Migration status, advisory baseline, and consumer-audit mechanics. |
+| [`AGENTS.md`](../AGENTS.md) | Repo-specific conventions reference; its "Casing rules at a glance" section mirrors this document. |
 | [`validation/`](../validation) | Validator rule implementations and advisory baseline. |
 | [`validation/baseline/`](../validation/baseline/) | Phase 0 baseline artifacts that anchored the migration. |
 

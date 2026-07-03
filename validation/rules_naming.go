@@ -154,7 +154,7 @@ func checkRule4(filePath string, doc *openapi3.T, opts AuditOptions) []Violation
 // Rule 6: schema property names (on api.yml components/schemas).
 //
 // Under the canonical identifier-naming contract (docs/schema-tooling.md §
-// Identifier-naming migration, docs/identifier-naming-migration.md §1), every schema
+// Identifier-naming migration, docs/casing-rules.md), every schema
 // property name / JSON tag is camelCase regardless of DB backing. Rule 6 is
 // therefore unconditional - DB-mirrored fields are no longer exempt and are
 // flagged through the same `--style-debt` severity path as any other
@@ -267,7 +267,7 @@ func checkPropertyNameCasing(filePath, schemaName string, schema *openapi3.Schem
 // query/header parameter names).
 func schemaPropertyDBContext(propName string) string {
 	if dbMirroredFields[propName] {
-		return ` (legacy DB-mirrored name - migrate at the resource's next API-version bump per docs/identifier-naming-migration.md §9)`
+		return ` (legacy DB-mirrored name - migrate at the resource's next API-version bump per docs/casing-rules.md)`
 	}
 	if HasUnderscore(propName) {
 		return ` (snake_case belongs in the db: tag only)`
@@ -473,8 +473,7 @@ func getExtraTag(extensions map[string]any, tagName string) string {
 // wire-form property names (schema-property key, or the
 // `x-oapi-codegen-extra-tags.json` override when present) mix two or more
 // casing families - camel / snake / screaming. Under the canonical
-// identifier-naming contract (docs/casing-rules.md,
-// docs/identifier-naming-migration.md §1), when a resource's wire format
+// identifier-naming contract (docs/casing-rules.md), when a resource's wire format
 // changes, the change must land on a new API version and migrate *every*
 // property consistently. A struct that publishes `userId` + `user_id` +
 // `orgId` is the symptom of a partial migration that forgot some fields
@@ -587,7 +586,7 @@ func rule45Message(schemaName string, families map[string][]string) string {
 		parts = append(parts, fmt.Sprintf("%s: [%s]", f, strings.Join(out, ", ")))
 	}
 	return fmt.Sprintf(
-		`Schema %q mixes JSON-tag casing conventions across its properties - %s. Partial casing migrations are forbidden under the canonical identifier-naming contract. If the wire format must change, introduce a new API version and migrate every property consistently. See docs/casing-rules.md and docs/identifier-naming-migration.md §9.`,
+		`Schema %q mixes JSON-tag casing conventions across its properties - %s. Partial casing migrations are forbidden under the canonical identifier-naming contract. If the wire format must change, introduce a new API version and migrate every property consistently. See docs/casing-rules.md.`,
 		schemaName, strings.Join(parts, "; "))
 }
 
