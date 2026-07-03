@@ -178,6 +178,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/identity/users/{userId}/emails": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get email addresses for a user
+         * @description Returns all email addresses associated with a user account: the single live primary address (mirrored in users.email) and any secondary addresses accumulated from account consolidation or explicit addition.
+         */
+        get: operations["getUserEmailAddresses"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/identity/users/self": {
         parameters: {
             query?: never;
@@ -460,6 +480,45 @@ export interface components {
                 /** @description Total number of organization memberships returned for the user. */
                 totalCount?: number;
             };
+        };
+        /** @description One email address associated with a user account. A user has exactly one primary address (mirrored in users.email) and any number of secondary addresses accumulated from account consolidation or explicit addition. Uniqueness across live addresses is enforced case-insensitively. */
+        UserEmailAddress: {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            userId: string;
+            /** Format: email */
+            email: string;
+            /**
+             * @description Whether the address was verified (per Kratos verifiable addresses) at record time
+             * @default false
+             */
+            verified: boolean;
+            /**
+             * @description Exactly one live primary address per user; mirrors users.email
+             * @default false
+             */
+            isPrimary: boolean;
+            /**
+             * @description How this address became associated with the account
+             * @enum {string}
+             */
+            source: "signup" | "consolidation" | "backfill" | "manual";
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            /**
+             * Format: date-time
+             * @description SQL null Timestamp to handle null values of time.
+             */
+            deletedAt?: string;
         };
         /** @description An organization the user is a member of, together with the names of the roles assigned to that user within the organization. Returned as an item of User.organizations.organizationsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration). */
         OrganizationWithRoles: {
@@ -1479,7 +1538,7 @@ export interface components {
         id: string;
         /** @description Organization ID */
         orgId: string;
-        /** @description ID of the user whose recent activity is requested */
+        /** @description ID of the user */
         userId: string;
         /** @description Get responses by page */
         page: string;
@@ -2835,7 +2894,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description ID of the user whose recent activity is requested */
+                /** @description ID of the user */
                 userId: string;
             };
             cookie?: never;
@@ -3301,6 +3360,93 @@ export interface operations {
                 };
                 content: {
                     "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getUserEmailAddresses: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description ID of the user */
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Email addresses associated with the requested user */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        id: string;
+                        /**
+                         * Format: uuid
+                         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                         */
+                        userId: string;
+                        /** Format: email */
+                        email: string;
+                        /**
+                         * @description Whether the address was verified (per Kratos verifiable addresses) at record time
+                         * @default false
+                         */
+                        verified: boolean;
+                        /**
+                         * @description Exactly one live primary address per user; mirrors users.email
+                         * @default false
+                         */
+                        isPrimary: boolean;
+                        /**
+                         * @description How this address became associated with the account
+                         * @enum {string}
+                         */
+                        source: "signup" | "consolidation" | "backfill" | "manual";
+                        /** Format: date-time */
+                        createdAt: string;
+                        /** Format: date-time */
+                        updatedAt: string;
+                        /**
+                         * Format: date-time
+                         * @description SQL null Timestamp to handle null values of time.
+                         */
+                        deletedAt?: string;
+                    }[];
                 };
             };
             /** @description Expired JWT token used or insufficient privilege */

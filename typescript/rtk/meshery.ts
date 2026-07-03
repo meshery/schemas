@@ -286,6 +286,10 @@ const injectedRtkApi = api
         query: () => ({ url: `/api/identity/users/profile` }),
         providesTags: ["User_users"],
       }),
+      getUserEmailAddresses: build.query<GetUserEmailAddressesApiResponse, GetUserEmailAddressesApiArg>({
+        query: (queryArg) => ({ url: `/api/identity/users/${queryArg.userId}/emails` }),
+        providesTags: ["User_users"],
+      }),
       getConnections: build.query<GetConnectionsApiResponse, GetConnectionsApiArg>({
         query: (queryArg) => ({
           url: `/api/integrations/connections`,
@@ -4809,6 +4813,27 @@ export type GetUserApiResponse = /** status 200 Current user profile and role co
   };
 };
 export type GetUserApiArg = void;
+export type GetUserEmailAddressesApiResponse = /** status 200 Email addresses associated with the requested user */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  userId: string;
+  email: string;
+  /** Whether the address was verified (per Kratos verifiable addresses) at record time */
+  verified: boolean;
+  /** Exactly one live primary address per user; mirrors users.email */
+  isPrimary: boolean;
+  /** How this address became associated with the account */
+  source: "signup" | "consolidation" | "backfill" | "manual";
+  createdAt: string;
+  updatedAt: string;
+  /** SQL null Timestamp to handle null values of time. */
+  deletedAt?: string;
+}[];
+export type GetUserEmailAddressesApiArg = {
+  /** ID of the user */
+  userId: string;
+};
 export type GetConnectionsApiResponse = /** status 200 Paginated list of connections with summary information */ {
   /** List of connections on this page */
   connections: {
@@ -8999,6 +9024,7 @@ export const {
   useGetUsersQuery,
   useGetUserProfileByIdQuery,
   useGetUserQuery,
+  useGetUserEmailAddressesQuery,
   useGetConnectionsQuery,
   useRegisterConnectionMutation,
   useGetConnectionByIdQuery,

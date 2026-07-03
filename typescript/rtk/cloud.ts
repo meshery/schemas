@@ -546,6 +546,10 @@ const injectedRtkApi = api
         }),
         providesTags: ["User_users"],
       }),
+      getUserEmailAddresses: build.query<GetUserEmailAddressesApiResponse, GetUserEmailAddressesApiArg>({
+        query: (queryArg) => ({ url: `/api/identity/users/${queryArg.userId}/emails` }),
+        providesTags: ["User_users"],
+      }),
       deleteUserAccount: build.mutation<DeleteUserAccountApiResponse, DeleteUserAccountApiArg>({
         query: (queryArg) => ({
           url: `/api/identity/users/self`,
@@ -4757,7 +4761,7 @@ export type GetUserRecentActivitiesApiResponse = /** status 200 Recent-activity 
   }[];
 };
 export type GetUserRecentActivitiesApiArg = {
-  /** ID of the user whose recent activity is requested */
+  /** ID of the user */
   userId: string;
   /** Zero-based page index of the activity feed. */
   page?: number;
@@ -5029,6 +5033,27 @@ export type GetAccountDeletionEligibilityApiResponse = /** status 200 Account de
 export type GetAccountDeletionEligibilityApiArg = {
   /** Organization to evaluate for deletion alongside the account. When omitted, the caller's currently selected organization is evaluated. */
   organizationId?: string;
+};
+export type GetUserEmailAddressesApiResponse = /** status 200 Email addresses associated with the requested user */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  userId: string;
+  email: string;
+  /** Whether the address was verified (per Kratos verifiable addresses) at record time */
+  verified: boolean;
+  /** Exactly one live primary address per user; mirrors users.email */
+  isPrimary: boolean;
+  /** How this address became associated with the account */
+  source: "signup" | "consolidation" | "backfill" | "manual";
+  createdAt: string;
+  updatedAt: string;
+  /** SQL null Timestamp to handle null values of time. */
+  deletedAt?: string;
+}[];
+export type GetUserEmailAddressesApiArg = {
+  /** ID of the user */
+  userId: string;
 };
 export type DeleteUserAccountApiResponse = unknown;
 export type DeleteUserAccountApiArg = {
@@ -14896,6 +14921,7 @@ export const {
   useNotifyMentionUsersMutation,
   useCreateAnonymousUserSessionMutation,
   useGetAccountDeletionEligibilityQuery,
+  useGetUserEmailAddressesQuery,
   useDeleteUserAccountMutation,
   useCreateViewMutation,
   useGetViewsQuery,
