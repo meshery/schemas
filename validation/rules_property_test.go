@@ -438,7 +438,7 @@ func TestFingerprintSchema_IdenticalSchemasProduceSameFingerprint(t *testing.T) 
 
 // ---------------------------------------------------------------------------
 // Rule 6 (inverted): unconditional camelCase — no DB-mirroring exception.
-// See docs/identifier-naming-migration.md Phase 1.B.
+// See docs/casing-rules.md.
 // ---------------------------------------------------------------------------
 
 // TestCheckRule6ForAPI_DBBackedSnakeFails is the first charter acceptance
