@@ -1,6 +1,6 @@
-# Identifier Naming — Contributor Guide
+# Identifier Naming - Contributor Guide
 
-> The canonical, evergreen reference for identifier naming across every Meshery component and repository — Go, TypeScript, OpenAPI, SQL, URLs, file names, error codes. If you're contributing code or reviewing a PR in any repo, this document tells you the right form for every element type.
+> The canonical, evergreen reference for identifier naming across every Meshery component and repository - Go, TypeScript, OpenAPI, SQL, URLs, file names, error codes. If you're contributing code or reviewing a PR in any repo, this document tells you the right form for every element type.
 >
 > For a one-time announcement summarizing the migration that produced this convention (PR counts, releases cut, contributors, timeline), see [`identifier-naming-announcement-2026-04-24.md`](identifier-naming-announcement-2026-04-24.md).
 
@@ -40,7 +40,7 @@ This is the authoritative, per-element, per-layer naming convention. Use this ta
 | 16 | URL query parameter | `camelCase` | `?userId=…`, `?orgId=…`, `?pageSize=25`, `?order=updatedAt%20desc` | ~~`?user_id=…`~~, ~~`?orgID=…`~~, ~~`?page_size=…`~~ |
 | 17 | Pagination envelope fields | `camelCase` on new versions: `page`, `pageSize`, `totalCount` | `{ "page": 1, "pageSize": 25, "totalCount": 237 }` | ~~`page_size`~~, ~~`total_count`~~ (legacy, deprecated) |
 | 18 | HTTP response status for create | `201 Created` | `POST /api/workspaces` → 201 + new resource in body | ~~`POST` → 200~~ |
-| 19 | HTTP response status for upsert | `200 OK` | `POST /api/keys` (upsert) → 200 | — |
+| 19 | HTTP response status for upsert | `200 OK` | `POST /api/keys` (upsert) → 200 | - |
 | 20 | HTTP response status for single delete | `204 No Content` | `DELETE /api/keys/{keyId}` → 204, no body | ~~200 with echoed body~~ |
 | 21 | HTTP method for bulk delete | `POST .../delete`, never `DELETE` with body | `POST /api/designs/delete` with JSON body listing IDs | ~~`DELETE /api/designs` with body~~ |
 | 22 | Error code (mesheryctl) | `mesheryctl-NNNN` format, each code unique | `mesheryctl-1232` | two `ErrXxxCode` constants with the same `NNNN` |
@@ -49,12 +49,12 @@ This is the authoritative, per-element, per-layer naming convention. Use this ta
 | 25 | Template file | `<construct>_template.json` / `.yaml`, inside `templates/` | `templates/keychain_template.json` | template alongside the schema file |
 | 26 | RTK Query generated endpoint name | `camelCase` verbNoun, matches `operationId` | `useGetWorkspacesQuery`, `useCreateKeychainMutation` | hand-written `useGetMyCustomQuery` paralleling a generated one |
 
-### Wire-field casing — a closer look
+### Wire-field casing - a closer look
 
 On newly authored (canonical-casing) API versions, **every JSON tag is camelCase, regardless of whether the field is DB-backed.** The snake-case DB column name lives exclusively in `x-oapi-codegen-extra-tags.db` on the OpenAPI side and in the `db:` Go struct tag on the generated code. On DB-backed fields, the `json:` and `db:` tags differ by design:
 
 ```yaml
-# OpenAPI — canonical form for a DB-backed field
+# OpenAPI - canonical form for a DB-backed field
 patternFile:
   type: string
   description: Stored as a JSON blob.
@@ -74,15 +74,15 @@ patternFile: string;
 
 This is a **retirement** of the older rule that said "when a field is DB-backed, its JSON tag should match its DB column name." That rule is gone. Wire is camelCase; DB is snake_case; the ORM layer is the only translation.
 
-### Pagination envelope — the legacy exception
+### Pagination envelope - the legacy exception
 
-Pagination envelope fields historically used `snake_case` on the wire (`page_size`, `total_count`). On **newly authored API versions**, use `pageSize` and `totalCount`. On legacy resources that still publish the snake form, do not recase them in-place — that is a partial-casing migration and is forbidden by validator Rule 45. The snake forms attrite as resources migrate to their next canonical-casing version bump.
+Pagination envelope fields historically used `snake_case` on the wire (`page_size`, `total_count`). On **newly authored API versions**, use `pageSize` and `totalCount`. On legacy resources that still publish the snake form, do not recase them in-place - that is a partial-casing migration and is forbidden by validator Rule 45. The snake forms attrite as resources migrate to their next canonical-casing version bump.
 
 The field `page` is already a single-word identifier and stays `page` in both legacy and canonical forms.
 
 ---
 
-## Before / after — concrete examples
+## Before / after - concrete examples
 
 | | Before | After |
 |---|---|---|
@@ -114,13 +114,13 @@ During the migration, several server-side handlers were fitted with mechanisms t
 
 ### Is it permanent?
 
-No — it was framed as "one deprecation cycle." There is currently no calendar-scheduled removal. Phase 4.A (legacy-version sunset) closed administratively without physical deletion of `v1beta1/` and `v1beta2/` directories; by extension, the dual-accept shims behave as **retained compatibility**, not transitional scaffolding waiting to be deleted.
+No - it was framed as "one deprecation cycle." There is currently no calendar-scheduled removal. Phase 4.A (legacy-version sunset) closed administratively without physical deletion of `v1beta1/` and `v1beta2/` directories; by extension, the dual-accept shims behave as **retained compatibility**, not transitional scaffolding waiting to be deleted.
 
 Practically: they will remain until a future maintainer decision schedules their retirement. Do not plan around them disappearing next release.
 
 ### Policy for **new** code
 
-- **Do not add new dual-accept shims** on new canonical-version endpoints. New endpoints accept only the canonical camelCase form. The wire contract for a newly authored API version is single-cased — any legacy-form ambiguity has no justification when the endpoint is new.
+- **Do not add new dual-accept shims** on new canonical-version endpoints. New endpoints accept only the canonical camelCase form. The wire contract for a newly authored API version is single-cased - any legacy-form ambiguity has no justification when the endpoint is new.
 - **Do not copy the existing `*PayloadWire` pattern** as a template for unrelated endpoints. Its design point was one-time: it lets previously-snake_case clients keep calling a canonical endpoint during the migration overlap. A fresh endpoint has no such clients.
 - **Do reference the existing shims as historical examples** when asked how we handled the migration (e.g., in ADRs, architectural overviews).
 
@@ -139,23 +139,23 @@ Practically: they will remain until a future maintainer decision schedules their
 - Read the [Canonical Naming Directory](#canonical-naming-directory) above. It's the authoritative reference.
 - Default your new JSON tags to **camelCase**.
 - Put new DB-backed fields' `db:` tag in `x-oapi-codegen-extra-tags` on the OpenAPI side. The Go generator handles the rest.
-- Name URL path parameters `{workspaceId}` etc. — not `{workspaceID}`, not `{workspace_id}`.
-- Run `make validate-schemas` before opening a schemas PR — Rule 6, Rule 45, Rule 46, Rule 4 all block non-compliant changes.
-- Consult the per-repo `AGENTS.md` files for repo-specific conventions — all four consumer repos adopted the identifier-naming mandate in Phase 4.C.
+- Name URL path parameters `{workspaceId}` etc. - not `{workspaceID}`, not `{workspace_id}`.
+- Run `make validate-schemas` before opening a schemas PR - Rule 6, Rule 45, Rule 46, Rule 4 all block non-compliant changes.
+- Consult the per-repo `AGENTS.md` files for repo-specific conventions - all four consumer repos adopted the identifier-naming mandate in Phase 4.C.
 
 ### Don't
 
 - Don't re-case fields in-place on an already-published API version. That is a **partial-casing migration** and is forbidden by validator Rule 45. If the wire must change, introduce a new API version and migrate the resource consistently there.
-- Don't copy an existing legacy schema as a starting template if you can help it — prefer canonical-version files (anything under `v1beta3/` or the canonical-target `v1beta2/` directories named in `docs/identifier-naming-migration.md §9.1`).
+- Don't copy an existing legacy schema as a starting template if you can help it - prefer canonical-version files (anything under `v1beta3/` or the canonical-target `v1beta2/` directories named in `docs/identifier-naming-migration.md §9.1`).
 - Don't add a `DELETE` endpoint with a request body for bulk operations. REST clients and proxies silently strip `DELETE` bodies. Use `POST /api/{resources}/delete` (HTTP method cell #21 in the directory).
-- Don't return HTTP `200` from a `POST` that exclusively creates a new resource — use `201 Created`.
+- Don't return HTTP `200` from a `POST` that exclusively creates a new resource - use `201 Created`.
 - Don't add new dual-accept shims on new endpoints (see the [Dual-accept policy](#dual-accept-policy) above).
 - Don't allocate a `mesheryctl-NNNN` error code without confirming the number is free. The `MeshKit Error Codes Utility Runner` CI check will catch the collision, but it's cleaner to check `mesheryctl/internal/cli/.../error.go` files yourself first.
 
 ### If you find a violation
 
 - Fix it in the same PR that touches the code if possible.
-- If the violation predates this migration and is living in retained-legacy code, it's **expected debt** — the `v1beta1/` and `v1beta2/` directories retain their historical wire form under `info.x-deprecated: true`. External consumers pinning legacy versions depend on those markers being stable.
+- If the violation predates this migration and is living in retained-legacy code, it's **expected debt** - the `v1beta1/` and `v1beta2/` directories retain their historical wire form under `info.x-deprecated: true`. External consumers pinning legacy versions depend on those markers being stable.
 
 ---
 
