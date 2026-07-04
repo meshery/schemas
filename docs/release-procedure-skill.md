@@ -16,13 +16,13 @@ The skill will guide you through the proper release procedure.
 
 Releasing meshery/schemas requires strict adherence to procedure:
 
-1. **Wait for `generate-artifacts-from-schemas.yml` to finish** — This workflow generates the repo's Go and TypeScript artifacts and normally self-commits them back to `master`. Releases without that completed artifact pass are incomplete.
+1. **Wait for `generate-artifacts-from-schemas.yml` to finish** - This workflow generates the repo's Go and TypeScript artifacts and normally self-commits them back to `master`. Releases without that completed artifact pass are incomplete.
 
-2. **Wait for `release-drafter.yml` after the artifact self-commit** — Release drafter must refresh the draft release from the final `master` head, not from the pre-artifact commit.
+2. **Wait for `release-drafter.yml` after the artifact self-commit** - Release drafter must refresh the draft release from the final `master` head, not from the pre-artifact commit.
 
-3. **Let `publish-schemas.yml` handle npm publication** — Publishing the GitHub release triggers the repo's publication workflow, which performs the npm publish through automation.
+3. **Let `publish-schemas.yml` handle npm publication** - Publishing the GitHub release triggers the repo's publication workflow, which performs the npm publish through automation.
 
-4. **Use release automation end-to-end** — Manual release creation or manual npm publishing bypasses required automation and can publish stale bundles.
+4. **Use release automation end-to-end** - Manual release creation or manual npm publishing bypasses required automation and can publish stale bundles.
 
 ## Procedure Overview
 
@@ -183,8 +183,8 @@ Contact the team if the error is not obvious.
 
 ## References
 
-- **CLAUDE.md** - "Release Procedure" section with detailed guidelines
-- **AGENTS.md** - "Release Procedure" section with detailed guidelines
+- **[`release-procedure.md`](release-procedure.md)** - full release flow, What NOT to Do list, and versioning policy
+- **AGENTS.md** - "Release Procedure" summary in the top-level agent instructions (`CLAUDE.md` is a symlink to it)
 - **Workflows**:
   - `.github/workflows/generate-artifacts-from-schemas.yml` - Generates artifacts
   - `.github/workflows/release-drafter.yml` - Creates draft release

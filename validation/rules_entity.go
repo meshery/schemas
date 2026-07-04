@@ -277,8 +277,8 @@ func checkRule6ForEntity(filePath string, entity *entitySchema, opts AuditOption
 // match their snake_case `db:` tag exactly; under the new contract the
 // wire property name is camelCase and the snake_case DB column name lives
 // only in `x-oapi-codegen-extra-tags.db`, so propName != col is the
-// expected shape for DB-backed fields. See Phase 1.B in
-// docs/identifier-naming-migration.md. The function is retained as a
+// expected shape for DB-backed fields. See
+// docs/casing-rules.md. The function is retained as a
 // retired stub so historical audit-pipeline callers can be resolved at
 // compile time; it returns no violations.
 func checkRule32ForEntity(_ string, _ *entitySchema, _ AuditOptions) []Violation {

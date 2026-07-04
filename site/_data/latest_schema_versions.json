@@ -213,7 +213,7 @@
     "construct": "team",
     "version": "v1beta2",
     "href": "/schemas/constructs/v1beta2/team/team.yaml",
-    "core": true,
+    "core": false,
     "extension": true
   },
   {
@@ -225,10 +225,10 @@
   },
   {
     "construct": "user",
-    "version": "v1beta2",
-    "href": "/schemas/constructs/v1beta2/user/api.yml",
-    "core": true,
-    "extension": true
+    "version": "v1beta3",
+    "href": "/schemas/constructs/v1beta3/user/api.yml",
+    "core": false,
+    "extension": false
   },
   {
     "construct": "view",

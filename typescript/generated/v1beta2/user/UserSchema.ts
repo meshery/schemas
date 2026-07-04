@@ -165,7 +165,8 @@ const UserSchema: Record<string, unknown> = {
                           "userId": {
                             "type": "string",
                             "maxLength": 200,
-                            "description": "User identifier (username or external ID)",
+                            "deprecated": true,
+                            "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
                             "x-oapi-codegen-extra-tags": {
                               "db": "user_id",
                               "json": "userId"
@@ -1034,7 +1035,8 @@ const UserSchema: Record<string, unknown> = {
                           "userId": {
                             "type": "string",
                             "maxLength": 200,
-                            "description": "User identifier (username or external ID)",
+                            "deprecated": true,
+                            "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
                             "x-oapi-codegen-extra-tags": {
                               "db": "user_id",
                               "json": "userId"
@@ -1845,7 +1847,8 @@ const UserSchema: Record<string, unknown> = {
                     "userId": {
                       "type": "string",
                       "maxLength": 200,
-                      "description": "User identifier (username or external ID)",
+                      "deprecated": true,
+                      "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
                       "x-oapi-codegen-extra-tags": {
                         "db": "user_id",
                         "json": "userId"
@@ -2645,7 +2648,8 @@ const UserSchema: Record<string, unknown> = {
                     "userId": {
                       "type": "string",
                       "maxLength": 200,
-                      "description": "User identifier (username or external ID)",
+                      "deprecated": true,
+                      "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
                       "x-oapi-codegen-extra-tags": {
                         "db": "user_id",
                         "json": "userId"
@@ -3457,7 +3461,7 @@ const UserSchema: Record<string, unknown> = {
             "name": "userId",
             "in": "path",
             "required": true,
-            "description": "ID of the user whose recent activity is requested",
+            "description": "ID of the user",
             "schema": {
               "type": "string",
               "format": "uuid",
@@ -4625,6 +4629,198 @@ const UserSchema: Record<string, unknown> = {
         }
       }
     },
+    "/api/identity/users/{userId}/emails": {
+      "get": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
+        "tags": [
+          "users"
+        ],
+        "operationId": "getUserEmailAddresses",
+        "summary": "Get email addresses for a user",
+        "description": "Returns all email addresses associated with a user account: the single live primary address (mirrored in users.email) and any secondary addresses accumulated from account consolidation or explicit addition.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the user",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Email addresses associated with the requested user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "description": "One email address associated with a user account. A user has exactly one primary address (mirrored in users.email) and any number of secondary addresses accumulated from account consolidation or explicit addition. Uniqueness across live addresses is enforced case-insensitively.",
+                    "required": [
+                      "id",
+                      "userId",
+                      "email",
+                      "verified",
+                      "isPrimary",
+                      "source",
+                      "createdAt",
+                      "updatedAt"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                        "x-go-type": "uuid.UUID",
+                        "x-go-type-import": {
+                          "path": "github.com/gofrs/uuid"
+                        },
+                        "x-go-name": "ID",
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "id",
+                          "json": "id"
+                        }
+                      },
+                      "userId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                        "x-go-type": "uuid.UUID",
+                        "x-go-type-import": {
+                          "path": "github.com/gofrs/uuid"
+                        },
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "owner",
+                          "json": "userId"
+                        }
+                      },
+                      "email": {
+                        "type": "string",
+                        "format": "email",
+                        "maxLength": 300,
+                        "description": "The email address",
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "email",
+                          "json": "email"
+                        }
+                      },
+                      "verified": {
+                        "type": "boolean",
+                        "default": false,
+                        "description": "Whether the address was verified (per Kratos verifiable addresses) at record time",
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "verified",
+                          "json": "verified"
+                        }
+                      },
+                      "isPrimary": {
+                        "type": "boolean",
+                        "default": false,
+                        "description": "Exactly one live primary address per user; mirrors users.email",
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "is_primary",
+                          "json": "isPrimary"
+                        }
+                      },
+                      "source": {
+                        "type": "string",
+                        "enum": [
+                          "signup",
+                          "consolidation",
+                          "backfill",
+                          "manual"
+                        ],
+                        "description": "How this address became associated with the account",
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "source",
+                          "json": "source"
+                        }
+                      },
+                      "createdAt": {
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "created_at",
+                          "json": "createdAt"
+                        },
+                        "type": "string",
+                        "format": "date-time",
+                        "x-go-type-skip-optional-pointer": true
+                      },
+                      "updatedAt": {
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "updated_at",
+                          "json": "updatedAt"
+                        },
+                        "type": "string",
+                        "format": "date-time",
+                        "x-go-type-skip-optional-pointer": true
+                      },
+                      "deletedAt": {
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "deleted_at",
+                          "json": "deletedAt"
+                        },
+                        "description": "SQL null Timestamp to handle null values of time.",
+                        "x-go-type": "meshcore.NullTime",
+                        "x-go-type-import": {
+                          "name": "meshcore",
+                          "path": "github.com/meshery/schemas/models/core"
+                        },
+                        "type": "string",
+                        "format": "date-time",
+                        "x-go-type-skip-optional-pointer": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/identity/users/self": {
       "delete": {
         "x-internal": [
@@ -4831,7 +5027,7 @@ const UserSchema: Record<string, unknown> = {
         "name": "userId",
         "in": "path",
         "required": true,
-        "description": "ID of the user whose recent activity is requested",
+        "description": "ID of the user",
         "schema": {
           "type": "string",
           "format": "uuid",
@@ -4935,7 +5131,8 @@ const UserSchema: Record<string, unknown> = {
           "userId": {
             "type": "string",
             "maxLength": 200,
-            "description": "User identifier (username or external ID)",
+            "deprecated": true,
+            "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
             "x-oapi-codegen-extra-tags": {
               "db": "user_id",
               "json": "userId"
@@ -5639,6 +5836,125 @@ const UserSchema: Record<string, unknown> = {
         },
         "additionalProperties": false
       },
+      "UserEmailAddress": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "One email address associated with a user account. A user has exactly one primary address (mirrored in users.email) and any number of secondary addresses accumulated from account consolidation or explicit addition. Uniqueness across live addresses is enforced case-insensitively.",
+        "required": [
+          "id",
+          "userId",
+          "email",
+          "verified",
+          "isPrimary",
+          "source",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-name": "ID",
+            "x-oapi-codegen-extra-tags": {
+              "db": "id",
+              "json": "id"
+            }
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-oapi-codegen-extra-tags": {
+              "db": "owner",
+              "json": "userId"
+            }
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 300,
+            "description": "The email address",
+            "x-oapi-codegen-extra-tags": {
+              "db": "email",
+              "json": "email"
+            }
+          },
+          "verified": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether the address was verified (per Kratos verifiable addresses) at record time",
+            "x-oapi-codegen-extra-tags": {
+              "db": "verified",
+              "json": "verified"
+            }
+          },
+          "isPrimary": {
+            "type": "boolean",
+            "default": false,
+            "description": "Exactly one live primary address per user; mirrors users.email",
+            "x-oapi-codegen-extra-tags": {
+              "db": "is_primary",
+              "json": "isPrimary"
+            }
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "signup",
+              "consolidation",
+              "backfill",
+              "manual"
+            ],
+            "description": "How this address became associated with the account",
+            "x-oapi-codegen-extra-tags": {
+              "db": "source",
+              "json": "source"
+            }
+          },
+          "createdAt": {
+            "x-oapi-codegen-extra-tags": {
+              "db": "created_at",
+              "json": "createdAt"
+            },
+            "type": "string",
+            "format": "date-time",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "updatedAt": {
+            "x-oapi-codegen-extra-tags": {
+              "db": "updated_at",
+              "json": "updatedAt"
+            },
+            "type": "string",
+            "format": "date-time",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "deletedAt": {
+            "x-oapi-codegen-extra-tags": {
+              "db": "deleted_at",
+              "json": "deletedAt"
+            },
+            "description": "SQL null Timestamp to handle null values of time.",
+            "x-go-type": "meshcore.NullTime",
+            "x-go-type-import": {
+              "name": "meshcore",
+              "path": "github.com/meshery/schemas/models/core"
+            },
+            "type": "string",
+            "format": "date-time",
+            "x-go-type-skip-optional-pointer": true
+          }
+        }
+      },
       "OrganizationWithRoles": {
         "type": "object",
         "additionalProperties": false,
@@ -5942,7 +6258,8 @@ const UserSchema: Record<string, unknown> = {
                 "userId": {
                   "type": "string",
                   "maxLength": 200,
-                  "description": "User identifier (username or external ID)",
+                  "deprecated": true,
+                  "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
                   "x-oapi-codegen-extra-tags": {
                     "db": "user_id",
                     "json": "userId"
@@ -6705,7 +7022,8 @@ const UserSchema: Record<string, unknown> = {
                 "userId": {
                   "type": "string",
                   "maxLength": 200,
-                  "description": "User identifier (username or external ID)",
+                  "deprecated": true,
+                  "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
                   "x-oapi-codegen-extra-tags": {
                     "db": "user_id",
                     "json": "userId"

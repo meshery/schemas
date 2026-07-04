@@ -114,8 +114,8 @@ func TestToCamelCase(t *testing.T) {
 
 func TestGetCamelCaseIssues(t *testing.T) {
 	// Under the canonical identifier-naming contract, GetCamelCaseIssues
-	// is unconditional: DB-mirrored names no longer get a pass. See Rule 6
-	// inversion in Phase 1.B of docs/identifier-naming-migration.md.
+	// is unconditional: DB-mirrored names no longer get a pass. See
+	// docs/casing-rules.md.
 	tests := []struct {
 		name           string
 		wantIssueCount int

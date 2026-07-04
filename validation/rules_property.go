@@ -13,7 +13,7 @@ import (
 //
 // The pre-canonical rule required DB-backed property names to match their
 // snake_case `db:` tag exactly. Under the new contract (see
-// docs/identifier-naming-migration.md §1 and docs/casing-rules.md),
+// docs/casing-rules.md),
 // the wire property name is camelCase and the snake_case DB
 // column name lives only in `x-oapi-codegen-extra-tags.db` — so a
 // property whose name differs from its `db:` tag is the *expected* shape
@@ -29,7 +29,7 @@ func checkRule32ForAPI(_ string, _ *openapi3.T, _ AuditOptions) []Violation {
 // --- Rule 33: Pagination envelopes use canonical camelCase ---
 //
 // Under the canonical identifier-naming contract (see
-// docs/identifier-naming-migration.md §1 and docs/casing-rules.md),
+// docs/casing-rules.md),
 // pagination envelope properties are camelCase on the wire:
 // page, pageSize, totalCount. The legacy snake_case forms (page_size,
 // total_count) are still accepted inside existing API versions for
@@ -63,12 +63,12 @@ func checkRule33(filePath string, doc *openapi3.T, _ AuditOptions) []Violation {
 		}
 		if hasPageSizeSnake {
 			out = append(out, Violation{File: filePath,
-				Message:  fmt.Sprintf(`Schema %q — pagination envelopes should use "pageSize" (canonical camelCase), not "page_size". (migrate at the resource's next API-version bump per docs/identifier-naming-migration.md §9)`, name),
+				Message:  fmt.Sprintf(`Schema %q - pagination envelopes should use "pageSize" (canonical camelCase), not "page_size". (migrate at the resource's next API-version bump per docs/casing-rules.md)`, name),
 				Severity: SeverityAdvisory, RuleNumber: 33})
 		}
 		if hasTotalCountSnake {
 			out = append(out, Violation{File: filePath,
-				Message:  fmt.Sprintf(`Schema %q — pagination envelopes should use "totalCount" (canonical camelCase), not "total_count". (migrate at the resource's next API-version bump per docs/identifier-naming-migration.md §9)`, name),
+				Message:  fmt.Sprintf(`Schema %q - pagination envelopes should use "totalCount" (canonical camelCase), not "total_count". (migrate at the resource's next API-version bump per docs/casing-rules.md)`, name),
 				Severity: SeverityAdvisory, RuleNumber: 33})
 		}
 	}

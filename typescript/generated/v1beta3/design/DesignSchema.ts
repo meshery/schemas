@@ -336,7 +336,8 @@ const DesignSchema: Record<string, unknown> = {
                               "userId": {
                                 "type": "string",
                                 "maxLength": 200,
-                                "description": "User identifier (username or external ID)",
+                                "deprecated": true,
+                                "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "user_id",
                                   "json": "userId"
@@ -1587,7 +1588,8 @@ const DesignSchema: Record<string, unknown> = {
                         "userId": {
                           "type": "string",
                           "maxLength": 200,
-                          "description": "User identifier (username or external ID)",
+                          "deprecated": true,
+                          "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
                           "x-oapi-codegen-extra-tags": {
                             "db": "user_id",
                             "json": "userId"
@@ -2740,7 +2742,8 @@ const DesignSchema: Record<string, unknown> = {
                         "userId": {
                           "type": "string",
                           "maxLength": 200,
-                          "description": "User identifier (username or external ID)",
+                          "deprecated": true,
+                          "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
                           "x-oapi-codegen-extra-tags": {
                             "db": "user_id",
                             "json": "userId"
@@ -3869,7 +3872,8 @@ const DesignSchema: Record<string, unknown> = {
                         "userId": {
                           "type": "string",
                           "maxLength": 200,
-                          "description": "User identifier (username or external ID)",
+                          "deprecated": true,
+                          "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
                           "x-oapi-codegen-extra-tags": {
                             "db": "user_id",
                             "json": "userId"
@@ -5332,7 +5336,8 @@ const DesignSchema: Record<string, unknown> = {
                               "userId": {
                                 "type": "string",
                                 "maxLength": 200,
-                                "description": "User identifier (username or external ID)",
+                                "deprecated": true,
+                                "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "user_id",
                                   "json": "userId"
@@ -6603,7 +6608,8 @@ const DesignSchema: Record<string, unknown> = {
                         "userId": {
                           "type": "string",
                           "maxLength": 200,
-                          "description": "User identifier (username or external ID)",
+                          "deprecated": true,
+                          "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
                           "x-oapi-codegen-extra-tags": {
                             "db": "user_id",
                             "json": "userId"
@@ -7576,7 +7582,8 @@ const DesignSchema: Record<string, unknown> = {
                         "userId": {
                           "type": "string",
                           "maxLength": 200,
-                          "description": "User identifier (username or external ID)",
+                          "deprecated": true,
+                          "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
                           "x-oapi-codegen-extra-tags": {
                             "db": "user_id",
                             "json": "userId"
@@ -9104,7 +9111,8 @@ const DesignSchema: Record<string, unknown> = {
                               "userId": {
                                 "type": "string",
                                 "maxLength": 200,
-                                "description": "User identifier (username or external ID)",
+                                "deprecated": true,
+                                "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "user_id",
                                   "json": "userId"
@@ -14832,7 +14840,8 @@ const DesignSchema: Record<string, unknown> = {
               "userId": {
                 "type": "string",
                 "maxLength": 200,
-                "description": "User identifier (username or external ID)",
+                "deprecated": true,
+                "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
                 "x-oapi-codegen-extra-tags": {
                   "db": "user_id",
                   "json": "userId"
@@ -15852,7 +15861,8 @@ const DesignSchema: Record<string, unknown> = {
                     "userId": {
                       "type": "string",
                       "maxLength": 200,
-                      "description": "User identifier (username or external ID)",
+                      "deprecated": true,
+                      "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
                       "x-oapi-codegen-extra-tags": {
                         "db": "user_id",
                         "json": "userId"
@@ -17433,7 +17443,8 @@ const DesignSchema: Record<string, unknown> = {
                     "userId": {
                       "type": "string",
                       "maxLength": 200,
-                      "description": "User identifier (username or external ID)",
+                      "deprecated": true,
+                      "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
                       "x-oapi-codegen-extra-tags": {
                         "db": "user_id",
                         "json": "userId"
@@ -18670,7 +18681,8 @@ const DesignSchema: Record<string, unknown> = {
               "userId": {
                 "type": "string",
                 "maxLength": 200,
-                "description": "User identifier (username or external ID)",
+                "deprecated": true,
+                "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
                 "x-oapi-codegen-extra-tags": {
                   "db": "user_id",
                   "json": "userId"
@@ -19579,7 +19591,8 @@ const DesignSchema: Record<string, unknown> = {
                     "userId": {
                       "type": "string",
                       "maxLength": 200,
-                      "description": "User identifier (username or external ID)",
+                      "deprecated": true,
+                      "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
                       "x-oapi-codegen-extra-tags": {
                         "db": "user_id",
                         "json": "userId"

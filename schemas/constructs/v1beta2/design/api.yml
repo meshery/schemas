@@ -8,8 +8,8 @@ info:
     Phase 3 identifier-naming migration (camelCase-on-the-wire contract). All
     JSON tags and query/path parameters were snake_case in v1beta2; the
     replacement v1beta3 schema publishes them as canonical camelCase. v1beta2
-    remains served for one release cycle after all downstream consumers
-    migrate, then is retired per docs/identifier-naming-migration.md §9.1 row 5.
+    remains served indefinitely for consumers that pin it, per the Phase 4.A
+    non-deletion policy in docs/schema-tooling.md.
   version: v1beta2
   x-deprecated: true
   x-superseded-by: v1beta3/design

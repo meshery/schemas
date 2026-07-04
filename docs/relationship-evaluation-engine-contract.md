@@ -11,15 +11,15 @@ definitions and returns the design with policy-driven additions, removals,
 and updates applied. The wire contract is defined by the OpenAPI construct
 `schemas/constructs/v1beta1/evaluation/api.yml`:
 
-- `EvaluationRequest` — `{ design: PatternFile, options?: { returnDiffOnly?, enableTrace? } }`
-- `EvaluationResponse` — `{ schemaVersion, design: PatternFile, evaluationHash?, timestamp?, actions[] }`
+- `EvaluationRequest` - `{ design: PatternFile, options?: { returnDiffOnly?, enableTrace? } }`
+- `EvaluationResponse` - `{ schemaVersion, design: PatternFile, evaluationHash?, timestamp?, actions[] }`
 
 This contract is **engine-agnostic**. The same `EvaluationResponse` is
 produced by either of two interchangeable engines:
 
-1. **Server engine** — `POST /evaluate` (the OpenAPI operation above). The
+1. **Server engine** - `POST /evaluate` (the OpenAPI operation above). The
    always-available, default path.
-2. **In-browser WASM engine** — the same Meshery Go policy engine compiled to
+2. **In-browser WASM engine** - the same Meshery Go policy engine compiled to
    WebAssembly and run in a Web Worker by the in-browser policy-engine
    consumer. It eliminates network round-trips on the evaluation hot path.
    The WASM binary is built and shipped by Meshery; Meshery remains the
@@ -39,7 +39,7 @@ global scope:
 ```ts
 globalThis.__mesheryRelationshipEngine = {
   contract: number,   // integer; a consumer MUST refuse a mismatched contract
-  version: string,    // meshery build version / SHA — diagnostics only
+  version: string,    // meshery build version / SHA - diagnostics only
   init(relationshipsJson: string): string,                    // "{}" | {"error":"..."}
   evaluate(designJson: string, optionsJson: string): string,  // EvaluationResponse JSON | {"error":"..."}
   selfTest(): string                                          // {"ok":true,...} | {"error":"..."}

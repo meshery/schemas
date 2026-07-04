@@ -110,12 +110,19 @@ func TestFormSchemasAreSubsetOfCanonical(t *testing.T) {
 	for _, tc := range formCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			canonical := loadYAMLSchema(t, filepath.Join(repoRoot, tc.canonical))
-			form := loadJSONSchema(t, filepath.Join(repoRoot, tc.form))
+			canonical := loadYAMLSchema(t, absRepoPath(repoRoot, tc.canonical))
+			form := loadJSONSchema(t, absRepoPath(repoRoot, tc.form))
 
 			assertFormSubsetOfCanonical(t, form, canonical)
 		})
 	}
+}
+
+func absRepoPath(repoRoot, rel string) string {
+	if idx := strings.Index(rel, "#"); idx != -1 {
+		return filepath.Join(repoRoot, rel[:idx]) + rel[idx:]
+	}
+	return filepath.Join(repoRoot, rel)
 }
 
 // formJsonFiles walks `schemas/constructs/<v>/<c>/forms/` and returns

@@ -737,8 +737,7 @@ const TeamSchema: Record<string, unknown> = {
     "/api/identity/orgs/{orgId}/teams": {
       "get": {
         "x-internal": [
-          "cloud",
-          "meshery"
+          "cloud"
         ],
         "tags": [
           "teams"
@@ -976,8 +975,7 @@ const TeamSchema: Record<string, unknown> = {
       },
       "post": {
         "x-internal": [
-          "cloud",
-          "meshery"
+          "cloud"
         ],
         "tags": [
           "teams"
@@ -1198,8 +1196,7 @@ const TeamSchema: Record<string, unknown> = {
     "/api/identity/orgs/{orgId}/teams/{teamId}": {
       "get": {
         "x-internal": [
-          "cloud",
-          "meshery"
+          "cloud"
         ],
         "tags": [
           "teams"
@@ -1411,8 +1408,7 @@ const TeamSchema: Record<string, unknown> = {
       },
       "put": {
         "x-internal": [
-          "cloud",
-          "meshery"
+          "cloud"
         ],
         "tags": [
           "teams"
@@ -1648,8 +1644,7 @@ const TeamSchema: Record<string, unknown> = {
       },
       "delete": {
         "x-internal": [
-          "cloud",
-          "meshery"
+          "cloud"
         ],
         "tags": [
           "teams"
@@ -1749,8 +1744,7 @@ const TeamSchema: Record<string, unknown> = {
     "/api/identity/teams/{teamId}/users": {
       "get": {
         "x-internal": [
-          "cloud",
-          "meshery"
+          "cloud"
         ],
         "tags": [
           "teams"
@@ -1971,8 +1965,7 @@ const TeamSchema: Record<string, unknown> = {
     "/api/identity/orgs/{orgId}/teams/{teamId}/users/{userId}": {
       "post": {
         "x-internal": [
-          "cloud",
-          "meshery"
+          "cloud"
         ],
         "tags": [
           "teams"
@@ -2166,8 +2159,7 @@ const TeamSchema: Record<string, unknown> = {
       },
       "delete": {
         "x-internal": [
-          "cloud",
-          "meshery"
+          "cloud"
         ],
         "tags": [
           "teams"
@@ -2278,8 +2270,7 @@ const TeamSchema: Record<string, unknown> = {
     "/api/identity/orgs/{orgId}/teams/{teamId}/users": {
       "get": {
         "x-internal": [
-          "cloud",
-          "meshery"
+          "cloud"
         ],
         "tags": [
           "teams"
