@@ -422,9 +422,8 @@ components:
         - version
       properties:
         connectionId:
-          type: string
+          $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
           description: The kubernetes connection ID this status belongs to.
-          maxLength: 255
         controller:
           type: string
           description: The controller this status describes.
@@ -436,7 +435,7 @@ components:
           type: string
           description: >-
             Current controller status (e.g. DEPLOYED, NOTDEPLOYED, RUNNING,
-            CONNECTED, UNKOWN).
+            CONNECTED, UNKNOWN).
           maxLength: 255
         version:
           type: string
@@ -470,9 +469,8 @@ components:
             <endpoint>".
           maxLength: 1024
         connectionId:
-          type: string
+          $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
           description: The kubernetes connection ID this status belongs to.
-          maxLength: 255
 
     ControllerDiagnostic:
       type: object
@@ -546,9 +544,8 @@ components:
         - diagnostics
       properties:
         connectionId:
-          type: string
+          $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
           description: The kubernetes connection ID these diagnostics belong to.
-          maxLength: 255
         healthy:
           type: boolean
           description: >-
