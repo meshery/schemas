@@ -34,8 +34,8 @@ const (
 
 // ConnectionDiagnostics Diagnostics for a kubernetes connection's Meshery controllers, for rendering a "Diagnostics" section in the connection detail view.
 type ConnectionDiagnostics struct {
-	// ConnectionId The kubernetes connection ID these diagnostics belong to.
-	ConnectionId string `json:"connectionId" yaml:"connectionId"`
+	// ConnectionId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ConnectionId core.Uuid `json:"connectionId" yaml:"connectionId"`
 
 	// Diagnostics The diagnostics detected for this connection (possibly empty).
 	Diagnostics []ControllerDiagnostic `json:"diagnostics" yaml:"diagnostics"`
@@ -76,8 +76,8 @@ type ControllerDiagnosticSeverity string
 
 // ControllerInfo Detailed status of a named Meshery controller (MeshSync or Broker) for a kubernetes connection.
 type ControllerInfo struct {
-	// ConnectionId The kubernetes connection ID this status belongs to.
-	ConnectionId string `json:"connectionId" yaml:"connectionId"`
+	// ConnectionId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ConnectionId core.Uuid `json:"connectionId" yaml:"connectionId"`
 
 	// Name Controller name (e.g. MeshSync, MesheryBroker).
 	Name string `json:"name" yaml:"name"`
@@ -91,13 +91,13 @@ type ControllerInfo struct {
 
 // ControllerStatus Status of a single Meshery controller (operator, MeshSync, or broker) for a kubernetes connection. Element type of the controller-status SSE stream and the operator status response.
 type ControllerStatus struct {
-	// ConnectionId The kubernetes connection ID this status belongs to.
-	ConnectionId string `json:"connectionId" yaml:"connectionId"`
+	// ConnectionId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ConnectionId core.Uuid `json:"connectionId" yaml:"connectionId"`
 
 	// Controller The controller this status describes.
 	Controller ControllerStatusController `json:"controller" yaml:"controller"`
 
-	// Status Current controller status (e.g. DEPLOYED, NOTDEPLOYED, RUNNING, CONNECTED, UNKOWN).
+	// Status Current controller status (e.g. DEPLOYED, NOTDEPLOYED, RUNNING, CONNECTED, UNKNOWN).
 	Status string `json:"status" yaml:"status"`
 
 	// Version Deployed controller version, when known.
