@@ -1,5 +1,6 @@
 import { mesheryBaseApi as api } from "./api";
 export const addTagTypes = [
+  "Meshery_Controllers_Configuration_controllers",
   "Evaluation_Evaluation",
   "System_API_System",
   "credential_credentials",
@@ -23,6 +24,38 @@ const injectedRtkApi = api
   })
   .injectEndpoints({
     endpoints: (build) => ({
+      getControllersDefaultConfig: build.query<
+        GetControllersDefaultConfigApiResponse,
+        GetControllersDefaultConfigApiArg
+      >({
+        query: () => ({ url: `/api/system/controllers/config` }),
+        providesTags: ["Meshery_Controllers_Configuration_controllers"],
+      }),
+      updateControllersDefaultConfig: build.mutation<
+        UpdateControllersDefaultConfigApiResponse,
+        UpdateControllersDefaultConfigApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/system/controllers/config`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["Meshery_Controllers_Configuration_controllers"],
+      }),
+      getConnectionControllersConfig: build.query<
+        GetConnectionControllersConfigApiResponse,
+        GetConnectionControllersConfigApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/integrations/connections/${queryArg.connectionId}/controllers/config` }),
+        providesTags: ["Meshery_Controllers_Configuration_controllers"],
+      }),
+      updateConnectionControllersConfig: build.mutation<
+        UpdateConnectionControllersConfigApiResponse,
+        UpdateConnectionControllersConfigApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/integrations/connections/${queryArg.connectionId}/controllers/config`,
+          method: "PUT",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Meshery_Controllers_Configuration_controllers"],
+      }),
       evaluateRelationships: build.mutation<EvaluateRelationshipsApiResponse, EvaluateRelationshipsApiArg>({
         query: (queryArg) => ({ url: `/api/meshmodels/relationships/evaluate`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Evaluation_Evaluation"],
@@ -618,6 +651,647 @@ const injectedRtkApi = api
     overrideExisting: false,
   });
 export { injectedRtkApi as mesheryApi, injectedRtkApi };
+export type GetControllersDefaultConfigApiResponse = /** status 200 Server-wide controllers configuration defaults */ {
+  /** Specifies the version of the schema used for this configuration document. */
+  schemaVersion: string;
+  /** Configuration for the Meshery Operator on the managed cluster. */
+  operator?: {
+    /** How MeshSync is deployed for the connection. "operator" installs Meshery Operator into the cluster, which runs MeshSync and Meshery Broker there; "embedded" runs MeshSync in-process inside Meshery Server and installs nothing into the cluster. */
+    deploymentMode?: "operator" | "embedded";
+    /** Meshery Operator Helm chart version to deploy. When absent, the operator version tracks the Meshery Server release. */
+    version?: string;
+  };
+  /** Configuration for the MeshSync agent on the managed cluster. */
+  meshsync?: {
+    /** MeshSync image tag to run (for example "v1.0.2" or "stable-latest"). Applies to operator deployment mode only; in embedded mode MeshSync runs at the version compiled into Meshery Server. Secret redaction and broker content deduplication require MeshSync v1.0.2 or newer. */
+    version?: string;
+    /** Number of MeshSync replicas (MeshSync custom resource spec.size). Applies to operator deployment mode only. */
+    replicas?: number;
+    /** Discovery scope for MeshSync, as a whitelist or a blacklist of Kubernetes resource types. */
+    watchList?: {
+      /** Resource types MeshSync watches, each with the event types to subscribe to. Mutually exclusive with blacklist. */
+      whitelist?: {
+        /** Resource key in "<plural>.<version>.<group>" form (for example "pods.v1." for core-group pods or "deployments.v1.apps"). */
+        resource: string;
+        /** Event types to subscribe to for this resource. Empty or absent subscribes to all event types. */
+        events?: ("ADDED" | "MODIFIED" | "DELETED")[];
+      }[];
+      /** Resource types excluded from MeshSync's default discovery scope, in "<plural>.<version>.<group>" form (for example "pods.v1." or "deployments.v1.apps"). Mutually exclusive with whitelist. */
+      blacklist?: string[];
+    };
+    /** Namespaces whose resources MeshSync publishes. Empty or absent publishes resources from all namespaces. Discovery scope is unaffected; this filters only what is published. */
+    outputNamespaces?: string[];
+    /** Resource types MeshSync publishes (lowercase Kubernetes kinds, for example "pod" or "deployment"). Empty or absent publishes all discovered resource types. Discovery scope is unaffected; this filters only what is published. */
+    outputResources?: string[];
+    /** When true, MeshSync redacts Kubernetes Secret data values (keys are preserved) before publishing. Requires MeshSync v1.0.2 or newer. Off by default; enabling is recommended when Secrets are within the discovery scope. */
+    redactSecrets?: boolean;
+    /** When true, MeshSync suppresses byte-identical republishes of a resource to the broker. Requires MeshSync v1.0.2 or newer. Off by default. */
+    brokerContentDedup?: boolean;
+    /** When true, MeshSync runs with debug-level logging (DEBUG environment variable). */
+    debugLogging?: boolean;
+  };
+  /** Configuration for the Meshery Broker (NATS) on the managed cluster. */
+  broker?: {
+    /** NATS server image tag to run (Broker custom resource spec.version). When absent, the operator's bundled default NATS version is used. */
+    version?: string;
+    /** Number of NATS server replicas (Broker custom resource spec.size). */
+    replicas?: number;
+    /** How the broker is exposed on the network. Service changes reconcile in place without restarting broker pods. */
+    service?: {
+      /** Kubernetes Service type for client access. When absent the broker stays cluster-internal (ClusterIP). LoadBalancer acquires a cloud load-balancer address; NodePort exposes the broker on node IPs. */
+      type?: "ClusterIP" | "NodePort" | "LoadBalancer";
+      /** Annotations merged onto the client Service (cloud load-balancer hints, MetalLB address pools, internal-LB switches). */
+      annotations?: {
+        [key: string]: string;
+      };
+      /** Load-balancer implementation to use. Valid only when type is LoadBalancer. */
+      loadBalancerClass?: string;
+      /** CIDR ranges allowed to reach the broker. Valid only when type is LoadBalancer. */
+      loadBalancerSourceRanges?: string[];
+      /** Pins the advertised external broker endpoint as "host:port" when auto-derivation is undesirable: an ingress or gateway in front of the broker, an air-gapped topology, or NAT. The nats:// scheme is added by consumers. */
+      externalEndpointOverride?: string;
+    };
+  };
+};
+export type GetControllersDefaultConfigApiArg = void;
+export type UpdateControllersDefaultConfigApiResponse =
+  /** status 200 Persisted server-wide controllers configuration defaults */ {
+    /** Specifies the version of the schema used for this configuration document. */
+    schemaVersion: string;
+    /** Configuration for the Meshery Operator on the managed cluster. */
+    operator?: {
+      /** How MeshSync is deployed for the connection. "operator" installs Meshery Operator into the cluster, which runs MeshSync and Meshery Broker there; "embedded" runs MeshSync in-process inside Meshery Server and installs nothing into the cluster. */
+      deploymentMode?: "operator" | "embedded";
+      /** Meshery Operator Helm chart version to deploy. When absent, the operator version tracks the Meshery Server release. */
+      version?: string;
+    };
+    /** Configuration for the MeshSync agent on the managed cluster. */
+    meshsync?: {
+      /** MeshSync image tag to run (for example "v1.0.2" or "stable-latest"). Applies to operator deployment mode only; in embedded mode MeshSync runs at the version compiled into Meshery Server. Secret redaction and broker content deduplication require MeshSync v1.0.2 or newer. */
+      version?: string;
+      /** Number of MeshSync replicas (MeshSync custom resource spec.size). Applies to operator deployment mode only. */
+      replicas?: number;
+      /** Discovery scope for MeshSync, as a whitelist or a blacklist of Kubernetes resource types. */
+      watchList?: {
+        /** Resource types MeshSync watches, each with the event types to subscribe to. Mutually exclusive with blacklist. */
+        whitelist?: {
+          /** Resource key in "<plural>.<version>.<group>" form (for example "pods.v1." for core-group pods or "deployments.v1.apps"). */
+          resource: string;
+          /** Event types to subscribe to for this resource. Empty or absent subscribes to all event types. */
+          events?: ("ADDED" | "MODIFIED" | "DELETED")[];
+        }[];
+        /** Resource types excluded from MeshSync's default discovery scope, in "<plural>.<version>.<group>" form (for example "pods.v1." or "deployments.v1.apps"). Mutually exclusive with whitelist. */
+        blacklist?: string[];
+      };
+      /** Namespaces whose resources MeshSync publishes. Empty or absent publishes resources from all namespaces. Discovery scope is unaffected; this filters only what is published. */
+      outputNamespaces?: string[];
+      /** Resource types MeshSync publishes (lowercase Kubernetes kinds, for example "pod" or "deployment"). Empty or absent publishes all discovered resource types. Discovery scope is unaffected; this filters only what is published. */
+      outputResources?: string[];
+      /** When true, MeshSync redacts Kubernetes Secret data values (keys are preserved) before publishing. Requires MeshSync v1.0.2 or newer. Off by default; enabling is recommended when Secrets are within the discovery scope. */
+      redactSecrets?: boolean;
+      /** When true, MeshSync suppresses byte-identical republishes of a resource to the broker. Requires MeshSync v1.0.2 or newer. Off by default. */
+      brokerContentDedup?: boolean;
+      /** When true, MeshSync runs with debug-level logging (DEBUG environment variable). */
+      debugLogging?: boolean;
+    };
+    /** Configuration for the Meshery Broker (NATS) on the managed cluster. */
+    broker?: {
+      /** NATS server image tag to run (Broker custom resource spec.version). When absent, the operator's bundled default NATS version is used. */
+      version?: string;
+      /** Number of NATS server replicas (Broker custom resource spec.size). */
+      replicas?: number;
+      /** How the broker is exposed on the network. Service changes reconcile in place without restarting broker pods. */
+      service?: {
+        /** Kubernetes Service type for client access. When absent the broker stays cluster-internal (ClusterIP). LoadBalancer acquires a cloud load-balancer address; NodePort exposes the broker on node IPs. */
+        type?: "ClusterIP" | "NodePort" | "LoadBalancer";
+        /** Annotations merged onto the client Service (cloud load-balancer hints, MetalLB address pools, internal-LB switches). */
+        annotations?: {
+          [key: string]: string;
+        };
+        /** Load-balancer implementation to use. Valid only when type is LoadBalancer. */
+        loadBalancerClass?: string;
+        /** CIDR ranges allowed to reach the broker. Valid only when type is LoadBalancer. */
+        loadBalancerSourceRanges?: string[];
+        /** Pins the advertised external broker endpoint as "host:port" when auto-derivation is undesirable: an ingress or gateway in front of the broker, an air-gapped topology, or NAT. The nats:// scheme is added by consumers. */
+        externalEndpointOverride?: string;
+      };
+    };
+  };
+export type UpdateControllersDefaultConfigApiArg = {
+  /** Controllers configuration document. Absent fields inherit from the next precedence layer. */
+  body: {
+    /** Configuration for the Meshery Operator on the managed cluster. */
+    operator?: {
+      /** How MeshSync is deployed for the connection. "operator" installs Meshery Operator into the cluster, which runs MeshSync and Meshery Broker there; "embedded" runs MeshSync in-process inside Meshery Server and installs nothing into the cluster. */
+      deploymentMode?: "operator" | "embedded";
+      /** Meshery Operator Helm chart version to deploy. When absent, the operator version tracks the Meshery Server release. */
+      version?: string;
+    };
+    /** Configuration for the MeshSync agent on the managed cluster. */
+    meshsync?: {
+      /** MeshSync image tag to run (for example "v1.0.2" or "stable-latest"). Applies to operator deployment mode only; in embedded mode MeshSync runs at the version compiled into Meshery Server. Secret redaction and broker content deduplication require MeshSync v1.0.2 or newer. */
+      version?: string;
+      /** Number of MeshSync replicas (MeshSync custom resource spec.size). Applies to operator deployment mode only. */
+      replicas?: number;
+      /** Discovery scope for MeshSync, as a whitelist or a blacklist of Kubernetes resource types. */
+      watchList?: {
+        /** Resource types MeshSync watches, each with the event types to subscribe to. Mutually exclusive with blacklist. */
+        whitelist?: {
+          /** Resource key in "<plural>.<version>.<group>" form (for example "pods.v1." for core-group pods or "deployments.v1.apps"). */
+          resource: string;
+          /** Event types to subscribe to for this resource. Empty or absent subscribes to all event types. */
+          events?: ("ADDED" | "MODIFIED" | "DELETED")[];
+        }[];
+        /** Resource types excluded from MeshSync's default discovery scope, in "<plural>.<version>.<group>" form (for example "pods.v1." or "deployments.v1.apps"). Mutually exclusive with whitelist. */
+        blacklist?: string[];
+      };
+      /** Namespaces whose resources MeshSync publishes. Empty or absent publishes resources from all namespaces. Discovery scope is unaffected; this filters only what is published. */
+      outputNamespaces?: string[];
+      /** Resource types MeshSync publishes (lowercase Kubernetes kinds, for example "pod" or "deployment"). Empty or absent publishes all discovered resource types. Discovery scope is unaffected; this filters only what is published. */
+      outputResources?: string[];
+      /** When true, MeshSync redacts Kubernetes Secret data values (keys are preserved) before publishing. Requires MeshSync v1.0.2 or newer. Off by default; enabling is recommended when Secrets are within the discovery scope. */
+      redactSecrets?: boolean;
+      /** When true, MeshSync suppresses byte-identical republishes of a resource to the broker. Requires MeshSync v1.0.2 or newer. Off by default. */
+      brokerContentDedup?: boolean;
+      /** When true, MeshSync runs with debug-level logging (DEBUG environment variable). */
+      debugLogging?: boolean;
+    };
+    /** Configuration for the Meshery Broker (NATS) on the managed cluster. */
+    broker?: {
+      /** NATS server image tag to run (Broker custom resource spec.version). When absent, the operator's bundled default NATS version is used. */
+      version?: string;
+      /** Number of NATS server replicas (Broker custom resource spec.size). */
+      replicas?: number;
+      /** How the broker is exposed on the network. Service changes reconcile in place without restarting broker pods. */
+      service?: {
+        /** Kubernetes Service type for client access. When absent the broker stays cluster-internal (ClusterIP). LoadBalancer acquires a cloud load-balancer address; NodePort exposes the broker on node IPs. */
+        type?: "ClusterIP" | "NodePort" | "LoadBalancer";
+        /** Annotations merged onto the client Service (cloud load-balancer hints, MetalLB address pools, internal-LB switches). */
+        annotations?: {
+          [key: string]: string;
+        };
+        /** Load-balancer implementation to use. Valid only when type is LoadBalancer. */
+        loadBalancerClass?: string;
+        /** CIDR ranges allowed to reach the broker. Valid only when type is LoadBalancer. */
+        loadBalancerSourceRanges?: string[];
+        /** Pins the advertised external broker endpoint as "host:port" when auto-derivation is undesirable: an ingress or gateway in front of the broker, an air-gapped topology, or NAT. The nats:// scheme is added by consumers. */
+        externalEndpointOverride?: string;
+      };
+    };
+  };
+};
+export type GetConnectionControllersConfigApiResponse = /** status 200 Controllers configuration for the connection */ {
+  /** Deployment and runtime configuration for the Meshery controllers that manage a Kubernetes connection: Meshery Operator, MeshSync, and Meshery Broker. The same document shape is used at two layers. As a server-wide default it declares how Meshery Server deploys and configures the controllers for every managed cluster. As a per-connection override, stored in the connection's metadata, it overrides the server-wide default for a single connection. Every configuration field is optional: an absent field inherits the value from the next layer (per-connection override, then server-wide default, then built-in default). The only required field is the server-stamped schemaVersion discriminator, which identifies the document revision for future migrations. Learn more at https://docs.meshery.io/concepts/architecture */
+  override?: {
+    /** Specifies the version of the schema used for this configuration document. */
+    schemaVersion: string;
+    /** Configuration for the Meshery Operator on the managed cluster. */
+    operator?: {
+      /** How MeshSync is deployed for the connection. "operator" installs Meshery Operator into the cluster, which runs MeshSync and Meshery Broker there; "embedded" runs MeshSync in-process inside Meshery Server and installs nothing into the cluster. */
+      deploymentMode?: "operator" | "embedded";
+      /** Meshery Operator Helm chart version to deploy. When absent, the operator version tracks the Meshery Server release. */
+      version?: string;
+    };
+    /** Configuration for the MeshSync agent on the managed cluster. */
+    meshsync?: {
+      /** MeshSync image tag to run (for example "v1.0.2" or "stable-latest"). Applies to operator deployment mode only; in embedded mode MeshSync runs at the version compiled into Meshery Server. Secret redaction and broker content deduplication require MeshSync v1.0.2 or newer. */
+      version?: string;
+      /** Number of MeshSync replicas (MeshSync custom resource spec.size). Applies to operator deployment mode only. */
+      replicas?: number;
+      /** Discovery scope for MeshSync, as a whitelist or a blacklist of Kubernetes resource types. */
+      watchList?: {
+        /** Resource types MeshSync watches, each with the event types to subscribe to. Mutually exclusive with blacklist. */
+        whitelist?: {
+          /** Resource key in "<plural>.<version>.<group>" form (for example "pods.v1." for core-group pods or "deployments.v1.apps"). */
+          resource: string;
+          /** Event types to subscribe to for this resource. Empty or absent subscribes to all event types. */
+          events?: ("ADDED" | "MODIFIED" | "DELETED")[];
+        }[];
+        /** Resource types excluded from MeshSync's default discovery scope, in "<plural>.<version>.<group>" form (for example "pods.v1." or "deployments.v1.apps"). Mutually exclusive with whitelist. */
+        blacklist?: string[];
+      };
+      /** Namespaces whose resources MeshSync publishes. Empty or absent publishes resources from all namespaces. Discovery scope is unaffected; this filters only what is published. */
+      outputNamespaces?: string[];
+      /** Resource types MeshSync publishes (lowercase Kubernetes kinds, for example "pod" or "deployment"). Empty or absent publishes all discovered resource types. Discovery scope is unaffected; this filters only what is published. */
+      outputResources?: string[];
+      /** When true, MeshSync redacts Kubernetes Secret data values (keys are preserved) before publishing. Requires MeshSync v1.0.2 or newer. Off by default; enabling is recommended when Secrets are within the discovery scope. */
+      redactSecrets?: boolean;
+      /** When true, MeshSync suppresses byte-identical republishes of a resource to the broker. Requires MeshSync v1.0.2 or newer. Off by default. */
+      brokerContentDedup?: boolean;
+      /** When true, MeshSync runs with debug-level logging (DEBUG environment variable). */
+      debugLogging?: boolean;
+    };
+    /** Configuration for the Meshery Broker (NATS) on the managed cluster. */
+    broker?: {
+      /** NATS server image tag to run (Broker custom resource spec.version). When absent, the operator's bundled default NATS version is used. */
+      version?: string;
+      /** Number of NATS server replicas (Broker custom resource spec.size). */
+      replicas?: number;
+      /** How the broker is exposed on the network. Service changes reconcile in place without restarting broker pods. */
+      service?: {
+        /** Kubernetes Service type for client access. When absent the broker stays cluster-internal (ClusterIP). LoadBalancer acquires a cloud load-balancer address; NodePort exposes the broker on node IPs. */
+        type?: "ClusterIP" | "NodePort" | "LoadBalancer";
+        /** Annotations merged onto the client Service (cloud load-balancer hints, MetalLB address pools, internal-LB switches). */
+        annotations?: {
+          [key: string]: string;
+        };
+        /** Load-balancer implementation to use. Valid only when type is LoadBalancer. */
+        loadBalancerClass?: string;
+        /** CIDR ranges allowed to reach the broker. Valid only when type is LoadBalancer. */
+        loadBalancerSourceRanges?: string[];
+        /** Pins the advertised external broker endpoint as "host:port" when auto-derivation is undesirable: an ingress or gateway in front of the broker, an air-gapped topology, or NAT. The nats:// scheme is added by consumers. */
+        externalEndpointOverride?: string;
+      };
+    };
+  };
+  /** Deployment and runtime configuration for the Meshery controllers that manage a Kubernetes connection: Meshery Operator, MeshSync, and Meshery Broker. The same document shape is used at two layers. As a server-wide default it declares how Meshery Server deploys and configures the controllers for every managed cluster. As a per-connection override, stored in the connection's metadata, it overrides the server-wide default for a single connection. Every configuration field is optional: an absent field inherits the value from the next layer (per-connection override, then server-wide default, then built-in default). The only required field is the server-stamped schemaVersion discriminator, which identifies the document revision for future migrations. Learn more at https://docs.meshery.io/concepts/architecture */
+  default?: {
+    /** Specifies the version of the schema used for this configuration document. */
+    schemaVersion: string;
+    /** Configuration for the Meshery Operator on the managed cluster. */
+    operator?: {
+      /** How MeshSync is deployed for the connection. "operator" installs Meshery Operator into the cluster, which runs MeshSync and Meshery Broker there; "embedded" runs MeshSync in-process inside Meshery Server and installs nothing into the cluster. */
+      deploymentMode?: "operator" | "embedded";
+      /** Meshery Operator Helm chart version to deploy. When absent, the operator version tracks the Meshery Server release. */
+      version?: string;
+    };
+    /** Configuration for the MeshSync agent on the managed cluster. */
+    meshsync?: {
+      /** MeshSync image tag to run (for example "v1.0.2" or "stable-latest"). Applies to operator deployment mode only; in embedded mode MeshSync runs at the version compiled into Meshery Server. Secret redaction and broker content deduplication require MeshSync v1.0.2 or newer. */
+      version?: string;
+      /** Number of MeshSync replicas (MeshSync custom resource spec.size). Applies to operator deployment mode only. */
+      replicas?: number;
+      /** Discovery scope for MeshSync, as a whitelist or a blacklist of Kubernetes resource types. */
+      watchList?: {
+        /** Resource types MeshSync watches, each with the event types to subscribe to. Mutually exclusive with blacklist. */
+        whitelist?: {
+          /** Resource key in "<plural>.<version>.<group>" form (for example "pods.v1." for core-group pods or "deployments.v1.apps"). */
+          resource: string;
+          /** Event types to subscribe to for this resource. Empty or absent subscribes to all event types. */
+          events?: ("ADDED" | "MODIFIED" | "DELETED")[];
+        }[];
+        /** Resource types excluded from MeshSync's default discovery scope, in "<plural>.<version>.<group>" form (for example "pods.v1." or "deployments.v1.apps"). Mutually exclusive with whitelist. */
+        blacklist?: string[];
+      };
+      /** Namespaces whose resources MeshSync publishes. Empty or absent publishes resources from all namespaces. Discovery scope is unaffected; this filters only what is published. */
+      outputNamespaces?: string[];
+      /** Resource types MeshSync publishes (lowercase Kubernetes kinds, for example "pod" or "deployment"). Empty or absent publishes all discovered resource types. Discovery scope is unaffected; this filters only what is published. */
+      outputResources?: string[];
+      /** When true, MeshSync redacts Kubernetes Secret data values (keys are preserved) before publishing. Requires MeshSync v1.0.2 or newer. Off by default; enabling is recommended when Secrets are within the discovery scope. */
+      redactSecrets?: boolean;
+      /** When true, MeshSync suppresses byte-identical republishes of a resource to the broker. Requires MeshSync v1.0.2 or newer. Off by default. */
+      brokerContentDedup?: boolean;
+      /** When true, MeshSync runs with debug-level logging (DEBUG environment variable). */
+      debugLogging?: boolean;
+    };
+    /** Configuration for the Meshery Broker (NATS) on the managed cluster. */
+    broker?: {
+      /** NATS server image tag to run (Broker custom resource spec.version). When absent, the operator's bundled default NATS version is used. */
+      version?: string;
+      /** Number of NATS server replicas (Broker custom resource spec.size). */
+      replicas?: number;
+      /** How the broker is exposed on the network. Service changes reconcile in place without restarting broker pods. */
+      service?: {
+        /** Kubernetes Service type for client access. When absent the broker stays cluster-internal (ClusterIP). LoadBalancer acquires a cloud load-balancer address; NodePort exposes the broker on node IPs. */
+        type?: "ClusterIP" | "NodePort" | "LoadBalancer";
+        /** Annotations merged onto the client Service (cloud load-balancer hints, MetalLB address pools, internal-LB switches). */
+        annotations?: {
+          [key: string]: string;
+        };
+        /** Load-balancer implementation to use. Valid only when type is LoadBalancer. */
+        loadBalancerClass?: string;
+        /** CIDR ranges allowed to reach the broker. Valid only when type is LoadBalancer. */
+        loadBalancerSourceRanges?: string[];
+        /** Pins the advertised external broker endpoint as "host:port" when auto-derivation is undesirable: an ingress or gateway in front of the broker, an air-gapped topology, or NAT. The nats:// scheme is added by consumers. */
+        externalEndpointOverride?: string;
+      };
+    };
+  };
+  /** Deployment and runtime configuration for the Meshery controllers that manage a Kubernetes connection: Meshery Operator, MeshSync, and Meshery Broker. The same document shape is used at two layers. As a server-wide default it declares how Meshery Server deploys and configures the controllers for every managed cluster. As a per-connection override, stored in the connection's metadata, it overrides the server-wide default for a single connection. Every configuration field is optional: an absent field inherits the value from the next layer (per-connection override, then server-wide default, then built-in default). The only required field is the server-stamped schemaVersion discriminator, which identifies the document revision for future migrations. Learn more at https://docs.meshery.io/concepts/architecture */
+  effective: {
+    /** Specifies the version of the schema used for this configuration document. */
+    schemaVersion: string;
+    /** Configuration for the Meshery Operator on the managed cluster. */
+    operator?: {
+      /** How MeshSync is deployed for the connection. "operator" installs Meshery Operator into the cluster, which runs MeshSync and Meshery Broker there; "embedded" runs MeshSync in-process inside Meshery Server and installs nothing into the cluster. */
+      deploymentMode?: "operator" | "embedded";
+      /** Meshery Operator Helm chart version to deploy. When absent, the operator version tracks the Meshery Server release. */
+      version?: string;
+    };
+    /** Configuration for the MeshSync agent on the managed cluster. */
+    meshsync?: {
+      /** MeshSync image tag to run (for example "v1.0.2" or "stable-latest"). Applies to operator deployment mode only; in embedded mode MeshSync runs at the version compiled into Meshery Server. Secret redaction and broker content deduplication require MeshSync v1.0.2 or newer. */
+      version?: string;
+      /** Number of MeshSync replicas (MeshSync custom resource spec.size). Applies to operator deployment mode only. */
+      replicas?: number;
+      /** Discovery scope for MeshSync, as a whitelist or a blacklist of Kubernetes resource types. */
+      watchList?: {
+        /** Resource types MeshSync watches, each with the event types to subscribe to. Mutually exclusive with blacklist. */
+        whitelist?: {
+          /** Resource key in "<plural>.<version>.<group>" form (for example "pods.v1." for core-group pods or "deployments.v1.apps"). */
+          resource: string;
+          /** Event types to subscribe to for this resource. Empty or absent subscribes to all event types. */
+          events?: ("ADDED" | "MODIFIED" | "DELETED")[];
+        }[];
+        /** Resource types excluded from MeshSync's default discovery scope, in "<plural>.<version>.<group>" form (for example "pods.v1." or "deployments.v1.apps"). Mutually exclusive with whitelist. */
+        blacklist?: string[];
+      };
+      /** Namespaces whose resources MeshSync publishes. Empty or absent publishes resources from all namespaces. Discovery scope is unaffected; this filters only what is published. */
+      outputNamespaces?: string[];
+      /** Resource types MeshSync publishes (lowercase Kubernetes kinds, for example "pod" or "deployment"). Empty or absent publishes all discovered resource types. Discovery scope is unaffected; this filters only what is published. */
+      outputResources?: string[];
+      /** When true, MeshSync redacts Kubernetes Secret data values (keys are preserved) before publishing. Requires MeshSync v1.0.2 or newer. Off by default; enabling is recommended when Secrets are within the discovery scope. */
+      redactSecrets?: boolean;
+      /** When true, MeshSync suppresses byte-identical republishes of a resource to the broker. Requires MeshSync v1.0.2 or newer. Off by default. */
+      brokerContentDedup?: boolean;
+      /** When true, MeshSync runs with debug-level logging (DEBUG environment variable). */
+      debugLogging?: boolean;
+    };
+    /** Configuration for the Meshery Broker (NATS) on the managed cluster. */
+    broker?: {
+      /** NATS server image tag to run (Broker custom resource spec.version). When absent, the operator's bundled default NATS version is used. */
+      version?: string;
+      /** Number of NATS server replicas (Broker custom resource spec.size). */
+      replicas?: number;
+      /** How the broker is exposed on the network. Service changes reconcile in place without restarting broker pods. */
+      service?: {
+        /** Kubernetes Service type for client access. When absent the broker stays cluster-internal (ClusterIP). LoadBalancer acquires a cloud load-balancer address; NodePort exposes the broker on node IPs. */
+        type?: "ClusterIP" | "NodePort" | "LoadBalancer";
+        /** Annotations merged onto the client Service (cloud load-balancer hints, MetalLB address pools, internal-LB switches). */
+        annotations?: {
+          [key: string]: string;
+        };
+        /** Load-balancer implementation to use. Valid only when type is LoadBalancer. */
+        loadBalancerClass?: string;
+        /** CIDR ranges allowed to reach the broker. Valid only when type is LoadBalancer. */
+        loadBalancerSourceRanges?: string[];
+        /** Pins the advertised external broker endpoint as "host:port" when auto-derivation is undesirable: an ingress or gateway in front of the broker, an air-gapped topology, or NAT. The nats:// scheme is added by consumers. */
+        externalEndpointOverride?: string;
+      };
+    };
+  };
+};
+export type GetConnectionControllersConfigApiArg = {
+  /** Kubernetes connection ID. */
+  connectionId: string;
+};
+export type UpdateConnectionControllersConfigApiResponse =
+  /** status 200 Updated controllers configuration for the connection */ {
+    /** Deployment and runtime configuration for the Meshery controllers that manage a Kubernetes connection: Meshery Operator, MeshSync, and Meshery Broker. The same document shape is used at two layers. As a server-wide default it declares how Meshery Server deploys and configures the controllers for every managed cluster. As a per-connection override, stored in the connection's metadata, it overrides the server-wide default for a single connection. Every configuration field is optional: an absent field inherits the value from the next layer (per-connection override, then server-wide default, then built-in default). The only required field is the server-stamped schemaVersion discriminator, which identifies the document revision for future migrations. Learn more at https://docs.meshery.io/concepts/architecture */
+    override?: {
+      /** Specifies the version of the schema used for this configuration document. */
+      schemaVersion: string;
+      /** Configuration for the Meshery Operator on the managed cluster. */
+      operator?: {
+        /** How MeshSync is deployed for the connection. "operator" installs Meshery Operator into the cluster, which runs MeshSync and Meshery Broker there; "embedded" runs MeshSync in-process inside Meshery Server and installs nothing into the cluster. */
+        deploymentMode?: "operator" | "embedded";
+        /** Meshery Operator Helm chart version to deploy. When absent, the operator version tracks the Meshery Server release. */
+        version?: string;
+      };
+      /** Configuration for the MeshSync agent on the managed cluster. */
+      meshsync?: {
+        /** MeshSync image tag to run (for example "v1.0.2" or "stable-latest"). Applies to operator deployment mode only; in embedded mode MeshSync runs at the version compiled into Meshery Server. Secret redaction and broker content deduplication require MeshSync v1.0.2 or newer. */
+        version?: string;
+        /** Number of MeshSync replicas (MeshSync custom resource spec.size). Applies to operator deployment mode only. */
+        replicas?: number;
+        /** Discovery scope for MeshSync, as a whitelist or a blacklist of Kubernetes resource types. */
+        watchList?: {
+          /** Resource types MeshSync watches, each with the event types to subscribe to. Mutually exclusive with blacklist. */
+          whitelist?: {
+            /** Resource key in "<plural>.<version>.<group>" form (for example "pods.v1." for core-group pods or "deployments.v1.apps"). */
+            resource: string;
+            /** Event types to subscribe to for this resource. Empty or absent subscribes to all event types. */
+            events?: ("ADDED" | "MODIFIED" | "DELETED")[];
+          }[];
+          /** Resource types excluded from MeshSync's default discovery scope, in "<plural>.<version>.<group>" form (for example "pods.v1." or "deployments.v1.apps"). Mutually exclusive with whitelist. */
+          blacklist?: string[];
+        };
+        /** Namespaces whose resources MeshSync publishes. Empty or absent publishes resources from all namespaces. Discovery scope is unaffected; this filters only what is published. */
+        outputNamespaces?: string[];
+        /** Resource types MeshSync publishes (lowercase Kubernetes kinds, for example "pod" or "deployment"). Empty or absent publishes all discovered resource types. Discovery scope is unaffected; this filters only what is published. */
+        outputResources?: string[];
+        /** When true, MeshSync redacts Kubernetes Secret data values (keys are preserved) before publishing. Requires MeshSync v1.0.2 or newer. Off by default; enabling is recommended when Secrets are within the discovery scope. */
+        redactSecrets?: boolean;
+        /** When true, MeshSync suppresses byte-identical republishes of a resource to the broker. Requires MeshSync v1.0.2 or newer. Off by default. */
+        brokerContentDedup?: boolean;
+        /** When true, MeshSync runs with debug-level logging (DEBUG environment variable). */
+        debugLogging?: boolean;
+      };
+      /** Configuration for the Meshery Broker (NATS) on the managed cluster. */
+      broker?: {
+        /** NATS server image tag to run (Broker custom resource spec.version). When absent, the operator's bundled default NATS version is used. */
+        version?: string;
+        /** Number of NATS server replicas (Broker custom resource spec.size). */
+        replicas?: number;
+        /** How the broker is exposed on the network. Service changes reconcile in place without restarting broker pods. */
+        service?: {
+          /** Kubernetes Service type for client access. When absent the broker stays cluster-internal (ClusterIP). LoadBalancer acquires a cloud load-balancer address; NodePort exposes the broker on node IPs. */
+          type?: "ClusterIP" | "NodePort" | "LoadBalancer";
+          /** Annotations merged onto the client Service (cloud load-balancer hints, MetalLB address pools, internal-LB switches). */
+          annotations?: {
+            [key: string]: string;
+          };
+          /** Load-balancer implementation to use. Valid only when type is LoadBalancer. */
+          loadBalancerClass?: string;
+          /** CIDR ranges allowed to reach the broker. Valid only when type is LoadBalancer. */
+          loadBalancerSourceRanges?: string[];
+          /** Pins the advertised external broker endpoint as "host:port" when auto-derivation is undesirable: an ingress or gateway in front of the broker, an air-gapped topology, or NAT. The nats:// scheme is added by consumers. */
+          externalEndpointOverride?: string;
+        };
+      };
+    };
+    /** Deployment and runtime configuration for the Meshery controllers that manage a Kubernetes connection: Meshery Operator, MeshSync, and Meshery Broker. The same document shape is used at two layers. As a server-wide default it declares how Meshery Server deploys and configures the controllers for every managed cluster. As a per-connection override, stored in the connection's metadata, it overrides the server-wide default for a single connection. Every configuration field is optional: an absent field inherits the value from the next layer (per-connection override, then server-wide default, then built-in default). The only required field is the server-stamped schemaVersion discriminator, which identifies the document revision for future migrations. Learn more at https://docs.meshery.io/concepts/architecture */
+    default?: {
+      /** Specifies the version of the schema used for this configuration document. */
+      schemaVersion: string;
+      /** Configuration for the Meshery Operator on the managed cluster. */
+      operator?: {
+        /** How MeshSync is deployed for the connection. "operator" installs Meshery Operator into the cluster, which runs MeshSync and Meshery Broker there; "embedded" runs MeshSync in-process inside Meshery Server and installs nothing into the cluster. */
+        deploymentMode?: "operator" | "embedded";
+        /** Meshery Operator Helm chart version to deploy. When absent, the operator version tracks the Meshery Server release. */
+        version?: string;
+      };
+      /** Configuration for the MeshSync agent on the managed cluster. */
+      meshsync?: {
+        /** MeshSync image tag to run (for example "v1.0.2" or "stable-latest"). Applies to operator deployment mode only; in embedded mode MeshSync runs at the version compiled into Meshery Server. Secret redaction and broker content deduplication require MeshSync v1.0.2 or newer. */
+        version?: string;
+        /** Number of MeshSync replicas (MeshSync custom resource spec.size). Applies to operator deployment mode only. */
+        replicas?: number;
+        /** Discovery scope for MeshSync, as a whitelist or a blacklist of Kubernetes resource types. */
+        watchList?: {
+          /** Resource types MeshSync watches, each with the event types to subscribe to. Mutually exclusive with blacklist. */
+          whitelist?: {
+            /** Resource key in "<plural>.<version>.<group>" form (for example "pods.v1." for core-group pods or "deployments.v1.apps"). */
+            resource: string;
+            /** Event types to subscribe to for this resource. Empty or absent subscribes to all event types. */
+            events?: ("ADDED" | "MODIFIED" | "DELETED")[];
+          }[];
+          /** Resource types excluded from MeshSync's default discovery scope, in "<plural>.<version>.<group>" form (for example "pods.v1." or "deployments.v1.apps"). Mutually exclusive with whitelist. */
+          blacklist?: string[];
+        };
+        /** Namespaces whose resources MeshSync publishes. Empty or absent publishes resources from all namespaces. Discovery scope is unaffected; this filters only what is published. */
+        outputNamespaces?: string[];
+        /** Resource types MeshSync publishes (lowercase Kubernetes kinds, for example "pod" or "deployment"). Empty or absent publishes all discovered resource types. Discovery scope is unaffected; this filters only what is published. */
+        outputResources?: string[];
+        /** When true, MeshSync redacts Kubernetes Secret data values (keys are preserved) before publishing. Requires MeshSync v1.0.2 or newer. Off by default; enabling is recommended when Secrets are within the discovery scope. */
+        redactSecrets?: boolean;
+        /** When true, MeshSync suppresses byte-identical republishes of a resource to the broker. Requires MeshSync v1.0.2 or newer. Off by default. */
+        brokerContentDedup?: boolean;
+        /** When true, MeshSync runs with debug-level logging (DEBUG environment variable). */
+        debugLogging?: boolean;
+      };
+      /** Configuration for the Meshery Broker (NATS) on the managed cluster. */
+      broker?: {
+        /** NATS server image tag to run (Broker custom resource spec.version). When absent, the operator's bundled default NATS version is used. */
+        version?: string;
+        /** Number of NATS server replicas (Broker custom resource spec.size). */
+        replicas?: number;
+        /** How the broker is exposed on the network. Service changes reconcile in place without restarting broker pods. */
+        service?: {
+          /** Kubernetes Service type for client access. When absent the broker stays cluster-internal (ClusterIP). LoadBalancer acquires a cloud load-balancer address; NodePort exposes the broker on node IPs. */
+          type?: "ClusterIP" | "NodePort" | "LoadBalancer";
+          /** Annotations merged onto the client Service (cloud load-balancer hints, MetalLB address pools, internal-LB switches). */
+          annotations?: {
+            [key: string]: string;
+          };
+          /** Load-balancer implementation to use. Valid only when type is LoadBalancer. */
+          loadBalancerClass?: string;
+          /** CIDR ranges allowed to reach the broker. Valid only when type is LoadBalancer. */
+          loadBalancerSourceRanges?: string[];
+          /** Pins the advertised external broker endpoint as "host:port" when auto-derivation is undesirable: an ingress or gateway in front of the broker, an air-gapped topology, or NAT. The nats:// scheme is added by consumers. */
+          externalEndpointOverride?: string;
+        };
+      };
+    };
+    /** Deployment and runtime configuration for the Meshery controllers that manage a Kubernetes connection: Meshery Operator, MeshSync, and Meshery Broker. The same document shape is used at two layers. As a server-wide default it declares how Meshery Server deploys and configures the controllers for every managed cluster. As a per-connection override, stored in the connection's metadata, it overrides the server-wide default for a single connection. Every configuration field is optional: an absent field inherits the value from the next layer (per-connection override, then server-wide default, then built-in default). The only required field is the server-stamped schemaVersion discriminator, which identifies the document revision for future migrations. Learn more at https://docs.meshery.io/concepts/architecture */
+    effective: {
+      /** Specifies the version of the schema used for this configuration document. */
+      schemaVersion: string;
+      /** Configuration for the Meshery Operator on the managed cluster. */
+      operator?: {
+        /** How MeshSync is deployed for the connection. "operator" installs Meshery Operator into the cluster, which runs MeshSync and Meshery Broker there; "embedded" runs MeshSync in-process inside Meshery Server and installs nothing into the cluster. */
+        deploymentMode?: "operator" | "embedded";
+        /** Meshery Operator Helm chart version to deploy. When absent, the operator version tracks the Meshery Server release. */
+        version?: string;
+      };
+      /** Configuration for the MeshSync agent on the managed cluster. */
+      meshsync?: {
+        /** MeshSync image tag to run (for example "v1.0.2" or "stable-latest"). Applies to operator deployment mode only; in embedded mode MeshSync runs at the version compiled into Meshery Server. Secret redaction and broker content deduplication require MeshSync v1.0.2 or newer. */
+        version?: string;
+        /** Number of MeshSync replicas (MeshSync custom resource spec.size). Applies to operator deployment mode only. */
+        replicas?: number;
+        /** Discovery scope for MeshSync, as a whitelist or a blacklist of Kubernetes resource types. */
+        watchList?: {
+          /** Resource types MeshSync watches, each with the event types to subscribe to. Mutually exclusive with blacklist. */
+          whitelist?: {
+            /** Resource key in "<plural>.<version>.<group>" form (for example "pods.v1." for core-group pods or "deployments.v1.apps"). */
+            resource: string;
+            /** Event types to subscribe to for this resource. Empty or absent subscribes to all event types. */
+            events?: ("ADDED" | "MODIFIED" | "DELETED")[];
+          }[];
+          /** Resource types excluded from MeshSync's default discovery scope, in "<plural>.<version>.<group>" form (for example "pods.v1." or "deployments.v1.apps"). Mutually exclusive with whitelist. */
+          blacklist?: string[];
+        };
+        /** Namespaces whose resources MeshSync publishes. Empty or absent publishes resources from all namespaces. Discovery scope is unaffected; this filters only what is published. */
+        outputNamespaces?: string[];
+        /** Resource types MeshSync publishes (lowercase Kubernetes kinds, for example "pod" or "deployment"). Empty or absent publishes all discovered resource types. Discovery scope is unaffected; this filters only what is published. */
+        outputResources?: string[];
+        /** When true, MeshSync redacts Kubernetes Secret data values (keys are preserved) before publishing. Requires MeshSync v1.0.2 or newer. Off by default; enabling is recommended when Secrets are within the discovery scope. */
+        redactSecrets?: boolean;
+        /** When true, MeshSync suppresses byte-identical republishes of a resource to the broker. Requires MeshSync v1.0.2 or newer. Off by default. */
+        brokerContentDedup?: boolean;
+        /** When true, MeshSync runs with debug-level logging (DEBUG environment variable). */
+        debugLogging?: boolean;
+      };
+      /** Configuration for the Meshery Broker (NATS) on the managed cluster. */
+      broker?: {
+        /** NATS server image tag to run (Broker custom resource spec.version). When absent, the operator's bundled default NATS version is used. */
+        version?: string;
+        /** Number of NATS server replicas (Broker custom resource spec.size). */
+        replicas?: number;
+        /** How the broker is exposed on the network. Service changes reconcile in place without restarting broker pods. */
+        service?: {
+          /** Kubernetes Service type for client access. When absent the broker stays cluster-internal (ClusterIP). LoadBalancer acquires a cloud load-balancer address; NodePort exposes the broker on node IPs. */
+          type?: "ClusterIP" | "NodePort" | "LoadBalancer";
+          /** Annotations merged onto the client Service (cloud load-balancer hints, MetalLB address pools, internal-LB switches). */
+          annotations?: {
+            [key: string]: string;
+          };
+          /** Load-balancer implementation to use. Valid only when type is LoadBalancer. */
+          loadBalancerClass?: string;
+          /** CIDR ranges allowed to reach the broker. Valid only when type is LoadBalancer. */
+          loadBalancerSourceRanges?: string[];
+          /** Pins the advertised external broker endpoint as "host:port" when auto-derivation is undesirable: an ingress or gateway in front of the broker, an air-gapped topology, or NAT. The nats:// scheme is added by consumers. */
+          externalEndpointOverride?: string;
+        };
+      };
+    };
+  };
+export type UpdateConnectionControllersConfigApiArg = {
+  /** Kubernetes connection ID. */
+  connectionId: string;
+  /** Controllers configuration document. Absent fields inherit from the next precedence layer. */
+  body: {
+    /** Configuration for the Meshery Operator on the managed cluster. */
+    operator?: {
+      /** How MeshSync is deployed for the connection. "operator" installs Meshery Operator into the cluster, which runs MeshSync and Meshery Broker there; "embedded" runs MeshSync in-process inside Meshery Server and installs nothing into the cluster. */
+      deploymentMode?: "operator" | "embedded";
+      /** Meshery Operator Helm chart version to deploy. When absent, the operator version tracks the Meshery Server release. */
+      version?: string;
+    };
+    /** Configuration for the MeshSync agent on the managed cluster. */
+    meshsync?: {
+      /** MeshSync image tag to run (for example "v1.0.2" or "stable-latest"). Applies to operator deployment mode only; in embedded mode MeshSync runs at the version compiled into Meshery Server. Secret redaction and broker content deduplication require MeshSync v1.0.2 or newer. */
+      version?: string;
+      /** Number of MeshSync replicas (MeshSync custom resource spec.size). Applies to operator deployment mode only. */
+      replicas?: number;
+      /** Discovery scope for MeshSync, as a whitelist or a blacklist of Kubernetes resource types. */
+      watchList?: {
+        /** Resource types MeshSync watches, each with the event types to subscribe to. Mutually exclusive with blacklist. */
+        whitelist?: {
+          /** Resource key in "<plural>.<version>.<group>" form (for example "pods.v1." for core-group pods or "deployments.v1.apps"). */
+          resource: string;
+          /** Event types to subscribe to for this resource. Empty or absent subscribes to all event types. */
+          events?: ("ADDED" | "MODIFIED" | "DELETED")[];
+        }[];
+        /** Resource types excluded from MeshSync's default discovery scope, in "<plural>.<version>.<group>" form (for example "pods.v1." or "deployments.v1.apps"). Mutually exclusive with whitelist. */
+        blacklist?: string[];
+      };
+      /** Namespaces whose resources MeshSync publishes. Empty or absent publishes resources from all namespaces. Discovery scope is unaffected; this filters only what is published. */
+      outputNamespaces?: string[];
+      /** Resource types MeshSync publishes (lowercase Kubernetes kinds, for example "pod" or "deployment"). Empty or absent publishes all discovered resource types. Discovery scope is unaffected; this filters only what is published. */
+      outputResources?: string[];
+      /** When true, MeshSync redacts Kubernetes Secret data values (keys are preserved) before publishing. Requires MeshSync v1.0.2 or newer. Off by default; enabling is recommended when Secrets are within the discovery scope. */
+      redactSecrets?: boolean;
+      /** When true, MeshSync suppresses byte-identical republishes of a resource to the broker. Requires MeshSync v1.0.2 or newer. Off by default. */
+      brokerContentDedup?: boolean;
+      /** When true, MeshSync runs with debug-level logging (DEBUG environment variable). */
+      debugLogging?: boolean;
+    };
+    /** Configuration for the Meshery Broker (NATS) on the managed cluster. */
+    broker?: {
+      /** NATS server image tag to run (Broker custom resource spec.version). When absent, the operator's bundled default NATS version is used. */
+      version?: string;
+      /** Number of NATS server replicas (Broker custom resource spec.size). */
+      replicas?: number;
+      /** How the broker is exposed on the network. Service changes reconcile in place without restarting broker pods. */
+      service?: {
+        /** Kubernetes Service type for client access. When absent the broker stays cluster-internal (ClusterIP). LoadBalancer acquires a cloud load-balancer address; NodePort exposes the broker on node IPs. */
+        type?: "ClusterIP" | "NodePort" | "LoadBalancer";
+        /** Annotations merged onto the client Service (cloud load-balancer hints, MetalLB address pools, internal-LB switches). */
+        annotations?: {
+          [key: string]: string;
+        };
+        /** Load-balancer implementation to use. Valid only when type is LoadBalancer. */
+        loadBalancerClass?: string;
+        /** CIDR ranges allowed to reach the broker. Valid only when type is LoadBalancer. */
+        loadBalancerSourceRanges?: string[];
+        /** Pins the advertised external broker endpoint as "host:port" when auto-derivation is undesirable: an ingress or gateway in front of the broker, an air-gapped topology, or NAT. The nats:// scheme is added by consumers. */
+        externalEndpointOverride?: string;
+      };
+    };
+  };
+};
 export type EvaluateRelationshipsApiResponse = /** status 200 Successful evaluation */ {
   /** Specifies the version of the schema to which the evaluation response conforms. */
   schemaVersion: string;
@@ -8667,6 +9341,10 @@ export type UnassignViewFromWorkspaceApiArg = {
   viewId: string;
 };
 export const {
+  useGetControllersDefaultConfigQuery,
+  useUpdateControllersDefaultConfigMutation,
+  useGetConnectionControllersConfigQuery,
+  useUpdateConnectionControllersConfigMutation,
   useEvaluateRelationshipsMutation,
   useGetSystemDatabaseQuery,
   useResetSystemDatabaseMutation,

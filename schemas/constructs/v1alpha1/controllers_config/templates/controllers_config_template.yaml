@@ -1,0 +1,34 @@
+# Example MesheryControllersConfig document.
+#
+# The same shape is used for the server-wide defaults
+# (PUT /api/system/controllers/config) and for a per-connection override
+# (PUT /api/integrations/connections/{connectionId}/controllers/config).
+# Every field is optional: an absent field inherits from the next precedence
+# layer (per-connection override -> server-wide default -> built-in default).
+# schemaVersion is server-stamped on reads and omitted from write payloads.
+schemaVersion: controllers.meshery.io/v1alpha1
+operator:
+  deploymentMode: operator
+  version: v0.8.0
+meshsync:
+  version: v1.0.2
+  replicas: 1
+  watchList:
+    blacklist:
+      - secrets.v1.
+      - events.v1.
+  outputNamespaces:
+    - default
+    - production
+  redactSecrets: true
+  brokerContentDedup: true
+  debugLogging: false
+broker:
+  version: 2.14.2-alpine
+  replicas: 3
+  service:
+    type: LoadBalancer
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-internal: "true"
+    loadBalancerSourceRanges:
+      - 10.0.0.0/8
