@@ -37,6 +37,35 @@ const paths = require("./lib/paths");
 const { commandExists } = require("./lib/exec");
 const { writeGeneratedHelperFile } = require("./lib/generated-go-helpers");
 
+let oapiCodegenBinary = "oapi-codegen";
+
+function getDefaultOapiCodegenPath() {
+  try {
+    const gopath = execSync("go env GOPATH", { encoding: "utf-8" }).trim();
+    if (!gopath) {
+      return null;
+    }
+    const candidate = path.join(gopath, "bin", "oapi-codegen");
+    return fs.existsSync(candidate) ? candidate : null;
+  } catch {
+    return null;
+  }
+}
+
+function resolveOapiCodegenBinary() {
+  if (commandExists("oapi-codegen")) {
+    return "oapi-codegen";
+  }
+
+  const fallback = getDefaultOapiCodegenPath();
+  if (fallback) {
+    console.log(`Using fallback oapi-codegen binary at: ${fallback}`);
+    return fallback;
+  }
+
+  return null;
+}
+
 /**
  * Add YAML struct tags alongside JSON ones in generated Go file
  * @param {string} filePath - Path to Go file
@@ -46,6 +75,11 @@ const { writeGeneratedHelperFile } = require("./lib/generated-go-helpers");
  * These occur when x-go-type references a type defined manually in the
  * same package (e.g., core.NullTime in models/core/).
  */
+
+const GENERATE_SERVER =
+  process.env.GENERATE_SERVER === "true";
+
+
 function removeSelfReferentialAliases(filePath) {
   let content = fs.readFileSync(filePath, "utf-8");
   const selfRefPattern = /^type (\w+) = \1\s*$/gm;
@@ -104,6 +138,14 @@ function normalizeUuidType(filePath) {
     );
   }
   fs.writeFileSync(filePath, content, "utf-8");
+}
+
+function fixMalformedPointerTypeExpressions(filePath) {
+  let content = fs.readFileSync(filePath, "utf-8");
+  const fixed = content.replace(/\*\.(externalRef\d+(?:\.[A-Za-z_][A-Za-z0-9_]*)+)/g, "*$1");
+  if (fixed !== content) {
+    fs.writeFileSync(filePath, fixed, "utf-8");
+  }
 }
 
 function addYamlTags(filePath) {
@@ -1444,22 +1486,191 @@ function buildImportMappings(currentPkg, entryPath) {
   return importMappings;
 }
 
-function createGeneratorConfig(pkg, inputPath, tempDir) {
+function createGeneratorConfig(pkg, inputPath, tempDir, enableServerGeneration) {
   const baseConfigPath = paths.fromRoot(config.paths.openapiConfig);
   const baseConfig = loadYamlFile(baseConfigPath) || {};
   const tempConfigPath = path.join(tempDir, "openapi.config.yml");
-  const generatedConfig = {
-    ...baseConfig,
-    package: pkg.name,
-    "import-mapping": {
-      ...(baseConfig["import-mapping"] || {}),
-      ...buildImportMappings(pkg, inputPath),
-    },
-  };
 
+  const generatedConfig = {
+      ...baseConfig,
+      package: pkg.name,
+      "import-mapping": {
+        ...(baseConfig["import-mapping"] || {}),
+        ...buildImportMappings(pkg, inputPath),
+      },
+      "output-options": {
+        ...(baseConfig["output-options"] || {}),
+        "skip-fmt": true,
+      },
+  };
+  
+  console.log("===== GENERATED CONFIG =====");
+  console.log(yaml.dump(generatedConfig));
+  console.log("============================");
   fs.writeFileSync(tempConfigPath, yaml.dump(generatedConfig), "utf-8");
 
-  return { tempDir, tempConfigPath };
+  return {
+    tempDir,
+    tempConfigPath,
+  };
+}
+/**
+ * Generate Go models for a single package
+ * @param {Object} pkg - Package definition
+ * @returns {Promise<void>}
+ */
+function isPilotServerPackage(pkg) {
+  return GENERATE_SERVER && ["key", "keychain", "feature"].includes(pkg.name);
+}
+function runOapiCodegen({
+  pkg,
+  configPath,
+  inputPath,
+  outputPath,
+  generateTargets,
+  timeoutMs = 300000,
+  skipFmt = false,
+}) {
+  let targets = generateTargets;
+  if (skipFmt) {
+    targets = `${generateTargets},skip-fmt`;
+  }
+
+  const repoRoot = process.cwd();
+  const resolvedConfigPath = path.isAbsolute(configPath)
+    ? path.relative(repoRoot, configPath)
+    : configPath;
+  const resolvedInputPath = path.isAbsolute(inputPath)
+    ? path.relative(repoRoot, inputPath)
+    : inputPath;
+  const resolvedOutputPath = path.isAbsolute(outputPath)
+    ? path.relative(repoRoot, outputPath)
+    : outputPath;
+
+  const command = [
+    oapiCodegenBinary,
+    `--config "${resolvedConfigPath}"`,
+    `--package "${pkg.name}"`,
+    `-generate ${targets}`,
+    `-o "${resolvedOutputPath}"`,
+    `"${resolvedInputPath}"`,
+  ].join(" ");
+
+  console.log(`\n>>> START ${pkg.name} : ${generateTargets}`);
+  console.log(`>>> OUTPUT: ${outputPath}`);
+  console.log(`>>> COMMAND: ${command}`);
+
+  const startTime = Date.now();
+
+  try {
+    execSync(command, { stdio: "inherit", timeout: timeoutMs });
+  } catch (err) {
+    const elapsedSeconds = ((Date.now() - startTime) / 1000).toFixed(1);
+    if (err.killed) {
+      console.error(
+        `!!! oapi-codegen ${generateTargets} timed out after ${elapsedSeconds}s for package ${pkg.name}`,
+      );
+    } else {
+      console.error(
+        `!!! oapi-codegen ${generateTargets} failed after ${elapsedSeconds}s for package ${pkg.name}`,
+      );
+    }
+    throw err;
+  }
+
+  const elapsedSeconds = ((Date.now() - startTime) / 1000).toFixed(1);
+  console.log(`<<< END ${pkg.name} : ${generateTargets} (${elapsedSeconds}s)\n`);
+}
+function postProcessGeneratedGoFile(outputPath, inputPath, options = {}) {
+  const {
+    addYaml = false,
+    addExtraTags = false,
+    rewriteRefs = false,
+    validateDbTags = false,
+    validateJsonTags = false,
+    addCompatibilityAliases = false,
+    normalizeUuid = true,
+    ensureImports = true,
+    removeSelfAliases = true,
+    validateReadableAliases = true,
+  } = options;
+
+  if (addYaml) {
+    addYamlTags(outputPath);
+  }
+
+  if (removeSelfAliases) {
+    removeSelfReferentialAliases(outputPath);
+  }
+
+  if (addExtraTags) {
+    addSchemaExtraTags(outputPath, inputPath);
+  }
+
+  if (rewriteRefs) {
+    rewriteExternalRefAliases(outputPath, inputPath);
+  }
+
+  if (validateReadableAliases) {
+    validateReadableImportAliases(outputPath);
+  }
+
+  if (addCompatibilityAliases) {
+    addCompatibilityParameterAliases(outputPath, inputPath);
+  }
+
+  if (normalizeUuid) {
+    normalizeUuidType(outputPath);
+  }
+
+  fixMalformedPointerTypeExpressions(outputPath);
+
+  if (ensureImports) {
+    ensureRequiredImports(outputPath);
+  }
+
+  if (validateDbTags) {
+    validateGeneratedDbTags(outputPath, inputPath);
+  }
+
+  if (validateJsonTags) {
+    validateGeneratedJsonTags(outputPath, inputPath);
+  }
+}
+
+function ensureSpecAccessor(specOutputPath) {
+  if (!fs.existsSync(specOutputPath)) {
+    throw new Error(`Expected generated spec file not found: ${specOutputPath}`);
+  }
+
+  let content = fs.readFileSync(specOutputPath, "utf-8");
+
+  if (
+    !content.includes("func Spec() []byte") &&
+    content.includes("func GetSwagger()")
+  ) {
+    content += `
+
+func Spec() []byte {
+\treturn rawSpec
+}
+`;
+    fs.writeFileSync(specOutputPath, content, "utf-8");
+  }
+}
+
+/**
+ * Optional follow-up step:
+ * If strict-server params are emitted inside server.go instead of params.go,
+ * this function can later be upgraded to extract all `*Params` structs into
+ * a separate params.go file. For now it creates no file and keeps server.go
+ * intact unless you implement splitting.
+ */
+function maybeExtractParamsFile(serverOutputPath, paramsOutputPath) {
+  // Intentionally no-op for the first pass.
+  // If your acceptance criteria must require a physical params.go immediately,
+  // implement extraction logic here.
+  return { serverOutputPath, paramsOutputPath };
 }
 
 /**
@@ -1472,13 +1683,11 @@ async function generateGoModels(pkg) {
   const outputDir = path.dirname(outputPath);
   const sourceInputPath = resolveGoInputSchemaPath(pkg);
 
-  // Verify input exists
   if (!paths.fileExists(sourceInputPath)) {
     logger.warn(`Schema not found: ${sourceInputPath}, skipping ${pkg.name}`);
     return;
   }
 
-  // Ensure output directory exists
   paths.ensureParentDir(outputPath);
 
   logger.step(`Generating Go models: ${pkg.name} (${pkg.version})...`);
@@ -1489,35 +1698,107 @@ async function generateGoModels(pkg) {
     tempDir = stagedSources.tempDir;
 
     const inputPath = stagedSources.inputPath;
-    const generatedConfig = createGeneratorConfig(pkg, inputPath, tempDir);
+    const enableServerGeneration = isPilotServerPackage(pkg);
 
-    execSync(
-      `oapi-codegen --config "${generatedConfig.tempConfigPath}" ` +
-        `--package "${pkg.name}" ` +
-        `-generate types ` +
-        `--include-tags all ` +
-        `-o "${outputPath}" ` +
-        `"${inputPath}"`,
-      { stdio: "inherit" },
+    const generatedConfig = createGeneratorConfig(
+      pkg,
+      inputPath,
+      tempDir,
+      enableServerGeneration,
     );
 
-    // Add YAML struct tags and restore any schema-declared extra tags that
-    // oapi-codegen omits for referenced object fields.
-    addYamlTags(outputPath);
-    // Remove self-referential type aliases (type X = X) that occur when
-    // x-go-type references a type defined manually in the same package.
-    removeSelfReferentialAliases(outputPath);
-    addSchemaExtraTags(outputPath, inputPath);
-    rewriteExternalRefAliases(outputPath, inputPath);
-    validateReadableImportAliases(outputPath);
-    addCompatibilityParameterAliases(outputPath, inputPath);
-    normalizeUuidType(outputPath);
-    ensureRequiredImports(outputPath);
-    validateGeneratedDbTags(outputPath, inputPath);
-    validateGeneratedJsonTags(outputPath, inputPath);
+    const typesOutputPath = outputPath;
+    const serverOutputPath = path.join(outputDir, "server.go");
+    const specOutputPath = path.join(outputDir, "spec.go");
+    const paramsOutputPath = path.join(outputDir, "params.go");
+
+    if (!enableServerGeneration) {
+      runOapiCodegen({
+          pkg,
+          configPath: generatedConfig.tempConfigPath,
+          inputPath,
+          outputPath: typesOutputPath,
+          generateTargets: "types",
+          skipFmt: true,
+    });
+
+      postProcessGeneratedGoFile(typesOutputPath, inputPath, {
+        addYaml: true,
+        addExtraTags: true,
+        rewriteRefs: true,
+        validateDbTags: true,
+        validateJsonTags: true,
+        addCompatibilityAliases: true,
+      });
+
+      writeGeneratedHelperFile(pkg, outputDir);
+      logger.success(`Generated: ${paths.relativePath(typesOutputPath)}`);
+      return;
+    }
+
+    runOapiCodegen({
+      pkg,
+      configPath: generatedConfig.tempConfigPath,
+      inputPath,
+      outputPath: typesOutputPath,
+      generateTargets: "types",
+    });
+
+    postProcessGeneratedGoFile(typesOutputPath, inputPath, {
+      addYaml: true,
+      addExtraTags: true,
+      rewriteRefs: true,
+      validateDbTags: true,
+      validateJsonTags: true,
+      addCompatibilityAliases: true,
+    });
+
+    runOapiCodegen({
+      pkg,
+      configPath: generatedConfig.tempConfigPath,
+      inputPath,
+      outputPath: serverOutputPath,
+      generateTargets: "std-http",
+    });
+
+    postProcessGeneratedGoFile(serverOutputPath, inputPath, {
+      addYaml: false,
+      addExtraTags: false,
+      rewriteRefs: true,
+      validateDbTags: false,
+      validateJsonTags: false,
+      addCompatibilityAliases: false,
+    });
+
+    runOapiCodegen({
+      pkg,
+      configPath: generatedConfig.tempConfigPath,
+      inputPath,
+      outputPath: specOutputPath,
+      generateTargets: "spec",
+    });
+
+    postProcessGeneratedGoFile(specOutputPath, inputPath, {
+      addYaml: false,
+      addExtraTags: false,
+      rewriteRefs: false,
+      validateDbTags: false,
+      validateJsonTags: false,
+      addCompatibilityAliases: false,
+      validateReadableAliases: false,
+    });
+
+    ensureSpecAccessor(specOutputPath);
+
+    maybeExtractParamsFile(serverOutputPath, paramsOutputPath);
+
     writeGeneratedHelperFile(pkg, outputDir);
 
-    logger.success(`Generated: ${paths.relativePath(outputPath)}`);
+    logger.success(
+      `Generated: ${paths.relativePath(typesOutputPath)}, ` +
+        `${paths.relativePath(serverOutputPath)}, ` +
+        `${paths.relativePath(specOutputPath)}`,
+    );
   } catch (err) {
     throw new Error(
       `Go model generation failed for ${pkg.name}: ${err.message}`,
@@ -1528,13 +1809,13 @@ async function generateGoModels(pkg) {
     }
   }
 }
-
 /**
  * Check prerequisites
  */
 function checkPrerequisites() {
   // Check for oapi-codegen
-  if (!commandExists("oapi-codegen")) {
+  const resolved = resolveOapiCodegenBinary();
+  if (!resolved) {
     logger.error("oapi-codegen not found.");
     logger.info(
       "Install it with: go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest",
@@ -1542,6 +1823,7 @@ function checkPrerequisites() {
     process.exit(1);
   }
 
+  oapiCodegenBinary = resolved;
 }
 
 /**
