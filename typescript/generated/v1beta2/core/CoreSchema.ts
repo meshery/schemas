@@ -32,7 +32,7 @@ const CoreSchema: Record<string, unknown> = {
         "minLength": 2,
         "maxLength": 100,
         "description": "API version of the object, optionally prefixed with an API group (e.g. \"group.example.io/v1beta1\" or bare \"v1beta1\").",
-        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
         "example": [
           "v1",
           "v1alpha1",
