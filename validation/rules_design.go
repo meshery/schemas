@@ -271,19 +271,170 @@ func checkRule23(filePath string, doc *openapi3.T, opts AuditOptions) []Violatio
 	return out
 }
 
-// --- Rule 24: api.yml must declare a security scheme ---
+// --- Rule 24: validate security scheme declarations and configuration ---
 
 func checkRule24(filePath string, doc *openapi3.T, opts AuditOptions) []Violation {
 	if doc == nil || doc.Paths == nil {
 		return nil
 	}
+
 	var out []Violation
+
 	schemes := doc.Components
-	if schemes == nil || schemes.SecuritySchemes == nil || len(schemes.SecuritySchemes) == 0 {
+	if schemes == nil || len(schemes.SecuritySchemes) == 0 {
 		out = append(out, Violation{
-			File: filePath, Message: "No security schemes declared. api.yml files with path operations must define at least one entry under `components.securitySchemes`.",
-			Severity: classifyDesignIssue(opts), RuleNumber: 24,
+			File:       filePath,
+			Message:    "No security schemes declared. api.yml files with path operations must define at least one entry under `components.securitySchemes`.",
+			Severity:   classifyDesignIssue(opts),
+			RuleNumber: 24,
 		})
+		return out
+	}
+
+	for name, ref := range schemes.SecuritySchemes {
+		if ref == nil || ref.Value == nil {
+			continue
+		}
+
+		scheme := ref.Value
+		lower := strings.ToLower(name)
+
+		if (lower == "jwt" || lower == "bearer") && scheme.Type != "http" {
+			out = append(out, Violation{
+				File: filePath,
+				Message: fmt.Sprintf(
+					`Security scheme %q should use type "http" when representing JWT/Bearer authentication.`,
+					name,
+				),
+				Severity:   classifyDesignIssue(opts),
+				RuleNumber: 24,
+			})
+		}
+
+		if scheme.Type == "apiKey" {
+			if scheme.Name == "" {
+				out = append(out, Violation{
+					File: filePath,
+					Message: fmt.Sprintf(
+						`Security scheme %q of type "apiKey" must define a "name".`,
+						name,
+					),
+					Severity:   classifyDesignIssue(opts),
+					RuleNumber: 24,
+				})
+			}
+
+			validLocations := map[string]bool{
+				"header": true,
+				"query":  true,
+				"cookie": true,
+			}
+
+			if !validLocations[scheme.In] {
+				out = append(out, Violation{
+					File: filePath,
+					Message: fmt.Sprintf(
+						`Security scheme %q of type "apiKey" must define a valid "in" value (header, query, or cookie).`,
+						name,
+					),
+					Severity:   classifyDesignIssue(opts),
+					RuleNumber: 24,
+				})
+			}
+		}
+
+		if scheme.Type == "http" {
+			// Current schemas only use bearer authentication.
+			// kin-openapi also supports basic, negotiate, and digest.
+			// Extend this allowlist if additional HTTP auth schemes are introduced.
+			validSchemes := map[string]bool{
+				"bearer": true,
+				"basic":  true,
+			}
+
+			if scheme.Scheme == "" {
+				out = append(out, Violation{
+					File: filePath,
+					Message: fmt.Sprintf(
+						`Security scheme %q of type "http" must define a scheme.`,
+						name,
+					),
+					Severity:   classifyDesignIssue(opts),
+					RuleNumber: 24,
+				})
+				continue
+			}
+
+			if !validSchemes[strings.ToLower(scheme.Scheme)] {
+				out = append(out, Violation{
+					File: filePath,
+					Message: fmt.Sprintf(
+						`Security scheme %q uses unsupported http scheme %q.`,
+						name,
+						scheme.Scheme,
+					),
+					Severity:   classifyDesignIssue(opts),
+					RuleNumber: 24,
+				})
+			}
+		}
+		if scheme.Type == "oauth2" {
+			if scheme.Flows == nil {
+				out = append(out, Violation{
+					File: filePath,
+					Message: fmt.Sprintf(
+						`Security scheme %q of type "oauth2" must define flows.`,
+						name,
+					),
+					Severity:   classifyDesignIssue(opts),
+					RuleNumber: 24,
+				})
+				continue
+			}
+
+			if scheme.Flows.AuthorizationCode == nil &&
+				scheme.Flows.ClientCredentials == nil &&
+				scheme.Flows.Implicit == nil &&
+				scheme.Flows.Password == nil {
+
+				out = append(out, Violation{
+					File: filePath,
+					Message: fmt.Sprintf(
+						`Security scheme %q of type "oauth2" must define at least one OAuth flow.`,
+						name,
+					),
+					Severity:   classifyDesignIssue(opts),
+					RuleNumber: 24,
+				})
+				continue
+			}
+
+			flows := []*openapi3.OAuthFlow{
+				scheme.Flows.AuthorizationCode,
+				scheme.Flows.ClientCredentials,
+				scheme.Flows.Implicit,
+				scheme.Flows.Password,
+			}
+
+			for _, flow := range flows {
+				if flow == nil {
+					continue
+				}
+
+				if len(flow.Scopes) == 0 {
+					out = append(out, Violation{
+						File: filePath,
+						Message: fmt.Sprintf(
+							`OAuth2 security scheme %q must define at least one scope.`,
+							name,
+						),
+						Severity:   classifyDesignIssue(opts),
+						RuleNumber: 24,
+					})
+					break
+				}
+			}
+		}
 	}
 	return out
 }
