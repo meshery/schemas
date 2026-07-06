@@ -20,6 +20,14 @@ const (
 	Pending   UserStatus = "pending"
 )
 
+// Defines values for UserEmailAddressSource.
+const (
+	Backfill      UserEmailAddressSource = "backfill"
+	Consolidation UserEmailAddressSource = "consolidation"
+	Manual        UserEmailAddressSource = "manual"
+	Signup        UserEmailAddressSource = "signup"
+)
+
 // AccountDeletionEligibility Pre-check result returned before an account self-deletion is confirmed. Describes whether deleting the caller's account would also require or permit hard-deleting their organization and quantifies the blast radius. All fields are always present so the client can render the confirmation state deterministically.
 type AccountDeletionEligibility struct {
 	// CrossTenantSharedResourceCount Count of resources reachable from this organization that are also shared into a different, surviving organization; destroying them affects other tenants. When greater than zero the client must set confirmSharedResourceDestruction to proceed.
@@ -367,7 +375,8 @@ type User struct {
 	} `db:"teams" json:"teams" yaml:"teams"`
 	UpdatedAt core.Time `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
 
-	// UserId User identifier (username or external ID)
+	// UserId Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UserId string `db:"user_id" json:"userId" yaml:"userId"`
 }
 
@@ -393,6 +402,36 @@ type UserActivity struct {
 	Owner     *core.Uuid `db:"owner" json:"owner" yaml:"owner,omitempty"`
 	UpdatedAt core.Time  `db:"updated_at" json:"updatedAt" yaml:"updatedAt,omitempty"`
 }
+
+// UserEmailAddress One email address associated with a user account. A user has exactly one primary address (mirrored in users.email) and any number of secondary addresses accumulated from account consolidation or explicit addition. Uniqueness across live addresses is enforced case-insensitively.
+type UserEmailAddress struct {
+	CreatedAt core.Time `db:"created_at" json:"createdAt" yaml:"createdAt"`
+
+	// DeletedAt SQL null Timestamp to handle null values of time.
+	DeletedAt core.NullTime `db:"deleted_at" json:"deletedAt" yaml:"deletedAt,omitempty"`
+
+	// Email The email address
+	Email openapi_types.Email `db:"email" json:"email" yaml:"email"`
+
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID core.Uuid `db:"id" json:"id" yaml:"id"`
+
+	// IsPrimary Exactly one live primary address per user; mirrors users.email
+	IsPrimary bool `db:"is_primary" json:"isPrimary" yaml:"isPrimary"`
+
+	// Source How this address became associated with the account
+	Source    UserEmailAddressSource `db:"source" json:"source" yaml:"source"`
+	UpdatedAt core.Time      `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
+
+	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	UserId core.Uuid `db:"owner" json:"userId" yaml:"userId"`
+
+	// Verified Whether the address was verified (per Kratos verifiable addresses) at record time
+	Verified bool `db:"verified" json:"verified" yaml:"verified"`
+}
+
+// UserEmailAddressSource How this address became associated with the account
+type UserEmailAddressSource string
 
 // UsersPageForAdmin Paginated list of users with organization and team role context
 type UsersPageForAdmin struct {

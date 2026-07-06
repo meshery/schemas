@@ -546,6 +546,10 @@ const injectedRtkApi = api
         }),
         providesTags: ["User_users"],
       }),
+      getUserEmailAddresses: build.query<GetUserEmailAddressesApiResponse, GetUserEmailAddressesApiArg>({
+        query: (queryArg) => ({ url: `/api/identity/users/${queryArg.userId}/emails` }),
+        providesTags: ["User_users"],
+      }),
       deleteUserAccount: build.mutation<DeleteUserAccountApiResponse, DeleteUserAccountApiArg>({
         query: (queryArg) => ({
           url: `/api/identity/users/self`,
@@ -3996,7 +4000,7 @@ export type GetUsersForOrgApiResponse = /** status 200 Paginated list of organiz
   data?: {
     /** Unique identifier for the user */
     id: string;
-    /** User identifier (username or external ID) */
+    /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
     userId: string;
     /** Authentication provider (e.g., Google, Github) */
     provider: string;
@@ -4193,7 +4197,7 @@ export type GetUsersApiResponse = /** status 200 Paginated list of public users 
   data?: {
     /** Unique identifier for the user */
     id: string;
-    /** User identifier (username or external ID) */
+    /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
     userId: string;
     /** Authentication provider (e.g., Google, Github) */
     provider: string;
@@ -4378,7 +4382,7 @@ export type GetUsersApiArg = {
 export type GetUserProfileByIdApiResponse = /** status 200 User profile for the requested ID */ {
   /** Unique identifier for the user */
   id: string;
-  /** User identifier (username or external ID) */
+  /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
   userId: string;
   /** Authentication provider (e.g., Google, Github) */
   provider: string;
@@ -4554,7 +4558,7 @@ export type GetUserProfileByIdApiArg = {
 export type GetUserApiResponse = /** status 200 Current user profile and role context */ {
   /** Unique identifier for the user */
   id: string;
-  /** User identifier (username or external ID) */
+  /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
   userId: string;
   /** Authentication provider (e.g., Google, Github) */
   provider: string;
@@ -4757,7 +4761,7 @@ export type GetUserRecentActivitiesApiResponse = /** status 200 Recent-activity 
   }[];
 };
 export type GetUserRecentActivitiesApiArg = {
-  /** ID of the user whose recent activity is requested */
+  /** ID of the user */
   userId: string;
   /** Zero-based page index of the activity feed. */
   page?: number;
@@ -5029,6 +5033,28 @@ export type GetAccountDeletionEligibilityApiResponse = /** status 200 Account de
 export type GetAccountDeletionEligibilityApiArg = {
   /** Organization to evaluate for deletion alongside the account. When omitted, the caller's currently selected organization is evaluated. */
   organizationId?: string;
+};
+export type GetUserEmailAddressesApiResponse = /** status 200 Email addresses associated with the requested user */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  userId: string;
+  /** The email address */
+  email: string;
+  /** Whether the address was verified (per Kratos verifiable addresses) at record time */
+  verified: boolean;
+  /** Exactly one live primary address per user; mirrors users.email */
+  isPrimary: boolean;
+  /** How this address became associated with the account */
+  source: "signup" | "consolidation" | "backfill" | "manual";
+  createdAt: string;
+  updatedAt: string;
+  /** SQL null Timestamp to handle null values of time. */
+  deletedAt?: string;
+}[];
+export type GetUserEmailAddressesApiArg = {
+  /** ID of the user */
+  userId: string;
 };
 export type DeleteUserAccountApiResponse = unknown;
 export type DeleteUserAccountApiArg = {
@@ -9066,7 +9092,7 @@ export type GetPatternsApiResponse = /** status 200 Designs response */ {
     user?: {
       /** Unique identifier for the user */
       id: string;
-      /** User identifier (username or external ID) */
+      /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
       userId: string;
       /** Authentication provider (e.g., Google, Github) */
       provider: string;
@@ -9335,7 +9361,7 @@ export type UpsertPatternApiResponse = /** status 200 Design saved */ {
   user?: {
     /** Unique identifier for the user */
     id: string;
-    /** User identifier (username or external ID) */
+    /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
     userId: string;
     /** Authentication provider (e.g., Google, Github) */
     provider: string;
@@ -9647,7 +9673,7 @@ export type GetPatternApiResponse = /** status 200 Design response */ {
   user?: {
     /** Unique identifier for the user */
     id: string;
-    /** User identifier (username or external ID) */
+    /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
     userId: string;
     /** Authentication provider (e.g., Google, Github) */
     provider: string;
@@ -9898,7 +9924,7 @@ export type ClonePatternApiResponse = /** status 200 Design cloned */ {
   user?: {
     /** Unique identifier for the user */
     id: string;
-    /** User identifier (username or external ID) */
+    /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
     userId: string;
     /** Authentication provider (e.g., Google, Github) */
     provider: string;
@@ -10183,7 +10209,7 @@ export type GetCatalogContentApiResponse = /** status 200 Catalog content page *
     user?: {
       /** Unique identifier for the user */
       id: string;
-      /** User identifier (username or external ID) */
+      /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
       userId: string;
       /** Authentication provider (e.g., Google, Github) */
       provider: string;
@@ -10495,7 +10521,7 @@ export type PublishCatalogContentApiResponse = /** status 200 Catalog request re
   user?: {
     /** Unique identifier for the user */
     id: string;
-    /** User identifier (username or external ID) */
+    /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
     userId: string;
     /** Authentication provider (e.g., Google, Github) */
     provider: string;
@@ -10702,7 +10728,7 @@ export type UnPublishCatalogContentApiResponse = /** status 200 Catalog request 
   user?: {
     /** Unique identifier for the user */
     id: string;
-    /** User identifier (username or external ID) */
+    /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
     userId: string;
     /** Authentication provider (e.g., Google, Github) */
     provider: string;
@@ -10986,7 +11012,7 @@ export type GetCatalogRequestApiResponse = /** status 200 Catalog requests page 
     user?: {
       /** Unique identifier for the user */
       id: string;
-      /** User identifier (username or external ID) */
+      /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
       userId: string;
       /** Authentication provider (e.g., Google, Github) */
       provider: string;
@@ -14896,6 +14922,7 @@ export const {
   useNotifyMentionUsersMutation,
   useCreateAnonymousUserSessionMutation,
   useGetAccountDeletionEligibilityQuery,
+  useGetUserEmailAddressesQuery,
   useDeleteUserAccountMutation,
   useCreateViewMutation,
   useGetViewsQuery,

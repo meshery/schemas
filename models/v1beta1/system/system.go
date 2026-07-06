@@ -11,6 +11,102 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
+// Defines values for ControllerDiagnosticController.
+const (
+	ControllerDiagnosticControllerBROKER   ControllerDiagnosticController = "BROKER"
+	ControllerDiagnosticControllerMESHSYNC ControllerDiagnosticController = "MESHSYNC"
+	ControllerDiagnosticControllerOPERATOR ControllerDiagnosticController = "OPERATOR"
+)
+
+// Defines values for ControllerDiagnosticSeverity.
+const (
+	Error   ControllerDiagnosticSeverity = "error"
+	Info    ControllerDiagnosticSeverity = "info"
+	Warning ControllerDiagnosticSeverity = "warning"
+)
+
+// Defines values for ControllerStatusController.
+const (
+	ControllerStatusControllerBROKER   ControllerStatusController = "BROKER"
+	ControllerStatusControllerMESHSYNC ControllerStatusController = "MESHSYNC"
+	ControllerStatusControllerOPERATOR ControllerStatusController = "OPERATOR"
+)
+
+// ConnectionDiagnostics Diagnostics for a kubernetes connection's Meshery controllers, for rendering a "Diagnostics" section in the connection detail view.
+type ConnectionDiagnostics struct {
+	// ConnectionId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ConnectionId core.Uuid `json:"connectionId" yaml:"connectionId"`
+
+	// Diagnostics The diagnostics detected for this connection (possibly empty).
+	Diagnostics []ControllerDiagnostic `json:"diagnostics" yaml:"diagnostics"`
+
+	// Healthy True when no warning/error diagnostics were detected (informational diagnostics do not affect health).
+	Healthy bool `json:"healthy" yaml:"healthy"`
+}
+
+// ControllerDiagnostic A single human-actionable diagnostic about a kubernetes connection's Meshery controllers, with an explanation and remediation steps.
+type ControllerDiagnostic struct {
+	// Code Stable machine-readable code for this diagnostic (e.g. `broker_unreachable`), for the UI to key on.
+	Code string `json:"code" yaml:"code"`
+
+	// Controller The controller this diagnostic concerns, when applicable.
+	Controller *ControllerDiagnosticController `json:"controller,omitempty" yaml:"controller,omitempty"`
+
+	// Description A fuller explanation of what is wrong and why.
+	Description *string `json:"description,omitempty" yaml:"description,omitempty"`
+
+	// Endpoint A relevant endpoint for the diagnostic, when applicable (e.g. the broker's published address the user needs to make reachable).
+	Endpoint *string `json:"endpoint,omitempty" yaml:"endpoint,omitempty"`
+
+	// Remediation Ordered, concrete steps the user can take to resolve the issue.
+	Remediation *[]string `json:"remediation,omitempty" yaml:"remediation,omitempty"`
+
+	// Severity How serious the diagnostic is.
+	Severity ControllerDiagnosticSeverity `json:"severity" yaml:"severity"`
+
+	// Summary Short, human-readable title for the diagnostic.
+	Summary string `json:"summary" yaml:"summary"`
+}
+
+// ControllerDiagnosticController The controller this diagnostic concerns, when applicable.
+type ControllerDiagnosticController string
+
+// ControllerDiagnosticSeverity How serious the diagnostic is.
+type ControllerDiagnosticSeverity string
+
+// ControllerInfo Detailed status of a named Meshery controller (MeshSync or Broker) for a kubernetes connection.
+type ControllerInfo struct {
+	// ConnectionId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ConnectionId core.Uuid `json:"connectionId" yaml:"connectionId"`
+
+	// Name Controller name (e.g. MeshSync, MesheryBroker).
+	Name string `json:"name" yaml:"name"`
+
+	// Status Current controller status. May be composed, e.g. "Connected <endpoint>".
+	Status string `json:"status" yaml:"status"`
+
+	// Version Deployed controller version, when known.
+	Version string `json:"version" yaml:"version"`
+}
+
+// ControllerStatus Status of a single Meshery controller (operator, MeshSync, or broker) for a kubernetes connection. Element type of the controller-status SSE stream and the operator status response.
+type ControllerStatus struct {
+	// ConnectionId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ConnectionId core.Uuid `json:"connectionId" yaml:"connectionId"`
+
+	// Controller The controller this status describes.
+	Controller ControllerStatusController `json:"controller" yaml:"controller"`
+
+	// Status Current controller status (e.g. DEPLOYED, NOTDEPLOYED, RUNNING, CONNECTED, UNKNOWN).
+	Status string `json:"status" yaml:"status"`
+
+	// Version Deployed controller version, when known.
+	Version string `json:"version" yaml:"version"`
+}
+
+// ControllerStatusController The controller this status describes.
+type ControllerStatusController string
+
 // EmailTestRequest Request body for sending a test email through the configured SMTP provider.
 type EmailTestRequest struct {
 	// Subject Subject line for the test message. A default subject is used when omitted.

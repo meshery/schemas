@@ -1,0 +1,46 @@
+$id: https://schemas.meshery.io/controllers_config.yaml
+$schema: http://json-schema.org/draft-07/schema#
+title: MesheryControllersConfig
+description: >-
+  Deployment and runtime configuration for the Meshery controllers that manage
+  a Kubernetes connection: Meshery Operator, MeshSync, and Meshery Broker.
+  The same document shape is used at two layers. As a server-wide default it
+  declares how Meshery Server deploys and configures the controllers for every
+  managed cluster. As a per-connection override, stored in the connection's
+  metadata, it overrides the server-wide default for a single connection.
+  Every configuration field is optional: an absent field inherits the value
+  from the next layer (per-connection override, then server-wide default,
+  then built-in default). The only required field is the server-stamped
+  schemaVersion discriminator, which identifies the document revision for
+  future migrations. Learn more at
+  https://docs.meshery.io/concepts/architecture
+additionalProperties: false
+type: object
+required:
+  - schemaVersion
+properties:
+  schemaVersion:
+    description: Specifies the version of the schema used for this configuration document.
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/versionString
+    default: controllers.meshery.io/v1alpha1
+    x-order: 0
+    x-oapi-codegen-extra-tags:
+      json: schemaVersion
+  operator:
+    $ref: ./api.yml#/components/schemas/MesheryOperatorConfig
+    description: Configuration for the Meshery Operator on the managed cluster.
+    x-order: 1
+    x-oapi-codegen-extra-tags:
+      json: "operator,omitempty"
+  meshsync:
+    $ref: ./api.yml#/components/schemas/MeshSyncConfig
+    description: Configuration for the MeshSync agent on the managed cluster.
+    x-order: 2
+    x-oapi-codegen-extra-tags:
+      json: "meshsync,omitempty"
+  broker:
+    $ref: ./api.yml#/components/schemas/MesheryBrokerConfig
+    description: Configuration for the Meshery Broker (NATS) on the managed cluster.
+    x-order: 3
+    x-oapi-codegen-extra-tags:
+      json: "broker,omitempty"

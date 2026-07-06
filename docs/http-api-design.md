@@ -18,7 +18,7 @@
 **Do NOT use `DELETE` with a request body for bulk operations.** REST semantics do not define a request body for `DELETE`; many HTTP clients and proxies strip it silently. Use a `POST /api/{resources}/delete` sub-resource instead:
 
 ```yaml
-# WRONG — DELETE with a request body
+# WRONG - DELETE with a request body
 delete:
   operationId: deletePatterns
   requestBody:
@@ -27,7 +27,7 @@ delete:
         schema:
           $ref: '#/components/schemas/PatternIds'
 
-# CORRECT — POST sub-resource for bulk delete
+# CORRECT - POST sub-resource for bulk delete
 post:
   operationId: deletePatterns
   summary: Bulk delete patterns by ID
