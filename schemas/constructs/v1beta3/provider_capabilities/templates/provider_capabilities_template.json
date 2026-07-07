@@ -1,0 +1,15 @@
+{
+  "providerType": "",
+  "providerName": "",
+  "providerDescription": [],
+  "providerUrl": "",
+  "packageVersion": "",
+  "packageUrl": "",
+  "capabilities": [],
+  "extensions": {},
+  "restrictedAccess": {
+    "isMesheryUIRestricted": false,
+    "allowedComponents": {}
+  },
+  "redirects": {}
+}
