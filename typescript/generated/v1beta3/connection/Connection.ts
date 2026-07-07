@@ -56,6 +56,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/integrations/connections/{connectionId}/actions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Perform an action on a connection
+         * @description Perform a side-effecting operation on a connection (as opposed to a field update via PUT). The action is selected by the `action` discriminator in the request body. Currently supports switching the MeshSync deployment mode for a kubernetes connection, which redeploys MeshSync (operator vs embedded) for the connection's cluster; the server owns the connection metadata merge so callers only send the intent.
+         */
+        post: operations["performConnectionAction"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/integrations/connections/meshery/{mesheryServerId}": {
         parameters: {
             query?: never;
@@ -1156,6 +1176,19 @@ export interface components {
             nextState: "discovered" | "registered" | "connected" | "ignored" | "maintenance" | "disconnected" | "deleted" | "not found";
             /** @description Human-readable explanation of when or why this transition occurs. */
             description?: string;
+        };
+        /** @description A side-effecting operation to perform on a connection via POST /api/integrations/connections/{connectionId}/actions. The `action` field selects the operation; operation-specific fields carry its parameters. Unlike PUT (which updates resource fields), the server owns any resulting metadata merge and cluster-side effects. */
+        ConnectionActionRequest: {
+            /**
+             * @description The operation to perform on the connection.
+             * @enum {string}
+             */
+            action: "setMeshsyncMode";
+            /**
+             * @description Target MeshSync deployment mode. Required when `action` is `setMeshsyncMode`; the server redeploys MeshSync (operator vs embedded) for the connection's cluster.
+             * @enum {string}
+             */
+            mode?: "operator" | "embedded";
         };
         /** @description Payload for creating or updating a connection */
         ConnectionPayload: {
@@ -3649,6 +3682,417 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Result not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    performConnectionAction: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Connection ID */
+                connectionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * @description The operation to perform on the connection.
+                     * @enum {string}
+                     */
+                    action: "setMeshsyncMode";
+                    /**
+                     * @description Target MeshSync deployment mode. Required when `action` is `setMeshsyncMode`; the server redeploys MeshSync (operator vs embedded) for the connection's cluster.
+                     * @enum {string}
+                     */
+                    mode?: "operator" | "embedded";
+                };
+            };
+        };
+        responses: {
+            /** @description The updated connection after the action was applied. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Connection ID
+                         */
+                        id: string;
+                        /** @description Connection Name */
+                        name: string;
+                        /** @description Human-readable description of the connection and its purpose. */
+                        description?: string;
+                        /**
+                         * Format: uri
+                         * @description URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL).
+                         */
+                        url?: string;
+                        /**
+                         * Format: uuid
+                         * @description Associated Credential ID
+                         */
+                        credentialId?: string;
+                        /** @description Connection Type (platform, telemetry, collaboration) */
+                        type: string;
+                        /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+                        subType: string;
+                        /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+                        kind: string;
+                        /** @description Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+                        modelReference?: {
+                            /**
+                             * Format: uuid
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                             */
+                            id: string;
+                            /**
+                             * @description The unique name for the model within the scope of a registrant.
+                             * @example cert-manager
+                             */
+                            name: string;
+                            /** @description Version of the model definition. */
+                            version: string;
+                            /**
+                             * @description Human-readable name for the model.
+                             * @example Cert Manager
+                             */
+                            displayName: string;
+                            /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+                            model: {
+                                /** @description Version of the model as defined by the registrant. */
+                                version: string;
+                            };
+                            registrant: {
+                                /** @description Kind of the registrant. */
+                                kind: string;
+                            };
+                        };
+                        /** @description Additional connection metadata */
+                        metadata?: Record<string, never>;
+                        /** @description Schema for the credential Associated with the connection */
+                        credentialSchema?: Record<string, never>;
+                        /** @description Schema for the connection */
+                        connectionSchema?: Record<string, never>;
+                        /** @description Visualization styles for the connection, including svgColor and svgWhite used for UI representation. */
+                        styles?: ({
+                            /** @description Primary color of the component used for UI representation. */
+                            primaryColor: string;
+                            /** @description Secondary color of the entity used for UI representation. */
+                            secondaryColor?: string;
+                            /** @description White SVG of the entity used for UI representation on dark background. */
+                            svgWhite: string;
+                            /** @description Colored SVG of the entity used for UI representation on light background. */
+                            svgColor: string;
+                            /** @description Complete SVG of the entity used for UI representation, often inclusive of background. */
+                            svgComplete: string;
+                            /** @description The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+                            color?: string;
+                            /** @description The opacity of the label text, including its outline. */
+                            textOpacity?: number;
+                            /** @description A comma-separated list of font names to use on the label text. */
+                            fontFamily?: string;
+                            /** @description The size of the label text. */
+                            fontSize?: string;
+                            /** @description A CSS font style to be applied to the label text. */
+                            fontStyle?: string;
+                            /** @description A CSS font weight to be applied to the label text. */
+                            fontWeight?: string;
+                            /**
+                             * @description A transformation to apply to the label text
+                             * @enum {string}
+                             */
+                            textTransform?: "none" | "uppercase" | "lowercase";
+                            /** @description The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+                            opacity?: number;
+                            /** @description An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+                            zIndex?: number;
+                            /** @description The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+                            label?: string;
+                            /** @description The animation to apply to the element. example ripple,bounce,etc */
+                            animation?: Record<string, never>;
+                        } & {
+                            [key: string]: unknown;
+                        }) & {
+                            /**
+                             * @description The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
+                             * @enum {string}
+                             */
+                            shape: "ellipse" | "triangle" | "round-triangle" | "rectangle" | "round-rectangle" | "bottom-round-rectangle" | "cut-rectangle" | "barrel" | "rhomboid" | "diamond" | "round-diamond" | "pentagon" | "round-pentagon" | "hexagon" | "round-hexagon" | "concave-hexagon" | "heptagon" | "round-heptagon" | "octagon" | "round-octagon" | "star" | "tag" | "round-tag" | "vee" | "polygon";
+                            /** @description The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+                            position?: {
+                                /** @description The x-coordinate of the node. */
+                                x: number;
+                                /** @description The y-coordinate of the node. */
+                                y: number;
+                            };
+                            /** @description The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+                            bodyText?: string;
+                            /**
+                             * @description How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'.
+                             * @enum {string}
+                             */
+                            bodyTextWrap?: "none" | "wrap" | "ellipsis";
+                            /** @description The maximum width for wrapping text in the node. */
+                            bodyTextMaxWidth?: string;
+                            /** @description The opacity of the node's body text, including its outline. */
+                            bodyTextOpacity?: number;
+                            /** @description The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+                            bodyTextBackgroundColor?: string;
+                            /** @description The size of the node's body text. */
+                            bodyTextFontSize?: number;
+                            /** @description The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+                            bodyTextColor?: string;
+                            /** @description A CSS font weight to be applied to the node's body text. */
+                            bodyTextFontWeight?: string;
+                            /** @description A CSS horizontal alignment to be applied to the node's body text. */
+                            bodyTextHorizontalAlign?: string;
+                            /** @description A CSS text decoration to be applied to the node's body text. */
+                            bodyTextDecoration?: string;
+                            /** @description A CSS vertical alignment to be applied to the node's body text. */
+                            bodyTextVerticalAlign?: string;
+                            /** @description The width of the node's body or the width of an edge's line. */
+                            width?: number;
+                            /** @description The height of the node's body */
+                            height?: number;
+                            /**
+                             * Format: uri
+                             * @description The URL that points to the image to show in the node.
+                             */
+                            backgroundImage?: string;
+                            /** @description The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+                            backgroundColor?: string;
+                            /** @description Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+                            backgroundBlacken?: number;
+                            /** @description The opacity level of the node's background colour */
+                            backgroundOpacity?: number;
+                            /** @description The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+                            backgroundPositionX?: string;
+                            /** @description The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+                            backgroundPositionY?: string;
+                            /** @description The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+                            backgroundOffsetX?: string;
+                            /** @description The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+                            backgroundOffsetY?: string;
+                            /**
+                             * @description How the background image is fit to the node. Can be 'none', 'contain', or 'cover'.
+                             * @enum {string}
+                             */
+                            backgroundFit?: "none" | "contain" | "cover";
+                            /**
+                             * @description How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'.
+                             * @enum {string}
+                             */
+                            backgroundClip?: "none" | "node" | "node-border";
+                            /**
+                             * @description How the background image's width is determined. Can be 'none', 'inner', or 'outer'.
+                             * @enum {string}
+                             */
+                            backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+                            /**
+                             * @description How the background image's height is determined. Can be 'none', 'inner', or 'outer'.
+                             * @enum {string}
+                             */
+                            backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+                            /** @description The size of the node's border. */
+                            borderWidth?: number;
+                            /**
+                             * @description The style of the node's border
+                             * @enum {string}
+                             */
+                            borderStyle?: "solid" | "dotted" | "dashed" | "double";
+                            /** @description The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+                            borderColor?: string;
+                            /** @description The opacity of the node's border */
+                            borderOpacity?: number;
+                            /** @description The amount of padding around all sides of the node. */
+                            padding?: number;
+                            /**
+                             * @description The horizontal alignment of a node's label
+                             * @enum {string}
+                             */
+                            textHalign?: "left" | "center" | "right";
+                            /**
+                             * @description The vertical alignment of a node's label
+                             * @enum {string}
+                             */
+                            textValign?: "top" | "center" | "bottom";
+                            /**
+                             * @description Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset.
+                             * @default no
+                             * @enum {string}
+                             */
+                            ghost: "yes" | "no";
+                            /** @description The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+                            activeBgColor?: string;
+                            /** @description The opacity of the active background indicator. Selector needs to be *core*. */
+                            activeBgOpacity?: string;
+                            /** @description The opacity of the active background indicator. Selector needs to be *core*. */
+                            activeBgSize?: string;
+                            /** @description The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+                            selectionBoxColor?: string;
+                            /** @description The size of the border on the selection box. Selector needs to be *core* */
+                            selectionBoxBorderWidth?: number;
+                            /** @description The opacity of the selection box. Selector needs to be *core* */
+                            selectionBoxOpacity?: number;
+                            /** @description The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+                            outsideTextureBgColor?: string;
+                            /** @description The opacity of the area outside the viewport texture. Selector needs to be *core* */
+                            outsideTextureBgOpacity?: number;
+                            /** @description An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+                            shapePolygonPoints?: string;
+                            /** @description The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+                            menuBackgroundColor?: string;
+                            /** @description The opacity of the background of the component menu. */
+                            menuBackgroundOpacity?: number;
+                            /** @description The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+                            menuForgroundColor?: string;
+                        };
+                        /**
+                         * @description Connection Status
+                         * @enum {string}
+                         */
+                        status: "discovered" | "registered" | "connected" | "ignored" | "maintenance" | "disconnected" | "deleted" | "not found";
+                        /** @description Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status, along with a description of each transition. */
+                        transitionMap?: {
+                            [key: string]: {
+                                /**
+                                 * @description Connection Status Value
+                                 * @enum {string}
+                                 */
+                                nextState: "discovered" | "registered" | "connected" | "ignored" | "maintenance" | "disconnected" | "deleted" | "not found";
+                                /** @description Human-readable explanation of when or why this transition occurs. */
+                                description?: string;
+                            }[];
+                        };
+                        /**
+                         * Format: uuid
+                         * @description User ID who owns this connection
+                         */
+                        owner?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the connection was created.
+                         */
+                        createdAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the connection was last updated.
+                         */
+                        updatedAt?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the connection was soft-deleted, if applicable.
+                         */
+                        deletedAt?: string;
+                        /** @description Associated environments for this connection */
+                        environments?: {
+                            /**
+                             * Format: uuid
+                             * @description ID
+                             */
+                            id: string;
+                            /**
+                             * @description Specifies the version of the schema to which the environment conforms.
+                             * @default environments.meshery.io/v1beta3
+                             * @example [
+                             *       "v1",
+                             *       "v1alpha1",
+                             *       "v2beta3",
+                             *       "v1.custom-suffix",
+                             *       "models.meshery.io/v1beta1",
+                             *       "capability.meshery.io/v1alpha1"
+                             *     ]
+                             */
+                            schemaVersion: string;
+                            /** @description Environment name */
+                            name: string;
+                            /** @description Environment description */
+                            description: string;
+                            /**
+                             * Format: uuid
+                             * @description Environment organization ID
+                             */
+                            organizationId: string;
+                            /**
+                             * Format: uuid
+                             * @description Environment owner
+                             */
+                            owner?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the environment was created.
+                             */
+                            createdAt?: string;
+                            /** @description Additional metadata associated with the environment. */
+                            metadata?: Record<string, never>;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the environment was last updated.
+                             */
+                            updatedAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
+                             */
+                            deletedAt?: string | null;
+                        }[];
+                        /**
+                         * @description Specifies the version of the schema used for the definition.
+                         * @default connections.meshery.io/v1beta3
+                         * @example [
+                         *       "v1",
+                         *       "v1alpha1",
+                         *       "v2beta3",
+                         *       "v1.custom-suffix",
+                         *       "models.meshery.io/v1beta1",
+                         *       "capability.meshery.io/v1alpha1"
+                         *     ]
+                         */
+                        schemaVersion: string;
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
             };
             /** @description Expired JWT token used or insufficient privilege */
             401: {

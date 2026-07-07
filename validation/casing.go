@@ -10,8 +10,8 @@ import (
 //
 // Phase 4.D — `knownLowercaseSuffixViolations` retired.
 //
-// Phase 3 migrated all 22 resources in the §9.1 inventory of
-// docs/identifier-naming-migration.md to canonical camelCase wire form,
+// Phase 3 migrated all 22 resources in the migration inventory to
+// canonical camelCase wire form (see docs/schema-tooling.md),
 // and Phase 4.A administratively closed with every legacy directory
 // carrying `info.x-deprecated: true`. The audit walker
 // (validation/audit.go::walkValidatedConstructSpecs) skips deprecated
@@ -64,14 +64,14 @@ var (
 // above). The empty map is retained so `HasLowercaseSuffix` keeps its
 // public signature — callers inside `GetCamelCaseIssues` still
 // type-check and simply never append a lowercase-suffix issue. See
-// docs/identifier-naming-migration.md §10 Agent 4.D.
+// docs/schema-tooling.md.
 var knownLowercaseSuffixViolations = map[string]bool{}
 
 // dbMirroredFields enumerates known snake_case property names that originated
 // as DB column mirrors in pre-canonical-contract schemas.
 //
-// Under the canonical identifier-naming contract (see docs/casing-rules.md
-// and docs/identifier-naming-migration.md), wire tags are
+// Under the canonical identifier-naming contract (see
+// docs/casing-rules.md), wire tags are
 // camelCase regardless of DB backing — so these names are no longer treated
 // as an exception to Rule 6. They surface as Rule 6 violations and are
 // routed through the same `--style-debt` severity path as every other
@@ -187,8 +187,8 @@ type CasingIssue struct {
 // OpenAPI query/header parameter name, or any similar camelCase-expected
 // token) for casing violations.
 //
-// Under the canonical identifier-naming contract (docs/casing-rules.md,
-// docs/identifier-naming-migration.md §1), wire names are
+// Under the canonical identifier-naming contract
+// (docs/casing-rules.md), wire names are
 // camelCase regardless of DB backing — the snake_case DB column name lives
 // only in `x-oapi-codegen-extra-tags.db`, not on the wire. Accordingly this
 // checker is unconditional: there is no DB-mirroring exception. The

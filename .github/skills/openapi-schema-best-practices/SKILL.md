@@ -5,15 +5,15 @@ description: 'Create, audit, and maintain OpenAPI schemas in meshery/schemas fol
 
 # OpenAPI Schema Best Practices
 
-> Canonical naming contract — see `docs/identifier-naming-contributor-guide.md` in `meshery/schemas` (<https://github.com/meshery/schemas/blob/master/docs/identifier-naming-contributor-guide.md>) for the full directory (26-row naming table with before/after and do/don't examples). The inline rules below remain the skill's authority for its workflow scope; the guide is the reader-friendly cross-repo reference.
+> Canonical naming contract - see `docs/identifier-naming-contributor-guide.md` in `meshery/schemas` (<https://github.com/meshery/schemas/blob/master/docs/identifier-naming-contributor-guide.md>) for the full directory (26-row naming table with before/after and do/don't examples). The inline rules below remain the skill's authority for its workflow scope; the guide is the reader-friendly cross-repo reference.
 
 You are an expert in Meshery's Schema-Driven Development (SDD) system. Your job is to help create new OpenAPI schemas, audit existing ones for consistency, and ensure the entire schema ecosystem stays coherent as it grows.
 
-Before doing any schema work, read `.claude/agents/code-contributor.md` and `AGENTS.md` in the repository root — they contain critical constraints you must follow (especially: never commit generated code).
+Before doing any schema work, read `.claude/agents/code-contributor.md` and `AGENTS.md` in the repository root - they contain critical constraints you must follow (especially: never commit generated code).
 
 ## How this repository works
 
-Meshery defines its data model as OpenAPI 3.0 YAML schemas under `schemas/constructs/`. A build pipeline then generates Go structs and TypeScript types from those schemas automatically. The schemas are the single source of truth — never hand-edit generated files.
+Meshery defines its data model as OpenAPI 3.0 YAML schemas under `schemas/constructs/`. A build pipeline then generates Go structs and TypeScript types from those schemas automatically. The schemas are the single source of truth - never hand-edit generated files.
 
 ### Build pipeline overview
 
@@ -78,7 +78,7 @@ schemas/constructs/<version>/<construct>/
     └── <construct>_minimal_template.json  # Minimal variant (optional)
 ```
 
-The `api.yml` is the entry point. It references subschemas via `$ref` and defines REST endpoints under `paths:`. Code generators only read `api.yml` — subschemas are pulled in through references.
+The `api.yml` is the entry point. It references subschemas via `$ref` and defines REST endpoints under `paths:`. Code generators only read `api.yml` - subschemas are pulled in through references.
 
 ## Naming conventions
 
@@ -97,7 +97,7 @@ These conventions apply to all new additions (properties, paths, operationIds, e
 | Version strings | k8s-style | `v1alpha1`, `v1beta1` |
 | schemaVersion | group/version | `models.meshery.io/v1beta1` |
 
-Path parameters must use camelCase with the `Id` suffix — never SCREAMING\_CASE or snake\_case:
+Path parameters must use camelCase with the `Id` suffix - never SCREAMING\_CASE or snake\_case:
 
 | Correct | Wrong |
 |---|---|
@@ -105,7 +105,7 @@ Path parameters must use camelCase with the `Id` suffix — never SCREAMING\_CAS
 | `{workspaceId}` | `{workspaceID}` |
 | `{connectionId}` | `{connectionID}`, `{connection_id}` |
 
-## Casing rules — single authoritative reference
+## Casing rules - single authoritative reference
 
 Every element has exactly one correct casing. Use this table for all decisions:
 
@@ -120,8 +120,8 @@ Every element has exactly one correct casing. Use this table for all decisions:
 | Path segments | kebab-case plural nouns | `/api/role-holders` | ~~`/api/roleHolders`~~ |
 | Path parameters | camelCase + `Id` suffix | `{orgId}`, `{workspaceId}` | ~~`{orgID}`~~, ~~`{org_id}`~~ |
 | `operationId` | lower camelCase verbNoun | `getAllRoles`, `createWorkspace` | ~~`GetAllRoles`~~, ~~`get_all_roles`~~ |
-| Go type names | PascalCase (generated) | `Connection`, `KeychainPayload` | — |
-| TypeScript type names | PascalCase (generated) | `Connection`, `KeychainPayload` | — |
+| Go type names | PascalCase (generated) | `Connection`, `KeychainPayload` | - |
+| TypeScript type names | PascalCase (generated) | `Connection`, `KeychainPayload` | - |
 
 **The database naming is the compatibility boundary.** If a property has `x-oapi-codegen-extra-tags.db` and that `db` value is snake_case, then the schema property name and JSON tag must use that exact snake_case name. Do not camelize DB-backed fields in-place within an existing API version.
 
@@ -129,7 +129,7 @@ Every element has exactly one correct casing. Use this table for all decisions:
 
 **Existing enum wire values are compatibility-sensitive.** Use lowercase for newly introduced enum literals, but do not recase published enum values in-place within the same API version. The validator exempts legacy enum values that already exist on the baseline branch.
 
-**Pagination envelopes are fixed API contract fields** — use `page`, `page_size`, and `total_count`, not `pageSize` or `totalCount`.
+**Pagination envelopes are fixed API contract fields** - use `page`, `page_size`, and `total_count`, not `pageSize` or `totalCount`.
 
 **Exceptions for DB-mirrored/system fields**
 
@@ -140,7 +140,7 @@ Some fields intentionally remain `snake_case` to mirror existing database column
 The `v1alpha1/core/api.yml` file defines reusable building blocks. Always reference these instead of redefining them:
 
 ```yaml
-# Timestamps — use the core refs, not inline definitions
+# Timestamps - use the core refs, not inline definitions
 created_at:
   $ref: ../../v1alpha1/core/api.yml#/components/schemas/created_at
   x-order: 14
@@ -161,7 +161,7 @@ semver:
   $ref: ../../v1alpha1/core/api.yml#/components/schemas/semverString
 ```
 
-When using a `$ref` to a core schema that already defines `x-oapi-codegen-extra-tags`, do NOT add redundant tags — they're already in the core definition.
+When using a `$ref` to a core schema that already defines `x-oapi-codegen-extra-tags`, do NOT add redundant tags - they're already in the core definition.
 
 For schemas in `v1alpha3`, the relative path is shorter: `../v1alpha1/core/api.yml#/...`
 
@@ -185,7 +185,7 @@ These rules govern how endpoints are structured. Violations are caught by `make 
 **Critical: Never use `DELETE` with a request body.** REST semantics don't define request bodies for `DELETE`; HTTP clients and proxies may strip them silently. Bulk deletes must use `POST /api/{resources}/delete`.
 
 ```yaml
-# WRONG — DELETE with a body; clients/proxies may silently strip it
+# WRONG - DELETE with a body; clients/proxies may silently strip it
 delete:
   operationId: deletePatterns
   requestBody:
@@ -194,7 +194,7 @@ delete:
         schema:
           $ref: '#/components/schemas/PatternIds'
 
-# CORRECT — POST sub-resource for bulk delete
+# CORRECT - POST sub-resource for bulk delete
 post:
   operationId: deletePatterns
   summary: Bulk delete patterns by ID
@@ -241,7 +241,7 @@ New endpoints must be placed in the appropriate category. Path segments are keba
 
 Every persisted entity MUST follow this pattern. Violating it causes generated Go structs and API clients in downstream repos (`meshery/meshery`, `layer5io/meshery-cloud`) to require clients to supply server-generated fields.
 
-#### Rule 1 — `<construct>.yaml` is a response schema only
+#### Rule 1 - `<construct>.yaml` is a response schema only
 
 The YAML file is the **full server-side object** as returned in API responses. It is never a request body.
 
@@ -275,15 +275,15 @@ properties:
     $ref: ../../v1alpha1/core/api.yml#/components/schemas/nullTime
 ```
 
-#### Rule 2 — Define a `{Construct}Payload` in `api.yml` for every writable entity
+#### Rule 2 - Define a `{Construct}Payload` in `api.yml` for every writable entity
 
 Every entity with `POST` or `PUT` operations needs a dedicated `{Construct}Payload` schema in `api.yml`:
-- Contains only client-settable fields — never `created_at`, `updated_at`, `deleted_at`
+- Contains only client-settable fields - never `created_at`, `updated_at`, `deleted_at`
 - `id` is optional with `json:"id,omitempty"` for upsert patterns; absent entirely for create-only
 - Referenced by all `requestBody` entries for `POST`/`PUT`
 
 ```yaml
-# In api.yml — components/schemas
+# In api.yml - components/schemas
 KeychainPayload:
   type: object
   description: Payload for creating or updating a keychain.
@@ -303,10 +303,10 @@ KeychainPayload:
         json: "owner,omitempty"
 ```
 
-#### Rule 3 — `POST`/`PUT` requestBody must reference `*Payload`, not the entity schema
+#### Rule 3 - `POST`/`PUT` requestBody must reference `*Payload`, not the entity schema
 
 ```yaml
-# WRONG — exposes server-generated required fields to clients
+# WRONG - exposes server-generated required fields to clients
 post:
   requestBody:
     content:
@@ -314,7 +314,7 @@ post:
         schema:
           $ref: "#/components/schemas/Keychain"
 
-# CORRECT — payload for write, full entity for response
+# CORRECT - payload for write, full entity for response
 post:
   requestBody:
     content:
@@ -346,12 +346,12 @@ Run `make validate-schemas` to catch dual-schema violations automatically.
 
 When writing `sql.Scanner` / `driver.Valuer` implementations in manual `*_helper.go` files:
 
-#### `Value()` — always serialize, never return SQL NULL
+#### `Value()` - always serialize, never return SQL NULL
 
-The established pattern (`core.Map`) always marshals. A nil map produces JSON `"null"` — not SQL NULL. All implementations must match this.
+The established pattern (`core.Map`) always marshals. A nil map produces JSON `"null"` - not SQL NULL. All implementations must match this.
 
 ```go
-// CORRECT — matches core.Map; nil → JSON "null", never SQL NULL
+// CORRECT - matches core.Map; nil → JSON "null", never SQL NULL
 func (m MapObject) Value() (driver.Value, error) {
     b, err := json.Marshal(m)
     if err != nil {
@@ -360,7 +360,7 @@ func (m MapObject) Value() (driver.Value, error) {
     return string(b), nil
 }
 
-// WRONG — writes SQL NULL; inconsistent with core.Map
+// WRONG - writes SQL NULL; inconsistent with core.Map
 func (m MapObject) Value() (driver.Value, error) {
     if m == nil {
         return nil, nil   // ← never do this
@@ -369,15 +369,15 @@ func (m MapObject) Value() (driver.Value, error) {
 }
 ```
 
-#### `Scan()` — zero the receiver when `src` is nil
+#### `Scan()` - zero the receiver when `src` is nil
 
 ```go
-// CORRECT — prevents stale data when struct is reused across rows
+// CORRECT - prevents stale data when struct is reused across rows
 case nil:
     *m = nil
     return nil
 
-// WRONG — leaves stale data from previous row
+// WRONG - leaves stale data from previous row
 case nil:
     return nil
 ```
@@ -488,13 +488,13 @@ Keep helper generation implicit whenever possible.
 - If a helper is not safely inferable, keep only that narrow exception handwritten in the package helper file and explain the exception in code or docs.
 - Do not introduce new hand-maintained generator manifests for package/type-level helper behavior unless the schema and generated type information genuinely cannot express the rule.
 
-### `x-generate-db-helpers` — explicit JSON-blob helper generation
+### `x-generate-db-helpers` - explicit JSON-blob helper generation
 
 `x-generate-db-helpers: true` is a **schema-level** OpenAPI vendor extension (declared on a named schema component, not on individual properties). It explicitly instructs the Go generator to produce `Scan()` and `Value()` SQL driver methods for that type in `zz_generated.helpers.go`.
 
 **Use it when** both of the following are true:
 1. The type has a **dedicated OpenAPI schema component** with well-defined, named properties.
-2. The type is **persisted as a JSON blob in a single database column** — not in a dedicated table with one column per property.
+2. The type is **persisted as a JSON blob in a single database column** - not in a dedicated table with one column per property.
 
 **Do not use it** for amorphous objects with no fixed property set (e.g., a freeform `metadata` field). Those should use `x-go-type: "core.Map"` instead. Do not use it for types that correspond to a proper relational table.
 
@@ -509,7 +509,7 @@ Quiz:
     title:
       type: string
 
-# ❌ Wrong: amorphous map — use x-go-type: "core.Map" instead
+# ❌ Wrong: amorphous map - use x-go-type: "core.Map" instead
 metadata:
   type: object
   additionalProperties: true
@@ -636,7 +636,7 @@ When reviewing or auditing schemas, check every item on this list:
 
 - [ ] All `operationId` values are lower camelCase verbNoun (not `GetPatterns`, not `get_patterns`)
 - [ ] Path parameters are camelCase with `Id` suffix (`{workspaceId}`, not `{workspaceID}`, not `{workspace_id}`)
-- [ ] No `DELETE` operation has a `requestBody` — bulk deletes use `POST .../delete`
+- [ ] No `DELETE` operation has a `requestBody` - bulk deletes use `POST .../delete`
 - [ ] `POST` endpoints that exclusively create a new resource return 201, not 200
 - [ ] `DELETE` endpoints with no response body return 204
 - [ ] Long-running async operations return 202
@@ -653,7 +653,7 @@ When reviewing or auditing schemas, check every item on this list:
 
 ### Reference audit
 
-- [ ] No references to deprecated `core.json` — all use `v1alpha1/core/api.yml`
+- [ ] No references to deprecated `core.json` - all use `v1alpha1/core/api.yml`
 - [ ] Timestamps use `$ref` to core schemas (not inline type definitions)
 - [ ] UUIDs use `$ref` to core `uuid` schema
 - [ ] No redundant `x-oapi-codegen-extra-tags` on fields that already have them in the referenced schema
@@ -665,7 +665,7 @@ When reviewing or auditing schemas, check every item on this list:
 - [ ] Every construct directory has an `api.yml` index file
 - [ ] Subschemas are referenced from `api.yml` via `$ref`
 - [ ] Template files exist in `templates/` subdirectory with sensible defaults
-- [ ] `openapi: 3.0.0` version is declared (not 3.1.0 — `oapi-codegen` requires 3.0.x)
+- [ ] `openapi: 3.0.0` version is declared (not 3.1.0 - `oapi-codegen` requires 3.0.x)
 - [ ] Each construct defines `info.title` and `info.version`
 - [ ] Single-entry `allOf` wrappers are limited to reusable alias schemas or documented compatibility exceptions; ordinary property refs stay direct
 
@@ -690,14 +690,14 @@ When reviewing or auditing schemas, check every item on this list:
 
 These are the most common mistakes. If you catch yourself doing any of them, stop:
 
-1. **Committing generated code** — files in `models/`, `typescript/generated/`, `dist/`, or `_openapi_build/` are auto-generated. Only commit schema YAML and template files.
-2. **Using deprecated core.json references** — always use `v1alpha1/core/api.yml`.
-3. **Defining timestamps inline** — use `$ref` to core schema timestamps.
-4. **Adding redundant extra tags** — if the `$ref` target already has `x-oapi-codegen-extra-tags`, don't duplicate them.
-5. **Using OpenAPI 3.1.0** — the code generators require 3.0.x.
-6. **Placing templates outside `templates/`** — they belong in the `templates/` subdirectory.
-7. **Using `.d.ts` extension in TypeScript imports** — use extensionless paths.
-8. **Forgetting to update `typescript/index.ts`** — when adding a new construct, add the import and type export to this manually-maintained file.
+1. **Committing generated code** - files in `models/`, `typescript/generated/`, `dist/`, or `_openapi_build/` are auto-generated. Only commit schema YAML and template files.
+2. **Using deprecated core.json references** - always use `v1alpha1/core/api.yml`.
+3. **Defining timestamps inline** - use `$ref` to core schema timestamps.
+4. **Adding redundant extra tags** - if the `$ref` target already has `x-oapi-codegen-extra-tags`, don't duplicate them.
+5. **Using OpenAPI 3.1.0** - the code generators require 3.0.x.
+6. **Placing templates outside `templates/`** - they belong in the `templates/` subdirectory.
+7. **Using `.d.ts` extension in TypeScript imports** - use extensionless paths.
+8. **Forgetting to update `typescript/index.ts`** - when adding a new construct, add the import and type export to this manually-maintained file.
 
 ## Validation commands
 
@@ -707,7 +707,7 @@ go run ./cmd/validate-schemas              # fails on violations
 go run ./cmd/validate-schemas --warn       # reports only
 make validate-schemas                      # same via Makefile
 
-# Full build (validates + generates everything — validator is step 1)
+# Full build (validates + generates everything - validator is step 1)
 make build
 
 # Run Go tests (including validation tests)
@@ -738,7 +738,7 @@ The validator (`validation/` Go package, using kin-openapi for spec parsing) che
 - `x-generate-db-helpers` at schema component level only
 
 **Structural and annotation rules (12-22):**
-- `openapi: 3.0.x` required (not 3.1.0 — oapi-codegen requirement)
+- `openapi: 3.0.x` required (not 3.1.0 - oapi-codegen requirement)
 - `info.title` and `info.version` required in every `api.yml`
 - `x-internal` is required on every operation and must be `["cloud"]`, `["meshery"]`, or `["cloud", "meshery"]` (lowercase, array form)
 - Cross-construct `$ref` must have `x-go-type` + `x-go-type-import` for Go imports
@@ -770,9 +770,9 @@ The validator (`validation/` Go package, using kin-openapi for spec parsing) che
 
 ## Related resources
 
-- **Agent guidelines**: `.claude/agents/code-contributor.md` — detailed contributor rules
-- **Repository guidelines**: `AGENTS.md` — complete checklist for schema changes
-- **Existing skill**: `.github/skills/create-openapi-schemas-from-golang-models/` — specialized workflow for creating schemas from Go models in `layer5io/meshery-cloud`
-- **Build scripts**: `build/` directory — the bundler and all code generators
-- **Core schemas**: `schemas/constructs/v1alpha1/core/api.yml` — reusable building blocks
-- **Example constructs**: `schemas/constructs/v1beta1/model/`, `schemas/constructs/v1beta1/environment/` — well-established patterns to follow
+- **Agent guidelines**: `.claude/agents/code-contributor.md` - detailed contributor rules
+- **Repository guidelines**: `AGENTS.md` - complete checklist for schema changes
+- **Existing skill**: `.github/skills/create-openapi-schemas-from-golang-models/` - specialized workflow for creating schemas from Go models in `layer5io/meshery-cloud`
+- **Build scripts**: `build/` directory - the bundler and all code generators
+- **Core schemas**: `schemas/constructs/v1alpha1/core/api.yml` - reusable building blocks
+- **Example constructs**: `schemas/constructs/v1beta1/model/`, `schemas/constructs/v1beta1/environment/` - well-established patterns to follow

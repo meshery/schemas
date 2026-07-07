@@ -7,7 +7,7 @@ const DesignSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "Design",
-    "description": "OpenAPI schema for managing Meshery designs and infrastructure patterns.\n\nDEPRECATED: superseded by schemas/constructs/v1beta3/design as part of the\nPhase 3 identifier-naming migration (camelCase-on-the-wire contract). All\nJSON tags and query/path parameters were snake_case in v1beta2; the\nreplacement v1beta3 schema publishes them as canonical camelCase. v1beta2\nremains served for one release cycle after all downstream consumers\nmigrate, then is retired per docs/identifier-naming-migration.md §9.1 row 5.\n",
+    "description": "OpenAPI schema for managing Meshery designs and infrastructure patterns.\n\nDEPRECATED: superseded by schemas/constructs/v1beta3/design as part of the\nPhase 3 identifier-naming migration (camelCase-on-the-wire contract). All\nJSON tags and query/path parameters were snake_case in v1beta2; the\nreplacement v1beta3 schema publishes them as canonical camelCase. v1beta2\nremains served indefinitely for consumers that pin it, per the Phase 4.A\nnon-deletion policy in docs/schema-tooling.md.\n",
     "version": "v1beta2",
     "x-deprecated": true,
     "x-superseded-by": "v1beta3/design",
@@ -308,7 +308,7 @@ const DesignSchema: Record<string, unknown> = {
                                 "type": "string",
                                 "minLength": 2,
                                 "maxLength": 100,
-                                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                 "example": [
                                   "v1",
                                   "v1alpha1",
@@ -464,7 +464,7 @@ const DesignSchema: Record<string, unknown> = {
                                           "type": "string",
                                           "minLength": 2,
                                           "maxLength": 100,
-                                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                           "example": [
                                             "v1",
                                             "v1alpha1",
@@ -563,7 +563,7 @@ const DesignSchema: Record<string, unknown> = {
                                               "type": "string",
                                               "minLength": 2,
                                               "maxLength": 100,
-                                              "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                              "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                               "example": [
                                                 "v1",
                                                 "v1alpha1",
@@ -883,7 +883,7 @@ const DesignSchema: Record<string, unknown> = {
                                                         "type": "string",
                                                         "minLength": 2,
                                                         "maxLength": 100,
-                                                        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                                        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                                         "example": [
                                                           "v1",
                                                           "v1alpha1",
@@ -1019,7 +1019,7 @@ const DesignSchema: Record<string, unknown> = {
                                                   "type": "string",
                                                   "minLength": 2,
                                                   "maxLength": 100,
-                                                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                                   "example": [
                                                     "v1",
                                                     "v1alpha1",
@@ -1105,6 +1105,7 @@ const DesignSchema: Record<string, unknown> = {
                                                   },
                                                   "default": "Uncategorized",
                                                   "description": "The category of the model that determines the main grouping.",
+                                                  "helperText": "Select a model category",
                                                   "enum": [
                                                     "Analytics",
                                                     "App Definition and Development",
@@ -1247,7 +1248,7 @@ const DesignSchema: Record<string, unknown> = {
                                                         "type": "string",
                                                         "minLength": 2,
                                                         "maxLength": 100,
-                                                        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                                        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                                         "example": [
                                                           "v1",
                                                           "v1alpha1",
@@ -2222,7 +2223,7 @@ const DesignSchema: Record<string, unknown> = {
                                                 "type": "string",
                                                 "minLength": 2,
                                                 "maxLength": 100,
-                                                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                                 "example": [
                                                   "v1",
                                                   "v1alpha1",
@@ -2726,7 +2727,7 @@ const DesignSchema: Record<string, unknown> = {
                                           "type": "string",
                                           "minLength": 2,
                                           "maxLength": 100,
-                                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                           "example": [
                                             "v1",
                                             "v1alpha1",
@@ -2838,7 +2839,7 @@ const DesignSchema: Record<string, unknown> = {
                                                 "type": "string",
                                                 "minLength": 2,
                                                 "maxLength": 100,
-                                                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                                 "example": [
                                                   "v1",
                                                   "v1alpha1",
@@ -3373,6 +3374,7 @@ const DesignSchema: Record<string, unknown> = {
                                           "x-go-type-skip-optional-pointer": true,
                                           "x-order": 6,
                                           "description": "Model Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
+                                          "helperText": "Select a model",
                                           "x-oapi-codegen-extra-tags": {
                                             "yaml": "model",
                                             "json": "model",
@@ -5168,7 +5170,7 @@ const DesignSchema: Record<string, unknown> = {
                             "type": "string",
                             "minLength": 2,
                             "maxLength": 100,
-                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                             "example": [
                               "v1",
                               "v1alpha1",
@@ -5324,7 +5326,7 @@ const DesignSchema: Record<string, unknown> = {
                                       "type": "string",
                                       "minLength": 2,
                                       "maxLength": 100,
-                                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                       "example": [
                                         "v1",
                                         "v1alpha1",
@@ -5423,7 +5425,7 @@ const DesignSchema: Record<string, unknown> = {
                                           "type": "string",
                                           "minLength": 2,
                                           "maxLength": 100,
-                                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                           "example": [
                                             "v1",
                                             "v1alpha1",
@@ -5743,7 +5745,7 @@ const DesignSchema: Record<string, unknown> = {
                                                     "type": "string",
                                                     "minLength": 2,
                                                     "maxLength": 100,
-                                                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                                     "example": [
                                                       "v1",
                                                       "v1alpha1",
@@ -5879,7 +5881,7 @@ const DesignSchema: Record<string, unknown> = {
                                               "type": "string",
                                               "minLength": 2,
                                               "maxLength": 100,
-                                              "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                              "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                               "example": [
                                                 "v1",
                                                 "v1alpha1",
@@ -5965,6 +5967,7 @@ const DesignSchema: Record<string, unknown> = {
                                               },
                                               "default": "Uncategorized",
                                               "description": "The category of the model that determines the main grouping.",
+                                              "helperText": "Select a model category",
                                               "enum": [
                                                 "Analytics",
                                                 "App Definition and Development",
@@ -6107,7 +6110,7 @@ const DesignSchema: Record<string, unknown> = {
                                                     "type": "string",
                                                     "minLength": 2,
                                                     "maxLength": 100,
-                                                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                                     "example": [
                                                       "v1",
                                                       "v1alpha1",
@@ -7082,7 +7085,7 @@ const DesignSchema: Record<string, unknown> = {
                                             "type": "string",
                                             "minLength": 2,
                                             "maxLength": 100,
-                                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                             "example": [
                                               "v1",
                                               "v1alpha1",
@@ -7586,7 +7589,7 @@ const DesignSchema: Record<string, unknown> = {
                                       "type": "string",
                                       "minLength": 2,
                                       "maxLength": 100,
-                                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                       "example": [
                                         "v1",
                                         "v1alpha1",
@@ -7698,7 +7701,7 @@ const DesignSchema: Record<string, unknown> = {
                                             "type": "string",
                                             "minLength": 2,
                                             "maxLength": 100,
-                                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                             "example": [
                                               "v1",
                                               "v1alpha1",
@@ -8233,6 +8236,7 @@ const DesignSchema: Record<string, unknown> = {
                                       "x-go-type-skip-optional-pointer": true,
                                       "x-order": 6,
                                       "description": "Model Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
+                                      "helperText": "Select a model",
                                       "x-oapi-codegen-extra-tags": {
                                         "yaml": "model",
                                         "json": "model",
@@ -9994,7 +9998,7 @@ const DesignSchema: Record<string, unknown> = {
                           "type": "string",
                           "minLength": 2,
                           "maxLength": 100,
-                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                           "example": [
                             "v1",
                             "v1alpha1",
@@ -10150,7 +10154,7 @@ const DesignSchema: Record<string, unknown> = {
                                     "type": "string",
                                     "minLength": 2,
                                     "maxLength": 100,
-                                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                     "example": [
                                       "v1",
                                       "v1alpha1",
@@ -10249,7 +10253,7 @@ const DesignSchema: Record<string, unknown> = {
                                         "type": "string",
                                         "minLength": 2,
                                         "maxLength": 100,
-                                        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                         "example": [
                                           "v1",
                                           "v1alpha1",
@@ -10569,7 +10573,7 @@ const DesignSchema: Record<string, unknown> = {
                                                   "type": "string",
                                                   "minLength": 2,
                                                   "maxLength": 100,
-                                                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                                   "example": [
                                                     "v1",
                                                     "v1alpha1",
@@ -10705,7 +10709,7 @@ const DesignSchema: Record<string, unknown> = {
                                             "type": "string",
                                             "minLength": 2,
                                             "maxLength": 100,
-                                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                             "example": [
                                               "v1",
                                               "v1alpha1",
@@ -10791,6 +10795,7 @@ const DesignSchema: Record<string, unknown> = {
                                             },
                                             "default": "Uncategorized",
                                             "description": "The category of the model that determines the main grouping.",
+                                            "helperText": "Select a model category",
                                             "enum": [
                                               "Analytics",
                                               "App Definition and Development",
@@ -10933,7 +10938,7 @@ const DesignSchema: Record<string, unknown> = {
                                                   "type": "string",
                                                   "minLength": 2,
                                                   "maxLength": 100,
-                                                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                                   "example": [
                                                     "v1",
                                                     "v1alpha1",
@@ -11908,7 +11913,7 @@ const DesignSchema: Record<string, unknown> = {
                                           "type": "string",
                                           "minLength": 2,
                                           "maxLength": 100,
-                                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                           "example": [
                                             "v1",
                                             "v1alpha1",
@@ -12412,7 +12417,7 @@ const DesignSchema: Record<string, unknown> = {
                                     "type": "string",
                                     "minLength": 2,
                                     "maxLength": 100,
-                                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                     "example": [
                                       "v1",
                                       "v1alpha1",
@@ -12524,7 +12529,7 @@ const DesignSchema: Record<string, unknown> = {
                                           "type": "string",
                                           "minLength": 2,
                                           "maxLength": 100,
-                                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                           "example": [
                                             "v1",
                                             "v1alpha1",
@@ -13059,6 +13064,7 @@ const DesignSchema: Record<string, unknown> = {
                                     "x-go-type-skip-optional-pointer": true,
                                     "x-order": 6,
                                     "description": "Model Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
+                                    "helperText": "Select a model",
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "model",
                                       "json": "model",
@@ -15188,7 +15194,7 @@ const DesignSchema: Record<string, unknown> = {
                           "type": "string",
                           "minLength": 2,
                           "maxLength": 100,
-                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                           "example": [
                             "v1",
                             "v1alpha1",
@@ -15344,7 +15350,7 @@ const DesignSchema: Record<string, unknown> = {
                                     "type": "string",
                                     "minLength": 2,
                                     "maxLength": 100,
-                                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                     "example": [
                                       "v1",
                                       "v1alpha1",
@@ -15443,7 +15449,7 @@ const DesignSchema: Record<string, unknown> = {
                                         "type": "string",
                                         "minLength": 2,
                                         "maxLength": 100,
-                                        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                         "example": [
                                           "v1",
                                           "v1alpha1",
@@ -15763,7 +15769,7 @@ const DesignSchema: Record<string, unknown> = {
                                                   "type": "string",
                                                   "minLength": 2,
                                                   "maxLength": 100,
-                                                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                                   "example": [
                                                     "v1",
                                                     "v1alpha1",
@@ -15899,7 +15905,7 @@ const DesignSchema: Record<string, unknown> = {
                                             "type": "string",
                                             "minLength": 2,
                                             "maxLength": 100,
-                                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                             "example": [
                                               "v1",
                                               "v1alpha1",
@@ -15985,6 +15991,7 @@ const DesignSchema: Record<string, unknown> = {
                                             },
                                             "default": "Uncategorized",
                                             "description": "The category of the model that determines the main grouping.",
+                                            "helperText": "Select a model category",
                                             "enum": [
                                               "Analytics",
                                               "App Definition and Development",
@@ -16127,7 +16134,7 @@ const DesignSchema: Record<string, unknown> = {
                                                   "type": "string",
                                                   "minLength": 2,
                                                   "maxLength": 100,
-                                                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                                   "example": [
                                                     "v1",
                                                     "v1alpha1",
@@ -17102,7 +17109,7 @@ const DesignSchema: Record<string, unknown> = {
                                           "type": "string",
                                           "minLength": 2,
                                           "maxLength": 100,
-                                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                           "example": [
                                             "v1",
                                             "v1alpha1",
@@ -17606,7 +17613,7 @@ const DesignSchema: Record<string, unknown> = {
                                     "type": "string",
                                     "minLength": 2,
                                     "maxLength": 100,
-                                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                     "example": [
                                       "v1",
                                       "v1alpha1",
@@ -17718,7 +17725,7 @@ const DesignSchema: Record<string, unknown> = {
                                           "type": "string",
                                           "minLength": 2,
                                           "maxLength": 100,
-                                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                           "example": [
                                             "v1",
                                             "v1alpha1",
@@ -18253,6 +18260,7 @@ const DesignSchema: Record<string, unknown> = {
                                     "x-go-type-skip-optional-pointer": true,
                                     "x-order": 6,
                                     "description": "Model Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
+                                    "helperText": "Select a model",
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "model",
                                       "json": "model",
@@ -20118,7 +20126,7 @@ const DesignSchema: Record<string, unknown> = {
                           "type": "string",
                           "minLength": 2,
                           "maxLength": 100,
-                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                           "example": [
                             "v1",
                             "v1alpha1",
@@ -20274,7 +20282,7 @@ const DesignSchema: Record<string, unknown> = {
                                     "type": "string",
                                     "minLength": 2,
                                     "maxLength": 100,
-                                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                     "example": [
                                       "v1",
                                       "v1alpha1",
@@ -20373,7 +20381,7 @@ const DesignSchema: Record<string, unknown> = {
                                         "type": "string",
                                         "minLength": 2,
                                         "maxLength": 100,
-                                        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                         "example": [
                                           "v1",
                                           "v1alpha1",
@@ -20693,7 +20701,7 @@ const DesignSchema: Record<string, unknown> = {
                                                   "type": "string",
                                                   "minLength": 2,
                                                   "maxLength": 100,
-                                                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                                   "example": [
                                                     "v1",
                                                     "v1alpha1",
@@ -20829,7 +20837,7 @@ const DesignSchema: Record<string, unknown> = {
                                             "type": "string",
                                             "minLength": 2,
                                             "maxLength": 100,
-                                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                             "example": [
                                               "v1",
                                               "v1alpha1",
@@ -20915,6 +20923,7 @@ const DesignSchema: Record<string, unknown> = {
                                             },
                                             "default": "Uncategorized",
                                             "description": "The category of the model that determines the main grouping.",
+                                            "helperText": "Select a model category",
                                             "enum": [
                                               "Analytics",
                                               "App Definition and Development",
@@ -21057,7 +21066,7 @@ const DesignSchema: Record<string, unknown> = {
                                                   "type": "string",
                                                   "minLength": 2,
                                                   "maxLength": 100,
-                                                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                                   "example": [
                                                     "v1",
                                                     "v1alpha1",
@@ -22032,7 +22041,7 @@ const DesignSchema: Record<string, unknown> = {
                                           "type": "string",
                                           "minLength": 2,
                                           "maxLength": 100,
-                                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                           "example": [
                                             "v1",
                                             "v1alpha1",
@@ -22536,7 +22545,7 @@ const DesignSchema: Record<string, unknown> = {
                                     "type": "string",
                                     "minLength": 2,
                                     "maxLength": 100,
-                                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                     "example": [
                                       "v1",
                                       "v1alpha1",
@@ -22648,7 +22657,7 @@ const DesignSchema: Record<string, unknown> = {
                                           "type": "string",
                                           "minLength": 2,
                                           "maxLength": 100,
-                                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                           "example": [
                                             "v1",
                                             "v1alpha1",
@@ -23183,6 +23192,7 @@ const DesignSchema: Record<string, unknown> = {
                                     "x-go-type-skip-optional-pointer": true,
                                     "x-order": 6,
                                     "description": "Model Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
+                                    "helperText": "Select a model",
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "model",
                                       "json": "model",
@@ -25380,7 +25390,7 @@ const DesignSchema: Record<string, unknown> = {
                                 "type": "string",
                                 "minLength": 2,
                                 "maxLength": 100,
-                                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                 "example": [
                                   "v1",
                                   "v1alpha1",
@@ -25536,7 +25546,7 @@ const DesignSchema: Record<string, unknown> = {
                                           "type": "string",
                                           "minLength": 2,
                                           "maxLength": 100,
-                                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                           "example": [
                                             "v1",
                                             "v1alpha1",
@@ -25635,7 +25645,7 @@ const DesignSchema: Record<string, unknown> = {
                                               "type": "string",
                                               "minLength": 2,
                                               "maxLength": 100,
-                                              "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                              "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                               "example": [
                                                 "v1",
                                                 "v1alpha1",
@@ -25955,7 +25965,7 @@ const DesignSchema: Record<string, unknown> = {
                                                         "type": "string",
                                                         "minLength": 2,
                                                         "maxLength": 100,
-                                                        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                                        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                                         "example": [
                                                           "v1",
                                                           "v1alpha1",
@@ -26091,7 +26101,7 @@ const DesignSchema: Record<string, unknown> = {
                                                   "type": "string",
                                                   "minLength": 2,
                                                   "maxLength": 100,
-                                                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                                   "example": [
                                                     "v1",
                                                     "v1alpha1",
@@ -26177,6 +26187,7 @@ const DesignSchema: Record<string, unknown> = {
                                                   },
                                                   "default": "Uncategorized",
                                                   "description": "The category of the model that determines the main grouping.",
+                                                  "helperText": "Select a model category",
                                                   "enum": [
                                                     "Analytics",
                                                     "App Definition and Development",
@@ -26319,7 +26330,7 @@ const DesignSchema: Record<string, unknown> = {
                                                         "type": "string",
                                                         "minLength": 2,
                                                         "maxLength": 100,
-                                                        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                                        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                                         "example": [
                                                           "v1",
                                                           "v1alpha1",
@@ -27294,7 +27305,7 @@ const DesignSchema: Record<string, unknown> = {
                                                 "type": "string",
                                                 "minLength": 2,
                                                 "maxLength": 100,
-                                                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                                 "example": [
                                                   "v1",
                                                   "v1alpha1",
@@ -27798,7 +27809,7 @@ const DesignSchema: Record<string, unknown> = {
                                           "type": "string",
                                           "minLength": 2,
                                           "maxLength": 100,
-                                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                           "example": [
                                             "v1",
                                             "v1alpha1",
@@ -27910,7 +27921,7 @@ const DesignSchema: Record<string, unknown> = {
                                                 "type": "string",
                                                 "minLength": 2,
                                                 "maxLength": 100,
-                                                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                                 "example": [
                                                   "v1",
                                                   "v1alpha1",
@@ -28445,6 +28456,7 @@ const DesignSchema: Record<string, unknown> = {
                                           "x-go-type-skip-optional-pointer": true,
                                           "x-order": 6,
                                           "description": "Model Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
+                                          "helperText": "Select a model",
                                           "x-oapi-codegen-extra-tags": {
                                             "yaml": "model",
                                             "json": "model",
@@ -31204,7 +31216,7 @@ const DesignSchema: Record<string, unknown> = {
             "type": "string",
             "minLength": 2,
             "maxLength": 100,
-            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
             "example": [
               "v1",
               "v1alpha1",
@@ -31360,7 +31372,7 @@ const DesignSchema: Record<string, unknown> = {
                       "type": "string",
                       "minLength": 2,
                       "maxLength": 100,
-                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                       "example": [
                         "v1",
                         "v1alpha1",
@@ -31459,7 +31471,7 @@ const DesignSchema: Record<string, unknown> = {
                           "type": "string",
                           "minLength": 2,
                           "maxLength": 100,
-                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                           "example": [
                             "v1",
                             "v1alpha1",
@@ -31779,7 +31791,7 @@ const DesignSchema: Record<string, unknown> = {
                                     "type": "string",
                                     "minLength": 2,
                                     "maxLength": 100,
-                                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                     "example": [
                                       "v1",
                                       "v1alpha1",
@@ -31915,7 +31927,7 @@ const DesignSchema: Record<string, unknown> = {
                               "type": "string",
                               "minLength": 2,
                               "maxLength": 100,
-                              "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                              "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                               "example": [
                                 "v1",
                                 "v1alpha1",
@@ -32001,6 +32013,7 @@ const DesignSchema: Record<string, unknown> = {
                               },
                               "default": "Uncategorized",
                               "description": "The category of the model that determines the main grouping.",
+                              "helperText": "Select a model category",
                               "enum": [
                                 "Analytics",
                                 "App Definition and Development",
@@ -32143,7 +32156,7 @@ const DesignSchema: Record<string, unknown> = {
                                     "type": "string",
                                     "minLength": 2,
                                     "maxLength": 100,
-                                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                     "example": [
                                       "v1",
                                       "v1alpha1",
@@ -33118,7 +33131,7 @@ const DesignSchema: Record<string, unknown> = {
                             "type": "string",
                             "minLength": 2,
                             "maxLength": 100,
-                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                             "example": [
                               "v1",
                               "v1alpha1",
@@ -33622,7 +33635,7 @@ const DesignSchema: Record<string, unknown> = {
                       "type": "string",
                       "minLength": 2,
                       "maxLength": 100,
-                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                       "example": [
                         "v1",
                         "v1alpha1",
@@ -33734,7 +33747,7 @@ const DesignSchema: Record<string, unknown> = {
                             "type": "string",
                             "minLength": 2,
                             "maxLength": 100,
-                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                             "example": [
                               "v1",
                               "v1alpha1",
@@ -34269,6 +34282,7 @@ const DesignSchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true,
                       "x-order": 6,
                       "description": "Model Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
+                      "helperText": "Select a model",
                       "x-oapi-codegen-extra-tags": {
                         "yaml": "model",
                         "json": "model",
@@ -35983,7 +35997,7 @@ const DesignSchema: Record<string, unknown> = {
                 "type": "string",
                 "minLength": 2,
                 "maxLength": 100,
-                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                 "example": [
                   "v1",
                   "v1alpha1",
@@ -36139,7 +36153,7 @@ const DesignSchema: Record<string, unknown> = {
                           "type": "string",
                           "minLength": 2,
                           "maxLength": 100,
-                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                           "example": [
                             "v1",
                             "v1alpha1",
@@ -36238,7 +36252,7 @@ const DesignSchema: Record<string, unknown> = {
                               "type": "string",
                               "minLength": 2,
                               "maxLength": 100,
-                              "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                              "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                               "example": [
                                 "v1",
                                 "v1alpha1",
@@ -36558,7 +36572,7 @@ const DesignSchema: Record<string, unknown> = {
                                         "type": "string",
                                         "minLength": 2,
                                         "maxLength": 100,
-                                        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                         "example": [
                                           "v1",
                                           "v1alpha1",
@@ -36694,7 +36708,7 @@ const DesignSchema: Record<string, unknown> = {
                                   "type": "string",
                                   "minLength": 2,
                                   "maxLength": 100,
-                                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                   "example": [
                                     "v1",
                                     "v1alpha1",
@@ -36780,6 +36794,7 @@ const DesignSchema: Record<string, unknown> = {
                                   },
                                   "default": "Uncategorized",
                                   "description": "The category of the model that determines the main grouping.",
+                                  "helperText": "Select a model category",
                                   "enum": [
                                     "Analytics",
                                     "App Definition and Development",
@@ -36922,7 +36937,7 @@ const DesignSchema: Record<string, unknown> = {
                                         "type": "string",
                                         "minLength": 2,
                                         "maxLength": 100,
-                                        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                         "example": [
                                           "v1",
                                           "v1alpha1",
@@ -37897,7 +37912,7 @@ const DesignSchema: Record<string, unknown> = {
                                 "type": "string",
                                 "minLength": 2,
                                 "maxLength": 100,
-                                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                 "example": [
                                   "v1",
                                   "v1alpha1",
@@ -38401,7 +38416,7 @@ const DesignSchema: Record<string, unknown> = {
                           "type": "string",
                           "minLength": 2,
                           "maxLength": 100,
-                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                           "example": [
                             "v1",
                             "v1alpha1",
@@ -38513,7 +38528,7 @@ const DesignSchema: Record<string, unknown> = {
                                 "type": "string",
                                 "minLength": 2,
                                 "maxLength": 100,
-                                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                 "example": [
                                   "v1",
                                   "v1alpha1",
@@ -39048,6 +39063,7 @@ const DesignSchema: Record<string, unknown> = {
                           "x-go-type-skip-optional-pointer": true,
                           "x-order": 6,
                           "description": "Model Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
+                          "helperText": "Select a model",
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "model",
                             "json": "model",
@@ -40798,7 +40814,7 @@ const DesignSchema: Record<string, unknown> = {
                       "type": "string",
                       "minLength": 2,
                       "maxLength": 100,
-                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                       "example": [
                         "v1",
                         "v1alpha1",
@@ -40954,7 +40970,7 @@ const DesignSchema: Record<string, unknown> = {
                                 "type": "string",
                                 "minLength": 2,
                                 "maxLength": 100,
-                                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                 "example": [
                                   "v1",
                                   "v1alpha1",
@@ -41053,7 +41069,7 @@ const DesignSchema: Record<string, unknown> = {
                                     "type": "string",
                                     "minLength": 2,
                                     "maxLength": 100,
-                                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                     "example": [
                                       "v1",
                                       "v1alpha1",
@@ -41373,7 +41389,7 @@ const DesignSchema: Record<string, unknown> = {
                                               "type": "string",
                                               "minLength": 2,
                                               "maxLength": 100,
-                                              "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                              "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                               "example": [
                                                 "v1",
                                                 "v1alpha1",
@@ -41509,7 +41525,7 @@ const DesignSchema: Record<string, unknown> = {
                                         "type": "string",
                                         "minLength": 2,
                                         "maxLength": 100,
-                                        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                         "example": [
                                           "v1",
                                           "v1alpha1",
@@ -41595,6 +41611,7 @@ const DesignSchema: Record<string, unknown> = {
                                         },
                                         "default": "Uncategorized",
                                         "description": "The category of the model that determines the main grouping.",
+                                        "helperText": "Select a model category",
                                         "enum": [
                                           "Analytics",
                                           "App Definition and Development",
@@ -41737,7 +41754,7 @@ const DesignSchema: Record<string, unknown> = {
                                               "type": "string",
                                               "minLength": 2,
                                               "maxLength": 100,
-                                              "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                              "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                               "example": [
                                                 "v1",
                                                 "v1alpha1",
@@ -42712,7 +42729,7 @@ const DesignSchema: Record<string, unknown> = {
                                       "type": "string",
                                       "minLength": 2,
                                       "maxLength": 100,
-                                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                       "example": [
                                         "v1",
                                         "v1alpha1",
@@ -43216,7 +43233,7 @@ const DesignSchema: Record<string, unknown> = {
                                 "type": "string",
                                 "minLength": 2,
                                 "maxLength": 100,
-                                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                 "example": [
                                   "v1",
                                   "v1alpha1",
@@ -43328,7 +43345,7 @@ const DesignSchema: Record<string, unknown> = {
                                       "type": "string",
                                       "minLength": 2,
                                       "maxLength": 100,
-                                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                       "example": [
                                         "v1",
                                         "v1alpha1",
@@ -43863,6 +43880,7 @@ const DesignSchema: Record<string, unknown> = {
                                 "x-go-type-skip-optional-pointer": true,
                                 "x-order": 6,
                                 "description": "Model Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
+                                "helperText": "Select a model",
                                 "x-oapi-codegen-extra-tags": {
                                   "yaml": "model",
                                   "json": "model",
@@ -45647,7 +45665,7 @@ const DesignSchema: Record<string, unknown> = {
                     "type": "string",
                     "minLength": 2,
                     "maxLength": 100,
-                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                     "example": [
                       "v1",
                       "v1alpha1",
@@ -45803,7 +45821,7 @@ const DesignSchema: Record<string, unknown> = {
                               "type": "string",
                               "minLength": 2,
                               "maxLength": 100,
-                              "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                              "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                               "example": [
                                 "v1",
                                 "v1alpha1",
@@ -45902,7 +45920,7 @@ const DesignSchema: Record<string, unknown> = {
                                   "type": "string",
                                   "minLength": 2,
                                   "maxLength": 100,
-                                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                   "example": [
                                     "v1",
                                     "v1alpha1",
@@ -46222,7 +46240,7 @@ const DesignSchema: Record<string, unknown> = {
                                             "type": "string",
                                             "minLength": 2,
                                             "maxLength": 100,
-                                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                             "example": [
                                               "v1",
                                               "v1alpha1",
@@ -46358,7 +46376,7 @@ const DesignSchema: Record<string, unknown> = {
                                       "type": "string",
                                       "minLength": 2,
                                       "maxLength": 100,
-                                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                       "example": [
                                         "v1",
                                         "v1alpha1",
@@ -46444,6 +46462,7 @@ const DesignSchema: Record<string, unknown> = {
                                       },
                                       "default": "Uncategorized",
                                       "description": "The category of the model that determines the main grouping.",
+                                      "helperText": "Select a model category",
                                       "enum": [
                                         "Analytics",
                                         "App Definition and Development",
@@ -46586,7 +46605,7 @@ const DesignSchema: Record<string, unknown> = {
                                             "type": "string",
                                             "minLength": 2,
                                             "maxLength": 100,
-                                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                             "example": [
                                               "v1",
                                               "v1alpha1",
@@ -47561,7 +47580,7 @@ const DesignSchema: Record<string, unknown> = {
                                     "type": "string",
                                     "minLength": 2,
                                     "maxLength": 100,
-                                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                     "example": [
                                       "v1",
                                       "v1alpha1",
@@ -48065,7 +48084,7 @@ const DesignSchema: Record<string, unknown> = {
                               "type": "string",
                               "minLength": 2,
                               "maxLength": 100,
-                              "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                              "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                               "example": [
                                 "v1",
                                 "v1alpha1",
@@ -48177,7 +48196,7 @@ const DesignSchema: Record<string, unknown> = {
                                     "type": "string",
                                     "minLength": 2,
                                     "maxLength": 100,
-                                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                     "example": [
                                       "v1",
                                       "v1alpha1",
@@ -48712,6 +48731,7 @@ const DesignSchema: Record<string, unknown> = {
                               "x-go-type-skip-optional-pointer": true,
                               "x-order": 6,
                               "description": "Model Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
+                              "helperText": "Select a model",
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "model",
                                 "json": "model",
@@ -50608,7 +50628,7 @@ const DesignSchema: Record<string, unknown> = {
                       "type": "string",
                       "minLength": 2,
                       "maxLength": 100,
-                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                       "example": [
                         "v1",
                         "v1alpha1",
@@ -50764,7 +50784,7 @@ const DesignSchema: Record<string, unknown> = {
                                 "type": "string",
                                 "minLength": 2,
                                 "maxLength": 100,
-                                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                 "example": [
                                   "v1",
                                   "v1alpha1",
@@ -50863,7 +50883,7 @@ const DesignSchema: Record<string, unknown> = {
                                     "type": "string",
                                     "minLength": 2,
                                     "maxLength": 100,
-                                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                     "example": [
                                       "v1",
                                       "v1alpha1",
@@ -51183,7 +51203,7 @@ const DesignSchema: Record<string, unknown> = {
                                               "type": "string",
                                               "minLength": 2,
                                               "maxLength": 100,
-                                              "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                              "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                               "example": [
                                                 "v1",
                                                 "v1alpha1",
@@ -51319,7 +51339,7 @@ const DesignSchema: Record<string, unknown> = {
                                         "type": "string",
                                         "minLength": 2,
                                         "maxLength": 100,
-                                        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                         "example": [
                                           "v1",
                                           "v1alpha1",
@@ -51405,6 +51425,7 @@ const DesignSchema: Record<string, unknown> = {
                                         },
                                         "default": "Uncategorized",
                                         "description": "The category of the model that determines the main grouping.",
+                                        "helperText": "Select a model category",
                                         "enum": [
                                           "Analytics",
                                           "App Definition and Development",
@@ -51547,7 +51568,7 @@ const DesignSchema: Record<string, unknown> = {
                                               "type": "string",
                                               "minLength": 2,
                                               "maxLength": 100,
-                                              "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                              "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                               "example": [
                                                 "v1",
                                                 "v1alpha1",
@@ -52522,7 +52543,7 @@ const DesignSchema: Record<string, unknown> = {
                                       "type": "string",
                                       "minLength": 2,
                                       "maxLength": 100,
-                                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                       "example": [
                                         "v1",
                                         "v1alpha1",
@@ -53026,7 +53047,7 @@ const DesignSchema: Record<string, unknown> = {
                                 "type": "string",
                                 "minLength": 2,
                                 "maxLength": 100,
-                                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                 "example": [
                                   "v1",
                                   "v1alpha1",
@@ -53138,7 +53159,7 @@ const DesignSchema: Record<string, unknown> = {
                                       "type": "string",
                                       "minLength": 2,
                                       "maxLength": 100,
-                                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                       "example": [
                                         "v1",
                                         "v1alpha1",
@@ -53673,6 +53694,7 @@ const DesignSchema: Record<string, unknown> = {
                                 "x-go-type-skip-optional-pointer": true,
                                 "x-order": 6,
                                 "description": "Model Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
+                                "helperText": "Select a model",
                                 "x-oapi-codegen-extra-tags": {
                                   "yaml": "model",
                                   "json": "model",

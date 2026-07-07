@@ -1,0 +1,658 @@
+openapi: 3.0.3
+info:
+  title: User
+  description: OpenAPI schema for user management in Meshery Cloud.
+  version: v1beta3
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+paths: {}
+
+components:
+  schemas:
+    User:
+      type: object
+      description: Represents a user
+      required:
+        - id
+        - provider
+        - email
+        - firstName
+        - lastName
+        - status
+        - createdAt
+        - updatedAt
+        - lastLoginTime
+        - deletedAt
+      properties:
+        id:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: Unique identifier for the user
+          x-go-name: ID
+          x-oapi-codegen-extra-tags:
+            db: "id"
+            json: "id"
+        provider:
+          type: string
+          maxLength: 100
+          description: "Authentication provider (e.g., Google, Github)"
+          example:
+            - local
+            - github
+            - google
+            - twitter
+          x-oapi-codegen-extra-tags:
+            db: "provider"
+            json: "provider"
+        email:
+          type: string
+          format: email
+          maxLength: 300
+          description: User's email address
+          x-oapi-codegen-extra-tags:
+            db: "email"
+            json: "email"
+        firstName:
+          type: string
+          maxLength: 200
+          description: User's first name
+          x-oapi-codegen-extra-tags:
+            db: "first_name"
+            json: "firstName"
+        lastName:
+          type: string
+          maxLength: 300
+          description: User's last name
+          x-oapi-codegen-extra-tags:
+            db: "last_name"
+            json: "lastName"
+        avatarUrl:
+          type: string
+          format: uri
+          maxLength: 500
+          description: URL to user's avatar image
+          x-oapi-codegen-extra-tags:
+            db: "avatar_url"
+            json: "avatarUrl"
+        status:
+          type: string
+          maxLength: 100
+          enum:
+            - active
+            - inactive
+            - pending
+            - anonymous
+          description: User account status
+          x-oapi-codegen-extra-tags:
+            db: "status"
+            json: "status"
+        bio:
+          type: string
+          maxLength: 1000
+          default: ""
+          description: User's biography or description
+          x-oapi-codegen-extra-tags:
+            db: "bio"
+            json: "bio"
+        country:
+          type: object
+          description: User's country information stored as JSONB
+          additionalProperties: true
+          x-go-type: "core.Map"
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: "country"
+            json: "country"
+        region:
+          type: object
+          description: User's region information stored as JSONB
+          additionalProperties: true
+          x-go-type: "core.Map"
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: "region"
+            json: "region"
+        preferences:
+          $ref: "#/components/schemas/Preference"
+          x-go-type: "Preference"
+          description: User preferences stored as JSONB
+          x-oapi-codegen-extra-tags:
+            db: "preferences"
+            json: "preferences"
+        acceptedTermsAt:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Time"
+          description: Timestamp when user accepted terms and conditions
+          x-oapi-codegen-extra-tags:
+            db: "accepted_terms_at"
+            json: "acceptedTermsAt"
+        firstLoginTime:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Time"
+          description: Timestamp of user's first login
+          x-oapi-codegen-extra-tags:
+            db: "first_login_time"
+            json: "firstLoginTime"
+        lastLoginTime:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Time"
+          description: Timestamp of user's most recent login
+          x-oapi-codegen-extra-tags:
+            db: "last_login_time"
+            json: "lastLoginTime"
+        createdAt:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Time"
+          description: Timestamp when the user record was created
+          x-oapi-codegen-extra-tags:
+            db: "created_at"
+            json: "createdAt"
+        updatedAt:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Time"
+          description: Timestamp when the user record was last updated
+          x-oapi-codegen-extra-tags:
+            db: "updated_at"
+            json: "updatedAt"
+        socials:
+          type: array
+          description: Various online profiles associated with the user account
+          # use a custom type to represent a slice of Social structs , the default is []Social which
+          # cant be used with sql drivers as we cant add methods to that type
+          x-go-type: "UserSocials"
+          items:
+            $ref: "#/components/schemas/Social"
+            x-go-type: "Social"
+          x-oapi-codegen-extra-tags:
+            db: "socials"
+            json: "socials"
+        deletedAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: Timestamp when the user record was soft-deleted (null if not deleted)
+          x-go-type: "core.NullTime"
+          x-oapi-codegen-extra-tags:
+            db: "deleted_at"
+            json: "deletedAt"
+        roleNames:
+          type: array
+          x-go-type: pq.StringArray
+          x-go-type-import:
+            path: github.com/lib/pq
+          x-go-type-skip-optional-pointer: true
+          items:
+            type: string
+          description: >-
+            Names of the global roles assigned to the user. Free-form,
+            user-generated values sourced from the roles table (role_name is a
+            varchar, not a fixed enumeration); the seeded system roles such as
+            "admin", "organization admin" and "user" are a subset, not the whole
+            set.
+          example: ["organization admin", "user"]
+          x-oapi-codegen-extra-tags:
+            db: "role_names"
+            json: "roleNames"
+        teams:
+          type: object
+          description: Teams the user belongs to with role information
+          x-oapi-codegen-extra-tags:
+            db: "teams"
+            json: "teams"
+          properties:
+            teamsWithRoles:
+              type: array
+              description: Team memberships for the user with their assigned roles.
+              items:
+                $ref: "#/components/schemas/TeamWithRoles"
+              x-oapi-codegen-extra-tags:
+                db: "teams_with_roles"
+                json: "teamsWithRoles"
+            totalCount:
+              type: integer
+              description: Total number of team memberships returned for the user.
+              minimum: 0
+              x-oapi-codegen-extra-tags:
+                db: "total_count"
+                json: "totalCount"
+        organizations:
+          type: object
+          description: Organizations the user belongs to with role information
+          x-oapi-codegen-extra-tags:
+            db: "organizations"
+            json: "organizations"
+          properties:
+            organizationsWithRoles:
+              type: array
+              description: Organization memberships for the user with their assigned roles.
+              items:
+                $ref: "#/components/schemas/OrganizationWithRoles"
+              x-oapi-codegen-extra-tags:
+                db: "organizations_with_roles"
+                json: "organizationsWithRoles"
+            totalCount:
+              type: integer
+              description: Total number of organization memberships returned for the user.
+              minimum: 0
+              x-oapi-codegen-extra-tags:
+                db: "total_count"
+                json: "totalCount"
+      additionalProperties: false
+
+    UserEmailAddress:
+      type: object
+      additionalProperties: false
+      description: >-
+        One email address associated with a user account. A user has exactly
+        one primary address (mirrored in users.email) and any number of
+        secondary addresses accumulated from account consolidation or
+        explicit addition. Uniqueness across live addresses is enforced
+        case-insensitively.
+      required:
+        - id
+        - userId
+        - email
+        - verified
+        - isPrimary
+        - source
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: Unique identifier for this email-address record
+          x-go-name: ID
+          x-oapi-codegen-extra-tags:
+            db: "id"
+            json: "id"
+        userId:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: The user (users.id) this address belongs to
+          x-go-name: UserID
+          x-oapi-codegen-extra-tags:
+            db: "owner"
+            json: "userId"
+        email:
+          type: string
+          format: email
+          maxLength: 300
+          description: The email address
+          x-oapi-codegen-extra-tags:
+            db: "email"
+            json: "email"
+        verified:
+          type: boolean
+          default: false
+          description: Whether the address was verified (per Kratos verifiable addresses) at record time
+          x-oapi-codegen-extra-tags:
+            db: "verified"
+            json: "verified"
+        isPrimary:
+          type: boolean
+          default: false
+          description: Exactly one live primary address per user; mirrors users.email
+          x-oapi-codegen-extra-tags:
+            db: "is_primary"
+            json: "isPrimary"
+        source:
+          type: string
+          enum: [signup, consolidation, backfill, manual]
+          description: How this address became associated with the account
+          x-oapi-codegen-extra-tags:
+            db: "source"
+            json: "source"
+        createdAt:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Time"
+          x-oapi-codegen-extra-tags:
+            db: "created_at"
+            json: "createdAt"
+        updatedAt:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Time"
+          x-oapi-codegen-extra-tags:
+            db: "updated_at"
+            json: "updatedAt"
+        deletedAt:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/NullTime"
+          x-oapi-codegen-extra-tags:
+            db: "deleted_at"
+            json: "deletedAt"
+
+    OrganizationWithRoles:
+      type: object
+      additionalProperties: false
+      description: >-
+        An organization the user is a member of, together with the names of
+        the roles assigned to that user within the organization. Returned as
+        an item of User.organizations.organizationsWithRoles. The role names
+        are dynamic, user-generated values (no fixed enumeration).
+      required:
+        - id
+        - name
+        - roleNames
+      properties:
+        id:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: Unique identifier of the organization.
+          x-go-name: ID
+          x-order: 1
+          x-oapi-codegen-extra-tags:
+            db: "id"
+            json: "id,omitempty"
+        name:
+          type: string
+          description: Name of the organization.
+          x-order: 2
+          x-oapi-codegen-extra-tags:
+            db: "name"
+            json: "name,omitempty"
+        description:
+          type: string
+          description: Human readable description of the organization.
+          x-order: 3
+          x-oapi-codegen-extra-tags:
+            db: "description"
+            json: "description,omitempty"
+        country:
+          type: string
+          description: Country associated with the organization.
+          x-order: 4
+          x-oapi-codegen-extra-tags:
+            db: "country"
+            json: "country,omitempty"
+        region:
+          type: string
+          description: Region associated with the organization.
+          x-order: 5
+          x-oapi-codegen-extra-tags:
+            db: "region"
+            json: "region,omitempty"
+        owner:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: Identifier of the organization owner.
+          x-order: 6
+          x-oapi-codegen-extra-tags:
+            db: "owner"
+            json: "owner,omitempty"
+        createdAt:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Time"
+          description: Timestamp when the organization was created.
+          x-order: 7
+          x-oapi-codegen-extra-tags:
+            db: "created_at"
+            json: "createdAt,omitempty"
+        updatedAt:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Time"
+          description: Timestamp when the organization was last updated.
+          x-order: 8
+          x-oapi-codegen-extra-tags:
+            db: "updated_at"
+            json: "updatedAt,omitempty"
+        deletedAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: Timestamp when the organization was soft-deleted (null if not deleted).
+          x-go-type: "core.NullTime"
+          x-order: 9
+          x-oapi-codegen-extra-tags:
+            db: "deleted_at"
+            json: "deletedAt,omitempty"
+        roleNames:
+          type: array
+          x-go-type: pq.StringArray
+          x-go-type-import:
+            path: github.com/lib/pq
+          description: >-
+            Names of the roles assigned to the user within this organization.
+            Free-form, user-generated role names; not a fixed enumeration.
+          items:
+            type: string
+          x-order: 10
+          x-oapi-codegen-extra-tags:
+            db: "role_names"
+            json: "roleNames"
+
+    TeamWithRoles:
+      type: object
+      additionalProperties: false
+      description: >-
+        A team the user is a member of, together with the names of the roles
+        assigned to that user within the team. Returned as an item of
+        User.teams.teamsWithRoles. The role names are dynamic, user-generated
+        values (no fixed enumeration).
+      required:
+        - id
+        - name
+        - roleNames
+      properties:
+        id:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: Unique identifier of the team.
+          x-go-name: ID
+          x-order: 1
+          x-oapi-codegen-extra-tags:
+            db: "id"
+            json: "id,omitempty"
+        name:
+          type: string
+          description: Name of the team.
+          x-order: 2
+          x-oapi-codegen-extra-tags:
+            db: "name"
+            json: "name,omitempty"
+        description:
+          type: string
+          description: Human readable description of the team.
+          x-order: 3
+          x-oapi-codegen-extra-tags:
+            db: "description"
+            json: "description,omitempty"
+        owner:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: Identifier of the team owner.
+          x-order: 4
+          x-oapi-codegen-extra-tags:
+            db: "owner"
+            json: "owner,omitempty"
+        metadata:
+          type: object
+          additionalProperties: true
+          description: Free-form metadata associated with the team.
+          x-go-type: "core.Map"
+          x-go-type-skip-optional-pointer: true
+          x-order: 5
+          x-oapi-codegen-extra-tags:
+            db: "metadata"
+            json: "metadata,omitempty"
+        createdAt:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Time"
+          description: Timestamp when the team was created.
+          x-order: 6
+          x-oapi-codegen-extra-tags:
+            db: "created_at"
+            json: "createdAt,omitempty"
+        updatedAt:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Time"
+          description: Timestamp when the team was last updated.
+          x-order: 7
+          x-oapi-codegen-extra-tags:
+            db: "updated_at"
+            json: "updatedAt,omitempty"
+        deletedAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: Timestamp when the team was soft-deleted (null if not deleted).
+          x-go-type: "core.NullTime"
+          x-order: 8
+          x-oapi-codegen-extra-tags:
+            db: "deleted_at"
+            json: "deletedAt,omitempty"
+        roleNames:
+          type: array
+          x-go-type: pq.StringArray
+          x-go-type-import:
+            path: github.com/lib/pq
+          description: >-
+            Names of the roles assigned to the user within this team.
+            Free-form, user-generated role names; not a fixed enumeration.
+          items:
+            type: string
+          x-order: 9
+          x-oapi-codegen-extra-tags:
+            db: "role_names"
+            json: "roleNames"
+
+    Preference:
+      x-generate-db-helpers: true
+      type: object
+      required:
+        - anonymousUsageStats
+        - anonymousPerfResults
+        - updatedAt
+        - dashboardPreferences
+        - selectedOrganizationId
+        - selectedWorkspaceForOrganizations
+        - usersExtensionPreferences
+        - remoteProviderPreferences
+
+      properties:
+        meshAdapters:
+          type: array
+          items:
+            x-go-type: Adapter
+            $ref: "#/components/schemas/Adapter"
+          description: The mesh adapters of the preference.
+        grafana:
+          x-go-type: Grafana
+          $ref: "#/components/schemas/Grafana"
+        prometheus:
+          x-go-type: Prometheus
+          $ref: "#/components/schemas/Prometheus"
+        loadTestPrefs:
+          x-go-type: LoadTestPreferences
+          $ref: "#/components/schemas/LoadTestPreferences"
+        anonymousUsageStats:
+          type: boolean
+          description: The anonymous usage stats of the preference.
+        anonymousPerfResults:
+          type: boolean
+          description: The anonymous perf results of the preference.
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp of when the resource was last updated.
+        dashboardPreferences:
+          type: object
+          additionalProperties: true
+          description: The dashboard preferences of the preference.
+        selectedOrganizationId:
+          type: string
+          description: ID of the associated selectedOrganization.
+          maxLength: 500
+          format: uuid
+        selectedWorkspaceForOrganizations:
+          type: object
+          additionalProperties:
+            type: string
+          description: The selected workspace for organizations of the preference.
+        usersExtensionPreferences:
+          type: object
+          additionalProperties: true
+          description: The users extension preferences of the preference.
+        remoteProviderPreferences:
+          type: object
+          additionalProperties: true
+          description: The remote provider preferences of the preference.
+
+    Adapter:
+      type: object
+      description: Placeholder for Adapter struct definition.
+
+    Grafana:
+      type: object
+      properties:
+        grafanaUrl:
+          type: string
+          description: Grafana URL for the user configuration.
+          maxLength: 500
+        grafanaApiKey:
+          type: string
+          description: Grafana API key for the user configuration.
+          maxLength: 500
+        selectedBoardsConfigs:
+          type: array
+          items:
+            $ref: "#/components/schemas/SelectedGrafanaConfig"
+          description: Selected Grafana board configurations for the user.
+
+    SelectedGrafanaConfig:
+      type: object
+      properties:
+        board:
+          $ref: "#/components/schemas/GrafanaBoard"
+        panels:
+          type: array
+          items:
+            $ref: "#/components/schemas/Panel"
+          description: Panels selected for the Grafana board configuration.
+        templateVars:
+          type: array
+          items:
+            type: string
+          description: Template variables applied to the selected Grafana board configuration.
+
+    GrafanaBoard:
+      type: object
+      description: Placeholder for GrafanaBoard definition (define fields as needed)
+
+    Panel:
+      type: object
+      description: Grafana panel structure imported from github.com/grafana-tools/sdk
+
+    Prometheus:
+      type: object
+      properties:
+        prometheusUrl:
+          type: string
+          description: The prometheus URL of the prometheus.
+          maxLength: 500
+        selectedPrometheusBoardsConfigs:
+          type: array
+          items:
+            $ref: "#/components/schemas/SelectedGrafanaConfig"
+          description: The selected prometheus boards configs of the prometheus.
+
+    LoadTestPreferences:
+      type: object
+      properties:
+        c:
+          type: integer
+          description: Concurrent requests
+          minimum: 0
+        qps:
+          type: integer
+          description: Queries per second
+          minimum: 0
+        t:
+          type: string
+          description: Duration
+          maxLength: 500
+        gen:
+          type: string
+          description: Load generator
+          maxLength: 500
+
+    Social:
+      description: "Various online profiles associated with the user account, like GitHub, LinkedIn, X, and so on."
+      type: object
+      properties:
+        site:
+          type: string
+          maxLength: 50
+          description: The site of the social.
+        link:
+          type: string
+          format: uri
+          description: The link of the social.
+      required: ["site", "link"]

@@ -19,7 +19,7 @@
 //
 // The report is the input to Phase 1 rule authoring and Phase 3 sequencing in
 // the identifier-naming migration
-// (docs/identifier-naming-migration.md §6).
+// (see docs/schema-tooling.md).
 package main
 
 import (

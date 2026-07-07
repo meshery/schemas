@@ -1,12 +1,12 @@
 import { mesheryBaseApi as api } from "./api";
 export const addTagTypes = [
+  "Meshery_Controllers_Configuration_controllers",
   "Evaluation_Evaluation",
   "System_API_System",
   "credential_credentials",
   "Key_users",
   "Model_Models",
   "Organization_Organizations",
-  "Team_teams",
   "User_users",
   "Connection_API_Connections",
   "Connection_API_ConnectionDefinitions",
@@ -24,6 +24,38 @@ const injectedRtkApi = api
   })
   .injectEndpoints({
     endpoints: (build) => ({
+      getControllersDefaultConfig: build.query<
+        GetControllersDefaultConfigApiResponse,
+        GetControllersDefaultConfigApiArg
+      >({
+        query: () => ({ url: `/api/system/controllers/config` }),
+        providesTags: ["Meshery_Controllers_Configuration_controllers"],
+      }),
+      updateControllersDefaultConfig: build.mutation<
+        UpdateControllersDefaultConfigApiResponse,
+        UpdateControllersDefaultConfigApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/system/controllers/config`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["Meshery_Controllers_Configuration_controllers"],
+      }),
+      getConnectionControllersConfig: build.query<
+        GetConnectionControllersConfigApiResponse,
+        GetConnectionControllersConfigApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/integrations/connections/${queryArg.connectionId}/controllers/config` }),
+        providesTags: ["Meshery_Controllers_Configuration_controllers"],
+      }),
+      updateConnectionControllersConfig: build.mutation<
+        UpdateConnectionControllersConfigApiResponse,
+        UpdateConnectionControllersConfigApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/integrations/connections/${queryArg.connectionId}/controllers/config`,
+          method: "PUT",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Meshery_Controllers_Configuration_controllers"],
+      }),
       evaluateRelationships: build.mutation<EvaluateRelationshipsApiResponse, EvaluateRelationshipsApiArg>({
         query: (queryArg) => ({ url: `/api/meshmodels/relationships/evaluate`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Evaluation_Evaluation"],
@@ -51,6 +83,57 @@ const injectedRtkApi = api
       }),
       getSystemSync: build.query<GetSystemSyncApiResponse, GetSystemSyncApiArg>({
         query: () => ({ url: `/api/system/sync` }),
+        providesTags: ["System_API_System"],
+      }),
+      getOperatorControllerStatus: build.query<
+        GetOperatorControllerStatusApiResponse,
+        GetOperatorControllerStatusApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/system/controllers/operator/status`,
+          params: {
+            connectionId: queryArg?.connectionId,
+          },
+        }),
+        providesTags: ["System_API_System"],
+      }),
+      getMeshsyncControllerStatus: build.query<
+        GetMeshsyncControllerStatusApiResponse,
+        GetMeshsyncControllerStatusApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/system/controllers/meshsync/status`,
+          params: {
+            connectionId: queryArg?.connectionId,
+          },
+        }),
+        providesTags: ["System_API_System"],
+      }),
+      getBrokerControllerStatus: build.query<GetBrokerControllerStatusApiResponse, GetBrokerControllerStatusApiArg>({
+        query: (queryArg) => ({
+          url: `/api/system/controllers/broker/status`,
+          params: {
+            connectionId: queryArg?.connectionId,
+          },
+        }),
+        providesTags: ["System_API_System"],
+      }),
+      getControllerDiagnostics: build.query<GetControllerDiagnosticsApiResponse, GetControllerDiagnosticsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/system/controllers/diagnostics`,
+          params: {
+            connectionId: queryArg?.connectionId,
+          },
+        }),
+        providesTags: ["System_API_System"],
+      }),
+      subscribeControllersStatus: build.query<SubscribeControllersStatusApiResponse, SubscribeControllersStatusApiArg>({
+        query: (queryArg) => ({
+          url: `/api/system/controllers/status/subscribe`,
+          params: {
+            connectionIds: queryArg?.connectionIds,
+          },
+        }),
         providesTags: ["System_API_System"],
       }),
       getUserCredentials: build.query<GetUserCredentialsApiResponse, GetUserCredentialsApiArg>({
@@ -153,25 +236,6 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["Organization_Organizations"],
       }),
-      getTeamById: build.query<GetTeamByIdApiResponse, GetTeamByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}` }),
-        providesTags: ["Team_teams"],
-      }),
-      updateTeam: build.mutation<UpdateTeamApiResponse, UpdateTeamApiArg>({
-        query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}`,
-          method: "PUT",
-          body: queryArg.body,
-        }),
-        invalidatesTags: ["Team_teams"],
-      }),
-      deleteTeam: build.mutation<DeleteTeamApiResponse, DeleteTeamApiArg>({
-        query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}`,
-          method: "DELETE",
-        }),
-        invalidatesTags: ["Team_teams"],
-      }),
       removeTeamFromOrg: build.mutation<RemoveTeamFromOrgApiResponse, RemoveTeamFromOrgApiArg>({
         query: (queryArg) => ({
           url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}/remove`,
@@ -189,67 +253,6 @@ const injectedRtkApi = api
           method: "DELETE",
         }),
         invalidatesTags: ["Organization_Organizations"],
-      }),
-      getTeams: build.query<GetTeamsApiResponse, GetTeamsApiArg>({
-        query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/teams`,
-          params: {
-            search: queryArg?.search,
-            order: queryArg?.order,
-            page: queryArg?.page,
-            pageSize: queryArg?.pageSize,
-            pagesize: queryArg?.pagesize,
-          },
-        }),
-        providesTags: ["Team_teams"],
-      }),
-      createTeam: build.mutation<CreateTeamApiResponse, CreateTeamApiArg>({
-        query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/teams`,
-          method: "POST",
-          body: queryArg.body,
-        }),
-        invalidatesTags: ["Team_teams"],
-      }),
-      getTeamUsers: build.query<GetTeamUsersApiResponse, GetTeamUsersApiArg>({
-        query: (queryArg) => ({
-          url: `/api/identity/teams/${queryArg.teamId}/users`,
-          params: {
-            search: queryArg?.search,
-            order: queryArg?.order,
-            page: queryArg?.page,
-            pageSize: queryArg?.pageSize,
-            pagesize: queryArg?.pagesize,
-          },
-        }),
-        providesTags: ["Team_teams"],
-      }),
-      addUserToTeam: build.mutation<AddUserToTeamApiResponse, AddUserToTeamApiArg>({
-        query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}/users/${queryArg.userId}`,
-          method: "POST",
-        }),
-        invalidatesTags: ["Team_teams"],
-      }),
-      removeUserFromTeam: build.mutation<RemoveUserFromTeamApiResponse, RemoveUserFromTeamApiArg>({
-        query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}/users/${queryArg.userId}`,
-          method: "DELETE",
-        }),
-        invalidatesTags: ["Team_teams"],
-      }),
-      listUsersNotInTeam: build.query<ListUsersNotInTeamApiResponse, ListUsersNotInTeamApiArg>({
-        query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}/users`,
-          params: {
-            search: queryArg?.search,
-            order: queryArg?.order,
-            page: queryArg?.page,
-            pageSize: queryArg?.pageSize,
-            pagesize: queryArg?.pagesize,
-          },
-        }),
-        providesTags: ["Team_teams"],
       }),
       getUsersForOrg: build.query<GetUsersForOrgApiResponse, GetUsersForOrgApiArg>({
         query: (queryArg) => ({
@@ -284,6 +287,10 @@ const injectedRtkApi = api
       }),
       getUser: build.query<GetUserApiResponse, GetUserApiArg>({
         query: () => ({ url: `/api/identity/users/profile` }),
+        providesTags: ["User_users"],
+      }),
+      getUserEmailAddresses: build.query<GetUserEmailAddressesApiResponse, GetUserEmailAddressesApiArg>({
+        query: (queryArg) => ({ url: `/api/identity/users/${queryArg.userId}/emails` }),
         providesTags: ["User_users"],
       }),
       getConnections: build.query<GetConnectionsApiResponse, GetConnectionsApiArg>({
@@ -322,6 +329,14 @@ const injectedRtkApi = api
       }),
       deleteConnection: build.mutation<DeleteConnectionApiResponse, DeleteConnectionApiArg>({
         query: (queryArg) => ({ url: `/api/integrations/connections/${queryArg.connectionId}`, method: "DELETE" }),
+        invalidatesTags: ["Connection_API_Connections"],
+      }),
+      performConnectionAction: build.mutation<PerformConnectionActionApiResponse, PerformConnectionActionApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/connections/${queryArg.connectionId}/actions`,
+          method: "POST",
+          body: queryArg.body,
+        }),
         invalidatesTags: ["Connection_API_Connections"],
       }),
       deleteMesheryConnection: build.mutation<DeleteMesheryConnectionApiResponse, DeleteMesheryConnectionApiArg>({
@@ -695,6 +710,647 @@ const injectedRtkApi = api
     overrideExisting: false,
   });
 export { injectedRtkApi as mesheryApi, injectedRtkApi };
+export type GetControllersDefaultConfigApiResponse = /** status 200 Server-wide controllers configuration defaults */ {
+  /** Specifies the version of the schema used for this configuration document. */
+  schemaVersion: string;
+  /** Configuration for the Meshery Operator on the managed cluster. */
+  operator?: {
+    /** How MeshSync is deployed for the connection. "operator" installs Meshery Operator into the cluster, which runs MeshSync and Meshery Broker there; "embedded" runs MeshSync in-process inside Meshery Server and installs nothing into the cluster. */
+    deploymentMode?: "operator" | "embedded";
+    /** Meshery Operator Helm chart version to deploy. When absent, the operator version tracks the Meshery Server release. */
+    version?: string;
+  };
+  /** Configuration for the MeshSync agent on the managed cluster. */
+  meshsync?: {
+    /** MeshSync image tag to run (for example "v1.0.2" or "stable-latest"). Applies to operator deployment mode only; in embedded mode MeshSync runs at the version compiled into Meshery Server. Secret redaction and broker content deduplication require MeshSync v1.0.2 or newer. */
+    version?: string;
+    /** Number of MeshSync replicas (MeshSync custom resource spec.size). Applies to operator deployment mode only. */
+    replicas?: number;
+    /** Discovery scope for MeshSync, as a whitelist or a blacklist of Kubernetes resource types. */
+    watchList?: {
+      /** Resource types MeshSync watches, each with the event types to subscribe to. Mutually exclusive with blacklist. */
+      whitelist?: {
+        /** Resource key in "<plural>.<version>.<group>" form (for example "pods.v1." for core-group pods or "deployments.v1.apps"). */
+        resource: string;
+        /** Event types to subscribe to for this resource. Empty or absent subscribes to all event types. */
+        events?: ("ADDED" | "MODIFIED" | "DELETED")[];
+      }[];
+      /** Resource types excluded from MeshSync's default discovery scope, in "<plural>.<version>.<group>" form (for example "pods.v1." or "deployments.v1.apps"). Mutually exclusive with whitelist. */
+      blacklist?: string[];
+    };
+    /** Namespaces whose resources MeshSync publishes. Empty or absent publishes resources from all namespaces. Discovery scope is unaffected; this filters only what is published. */
+    outputNamespaces?: string[];
+    /** Resource types MeshSync publishes (lowercase Kubernetes kinds, for example "pod" or "deployment"). Empty or absent publishes all discovered resource types. Discovery scope is unaffected; this filters only what is published. */
+    outputResources?: string[];
+    /** When true, MeshSync redacts Kubernetes Secret data values (keys are preserved) before publishing. Requires MeshSync v1.0.2 or newer. Off by default; enabling is recommended when Secrets are within the discovery scope. */
+    redactSecrets?: boolean;
+    /** When true, MeshSync suppresses byte-identical republishes of a resource to the broker. Requires MeshSync v1.0.2 or newer. Off by default. */
+    brokerContentDedup?: boolean;
+    /** When true, MeshSync runs with debug-level logging (DEBUG environment variable). */
+    debugLogging?: boolean;
+  };
+  /** Configuration for the Meshery Broker (NATS) on the managed cluster. */
+  broker?: {
+    /** NATS server image tag to run (Broker custom resource spec.version). When absent, the operator's bundled default NATS version is used. */
+    version?: string;
+    /** Number of NATS server replicas (Broker custom resource spec.size). */
+    replicas?: number;
+    /** How the broker is exposed on the network. Service changes reconcile in place without restarting broker pods. */
+    service?: {
+      /** Kubernetes Service type for client access. When absent the broker stays cluster-internal (ClusterIP). LoadBalancer acquires a cloud load-balancer address; NodePort exposes the broker on node IPs. */
+      type?: "ClusterIP" | "NodePort" | "LoadBalancer";
+      /** Annotations merged onto the client Service (cloud load-balancer hints, MetalLB address pools, internal-LB switches). */
+      annotations?: {
+        [key: string]: string;
+      };
+      /** Load-balancer implementation to use. Valid only when type is LoadBalancer. */
+      loadBalancerClass?: string;
+      /** CIDR ranges allowed to reach the broker. Valid only when type is LoadBalancer. */
+      loadBalancerSourceRanges?: string[];
+      /** Pins the advertised external broker endpoint as "host:port" when auto-derivation is undesirable: an ingress or gateway in front of the broker, an air-gapped topology, or NAT. The nats:// scheme is added by consumers. */
+      externalEndpointOverride?: string;
+    };
+  };
+};
+export type GetControllersDefaultConfigApiArg = void;
+export type UpdateControllersDefaultConfigApiResponse =
+  /** status 200 Persisted server-wide controllers configuration defaults */ {
+    /** Specifies the version of the schema used for this configuration document. */
+    schemaVersion: string;
+    /** Configuration for the Meshery Operator on the managed cluster. */
+    operator?: {
+      /** How MeshSync is deployed for the connection. "operator" installs Meshery Operator into the cluster, which runs MeshSync and Meshery Broker there; "embedded" runs MeshSync in-process inside Meshery Server and installs nothing into the cluster. */
+      deploymentMode?: "operator" | "embedded";
+      /** Meshery Operator Helm chart version to deploy. When absent, the operator version tracks the Meshery Server release. */
+      version?: string;
+    };
+    /** Configuration for the MeshSync agent on the managed cluster. */
+    meshsync?: {
+      /** MeshSync image tag to run (for example "v1.0.2" or "stable-latest"). Applies to operator deployment mode only; in embedded mode MeshSync runs at the version compiled into Meshery Server. Secret redaction and broker content deduplication require MeshSync v1.0.2 or newer. */
+      version?: string;
+      /** Number of MeshSync replicas (MeshSync custom resource spec.size). Applies to operator deployment mode only. */
+      replicas?: number;
+      /** Discovery scope for MeshSync, as a whitelist or a blacklist of Kubernetes resource types. */
+      watchList?: {
+        /** Resource types MeshSync watches, each with the event types to subscribe to. Mutually exclusive with blacklist. */
+        whitelist?: {
+          /** Resource key in "<plural>.<version>.<group>" form (for example "pods.v1." for core-group pods or "deployments.v1.apps"). */
+          resource: string;
+          /** Event types to subscribe to for this resource. Empty or absent subscribes to all event types. */
+          events?: ("ADDED" | "MODIFIED" | "DELETED")[];
+        }[];
+        /** Resource types excluded from MeshSync's default discovery scope, in "<plural>.<version>.<group>" form (for example "pods.v1." or "deployments.v1.apps"). Mutually exclusive with whitelist. */
+        blacklist?: string[];
+      };
+      /** Namespaces whose resources MeshSync publishes. Empty or absent publishes resources from all namespaces. Discovery scope is unaffected; this filters only what is published. */
+      outputNamespaces?: string[];
+      /** Resource types MeshSync publishes (lowercase Kubernetes kinds, for example "pod" or "deployment"). Empty or absent publishes all discovered resource types. Discovery scope is unaffected; this filters only what is published. */
+      outputResources?: string[];
+      /** When true, MeshSync redacts Kubernetes Secret data values (keys are preserved) before publishing. Requires MeshSync v1.0.2 or newer. Off by default; enabling is recommended when Secrets are within the discovery scope. */
+      redactSecrets?: boolean;
+      /** When true, MeshSync suppresses byte-identical republishes of a resource to the broker. Requires MeshSync v1.0.2 or newer. Off by default. */
+      brokerContentDedup?: boolean;
+      /** When true, MeshSync runs with debug-level logging (DEBUG environment variable). */
+      debugLogging?: boolean;
+    };
+    /** Configuration for the Meshery Broker (NATS) on the managed cluster. */
+    broker?: {
+      /** NATS server image tag to run (Broker custom resource spec.version). When absent, the operator's bundled default NATS version is used. */
+      version?: string;
+      /** Number of NATS server replicas (Broker custom resource spec.size). */
+      replicas?: number;
+      /** How the broker is exposed on the network. Service changes reconcile in place without restarting broker pods. */
+      service?: {
+        /** Kubernetes Service type for client access. When absent the broker stays cluster-internal (ClusterIP). LoadBalancer acquires a cloud load-balancer address; NodePort exposes the broker on node IPs. */
+        type?: "ClusterIP" | "NodePort" | "LoadBalancer";
+        /** Annotations merged onto the client Service (cloud load-balancer hints, MetalLB address pools, internal-LB switches). */
+        annotations?: {
+          [key: string]: string;
+        };
+        /** Load-balancer implementation to use. Valid only when type is LoadBalancer. */
+        loadBalancerClass?: string;
+        /** CIDR ranges allowed to reach the broker. Valid only when type is LoadBalancer. */
+        loadBalancerSourceRanges?: string[];
+        /** Pins the advertised external broker endpoint as "host:port" when auto-derivation is undesirable: an ingress or gateway in front of the broker, an air-gapped topology, or NAT. The nats:// scheme is added by consumers. */
+        externalEndpointOverride?: string;
+      };
+    };
+  };
+export type UpdateControllersDefaultConfigApiArg = {
+  /** Controllers configuration document. Absent fields inherit from the next precedence layer. */
+  body: {
+    /** Configuration for the Meshery Operator on the managed cluster. */
+    operator?: {
+      /** How MeshSync is deployed for the connection. "operator" installs Meshery Operator into the cluster, which runs MeshSync and Meshery Broker there; "embedded" runs MeshSync in-process inside Meshery Server and installs nothing into the cluster. */
+      deploymentMode?: "operator" | "embedded";
+      /** Meshery Operator Helm chart version to deploy. When absent, the operator version tracks the Meshery Server release. */
+      version?: string;
+    };
+    /** Configuration for the MeshSync agent on the managed cluster. */
+    meshsync?: {
+      /** MeshSync image tag to run (for example "v1.0.2" or "stable-latest"). Applies to operator deployment mode only; in embedded mode MeshSync runs at the version compiled into Meshery Server. Secret redaction and broker content deduplication require MeshSync v1.0.2 or newer. */
+      version?: string;
+      /** Number of MeshSync replicas (MeshSync custom resource spec.size). Applies to operator deployment mode only. */
+      replicas?: number;
+      /** Discovery scope for MeshSync, as a whitelist or a blacklist of Kubernetes resource types. */
+      watchList?: {
+        /** Resource types MeshSync watches, each with the event types to subscribe to. Mutually exclusive with blacklist. */
+        whitelist?: {
+          /** Resource key in "<plural>.<version>.<group>" form (for example "pods.v1." for core-group pods or "deployments.v1.apps"). */
+          resource: string;
+          /** Event types to subscribe to for this resource. Empty or absent subscribes to all event types. */
+          events?: ("ADDED" | "MODIFIED" | "DELETED")[];
+        }[];
+        /** Resource types excluded from MeshSync's default discovery scope, in "<plural>.<version>.<group>" form (for example "pods.v1." or "deployments.v1.apps"). Mutually exclusive with whitelist. */
+        blacklist?: string[];
+      };
+      /** Namespaces whose resources MeshSync publishes. Empty or absent publishes resources from all namespaces. Discovery scope is unaffected; this filters only what is published. */
+      outputNamespaces?: string[];
+      /** Resource types MeshSync publishes (lowercase Kubernetes kinds, for example "pod" or "deployment"). Empty or absent publishes all discovered resource types. Discovery scope is unaffected; this filters only what is published. */
+      outputResources?: string[];
+      /** When true, MeshSync redacts Kubernetes Secret data values (keys are preserved) before publishing. Requires MeshSync v1.0.2 or newer. Off by default; enabling is recommended when Secrets are within the discovery scope. */
+      redactSecrets?: boolean;
+      /** When true, MeshSync suppresses byte-identical republishes of a resource to the broker. Requires MeshSync v1.0.2 or newer. Off by default. */
+      brokerContentDedup?: boolean;
+      /** When true, MeshSync runs with debug-level logging (DEBUG environment variable). */
+      debugLogging?: boolean;
+    };
+    /** Configuration for the Meshery Broker (NATS) on the managed cluster. */
+    broker?: {
+      /** NATS server image tag to run (Broker custom resource spec.version). When absent, the operator's bundled default NATS version is used. */
+      version?: string;
+      /** Number of NATS server replicas (Broker custom resource spec.size). */
+      replicas?: number;
+      /** How the broker is exposed on the network. Service changes reconcile in place without restarting broker pods. */
+      service?: {
+        /** Kubernetes Service type for client access. When absent the broker stays cluster-internal (ClusterIP). LoadBalancer acquires a cloud load-balancer address; NodePort exposes the broker on node IPs. */
+        type?: "ClusterIP" | "NodePort" | "LoadBalancer";
+        /** Annotations merged onto the client Service (cloud load-balancer hints, MetalLB address pools, internal-LB switches). */
+        annotations?: {
+          [key: string]: string;
+        };
+        /** Load-balancer implementation to use. Valid only when type is LoadBalancer. */
+        loadBalancerClass?: string;
+        /** CIDR ranges allowed to reach the broker. Valid only when type is LoadBalancer. */
+        loadBalancerSourceRanges?: string[];
+        /** Pins the advertised external broker endpoint as "host:port" when auto-derivation is undesirable: an ingress or gateway in front of the broker, an air-gapped topology, or NAT. The nats:// scheme is added by consumers. */
+        externalEndpointOverride?: string;
+      };
+    };
+  };
+};
+export type GetConnectionControllersConfigApiResponse = /** status 200 Controllers configuration for the connection */ {
+  /** Deployment and runtime configuration for the Meshery controllers that manage a Kubernetes connection: Meshery Operator, MeshSync, and Meshery Broker. The same document shape is used at two layers. As a server-wide default it declares how Meshery Server deploys and configures the controllers for every managed cluster. As a per-connection override, stored in the connection's metadata, it overrides the server-wide default for a single connection. Every configuration field is optional: an absent field inherits the value from the next layer (per-connection override, then server-wide default, then built-in default). The only required field is the server-stamped schemaVersion discriminator, which identifies the document revision for future migrations. Learn more at https://docs.meshery.io/concepts/architecture */
+  override?: {
+    /** Specifies the version of the schema used for this configuration document. */
+    schemaVersion: string;
+    /** Configuration for the Meshery Operator on the managed cluster. */
+    operator?: {
+      /** How MeshSync is deployed for the connection. "operator" installs Meshery Operator into the cluster, which runs MeshSync and Meshery Broker there; "embedded" runs MeshSync in-process inside Meshery Server and installs nothing into the cluster. */
+      deploymentMode?: "operator" | "embedded";
+      /** Meshery Operator Helm chart version to deploy. When absent, the operator version tracks the Meshery Server release. */
+      version?: string;
+    };
+    /** Configuration for the MeshSync agent on the managed cluster. */
+    meshsync?: {
+      /** MeshSync image tag to run (for example "v1.0.2" or "stable-latest"). Applies to operator deployment mode only; in embedded mode MeshSync runs at the version compiled into Meshery Server. Secret redaction and broker content deduplication require MeshSync v1.0.2 or newer. */
+      version?: string;
+      /** Number of MeshSync replicas (MeshSync custom resource spec.size). Applies to operator deployment mode only. */
+      replicas?: number;
+      /** Discovery scope for MeshSync, as a whitelist or a blacklist of Kubernetes resource types. */
+      watchList?: {
+        /** Resource types MeshSync watches, each with the event types to subscribe to. Mutually exclusive with blacklist. */
+        whitelist?: {
+          /** Resource key in "<plural>.<version>.<group>" form (for example "pods.v1." for core-group pods or "deployments.v1.apps"). */
+          resource: string;
+          /** Event types to subscribe to for this resource. Empty or absent subscribes to all event types. */
+          events?: ("ADDED" | "MODIFIED" | "DELETED")[];
+        }[];
+        /** Resource types excluded from MeshSync's default discovery scope, in "<plural>.<version>.<group>" form (for example "pods.v1." or "deployments.v1.apps"). Mutually exclusive with whitelist. */
+        blacklist?: string[];
+      };
+      /** Namespaces whose resources MeshSync publishes. Empty or absent publishes resources from all namespaces. Discovery scope is unaffected; this filters only what is published. */
+      outputNamespaces?: string[];
+      /** Resource types MeshSync publishes (lowercase Kubernetes kinds, for example "pod" or "deployment"). Empty or absent publishes all discovered resource types. Discovery scope is unaffected; this filters only what is published. */
+      outputResources?: string[];
+      /** When true, MeshSync redacts Kubernetes Secret data values (keys are preserved) before publishing. Requires MeshSync v1.0.2 or newer. Off by default; enabling is recommended when Secrets are within the discovery scope. */
+      redactSecrets?: boolean;
+      /** When true, MeshSync suppresses byte-identical republishes of a resource to the broker. Requires MeshSync v1.0.2 or newer. Off by default. */
+      brokerContentDedup?: boolean;
+      /** When true, MeshSync runs with debug-level logging (DEBUG environment variable). */
+      debugLogging?: boolean;
+    };
+    /** Configuration for the Meshery Broker (NATS) on the managed cluster. */
+    broker?: {
+      /** NATS server image tag to run (Broker custom resource spec.version). When absent, the operator's bundled default NATS version is used. */
+      version?: string;
+      /** Number of NATS server replicas (Broker custom resource spec.size). */
+      replicas?: number;
+      /** How the broker is exposed on the network. Service changes reconcile in place without restarting broker pods. */
+      service?: {
+        /** Kubernetes Service type for client access. When absent the broker stays cluster-internal (ClusterIP). LoadBalancer acquires a cloud load-balancer address; NodePort exposes the broker on node IPs. */
+        type?: "ClusterIP" | "NodePort" | "LoadBalancer";
+        /** Annotations merged onto the client Service (cloud load-balancer hints, MetalLB address pools, internal-LB switches). */
+        annotations?: {
+          [key: string]: string;
+        };
+        /** Load-balancer implementation to use. Valid only when type is LoadBalancer. */
+        loadBalancerClass?: string;
+        /** CIDR ranges allowed to reach the broker. Valid only when type is LoadBalancer. */
+        loadBalancerSourceRanges?: string[];
+        /** Pins the advertised external broker endpoint as "host:port" when auto-derivation is undesirable: an ingress or gateway in front of the broker, an air-gapped topology, or NAT. The nats:// scheme is added by consumers. */
+        externalEndpointOverride?: string;
+      };
+    };
+  };
+  /** Deployment and runtime configuration for the Meshery controllers that manage a Kubernetes connection: Meshery Operator, MeshSync, and Meshery Broker. The same document shape is used at two layers. As a server-wide default it declares how Meshery Server deploys and configures the controllers for every managed cluster. As a per-connection override, stored in the connection's metadata, it overrides the server-wide default for a single connection. Every configuration field is optional: an absent field inherits the value from the next layer (per-connection override, then server-wide default, then built-in default). The only required field is the server-stamped schemaVersion discriminator, which identifies the document revision for future migrations. Learn more at https://docs.meshery.io/concepts/architecture */
+  default?: {
+    /** Specifies the version of the schema used for this configuration document. */
+    schemaVersion: string;
+    /** Configuration for the Meshery Operator on the managed cluster. */
+    operator?: {
+      /** How MeshSync is deployed for the connection. "operator" installs Meshery Operator into the cluster, which runs MeshSync and Meshery Broker there; "embedded" runs MeshSync in-process inside Meshery Server and installs nothing into the cluster. */
+      deploymentMode?: "operator" | "embedded";
+      /** Meshery Operator Helm chart version to deploy. When absent, the operator version tracks the Meshery Server release. */
+      version?: string;
+    };
+    /** Configuration for the MeshSync agent on the managed cluster. */
+    meshsync?: {
+      /** MeshSync image tag to run (for example "v1.0.2" or "stable-latest"). Applies to operator deployment mode only; in embedded mode MeshSync runs at the version compiled into Meshery Server. Secret redaction and broker content deduplication require MeshSync v1.0.2 or newer. */
+      version?: string;
+      /** Number of MeshSync replicas (MeshSync custom resource spec.size). Applies to operator deployment mode only. */
+      replicas?: number;
+      /** Discovery scope for MeshSync, as a whitelist or a blacklist of Kubernetes resource types. */
+      watchList?: {
+        /** Resource types MeshSync watches, each with the event types to subscribe to. Mutually exclusive with blacklist. */
+        whitelist?: {
+          /** Resource key in "<plural>.<version>.<group>" form (for example "pods.v1." for core-group pods or "deployments.v1.apps"). */
+          resource: string;
+          /** Event types to subscribe to for this resource. Empty or absent subscribes to all event types. */
+          events?: ("ADDED" | "MODIFIED" | "DELETED")[];
+        }[];
+        /** Resource types excluded from MeshSync's default discovery scope, in "<plural>.<version>.<group>" form (for example "pods.v1." or "deployments.v1.apps"). Mutually exclusive with whitelist. */
+        blacklist?: string[];
+      };
+      /** Namespaces whose resources MeshSync publishes. Empty or absent publishes resources from all namespaces. Discovery scope is unaffected; this filters only what is published. */
+      outputNamespaces?: string[];
+      /** Resource types MeshSync publishes (lowercase Kubernetes kinds, for example "pod" or "deployment"). Empty or absent publishes all discovered resource types. Discovery scope is unaffected; this filters only what is published. */
+      outputResources?: string[];
+      /** When true, MeshSync redacts Kubernetes Secret data values (keys are preserved) before publishing. Requires MeshSync v1.0.2 or newer. Off by default; enabling is recommended when Secrets are within the discovery scope. */
+      redactSecrets?: boolean;
+      /** When true, MeshSync suppresses byte-identical republishes of a resource to the broker. Requires MeshSync v1.0.2 or newer. Off by default. */
+      brokerContentDedup?: boolean;
+      /** When true, MeshSync runs with debug-level logging (DEBUG environment variable). */
+      debugLogging?: boolean;
+    };
+    /** Configuration for the Meshery Broker (NATS) on the managed cluster. */
+    broker?: {
+      /** NATS server image tag to run (Broker custom resource spec.version). When absent, the operator's bundled default NATS version is used. */
+      version?: string;
+      /** Number of NATS server replicas (Broker custom resource spec.size). */
+      replicas?: number;
+      /** How the broker is exposed on the network. Service changes reconcile in place without restarting broker pods. */
+      service?: {
+        /** Kubernetes Service type for client access. When absent the broker stays cluster-internal (ClusterIP). LoadBalancer acquires a cloud load-balancer address; NodePort exposes the broker on node IPs. */
+        type?: "ClusterIP" | "NodePort" | "LoadBalancer";
+        /** Annotations merged onto the client Service (cloud load-balancer hints, MetalLB address pools, internal-LB switches). */
+        annotations?: {
+          [key: string]: string;
+        };
+        /** Load-balancer implementation to use. Valid only when type is LoadBalancer. */
+        loadBalancerClass?: string;
+        /** CIDR ranges allowed to reach the broker. Valid only when type is LoadBalancer. */
+        loadBalancerSourceRanges?: string[];
+        /** Pins the advertised external broker endpoint as "host:port" when auto-derivation is undesirable: an ingress or gateway in front of the broker, an air-gapped topology, or NAT. The nats:// scheme is added by consumers. */
+        externalEndpointOverride?: string;
+      };
+    };
+  };
+  /** Deployment and runtime configuration for the Meshery controllers that manage a Kubernetes connection: Meshery Operator, MeshSync, and Meshery Broker. The same document shape is used at two layers. As a server-wide default it declares how Meshery Server deploys and configures the controllers for every managed cluster. As a per-connection override, stored in the connection's metadata, it overrides the server-wide default for a single connection. Every configuration field is optional: an absent field inherits the value from the next layer (per-connection override, then server-wide default, then built-in default). The only required field is the server-stamped schemaVersion discriminator, which identifies the document revision for future migrations. Learn more at https://docs.meshery.io/concepts/architecture */
+  effective: {
+    /** Specifies the version of the schema used for this configuration document. */
+    schemaVersion: string;
+    /** Configuration for the Meshery Operator on the managed cluster. */
+    operator?: {
+      /** How MeshSync is deployed for the connection. "operator" installs Meshery Operator into the cluster, which runs MeshSync and Meshery Broker there; "embedded" runs MeshSync in-process inside Meshery Server and installs nothing into the cluster. */
+      deploymentMode?: "operator" | "embedded";
+      /** Meshery Operator Helm chart version to deploy. When absent, the operator version tracks the Meshery Server release. */
+      version?: string;
+    };
+    /** Configuration for the MeshSync agent on the managed cluster. */
+    meshsync?: {
+      /** MeshSync image tag to run (for example "v1.0.2" or "stable-latest"). Applies to operator deployment mode only; in embedded mode MeshSync runs at the version compiled into Meshery Server. Secret redaction and broker content deduplication require MeshSync v1.0.2 or newer. */
+      version?: string;
+      /** Number of MeshSync replicas (MeshSync custom resource spec.size). Applies to operator deployment mode only. */
+      replicas?: number;
+      /** Discovery scope for MeshSync, as a whitelist or a blacklist of Kubernetes resource types. */
+      watchList?: {
+        /** Resource types MeshSync watches, each with the event types to subscribe to. Mutually exclusive with blacklist. */
+        whitelist?: {
+          /** Resource key in "<plural>.<version>.<group>" form (for example "pods.v1." for core-group pods or "deployments.v1.apps"). */
+          resource: string;
+          /** Event types to subscribe to for this resource. Empty or absent subscribes to all event types. */
+          events?: ("ADDED" | "MODIFIED" | "DELETED")[];
+        }[];
+        /** Resource types excluded from MeshSync's default discovery scope, in "<plural>.<version>.<group>" form (for example "pods.v1." or "deployments.v1.apps"). Mutually exclusive with whitelist. */
+        blacklist?: string[];
+      };
+      /** Namespaces whose resources MeshSync publishes. Empty or absent publishes resources from all namespaces. Discovery scope is unaffected; this filters only what is published. */
+      outputNamespaces?: string[];
+      /** Resource types MeshSync publishes (lowercase Kubernetes kinds, for example "pod" or "deployment"). Empty or absent publishes all discovered resource types. Discovery scope is unaffected; this filters only what is published. */
+      outputResources?: string[];
+      /** When true, MeshSync redacts Kubernetes Secret data values (keys are preserved) before publishing. Requires MeshSync v1.0.2 or newer. Off by default; enabling is recommended when Secrets are within the discovery scope. */
+      redactSecrets?: boolean;
+      /** When true, MeshSync suppresses byte-identical republishes of a resource to the broker. Requires MeshSync v1.0.2 or newer. Off by default. */
+      brokerContentDedup?: boolean;
+      /** When true, MeshSync runs with debug-level logging (DEBUG environment variable). */
+      debugLogging?: boolean;
+    };
+    /** Configuration for the Meshery Broker (NATS) on the managed cluster. */
+    broker?: {
+      /** NATS server image tag to run (Broker custom resource spec.version). When absent, the operator's bundled default NATS version is used. */
+      version?: string;
+      /** Number of NATS server replicas (Broker custom resource spec.size). */
+      replicas?: number;
+      /** How the broker is exposed on the network. Service changes reconcile in place without restarting broker pods. */
+      service?: {
+        /** Kubernetes Service type for client access. When absent the broker stays cluster-internal (ClusterIP). LoadBalancer acquires a cloud load-balancer address; NodePort exposes the broker on node IPs. */
+        type?: "ClusterIP" | "NodePort" | "LoadBalancer";
+        /** Annotations merged onto the client Service (cloud load-balancer hints, MetalLB address pools, internal-LB switches). */
+        annotations?: {
+          [key: string]: string;
+        };
+        /** Load-balancer implementation to use. Valid only when type is LoadBalancer. */
+        loadBalancerClass?: string;
+        /** CIDR ranges allowed to reach the broker. Valid only when type is LoadBalancer. */
+        loadBalancerSourceRanges?: string[];
+        /** Pins the advertised external broker endpoint as "host:port" when auto-derivation is undesirable: an ingress or gateway in front of the broker, an air-gapped topology, or NAT. The nats:// scheme is added by consumers. */
+        externalEndpointOverride?: string;
+      };
+    };
+  };
+};
+export type GetConnectionControllersConfigApiArg = {
+  /** Kubernetes connection ID. */
+  connectionId: string;
+};
+export type UpdateConnectionControllersConfigApiResponse =
+  /** status 200 Updated controllers configuration for the connection */ {
+    /** Deployment and runtime configuration for the Meshery controllers that manage a Kubernetes connection: Meshery Operator, MeshSync, and Meshery Broker. The same document shape is used at two layers. As a server-wide default it declares how Meshery Server deploys and configures the controllers for every managed cluster. As a per-connection override, stored in the connection's metadata, it overrides the server-wide default for a single connection. Every configuration field is optional: an absent field inherits the value from the next layer (per-connection override, then server-wide default, then built-in default). The only required field is the server-stamped schemaVersion discriminator, which identifies the document revision for future migrations. Learn more at https://docs.meshery.io/concepts/architecture */
+    override?: {
+      /** Specifies the version of the schema used for this configuration document. */
+      schemaVersion: string;
+      /** Configuration for the Meshery Operator on the managed cluster. */
+      operator?: {
+        /** How MeshSync is deployed for the connection. "operator" installs Meshery Operator into the cluster, which runs MeshSync and Meshery Broker there; "embedded" runs MeshSync in-process inside Meshery Server and installs nothing into the cluster. */
+        deploymentMode?: "operator" | "embedded";
+        /** Meshery Operator Helm chart version to deploy. When absent, the operator version tracks the Meshery Server release. */
+        version?: string;
+      };
+      /** Configuration for the MeshSync agent on the managed cluster. */
+      meshsync?: {
+        /** MeshSync image tag to run (for example "v1.0.2" or "stable-latest"). Applies to operator deployment mode only; in embedded mode MeshSync runs at the version compiled into Meshery Server. Secret redaction and broker content deduplication require MeshSync v1.0.2 or newer. */
+        version?: string;
+        /** Number of MeshSync replicas (MeshSync custom resource spec.size). Applies to operator deployment mode only. */
+        replicas?: number;
+        /** Discovery scope for MeshSync, as a whitelist or a blacklist of Kubernetes resource types. */
+        watchList?: {
+          /** Resource types MeshSync watches, each with the event types to subscribe to. Mutually exclusive with blacklist. */
+          whitelist?: {
+            /** Resource key in "<plural>.<version>.<group>" form (for example "pods.v1." for core-group pods or "deployments.v1.apps"). */
+            resource: string;
+            /** Event types to subscribe to for this resource. Empty or absent subscribes to all event types. */
+            events?: ("ADDED" | "MODIFIED" | "DELETED")[];
+          }[];
+          /** Resource types excluded from MeshSync's default discovery scope, in "<plural>.<version>.<group>" form (for example "pods.v1." or "deployments.v1.apps"). Mutually exclusive with whitelist. */
+          blacklist?: string[];
+        };
+        /** Namespaces whose resources MeshSync publishes. Empty or absent publishes resources from all namespaces. Discovery scope is unaffected; this filters only what is published. */
+        outputNamespaces?: string[];
+        /** Resource types MeshSync publishes (lowercase Kubernetes kinds, for example "pod" or "deployment"). Empty or absent publishes all discovered resource types. Discovery scope is unaffected; this filters only what is published. */
+        outputResources?: string[];
+        /** When true, MeshSync redacts Kubernetes Secret data values (keys are preserved) before publishing. Requires MeshSync v1.0.2 or newer. Off by default; enabling is recommended when Secrets are within the discovery scope. */
+        redactSecrets?: boolean;
+        /** When true, MeshSync suppresses byte-identical republishes of a resource to the broker. Requires MeshSync v1.0.2 or newer. Off by default. */
+        brokerContentDedup?: boolean;
+        /** When true, MeshSync runs with debug-level logging (DEBUG environment variable). */
+        debugLogging?: boolean;
+      };
+      /** Configuration for the Meshery Broker (NATS) on the managed cluster. */
+      broker?: {
+        /** NATS server image tag to run (Broker custom resource spec.version). When absent, the operator's bundled default NATS version is used. */
+        version?: string;
+        /** Number of NATS server replicas (Broker custom resource spec.size). */
+        replicas?: number;
+        /** How the broker is exposed on the network. Service changes reconcile in place without restarting broker pods. */
+        service?: {
+          /** Kubernetes Service type for client access. When absent the broker stays cluster-internal (ClusterIP). LoadBalancer acquires a cloud load-balancer address; NodePort exposes the broker on node IPs. */
+          type?: "ClusterIP" | "NodePort" | "LoadBalancer";
+          /** Annotations merged onto the client Service (cloud load-balancer hints, MetalLB address pools, internal-LB switches). */
+          annotations?: {
+            [key: string]: string;
+          };
+          /** Load-balancer implementation to use. Valid only when type is LoadBalancer. */
+          loadBalancerClass?: string;
+          /** CIDR ranges allowed to reach the broker. Valid only when type is LoadBalancer. */
+          loadBalancerSourceRanges?: string[];
+          /** Pins the advertised external broker endpoint as "host:port" when auto-derivation is undesirable: an ingress or gateway in front of the broker, an air-gapped topology, or NAT. The nats:// scheme is added by consumers. */
+          externalEndpointOverride?: string;
+        };
+      };
+    };
+    /** Deployment and runtime configuration for the Meshery controllers that manage a Kubernetes connection: Meshery Operator, MeshSync, and Meshery Broker. The same document shape is used at two layers. As a server-wide default it declares how Meshery Server deploys and configures the controllers for every managed cluster. As a per-connection override, stored in the connection's metadata, it overrides the server-wide default for a single connection. Every configuration field is optional: an absent field inherits the value from the next layer (per-connection override, then server-wide default, then built-in default). The only required field is the server-stamped schemaVersion discriminator, which identifies the document revision for future migrations. Learn more at https://docs.meshery.io/concepts/architecture */
+    default?: {
+      /** Specifies the version of the schema used for this configuration document. */
+      schemaVersion: string;
+      /** Configuration for the Meshery Operator on the managed cluster. */
+      operator?: {
+        /** How MeshSync is deployed for the connection. "operator" installs Meshery Operator into the cluster, which runs MeshSync and Meshery Broker there; "embedded" runs MeshSync in-process inside Meshery Server and installs nothing into the cluster. */
+        deploymentMode?: "operator" | "embedded";
+        /** Meshery Operator Helm chart version to deploy. When absent, the operator version tracks the Meshery Server release. */
+        version?: string;
+      };
+      /** Configuration for the MeshSync agent on the managed cluster. */
+      meshsync?: {
+        /** MeshSync image tag to run (for example "v1.0.2" or "stable-latest"). Applies to operator deployment mode only; in embedded mode MeshSync runs at the version compiled into Meshery Server. Secret redaction and broker content deduplication require MeshSync v1.0.2 or newer. */
+        version?: string;
+        /** Number of MeshSync replicas (MeshSync custom resource spec.size). Applies to operator deployment mode only. */
+        replicas?: number;
+        /** Discovery scope for MeshSync, as a whitelist or a blacklist of Kubernetes resource types. */
+        watchList?: {
+          /** Resource types MeshSync watches, each with the event types to subscribe to. Mutually exclusive with blacklist. */
+          whitelist?: {
+            /** Resource key in "<plural>.<version>.<group>" form (for example "pods.v1." for core-group pods or "deployments.v1.apps"). */
+            resource: string;
+            /** Event types to subscribe to for this resource. Empty or absent subscribes to all event types. */
+            events?: ("ADDED" | "MODIFIED" | "DELETED")[];
+          }[];
+          /** Resource types excluded from MeshSync's default discovery scope, in "<plural>.<version>.<group>" form (for example "pods.v1." or "deployments.v1.apps"). Mutually exclusive with whitelist. */
+          blacklist?: string[];
+        };
+        /** Namespaces whose resources MeshSync publishes. Empty or absent publishes resources from all namespaces. Discovery scope is unaffected; this filters only what is published. */
+        outputNamespaces?: string[];
+        /** Resource types MeshSync publishes (lowercase Kubernetes kinds, for example "pod" or "deployment"). Empty or absent publishes all discovered resource types. Discovery scope is unaffected; this filters only what is published. */
+        outputResources?: string[];
+        /** When true, MeshSync redacts Kubernetes Secret data values (keys are preserved) before publishing. Requires MeshSync v1.0.2 or newer. Off by default; enabling is recommended when Secrets are within the discovery scope. */
+        redactSecrets?: boolean;
+        /** When true, MeshSync suppresses byte-identical republishes of a resource to the broker. Requires MeshSync v1.0.2 or newer. Off by default. */
+        brokerContentDedup?: boolean;
+        /** When true, MeshSync runs with debug-level logging (DEBUG environment variable). */
+        debugLogging?: boolean;
+      };
+      /** Configuration for the Meshery Broker (NATS) on the managed cluster. */
+      broker?: {
+        /** NATS server image tag to run (Broker custom resource spec.version). When absent, the operator's bundled default NATS version is used. */
+        version?: string;
+        /** Number of NATS server replicas (Broker custom resource spec.size). */
+        replicas?: number;
+        /** How the broker is exposed on the network. Service changes reconcile in place without restarting broker pods. */
+        service?: {
+          /** Kubernetes Service type for client access. When absent the broker stays cluster-internal (ClusterIP). LoadBalancer acquires a cloud load-balancer address; NodePort exposes the broker on node IPs. */
+          type?: "ClusterIP" | "NodePort" | "LoadBalancer";
+          /** Annotations merged onto the client Service (cloud load-balancer hints, MetalLB address pools, internal-LB switches). */
+          annotations?: {
+            [key: string]: string;
+          };
+          /** Load-balancer implementation to use. Valid only when type is LoadBalancer. */
+          loadBalancerClass?: string;
+          /** CIDR ranges allowed to reach the broker. Valid only when type is LoadBalancer. */
+          loadBalancerSourceRanges?: string[];
+          /** Pins the advertised external broker endpoint as "host:port" when auto-derivation is undesirable: an ingress or gateway in front of the broker, an air-gapped topology, or NAT. The nats:// scheme is added by consumers. */
+          externalEndpointOverride?: string;
+        };
+      };
+    };
+    /** Deployment and runtime configuration for the Meshery controllers that manage a Kubernetes connection: Meshery Operator, MeshSync, and Meshery Broker. The same document shape is used at two layers. As a server-wide default it declares how Meshery Server deploys and configures the controllers for every managed cluster. As a per-connection override, stored in the connection's metadata, it overrides the server-wide default for a single connection. Every configuration field is optional: an absent field inherits the value from the next layer (per-connection override, then server-wide default, then built-in default). The only required field is the server-stamped schemaVersion discriminator, which identifies the document revision for future migrations. Learn more at https://docs.meshery.io/concepts/architecture */
+    effective: {
+      /** Specifies the version of the schema used for this configuration document. */
+      schemaVersion: string;
+      /** Configuration for the Meshery Operator on the managed cluster. */
+      operator?: {
+        /** How MeshSync is deployed for the connection. "operator" installs Meshery Operator into the cluster, which runs MeshSync and Meshery Broker there; "embedded" runs MeshSync in-process inside Meshery Server and installs nothing into the cluster. */
+        deploymentMode?: "operator" | "embedded";
+        /** Meshery Operator Helm chart version to deploy. When absent, the operator version tracks the Meshery Server release. */
+        version?: string;
+      };
+      /** Configuration for the MeshSync agent on the managed cluster. */
+      meshsync?: {
+        /** MeshSync image tag to run (for example "v1.0.2" or "stable-latest"). Applies to operator deployment mode only; in embedded mode MeshSync runs at the version compiled into Meshery Server. Secret redaction and broker content deduplication require MeshSync v1.0.2 or newer. */
+        version?: string;
+        /** Number of MeshSync replicas (MeshSync custom resource spec.size). Applies to operator deployment mode only. */
+        replicas?: number;
+        /** Discovery scope for MeshSync, as a whitelist or a blacklist of Kubernetes resource types. */
+        watchList?: {
+          /** Resource types MeshSync watches, each with the event types to subscribe to. Mutually exclusive with blacklist. */
+          whitelist?: {
+            /** Resource key in "<plural>.<version>.<group>" form (for example "pods.v1." for core-group pods or "deployments.v1.apps"). */
+            resource: string;
+            /** Event types to subscribe to for this resource. Empty or absent subscribes to all event types. */
+            events?: ("ADDED" | "MODIFIED" | "DELETED")[];
+          }[];
+          /** Resource types excluded from MeshSync's default discovery scope, in "<plural>.<version>.<group>" form (for example "pods.v1." or "deployments.v1.apps"). Mutually exclusive with whitelist. */
+          blacklist?: string[];
+        };
+        /** Namespaces whose resources MeshSync publishes. Empty or absent publishes resources from all namespaces. Discovery scope is unaffected; this filters only what is published. */
+        outputNamespaces?: string[];
+        /** Resource types MeshSync publishes (lowercase Kubernetes kinds, for example "pod" or "deployment"). Empty or absent publishes all discovered resource types. Discovery scope is unaffected; this filters only what is published. */
+        outputResources?: string[];
+        /** When true, MeshSync redacts Kubernetes Secret data values (keys are preserved) before publishing. Requires MeshSync v1.0.2 or newer. Off by default; enabling is recommended when Secrets are within the discovery scope. */
+        redactSecrets?: boolean;
+        /** When true, MeshSync suppresses byte-identical republishes of a resource to the broker. Requires MeshSync v1.0.2 or newer. Off by default. */
+        brokerContentDedup?: boolean;
+        /** When true, MeshSync runs with debug-level logging (DEBUG environment variable). */
+        debugLogging?: boolean;
+      };
+      /** Configuration for the Meshery Broker (NATS) on the managed cluster. */
+      broker?: {
+        /** NATS server image tag to run (Broker custom resource spec.version). When absent, the operator's bundled default NATS version is used. */
+        version?: string;
+        /** Number of NATS server replicas (Broker custom resource spec.size). */
+        replicas?: number;
+        /** How the broker is exposed on the network. Service changes reconcile in place without restarting broker pods. */
+        service?: {
+          /** Kubernetes Service type for client access. When absent the broker stays cluster-internal (ClusterIP). LoadBalancer acquires a cloud load-balancer address; NodePort exposes the broker on node IPs. */
+          type?: "ClusterIP" | "NodePort" | "LoadBalancer";
+          /** Annotations merged onto the client Service (cloud load-balancer hints, MetalLB address pools, internal-LB switches). */
+          annotations?: {
+            [key: string]: string;
+          };
+          /** Load-balancer implementation to use. Valid only when type is LoadBalancer. */
+          loadBalancerClass?: string;
+          /** CIDR ranges allowed to reach the broker. Valid only when type is LoadBalancer. */
+          loadBalancerSourceRanges?: string[];
+          /** Pins the advertised external broker endpoint as "host:port" when auto-derivation is undesirable: an ingress or gateway in front of the broker, an air-gapped topology, or NAT. The nats:// scheme is added by consumers. */
+          externalEndpointOverride?: string;
+        };
+      };
+    };
+  };
+export type UpdateConnectionControllersConfigApiArg = {
+  /** Kubernetes connection ID. */
+  connectionId: string;
+  /** Controllers configuration document. Absent fields inherit from the next precedence layer. */
+  body: {
+    /** Configuration for the Meshery Operator on the managed cluster. */
+    operator?: {
+      /** How MeshSync is deployed for the connection. "operator" installs Meshery Operator into the cluster, which runs MeshSync and Meshery Broker there; "embedded" runs MeshSync in-process inside Meshery Server and installs nothing into the cluster. */
+      deploymentMode?: "operator" | "embedded";
+      /** Meshery Operator Helm chart version to deploy. When absent, the operator version tracks the Meshery Server release. */
+      version?: string;
+    };
+    /** Configuration for the MeshSync agent on the managed cluster. */
+    meshsync?: {
+      /** MeshSync image tag to run (for example "v1.0.2" or "stable-latest"). Applies to operator deployment mode only; in embedded mode MeshSync runs at the version compiled into Meshery Server. Secret redaction and broker content deduplication require MeshSync v1.0.2 or newer. */
+      version?: string;
+      /** Number of MeshSync replicas (MeshSync custom resource spec.size). Applies to operator deployment mode only. */
+      replicas?: number;
+      /** Discovery scope for MeshSync, as a whitelist or a blacklist of Kubernetes resource types. */
+      watchList?: {
+        /** Resource types MeshSync watches, each with the event types to subscribe to. Mutually exclusive with blacklist. */
+        whitelist?: {
+          /** Resource key in "<plural>.<version>.<group>" form (for example "pods.v1." for core-group pods or "deployments.v1.apps"). */
+          resource: string;
+          /** Event types to subscribe to for this resource. Empty or absent subscribes to all event types. */
+          events?: ("ADDED" | "MODIFIED" | "DELETED")[];
+        }[];
+        /** Resource types excluded from MeshSync's default discovery scope, in "<plural>.<version>.<group>" form (for example "pods.v1." or "deployments.v1.apps"). Mutually exclusive with whitelist. */
+        blacklist?: string[];
+      };
+      /** Namespaces whose resources MeshSync publishes. Empty or absent publishes resources from all namespaces. Discovery scope is unaffected; this filters only what is published. */
+      outputNamespaces?: string[];
+      /** Resource types MeshSync publishes (lowercase Kubernetes kinds, for example "pod" or "deployment"). Empty or absent publishes all discovered resource types. Discovery scope is unaffected; this filters only what is published. */
+      outputResources?: string[];
+      /** When true, MeshSync redacts Kubernetes Secret data values (keys are preserved) before publishing. Requires MeshSync v1.0.2 or newer. Off by default; enabling is recommended when Secrets are within the discovery scope. */
+      redactSecrets?: boolean;
+      /** When true, MeshSync suppresses byte-identical republishes of a resource to the broker. Requires MeshSync v1.0.2 or newer. Off by default. */
+      brokerContentDedup?: boolean;
+      /** When true, MeshSync runs with debug-level logging (DEBUG environment variable). */
+      debugLogging?: boolean;
+    };
+    /** Configuration for the Meshery Broker (NATS) on the managed cluster. */
+    broker?: {
+      /** NATS server image tag to run (Broker custom resource spec.version). When absent, the operator's bundled default NATS version is used. */
+      version?: string;
+      /** Number of NATS server replicas (Broker custom resource spec.size). */
+      replicas?: number;
+      /** How the broker is exposed on the network. Service changes reconcile in place without restarting broker pods. */
+      service?: {
+        /** Kubernetes Service type for client access. When absent the broker stays cluster-internal (ClusterIP). LoadBalancer acquires a cloud load-balancer address; NodePort exposes the broker on node IPs. */
+        type?: "ClusterIP" | "NodePort" | "LoadBalancer";
+        /** Annotations merged onto the client Service (cloud load-balancer hints, MetalLB address pools, internal-LB switches). */
+        annotations?: {
+          [key: string]: string;
+        };
+        /** Load-balancer implementation to use. Valid only when type is LoadBalancer. */
+        loadBalancerClass?: string;
+        /** CIDR ranges allowed to reach the broker. Valid only when type is LoadBalancer. */
+        loadBalancerSourceRanges?: string[];
+        /** Pins the advertised external broker endpoint as "host:port" when auto-derivation is undesirable: an ingress or gateway in front of the broker, an air-gapped topology, or NAT. The nats:// scheme is added by consumers. */
+        externalEndpointOverride?: string;
+      };
+    };
+  };
+};
 export type EvaluateRelationshipsApiResponse = /** status 200 Successful evaluation */ {
   /** Specifies the version of the schema to which the evaluation response conforms. */
   schemaVersion: string;
@@ -2750,6 +3406,80 @@ export type GetSystemSyncApiResponse = /** status 200 Session sync payload */ {
   [key: string]: any;
 };
 export type GetSystemSyncApiArg = void;
+export type GetOperatorControllerStatusApiResponse = /** status 200 Operator controller status */ {
+  /** The kubernetes connection ID this status belongs to. */
+  connectionId: string;
+  /** The controller this status describes. */
+  controller: "OPERATOR" | "MESHSYNC" | "BROKER";
+  /** Current controller status (e.g. DEPLOYED, NOTDEPLOYED, RUNNING, CONNECTED, UNKNOWN). */
+  status: string;
+  /** Deployed controller version, when known. */
+  version: string;
+};
+export type GetOperatorControllerStatusApiArg = {
+  /** The kubernetes connection ID whose operator status is requested. */
+  connectionId: string;
+};
+export type GetMeshsyncControllerStatusApiResponse = /** status 200 MeshSync controller status */ {
+  /** Controller name (e.g. MeshSync, MesheryBroker). */
+  name: string;
+  /** Deployed controller version, when known. */
+  version: string;
+  /** Current controller status. May be composed, e.g. "Connected <endpoint>". */
+  status: string;
+  /** The kubernetes connection ID this status belongs to. */
+  connectionId: string;
+};
+export type GetMeshsyncControllerStatusApiArg = {
+  /** The kubernetes connection ID whose MeshSync status is requested. */
+  connectionId: string;
+};
+export type GetBrokerControllerStatusApiResponse = /** status 200 Broker controller status */ {
+  /** Controller name (e.g. MeshSync, MesheryBroker). */
+  name: string;
+  /** Deployed controller version, when known. */
+  version: string;
+  /** Current controller status. May be composed, e.g. "Connected <endpoint>". */
+  status: string;
+  /** The kubernetes connection ID this status belongs to. */
+  connectionId: string;
+};
+export type GetBrokerControllerStatusApiArg = {
+  /** The kubernetes connection ID whose broker status is requested. */
+  connectionId: string;
+};
+export type GetControllerDiagnosticsApiResponse = /** status 200 Connection controller diagnostics */ {
+  /** The kubernetes connection ID these diagnostics belong to. */
+  connectionId: string;
+  /** True when no warning/error diagnostics were detected (informational diagnostics do not affect health). */
+  healthy: boolean;
+  /** The diagnostics detected for this connection (possibly empty). */
+  diagnostics: {
+    /** How serious the diagnostic is. */
+    severity: "info" | "warning" | "error";
+    /** The controller this diagnostic concerns, when applicable. */
+    controller?: "OPERATOR" | "MESHSYNC" | "BROKER";
+    /** Stable machine-readable code for this diagnostic (e.g. `broker_unreachable`), for the UI to key on. */
+    code: string;
+    /** Short, human-readable title for the diagnostic. */
+    summary: string;
+    /** A fuller explanation of what is wrong and why. */
+    description?: string;
+    /** Ordered, concrete steps the user can take to resolve the issue. */
+    remediation?: string[];
+    /** A relevant endpoint for the diagnostic, when applicable (e.g. the broker's published address the user needs to make reachable). */
+    endpoint?: string;
+  }[];
+};
+export type GetControllerDiagnosticsApiArg = {
+  /** The kubernetes connection ID whose diagnostics are requested. */
+  connectionId: string;
+};
+export type SubscribeControllersStatusApiResponse = unknown;
+export type SubscribeControllersStatusApiArg = {
+  /** Kubernetes connection IDs to watch. Repeatable (connectionIds=<id>&connectionIds=<id>). */
+  connectionIds?: string[];
+};
 export type GetUserCredentialsApiResponse = /** status 200 Credentials response */ {
   /** The credentials returned on the current page. */
   credentials: {
@@ -3784,68 +4514,6 @@ export type AddTeamToOrgApiArg = {
     action?: "delete";
   };
 };
-export type GetTeamByIdApiResponse = /** status 200 Team */ {
-  /** Team ID */
-  id: string;
-  /** Team name */
-  name: string;
-  /** Team description */
-  description?: string;
-  /** User ID of the owner of the team */
-  owner?: string;
-  /** Additional metadata for the team */
-  metadata?: object;
-  /** Timestamp when the team was created. */
-  createdAt: string;
-  /** Timestamp when the team was last updated. */
-  updatedAt: string;
-  /** Timestamp when the team was soft-deleted, if applicable. */
-  deletedAt?: string;
-};
-export type GetTeamByIdApiArg = {
-  /** Organization ID */
-  orgId: string;
-  /** Team ID */
-  teamId: string;
-};
-export type UpdateTeamApiResponse = /** status 200 Updated team */ {
-  /** Team ID */
-  id: string;
-  /** Team name */
-  name: string;
-  /** Team description */
-  description?: string;
-  /** User ID of the owner of the team */
-  owner?: string;
-  /** Additional metadata for the team */
-  metadata?: object;
-  /** Timestamp when the team was created. */
-  createdAt: string;
-  /** Timestamp when the team was last updated. */
-  updatedAt: string;
-  /** Timestamp when the team was soft-deleted, if applicable. */
-  deletedAt?: string;
-};
-export type UpdateTeamApiArg = {
-  /** Organization ID */
-  orgId: string;
-  /** Team ID */
-  teamId: string;
-  /** Body for updating a team */
-  body: {
-    /** Updated team name */
-    name?: string;
-    /** Updated team description */
-    description?: string;
-  };
-};
-export type DeleteTeamApiResponse = unknown;
-export type DeleteTeamApiArg = {
-  /** Organization ID */
-  orgId: string;
-  /** Team ID */
-  teamId: string;
-};
 export type RemoveTeamFromOrgApiResponse = /** status 200 Team removed from organization */ {
   /** Zero-based page index returned in this response. */
   page?: number;
@@ -3891,185 +4559,6 @@ export type DeleteUserFromOrgApiArg = {
   /** User ID. */
   userId: string;
 };
-export type GetTeamsApiResponse = /** status 200 Teams */ {
-  /** Current page number of the result set. */
-  page?: number;
-  /** Number of items per page. */
-  pageSize?: number;
-  /** Total number of items available. */
-  totalCount?: number;
-  /** The teams of the teampage. */
-  teams?: {
-    /** Team ID */
-    id: string;
-    /** Team name */
-    name: string;
-    /** Team description */
-    description?: string;
-    /** User ID of the owner of the team */
-    owner?: string;
-    /** Additional metadata for the team */
-    metadata?: object;
-    /** Timestamp when the team was created. */
-    createdAt: string;
-    /** Timestamp when the team was last updated. */
-    updatedAt: string;
-    /** Timestamp when the team was soft-deleted, if applicable. */
-    deletedAt?: string;
-  }[];
-};
-export type GetTeamsApiArg = {
-  /** Organization ID */
-  orgId: string;
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-  /** Get responses by page */
-  page?: string;
-  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
-  pageSize?: number;
-  /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
-};
-export type CreateTeamApiResponse = /** status 201 Created team */ {
-  /** Team ID */
-  id: string;
-  /** Team name */
-  name: string;
-  /** Team description */
-  description?: string;
-  /** User ID of the owner of the team */
-  owner?: string;
-  /** Additional metadata for the team */
-  metadata?: object;
-  /** Timestamp when the team was created. */
-  createdAt: string;
-  /** Timestamp when the team was last updated. */
-  updatedAt: string;
-  /** Timestamp when the team was soft-deleted, if applicable. */
-  deletedAt?: string;
-};
-export type CreateTeamApiArg = {
-  /** Organization ID */
-  orgId: string;
-  /** Body for creating a team */
-  body: {
-    /** Team name. Provide a meaningful name that represents this team. */
-    name: string;
-    /** A detailed description of the team's purpose and responsibilities. */
-    description?: string;
-    /** Whether to notify team members when the team is created or updated. */
-    notifyTeamUpdate?: boolean;
-    /** Additional client-supplied metadata for the team. */
-    metadata?: {
-      [key: string]: any;
-    };
-  };
-};
-export type GetTeamUsersApiResponse = /** status 200 Team users mapping */ {
-  /** Current page number of the result set. */
-  page?: number;
-  /** Number of items per page. */
-  pageSize?: number;
-  /** Total number of items available. */
-  totalCount?: number;
-  /** The user-team mappings on the current page. */
-  usersTeamsMapping?: {
-    id?: string;
-    /** Team ID */
-    teamId?: string;
-    /** User ID */
-    userId?: string;
-    /** Optional role assigned to this team membership. Nullable because a membership may exist without an explicit role (e.g., team-admin assignments are stamped on insert; non-owner adds may leave `role_id` null until a role is assigned). References `roles.id`.
-     */
-    roleId?: string;
-    /** Timestamp when the mapping was created. */
-    createdAt?: string;
-    /** Timestamp when the mapping was last updated. */
-    updatedAt?: string;
-    /** Timestamp when the mapping was soft-deleted, if applicable. */
-    deletedAt?: string;
-  }[];
-};
-export type GetTeamUsersApiArg = {
-  /** Team ID */
-  teamId: string;
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-  /** Get responses by page */
-  page?: string;
-  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
-  pageSize?: number;
-  /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
-};
-export type AddUserToTeamApiResponse = /** status 201 User added to team */ {
-  id?: string;
-  /** Team ID */
-  teamId?: string;
-  /** User ID */
-  userId?: string;
-  /** Optional role assigned to this team membership. Nullable because a membership may exist without an explicit role (e.g., team-admin assignments are stamped on insert; non-owner adds may leave `role_id` null until a role is assigned). References `roles.id`.
-   */
-  roleId?: string;
-  /** Timestamp when the mapping was created. */
-  createdAt?: string;
-  /** Timestamp when the mapping was last updated. */
-  updatedAt?: string;
-  /** Timestamp when the mapping was soft-deleted, if applicable. */
-  deletedAt?: string;
-};
-export type AddUserToTeamApiArg = {
-  /** Organization ID */
-  orgId: string;
-  /** Team ID */
-  teamId: string;
-  /** User ID */
-  userId: string;
-};
-export type RemoveUserFromTeamApiResponse = unknown;
-export type RemoveUserFromTeamApiArg = {
-  /** Organization ID */
-  orgId: string;
-  /** Team ID */
-  teamId: string;
-  /** User ID */
-  userId: string;
-};
-export type ListUsersNotInTeamApiResponse = /** status 200 Users not currently in the team */ {
-  /** Current page number of the result set. */
-  page?: number;
-  /** Number of items per page. */
-  pageSize?: number;
-  /** Total number of items available. */
-  totalCount?: number;
-  /** The data of the teammemberspage. */
-  data?: {
-    /** Timestamp when the user joined the team. Server-computed from the earliest matching row in `users_teams_mapping` for this (team, user) pair. Server-managed; clients cannot set this.
-     */
-    joinedAt?: string;
-    [key: string]: any;
-  }[];
-};
-export type ListUsersNotInTeamApiArg = {
-  /** Organization ID */
-  orgId: string;
-  /** Team ID */
-  teamId: string;
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-  /** Get responses by page */
-  page?: string;
-  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
-  pageSize?: number;
-  /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
-};
 export type GetUsersForOrgApiResponse = /** status 200 Paginated list of organization users */ {
   /** Current page number of the result set. */
   page?: number;
@@ -4081,7 +4570,7 @@ export type GetUsersForOrgApiResponse = /** status 200 Paginated list of organiz
   data?: {
     /** Unique identifier for the user */
     id: string;
-    /** User identifier (username or external ID) */
+    /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
     userId: string;
     /** Authentication provider (e.g., Google, Github) */
     provider: string;
@@ -4278,7 +4767,7 @@ export type GetUsersApiResponse = /** status 200 Paginated list of public users 
   data?: {
     /** Unique identifier for the user */
     id: string;
-    /** User identifier (username or external ID) */
+    /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
     userId: string;
     /** Authentication provider (e.g., Google, Github) */
     provider: string;
@@ -4463,7 +4952,7 @@ export type GetUsersApiArg = {
 export type GetUserProfileByIdApiResponse = /** status 200 User profile for the requested ID */ {
   /** Unique identifier for the user */
   id: string;
-  /** User identifier (username or external ID) */
+  /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
   userId: string;
   /** Authentication provider (e.g., Google, Github) */
   provider: string;
@@ -4639,7 +5128,7 @@ export type GetUserProfileByIdApiArg = {
 export type GetUserApiResponse = /** status 200 Current user profile and role context */ {
   /** Unique identifier for the user */
   id: string;
-  /** User identifier (username or external ID) */
+  /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
   userId: string;
   /** Authentication provider (e.g., Google, Github) */
   provider: string;
@@ -4809,6 +5298,28 @@ export type GetUserApiResponse = /** status 200 Current user profile and role co
   };
 };
 export type GetUserApiArg = void;
+export type GetUserEmailAddressesApiResponse = /** status 200 Email addresses associated with the requested user */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  userId: string;
+  /** The email address */
+  email: string;
+  /** Whether the address was verified (per Kratos verifiable addresses) at record time */
+  verified: boolean;
+  /** Exactly one live primary address per user; mirrors users.email */
+  isPrimary: boolean;
+  /** How this address became associated with the account */
+  source: "signup" | "consolidation" | "backfill" | "manual";
+  createdAt: string;
+  updatedAt: string;
+  /** SQL null Timestamp to handle null values of time. */
+  deletedAt?: string;
+}[];
+export type GetUserEmailAddressesApiArg = {
+  /** ID of the user */
+  userId: string;
+};
 export type GetConnectionsApiResponse = /** status 200 Paginated list of connections with summary information */ {
   /** List of connections on this page */
   connections: {
@@ -6289,6 +6800,282 @@ export type DeleteConnectionApiResponse = unknown;
 export type DeleteConnectionApiArg = {
   /** Connection ID */
   connectionId: string;
+};
+export type PerformConnectionActionApiResponse =
+  /** status 200 The updated connection after the action was applied. */ {
+    /** Connection ID */
+    id: string;
+    /** Connection Name */
+    name: string;
+    /** Human-readable description of the connection and its purpose. */
+    description?: string;
+    /** URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL). */
+    url?: string;
+    /** Associated Credential ID */
+    credentialId?: string;
+    /** Connection Type (platform, telemetry, collaboration) */
+    type: string;
+    /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+    subType: string;
+    /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+    kind: string;
+    /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+    modelReference?: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** The unique name for the model within the scope of a registrant. */
+      name: string;
+      /** Version of the model definition. */
+      version: string;
+      /** Human-readable name for the model. */
+      displayName: string;
+      /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+      model: {
+        /** Version of the model as defined by the registrant. */
+        version: string;
+      };
+      registrant: {
+        /** Kind of the registrant. */
+        kind: string;
+      };
+    };
+    /** Additional connection metadata */
+    metadata?: object;
+    /** Schema for the credential Associated with the connection */
+    credentialSchema?: object;
+    /** Schema for the connection */
+    connectionSchema?: object;
+    /** Visualization styles for the connection, including svgColor and svgWhite used for UI representation. */
+    styles?: {
+      /** Primary color of the component used for UI representation. */
+      primaryColor: string;
+      /** Secondary color of the entity used for UI representation. */
+      secondaryColor?: string;
+      /** White SVG of the entity used for UI representation on dark background. */
+      svgWhite: string;
+      /** Colored SVG of the entity used for UI representation on light background. */
+      svgColor: string;
+      /** Complete SVG of the entity used for UI representation, often inclusive of background. */
+      svgComplete: string;
+      /** The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+      color?: string;
+      /** The opacity of the label text, including its outline. */
+      textOpacity?: number;
+      /** A comma-separated list of font names to use on the label text. */
+      fontFamily?: string;
+      /** The size of the label text. */
+      fontSize?: string;
+      /** A CSS font style to be applied to the label text. */
+      fontStyle?: string;
+      /** A CSS font weight to be applied to the label text. */
+      fontWeight?: string;
+      /** A transformation to apply to the label text */
+      textTransform?: "none" | "uppercase" | "lowercase";
+      /** The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+      opacity?: number;
+      /** An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+      zIndex?: number;
+      /** The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+      label?: string;
+      /** The animation to apply to the element. example ripple,bounce,etc */
+      animation?: object;
+      [key: string]: any;
+    } & {
+      /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+      shape:
+        | "ellipse"
+        | "triangle"
+        | "round-triangle"
+        | "rectangle"
+        | "round-rectangle"
+        | "bottom-round-rectangle"
+        | "cut-rectangle"
+        | "barrel"
+        | "rhomboid"
+        | "diamond"
+        | "round-diamond"
+        | "pentagon"
+        | "round-pentagon"
+        | "hexagon"
+        | "round-hexagon"
+        | "concave-hexagon"
+        | "heptagon"
+        | "round-heptagon"
+        | "octagon"
+        | "round-octagon"
+        | "star"
+        | "tag"
+        | "round-tag"
+        | "vee"
+        | "polygon";
+      /** The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+      position?: {
+        /** The x-coordinate of the node. */
+        x: number;
+        /** The y-coordinate of the node. */
+        y: number;
+      };
+      /** The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+      bodyText?: string;
+      /** How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
+      bodyTextWrap?: "none" | "wrap" | "ellipsis";
+      /** The maximum width for wrapping text in the node. */
+      bodyTextMaxWidth?: string;
+      /** The opacity of the node's body text, including its outline. */
+      bodyTextOpacity?: number;
+      /** The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+      bodyTextBackgroundColor?: string;
+      /** The size of the node's body text. */
+      bodyTextFontSize?: number;
+      /** The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+      bodyTextColor?: string;
+      /** A CSS font weight to be applied to the node's body text. */
+      bodyTextFontWeight?: string;
+      /** A CSS horizontal alignment to be applied to the node's body text. */
+      bodyTextHorizontalAlign?: string;
+      /** A CSS text decoration to be applied to the node's body text. */
+      bodyTextDecoration?: string;
+      /** A CSS vertical alignment to be applied to the node's body text. */
+      bodyTextVerticalAlign?: string;
+      /** The width of the node's body or the width of an edge's line. */
+      width?: number;
+      /** The height of the node's body */
+      height?: number;
+      /** The URL that points to the image to show in the node. */
+      backgroundImage?: string;
+      /** The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+      backgroundColor?: string;
+      /** Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+      backgroundBlacken?: number;
+      /** The opacity level of the node's background colour */
+      backgroundOpacity?: number;
+      /** The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundPositionX?: string;
+      /** The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundPositionY?: string;
+      /** The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundOffsetX?: string;
+      /** The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundOffsetY?: string;
+      /** How the background image is fit to the node. Can be 'none', 'contain', or 'cover'. */
+      backgroundFit?: "none" | "contain" | "cover";
+      /** How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'. */
+      backgroundClip?: "none" | "node" | "node-border";
+      /** How the background image's width is determined. Can be 'none', 'inner', or 'outer'. */
+      backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+      /** How the background image's height is determined. Can be 'none', 'inner', or 'outer'. */
+      backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+      /** The size of the node's border. */
+      borderWidth?: number;
+      /** The style of the node's border */
+      borderStyle?: "solid" | "dotted" | "dashed" | "double";
+      /** The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+      borderColor?: string;
+      /** The opacity of the node's border */
+      borderOpacity?: number;
+      /** The amount of padding around all sides of the node. */
+      padding?: number;
+      /** The horizontal alignment of a node's label */
+      textHalign?: "left" | "center" | "right";
+      /** The vertical alignment of a node's label */
+      textValign?: "top" | "center" | "bottom";
+      /** Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset. */
+      ghost?: "yes" | "no";
+      /** The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      activeBgColor?: string;
+      /** The opacity of the active background indicator. Selector needs to be *core*. */
+      activeBgOpacity?: string;
+      /** The opacity of the active background indicator. Selector needs to be *core*. */
+      activeBgSize?: string;
+      /** The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      selectionBoxColor?: string;
+      /** The size of the border on the selection box. Selector needs to be *core* */
+      selectionBoxBorderWidth?: number;
+      /** The opacity of the selection box. Selector needs to be *core* */
+      selectionBoxOpacity?: number;
+      /** The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      outsideTextureBgColor?: string;
+      /** The opacity of the area outside the viewport texture. Selector needs to be *core* */
+      outsideTextureBgOpacity?: number;
+      /** An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+      shapePolygonPoints?: string;
+      /** The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+      menuBackgroundColor?: string;
+      /** The opacity of the background of the component menu. */
+      menuBackgroundOpacity?: number;
+      /** The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+      menuForgroundColor?: string;
+    };
+    /** Connection Status */
+    status:
+      | "discovered"
+      | "registered"
+      | "connected"
+      | "ignored"
+      | "maintenance"
+      | "disconnected"
+      | "deleted"
+      | "not found";
+    /** Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status, along with a description of each transition. */
+    transitionMap?: {
+      [key: string]: {
+        /** Connection Status Value */
+        nextState:
+          | "discovered"
+          | "registered"
+          | "connected"
+          | "ignored"
+          | "maintenance"
+          | "disconnected"
+          | "deleted"
+          | "not found";
+        /** Human-readable explanation of when or why this transition occurs. */
+        description?: string;
+      }[];
+    };
+    /** User ID who owns this connection */
+    owner?: string;
+    /** Timestamp when the connection was created. */
+    createdAt?: string;
+    /** Timestamp when the connection was last updated. */
+    updatedAt?: string;
+    /** Timestamp when the connection was soft-deleted, if applicable. */
+    deletedAt?: string;
+    /** Associated environments for this connection */
+    environments?: {
+      /** ID */
+      id: string;
+      /** Specifies the version of the schema to which the environment conforms. */
+      schemaVersion: string;
+      /** Environment name */
+      name: string;
+      /** Environment description */
+      description: string;
+      /** Environment organization ID */
+      organizationId: string;
+      /** Environment owner */
+      owner?: string;
+      /** Timestamp when the environment was created. */
+      createdAt?: string;
+      /** Additional metadata associated with the environment. */
+      metadata?: object;
+      /** Timestamp when the environment was last updated. */
+      updatedAt?: string;
+      /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+      deletedAt?: string | null;
+    }[];
+    /** Specifies the version of the schema used for the definition. */
+    schemaVersion: string;
+  };
+export type PerformConnectionActionApiArg = {
+  /** Connection ID */
+  connectionId: string;
+  body: {
+    /** The operation to perform on the connection. */
+    action: "setMeshsyncMode";
+    /** Target MeshSync deployment mode. Required when `action` is `setMeshsyncMode`; the server redeploys MeshSync (operator vs embedded) for the connection's cluster. */
+    mode?: "operator" | "embedded";
+  };
 };
 export type DeleteMesheryConnectionApiResponse = unknown;
 export type DeleteMesheryConnectionApiArg = {
@@ -8963,11 +9750,20 @@ export type UnassignViewFromWorkspaceApiArg = {
   viewId: string;
 };
 export const {
+  useGetControllersDefaultConfigQuery,
+  useUpdateControllersDefaultConfigMutation,
+  useGetConnectionControllersConfigQuery,
+  useUpdateConnectionControllersConfigMutation,
   useEvaluateRelationshipsMutation,
   useGetSystemDatabaseQuery,
   useResetSystemDatabaseMutation,
   useGetSystemVersionQuery,
   useGetSystemSyncQuery,
+  useGetOperatorControllerStatusQuery,
+  useGetMeshsyncControllerStatusQuery,
+  useGetBrokerControllerStatusQuery,
+  useGetControllerDiagnosticsQuery,
+  useSubscribeControllersStatusQuery,
   useGetUserCredentialsQuery,
   useSaveUserCredentialMutation,
   useUpdateUserCredentialMutation,
@@ -8983,27 +9779,20 @@ export const {
   useUpdateOrgMutation,
   useGetOrgPreferencesQuery,
   useAddTeamToOrgMutation,
-  useGetTeamByIdQuery,
-  useUpdateTeamMutation,
-  useDeleteTeamMutation,
   useRemoveTeamFromOrgMutation,
   useAddUserToOrgMutation,
   useDeleteUserFromOrgMutation,
-  useGetTeamsQuery,
-  useCreateTeamMutation,
-  useGetTeamUsersQuery,
-  useAddUserToTeamMutation,
-  useRemoveUserFromTeamMutation,
-  useListUsersNotInTeamQuery,
   useGetUsersForOrgQuery,
   useGetUsersQuery,
   useGetUserProfileByIdQuery,
   useGetUserQuery,
+  useGetUserEmailAddressesQuery,
   useGetConnectionsQuery,
   useRegisterConnectionMutation,
   useGetConnectionByIdQuery,
   useUpdateConnectionMutation,
   useDeleteConnectionMutation,
+  usePerformConnectionActionMutation,
   useDeleteMesheryConnectionMutation,
   useGetKubernetesContextQuery,
   useAddConnectionToEnvironmentMutation,

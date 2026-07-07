@@ -30,8 +30,8 @@ Detailed reference for how the build scripts consume OpenAPI schemas and produce
 
 ### Excluded from merge
 
-- `v1alpha1/core` — reusable definitions, not a standalone API
-- `v1alpha1/capability` — capability schemas
+- `v1alpha1/core` - reusable definitions, not a standalone API
+- `v1alpha1/capability` - capability schemas
 
 ## Go Generator
 
@@ -151,11 +151,11 @@ The algorithm (`discoverSchemaPackages()`):
 3. Apply name overrides (`design` → `pattern`)
 4. Return `{name, version, dirName, openapiPath}` tuples
 
-A separate `getMergePackages()` function filters out packages listed in `excludeFromMerge` (currently `v1alpha1/core` and `v1alpha1/capability`). Excluded packages are still discovered and processed for per-package bundling and Go generation — they are only skipped when merging specs.
+A separate `getMergePackages()` function filters out packages listed in `excludeFromMerge` (currently `v1alpha1/core` and `v1alpha1/capability`). Excluded packages are still discovered and processed for per-package bundling and Go generation - they are only skipped when merging specs.
 
 This means:
 
-- **Adding a new construct**: just create the directory with `api.yml` — it's auto-discovered
+- **Adding a new construct**: just create the directory with `api.yml` - it's auto-discovered
 - **The directory name matters**: it becomes the Go package name and TypeScript module path
 - **No registration needed**: the build system finds new constructs automatically
 
@@ -173,7 +173,7 @@ Usually means invalid `$ref` path. Check:
 
 - Missing imports: add `x-go-type-import` to the schema field
 - Alias mismatch after generation: set `x-go-type-import.name` and make the alias prefix in `x-go-type` match it exactly
-- Type conflicts: two schemas might define the same type name — use `x-go-type` to disambiguate
+- Type conflicts: two schemas might define the same type name - use `x-go-type` to disambiguate
 - Extra tags not appearing: ensure `x-oapi-codegen-extra-tags` is at the property level, or intentionally use a single-entry `allOf` wrapper for a reusable alias schema component
 - Unsure about `allOf`: use it for schema composition, reusable alias wrappers, or the known PR `#629` design array-item compatibility case; otherwise keep a direct property `$ref`
 - New helper behavior seems to require a package list: first check whether the rule can be derived from generated struct tags, local type references, or naming conventions; only keep irreducible exceptions handwritten
@@ -187,4 +187,4 @@ Usually means invalid `$ref` path. Check:
 ### Package not discovered by build
 
 - Ensure `api.yml` exists in the construct directory (not just `<construct>.yaml`)
-- Check `build/lib/config.js` to see whether the directory is filtered out during the merge step (for example, via `getMergePackages()` or an `excludeFromMerge` list) — it will still be discovered, but its spec may be skipped during merging
+- Check `build/lib/config.js` to see whether the directory is filtered out during the merge step (for example, via `getMergePackages()` or an `excludeFromMerge` list) - it will still be discovered, but its spec may be skipped during merging

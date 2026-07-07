@@ -1,9 +1,11 @@
 name: Agent Instructions Sync
 
-# AGENTS.md and CLAUDE.md are intentionally kept as two byte-identical
-# copies (the symlink was removed in #885). This guard fails the build if
-# they ever drift, and if either file exceeds Claude Code's 40k-character
-# memory-file warning threshold.
+# CLAUDE.md is a symlink to AGENTS.md, restored as part of the ecosystem-wide
+# agent-instruction alignment (it was a byte-identical copy between #885 and
+# that alignment; the symlink makes drift structurally impossible). This guard
+# fails the build if CLAUDE.md stops resolving to AGENTS.md, or if the
+# instruction file exceeds Claude Code's 40k-character memory-file warning
+# threshold.
 
 on:
   workflow_dispatch:
@@ -30,27 +32,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: AGENTS.md and CLAUDE.md must be identical
+      - name: CLAUDE.md must be a symlink resolving to AGENTS.md
         run: |
-          if ! diff -q AGENTS.md CLAUDE.md; then
-            echo "::error::AGENTS.md and CLAUDE.md have drifted. They must be kept byte-identical."
-            echo "Re-sync with: cp AGENTS.md CLAUDE.md   (or the reverse)"
-            diff AGENTS.md CLAUDE.md || true
+          if [ ! -L CLAUDE.md ] || [ "$(readlink CLAUDE.md)" != "AGENTS.md" ]; then
+            echo "::error::CLAUDE.md must be a symlink pointing at AGENTS.md."
+            echo "Re-create with: ln -sf AGENTS.md CLAUDE.md"
             exit 1
           fi
-          echo "AGENTS.md and CLAUDE.md are identical."
+          if ! diff -q AGENTS.md CLAUDE.md; then
+            echo "::error::CLAUDE.md does not resolve to AGENTS.md content."
+            exit 1
+          fi
+          echo "CLAUDE.md is a symlink to AGENTS.md."
 
-      - name: Files must stay under the 40k-character warning threshold
+      - name: File must stay under the 40k-character warning threshold
         run: |
           limit=40000
-          status=0
-          for f in AGENTS.md CLAUDE.md; do
-            chars=$(wc -m < "$f")
-            if [ "$chars" -gt "$limit" ]; then
-              echo "::error::$f is ${chars} characters (> ${limit}). Move detail into docs/ and link it."
-              status=1
-            else
-              echo "$f: ${chars} characters (limit ${limit}) — OK"
-            fi
-          done
-          exit $status
+          chars=$(wc -m < AGENTS.md)
+          if [ "$chars" -gt "$limit" ]; then
+            echo "::error::AGENTS.md is ${chars} characters (> ${limit}). Move detail into docs/ and link it."
+            exit 1
+          fi
+          echo "AGENTS.md: ${chars} characters (limit ${limit}) - OK"
