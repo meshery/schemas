@@ -780,6 +780,7 @@ const UserSchema: Record<string, unknown> = {
           },
           "userId": {
             "description": "The user (users.id) this address belongs to",
+            "x-go-name": "UserID",
             "x-oapi-codegen-extra-tags": {
               "db": "owner",
               "json": "userId"

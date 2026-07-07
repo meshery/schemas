@@ -424,7 +424,7 @@ type UserEmailAddress struct {
 	UpdatedAt core.Time      `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
 
 	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	UserId core.Uuid `db:"owner" json:"userId" yaml:"userId"`
+	UserID core.Uuid `db:"owner" json:"userId" yaml:"userId"`
 
 	// Verified Whether the address was verified (per Kratos verifiable addresses) at record time
 	Verified bool `db:"verified" json:"verified" yaml:"verified"`

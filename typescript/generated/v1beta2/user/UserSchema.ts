@@ -4702,6 +4702,7 @@ const UserSchema: Record<string, unknown> = {
                         "x-go-type-import": {
                           "path": "github.com/gofrs/uuid"
                         },
+                        "x-go-name": "UserID",
                         "x-oapi-codegen-extra-tags": {
                           "db": "owner",
                           "json": "userId"
@@ -5873,6 +5874,7 @@ const UserSchema: Record<string, unknown> = {
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
             },
+            "x-go-name": "UserID",
             "x-oapi-codegen-extra-tags": {
               "db": "owner",
               "json": "userId"
