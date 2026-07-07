@@ -708,6 +708,7 @@ const RelationshipSchema: Record<string, unknown> = {
             "x-go-type-skip-optional-pointer": true,
             "x-order": 6,
             "description": "Model Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
+            "helperText": "Select a model",
             "x-oapi-codegen-extra-tags": {
               "yaml": "model",
               "json": "model",

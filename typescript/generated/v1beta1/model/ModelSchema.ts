@@ -863,6 +863,7 @@ const ModelSchema: Record<string, unknown> = {
                                 },
                                 "default": "Uncategorized",
                                 "description": "The category of the model that determines the main grouping.",
+                                "helperText": "Select a model category",
                                 "enum": [
                                   "Analytics",
                                   "App Definition and Development",
@@ -2021,6 +2022,7 @@ const ModelSchema: Record<string, unknown> = {
                 },
                 "default": "Uncategorized",
                 "description": "The category of the model that determines the main grouping.",
+                "helperText": "Select a model category",
                 "enum": [
                   "Analytics",
                   "App Definition and Development",
@@ -3469,6 +3471,7 @@ const ModelSchema: Record<string, unknown> = {
                       },
                       "default": "Uncategorized",
                       "description": "The category of the model that determines the main grouping.",
+                      "helperText": "Select a model category",
                       "enum": [
                         "Analytics",
                         "App Definition and Development",
