@@ -50,8 +50,8 @@ type ProviderCapabilities struct {
 		// AllowedComponents UI components permitted when the Meshery UI is restricted. An open, UI-defined object (navigator and header component toggles) whose inner shape is intentionally not fixed by this schema.
 		AllowedComponents core.Map `json:"allowedComponents,omitempty" yaml:"allowedComponents,omitempty"`
 
-		// IsMesheryUIRestricted Whether the Meshery UI is restricted for this provider.
-		IsMesheryUIRestricted *bool `json:"isMesheryUIRestricted" yaml:"isMesheryUIRestricted"`
+		// IsMesheryUiRestricted Whether the Meshery UI is restricted for this provider.
+		IsMesheryUiRestricted *bool `json:"isMesheryUiRestricted" yaml:"isMesheryUiRestricted"`
 	} `json:"restrictedAccess,omitempty" yaml:"restrictedAccess,omitempty"`
 
 	// Redirects Redirect path mappings the provider defines.

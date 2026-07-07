@@ -57,7 +57,7 @@ export interface components {
             /** @description Access restrictions the provider imposes on the Meshery UI. */
             restrictedAccess?: {
                 /** @description Whether the Meshery UI is restricted for this provider. */
-                isMesheryUIRestricted?: boolean;
+                isMesheryUiRestricted?: boolean;
                 /** @description UI components permitted when the Meshery UI is restricted. An open, UI-defined object (navigator and header component toggles) whose inner shape is intentionally not fixed by this schema. */
                 allowedComponents?: Record<string, never>;
             };
@@ -137,7 +137,7 @@ export interface operations {
                         /** @description Access restrictions the provider imposes on the Meshery UI. */
                         restrictedAccess?: {
                             /** @description Whether the Meshery UI is restricted for this provider. */
-                            isMesheryUIRestricted?: boolean;
+                            isMesheryUiRestricted?: boolean;
                             /** @description UI components permitted when the Meshery UI is restricted. An open, UI-defined object (navigator and header component toggles) whose inner shape is intentionally not fixed by this schema. */
                             allowedComponents?: Record<string, never>;
                         };

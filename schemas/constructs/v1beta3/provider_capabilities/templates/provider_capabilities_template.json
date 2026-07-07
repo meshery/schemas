@@ -8,7 +8,7 @@
   "capabilities": [],
   "extensions": {},
   "restrictedAccess": {
-    "isMesheryUIRestricted": false,
+    "isMesheryUiRestricted": false,
     "allowedComponents": {}
   },
   "redirects": {}

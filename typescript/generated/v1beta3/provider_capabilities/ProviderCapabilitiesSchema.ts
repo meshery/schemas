@@ -164,11 +164,11 @@ const ProviderCapabilitiesSchema: Record<string, unknown> = {
                       "additionalProperties": false,
                       "description": "Access restrictions the provider imposes on the Meshery UI.",
                       "properties": {
-                        "isMesheryUIRestricted": {
+                        "isMesheryUiRestricted": {
                           "type": "boolean",
                           "description": "Whether the Meshery UI is restricted for this provider.",
                           "x-oapi-codegen-extra-tags": {
-                            "json": "isMesheryUIRestricted"
+                            "json": "isMesheryUiRestricted"
                           }
                         },
                         "allowedComponents": {
@@ -371,11 +371,11 @@ const ProviderCapabilitiesSchema: Record<string, unknown> = {
             "additionalProperties": false,
             "description": "Access restrictions the provider imposes on the Meshery UI.",
             "properties": {
-              "isMesheryUIRestricted": {
+              "isMesheryUiRestricted": {
                 "type": "boolean",
                 "description": "Whether the Meshery UI is restricted for this provider.",
                 "x-oapi-codegen-extra-tags": {
-                  "json": "isMesheryUIRestricted"
+                  "json": "isMesheryUiRestricted"
                 }
               },
               "allowedComponents": {
