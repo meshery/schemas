@@ -1504,9 +1504,6 @@ function createGeneratorConfig(pkg, inputPath, tempDir, enableServerGeneration) 
       },
   };
   
-  console.log("===== GENERATED CONFIG =====");
-  console.log(yaml.dump(generatedConfig));
-  console.log("============================");
   fs.writeFileSync(tempConfigPath, yaml.dump(generatedConfig), "utf-8");
 
   return {
@@ -1712,36 +1709,13 @@ async function generateGoModels(pkg) {
     const specOutputPath = path.join(outputDir, "spec.go");
     const paramsOutputPath = path.join(outputDir, "params.go");
 
-    if (!enableServerGeneration) {
-      runOapiCodegen({
-          pkg,
-          configPath: generatedConfig.tempConfigPath,
-          inputPath,
-          outputPath: typesOutputPath,
-          generateTargets: "types",
-          skipFmt: true,
-    });
-
-      postProcessGeneratedGoFile(typesOutputPath, inputPath, {
-        addYaml: true,
-        addExtraTags: true,
-        rewriteRefs: true,
-        validateDbTags: true,
-        validateJsonTags: true,
-        addCompatibilityAliases: true,
-      });
-
-      writeGeneratedHelperFile(pkg, outputDir);
-      logger.success(`Generated: ${paths.relativePath(typesOutputPath)}`);
-      return;
-    }
-
     runOapiCodegen({
       pkg,
       configPath: generatedConfig.tempConfigPath,
       inputPath,
       outputPath: typesOutputPath,
       generateTargets: "types",
+      skipFmt: true,
     });
 
     postProcessGeneratedGoFile(typesOutputPath, inputPath, {
@@ -1752,6 +1726,12 @@ async function generateGoModels(pkg) {
       validateJsonTags: true,
       addCompatibilityAliases: true,
     });
+
+    if (!enableServerGeneration) {
+      writeGeneratedHelperFile(pkg, outputDir);
+      logger.success("Generated: " + paths.relativePath(typesOutputPath));
+      return;
+    }
 
     runOapiCodegen({
       pkg,
