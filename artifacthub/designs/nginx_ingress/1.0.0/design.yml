@@ -169,7 +169,7 @@ components:
   model: *id002
   status: enabled
   metadata:
-    isNamespaced: true
+    isNamespaced: false
     published: false
     instanceDetails: null
     isAnnotation: false
@@ -180,8 +180,6 @@ components:
         app.kubernetes.io/name: ingress-nginx
         app.kubernetes.io/instance: ingress-nginx
         app.kubernetes.io/component: controller
-      annotations:
-        ingressclass.kubernetes.io/is-default-class: 'true'
     spec:
       controller: k8s.io/ingress-nginx
   component:
@@ -218,6 +216,11 @@ components:
           containers:
           - name: controller
             image: registry.k8s.io/ingress-nginx/controller:v1.11.3
+            env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
             args:
             - /nginx-ingress-controller
             - --publish-service=$(POD_NAMESPACE)/ingress-nginx-controller
