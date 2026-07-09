@@ -1,0 +1,276 @@
+id: 2a101e8f-f348-562d-aa6e-17bad3f1ab91
+name: NGINX Ingress
+schemaVersion: designs.meshery.io/v1beta1
+version: v0.0.1
+metadata:
+  resolvedAliases: {}
+  additionalProperties:
+    source_uri: ''
+    author: meshery-maintainers
+components:
+- id: 5219fd4f-5875-5e9d-aaf2-53281bc59588
+  schemaVersion: components.meshery.io/v1beta1
+  version: v1.0.0
+  displayName: nginx
+  description: ''
+  format: JSON
+  model: &id002
+    id: b3f5bc0d-30f7-607d-6c73-784ddde6cad8
+    name: kubernetes
+    model:
+      version: v1.32.0-alpha.3
+    status: enabled
+    version: v1.0.0
+    category:
+      id: 9ca27d0d-66ce-42a9-8c85-6236563f2ddb
+      name: Orchestration & Management
+    metadata:
+      shape: circle
+      svgColor: ui/public/static/img/meshmodels/kubernetes/color/kubernetes-color.svg
+      svgWhite: ui/public/static/img/meshmodels/kubernetes/white/kubernetes-white.svg
+      svgComplete: ''
+      isAnnotation: false
+      primaryColor: '#326CE5'
+      secondaryColor: '#7aa1f0'
+      styleOverrides: ''
+    components: null
+    registrant:
+      id: 5bc80e3c-5d43-9eb4-d16c-78a2769247a6
+      kind: github
+      name: Github
+      type: registry
+      status: registered
+      user_id: 00000000-0000-0000-0000-000000000000
+      sub_type: ''
+      created_at: '2025-10-05T18:43:33.783547247Z'
+      deleted_at: '0001-01-01T00:00:00Z'
+      updated_at: '2025-10-05T18:43:33.783547247Z'
+      credential_id: 00000000-0000-0000-0000-000000000000
+      schemaVersion: ''
+    displayName: Kubernetes
+    subCategory: Scheduling & Orchestration
+    connection_id: 5bc80e3c-5d43-9eb4-d16c-78a2769247a6
+    relationships: null
+    schemaVersion: models.meshery.io/v1beta1
+    components_count: 0
+    relationships_count: 0
+  status: enabled
+  metadata:
+    isNamespaced: true
+    published: false
+    instanceDetails: null
+    isAnnotation: false
+  configuration:
+    metadata:
+      name: nginx
+      namespace: default
+      labels: &id001
+        app: nginx
+        app.kubernetes.io/name: nginx
+    spec:
+      replicas: 3
+      selector:
+        matchLabels: *id001
+      template:
+        metadata:
+          labels: *id001
+        spec:
+          containers:
+          - name: nginx
+            image: nginx:1.27.4
+            ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+            resources:
+              requests:
+                cpu: 100m
+                memory: 128Mi
+              limits:
+                cpu: 250m
+                memory: 256Mi
+  component:
+    kind: Deployment
+    version: apps/v1
+    schema: ''
+- id: 519db2b0-0dbd-5783-a582-2743589468c3
+  schemaVersion: components.meshery.io/v1beta1
+  version: v1.0.0
+  displayName: nginx
+  description: ''
+  format: JSON
+  model: *id002
+  status: enabled
+  metadata:
+    isNamespaced: true
+    published: false
+    instanceDetails: null
+    isAnnotation: false
+  configuration:
+    metadata:
+      name: nginx
+      namespace: default
+      labels: *id001
+    spec:
+      type: ClusterIP
+      selector: *id001
+      ports:
+      - name: http
+        port: 80
+        targetPort: http
+        protocol: TCP
+  component:
+    kind: Service
+    version: v1
+    schema: ''
+- id: 8f8c28d2-edae-5eab-a3db-838c7a5bed38
+  schemaVersion: components.meshery.io/v1beta1
+  version: v1.0.0
+  displayName: nginx
+  description: ''
+  format: JSON
+  model: *id002
+  status: enabled
+  metadata:
+    isNamespaced: true
+    published: false
+    instanceDetails: null
+    isAnnotation: false
+  configuration:
+    metadata:
+      name: nginx
+      namespace: default
+      labels: *id001
+      annotations:
+        nginx.ingress.kubernetes.io/rewrite-target: /
+    spec:
+      ingressClassName: nginx
+      rules:
+      - host: nginx.example.com
+        http:
+          paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nginx
+                port:
+                  number: 80
+  component:
+    kind: Ingress
+    version: networking.k8s.io/v1
+    schema: ''
+- id: 0ad2b290-ea6c-5a36-a947-4384fd80d046
+  schemaVersion: components.meshery.io/v1beta1
+  version: v1.0.0
+  displayName: nginx
+  description: ''
+  format: JSON
+  model: *id002
+  status: enabled
+  metadata:
+    isNamespaced: true
+    published: false
+    instanceDetails: null
+    isAnnotation: false
+  configuration:
+    metadata:
+      name: nginx
+      labels: &id003
+        app.kubernetes.io/name: ingress-nginx
+        app.kubernetes.io/instance: ingress-nginx
+        app.kubernetes.io/component: controller
+      annotations:
+        ingressclass.kubernetes.io/is-default-class: 'true'
+    spec:
+      controller: k8s.io/ingress-nginx
+  component:
+    kind: IngressClass
+    version: networking.k8s.io/v1
+    schema: ''
+- id: b49e1052-44aa-53fe-88c2-3c08eaadca45
+  schemaVersion: components.meshery.io/v1beta1
+  version: v1.0.0
+  displayName: ingress-nginx-controller
+  description: ''
+  format: JSON
+  model: *id002
+  status: enabled
+  metadata:
+    isNamespaced: true
+    published: false
+    instanceDetails: null
+    isAnnotation: false
+  configuration:
+    metadata:
+      name: ingress-nginx-controller
+      namespace: ingress-nginx
+      labels: *id003
+    spec:
+      replicas: 1
+      selector:
+        matchLabels: *id003
+      template:
+        metadata:
+          labels: *id003
+        spec:
+          serviceAccountName: ingress-nginx
+          containers:
+          - name: controller
+            image: registry.k8s.io/ingress-nginx/controller:v1.11.3
+            args:
+            - /nginx-ingress-controller
+            - --publish-service=$(POD_NAMESPACE)/ingress-nginx-controller
+            - --election-id=ingress-nginx-leader
+            - --controller-class=k8s.io/ingress-nginx
+            - --ingress-class=nginx
+            ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+            - name: https
+              containerPort: 443
+              protocol: TCP
+            resources:
+              requests:
+                cpu: 100m
+                memory: 90Mi
+  component:
+    kind: Deployment
+    version: apps/v1
+    schema: ''
+- id: 80a17bd1-fb10-5be2-90c2-ba2cb154a97c
+  schemaVersion: components.meshery.io/v1beta1
+  version: v1.0.0
+  displayName: ingress-nginx-controller
+  description: ''
+  format: JSON
+  model: *id002
+  status: enabled
+  metadata:
+    isNamespaced: true
+    published: false
+    instanceDetails: null
+    isAnnotation: false
+  configuration:
+    metadata:
+      name: ingress-nginx-controller
+      namespace: ingress-nginx
+      labels: *id003
+    spec:
+      type: LoadBalancer
+      selector: *id003
+      ports:
+      - name: http
+        port: 80
+        targetPort: http
+        protocol: TCP
+      - name: https
+        port: 443
+        targetPort: https
+        protocol: TCP
+  component:
+    kind: Service
+    version: v1
+    schema: ''
+relationships: []
