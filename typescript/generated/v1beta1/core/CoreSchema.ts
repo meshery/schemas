@@ -1634,6 +1634,25 @@ const CoreSchema: Record<string, unknown> = {
           "docker-compose",
           "k8s-kustomize"
         ]
+      },
+      "TransferOwnershipRequest": {
+        "type": "object",
+        "description": "Request payload for transferring ownership of a resource to another user.",
+        "required": [
+          "newOwnerId"
+        ],
+        "properties": {
+          "newOwnerId": {
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-type-skip-optional-pointer": true,
+            "description": "The UUID of the user to transfer ownership to."
+          }
+        }
       }
     },
     "parameters": {
@@ -1898,6 +1917,16 @@ const CoreSchema: Record<string, unknown> = {
       },
       "401": {
         "description": "Expired JWT token used or insufficient privilege",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden - caller has insufficient privilege",
         "content": {
           "text/plain": {
             "schema": {

@@ -859,6 +859,7 @@ components:
         newOwnerId:
           $ref: "#/components/schemas/Id"
           description: The UUID of the user to transfer ownership to.
+          x-go-name: NewOwnerID
 
   parameters:
     id:

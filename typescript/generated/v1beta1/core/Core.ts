@@ -617,6 +617,14 @@ export interface components {
          * @enum {string}
          */
         IaCFileTypes: "meshery-design" | "helm-chart" | "k8s-manifest" | "docker-compose" | "k8s-kustomize";
+        /** @description Request payload for transferring ownership of a resource to another user. */
+        TransferOwnershipRequest: {
+            /**
+             * Format: uuid
+             * @description The UUID of the user to transfer ownership to.
+             */
+            newOwnerId: string;
+        };
     };
     responses: {
         /** @description ok */
@@ -647,6 +655,15 @@ export interface components {
         };
         /** @description Expired JWT token used or insufficient privilege */
         401: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Forbidden - caller has insufficient privilege */
+        403: {
             headers: {
                 [name: string]: unknown;
             };
