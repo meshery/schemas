@@ -2,6 +2,7 @@ import { mesheryBaseApi as api } from "./api";
 export const addTagTypes = [
   "Meshery_Controllers_Configuration_controllers",
   "Evaluation_Evaluation",
+  "Session_API_Sessions",
   "System_API_System",
   "credential_credentials",
   "Key_users",
@@ -59,6 +60,48 @@ const injectedRtkApi = api
       evaluateRelationships: build.mutation<EvaluateRelationshipsApiResponse, EvaluateRelationshipsApiArg>({
         query: (queryArg) => ({ url: `/api/meshmodels/relationships/evaluate`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Evaluation_Evaluation"],
+      }),
+      getSessionCapabilities: build.query<GetSessionCapabilitiesApiResponse, GetSessionCapabilitiesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/connections/${queryArg.connectionId}/sessions/capabilities`,
+          params: {
+            resource: queryArg?.resource,
+            name: queryArg?.name,
+            namespace: queryArg?.["namespace"],
+            container: queryArg?.container,
+          },
+        }),
+        providesTags: ["Session_API_Sessions"],
+      }),
+      openTerminalSession: build.query<OpenTerminalSessionApiResponse, OpenTerminalSessionApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/connections/${queryArg.connectionId}/sessions/terminal`,
+          params: {
+            resource: queryArg?.resource,
+            name: queryArg?.name,
+            namespace: queryArg?.["namespace"],
+            container: queryArg?.container,
+            command: queryArg?.command,
+          },
+        }),
+        providesTags: ["Session_API_Sessions"],
+      }),
+      openLogSession: build.query<OpenLogSessionApiResponse, OpenLogSessionApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/connections/${queryArg.connectionId}/sessions/logs`,
+          params: {
+            resource: queryArg?.resource,
+            name: queryArg?.name,
+            namespace: queryArg?.["namespace"],
+            container: queryArg?.container,
+            follow: queryArg?.follow,
+            previous: queryArg?.previous,
+            timestamps: queryArg?.timestamps,
+            tailLines: queryArg?.tailLines,
+            sinceSeconds: queryArg?.sinceSeconds,
+          },
+        }),
+        providesTags: ["Session_API_Sessions"],
       }),
       getSystemDatabase: build.query<GetSystemDatabaseApiResponse, GetSystemDatabaseApiArg>({
         query: (queryArg) => ({
@@ -3333,6 +3376,68 @@ export type EvaluateRelationshipsApiArg = {
       enableTrace?: boolean;
     };
   };
+};
+export type GetSessionCapabilitiesApiResponse = /** status 200 The session kinds the target admits. */ {
+  /** Whether an interactive terminal can be opened. */
+  terminal: boolean;
+  /** Whether a log stream can be opened. */
+  logs: boolean;
+  /** The addressable sub-targets, if the resource has any. */
+  containers?: string[];
+  /** The sub-target used when SessionTarget.container is empty. */
+  defaultContainer?: string;
+  /** Explains, for a human, why an unsupported session kind is unsupported — e.g. that the pod is not running. */
+  reason?: string;
+};
+export type GetSessionCapabilitiesApiArg = {
+  /** The connection whose resources the session addresses. */
+  connectionId: string;
+  /** The driver-specific resource type, e.g. `pod` for a kubernetes connection. */
+  resource: string;
+  /** The resource's name within its scope. */
+  name: string;
+  /** The resource's parent scope, where it has one. Required for namespaced Kubernetes resources. */
+  namespace?: string;
+  /** A sub-target within the resource, e.g. a container within a pod. The driver's default sub-target is used when omitted. */
+  container?: string;
+};
+export type OpenTerminalSessionApiResponse = unknown;
+export type OpenTerminalSessionApiArg = {
+  /** The connection whose resources the session addresses. */
+  connectionId: string;
+  /** The driver-specific resource type, e.g. `pod` for a kubernetes connection. */
+  resource: string;
+  /** The resource's name within its scope. */
+  name: string;
+  /** The resource's parent scope, where it has one. Required for namespaced Kubernetes resources. */
+  namespace?: string;
+  /** A sub-target within the resource, e.g. a container within a pod. The driver's default sub-target is used when omitted. */
+  container?: string;
+  /** The argv to execute, one query parameter per element. When omitted the driver picks a sensible interactive shell for the target. */
+  command?: string[];
+};
+export type OpenLogSessionApiResponse = unknown;
+export type OpenLogSessionApiArg = {
+  /** The connection whose resources the session addresses. */
+  connectionId: string;
+  /** The driver-specific resource type, e.g. `pod` for a kubernetes connection. */
+  resource: string;
+  /** The resource's name within its scope. */
+  name: string;
+  /** The resource's parent scope, where it has one. Required for namespaced Kubernetes resources. */
+  namespace?: string;
+  /** A sub-target within the resource, e.g. a container within a pod. The driver's default sub-target is used when omitted. */
+  container?: string;
+  /** Keep the stream open and append new output as it is produced. */
+  follow?: boolean;
+  /** Return the logs of the target's prior instance, if any. */
+  previous?: boolean;
+  /** Prefix each line with an RFC 3339 timestamp. */
+  timestamps?: boolean;
+  /** Cap how many lines of history are replayed before following. Omit for no limit. */
+  tailLines?: number;
+  /** Bound history to output produced within the last N seconds. Omit for no bound; a value of 0 is treated as omitted. */
+  sinceSeconds?: number;
 };
 export type GetSystemDatabaseApiResponse = /** status 200 Database summary */ {
   /** Zero-based page index of the returned table slice. */
@@ -9755,6 +9860,9 @@ export const {
   useGetConnectionControllersConfigQuery,
   useUpdateConnectionControllersConfigMutation,
   useEvaluateRelationshipsMutation,
+  useGetSessionCapabilitiesQuery,
+  useOpenTerminalSessionQuery,
+  useOpenLogSessionQuery,
   useGetSystemDatabaseQuery,
   useResetSystemDatabaseMutation,
   useGetSystemVersionQuery,
