@@ -1,0 +1,484 @@
+openapi: 3.0.0
+info:
+  title: Session API
+  description: >-
+    OpenAPI schema for interactive sessions against the resources reachable
+    through a Meshery connection: an interactive terminal, and a log tail.
+
+    Sessions are deliberately connection-scoped and resource-agnostic. A session
+    driver is registered per connection kind ("kubernetes" today; a container
+    runtime, a managed database, or a remote host tomorrow), so support for a
+    new resource universe is additive and none of the shapes below are
+    Kubernetes-specific. `SessionTarget.resource` names a driver-specific
+    resource type, and `namespace`/`container` are optional qualifiers a driver
+    interprets for itself.
+
+    Two of the three endpoints are WebSockets. They are documented here because
+    this file is the wire contract, but they must be consumed with a native
+    WebSocket client rather than a generated RTK hook — the same way the
+    Server-Sent Events endpoints in the System API are consumed with a native
+    EventSource. The frame protocol they speak is described on
+    SessionControlMessage.
+  version: v1beta1
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+security:
+  - jwt: []
+
+tags:
+  - name: Sessions
+    description: Interactive terminal and log sessions against a connection's resources.
+
+paths:
+  /api/integrations/connections/{connectionId}/sessions/capabilities:
+    get:
+      x-internal: ["meshery"]
+      tags:
+        - Sessions
+      operationId: getSessionCapabilities
+      summary: Report which session kinds a resource supports
+      description: >-
+        Resolve what the connection's session driver can do with the addressed
+        resource, against live state rather than a static table: whether a
+        resource admits a terminal generally depends on its current status. Used
+        by a client to decide whether to offer a terminal or a log tail before
+        opening a socket, and which containers the user may choose between.
+      parameters:
+        - $ref: "#/components/parameters/connectionId"
+        - $ref: "#/components/parameters/resource"
+        - $ref: "#/components/parameters/name"
+        - $ref: "#/components/parameters/namespace"
+        - $ref: "#/components/parameters/container"
+      responses:
+        "200":
+          description: The session kinds the target admits.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SessionCapabilities"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/integrations/connections/{connectionId}/sessions/terminal:
+    get:
+      x-internal: ["meshery"]
+      tags:
+        - Sessions
+      operationId: openTerminalSession
+      summary: Open an interactive terminal over a WebSocket
+      description: >-
+        Upgrade to a WebSocket carrying an interactive, TTY-backed shell in the
+        target resource. Consume with a native WebSocket client, not a generated
+        RTK hook.
+
+        Everything that can fail with a useful HTTP status — an unknown target,
+        an unsupported session kind, an exhausted per-user session budget — is
+        settled before the upgrade, so those failures arrive as ordinary HTTP
+        responses rather than as a socket that opens and immediately closes. The
+        handshake enforces a same-origin check: it is authenticated by an
+        ambient session cookie, so accepting any Origin would let any page the
+        user visits open a shell as them.
+
+        The session runs with the requesting user's own credential, so the
+        target's native authorization (Kubernetes RBAC, for a kubernetes
+        connection) governs it unchanged.
+
+        See SessionControlMessage for the frame protocol.
+      parameters:
+        - $ref: "#/components/parameters/connectionId"
+        - $ref: "#/components/parameters/resource"
+        - $ref: "#/components/parameters/name"
+        - $ref: "#/components/parameters/namespace"
+        - $ref: "#/components/parameters/container"
+        - name: command
+          in: query
+          description: >-
+            The argv to execute, one query parameter per element. When omitted
+            the driver picks a sensible interactive shell for the target.
+          required: false
+          schema:
+            type: array
+            maxItems: 64
+            items:
+              type: string
+              maxLength: 4096
+      responses:
+        "101":
+          description: >-
+            Switching Protocols. The connection becomes a session WebSocket
+            speaking the frame protocol on SessionControlMessage.
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          description: >-
+            The WebSocket handshake carried an Origin that is neither the
+            server's own nor in its configured allow-list.
+        "404":
+          $ref: "#/components/responses/404"
+        "429":
+          description: The user already holds the maximum number of concurrent sessions.
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/integrations/connections/{connectionId}/sessions/logs:
+    get:
+      x-internal: ["meshery"]
+      tags:
+        - Sessions
+      operationId: openLogSession
+      summary: Stream a resource's logs over a WebSocket
+      description: >-
+        Upgrade to a WebSocket carrying the target resource's log output. With
+        `follow=true` the socket stays open until the client leaves; otherwise
+        it closes once the available history has been sent. Consume with a
+        native WebSocket client, not a generated RTK hook.
+
+        The stream parameters below are fixed when the remote log stream is
+        created and cannot be renegotiated on a live socket: changing any of
+        them means opening a new session.
+
+        See SessionControlMessage for the frame protocol.
+      parameters:
+        - $ref: "#/components/parameters/connectionId"
+        - $ref: "#/components/parameters/resource"
+        - $ref: "#/components/parameters/name"
+        - $ref: "#/components/parameters/namespace"
+        - $ref: "#/components/parameters/container"
+        - name: follow
+          in: query
+          description: Keep the stream open and append new output as it is produced.
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - name: previous
+          in: query
+          description: Return the logs of the target's prior instance, if any.
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - name: timestamps
+          in: query
+          description: Prefix each line with an RFC 3339 timestamp.
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - name: tailLines
+          in: query
+          description: >-
+            Cap how many lines of history are replayed before following.
+            Omit for no limit.
+          required: false
+          schema:
+            type: integer
+            format: int64
+            minimum: 0
+        - name: sinceSeconds
+          in: query
+          description: >-
+            Bound history to output produced within the last N seconds. Omit for
+            no bound; a value of 0 is treated as omitted.
+          required: false
+          schema:
+            type: integer
+            format: int64
+            minimum: 0
+      responses:
+        "101":
+          description: >-
+            Switching Protocols. The connection becomes a session WebSocket
+            speaking the frame protocol on SessionControlMessage.
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          description: >-
+            The WebSocket handshake carried an Origin that is neither the
+            server's own nor in its configured allow-list.
+        "404":
+          $ref: "#/components/responses/404"
+        "429":
+          description: The user already holds the maximum number of concurrent sessions.
+        "500":
+          $ref: "#/components/responses/500"
+
+components:
+  responses:
+    400:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/400"
+    401:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/401"
+    404:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/404"
+    500:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/500"
+
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    connectionId:
+      name: connectionId
+      in: path
+      required: true
+      description: The connection whose resources the session addresses.
+      schema:
+        type: string
+        format: uuid
+
+    resource:
+      name: resource
+      in: query
+      required: true
+      description: >-
+        The driver-specific resource type, e.g. `pod` for a kubernetes
+        connection.
+      schema:
+        type: string
+        maxLength: 253
+
+    name:
+      name: name
+      in: query
+      required: true
+      description: The resource's name within its scope.
+      schema:
+        type: string
+        maxLength: 253
+
+    namespace:
+      name: namespace
+      in: query
+      required: false
+      description: >-
+        The resource's parent scope, where it has one. Required for namespaced
+        Kubernetes resources.
+      schema:
+        type: string
+        maxLength: 253
+
+    container:
+      name: container
+      in: query
+      required: false
+      description: >-
+        A sub-target within the resource, e.g. a container within a pod. The
+        driver's default sub-target is used when omitted.
+      schema:
+        type: string
+        maxLength: 253
+
+  schemas:
+    SessionKind:
+      type: string
+      description: The kinds of session a driver may support for a given target.
+      enum:
+        - terminal
+        - logs
+
+    SessionTarget:
+      type: object
+      description: >-
+        Addresses the resource a session attaches to, within the universe of a
+        single connection. The field names read Kubernetes-ish because that is
+        the first driver, but each driver interprets them for itself: `namespace`
+        is any parent scope, `container` is any sub-target within `name`. A
+        driver ignores the fields it has no use for.
+      additionalProperties: false
+      required:
+        - resource
+        - name
+      properties:
+        resource:
+          type: string
+          description: The driver-specific resource type, e.g. "pod".
+          maxLength: 253
+          x-oapi-codegen-extra-tags:
+            json: "resource"
+        namespace:
+          type: string
+          description: The parent scope of the resource, if it has one.
+          maxLength: 253
+          x-oapi-codegen-extra-tags:
+            json: "namespace,omitempty"
+          x-go-type-skip-optional-pointer: true
+        name:
+          type: string
+          description: Identifies the resource within its scope.
+          maxLength: 253
+          x-oapi-codegen-extra-tags:
+            json: "name"
+        container:
+          type: string
+          description: Selects a sub-target within the resource, if it has any.
+          maxLength: 253
+          x-oapi-codegen-extra-tags:
+            json: "container,omitempty"
+          x-go-type-skip-optional-pointer: true
+
+    SessionCapabilities:
+      type: object
+      description: >-
+        What a driver can do with one specific target. Resolved against live
+        state rather than a static table, because whether a target admits a
+        terminal generally depends on its current status.
+      additionalProperties: false
+      required:
+        - terminal
+        - logs
+      properties:
+        terminal:
+          type: boolean
+          description: Whether an interactive terminal can be opened.
+          x-oapi-codegen-extra-tags:
+            json: "terminal"
+        logs:
+          type: boolean
+          description: Whether a log stream can be opened.
+          x-oapi-codegen-extra-tags:
+            json: "logs"
+        containers:
+          type: array
+          description: The addressable sub-targets, if the resource has any.
+          maxItems: 256
+          items:
+            type: string
+            maxLength: 253
+          x-oapi-codegen-extra-tags:
+            json: "containers,omitempty"
+          x-go-type-skip-optional-pointer: true
+        defaultContainer:
+          type: string
+          description: The sub-target used when SessionTarget.container is empty.
+          maxLength: 253
+          x-oapi-codegen-extra-tags:
+            json: "defaultContainer,omitempty"
+          x-go-type-skip-optional-pointer: true
+        reason:
+          type: string
+          description: >-
+            Explains, for a human, why an unsupported session kind is
+            unsupported — e.g. that the pod is not running.
+          maxLength: 1024
+          x-oapi-codegen-extra-tags:
+            json: "reason,omitempty"
+          x-go-type-skip-optional-pointer: true
+
+    SessionControlType:
+      type: string
+      description: >-
+        Identifies a session control frame. `resize` travels client-to-server;
+        the rest travel server-to-client. A receiver ignores an unknown or
+        wrong-direction type, so a newer peer can send frames an older one does
+        not know about without breaking the session.
+      enum:
+        - ready
+        - resize
+        - error
+        - exit
+        - eof
+
+    SessionControlMessage:
+      type: object
+      description: >-
+        The JSON payload of a session WebSocket's text frames.
+
+        A session socket carries two interleaved channels, distinguished by
+        WebSocket opcode rather than by an envelope field. Binary frames carry
+        raw payload bytes: stdin keystrokes from the client (terminal sessions
+        only), and stdout or log bytes to the client. Text frames carry one of
+        these JSON control messages.
+
+        Splitting on opcode keeps the hot path allocation-light and avoids
+        base64-inflating every keystroke and every log line by a third. It is
+        also required for correctness: terminal output is not valid UTF-8 in
+        general — it carries escape sequences, and arbitrary octets from a
+        program writing raw bytes — so a text frame could not carry it
+        faithfully.
+
+        Every session ends with exactly one terminal control frame (`error`,
+        `exit`, or `eof`) before the socket is closed, so a client never has to
+        infer why a stream stopped from the close code alone. The close code is
+        4000 when the session ended as intended and 4001 when it failed; both
+        sit in the private-use range RFC 6455 §7.4.2 reserves for applications.
+
+        Fields not relevant to a given `type` are omitted.
+      additionalProperties: false
+      required:
+        - type
+      properties:
+        type:
+          $ref: "#/components/schemas/SessionControlType"
+        cols:
+          type: integer
+          description: Terminal width in character cells. Carried by `resize`.
+          minimum: 0
+          maximum: 65535
+          x-oapi-codegen-extra-tags:
+            json: "cols,omitempty"
+          x-go-type-skip-optional-pointer: true
+        rows:
+          type: integer
+          description: Terminal height in character cells. Carried by `resize`.
+          minimum: 0
+          maximum: 65535
+          x-oapi-codegen-extra-tags:
+            json: "rows,omitempty"
+          x-go-type-skip-optional-pointer: true
+        capabilities:
+          allOf:
+            - $ref: "#/components/schemas/SessionCapabilities"
+          description: >-
+            The resolved target capabilities. Carried by `ready`, which the
+            server sends once, after it has attached to the target. It lets a
+            client render the sub-target it actually attached to when the
+            request left `container` unspecified.
+
+            Deliberately left as a pointer in Go: `omitempty` does not elide an
+            empty struct, so a value type would stamp an empty capabilities
+            object onto every `error` and `exit` frame.
+          x-oapi-codegen-extra-tags:
+            json: "capabilities,omitempty"
+        code:
+          type: string
+          description: >-
+            The MeshKit error code of an `error` frame, e.g.
+            "meshery-server-1447". Lets a client branch on the failure without
+            parsing prose.
+          maxLength: 64
+          x-oapi-codegen-extra-tags:
+            json: "code,omitempty"
+          x-go-type-skip-optional-pointer: true
+        message:
+          type: string
+          description: The human-readable description of an `error` frame.
+          maxLength: 4096
+          x-oapi-codegen-extra-tags:
+            json: "message,omitempty"
+          x-go-type-skip-optional-pointer: true
+        exitCode:
+          type: integer
+          description: The remote command's status. Carried by `exit`.
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "exitCode"
