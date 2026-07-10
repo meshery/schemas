@@ -5,7 +5,7 @@ package permissions
 import "github.com/gofrs/uuid"
 
 // Index ID used to generate this file
-const IndexID = "8d7905beb07904185485104a47bb9916237daee1dc5573a431103fa4391a8170"
+const IndexID = "f125a418f2ca870bc9d3f2ffcfa5edcb417eb0157f916bfb6b7de27c498c794c"
 
 
 // PermissionKey represents a permission key identifier.
@@ -1352,5 +1352,8 @@ var (
 
 	// ChaosManagementAsDaemonsets - No description available
 	ChaosManagementAsDaemonsets = PermissionKey(uuid.Must(uuid.FromString("b73d71ec-f5b2-4d0b-83de-6e2dccff5041")))
+
+	// CatalogManagementTransferDesignOwnership - Transfer ownership of a design to another user.
+	CatalogManagementTransferDesignOwnership = PermissionKey(uuid.Must(uuid.FromString("576ee93e-0e25-4369-95bf-8a7216342aee")))
 
 )

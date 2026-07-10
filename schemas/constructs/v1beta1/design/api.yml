@@ -270,6 +270,40 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
+  /api/content/patterns/transfer/{id}:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - designs
+      summary: Transfer design ownership
+      operationId: transferDesignOwnership
+      description: Transfers ownership of a design to a new owner.
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../core/api.yml#/components/schemas/TransferOwnershipRequest"
+      responses:
+        "200":
+          description: Ownership transferred.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MesheryPattern"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
   /api/content/patterns/download/{id}:
     get:
       x-internal: ["cloud"]
@@ -748,6 +782,8 @@ components:
       $ref: "../core/api.yml#/components/responses/400"
     401:
       $ref: "../core/api.yml#/components/responses/401"
+    403:
+      $ref: "../core/api.yml#/components/responses/403"
     404:
       $ref: "../core/api.yml#/components/responses/404"
     500:

@@ -24,7 +24,7 @@ export interface Key {
 /**
  * Permissions Index ID used for this generated file.
  */
-export const PERMISSIONS_INDEX_ID = "8d7905beb07904185485104a47bb9916237daee1dc5573a431103fa4391a8170" as const;
+export const PERMISSIONS_INDEX_ID = "f125a418f2ca870bc9d3f2ffcfa5edcb417eb0157f916bfb6b7de27c498c794c" as const;
 
 /**
  * Creates a PermissionKey from a UUID string.
@@ -4899,6 +4899,17 @@ export const Keys = {
     subcategory: "MeshMonkey",
     function: "As daemonsets",
     description: ""
+  },
+
+  /**
+   * Transfer ownership of a design to another user.
+   */
+  CatalogManagementTransferDesignOwnership: {
+    id: "576ee93e-0e25-4369-95bf-8a7216342aee" as PermissionKey,
+    category: "Catalog Management",
+    subcategory: "Designs",
+    function: "Transfer Design Ownership",
+    description: "Transfer ownership of a design to another user."
   }
 } as const;
 
@@ -7115,7 +7126,12 @@ export const PermissionKeys = {
   /**
    * No description available
    */
-  ChaosManagementAsDaemonsets: "b73d71ec-f5b2-4d0b-83de-6e2dccff5041" as PermissionKey
+  ChaosManagementAsDaemonsets: "b73d71ec-f5b2-4d0b-83de-6e2dccff5041" as PermissionKey,
+
+  /**
+   * Transfer ownership of a design to another user.
+   */
+  CatalogManagementTransferDesignOwnership: "576ee93e-0e25-4369-95bf-8a7216342aee" as PermissionKey
 } as const;
 
 /**
