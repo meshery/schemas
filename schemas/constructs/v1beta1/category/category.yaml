@@ -3,6 +3,8 @@ $schema: http://json-schema.org/draft-07/schema#
 type: object
 additionalProperties: false
 description: Category of the model.
+example:
+  $ref: "./templates/category_template.json"
 required:
   - id
   - name

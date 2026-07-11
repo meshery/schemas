@@ -578,6 +578,8 @@ components:
     RelationshipDefinition:
       description: "Relationships define the nature of interaction between interconnected components in Meshery. The combination of relationship properties kind, type, and subtype characterize various genealogical relations among and between components. Relationships have selectors, selector sets, metadata, and optional parameters. Learn more at https://docs.meshery.io/concepts/logical/relationships."
       type: object
+      example:
+        $ref: "./templates/relationship_template.json"
       required:
         - schemaVersion
         - version
@@ -715,4 +717,5 @@ components:
             yaml: "selectors,omitempty"
             json: "selectors,omitempty"
             gorm: "type:bytes;serializer:json"
+
 
