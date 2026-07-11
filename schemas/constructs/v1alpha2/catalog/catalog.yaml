@@ -1,4 +1,6 @@
 type: object
+example:
+  $ref: "./templates/catalog_template.json"
 properties:
   publishedVersion:
     description: Tracks the specific content version that has been made available in the Catalog.

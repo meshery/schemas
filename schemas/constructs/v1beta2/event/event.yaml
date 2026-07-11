@@ -1,6 +1,8 @@
 type: object
 additionalProperties: false
 description: EventResult entity schema.
+example:
+  $ref: "./templates/event_template.json"
 properties:
   user_id:
     $ref: ../core/api.yml#/components/schemas/UserUuid

@@ -4,6 +4,8 @@ type: string
 title: SubCategory
 description: Sub category of the model determines the secondary grouping.
 default: Uncategorized
+example:
+  $ref: "./templates/subcategory_template.json"
 enum:
   - API Gateway
   - API Integration
