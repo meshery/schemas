@@ -181,6 +181,16 @@ components:
             $ref: "#/components/schemas/TeamMember"
           description: The data of the teammemberspage.
 
+    TeamOwnershipTransferPayload:
+      type: object
+      description: Payload for transferring ownership of a team
+      required:
+        - newOwnerId
+      properties:
+        newOwnerId:
+          $ref: ../core/api.yml#/components/schemas/user_id
+          description: ID of the new owner of the team  
+          
   requestBodies:
     teamPayload:
       description: Body for creating a team
@@ -196,6 +206,13 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/TeamUpdatePayload"
+    teamOwnershipTransferPayload:
+      description: Body for transferring ownership of a team
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/TeamOwnershipTransferPayload"         
 
 paths:
   /api/identity/orgs/{orgId}/teams:
@@ -438,6 +455,34 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TeamMembersPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/orgs/{orgId}/teams/{teamId}/transfer:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - teams
+      operationId: transferTeamOwnership
+      summary: Transfers team ownership
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+        - $ref: "#/components/parameters/teamId"
+      requestBody:
+        $ref: "#/components/requestBodies/teamOwnershipTransferPayload"
+      responses:
+        "200":
+          description: Team ownership transferred successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Team"
         "400":
           $ref: "#/components/responses/400"
         "401":

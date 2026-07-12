@@ -5,7 +5,7 @@ package permissions
 import "github.com/gofrs/uuid"
 
 // Index ID used to generate this file
-const IndexID = "8d7905beb07904185485104a47bb9916237daee1dc5573a431103fa4391a8170"
+const IndexID = "7d1814c8dc1f4d928d151e32adf1a916847c1f460738ca301e68bea798ea0f08"
 
 
 // PermissionKey represents a permission key identifier.
@@ -398,6 +398,9 @@ var (
 
 	// IdentityAccessManagementTransferOrganizationOwnership - Transfer organization ownership to another member of the organization.
 	IdentityAccessManagementTransferOrganizationOwnership = PermissionKey(uuid.Must(uuid.FromString("c81764a3-9fb1-451e-8e80-693cba6f79bf")))
+
+	// IdentityAccessManagementTransferTeamOwnership - Transfer team ownership to another member of the organization.
+	IdentityAccessManagementTransferTeamOwnership = PermissionKey(uuid.Must(uuid.FromString("be955971-a561-45ce-a144-451be70bfa22")))
 
 	// IdentityAccessManagementDeleteOrganization - Decommission organization and suspend account from additional accruals.
 	IdentityAccessManagementDeleteOrganization = PermissionKey(uuid.Must(uuid.FromString("b3dc083c-fe8e-43a9-9bcd-ed93d4584f55")))

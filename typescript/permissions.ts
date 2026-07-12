@@ -24,7 +24,7 @@ export interface Key {
 /**
  * Permissions Index ID used for this generated file.
  */
-export const PERMISSIONS_INDEX_ID = "8d7905beb07904185485104a47bb9916237daee1dc5573a431103fa4391a8170" as const;
+export const PERMISSIONS_INDEX_ID = "7d1814c8dc1f4d928d151e32adf1a916847c1f460738ca301e68bea798ea0f08" as const;
 
 /**
  * Creates a PermissionKey from a UUID string.
@@ -1401,6 +1401,17 @@ export const Keys = {
     subcategory: "Organizations",
     function: "Transfer Organization Ownership",
     description: "Transfer organization ownership to another member of the organization."
+  },
+
+  /**
+   * Transfer team ownership to another member of the organization.
+   */
+  IdentityAccessManagementTransferTeamOwnership: {
+    id: "be955971-a561-45ce-a144-451be70bfa22" as PermissionKey,
+    category: "Identity & Access Management",
+    subcategory: "Teams",
+    function: "Transfer Team Ownership",
+    description: "Transfer team ownership to another member of the organization."
   },
 
   /**
@@ -5526,6 +5537,11 @@ export const PermissionKeys = {
    * Transfer organization ownership to another member of the organization.
    */
   IdentityAccessManagementTransferOrganizationOwnership: "c81764a3-9fb1-451e-8e80-693cba6f79bf" as PermissionKey,
+
+  /**
+   * Transfer team ownership to another member of the organization.
+   */
+  IdentityAccessManagementTransferTeamOwnership: "be955971-a561-45ce-a144-451be70bfa22" as PermissionKey,
 
   /**
    * Decommission organization and suspend account from additional accruals.
