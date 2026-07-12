@@ -190,6 +190,7 @@ components:
         newOwnerId:
           $ref: ../core/api.yml#/components/schemas/user_id
           description: ID of the new owner of the team  
+          x-go-name: NewOwnerID
           
   requestBodies:
     teamPayload:
