@@ -248,6 +248,80 @@ function guardOptionalQueryParams(filePath) {
 }
 
 /**
+ * Post-process generated RTK file to add cross-construct cache invalidation
+ * for operations whose OpenAPI tags cannot express it.
+ *
+ * `addConnectionToEnvironment` / `removeConnectionFromEnvironment` live in
+ * the `connection` construct (schemas/constructs/<version>/connection/api.yml), so
+ * bundle-openapi.js's prefixTags() namespaces their tags under
+ * `Connection_API_*`. There is no mechanism for a tag declared in one
+ * construct file to resolve to another construct's namespace, so these
+ * mutations can never automatically invalidate `Environment_environments`,
+ * the tag `getEnvironmentConnections` provides -- even though assigning or
+ * removing a connection changes exactly that data. Without this, the
+ * Environment UI's "Assigned Connections" count silently goes stale after
+ * every assign/remove action.
+ *
+ * This manually injects the missing tag into `invalidatesTags` for the
+ * affected operations after codegen runs.
+ *
+ * @param {string} filePath - Absolute path to the generated TS file
+ * @returns {number} count of operations patched
+ */
+function addCrossConstructInvalidation(filePath) {
+  if (!paths.fileExists(filePath)) {
+    logger.warn(`Post-process skipped: ${filePath} not found.`);
+    return 0;
+  }
+  const content = fs.readFileSync(filePath, "utf8");
+
+  const targets = ["addConnectionToEnvironment", "removeConnectionFromEnvironment"];
+  const extraTag = "Environment_environments";
+
+  let patched = content;
+  let count = 0;
+
+  for (const opName of targets) {
+    // Find the operation's starting position, then look for invalidatesTags
+    // within a bounded window right after it. This avoids both the original
+    // cross-operation matching risk and the inner-brace false-match issue
+    // (query blocks close with their own "}),", which a naive block regex
+    // can match before reaching the operation's actual invalidatesTags line).
+    const opStart = patched.indexOf(`${opName}: build.mutation`);
+    if (opStart === -1) {
+      logger.warn(`Post-process note: ${opName} not found; skipping cross-construct tag injection.`);
+      continue;
+    }
+    const searchWindow = patched.slice(opStart, opStart + 2000);
+    const tagsMatch = /invalidatesTags:\s*\[([^\]]*)\]/.exec(searchWindow);
+    if (!tagsMatch) {
+      logger.warn(`Post-process note: ${opName} has no invalidatesTags array within range; skipping.`);
+      continue;
+    }
+    if (tagsMatch[1].includes(extraTag)) {
+      continue;
+    }
+    const existingTags = tagsMatch[1].trim();
+    const newTagsInner = existingTags.length > 0
+      ? `${existingTags}, "${extraTag}"`
+      : `"${extraTag}"`;
+    const oldFull = tagsMatch[0];
+    const newFull = `invalidatesTags: [${newTagsInner}]`;
+    const absoluteIndex = opStart + tagsMatch.index;
+    patched = patched.slice(0, absoluteIndex) + newFull + patched.slice(absoluteIndex + oldFull.length);
+    count += 1;
+  }
+
+  if (count > 0) {
+    fs.writeFileSync(filePath, patched, "utf8");
+    logger.success(
+      `Post-processed: added cross-construct invalidatesTags to ${count} operation(s) in ${filePath}`,
+    );
+  }
+  return count;
+}
+
+/**
  * Post-process a generated RTK file to add extra named exports.
  * The codegen only emits `export { injectedRtkApi as <exportName> }`.
  * For consumers that import `injectedRtkApi` by its original internal name
@@ -289,6 +363,9 @@ async function generateRtkClient(rtk) {
     logger.success(`Generated: ${rtk.outputDescription}`);
     if (rtk.outputFile) {
       guardOptionalQueryParams(paths.fromRoot(rtk.outputFile));
+    }
+    if (rtk.name === "meshery" && rtk.outputFile) {
+      addCrossConstructInvalidation(paths.fromRoot(rtk.outputFile));
     }
     if (rtk.outputFile && rtk.outputExportName) {
       addInjectedRtkApiExport(paths.fromRoot(rtk.outputFile), rtk.outputExportName);
@@ -332,6 +409,7 @@ async function main() {
 }
 
 module.exports = {
+  addCrossConstructInvalidation,
   addInjectedRtkApiExport,
   checkPrerequisites,
   findUnguardedQueryParamAccesses,

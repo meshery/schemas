@@ -358,7 +358,7 @@ const injectedRtkApi = api
           url: `/api/environments/${queryArg.environmentId}/connections/${queryArg.connectionId}`,
           method: "POST",
         }),
-        invalidatesTags: ["Connection_API_Connections"],
+        invalidatesTags: ["Connection_API_Connections", "Environment_environments"],
       }),
       removeConnectionFromEnvironment: build.mutation<
         RemoveConnectionFromEnvironmentApiResponse,
@@ -368,7 +368,7 @@ const injectedRtkApi = api
           url: `/api/environments/${queryArg.environmentId}/connections/${queryArg.connectionId}`,
           method: "DELETE",
         }),
-        invalidatesTags: ["Connection_API_Connections"],
+        invalidatesTags: ["Connection_API_Connections", "Environment_environments"],
       }),
       listConnectionDefinitions: build.query<ListConnectionDefinitionsApiResponse, ListConnectionDefinitionsApiArg>({
         query: (queryArg) => ({
