@@ -3,11 +3,11 @@
  * Do not manually modify this file.
  */
 
-const SessionSchema: Record<string, unknown> = {
+const ConsoleSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
-    "title": "Session API",
-    "description": "OpenAPI schema for interactive sessions against the resources reachable through a Meshery connection: an interactive terminal, and a log tail.\nSessions are deliberately connection-scoped and resource-agnostic. A session driver is registered per connection kind (\"kubernetes\" today; a container runtime, a managed database, or a remote host tomorrow), so support for a new resource universe is additive and none of the shapes below are Kubernetes-specific. `SessionTarget.resource` names a driver-specific resource type, and `namespace`/`container` are optional qualifiers a driver interprets for itself.\nTwo of the three endpoints are WebSockets. They are documented here because this file is the wire contract, but they must be consumed with a native WebSocket client rather than a generated RTK hook — the same way the Server-Sent Events endpoints in the System API are consumed with a native EventSource. The frame protocol they speak is described on SessionControlMessage.",
+    "title": "Console API",
+    "description": "OpenAPI schema for interactive consoles against the resources reachable through a Meshery connection: an interactive terminal, and a log tail.\n\"Console\" rather than \"session\": a Meshery session already means a user's authenticated session, and the two were read for one another.\nConsoles are deliberately connection-scoped and resource-agnostic. A console driver is registered per connection kind (\"kubernetes\" today; a container runtime, a managed database, or a remote host tomorrow), so support for a new resource universe is additive and none of the shapes below are Kubernetes-specific. `ConsoleTarget.resource` names a driver-specific resource type, and `namespace`/`container` are optional qualifiers a driver interprets for itself.\nTwo of the three endpoints are WebSockets. They are documented here because this file is the wire contract, but they must be consumed with a native WebSocket client rather than a generated RTK hook — the same way the Server-Sent Events endpoints in the System API are consumed with a native EventSource. The frame protocol they speak is described on ConsoleControlMessage.",
     "version": "v1beta1",
     "contact": {
       "name": "Meshery Maintainers",
@@ -26,28 +26,28 @@ const SessionSchema: Record<string, unknown> = {
   ],
   "tags": [
     {
-      "name": "Sessions",
-      "description": "Interactive terminal and log sessions against a connection's resources."
+      "name": "Console",
+      "description": "Interactive terminal and log consoles against a connection's resources."
     }
   ],
   "paths": {
-    "/api/integrations/connections/{connectionId}/sessions/capabilities": {
+    "/api/integrations/connections/{connectionId}/console/capabilities": {
       "get": {
         "x-internal": [
           "meshery"
         ],
         "tags": [
-          "Sessions"
+          "Console"
         ],
-        "operationId": "getSessionCapabilities",
-        "summary": "Report which session kinds a resource supports",
-        "description": "Resolve what the connection's session driver can do with the addressed resource, against live state rather than a static table: whether a resource admits a terminal generally depends on its current status. Used by a client to decide whether to offer a terminal or a log tail before opening a socket, and which containers the user may choose between.",
+        "operationId": "getConsoleCapabilities",
+        "summary": "Report which console kinds a resource supports",
+        "description": "Resolve what the connection's console driver can do with the addressed resource, against live state rather than a static table: whether a resource admits a terminal generally depends on its current status. Used by a client to decide whether to offer a terminal or a log tail before opening a socket, and which containers the user may choose between.",
         "parameters": [
           {
             "name": "connectionId",
             "in": "path",
             "required": true,
-            "description": "The connection whose resources the session addresses.",
+            "description": "The connection whose resources the console addresses.",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -96,7 +96,7 @@ const SessionSchema: Record<string, unknown> = {
         ],
         "responses": {
           "200": {
-            "description": "The session kinds the target admits.",
+            "description": "The console kinds the target admits.",
             "content": {
               "application/json": {
                 "schema": {
@@ -137,7 +137,7 @@ const SessionSchema: Record<string, unknown> = {
                     },
                     "defaultContainer": {
                       "type": "string",
-                      "description": "The sub-target used when SessionTarget.container is empty.",
+                      "description": "The sub-target used when ConsoleTarget.container is empty.",
                       "maxLength": 253,
                       "x-oapi-codegen-extra-tags": {
                         "json": "defaultContainer,omitempty"
@@ -146,7 +146,7 @@ const SessionSchema: Record<string, unknown> = {
                     },
                     "reason": {
                       "type": "string",
-                      "description": "Explains, for a human, why an unsupported session kind is unsupported — e.g. that the pod is not running.",
+                      "description": "Explains, for a human, why an unsupported console kind is unsupported — e.g. that the pod is not running.",
                       "maxLength": 1024,
                       "x-oapi-codegen-extra-tags": {
                         "json": "reason,omitempty"
@@ -201,23 +201,23 @@ const SessionSchema: Record<string, unknown> = {
         }
       }
     },
-    "/api/integrations/connections/{connectionId}/sessions/terminal": {
+    "/api/integrations/connections/{connectionId}/console/terminal": {
       "get": {
         "x-internal": [
           "meshery"
         ],
         "tags": [
-          "Sessions"
+          "Console"
         ],
-        "operationId": "openTerminalSession",
+        "operationId": "openTerminalConsole",
         "summary": "Open an interactive terminal over a WebSocket",
-        "description": "Upgrade to a WebSocket carrying an interactive, TTY-backed shell in the target resource. Consume with a native WebSocket client, not a generated RTK hook.\nEverything that can fail with a useful HTTP status — an unknown target, an unsupported session kind, an exhausted per-user session budget — is settled before the upgrade, so those failures arrive as ordinary HTTP responses rather than as a socket that opens and immediately closes. The handshake enforces a same-origin check: it is authenticated by an ambient session cookie, so accepting any Origin would let any page the user visits open a shell as them.\nThe session runs with the requesting user's own credential, so the target's native authorization (Kubernetes RBAC, for a kubernetes connection) governs it unchanged.\nSee SessionControlMessage for the frame protocol.",
+        "description": "Upgrade to a WebSocket carrying an interactive, TTY-backed shell in the target resource. Consume with a native WebSocket client, not a generated RTK hook.\nEverything that can fail with a useful HTTP status — an unknown target, an unsupported console kind, an exhausted per-user console budget — is settled before the upgrade, so those failures arrive as ordinary HTTP responses rather than as a socket that opens and immediately closes. The handshake enforces a same-origin check: it is authenticated by an ambient session cookie, so accepting any Origin would let any page the user visits open a shell as them.\nThe console runs with the requesting user's own credential, so the target's native authorization (Kubernetes RBAC, for a kubernetes connection) governs it unchanged.\nSee ConsoleControlMessage for the frame protocol.",
         "parameters": [
           {
             "name": "connectionId",
             "in": "path",
             "required": true,
-            "description": "The connection whose resources the session addresses.",
+            "description": "The connection whose resources the console addresses.",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -280,7 +280,7 @@ const SessionSchema: Record<string, unknown> = {
         ],
         "responses": {
           "101": {
-            "description": "Switching Protocols. The connection becomes a session WebSocket speaking the frame protocol on SessionControlMessage."
+            "description": "Switching Protocols. The connection becomes a console WebSocket speaking the frame protocol on ConsoleControlMessage."
           },
           "400": {
             "description": "Invalid request body or request param",
@@ -316,7 +316,7 @@ const SessionSchema: Record<string, unknown> = {
             }
           },
           "429": {
-            "description": "The user already holds the maximum number of concurrent sessions."
+            "description": "The user already holds the maximum number of concurrent consoles."
           },
           "500": {
             "description": "Internal server error",
@@ -331,23 +331,23 @@ const SessionSchema: Record<string, unknown> = {
         }
       }
     },
-    "/api/integrations/connections/{connectionId}/sessions/logs": {
+    "/api/integrations/connections/{connectionId}/console/logs": {
       "get": {
         "x-internal": [
           "meshery"
         ],
         "tags": [
-          "Sessions"
+          "Console"
         ],
-        "operationId": "openLogSession",
+        "operationId": "openLogConsole",
         "summary": "Stream a resource's logs over a WebSocket",
-        "description": "Upgrade to a WebSocket carrying the target resource's log output. With `follow=true` the socket stays open until the client leaves; otherwise it closes once the available history has been sent. Consume with a native WebSocket client, not a generated RTK hook.\nThe stream parameters below are fixed when the remote log stream is created and cannot be renegotiated on a live socket: changing any of them means opening a new session.\nSee SessionControlMessage for the frame protocol.",
+        "description": "Upgrade to a WebSocket carrying the target resource's log output. With `follow=true` the socket stays open until the client leaves; otherwise it closes once the available history has been sent. Consume with a native WebSocket client, not a generated RTK hook.\nThe stream parameters below are fixed when the remote log stream is created and cannot be renegotiated on a live socket: changing any of them means opening a new console.\nSee ConsoleControlMessage for the frame protocol.",
         "parameters": [
           {
             "name": "connectionId",
             "in": "path",
             "required": true,
-            "description": "The connection whose resources the session addresses.",
+            "description": "The connection whose resources the console addresses.",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -448,7 +448,7 @@ const SessionSchema: Record<string, unknown> = {
         ],
         "responses": {
           "101": {
-            "description": "Switching Protocols. The connection becomes a session WebSocket speaking the frame protocol on SessionControlMessage."
+            "description": "Switching Protocols. The connection becomes a console WebSocket speaking the frame protocol on ConsoleControlMessage."
           },
           "400": {
             "description": "Invalid request body or request param",
@@ -484,7 +484,7 @@ const SessionSchema: Record<string, unknown> = {
             }
           },
           "429": {
-            "description": "The user already holds the maximum number of concurrent sessions."
+            "description": "The user already holds the maximum number of concurrent consoles."
           },
           "500": {
             "description": "Internal server error",
@@ -555,7 +555,7 @@ const SessionSchema: Record<string, unknown> = {
         "name": "connectionId",
         "in": "path",
         "required": true,
-        "description": "The connection whose resources the session addresses.",
+        "description": "The connection whose resources the console addresses.",
         "schema": {
           "type": "string",
           "format": "uuid"
@@ -603,17 +603,17 @@ const SessionSchema: Record<string, unknown> = {
       }
     },
     "schemas": {
-      "SessionKind": {
+      "ConsoleKind": {
         "type": "string",
-        "description": "The kinds of session a driver may support for a given target.",
+        "description": "The kinds of console a driver may support for a given target.",
         "enum": [
           "terminal",
           "logs"
         ]
       },
-      "SessionTarget": {
+      "ConsoleTarget": {
         "type": "object",
-        "description": "Addresses the resource a session attaches to, within the universe of a single connection. The field names read Kubernetes-ish because that is the first driver, but each driver interprets them for itself: `namespace` is any parent scope, `container` is any sub-target within `name`. A driver ignores the fields it has no use for.",
+        "description": "Addresses the resource a console attaches to, within the universe of a single connection. The field names read Kubernetes-ish because that is the first driver, but each driver interprets them for itself: `namespace` is any parent scope, `container` is any sub-target within `name`. A driver ignores the fields it has no use for.",
         "additionalProperties": false,
         "required": [
           "resource",
@@ -656,7 +656,7 @@ const SessionSchema: Record<string, unknown> = {
           }
         }
       },
-      "SessionCapabilities": {
+      "ConsoleCapabilities": {
         "type": "object",
         "description": "What a driver can do with one specific target. Resolved against live state rather than a static table, because whether a target admits a terminal generally depends on its current status.",
         "additionalProperties": false,
@@ -694,7 +694,7 @@ const SessionSchema: Record<string, unknown> = {
           },
           "defaultContainer": {
             "type": "string",
-            "description": "The sub-target used when SessionTarget.container is empty.",
+            "description": "The sub-target used when ConsoleTarget.container is empty.",
             "maxLength": 253,
             "x-oapi-codegen-extra-tags": {
               "json": "defaultContainer,omitempty"
@@ -703,7 +703,7 @@ const SessionSchema: Record<string, unknown> = {
           },
           "reason": {
             "type": "string",
-            "description": "Explains, for a human, why an unsupported session kind is unsupported — e.g. that the pod is not running.",
+            "description": "Explains, for a human, why an unsupported console kind is unsupported — e.g. that the pod is not running.",
             "maxLength": 1024,
             "x-oapi-codegen-extra-tags": {
               "json": "reason,omitempty"
@@ -712,9 +712,9 @@ const SessionSchema: Record<string, unknown> = {
           }
         }
       },
-      "SessionControlType": {
+      "ConsoleControlType": {
         "type": "string",
-        "description": "Identifies a session control frame. `resize` travels client-to-server; the rest travel server-to-client. A receiver ignores an unknown or wrong-direction type, so a newer peer can send frames an older one does not know about without breaking the session.",
+        "description": "Identifies a console control frame. `resize` travels client-to-server; the rest travel server-to-client. A receiver ignores an unknown or wrong-direction type, so a newer peer can send frames an older one does not know about without breaking the console.",
         "enum": [
           "ready",
           "resize",
@@ -723,9 +723,9 @@ const SessionSchema: Record<string, unknown> = {
           "eof"
         ]
       },
-      "SessionControlMessage": {
+      "ConsoleControlMessage": {
         "type": "object",
-        "description": "The JSON payload of a session WebSocket's text frames.\nA session socket carries two interleaved channels, distinguished by WebSocket opcode rather than by an envelope field. Binary frames carry raw payload bytes: stdin keystrokes from the client (terminal sessions only), and stdout or log bytes to the client. Text frames carry one of these JSON control messages.\nSplitting on opcode keeps the hot path allocation-light and avoids base64-inflating every keystroke and every log line by a third. It is also required for correctness: terminal output is not valid UTF-8 in general — it carries escape sequences, and arbitrary octets from a program writing raw bytes — so a text frame could not carry it faithfully.\nEvery session ends with exactly one terminal control frame (`error`, `exit`, or `eof`) before the socket is closed, so a client never has to infer why a stream stopped from the close code alone. The close code is 4000 when the session ended as intended and 4001 when it failed; both sit in the private-use range RFC 6455 §7.4.2 reserves for applications.\nFields not relevant to a given `type` are omitted.",
+        "description": "The JSON payload of a console WebSocket's text frames.\nA console socket carries two interleaved channels, distinguished by WebSocket opcode rather than by an envelope field. Binary frames carry raw payload bytes: stdin keystrokes from the client (terminal consoles only), and stdout or log bytes to the client. Text frames carry one of these JSON control messages.\nSplitting on opcode keeps the hot path allocation-light and avoids base64-inflating every keystroke and every log line by a third. It is also required for correctness: terminal output is not valid UTF-8 in general — it carries escape sequences, and arbitrary octets from a program writing raw bytes — so a text frame could not carry it faithfully.\nEvery console ends with exactly one terminal control frame (`error`, `exit`, or `eof`) before the socket is closed, so a client never has to infer why a stream stopped from the close code alone. The close code is 4000 when the console ended as intended and 4001 when it failed; both sit in the private-use range RFC 6455 §7.4.2 reserves for applications.\nFields not relevant to a given `type` are omitted.",
         "additionalProperties": false,
         "required": [
           "type"
@@ -733,7 +733,7 @@ const SessionSchema: Record<string, unknown> = {
         "properties": {
           "type": {
             "type": "string",
-            "description": "Identifies a session control frame. `resize` travels client-to-server; the rest travel server-to-client. A receiver ignores an unknown or wrong-direction type, so a newer peer can send frames an older one does not know about without breaking the session.",
+            "description": "Identifies a console control frame. `resize` travels client-to-server; the rest travel server-to-client. A receiver ignores an unknown or wrong-direction type, so a newer peer can send frames an older one does not know about without breaking the console.",
             "enum": [
               "ready",
               "resize",
@@ -802,7 +802,7 @@ const SessionSchema: Record<string, unknown> = {
                   },
                   "defaultContainer": {
                     "type": "string",
-                    "description": "The sub-target used when SessionTarget.container is empty.",
+                    "description": "The sub-target used when ConsoleTarget.container is empty.",
                     "maxLength": 253,
                     "x-oapi-codegen-extra-tags": {
                       "json": "defaultContainer,omitempty"
@@ -811,7 +811,7 @@ const SessionSchema: Record<string, unknown> = {
                   },
                   "reason": {
                     "type": "string",
-                    "description": "Explains, for a human, why an unsupported session kind is unsupported — e.g. that the pod is not running.",
+                    "description": "Explains, for a human, why an unsupported console kind is unsupported — e.g. that the pod is not running.",
                     "maxLength": 1024,
                     "x-oapi-codegen-extra-tags": {
                       "json": "reason,omitempty"
@@ -821,11 +821,10 @@ const SessionSchema: Record<string, unknown> = {
                 }
               }
             ],
-            "description": "The resolved target capabilities. Carried by `ready`, which the server sends once, after it has attached to the target. It lets a client render the sub-target it actually attached to when the request left `container` unspecified.",
+            "description": "The resolved target capabilities. Carried by `ready`, which the server sends once, after it has attached to the target. It lets a client render the sub-target it actually attached to when the request left `container` unspecified.\nDeliberately left as a pointer in Go: `omitempty` does not elide an empty struct, so a value type would stamp an empty capabilities object onto every `error` and `exit` frame.",
             "x-oapi-codegen-extra-tags": {
               "json": "capabilities,omitempty"
-            },
-            "x-go-type-skip-optional-pointer": true
+            }
           },
           "code": {
             "type": "string",
@@ -859,4 +858,4 @@ const SessionSchema: Record<string, unknown> = {
   }
 };
 
-export default SessionSchema;
+export default ConsoleSchema;

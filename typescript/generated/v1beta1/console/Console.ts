@@ -4,38 +4,38 @@
  */
 
 export interface paths {
-  "/api/integrations/connections/{connectionId}/sessions/capabilities": {
-    /** Resolve what the connection's session driver can do with the addressed resource, against live state rather than a static table: whether a resource admits a terminal generally depends on its current status. Used by a client to decide whether to offer a terminal or a log tail before opening a socket, and which containers the user may choose between. */
-    get: operations["getSessionCapabilities"];
+  "/api/integrations/connections/{connectionId}/console/capabilities": {
+    /** Resolve what the connection's console driver can do with the addressed resource, against live state rather than a static table: whether a resource admits a terminal generally depends on its current status. Used by a client to decide whether to offer a terminal or a log tail before opening a socket, and which containers the user may choose between. */
+    get: operations["getConsoleCapabilities"];
   };
-  "/api/integrations/connections/{connectionId}/sessions/terminal": {
+  "/api/integrations/connections/{connectionId}/console/terminal": {
     /**
      * Upgrade to a WebSocket carrying an interactive, TTY-backed shell in the target resource. Consume with a native WebSocket client, not a generated RTK hook.
-     * Everything that can fail with a useful HTTP status — an unknown target, an unsupported session kind, an exhausted per-user session budget — is settled before the upgrade, so those failures arrive as ordinary HTTP responses rather than as a socket that opens and immediately closes. The handshake enforces a same-origin check: it is authenticated by an ambient session cookie, so accepting any Origin would let any page the user visits open a shell as them.
-     * The session runs with the requesting user's own credential, so the target's native authorization (Kubernetes RBAC, for a kubernetes connection) governs it unchanged.
-     * See SessionControlMessage for the frame protocol.
+     * Everything that can fail with a useful HTTP status — an unknown target, an unsupported console kind, an exhausted per-user console budget — is settled before the upgrade, so those failures arrive as ordinary HTTP responses rather than as a socket that opens and immediately closes. The handshake enforces a same-origin check: it is authenticated by an ambient session cookie, so accepting any Origin would let any page the user visits open a shell as them.
+     * The console runs with the requesting user's own credential, so the target's native authorization (Kubernetes RBAC, for a kubernetes connection) governs it unchanged.
+     * See ConsoleControlMessage for the frame protocol.
      */
-    get: operations["openTerminalSession"];
+    get: operations["openTerminalConsole"];
   };
-  "/api/integrations/connections/{connectionId}/sessions/logs": {
+  "/api/integrations/connections/{connectionId}/console/logs": {
     /**
      * Upgrade to a WebSocket carrying the target resource's log output. With `follow=true` the socket stays open until the client leaves; otherwise it closes once the available history has been sent. Consume with a native WebSocket client, not a generated RTK hook.
-     * The stream parameters below are fixed when the remote log stream is created and cannot be renegotiated on a live socket: changing any of them means opening a new session.
-     * See SessionControlMessage for the frame protocol.
+     * The stream parameters below are fixed when the remote log stream is created and cannot be renegotiated on a live socket: changing any of them means opening a new console.
+     * See ConsoleControlMessage for the frame protocol.
      */
-    get: operations["openLogSession"];
+    get: operations["openLogConsole"];
   };
 }
 
 export interface components {
   schemas: {
     /**
-     * @description The kinds of session a driver may support for a given target.
+     * @description The kinds of console a driver may support for a given target.
      * @enum {string}
      */
-    SessionKind: "terminal" | "logs";
-    /** @description Addresses the resource a session attaches to, within the universe of a single connection. The field names read Kubernetes-ish because that is the first driver, but each driver interprets them for itself: `namespace` is any parent scope, `container` is any sub-target within `name`. A driver ignores the fields it has no use for. */
-    SessionTarget: {
+    ConsoleKind: "terminal" | "logs";
+    /** @description Addresses the resource a console attaches to, within the universe of a single connection. The field names read Kubernetes-ish because that is the first driver, but each driver interprets them for itself: `namespace` is any parent scope, `container` is any sub-target within `name`. A driver ignores the fields it has no use for. */
+    ConsoleTarget: {
       /** @description The driver-specific resource type, e.g. "pod". */
       resource: string;
       /** @description The parent scope of the resource, if it has one. */
@@ -46,33 +46,33 @@ export interface components {
       container?: string;
     };
     /** @description What a driver can do with one specific target. Resolved against live state rather than a static table, because whether a target admits a terminal generally depends on its current status. */
-    SessionCapabilities: {
+    ConsoleCapabilities: {
       /** @description Whether an interactive terminal can be opened. */
       terminal: boolean;
       /** @description Whether a log stream can be opened. */
       logs: boolean;
       /** @description The addressable sub-targets, if the resource has any. */
       containers?: string[];
-      /** @description The sub-target used when SessionTarget.container is empty. */
+      /** @description The sub-target used when ConsoleTarget.container is empty. */
       defaultContainer?: string;
-      /** @description Explains, for a human, why an unsupported session kind is unsupported — e.g. that the pod is not running. */
+      /** @description Explains, for a human, why an unsupported console kind is unsupported — e.g. that the pod is not running. */
       reason?: string;
     };
     /**
-     * @description Identifies a session control frame. `resize` travels client-to-server; the rest travel server-to-client. A receiver ignores an unknown or wrong-direction type, so a newer peer can send frames an older one does not know about without breaking the session.
+     * @description Identifies a console control frame. `resize` travels client-to-server; the rest travel server-to-client. A receiver ignores an unknown or wrong-direction type, so a newer peer can send frames an older one does not know about without breaking the console.
      * @enum {string}
      */
-    SessionControlType: "ready" | "resize" | "error" | "exit" | "eof";
+    ConsoleControlType: "ready" | "resize" | "error" | "exit" | "eof";
     /**
-     * @description The JSON payload of a session WebSocket's text frames.
-     * A session socket carries two interleaved channels, distinguished by WebSocket opcode rather than by an envelope field. Binary frames carry raw payload bytes: stdin keystrokes from the client (terminal sessions only), and stdout or log bytes to the client. Text frames carry one of these JSON control messages.
+     * @description The JSON payload of a console WebSocket's text frames.
+     * A console socket carries two interleaved channels, distinguished by WebSocket opcode rather than by an envelope field. Binary frames carry raw payload bytes: stdin keystrokes from the client (terminal consoles only), and stdout or log bytes to the client. Text frames carry one of these JSON control messages.
      * Splitting on opcode keeps the hot path allocation-light and avoids base64-inflating every keystroke and every log line by a third. It is also required for correctness: terminal output is not valid UTF-8 in general — it carries escape sequences, and arbitrary octets from a program writing raw bytes — so a text frame could not carry it faithfully.
-     * Every session ends with exactly one terminal control frame (`error`, `exit`, or `eof`) before the socket is closed, so a client never has to infer why a stream stopped from the close code alone. The close code is 4000 when the session ended as intended and 4001 when it failed; both sit in the private-use range RFC 6455 §7.4.2 reserves for applications.
+     * Every console ends with exactly one terminal control frame (`error`, `exit`, or `eof`) before the socket is closed, so a client never has to infer why a stream stopped from the close code alone. The close code is 4000 when the console ended as intended and 4001 when it failed; both sit in the private-use range RFC 6455 §7.4.2 reserves for applications.
      * Fields not relevant to a given `type` are omitted.
      */
-    SessionControlMessage: {
+    ConsoleControlMessage: {
       /**
-       * @description Identifies a session control frame. `resize` travels client-to-server; the rest travel server-to-client. A receiver ignores an unknown or wrong-direction type, so a newer peer can send frames an older one does not know about without breaking the session.
+       * @description Identifies a console control frame. `resize` travels client-to-server; the rest travel server-to-client. A receiver ignores an unknown or wrong-direction type, so a newer peer can send frames an older one does not know about without breaking the console.
        * @enum {string}
        */
       type: "ready" | "resize" | "error" | "exit" | "eof";
@@ -80,7 +80,10 @@ export interface components {
       cols?: number;
       /** @description Terminal height in character cells. Carried by `resize`. */
       rows?: number;
-      /** @description The resolved target capabilities. Carried by `ready`, which the server sends once, after it has attached to the target. It lets a client render the sub-target it actually attached to when the request left `container` unspecified. */
+      /**
+       * @description The resolved target capabilities. Carried by `ready`, which the server sends once, after it has attached to the target. It lets a client render the sub-target it actually attached to when the request left `container` unspecified.
+       * Deliberately left as a pointer in Go: `omitempty` does not elide an empty struct, so a value type would stamp an empty capabilities object onto every `error` and `exit` frame.
+       */
       capabilities?: {
         /** @description Whether an interactive terminal can be opened. */
         terminal: boolean;
@@ -88,9 +91,9 @@ export interface components {
         logs: boolean;
         /** @description The addressable sub-targets, if the resource has any. */
         containers?: string[];
-        /** @description The sub-target used when SessionTarget.container is empty. */
+        /** @description The sub-target used when ConsoleTarget.container is empty. */
         defaultContainer?: string;
-        /** @description Explains, for a human, why an unsupported session kind is unsupported — e.g. that the pod is not running. */
+        /** @description Explains, for a human, why an unsupported console kind is unsupported — e.g. that the pod is not running. */
         reason?: string;
       };
       /** @description The MeshKit error code of an `error` frame, e.g. "meshery-server-1447". Lets a client branch on the failure without parsing prose. */
@@ -128,7 +131,7 @@ export interface components {
     };
   };
   parameters: {
-    /** @description The connection whose resources the session addresses. */
+    /** @description The connection whose resources the console addresses. */
     connectionId: string;
     /** @description The driver-specific resource type, e.g. `pod` for a kubernetes connection. */
     resource: string;
@@ -142,11 +145,11 @@ export interface components {
 }
 
 export interface operations {
-  /** Resolve what the connection's session driver can do with the addressed resource, against live state rather than a static table: whether a resource admits a terminal generally depends on its current status. Used by a client to decide whether to offer a terminal or a log tail before opening a socket, and which containers the user may choose between. */
-  getSessionCapabilities: {
+  /** Resolve what the connection's console driver can do with the addressed resource, against live state rather than a static table: whether a resource admits a terminal generally depends on its current status. Used by a client to decide whether to offer a terminal or a log tail before opening a socket, and which containers the user may choose between. */
+  getConsoleCapabilities: {
     parameters: {
       path: {
-        /** The connection whose resources the session addresses. */
+        /** The connection whose resources the console addresses. */
         connectionId: string;
       };
       query: {
@@ -161,7 +164,7 @@ export interface operations {
       };
     };
     responses: {
-      /** The session kinds the target admits. */
+      /** The console kinds the target admits. */
       200: {
         content: {
           "application/json": {
@@ -171,9 +174,9 @@ export interface operations {
             logs: boolean;
             /** @description The addressable sub-targets, if the resource has any. */
             containers?: string[];
-            /** @description The sub-target used when SessionTarget.container is empty. */
+            /** @description The sub-target used when ConsoleTarget.container is empty. */
             defaultContainer?: string;
-            /** @description Explains, for a human, why an unsupported session kind is unsupported — e.g. that the pod is not running. */
+            /** @description Explains, for a human, why an unsupported console kind is unsupported — e.g. that the pod is not running. */
             reason?: string;
           };
         };
@@ -206,14 +209,14 @@ export interface operations {
   };
   /**
    * Upgrade to a WebSocket carrying an interactive, TTY-backed shell in the target resource. Consume with a native WebSocket client, not a generated RTK hook.
-   * Everything that can fail with a useful HTTP status — an unknown target, an unsupported session kind, an exhausted per-user session budget — is settled before the upgrade, so those failures arrive as ordinary HTTP responses rather than as a socket that opens and immediately closes. The handshake enforces a same-origin check: it is authenticated by an ambient session cookie, so accepting any Origin would let any page the user visits open a shell as them.
-   * The session runs with the requesting user's own credential, so the target's native authorization (Kubernetes RBAC, for a kubernetes connection) governs it unchanged.
-   * See SessionControlMessage for the frame protocol.
+   * Everything that can fail with a useful HTTP status — an unknown target, an unsupported console kind, an exhausted per-user console budget — is settled before the upgrade, so those failures arrive as ordinary HTTP responses rather than as a socket that opens and immediately closes. The handshake enforces a same-origin check: it is authenticated by an ambient session cookie, so accepting any Origin would let any page the user visits open a shell as them.
+   * The console runs with the requesting user's own credential, so the target's native authorization (Kubernetes RBAC, for a kubernetes connection) governs it unchanged.
+   * See ConsoleControlMessage for the frame protocol.
    */
-  openTerminalSession: {
+  openTerminalConsole: {
     parameters: {
       path: {
-        /** The connection whose resources the session addresses. */
+        /** The connection whose resources the console addresses. */
         connectionId: string;
       };
       query: {
@@ -230,7 +233,7 @@ export interface operations {
       };
     };
     responses: {
-      /** Switching Protocols. The connection becomes a session WebSocket speaking the frame protocol on SessionControlMessage. */
+      /** Switching Protocols. The connection becomes a console WebSocket speaking the frame protocol on ConsoleControlMessage. */
       101: unknown;
       /** Invalid request body or request param */
       400: {
@@ -252,7 +255,7 @@ export interface operations {
           "text/plain": string;
         };
       };
-      /** The user already holds the maximum number of concurrent sessions. */
+      /** The user already holds the maximum number of concurrent consoles. */
       429: unknown;
       /** Internal server error */
       500: {
@@ -264,13 +267,13 @@ export interface operations {
   };
   /**
    * Upgrade to a WebSocket carrying the target resource's log output. With `follow=true` the socket stays open until the client leaves; otherwise it closes once the available history has been sent. Consume with a native WebSocket client, not a generated RTK hook.
-   * The stream parameters below are fixed when the remote log stream is created and cannot be renegotiated on a live socket: changing any of them means opening a new session.
-   * See SessionControlMessage for the frame protocol.
+   * The stream parameters below are fixed when the remote log stream is created and cannot be renegotiated on a live socket: changing any of them means opening a new console.
+   * See ConsoleControlMessage for the frame protocol.
    */
-  openLogSession: {
+  openLogConsole: {
     parameters: {
       path: {
-        /** The connection whose resources the session addresses. */
+        /** The connection whose resources the console addresses. */
         connectionId: string;
       };
       query: {
@@ -295,7 +298,7 @@ export interface operations {
       };
     };
     responses: {
-      /** Switching Protocols. The connection becomes a session WebSocket speaking the frame protocol on SessionControlMessage. */
+      /** Switching Protocols. The connection becomes a console WebSocket speaking the frame protocol on ConsoleControlMessage. */
       101: unknown;
       /** Invalid request body or request param */
       400: {
@@ -317,7 +320,7 @@ export interface operations {
           "text/plain": string;
         };
       };
-      /** The user already holds the maximum number of concurrent sessions. */
+      /** The user already holds the maximum number of concurrent consoles. */
       429: unknown;
       /** Internal server error */
       500: {

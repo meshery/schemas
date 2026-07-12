@@ -1,15 +1,18 @@
 openapi: 3.0.0
 info:
-  title: Session API
+  title: Console API
   description: >-
-    OpenAPI schema for interactive sessions against the resources reachable
+    OpenAPI schema for interactive consoles against the resources reachable
     through a Meshery connection: an interactive terminal, and a log tail.
 
-    Sessions are deliberately connection-scoped and resource-agnostic. A session
+    "Console" rather than "session": a Meshery session already means a user's
+    authenticated session, and the two were read for one another.
+
+    Consoles are deliberately connection-scoped and resource-agnostic. A console
     driver is registered per connection kind ("kubernetes" today; a container
     runtime, a managed database, or a remote host tomorrow), so support for a
     new resource universe is additive and none of the shapes below are
-    Kubernetes-specific. `SessionTarget.resource` names a driver-specific
+    Kubernetes-specific. `ConsoleTarget.resource` names a driver-specific
     resource type, and `namespace`/`container` are optional qualifiers a driver
     interprets for itself.
 
@@ -18,7 +21,7 @@ info:
     WebSocket client rather than a generated RTK hook — the same way the
     Server-Sent Events endpoints in the System API are consumed with a native
     EventSource. The frame protocol they speak is described on
-    SessionControlMessage.
+    ConsoleControlMessage.
   version: v1beta1
   contact:
     name: Meshery Maintainers
@@ -32,19 +35,19 @@ security:
   - jwt: []
 
 tags:
-  - name: Sessions
-    description: Interactive terminal and log sessions against a connection's resources.
+  - name: Console
+    description: Interactive terminal and log consoles against a connection's resources.
 
 paths:
-  /api/integrations/connections/{connectionId}/sessions/capabilities:
+  /api/integrations/connections/{connectionId}/console/capabilities:
     get:
       x-internal: ["meshery"]
       tags:
-        - Sessions
-      operationId: getSessionCapabilities
-      summary: Report which session kinds a resource supports
+        - Console
+      operationId: getConsoleCapabilities
+      summary: Report which console kinds a resource supports
       description: >-
-        Resolve what the connection's session driver can do with the addressed
+        Resolve what the connection's console driver can do with the addressed
         resource, against live state rather than a static table: whether a
         resource admits a terminal generally depends on its current status. Used
         by a client to decide whether to offer a terminal or a log tail before
@@ -57,11 +60,11 @@ paths:
         - $ref: "#/components/parameters/container"
       responses:
         "200":
-          description: The session kinds the target admits.
+          description: The console kinds the target admits.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SessionCapabilities"
+                $ref: "#/components/schemas/ConsoleCapabilities"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -71,12 +74,12 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  /api/integrations/connections/{connectionId}/sessions/terminal:
+  /api/integrations/connections/{connectionId}/console/terminal:
     get:
       x-internal: ["meshery"]
       tags:
-        - Sessions
-      operationId: openTerminalSession
+        - Console
+      operationId: openTerminalConsole
       summary: Open an interactive terminal over a WebSocket
       description: >-
         Upgrade to a WebSocket carrying an interactive, TTY-backed shell in the
@@ -84,18 +87,18 @@ paths:
         RTK hook.
 
         Everything that can fail with a useful HTTP status — an unknown target,
-        an unsupported session kind, an exhausted per-user session budget — is
+        an unsupported console kind, an exhausted per-user console budget — is
         settled before the upgrade, so those failures arrive as ordinary HTTP
         responses rather than as a socket that opens and immediately closes. The
         handshake enforces a same-origin check: it is authenticated by an
         ambient session cookie, so accepting any Origin would let any page the
         user visits open a shell as them.
 
-        The session runs with the requesting user's own credential, so the
+        The console runs with the requesting user's own credential, so the
         target's native authorization (Kubernetes RBAC, for a kubernetes
         connection) governs it unchanged.
 
-        See SessionControlMessage for the frame protocol.
+        See ConsoleControlMessage for the frame protocol.
       parameters:
         - $ref: "#/components/parameters/connectionId"
         - $ref: "#/components/parameters/resource"
@@ -117,8 +120,8 @@ paths:
       responses:
         "101":
           description: >-
-            Switching Protocols. The connection becomes a session WebSocket
-            speaking the frame protocol on SessionControlMessage.
+            Switching Protocols. The connection becomes a console WebSocket
+            speaking the frame protocol on ConsoleControlMessage.
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -130,16 +133,16 @@ paths:
         "404":
           $ref: "#/components/responses/404"
         "429":
-          description: The user already holds the maximum number of concurrent sessions.
+          description: The user already holds the maximum number of concurrent consoles.
         "500":
           $ref: "#/components/responses/500"
 
-  /api/integrations/connections/{connectionId}/sessions/logs:
+  /api/integrations/connections/{connectionId}/console/logs:
     get:
       x-internal: ["meshery"]
       tags:
-        - Sessions
-      operationId: openLogSession
+        - Console
+      operationId: openLogConsole
       summary: Stream a resource's logs over a WebSocket
       description: >-
         Upgrade to a WebSocket carrying the target resource's log output. With
@@ -149,9 +152,9 @@ paths:
 
         The stream parameters below are fixed when the remote log stream is
         created and cannot be renegotiated on a live socket: changing any of
-        them means opening a new session.
+        them means opening a new console.
 
-        See SessionControlMessage for the frame protocol.
+        See ConsoleControlMessage for the frame protocol.
       parameters:
         - $ref: "#/components/parameters/connectionId"
         - $ref: "#/components/parameters/resource"
@@ -202,8 +205,8 @@ paths:
       responses:
         "101":
           description: >-
-            Switching Protocols. The connection becomes a session WebSocket
-            speaking the frame protocol on SessionControlMessage.
+            Switching Protocols. The connection becomes a console WebSocket
+            speaking the frame protocol on ConsoleControlMessage.
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -215,7 +218,7 @@ paths:
         "404":
           $ref: "#/components/responses/404"
         "429":
-          description: The user already holds the maximum number of concurrent sessions.
+          description: The user already holds the maximum number of concurrent consoles.
         "500":
           $ref: "#/components/responses/500"
 
@@ -241,7 +244,7 @@ components:
       name: connectionId
       in: path
       required: true
-      description: The connection whose resources the session addresses.
+      description: The connection whose resources the console addresses.
       schema:
         type: string
         format: uuid
@@ -289,17 +292,17 @@ components:
         maxLength: 253
 
   schemas:
-    SessionKind:
+    ConsoleKind:
       type: string
-      description: The kinds of session a driver may support for a given target.
+      description: The kinds of console a driver may support for a given target.
       enum:
         - terminal
         - logs
 
-    SessionTarget:
+    ConsoleTarget:
       type: object
       description: >-
-        Addresses the resource a session attaches to, within the universe of a
+        Addresses the resource a console attaches to, within the universe of a
         single connection. The field names read Kubernetes-ish because that is
         the first driver, but each driver interprets them for itself: `namespace`
         is any parent scope, `container` is any sub-target within `name`. A
@@ -336,7 +339,7 @@ components:
             json: "container,omitempty"
           x-go-type-skip-optional-pointer: true
 
-    SessionCapabilities:
+    ConsoleCapabilities:
       type: object
       description: >-
         What a driver can do with one specific target. Resolved against live
@@ -369,7 +372,7 @@ components:
           x-go-type-skip-optional-pointer: true
         defaultContainer:
           type: string
-          description: The sub-target used when SessionTarget.container is empty.
+          description: The sub-target used when ConsoleTarget.container is empty.
           maxLength: 253
           x-oapi-codegen-extra-tags:
             json: "defaultContainer,omitempty"
@@ -377,20 +380,20 @@ components:
         reason:
           type: string
           description: >-
-            Explains, for a human, why an unsupported session kind is
+            Explains, for a human, why an unsupported console kind is
             unsupported — e.g. that the pod is not running.
           maxLength: 1024
           x-oapi-codegen-extra-tags:
             json: "reason,omitempty"
           x-go-type-skip-optional-pointer: true
 
-    SessionControlType:
+    ConsoleControlType:
       type: string
       description: >-
-        Identifies a session control frame. `resize` travels client-to-server;
+        Identifies a console control frame. `resize` travels client-to-server;
         the rest travel server-to-client. A receiver ignores an unknown or
         wrong-direction type, so a newer peer can send frames an older one does
-        not know about without breaking the session.
+        not know about without breaking the console.
       enum:
         - ready
         - resize
@@ -398,14 +401,14 @@ components:
         - exit
         - eof
 
-    SessionControlMessage:
+    ConsoleControlMessage:
       type: object
       description: >-
-        The JSON payload of a session WebSocket's text frames.
+        The JSON payload of a console WebSocket's text frames.
 
-        A session socket carries two interleaved channels, distinguished by
+        A console socket carries two interleaved channels, distinguished by
         WebSocket opcode rather than by an envelope field. Binary frames carry
-        raw payload bytes: stdin keystrokes from the client (terminal sessions
+        raw payload bytes: stdin keystrokes from the client (terminal consoles
         only), and stdout or log bytes to the client. Text frames carry one of
         these JSON control messages.
 
@@ -416,10 +419,10 @@ components:
         program writing raw bytes — so a text frame could not carry it
         faithfully.
 
-        Every session ends with exactly one terminal control frame (`error`,
+        Every console ends with exactly one terminal control frame (`error`,
         `exit`, or `eof`) before the socket is closed, so a client never has to
         infer why a stream stopped from the close code alone. The close code is
-        4000 when the session ended as intended and 4001 when it failed; both
+        4000 when the console ended as intended and 4001 when it failed; both
         sit in the private-use range RFC 6455 §7.4.2 reserves for applications.
 
         Fields not relevant to a given `type` are omitted.
@@ -428,7 +431,7 @@ components:
         - type
       properties:
         type:
-          $ref: "#/components/schemas/SessionControlType"
+          $ref: "#/components/schemas/ConsoleControlType"
         cols:
           type: integer
           description: Terminal width in character cells. Carried by `resize`.
@@ -447,7 +450,7 @@ components:
           x-go-type-skip-optional-pointer: true
         capabilities:
           allOf:
-            - $ref: "#/components/schemas/SessionCapabilities"
+            - $ref: "#/components/schemas/ConsoleCapabilities"
           description: >-
             The resolved target capabilities. Carried by `ready`, which the
             server sends once, after it has attached to the target. It lets a
