@@ -168,7 +168,7 @@ func validate(
 	out *[]Violation,
 ) {
 	// Nothing to validate.
-	if schemaProp == nil {
+	if schemaProp == nil || templateValue == nil {
 		return
 	}
 
@@ -209,21 +209,20 @@ func validate(
 	// -------------------------
 	if schemaProp.Type == "array" {
 		arr, ok := templateValue.([]any)
-		if !ok {
+
+		if ok {
+			for _, element := range arr {
+				validate(
+					schemaProp.Items,
+					element,
+					relTmpl,
+					propName,
+					out,
+				)
+			}
+
 			return
 		}
-
-		for _, element := range arr {
-			validate(
-				schemaProp.Items,
-				element,
-				relTmpl,
-				propName,
-				out,
-			)
-		}
-
-		return
 	}
 
 	// -------------------------

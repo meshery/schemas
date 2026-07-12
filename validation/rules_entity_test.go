@@ -170,3 +170,32 @@ func TestValidateRule34_SkipRef(t *testing.T) {
 		t.Errorf("expected no violations for $ref, got %d", len(violations))
 	}
 }
+func TestValidateRule34_ArrayObjectMismatch(t *testing.T) {
+	schema := &propertyDef{
+		Type: "array",
+		Items: &propertyDef{
+			Type: "string",
+		},
+	}
+
+	// Template incorrectly uses an object instead of an array.
+	template := map[string]any{}
+
+	var violations []Violation
+
+	validate(
+		schema,
+		template,
+		"template.yaml",
+		"ports",
+		&violations,
+	)
+
+	if len(violations) != 1 {
+		t.Errorf("expected 1 violation, got %d", len(violations))
+	}
+
+	if len(violations) > 0 && violations[0].RuleNumber != 34 {
+		t.Errorf("expected Rule 34, got %d", violations[0].RuleNumber)
+	}
+}
