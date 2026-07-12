@@ -57,7 +57,7 @@ func checkRule18(relDir, constructDir, constructName string, _ AuditOptions) []V
 	for _, e := range entries {
 		if strings.Contains(e.Name(), "_template") {
 			out = append(out, Violation{File: relDir,
-				Message: fmt.Sprintf(`Construct %q has template file(s) at root level: %s. Move to templates/ subdirectory.`, constructName, e.Name()),
+				Message:  fmt.Sprintf(`Construct %q has template file(s) at root level: %s. Move to templates/ subdirectory.`, constructName, e.Name()),
 				Severity: SeverityBlocking, RuleNumber: 18})
 		}
 	}
@@ -146,40 +146,132 @@ func checkRule34(relDir, constructDir string, _ AuditOptions) []Violation {
 				if val == nil {
 					continue
 				}
-				_, isArray := val.([]any)
-				jsType := "object"
-				if isArray {
-					jsType = "array"
-				} else {
-					switch val.(type) {
-					case string:
-						jsType = "string"
-					case float64, int:
-						jsType = "number"
-					case bool:
-						jsType = "boolean"
-					}
-				}
 
-				if prop.Type == "string" && jsType == "object" {
-					out = append(out, Violation{File: relTmpl,
-						Message:  fmt.Sprintf(`Template property %q is an object but schema declares type: string. Use an empty string "" as the default.`, key),
-						Severity: SeverityBlocking, RuleNumber: 34})
-				}
-				if prop.Type == "array" && jsType == "object" && !isArray {
-					out = append(out, Violation{File: relTmpl,
-						Message:  fmt.Sprintf(`Template property %q is an object {} but schema declares type: array. Use an empty array [] as the default.`, key),
-						Severity: SeverityBlocking, RuleNumber: 34})
-				}
-				if (prop.Type == "integer" || prop.Type == "number") && jsType == "string" {
-					out = append(out, Violation{File: relTmpl,
-						Message:  fmt.Sprintf(`Template property %q is a string but schema declares type: %s. Use 0 as the default.`, key, prop.Type),
-						Severity: SeverityBlocking, RuleNumber: 34})
-				}
+				validate(
+					prop,
+					val,
+					relTmpl,
+					key,
+					&out,
+				)
 			}
 		}
 	}
 	return out
+}
+
+func validate(
+	schemaProp *propertyDef,
+	templateValue any,
+	relTmpl string,
+	propName string,
+	out *[]Violation,
+) {
+	// Nothing to validate.
+	if schemaProp == nil {
+		return
+	}
+
+	// Skip $ref properties.
+	if schemaProp.Ref != "" {
+		return
+	}
+
+	// -------------------------
+	// Object
+	// -------------------------
+	if schemaProp.Type == "object" && schemaProp.Properties != nil {
+		obj, ok := templateValue.(map[string]any)
+		if !ok {
+			return
+		}
+
+		for childName, childValue := range obj {
+			childSchema, ok := schemaProp.Properties[childName]
+			if !ok {
+				continue
+			}
+
+			validate(
+				childSchema,
+				childValue,
+				relTmpl,
+				childName,
+				out,
+			)
+		}
+
+		return
+	}
+
+	// -------------------------
+	// Array
+	// -------------------------
+	if schemaProp.Type == "array" {
+		arr, ok := templateValue.([]any)
+		if !ok {
+			return
+		}
+
+		for _, element := range arr {
+			validate(
+				schemaProp.Items,
+				element,
+				relTmpl,
+				propName,
+				out,
+			)
+		}
+
+		return
+	}
+
+	// -------------------------
+	// Primitive comparison
+	// -------------------------
+
+	_, isArray := templateValue.([]any)
+
+	jsType := "object"
+	if isArray {
+		jsType = "array"
+	} else {
+		switch templateValue.(type) {
+		case string:
+			jsType = "string"
+		case float64, int:
+			jsType = "number"
+		case bool:
+			jsType = "boolean"
+		}
+	}
+
+	if schemaProp.Type == "string" && jsType == "object" {
+		*out = append(*out, Violation{
+			File:       relTmpl,
+			Message:    fmt.Sprintf(`Template property %q is an object but schema declares type: string. Use an empty string "" as the default.`, propName),
+			Severity:   SeverityBlocking,
+			RuleNumber: 34,
+		})
+	}
+
+	if schemaProp.Type == "array" && jsType == "object" && !isArray {
+		*out = append(*out, Violation{
+			File:       relTmpl,
+			Message:    fmt.Sprintf(`Template property %q is an object {} but schema declares type: array. Use an empty array [] as the default.`, propName),
+			Severity:   SeverityBlocking,
+			RuleNumber: 34,
+		})
+	}
+
+	if (schemaProp.Type == "integer" || schemaProp.Type == "number") && jsType == "string" {
+		*out = append(*out, Violation{
+			File:       relTmpl,
+			Message:    fmt.Sprintf(`Template property %q is a string but schema declares type: %s. Use 0 as the default.`, propName, schemaProp.Type),
+			Severity:   SeverityBlocking,
+			RuleNumber: 34,
+		})
+	}
 }
 
 // --- Entity-schema check helpers ---
