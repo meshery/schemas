@@ -111,6 +111,24 @@ function collectXInternalTags(repoRoot, version, construct) {
 
   const tags = new Set();
   const pathItems = (doc && doc.paths) || {};
+
+  // Check top-level x-internal and info.x-internal
+  const addTags = (val) => {
+    if (Array.isArray(val)) {
+      for (const tag of val) {
+        tags.add(tag);
+      }
+    } else if (typeof val === "string") {
+      tags.add(val);
+    }
+  };
+  
+  if (doc) {
+    if (doc.info) {
+      addTags(doc.info["x-internal"]);
+    }
+  }
+
   const resolvePathItem = (pathItem) => {
     const ref = pathItem && typeof pathItem === "object" ? pathItem.$ref : undefined;
     if (typeof ref !== "string") {

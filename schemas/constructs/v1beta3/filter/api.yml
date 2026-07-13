@@ -1,5 +1,6 @@
 openapi: 3.0.0
 info:
+  x-internal: ["cloud", "meshery"]
   title: Filter
   description: |
     OpenAPI schema for managing Meshery filters. Filters carry an

@@ -1,5 +1,6 @@
 openapi: 3.0.0
 info:
+  x-internal: ["cloud", "meshery"]
   title: Catalog
   description: OpenAPI schema for Meshery catalog data and content management.
   version: v1beta2
@@ -15,3 +16,4 @@ components:
   schemas:
     CatalogData:
       $ref: "./catalog.yaml"
+

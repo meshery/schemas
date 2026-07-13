@@ -1,5 +1,6 @@
 openapi: 3.0.0
 info:
+  x-internal: ["cloud"]
   title: View
   description: OpenAPI schema for managing Meshery views — saved perspectives with filters and metadata.
   version: v1beta2

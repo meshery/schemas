@@ -1,5 +1,6 @@
 openapi: 3.0.0
 info:
+  x-internal: ["cloud", "meshery"]
   title: Core Schema Elements
   description: Reusable core schema elements for Meshery OpenAPI specifications.
   version: v1beta2
@@ -1141,3 +1142,4 @@ components:
         text/plain:
           schema:
             type: string
+

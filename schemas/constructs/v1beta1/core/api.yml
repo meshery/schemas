@@ -1,5 +1,6 @@
 openapi: 3.0.0
 info:
+  x-internal: ["cloud", "meshery"]
   title: Core Schema Elements
   description: Reusable core schema elements for Meshery OpenAPI specifications.
   x-deprecated: true
@@ -1060,3 +1061,4 @@ components:
         text/plain:
           schema:
             type: string
+
