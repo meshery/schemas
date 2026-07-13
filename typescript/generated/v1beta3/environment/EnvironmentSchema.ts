@@ -129,10 +129,20 @@ const EnvironmentSchema: Record<string, unknown> = {
           "type": "string"
         }
       },
+      "pageSize": {
+        "name": "pageSize",
+        "in": "query",
+        "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
       "pagesize": {
         "name": "pagesize",
         "in": "query",
-        "description": "Get responses by pagesize",
+        "description": "Get responses by pagesize. Deprecated alias of pageSize.",
+        "deprecated": true,
         "schema": {
           "type": "string"
         }
@@ -211,7 +221,7 @@ const EnvironmentSchema: Record<string, unknown> = {
             "type": "string",
             "minLength": 2,
             "maxLength": 100,
-            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
             "example": [
               "v1",
               "v1alpha1",
@@ -430,7 +440,7 @@ const EnvironmentSchema: Record<string, unknown> = {
             "type": "string",
             "description": "Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.",
             "x-go-type-skip-optional-pointer": true,
-            "x-go-name": "OrgId",
+            "x-go-name": "OrgID",
             "x-oapi-codegen-extra-tags": {
               "json": "organizationId"
             },
@@ -525,7 +535,7 @@ const EnvironmentSchema: Record<string, unknown> = {
                   "type": "string",
                   "minLength": 2,
                   "maxLength": 100,
-                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                   "example": [
                     "v1",
                     "v1alpha1",
@@ -677,6 +687,129 @@ const EnvironmentSchema: Record<string, unknown> = {
             "description": "The connections of the environmentconnectionspage."
           }
         }
+      },
+      "EnvironmentConnectionMappingPage": {
+        "type": "object",
+        "description": "Paginated list of environment-to-connection mapping records, returned when a connection is assigned to or unassigned from an environment. Distinct from EnvironmentConnectionsPage, which lists the connections themselves rather than the junction records.",
+        "required": [
+          "page",
+          "pageSize",
+          "totalCount",
+          "environmentConnectionMapping"
+        ],
+        "properties": {
+          "page": {
+            "type": "integer",
+            "description": "Zero-based page index returned in this response.",
+            "minimum": 0
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Maximum number of items returned on each page.",
+            "minimum": 1,
+            "x-oapi-codegen-extra-tags": {
+              "json": "pageSize"
+            }
+          },
+          "totalCount": {
+            "type": "integer",
+            "description": "Total number of items across all pages.",
+            "minimum": 0,
+            "x-oapi-codegen-extra-tags": {
+              "json": "totalCount"
+            }
+          },
+          "environmentConnectionMapping": {
+            "type": "array",
+            "description": "Environment-to-connection mapping records in this page.",
+            "x-oapi-codegen-extra-tags": {
+              "json": "environmentConnectionMapping"
+            },
+            "items": {
+              "type": "object",
+              "description": "Junction record linking an environment to a connection.",
+              "properties": {
+                "id": {
+                  "x-go-name": "ID",
+                  "description": "Mapping record ID.",
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "id",
+                    "json": "id"
+                  },
+                  "x-go-type-name": "GeneralId",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "environmentId": {
+                  "x-go-name": "EnvironmentID",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "environment_id",
+                    "json": "environmentId"
+                  },
+                  "x-go-type-skip-optional-pointer": true,
+                  "description": "ID of the associated environment.",
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "connectionId": {
+                  "x-go-name": "ConnectionID",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "connection_id",
+                    "json": "connectionId"
+                  },
+                  "x-go-type-skip-optional-pointer": true,
+                  "description": "ID of the associated connection.",
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "createdAt": {
+                  "description": "Timestamp when the mapping was created.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "created_at",
+                    "json": "createdAt"
+                  },
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "updatedAt": {
+                  "description": "Timestamp when the mapping was last updated.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "updated_at",
+                    "json": "updatedAt"
+                  },
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "deletedAt": {
+                  "description": "Timestamp when the mapping was soft-deleted. Null while the mapping remains active.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "deleted_at",
+                    "json": "deletedAt"
+                  },
+                  "x-go-type": "NullTime",
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                }
+              }
+            }
+          }
+        }
       }
     },
     "requestBodies": {
@@ -707,7 +840,7 @@ const EnvironmentSchema: Record<string, unknown> = {
                   "type": "string",
                   "description": "Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.",
                   "x-go-type-skip-optional-pointer": true,
-                  "x-go-name": "OrgId",
+                  "x-go-name": "OrgID",
                   "x-oapi-codegen-extra-tags": {
                     "json": "organizationId"
                   },
@@ -761,7 +894,7 @@ const EnvironmentSchema: Record<string, unknown> = {
                     "type": "string",
                     "description": "Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.",
                     "x-go-type-skip-optional-pointer": true,
-                    "x-go-name": "OrgId",
+                    "x-go-name": "OrgID",
                     "x-oapi-codegen-extra-tags": {
                       "json": "organizationId"
                     },
@@ -832,7 +965,7 @@ const EnvironmentSchema: Record<string, unknown> = {
                       "type": "string",
                       "minLength": 2,
                       "maxLength": 100,
-                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                       "example": [
                         "v1",
                         "v1alpha1",
@@ -1018,9 +1151,19 @@ const EnvironmentSchema: Record<string, unknown> = {
             }
           },
           {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
             "name": "pagesize",
             "in": "query",
-            "description": "Get responses by pagesize",
+            "description": "Get responses by pagesize. Deprecated alias of pageSize.",
+            "deprecated": true,
             "schema": {
               "type": "string"
             }
@@ -1128,7 +1271,7 @@ const EnvironmentSchema: Record<string, unknown> = {
                             "type": "string",
                             "minLength": 2,
                             "maxLength": 100,
-                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                             "example": [
                               "v1",
                               "v1alpha1",
@@ -1402,7 +1545,7 @@ const EnvironmentSchema: Record<string, unknown> = {
                             "type": "string",
                             "minLength": 2,
                             "maxLength": 100,
-                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                             "example": [
                               "v1",
                               "v1alpha1",
@@ -1619,7 +1762,7 @@ const EnvironmentSchema: Record<string, unknown> = {
                     "type": "string",
                     "description": "Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.",
                     "x-go-type-skip-optional-pointer": true,
-                    "x-go-name": "OrgId",
+                    "x-go-name": "OrgID",
                     "x-oapi-codegen-extra-tags": {
                       "json": "organizationId"
                     },
@@ -1722,7 +1865,7 @@ const EnvironmentSchema: Record<string, unknown> = {
                             "type": "string",
                             "minLength": 2,
                             "maxLength": 100,
-                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                             "example": [
                               "v1",
                               "v1alpha1",
@@ -2011,9 +2154,19 @@ const EnvironmentSchema: Record<string, unknown> = {
             }
           },
           {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
             "name": "pagesize",
             "in": "query",
-            "description": "Get responses by pagesize",
+            "description": "Get responses by pagesize. Deprecated alias of pageSize.",
+            "deprecated": true,
             "schema": {
               "type": "string"
             }

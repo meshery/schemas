@@ -74,9 +74,19 @@ const TokenSchema: Record<string, unknown> = {
             }
           },
           {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
             "name": "pagesize",
             "in": "query",
-            "description": "Get responses by pagesize",
+            "description": "Get responses by pagesize. Deprecated alias of pageSize.",
+            "deprecated": true,
             "schema": {
               "type": "string"
             }
@@ -123,7 +133,13 @@ const TokenSchema: Record<string, unknown> = {
                         "required": [
                           "id",
                           "owner",
-                          "provider"
+                          "provider",
+                          "accessToken",
+                          "name",
+                          "purpose",
+                          "isOauth",
+                          "createdAt",
+                          "updatedAt"
                         ],
                         "properties": {
                           "id": {
@@ -356,7 +372,13 @@ const TokenSchema: Record<string, unknown> = {
                         "required": [
                           "id",
                           "owner",
-                          "provider"
+                          "provider",
+                          "accessToken",
+                          "name",
+                          "purpose",
+                          "isOauth",
+                          "createdAt",
+                          "updatedAt"
                         ],
                         "properties": {
                           "id": {
@@ -594,7 +616,13 @@ const TokenSchema: Record<string, unknown> = {
                         "required": [
                           "id",
                           "owner",
-                          "provider"
+                          "provider",
+                          "accessToken",
+                          "name",
+                          "purpose",
+                          "isOauth",
+                          "createdAt",
+                          "updatedAt"
                         ],
                         "properties": {
                           "id": {
@@ -789,9 +817,9 @@ const TokenSchema: Record<string, unknown> = {
         "tags": [
           "tokens"
         ],
-        "summary": "Get token by ID",
-        "operationId": "getUserTokensById",
-        "description": "Retrieves a specific token by its ID.",
+        "summary": "Download token",
+        "operationId": "downloadToken",
+        "description": "Downloads a specific token by its ID for use as a local credential file (e.g. mesheryctl's auth.json). Gated by the Download Token permission and recorded as a distinct audit event from viewing or listing tokens.",
         "parameters": [
           {
             "name": "tokenId",
@@ -821,7 +849,13 @@ const TokenSchema: Record<string, unknown> = {
                   "required": [
                     "id",
                     "owner",
-                    "provider"
+                    "provider",
+                    "accessToken",
+                    "name",
+                    "purpose",
+                    "isOauth",
+                    "createdAt",
+                    "updatedAt"
                   ],
                   "properties": {
                     "id": {
@@ -989,7 +1023,7 @@ const TokenSchema: Record<string, unknown> = {
         "description": "Creates a non-expiring user token for provider admin use cases.",
         "parameters": [
           {
-            "name": "userId",
+            "name": "owner",
             "in": "query",
             "description": "UUID of the user to issue the indefinite token for.",
             "required": true,
@@ -1039,7 +1073,13 @@ const TokenSchema: Record<string, unknown> = {
                         "required": [
                           "id",
                           "owner",
-                          "provider"
+                          "provider",
+                          "accessToken",
+                          "name",
+                          "purpose",
+                          "isOauth",
+                          "createdAt",
+                          "updatedAt"
                         ],
                         "properties": {
                           "id": {
@@ -1308,8 +1348,8 @@ const TokenSchema: Record<string, unknown> = {
           }
         }
       },
-      "userIdQuery": {
-        "name": "userId",
+      "ownerQuery": {
+        "name": "owner",
         "in": "query",
         "description": "UUID of the user to issue the indefinite token for.",
         "required": true,
@@ -1341,10 +1381,20 @@ const TokenSchema: Record<string, unknown> = {
           "type": "string"
         }
       },
+      "pageSize": {
+        "name": "pageSize",
+        "in": "query",
+        "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
       "pagesize": {
         "name": "pagesize",
         "in": "query",
-        "description": "Get responses by pagesize",
+        "description": "Get responses by pagesize. Deprecated alias of pageSize.",
+        "deprecated": true,
         "schema": {
           "type": "string"
         }
@@ -1402,7 +1452,13 @@ const TokenSchema: Record<string, unknown> = {
         "required": [
           "id",
           "owner",
-          "provider"
+          "provider",
+          "accessToken",
+          "name",
+          "purpose",
+          "isOauth",
+          "createdAt",
+          "updatedAt"
         ],
         "properties": {
           "id": {
@@ -1541,7 +1597,13 @@ const TokenSchema: Record<string, unknown> = {
               "required": [
                 "id",
                 "owner",
-                "provider"
+                "provider",
+                "accessToken",
+                "name",
+                "purpose",
+                "isOauth",
+                "createdAt",
+                "updatedAt"
               ],
               "properties": {
                 "id": {

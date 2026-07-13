@@ -187,7 +187,7 @@ export interface components {
              * Format: uuid
              * @description UUID of the user associated with the event.
              */
-            userId?: string;
+            owner?: string;
             /** @description The category of the event. */
             category?: string;
             /** @description The action of the event. */
@@ -397,8 +397,15 @@ export interface components {
         workspaceId: string;
         /** @description Get responses by page */
         page: string;
+        /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+        pageSize: number;
         /** @description Get responses by pagesize */
         pagesize: string;
+        /**
+         * @deprecated
+         * @description Get responses by pagesize. Deprecated alias of pageSize.
+         */
+        pagesizeLegacy: string;
         /** @description Get responses that match search param value */
         search: string;
         /** @description Get ordered responses */
@@ -487,7 +494,7 @@ export interface operations {
                      * Format: uuid
                      * @description UUID of the user associated with the event.
                      */
-                    userId?: string;
+                    owner?: string;
                     /** @description The category of the event. */
                     category?: string;
                     /** @description The action of the event. */
@@ -739,7 +746,12 @@ export interface operations {
             query?: {
                 /** @description Get responses by page */
                 page?: string;
-                /** @description Get responses by pagesize */
+                /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+                pageSize?: number;
+                /**
+                 * @deprecated
+                 * @description Get responses by pagesize. Deprecated alias of pageSize.
+                 */
                 pagesize?: string;
                 /** @description Get responses that match search param value */
                 search?: string;
@@ -1046,7 +1058,12 @@ export interface operations {
             query?: {
                 /** @description Get responses by page */
                 page?: string;
-                /** @description Get responses by pagesize */
+                /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+                pageSize?: number;
+                /**
+                 * @deprecated
+                 * @description Get responses by pagesize. Deprecated alias of pageSize.
+                 */
                 pagesize?: string;
             };
             header?: never;

@@ -9,7 +9,7 @@ import (
 	"github.com/meshery/schemas/models/core"
 	modelv1beta1 "github.com/meshery/schemas/models/v1beta1/model"
 	environmentv1beta3 "github.com/meshery/schemas/models/v1beta3/environment"
-	openapi_types "github.com/oapi-codegen/runtime/types"
+	"github.com/gofrs/uuid"
 )
 
 // Defines values for ConnectionStatus.
@@ -22,6 +22,17 @@ const (
 	ConnectionStatusMaintenance  ConnectionStatus = "maintenance"
 	ConnectionStatusNotFound     ConnectionStatus = "not found"
 	ConnectionStatusRegistered   ConnectionStatus = "registered"
+)
+
+// Defines values for ConnectionActionRequestAction.
+const (
+	SetMeshsyncMode ConnectionActionRequestAction = "setMeshsyncMode"
+)
+
+// Defines values for ConnectionActionRequestMode.
+const (
+	Embedded ConnectionActionRequestMode = "embedded"
+	Operator ConnectionActionRequestMode = "operator"
 )
 
 // Defines values for ConnectionStatusValue.
@@ -56,9 +67,6 @@ type Connection struct {
 	// ConnectionType Connection Type (platform, telemetry, collaboration)
 	ConnectionType string `db:"type" json:"type" yaml:"type"`
 
-	// Model Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.
-	Model *modelv1beta1.ModelDefinition `gorm:"foreignKey:ModelID;references:ID" json:"model" yaml:"model"`
-
 	// SubType Connection Subtype (cloud, identity, metrics, chat, git, orchestration)
 	SubType string `db:"sub_type" json:"subType" yaml:"subType"`
 
@@ -66,7 +74,7 @@ type Connection struct {
 	Kind string `db:"kind" json:"kind" yaml:"kind"`
 
 	// ModelReference Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
-	ModelReference *modelv1beta1.ModelReference `gorm:"-" json:"modelReference,omitempty" yaml:"modelReference,omitempty"`
+	ModelReference *modelv1beta1.ModelReference `db:"model_reference" gorm:"model_reference" json:"modelReference" yaml:"modelReference"`
 
 	// ConnectionSchema Schema for the connection
 	ConnectionSchema core.Map `db:"connection_schema" json:"connectionSchema,omitempty" yaml:"connectionSchema,omitempty"`
@@ -95,21 +103,32 @@ type Connection struct {
 	SchemaVersion core.VersionString `gorm:"-" db:"-" json:"schemaVersion" yaml:"schemaVersion"`
 
 	// Styles Visualization styles for a component
-	Styles *core.ComponentStyles `gorm:"type:bytes;serializer:json" json:"styles" yaml:"styles"`
+	Styles *core.ComponentStyles `db:"-" gorm:"type:bytes;serializer:json" json:"styles" yaml:"styles"`
 
 	// TransitionMap Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status, along with a description of each transition.
-	TransitionMap map[string][]ConnectionStateTransition `gorm:"type:bytes;serializer:json" json:"transitionMap,omitempty" yaml:"transitionMap,omitempty"`
-
-	// ModelId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ModelID *core.Uuid `db:"model_id" gorm:"column:model_id" json:"-" yaml:"-"`
+	TransitionMap map[string][]ConnectionStateTransition `db:"-" gorm:"type:bytes;serializer:json" json:"transitionMap,omitempty" yaml:"transitionMap,omitempty"`
 }
 
 // ConnectionStatus Connection Status
 type ConnectionStatus string
 
-// ConnectionDefinition A connection definition is an uninitialized connection, authored per-model (in a model's `connections/` folder) and registered into the registry alongside components and relationships. It conforms to the connection schema; the dynamic, kind-specific shape is carried in `metadata`. The `model` association scopes the definition to its owning model.
-type ConnectionDefinition = Connection
+// ConnectionActionRequest A side-effecting operation to perform on a connection via POST /api/integrations/connections/{connectionId}/actions. The `action` field selects the operation; operation-specific fields carry its parameters. Unlike PUT (which updates resource fields), the server owns any resulting metadata merge and cluster-side effects.
+type ConnectionActionRequest struct {
+	// Action The operation to perform on the connection.
+	Action ConnectionActionRequestAction `json:"action" yaml:"action"`
 
+	// Mode Target MeshSync deployment mode. Required when `action` is `setMeshsyncMode`; the server redeploys MeshSync (operator vs embedded) for the connection's cluster.
+	Mode *ConnectionActionRequestMode `json:"mode,omitempty" yaml:"mode,omitempty"`
+}
+
+// ConnectionActionRequestAction The operation to perform on the connection.
+type ConnectionActionRequestAction string
+
+// ConnectionActionRequestMode Target MeshSync deployment mode. Required when `action` is `setMeshsyncMode`; the server redeploys MeshSync (operator vs embedded) for the connection's cluster.
+type ConnectionActionRequestMode string
+
+// ConnectionDefinition A connection definition is an uninitialized connection, authored per-model (in a model's `connections/` folder) and registered into the registry alongside components and relationships. It conforms to the connection schema; the dynamic, kind-specific shape is carried in `metadata`. The `model` association scopes the definition to its owning model.
+// type ConnectionDefinition — defined in manual helper file
 // ConnectionDefinitionPage Represents a page of connection definitions with meta information about the total count
 type ConnectionDefinitionPage struct {
 	// ConnectionDefinitions List of connection definitions on this page
@@ -123,6 +142,54 @@ type ConnectionDefinitionPage struct {
 
 	// PageSize Number of elements per page
 	PageSize int `json:"pageSize" yaml:"pageSize"`
+}
+
+// ConnectionDefinitionPayload Payload for registering (creating) or updating a connection definition. Contains only client-settable fields; server-generated fields such as createdAt, updatedAt, and deletedAt are excluded.
+type ConnectionDefinitionPayload struct {
+	// ConnectionSchema Schema for connections of this kind.
+	ConnectionSchema core.Map `json:"connectionSchema" yaml:"connectionSchema"`
+
+	// CredentialSchema Schema for the credential associated with connections of this kind.
+	CredentialSchema core.Map `json:"credentialSchema" yaml:"credentialSchema"`
+
+	// Description Human-readable description of the connection definition and its purpose.
+	Description *string `json:"description,omitempty" yaml:"description,omitempty"`
+
+	// ID Existing connection definition ID for updates; omit on create.
+	ID *uuid.UUID `json:"id,omitempty" yaml:"id,omitempty"`
+
+	// Kind Connection kind (e.g., kubernetes, prometheus, grafana)
+	Kind string `json:"kind" yaml:"kind"`
+
+	// Metadata Kind-specific connection metadata
+	Metadata core.Map `json:"metadata" yaml:"metadata"`
+
+	// ModelReference Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
+	ModelReference *modelv1beta1.ModelReference `json:"modelReference,omitempty" yaml:"modelReference,omitempty"`
+
+	// Name Connection definition name
+	Name string `json:"name" yaml:"name"`
+
+	// SchemaVersion API version of the object, optionally prefixed with an API group (e.g. "group.example.io/v1beta1" or bare "v1beta1").
+	SchemaVersion *core.VersionString `json:"schemaVersion,omitempty" yaml:"schemaVersion,omitempty"`
+
+	// ConnectionStatusValue Connection Status Value
+	Status ConnectionStatusValue `json:"status" yaml:"status"`
+
+	// Styles Visualization styles for a component
+	Styles *core.ComponentStyles `json:"styles,omitempty" yaml:"styles,omitempty"`
+
+	// SubType Connection sub-type (cloud, identity, metrics, chat, git, orchestration)
+	SubType string `json:"subType" yaml:"subType"`
+
+	// TransitionMap Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status.
+	TransitionMap map[string][]ConnectionStateTransition `json:"transitionMap,omitempty" yaml:"transitionMap,omitempty"`
+
+	// Type Connection type (platform, telemetry, collaboration)
+	Type string `json:"type" yaml:"type"`
+
+	// Url URL of the remote resource connections of this kind point to.
+	Url *string `json:"url,omitempty" yaml:"url,omitempty"`
 }
 
 // ConnectionPage Represents a page of connections with meta information about connections count
@@ -146,13 +213,13 @@ type ConnectionPage struct {
 // ConnectionPayload Payload for creating or updating a connection
 type ConnectionPayload struct {
 	// CredentialID Associated credential ID
-	CredentialID *openapi_types.UUID `json:"credentialId,omitempty" yaml:"credentialId,omitempty"`
+	CredentialID *uuid.UUID `json:"credentialId,omitempty" yaml:"credentialId,omitempty"`
 
 	// CredentialSecret Credential secret data
 	CredentialSecret core.Map `json:"credentialSecret" yaml:"credentialSecret"`
 
 	// ConnectionID Connection ID
-	ConnectionID *openapi_types.UUID `json:"id,omitempty" yaml:"id,omitempty"`
+	ConnectionID *uuid.UUID `json:"id,omitempty" yaml:"id,omitempty"`
 
 	// Kind Connection kind
 	Kind string `json:"kind" yaml:"kind"`
@@ -212,6 +279,66 @@ type ConnectionsStatusPage struct {
 	TotalCount int `json:"totalCount" yaml:"totalCount"`
 }
 
+// K8sContext Kubernetes-specific authentication context projected from a kubernetes connection and its credential. Connection metadata supplies the context identity (id, name, server, version, deployment type, instance and server IDs); the credential secret supplies the auth and cluster material. This is a response projection, not a stored table row.
+type K8sContext struct {
+	// Auth Authentication material for the context (token or kubeconfig reference), sourced from the connection's credential secret.
+	Auth core.Map `json:"auth,omitempty" yaml:"auth,omitempty"`
+
+	// Cluster Cluster definition for the context (certificate authority and server details), sourced from the connection's credential secret.
+	Cluster core.Map `json:"cluster,omitempty" yaml:"cluster,omitempty"`
+
+	// ConnectionId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ConnectionID *core.Uuid `json:"connectionId,omitempty" yaml:"connectionId,omitempty"`
+
+	// CreatedAt Timestamp when the underlying connection was created.
+	CreatedAt time.Time `json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
+
+	// CreatedBy A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	CreatedBy *core.Uuid `json:"createdBy,omitempty" yaml:"createdBy,omitempty"`
+
+	// DeploymentType How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster).
+	DeploymentType string `json:"deploymentType" yaml:"deploymentType"`
+
+	// ID Stable identifier of the Kubernetes context, assigned when the context is registered. Not a UUID; carried in connection metadata.
+	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+
+	// KubernetesServerId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	KubernetesServerID *core.Uuid `json:"kubernetesServerId,omitempty" yaml:"kubernetesServerId,omitempty"`
+
+	// MesheryInstanceId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	MesheryInstanceID *core.Uuid `json:"mesheryInstanceId,omitempty" yaml:"mesheryInstanceId,omitempty"`
+
+	// Name Human-readable name of the Kubernetes context.
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+
+	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	Owner *core.Uuid `json:"owner,omitempty" yaml:"owner,omitempty"`
+
+	// Server API server URL of the Kubernetes cluster.
+	Server string `json:"server,omitempty" yaml:"server,omitempty"`
+
+	// UpdatedAt Timestamp when the underlying connection was last updated.
+	UpdatedAt time.Time `json:"updatedAt,omitempty" yaml:"updatedAt,omitempty"`
+
+	// Version Kubernetes server version of the cluster.
+	Version string `json:"version" yaml:"version"`
+}
+
+// K8sContextPage Paginated list of Kubernetes contexts.
+type K8sContextPage struct {
+	// Contexts Kubernetes contexts in this page.
+	Contexts []K8sContext `json:"contexts" yaml:"contexts"`
+
+	// Page Zero-based page index returned in this response.
+	Page int `json:"page" yaml:"page"`
+
+	// PageSize Maximum number of items returned on each page.
+	PageSize int `json:"pageSize" yaml:"pageSize"`
+
+	// TotalCount Total number of items across all pages.
+	TotalCount int `json:"totalCount" yaml:"totalCount"`
+}
+
 // MesheryCompatibility Meshery version compatibility check
 type MesheryCompatibility struct {
 	// CheckCompatibility Whether to check compatibility
@@ -230,7 +357,7 @@ type MesheryInstance struct {
 	DeletedAt *time.Time `db:"deleted_at" json:"deletedAt,omitempty" yaml:"deletedAt,omitempty"`
 
 	// Id Instance ID
-	ID *openapi_types.UUID `db:"id" json:"id,omitempty" yaml:"id,omitempty"`
+	ID *uuid.UUID `db:"id" json:"id,omitempty" yaml:"id,omitempty"`
 
 	// Name Instance name
 	Name *string `db:"name" json:"name,omitempty" yaml:"name,omitempty"`
@@ -239,7 +366,7 @@ type MesheryInstance struct {
 	ServerBuildSHA *string `db:"server_build_sha" json:"serverBuildSha,omitempty" yaml:"serverBuildSha,omitempty"`
 
 	// ServerID Server ID
-	ServerID *openapi_types.UUID `db:"server_id" json:"serverId,omitempty" yaml:"serverId,omitempty"`
+	ServerID *uuid.UUID `db:"server_id" json:"serverId,omitempty" yaml:"serverId,omitempty"`
 
 	// ServerLocation Server location URL
 	ServerLocation *string `db:"server_location" json:"serverLocation,omitempty" yaml:"serverLocation,omitempty"`
@@ -267,25 +394,25 @@ type MesheryInstancePage struct {
 }
 
 // ConnectionDefinitionId defines model for connectionDefinitionId.
-type ConnectionDefinitionId = openapi_types.UUID
+type ConnectionDefinitionId = uuid.UUID
 
 // ConnectionId defines model for connectionId.
-type ConnectionId = openapi_types.UUID
+type ConnectionId = uuid.UUID
 
 // ConnectionKind defines model for connectionKind.
 type ConnectionKind = string
 
 // EnvironmentId defines model for environmentId.
-type EnvironmentId = openapi_types.UUID
+type EnvironmentId = uuid.UUID
 
 // MesheryServerId defines model for mesheryServerId.
-type MesheryServerId = openapi_types.UUID
+type MesheryServerId = uuid.UUID
 
 // Order defines model for order.
 type Order = string
 
 // OrgIdQuery defines model for orgIdQuery.
-type OrgIdQuery = openapi_types.UUID
+type OrgIdQuery = uuid.UUID
 
 // Page defines model for page.
 type Page = int

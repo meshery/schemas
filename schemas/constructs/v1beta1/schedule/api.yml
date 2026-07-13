@@ -185,7 +185,7 @@ components:
           description: UUID of the user who owns this schedule.
           x-order: 3
           x-oapi-codegen-extra-tags:
-            db: "user_id"
+            db: "owner"
         cron_expression:
           type: string
           description: >

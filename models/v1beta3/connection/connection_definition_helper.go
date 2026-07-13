@@ -9,9 +9,30 @@ import (
 	"github.com/gofrs/uuid"
 	"github.com/meshery/meshkit/database"
 	"github.com/meshery/meshkit/models/meshmodel/entity"
-	core "github.com/meshery/schemas/models/core"
 	"gorm.io/gorm/clause"
 )
+
+// ConnectionDefinition is the registry-entity form of a connection - an
+// uninitialized connection authored per-model and registered alongside
+// components and relationships. It is a DISTINCT defined type, NOT an alias of
+// Connection.
+//
+// The distinction is load-bearing: the entity.Entity methods below (notably
+// TableName, which returns "connection_definition_dbs") attach only to this
+// type. Were ConnectionDefinition a `= Connection` alias, those methods would
+// share Connection's method set and every Pop/GORM persistence of a runtime
+// Connection - which lives in the `connections` table - would be redirected to
+// the registry-only `connection_definition_dbs` table, 500-ing connection
+// writes (e.g. Meshery Server saving its connection to the remote provider).
+//
+// The generated alias is suppressed via a self-referential x-go-type in the
+// connection api.yml; see that spec and the generator's
+// removeSelfReferentialAliases pass.
+type ConnectionDefinition Connection
+
+// ConnectionDefinition is a registry entity; persistence and registration go
+// through the meshkit registry via this interface.
+var _ entity.Entity = (*ConnectionDefinition)(nil)
 
 func (c ConnectionDefinition) TableName() string {
 	return "connection_definition_dbs"
@@ -30,11 +51,11 @@ func (c ConnectionDefinition) GetID() uuid.UUID {
 }
 
 func (c *ConnectionDefinition) GetEntityDetail() string {
-	if c.Model == nil {
+	if c.ModelReference == nil {
 		return fmt.Sprintf("type: %s, kind: %s, name: %s", c.Type(), c.Kind, c.Name)
 	}
 
-	return fmt.Sprintf("type: %s, kind: %s, name: %s, model: %s, version: %s", c.Type(), c.Kind, c.Name, c.Model.Name, c.Model.Version)
+	return fmt.Sprintf("type: %s, kind: %s, name: %s, model: %s, version: %s", c.Type(), c.Kind, c.Name, c.ModelReference.Name, c.ModelReference.Version)
 }
 
 func (c *ConnectionDefinition) Create(db *database.Handler, hostID uuid.UUID) (uuid.UUID, error) {
@@ -44,17 +65,6 @@ func (c *ConnectionDefinition) Create(db *database.Handler, hostID uuid.UUID) (u
 	}
 	c.ID = generatedID
 
-	if c.Model == nil {
-		return uuid.Nil, fmt.Errorf("connection definition model is nil for connection %q (kind %s)", c.Name, c.Kind)
-	}
-
-	mid, err := c.Model.Create(db, hostID)
-	if err != nil {
-		return uuid.Nil, err
-	}
-
-	modelID := core.Uuid(mid)
-	c.ModelID = &modelID
 	err = db.Omit(clause.Associations).Create(&c).Error
 	return c.ID, err
 }

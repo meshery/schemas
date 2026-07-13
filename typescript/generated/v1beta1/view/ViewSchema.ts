@@ -269,7 +269,7 @@ const ViewSchema: Record<string, unknown> = {
             "x-go-type-skip-optional-pointer": true,
             "x-order": 6,
             "x-oapi-codegen-extra-tags": {
-              "db": "user_id",
+              "db": "owner",
               "yaml": "user_id"
             },
             "type": "string",
@@ -396,7 +396,7 @@ const ViewSchema: Record<string, unknown> = {
             "x-go-name": "UserID",
             "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
-              "db": "user_id",
+              "db": "owner",
               "json": "user_id,omitempty"
             },
             "type": "string",
@@ -680,7 +680,7 @@ const ViewSchema: Record<string, unknown> = {
                   "x-go-name": "UserID",
                   "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
-                    "db": "user_id",
+                    "db": "owner",
                     "json": "user_id,omitempty"
                   },
                   "type": "string",
@@ -1070,7 +1070,7 @@ const ViewSchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true,
                       "x-order": 6,
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id",
+                        "db": "owner",
                         "yaml": "user_id"
                       },
                       "type": "string",
@@ -1346,7 +1346,7 @@ const ViewSchema: Record<string, unknown> = {
                             "x-go-name": "UserID",
                             "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
-                              "db": "user_id",
+                              "db": "owner",
                               "json": "user_id,omitempty"
                             },
                             "type": "string",
@@ -1720,7 +1720,7 @@ const ViewSchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true,
                       "x-order": 6,
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id",
+                        "db": "owner",
                         "yaml": "user_id"
                       },
                       "type": "string",
@@ -2014,7 +2014,7 @@ const ViewSchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true,
                       "x-order": 6,
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id",
+                        "db": "owner",
                         "yaml": "user_id"
                       },
                       "type": "string",

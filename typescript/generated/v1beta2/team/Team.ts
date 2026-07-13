@@ -161,6 +161,12 @@ export interface components {
             name: string;
             /** @description A detailed description of the team's purpose and responsibilities. */
             description?: string;
+            /** @description Whether to notify team members when the team is created or updated. */
+            notifyTeamUpdate?: boolean;
+            /** @description Additional client-supplied metadata for the team. */
+            metadata?: {
+                [key: string]: unknown;
+            };
         };
         /** @description Payload for updating an existing team */
         TeamUpdatePayload: {
@@ -174,9 +180,9 @@ export interface components {
             /** @description Current page number of the result set. */
             page?: number;
             /** @description Number of items per page. */
-            page_size?: number;
+            pageSize?: number;
             /** @description Total number of items available. */
-            total_count?: number;
+            totalCount?: number;
             /** @description The teams of the teampage. */
             teams?: {
                 /**
@@ -252,9 +258,9 @@ export interface components {
             /** @description Current page number of the result set. */
             page?: number;
             /** @description Number of items per page. */
-            page_size?: number;
+            pageSize?: number;
             /** @description Total number of items available. */
-            total_count?: number;
+            totalCount?: number;
             /** @description The user-team mappings on the current page. */
             usersTeamsMapping?: {
                 /** Format: uuid */
@@ -306,9 +312,9 @@ export interface components {
             /** @description Current page number of the result set. */
             page?: number;
             /** @description Number of items per page. */
-            page_size?: number;
+            pageSize?: number;
             /** @description Total number of items available. */
-            total_count?: number;
+            totalCount?: number;
             /** @description The data of the teammemberspage. */
             data?: ({
                 /**
@@ -381,7 +387,12 @@ export interface components {
         order: string;
         /** @description Get responses by page */
         page: string;
-        /** @description Get responses by pagesize */
+        /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+        pageSize: number;
+        /**
+         * @deprecated
+         * @description Get responses by pagesize. Deprecated alias of pageSize.
+         */
         pagesize: string;
     };
     requestBodies: {
@@ -393,6 +404,12 @@ export interface components {
                     name: string;
                     /** @description A detailed description of the team's purpose and responsibilities. */
                     description?: string;
+                    /** @description Whether to notify team members when the team is created or updated. */
+                    notifyTeamUpdate?: boolean;
+                    /** @description Additional client-supplied metadata for the team. */
+                    metadata?: {
+                        [key: string]: unknown;
+                    };
                 };
             };
         };
@@ -422,7 +439,12 @@ export interface operations {
                 order?: string;
                 /** @description Get responses by page */
                 page?: string;
-                /** @description Get responses by pagesize */
+                /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+                pageSize?: number;
+                /**
+                 * @deprecated
+                 * @description Get responses by pagesize. Deprecated alias of pageSize.
+                 */
                 pagesize?: string;
             };
             header?: never;
@@ -444,9 +466,9 @@ export interface operations {
                         /** @description Current page number of the result set. */
                         page?: number;
                         /** @description Number of items per page. */
-                        page_size?: number;
+                        pageSize?: number;
                         /** @description Total number of items available. */
-                        total_count?: number;
+                        totalCount?: number;
                         /** @description The teams of the teampage. */
                         teams?: {
                             /**
@@ -531,6 +553,12 @@ export interface operations {
                     name: string;
                     /** @description A detailed description of the team's purpose and responsibilities. */
                     description?: string;
+                    /** @description Whether to notify team members when the team is created or updated. */
+                    notifyTeamUpdate?: boolean;
+                    /** @description Additional client-supplied metadata for the team. */
+                    metadata?: {
+                        [key: string]: unknown;
+                    };
                 };
             };
         };
@@ -878,7 +906,12 @@ export interface operations {
                 order?: string;
                 /** @description Get responses by page */
                 page?: string;
-                /** @description Get responses by pagesize */
+                /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+                pageSize?: number;
+                /**
+                 * @deprecated
+                 * @description Get responses by pagesize. Deprecated alias of pageSize.
+                 */
                 pagesize?: string;
             };
             header?: never;
@@ -900,9 +933,9 @@ export interface operations {
                         /** @description Current page number of the result set. */
                         page?: number;
                         /** @description Number of items per page. */
-                        page_size?: number;
+                        pageSize?: number;
                         /** @description Total number of items available. */
-                        total_count?: number;
+                        totalCount?: number;
                         /** @description The user-team mappings on the current page. */
                         usersTeamsMapping?: {
                             /** Format: uuid */
@@ -1145,7 +1178,12 @@ export interface operations {
                 order?: string;
                 /** @description Get responses by page */
                 page?: string;
-                /** @description Get responses by pagesize */
+                /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+                pageSize?: number;
+                /**
+                 * @deprecated
+                 * @description Get responses by pagesize. Deprecated alias of pageSize.
+                 */
                 pagesize?: string;
             };
             header?: never;
@@ -1169,9 +1207,9 @@ export interface operations {
                         /** @description Current page number of the result set. */
                         page?: number;
                         /** @description Number of items per page. */
-                        page_size?: number;
+                        pageSize?: number;
                         /** @description Total number of items available. */
-                        total_count?: number;
+                        totalCount?: number;
                         /** @description The data of the teammemberspage. */
                         data?: ({
                             /**

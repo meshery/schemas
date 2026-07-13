@@ -102,9 +102,19 @@ const WorkspaceSchema: Record<string, unknown> = {
             }
           },
           {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
             "name": "pagesize",
             "in": "query",
-            "description": "Get responses by pagesize",
+            "description": "Get responses by pagesize. Deprecated alias of pageSize.",
+            "deprecated": true,
             "schema": {
               "type": "string"
             }
@@ -217,7 +227,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                           },
                           "ownerId": {
                             "description": "User ID of the workspace owner.",
-                            "x-go-name": "OwnerId",
+                            "x-go-name": "OwnerID",
                             "x-oapi-codegen-extra-tags": {
                               "db": "owner_id",
                               "json": "ownerId,omitempty"
@@ -261,7 +271,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                           },
                           "organizationId": {
                             "description": "Organization to which this workspace belongs.",
-                            "x-go-name": "OrganizationId",
+                            "x-go-name": "OrganizationID",
                             "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "organization_id",
@@ -1207,9 +1217,19 @@ const WorkspaceSchema: Record<string, unknown> = {
             }
           },
           {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
             "name": "pagesize",
             "in": "query",
-            "description": "Get responses by pagesize",
+            "description": "Get responses by pagesize. Deprecated alias of pageSize.",
+            "deprecated": true,
             "schema": {
               "type": "string"
             }
@@ -1802,9 +1822,19 @@ const WorkspaceSchema: Record<string, unknown> = {
             }
           },
           {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
             "name": "pagesize",
             "in": "query",
-            "description": "Get responses by pagesize",
+            "description": "Get responses by pagesize. Deprecated alias of pageSize.",
+            "deprecated": true,
             "schema": {
               "type": "string"
             }
@@ -1910,7 +1940,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "type": "string",
                             "minLength": 2,
                             "maxLength": 100,
-                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                             "example": [
                               "v1",
                               "v1alpha1",
@@ -2468,9 +2498,19 @@ const WorkspaceSchema: Record<string, unknown> = {
             }
           },
           {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
             "name": "pagesize",
             "in": "query",
-            "description": "Get responses by pagesize",
+            "description": "Get responses by pagesize. Deprecated alias of pageSize.",
+            "deprecated": true,
             "schema": {
               "type": "string"
             }
@@ -2667,7 +2707,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                 "type": "string",
                                 "minLength": 2,
                                 "maxLength": 100,
-                                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                 "example": [
                                   "v1",
                                   "v1alpha1",
@@ -2820,7 +2860,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                           "type": "string",
                                           "minLength": 2,
                                           "maxLength": 100,
-                                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                           "example": [
                                             "v1",
                                             "v1alpha1",
@@ -2918,7 +2958,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                               "type": "string",
                                               "minLength": 2,
                                               "maxLength": 100,
-                                              "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                              "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                               "example": [
                                                 "v1",
                                                 "v1alpha1",
@@ -3135,7 +3175,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                   },
                                                   "x-go-name": "UserID",
                                                   "x-oapi-codegen-extra-tags": {
-                                                    "db": "user_id",
+                                                    "db": "owner",
                                                     "yaml": "user_id"
                                                   },
                                                   "x-order": 9
@@ -3238,7 +3278,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                         "type": "string",
                                                         "minLength": 2,
                                                         "maxLength": 100,
-                                                        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                                        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                                         "example": [
                                                           "v1",
                                                           "v1alpha1",
@@ -3374,7 +3414,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                   "type": "string",
                                                   "minLength": 2,
                                                   "maxLength": 100,
-                                                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                                   "example": [
                                                     "v1",
                                                     "v1alpha1",
@@ -3460,6 +3500,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                   },
                                                   "default": "Uncategorized",
                                                   "description": "The category of the model that determines the main grouping.",
+                                                  "helperText": "Select a model category",
                                                   "enum": [
                                                     "Analytics",
                                                     "App Definition and Development",
@@ -3602,7 +3643,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                         "type": "string",
                                                         "minLength": 2,
                                                         "maxLength": 100,
-                                                        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                                        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                                         "example": [
                                                           "v1",
                                                           "v1alpha1",
@@ -3990,6 +4031,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                           "x-oapi-codegen-extra-tags": {
                                             "gorm": "-"
                                           },
+                                          "x-generate-db-helpers": true,
                                           "type": "object",
                                           "required": [
                                             "id",
@@ -4507,7 +4549,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                 "type": "string",
                                                 "minLength": 2,
                                                 "maxLength": 100,
-                                                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                                 "example": [
                                                   "v1",
                                                   "v1alpha1",
@@ -5005,7 +5047,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                           "type": "string",
                                           "minLength": 2,
                                           "maxLength": 100,
-                                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                           "example": [
                                             "v1",
                                             "v1alpha1",
@@ -5115,7 +5157,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                 "type": "string",
                                                 "minLength": 2,
                                                 "maxLength": 100,
-                                                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                                 "example": [
                                                   "v1",
                                                   "v1alpha1",
@@ -5661,6 +5703,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                             "json": "model",
                                             "gorm": "type:bytes;serializer:json"
                                           },
+                                          "x-generate-db-helpers": true,
                                           "type": "object",
                                           "required": [
                                             "id",
@@ -6009,6 +6052,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                             "yaml": "model",
                                                             "json": "model,omitempty"
                                                           },
+                                                          "x-generate-db-helpers": true,
                                                           "type": "object",
                                                           "required": [
                                                             "id",
@@ -6365,6 +6409,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                             "yaml": "model",
                                                             "json": "model,omitempty"
                                                           },
+                                                          "x-generate-db-helpers": true,
                                                           "type": "object",
                                                           "required": [
                                                             "id",
@@ -6736,6 +6781,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                             "yaml": "model",
                                                             "json": "model,omitempty"
                                                           },
+                                                          "x-generate-db-helpers": true,
                                                           "type": "object",
                                                           "required": [
                                                             "id",
@@ -7092,6 +7138,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                             "yaml": "model",
                                                             "json": "model,omitempty"
                                                           },
+                                                          "x-generate-db-helpers": true,
                                                           "type": "object",
                                                           "required": [
                                                             "id",
@@ -7724,9 +7771,19 @@ const WorkspaceSchema: Record<string, unknown> = {
             }
           },
           {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
             "name": "pagesize",
             "in": "query",
-            "description": "Get responses by pagesize",
+            "description": "Get responses by pagesize. Deprecated alias of pageSize.",
+            "deprecated": true,
             "schema": {
               "type": "string"
             }
@@ -7847,7 +7904,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "x-go-name": "UserID",
                             "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
-                              "db": "user_id",
+                              "db": "owner",
                               "json": "user_id,omitempty"
                             }
                           },
@@ -8513,10 +8570,20 @@ const WorkspaceSchema: Record<string, unknown> = {
           "type": "string"
         }
       },
+      "pageSize": {
+        "name": "pageSize",
+        "in": "query",
+        "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
       "pagesize": {
         "name": "pagesize",
         "in": "query",
-        "description": "Get responses by pagesize",
+        "description": "Get responses by pagesize. Deprecated alias of pageSize.",
+        "deprecated": true,
         "schema": {
           "type": "string"
         }
@@ -8727,7 +8794,7 @@ const WorkspaceSchema: Record<string, unknown> = {
           },
           "ownerId": {
             "description": "User ID of the workspace owner.",
-            "x-go-name": "OwnerId",
+            "x-go-name": "OwnerID",
             "x-oapi-codegen-extra-tags": {
               "db": "owner_id",
               "json": "ownerId,omitempty"
@@ -8771,7 +8838,7 @@ const WorkspaceSchema: Record<string, unknown> = {
           },
           "organizationId": {
             "description": "Organization to which this workspace belongs.",
-            "x-go-name": "OrganizationId",
+            "x-go-name": "OrganizationID",
             "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "organization_id",
@@ -9015,7 +9082,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                 },
                 "ownerId": {
                   "description": "User ID of the workspace owner.",
-                  "x-go-name": "OwnerId",
+                  "x-go-name": "OwnerID",
                   "x-oapi-codegen-extra-tags": {
                     "db": "owner_id",
                     "json": "ownerId,omitempty"
@@ -9059,7 +9126,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                 },
                 "organizationId": {
                   "description": "Organization to which this workspace belongs.",
-                  "x-go-name": "OrganizationId",
+                  "x-go-name": "OrganizationID",
                   "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "organization_id",
@@ -10193,7 +10260,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                       "type": "string",
                       "minLength": 2,
                       "maxLength": 100,
-                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                       "example": [
                         "v1",
                         "v1alpha1",
@@ -10346,7 +10413,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                 "type": "string",
                                 "minLength": 2,
                                 "maxLength": 100,
-                                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                 "example": [
                                   "v1",
                                   "v1alpha1",
@@ -10444,7 +10511,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                     "type": "string",
                                     "minLength": 2,
                                     "maxLength": 100,
-                                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                     "example": [
                                       "v1",
                                       "v1alpha1",
@@ -10661,7 +10728,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                         },
                                         "x-go-name": "UserID",
                                         "x-oapi-codegen-extra-tags": {
-                                          "db": "user_id",
+                                          "db": "owner",
                                           "yaml": "user_id"
                                         },
                                         "x-order": 9
@@ -10764,7 +10831,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                               "type": "string",
                                               "minLength": 2,
                                               "maxLength": 100,
-                                              "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                              "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                               "example": [
                                                 "v1",
                                                 "v1alpha1",
@@ -10900,7 +10967,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                         "type": "string",
                                         "minLength": 2,
                                         "maxLength": 100,
-                                        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                         "example": [
                                           "v1",
                                           "v1alpha1",
@@ -10986,6 +11053,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                         },
                                         "default": "Uncategorized",
                                         "description": "The category of the model that determines the main grouping.",
+                                        "helperText": "Select a model category",
                                         "enum": [
                                           "Analytics",
                                           "App Definition and Development",
@@ -11128,7 +11196,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                               "type": "string",
                                               "minLength": 2,
                                               "maxLength": 100,
-                                              "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                              "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                               "example": [
                                                 "v1",
                                                 "v1alpha1",
@@ -11516,6 +11584,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                 "x-oapi-codegen-extra-tags": {
                                   "gorm": "-"
                                 },
+                                "x-generate-db-helpers": true,
                                 "type": "object",
                                 "required": [
                                   "id",
@@ -12033,7 +12102,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                       "type": "string",
                                       "minLength": 2,
                                       "maxLength": 100,
-                                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                       "example": [
                                         "v1",
                                         "v1alpha1",
@@ -12531,7 +12600,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                 "type": "string",
                                 "minLength": 2,
                                 "maxLength": 100,
-                                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                 "example": [
                                   "v1",
                                   "v1alpha1",
@@ -12641,7 +12710,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                       "type": "string",
                                       "minLength": 2,
                                       "maxLength": 100,
-                                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                       "example": [
                                         "v1",
                                         "v1alpha1",
@@ -13187,6 +13256,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                   "json": "model",
                                   "gorm": "type:bytes;serializer:json"
                                 },
+                                "x-generate-db-helpers": true,
                                 "type": "object",
                                 "required": [
                                   "id",
@@ -13535,6 +13605,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                   "yaml": "model",
                                                   "json": "model,omitempty"
                                                 },
+                                                "x-generate-db-helpers": true,
                                                 "type": "object",
                                                 "required": [
                                                   "id",
@@ -13891,6 +13962,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                   "yaml": "model",
                                                   "json": "model,omitempty"
                                                 },
+                                                "x-generate-db-helpers": true,
                                                 "type": "object",
                                                 "required": [
                                                   "id",
@@ -14262,6 +14334,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                   "yaml": "model",
                                                   "json": "model,omitempty"
                                                 },
+                                                "x-generate-db-helpers": true,
                                                 "type": "object",
                                                 "required": [
                                                   "id",
@@ -14618,6 +14691,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                   "yaml": "model",
                                                   "json": "model,omitempty"
                                                 },
+                                                "x-generate-db-helpers": true,
                                                 "type": "object",
                                                 "required": [
                                                   "id",
@@ -14889,7 +14963,7 @@ const WorkspaceSchema: Record<string, unknown> = {
             "x-go-name": "UserID",
             "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
-              "db": "user_id",
+              "db": "owner",
               "json": "user_id,omitempty"
             }
           },
@@ -15081,7 +15155,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "x-go-name": "UserID",
                   "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
-                    "db": "user_id",
+                    "db": "owner",
                     "json": "user_id,omitempty"
                   }
                 },

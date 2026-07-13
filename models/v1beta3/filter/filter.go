@@ -6,7 +6,7 @@ package filter
 import (
 	core "github.com/meshery/schemas/models/core"
 	catalogv1alpha2 "github.com/meshery/schemas/models/v1alpha2/catalog"
-	openapi_types "github.com/oapi-codegen/runtime/types"
+	"github.com/gofrs/uuid"
 )
 
 // Defines values for MesheryFilterImportFormPayloadUploadType.
@@ -178,7 +178,7 @@ type FilterId = core.Uuid
 type Order = string
 
 // OrgIdQuery defines model for orgIdQuery.
-type OrgIdQuery = openapi_types.UUID
+type OrgIdQuery = uuid.UUID
 
 // Page defines model for page.
 type Page = string

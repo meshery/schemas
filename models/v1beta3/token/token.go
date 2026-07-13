@@ -36,19 +36,19 @@ type UserToken struct {
 	Provider string `db:"provider" json:"provider" yaml:"provider"`
 
 	// AccessToken Access token value.
-	AccessToken *string `db:"access_token" json:"accessToken" yaml:"accessToken"`
+	AccessToken string `db:"access_token" json:"accessToken" yaml:"accessToken"`
 
 	// RefreshToken Refresh token value when applicable.
 	RefreshToken *string `db:"refresh_token" json:"refreshToken" yaml:"refreshToken"`
 
 	// Name Human-readable token name.
-	Name *string `db:"name" json:"name" yaml:"name"`
+	Name string `db:"name" json:"name" yaml:"name"`
 
 	// Purpose Purpose for which the token was created.
-	Purpose *string `db:"purpose" json:"purpose" yaml:"purpose"`
+	Purpose string `db:"purpose" json:"purpose" yaml:"purpose"`
 
 	// IsOAuth Whether this entry represents an OAuth session.
-	IsOAuth *bool `db:"is_oauth" json:"isOauth" yaml:"isOauth"`
+	IsOAuth bool `db:"is_oauth" json:"isOauth" yaml:"isOauth"`
 
 	// CreatedAt Timestamp when the token was created.
 	CreatedAt time.Time `db:"created_at" json:"createdAt" yaml:"createdAt"`
@@ -66,8 +66,14 @@ type Name = string
 // Order defines model for order.
 type Order = string
 
+// OwnerQuery A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+type OwnerQuery = core.Uuid
+
 // Page defines model for page.
 type Page = string
+
+// PageSize defines model for pageSize.
+type PageSize = int
 
 // Pagesize defines model for pagesize.
 type Pagesize = string
@@ -86,6 +92,3 @@ type TokenId = core.Uuid
 
 // TokenIdQuery A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 type TokenIdQuery = core.Uuid
-
-// UserIdQuery A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-type UserIdQuery = core.Uuid

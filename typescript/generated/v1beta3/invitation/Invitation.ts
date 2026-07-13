@@ -30,7 +30,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get all invitations for the organization */
+        /** Get a paginated list of invitations for the organization */
         get: operations["getInvitations"];
         put?: never;
         /** Create a new invitation for the organization */
@@ -155,8 +155,14 @@ export interface components {
         Uuid: string;
         /** @description Paginated list of invitations for an organization. */
         InvitationsPage: {
+            /** @description Current page number of the result set. */
+            page?: number;
+            /** @description Number of items per page. */
+            pageSize?: number;
+            /** @description Total number of items available. */
+            totalCount?: number;
             /** @description Invitations returned on the current page. */
-            data: {
+            data?: {
                 /**
                  * Format: uuid
                  * @description Unique identifier for the invitation, also used as the invitation code.
@@ -214,12 +220,152 @@ export interface components {
                  */
                 deletedAt: string;
             }[];
-            /** @description Total number of invitations available. */
-            total: number;
         };
         /** @description A signup request submitted for organization access. */
         SignupRequest: {
             [key: string]: unknown;
+        };
+        /** @description A signup request record as persisted in the signup_data table. Captures the requester's identity, the product form the request originated from (for example playground, meshmap, docker-extension), the moderation status, and the tracking task created for the request. Also embedded in signup webhook and notification payloads, where only a subset of fields may be populated. */
+        SignupData: {
+            /**
+             * Format: uuid
+             * @description Unique identifier of the signup request.
+             */
+            id?: string;
+            /** @description First name of the requester. */
+            firstName?: string;
+            /** @description Last name of the requester. */
+            lastName?: string;
+            /**
+             * Format: email
+             * @description Email address of the requester.
+             */
+            email?: string;
+            /** @description Occupation stated by the requester. */
+            occupation?: string;
+            /** @description Organization stated by the requester. */
+            organization?: string;
+            /** @description Role stated by the requester within their organization. */
+            role?: string;
+            /** @description Product form the signup request originated from. Known values include playground, meshmap, docker-extension, epsma-book, content, contact and event; the set is open-ended. */
+            formType?: string;
+            /** @description Moderation status of the signup request. */
+            status?: string;
+            /** @description Identifier of the tracking task created for this request in the external task system. */
+            taskId?: string;
+            /**
+             * Format: uri
+             * @description Link to the tracking task created for this request.
+             */
+            taskLink?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the signup request was created.
+             */
+            createdAt?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the signup request was last updated.
+             */
+            updatedAt?: string;
+        };
+        /** @description Notification about the most recent signup request awaiting moderator action, served by getSignupRequestNotification. */
+        SignupRequestNotification: {
+            /** @description The signup request the notification refers to. */
+            signupData: {
+                /**
+                 * Format: uuid
+                 * @description Unique identifier of the signup request.
+                 */
+                id?: string;
+                /** @description First name of the requester. */
+                firstName?: string;
+                /** @description Last name of the requester. */
+                lastName?: string;
+                /**
+                 * Format: email
+                 * @description Email address of the requester.
+                 */
+                email?: string;
+                /** @description Occupation stated by the requester. */
+                occupation?: string;
+                /** @description Organization stated by the requester. */
+                organization?: string;
+                /** @description Role stated by the requester within their organization. */
+                role?: string;
+                /** @description Product form the signup request originated from. Known values include playground, meshmap, docker-extension, epsma-book, content, contact and event; the set is open-ended. */
+                formType?: string;
+                /** @description Moderation status of the signup request. */
+                status?: string;
+                /** @description Identifier of the tracking task created for this request in the external task system. */
+                taskId?: string;
+                /**
+                 * Format: uri
+                 * @description Link to the tracking task created for this request.
+                 */
+                taskLink?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the signup request was created.
+                 */
+                createdAt?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the signup request was last updated.
+                 */
+                updatedAt?: string;
+            };
+            /** @description Whether the signup request was automatically processed before moderator review. */
+            preProcessed: boolean;
+        };
+        /** @description Outbound webhook body that Cloud POSTs to the configured signup and entitlement webhooks (WEBHOOK_SIGNUP_REQUEST, WEBHOOK_KANVAS_ENTITLEMENT) when a signup request is processed. Emitted by Cloud; not served by any Cloud endpoint. */
+        SignupWebhookPayload: {
+            /** @description The signup request that triggered the webhook. */
+            signupData: {
+                /**
+                 * Format: uuid
+                 * @description Unique identifier of the signup request.
+                 */
+                id?: string;
+                /** @description First name of the requester. */
+                firstName?: string;
+                /** @description Last name of the requester. */
+                lastName?: string;
+                /**
+                 * Format: email
+                 * @description Email address of the requester.
+                 */
+                email?: string;
+                /** @description Occupation stated by the requester. */
+                occupation?: string;
+                /** @description Organization stated by the requester. */
+                organization?: string;
+                /** @description Role stated by the requester within their organization. */
+                role?: string;
+                /** @description Product form the signup request originated from. Known values include playground, meshmap, docker-extension, epsma-book, content, contact and event; the set is open-ended. */
+                formType?: string;
+                /** @description Moderation status of the signup request. */
+                status?: string;
+                /** @description Identifier of the tracking task created for this request in the external task system. */
+                taskId?: string;
+                /**
+                 * Format: uri
+                 * @description Link to the tracking task created for this request.
+                 */
+                taskLink?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the signup request was created.
+                 */
+                createdAt?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the signup request was last updated.
+                 */
+                updatedAt?: string;
+            };
+            /** @description Whether the requester is a newly created user. */
+            newUser: boolean;
         };
         /** @description Paginated list of signup requests. */
         SignupRequestsPage: {
@@ -245,7 +391,7 @@ export interface components {
              * Format: uuid
              * @description ID of the user who created the invitation.
              */
-            ownerId?: string;
+            owner?: string;
             /** @description Indicates whether the invitation is a default invitation (open invite). */
             isDefault?: boolean;
             /** @description Name of the invitation. */
@@ -529,7 +675,7 @@ export interface operations {
                      * Format: uuid
                      * @description ID of the user who created the invitation.
                      */
-                    ownerId?: string;
+                    owner?: string;
                     /** @description Indicates whether the invitation is a default invitation (open invite). */
                     isDefault?: boolean;
                     /** @description Name of the invitation. */
@@ -726,7 +872,18 @@ export interface operations {
     };
     getInvitations: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Get responses by page */
+                page?: string;
+                /** @description Get responses by pagesize */
+                pagesize?: string;
+                /** @description Get responses that match search param value */
+                search?: string;
+                /** @description Get ordered responses */
+                order?: string;
+                /** @description Get filtered reponses */
+                filter?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -740,8 +897,14 @@ export interface operations {
                 };
                 content: {
                     "application/json": {
+                        /** @description Current page number of the result set. */
+                        page?: number;
+                        /** @description Number of items per page. */
+                        pageSize?: number;
+                        /** @description Total number of items available. */
+                        totalCount?: number;
                         /** @description Invitations returned on the current page. */
-                        data: {
+                        data?: {
                             /**
                              * Format: uuid
                              * @description Unique identifier for the invitation, also used as the invitation code.
@@ -799,8 +962,6 @@ export interface operations {
                              */
                             deletedAt: string;
                         }[];
-                        /** @description Total number of invitations available. */
-                        total: number;
                     };
                 };
             };
@@ -852,7 +1013,7 @@ export interface operations {
                      * Format: uuid
                      * @description ID of the user who created the invitation.
                      */
-                    ownerId?: string;
+                    owner?: string;
                     /** @description Indicates whether the invitation is a default invitation (open invite). */
                     isDefault?: boolean;
                     /** @description Name of the invitation. */
@@ -1393,7 +1554,52 @@ export interface operations {
                 };
                 content: {
                     "application/json": {
-                        [key: string]: unknown;
+                        /** @description The signup request the notification refers to. */
+                        signupData: {
+                            /**
+                             * Format: uuid
+                             * @description Unique identifier of the signup request.
+                             */
+                            id?: string;
+                            /** @description First name of the requester. */
+                            firstName?: string;
+                            /** @description Last name of the requester. */
+                            lastName?: string;
+                            /**
+                             * Format: email
+                             * @description Email address of the requester.
+                             */
+                            email?: string;
+                            /** @description Occupation stated by the requester. */
+                            occupation?: string;
+                            /** @description Organization stated by the requester. */
+                            organization?: string;
+                            /** @description Role stated by the requester within their organization. */
+                            role?: string;
+                            /** @description Product form the signup request originated from. Known values include playground, meshmap, docker-extension, epsma-book, content, contact and event; the set is open-ended. */
+                            formType?: string;
+                            /** @description Moderation status of the signup request. */
+                            status?: string;
+                            /** @description Identifier of the tracking task created for this request in the external task system. */
+                            taskId?: string;
+                            /**
+                             * Format: uri
+                             * @description Link to the tracking task created for this request.
+                             */
+                            taskLink?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the signup request was created.
+                             */
+                            createdAt?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the signup request was last updated.
+                             */
+                            updatedAt?: string;
+                        };
+                        /** @description Whether the signup request was automatically processed before moderator review. */
+                        preProcessed: boolean;
                     };
                 };
             };

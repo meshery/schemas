@@ -607,7 +607,7 @@ export interface operations {
                  * @description UUID of the owning user. Pass when fetching public/published
                  *     filters for a specific user (public-profile lookups).
                  */
-                userId?: string;
+                owner?: string;
             };
             header?: never;
             path?: never;

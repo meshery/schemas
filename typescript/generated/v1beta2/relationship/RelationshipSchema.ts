@@ -61,7 +61,7 @@ const RelationshipSchema: Record<string, unknown> = {
             "type": "string",
             "minLength": 2,
             "maxLength": 100,
-            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
             "example": [
               "v1",
               "v1alpha1",
@@ -173,7 +173,7 @@ const RelationshipSchema: Record<string, unknown> = {
                   "type": "string",
                   "minLength": 2,
                   "maxLength": 100,
-                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                   "example": [
                     "v1",
                     "v1alpha1",
@@ -708,11 +708,13 @@ const RelationshipSchema: Record<string, unknown> = {
             "x-go-type-skip-optional-pointer": true,
             "x-order": 6,
             "description": "Model Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
+            "helperText": "Select a model",
             "x-oapi-codegen-extra-tags": {
               "yaml": "model",
               "json": "model",
               "gorm": "type:bytes;serializer:json"
             },
+            "x-generate-db-helpers": true,
             "type": "object",
             "required": [
               "id",
@@ -1054,6 +1056,7 @@ const RelationshipSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "json": "model,omitempty"
                             },
+                            "x-generate-db-helpers": true,
                             "type": "object",
                             "required": [
                               "id",
@@ -1399,6 +1402,7 @@ const RelationshipSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "json": "model,omitempty"
                             },
+                            "x-generate-db-helpers": true,
                             "type": "object",
                             "required": [
                               "id",
@@ -1758,6 +1762,7 @@ const RelationshipSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "json": "model,omitempty"
                             },
+                            "x-generate-db-helpers": true,
                             "type": "object",
                             "required": [
                               "id",
@@ -2103,6 +2108,7 @@ const RelationshipSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "json": "model,omitempty"
                             },
+                            "x-generate-db-helpers": true,
                             "type": "object",
                             "required": [
                               "id",
@@ -2741,6 +2747,7 @@ const RelationshipSchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "json": "model,omitempty"
             },
+            "x-generate-db-helpers": true,
             "type": "object",
             "required": [
               "id",
@@ -3090,6 +3097,7 @@ const RelationshipSchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "json": "model,omitempty"
                   },
+                  "x-generate-db-helpers": true,
                   "type": "object",
                   "required": [
                     "id",
@@ -3435,6 +3443,7 @@ const RelationshipSchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "json": "model,omitempty"
                   },
+                  "x-generate-db-helpers": true,
                   "type": "object",
                   "required": [
                     "id",
@@ -3801,6 +3810,7 @@ const RelationshipSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "json": "model,omitempty"
                       },
+                      "x-generate-db-helpers": true,
                       "type": "object",
                       "required": [
                         "id",
@@ -4146,6 +4156,7 @@ const RelationshipSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "json": "model,omitempty"
                       },
+                      "x-generate-db-helpers": true,
                       "type": "object",
                       "required": [
                         "id",
@@ -4505,6 +4516,7 @@ const RelationshipSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "json": "model,omitempty"
                       },
+                      "x-generate-db-helpers": true,
                       "type": "object",
                       "required": [
                         "id",
@@ -4850,6 +4862,7 @@ const RelationshipSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "json": "model,omitempty"
                       },
+                      "x-generate-db-helpers": true,
                       "type": "object",
                       "required": [
                         "id",
@@ -5225,6 +5238,7 @@ const RelationshipSchema: Record<string, unknown> = {
                         "x-oapi-codegen-extra-tags": {
                           "json": "model,omitempty"
                         },
+                        "x-generate-db-helpers": true,
                         "type": "object",
                         "required": [
                           "id",
@@ -5570,6 +5584,7 @@ const RelationshipSchema: Record<string, unknown> = {
                         "x-oapi-codegen-extra-tags": {
                           "json": "model,omitempty"
                         },
+                        "x-generate-db-helpers": true,
                         "type": "object",
                         "required": [
                           "id",
@@ -5929,6 +5944,7 @@ const RelationshipSchema: Record<string, unknown> = {
                         "x-oapi-codegen-extra-tags": {
                           "json": "model,omitempty"
                         },
+                        "x-generate-db-helpers": true,
                         "type": "object",
                         "required": [
                           "id",
@@ -6274,6 +6290,7 @@ const RelationshipSchema: Record<string, unknown> = {
                         "x-oapi-codegen-extra-tags": {
                           "json": "model,omitempty"
                         },
+                        "x-generate-db-helpers": true,
                         "type": "object",
                         "required": [
                           "id",

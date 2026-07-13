@@ -47,8 +47,15 @@ components:
       $ref: ../../v1alpha1/core/api.yml#/components/parameters/order
     page:
       $ref: ../../v1alpha1/core/api.yml#/components/parameters/page
+    pageSize:
+      $ref: ../../v1beta2/core/api.yml#/components/parameters/pageSize
     pagesize:
-      $ref: ../../v1alpha1/core/api.yml#/components/parameters/pagesize
+      name: pagesize
+      in: query
+      description: Get responses by pagesize. Deprecated alias of pageSize.
+      deprecated: true
+      schema:
+        type: string
     orgIdQuery:
       name: orgId
       in: query
@@ -126,7 +133,7 @@ components:
           type: string
           description: Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
           x-go-type-skip-optional-pointer: true
-          x-go-name: OrgId
+          x-go-name: OrgID
           x-oapi-codegen-extra-tags:
             json: organizationId
           maxLength: 500
@@ -186,6 +193,43 @@ components:
             additionalProperties: true
           description: The connections of the environmentconnectionspage.
 
+    EnvironmentConnectionMappingPage:
+      type: object
+      description: >-
+        Paginated list of environment-to-connection mapping records, returned
+        when a connection is assigned to or unassigned from an environment.
+        Distinct from EnvironmentConnectionsPage, which lists the connections
+        themselves rather than the junction records.
+      required:
+        - page
+        - pageSize
+        - totalCount
+        - environmentConnectionMapping
+      properties:
+        page:
+          type: integer
+          description: Zero-based page index returned in this response.
+          minimum: 0
+        pageSize:
+          type: integer
+          description: Maximum number of items returned on each page.
+          minimum: 1
+          x-oapi-codegen-extra-tags:
+            json: pageSize
+        totalCount:
+          type: integer
+          description: Total number of items across all pages.
+          minimum: 0
+          x-oapi-codegen-extra-tags:
+            json: totalCount
+        environmentConnectionMapping:
+          type: array
+          description: Environment-to-connection mapping records in this page.
+          x-oapi-codegen-extra-tags:
+            json: environmentConnectionMapping
+          items:
+            $ref: "#/components/schemas/EnvironmentConnectionMapping"
+
   requestBodies:
     environmentPayload:
       description: Body for creating environment
@@ -230,6 +274,7 @@ paths:
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
         - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/pagesize"
         - $ref: "#/components/parameters/orgIdQuery"
       responses:
@@ -326,6 +371,7 @@ paths:
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
         - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/pagesize"
         - name: filter
           in: query

@@ -64,6 +64,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/system/email/test": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send a test email
+         * @description Sends a test email through the configured SMTP provider to verify the email configuration. Restricted to provider administrators.
+         */
+        post: operations["sendTestEmail"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/system/sync": {
         parameters: {
             query?: never;
@@ -84,14 +104,225 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/system/controllers/operator/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get the Meshery Operator status for a connection
+         * @description Returns the current status of the Meshery Operator controller for the given kubernetes connection. Replaces the getOperatorStatus GraphQL query.
+         */
+        get: operations["getOperatorControllerStatus"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/system/controllers/meshsync/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get the MeshSync controller status for a connection
+         * @description Returns the current status of the MeshSync controller for the given kubernetes connection. Replaces the getMeshsyncStatus GraphQL query.
+         */
+        get: operations["getMeshsyncControllerStatus"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/system/controllers/broker/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get the Meshery Broker (NATS) controller status for a connection
+         * @description Returns the current status of the Meshery Broker (NATS) controller for the given kubernetes connection. Replaces the getNatsStatus GraphQL query.
+         */
+        get: operations["getBrokerControllerStatus"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/system/controllers/diagnostics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get controller diagnostics and remediation for a connection
+         * @description Returns human-actionable diagnostics for a kubernetes connection's Meshery controllers (operator, MeshSync, broker), derived from their current status and Meshery's live broker connection. Each diagnostic carries a severity, a summary, an explanation, and concrete remediation steps so the UI can render a "Diagnostics" section in the connection detail view. An empty diagnostics list (with healthy=true) means no problems were detected.
+         */
+        get: operations["getControllerDiagnostics"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/system/controllers/status/subscribe": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Stream Meshery controller status over Server-Sent Events
+         * @description Server-Sent Events (SSE) stream of controller status (operator, MeshSync, broker) for the requested kubernetes connections. Replaces the subscribeMesheryControllersStatus GraphQL subscription. The server emits the full status array as an unnamed SSE event (`data: <json>` followed by a blank line) on subscribe and again whenever any controller's status changes; a comment keepalive is sent periodically. Consume with a native EventSource, not a buffered JSON client.
+         */
+        get: operations["subscribeControllersStatus"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @description Request body for sending a test email through the configured SMTP provider. */
+        EmailTestRequest: {
+            /**
+             * Format: email
+             * @description Recipient email address for the test message.
+             */
+            to: string;
+            /** @description Subject line for the test message. A default subject is used when omitted. */
+            subject?: string;
+        };
+        /** @description Result of a test email send attempt. */
+        EmailTestResponse: {
+            /** @description Outcome status of the send attempt (e.g. `success`). */
+            status: string;
+            /** @description Human-readable result message. */
+            message: string;
+            /** @description Unix-epoch seconds, as a decimal string, when the test email was sent. */
+            timestamp: string;
+            /**
+             * Format: email
+             * @description Recipient address the test email was sent to.
+             */
+            sentTo: string;
+        };
         /** @description Status message response. */
         SystemMessageResponse: {
             /** @description Human-readable status message. */
             message: string;
+        };
+        /** @description Status of a single Meshery controller (operator, MeshSync, or broker) for a kubernetes connection. Element type of the controller-status SSE stream and the operator status response. */
+        ControllerStatus: {
+            /**
+             * Format: uuid
+             * @description The kubernetes connection ID this status belongs to.
+             */
+            connectionId: string;
+            /**
+             * @description The controller this status describes.
+             * @enum {string}
+             */
+            controller: "OPERATOR" | "MESHSYNC" | "BROKER";
+            /** @description Current controller status (e.g. DEPLOYED, NOTDEPLOYED, RUNNING, CONNECTED, UNKNOWN). */
+            status: string;
+            /** @description Deployed controller version, when known. */
+            version: string;
+        };
+        /** @description Detailed status of a named Meshery controller (MeshSync or Broker) for a kubernetes connection. */
+        ControllerInfo: {
+            /** @description Controller name (e.g. MeshSync, MesheryBroker). */
+            name: string;
+            /** @description Deployed controller version, when known. */
+            version: string;
+            /** @description Current controller status. May be composed, e.g. "Connected <endpoint>". */
+            status: string;
+            /**
+             * Format: uuid
+             * @description The kubernetes connection ID this status belongs to.
+             */
+            connectionId: string;
+        };
+        /** @description A single human-actionable diagnostic about a kubernetes connection's Meshery controllers, with an explanation and remediation steps. */
+        ControllerDiagnostic: {
+            /**
+             * @description How serious the diagnostic is.
+             * @enum {string}
+             */
+            severity: "info" | "warning" | "error";
+            /**
+             * @description The controller this diagnostic concerns, when applicable.
+             * @enum {string}
+             */
+            controller?: "OPERATOR" | "MESHSYNC" | "BROKER";
+            /** @description Stable machine-readable code for this diagnostic (e.g. `broker_unreachable`), for the UI to key on. */
+            code: string;
+            /** @description Short, human-readable title for the diagnostic. */
+            summary: string;
+            /** @description A fuller explanation of what is wrong and why. */
+            description?: string;
+            /** @description Ordered, concrete steps the user can take to resolve the issue. */
+            remediation?: string[];
+            /** @description A relevant endpoint for the diagnostic, when applicable (e.g. the broker's published address the user needs to make reachable). */
+            endpoint?: string;
+        };
+        /** @description Diagnostics for a kubernetes connection's Meshery controllers, for rendering a "Diagnostics" section in the connection detail view. */
+        ConnectionDiagnostics: {
+            /**
+             * Format: uuid
+             * @description The kubernetes connection ID these diagnostics belong to.
+             */
+            connectionId: string;
+            /** @description True when no warning/error diagnostics were detected (informational diagnostics do not affect health). */
+            healthy: boolean;
+            /** @description The diagnostics detected for this connection (possibly empty). */
+            diagnostics: {
+                /**
+                 * @description How serious the diagnostic is.
+                 * @enum {string}
+                 */
+                severity: "info" | "warning" | "error";
+                /**
+                 * @description The controller this diagnostic concerns, when applicable.
+                 * @enum {string}
+                 */
+                controller?: "OPERATOR" | "MESHSYNC" | "BROKER";
+                /** @description Stable machine-readable code for this diagnostic (e.g. `broker_unreachable`), for the UI to key on. */
+                code: string;
+                /** @description Short, human-readable title for the diagnostic. */
+                summary: string;
+                /** @description A fuller explanation of what is wrong and why. */
+                description?: string;
+                /** @description Ordered, concrete steps the user can take to resolve the issue. */
+                remediation?: string[];
+                /** @description A relevant endpoint for the diagnostic, when applicable (e.g. the broker's published address the user needs to make reachable). */
+                endpoint?: string;
+            }[];
         };
         /** @description Database table summary. */
         SystemDatabaseTable: {
@@ -366,6 +597,74 @@ export interface operations {
             };
         };
     };
+    sendTestEmail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Recipient and optional subject for the test email. */
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * Format: email
+                     * @description Recipient email address for the test message.
+                     */
+                    to: string;
+                    /** @description Subject line for the test message. A default subject is used when omitted. */
+                    subject?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Test email sent */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Outcome status of the send attempt (e.g. `success`). */
+                        status: string;
+                        /** @description Human-readable result message. */
+                        message: string;
+                        /** @description Unix-epoch seconds, as a decimal string, when the test email was sent. */
+                        timestamp: string;
+                        /**
+                         * Format: email
+                         * @description Recipient address the test email was sent to.
+                         */
+                        sentTo: string;
+                    };
+                };
+            };
+            /** @description Invalid request payload or malformed recipient email address. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Email configuration validation failed or the send attempt errored. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     getSystemSync: {
         parameters: {
             query?: never;
@@ -428,6 +727,264 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    getOperatorControllerStatus: {
+        parameters: {
+            query: {
+                /** @description The kubernetes connection ID whose operator status is requested. */
+                connectionId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Operator controller status */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description The kubernetes connection ID this status belongs to.
+                         */
+                        connectionId: string;
+                        /**
+                         * @description The controller this status describes.
+                         * @enum {string}
+                         */
+                        controller: "OPERATOR" | "MESHSYNC" | "BROKER";
+                        /** @description Current controller status (e.g. DEPLOYED, NOTDEPLOYED, RUNNING, CONNECTED, UNKNOWN). */
+                        status: string;
+                        /** @description Deployed controller version, when known. */
+                        version: string;
+                    };
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error while resolving controller status. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getMeshsyncControllerStatus: {
+        parameters: {
+            query: {
+                /** @description The kubernetes connection ID whose MeshSync status is requested. */
+                connectionId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description MeshSync controller status */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Controller name (e.g. MeshSync, MesheryBroker). */
+                        name: string;
+                        /** @description Deployed controller version, when known. */
+                        version: string;
+                        /** @description Current controller status. May be composed, e.g. "Connected <endpoint>". */
+                        status: string;
+                        /**
+                         * Format: uuid
+                         * @description The kubernetes connection ID this status belongs to.
+                         */
+                        connectionId: string;
+                    };
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error while resolving controller status. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getBrokerControllerStatus: {
+        parameters: {
+            query: {
+                /** @description The kubernetes connection ID whose broker status is requested. */
+                connectionId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Broker controller status */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Controller name (e.g. MeshSync, MesheryBroker). */
+                        name: string;
+                        /** @description Deployed controller version, when known. */
+                        version: string;
+                        /** @description Current controller status. May be composed, e.g. "Connected <endpoint>". */
+                        status: string;
+                        /**
+                         * Format: uuid
+                         * @description The kubernetes connection ID this status belongs to.
+                         */
+                        connectionId: string;
+                    };
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error while resolving controller status. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getControllerDiagnostics: {
+        parameters: {
+            query: {
+                /** @description The kubernetes connection ID whose diagnostics are requested. */
+                connectionId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Connection controller diagnostics */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description The kubernetes connection ID these diagnostics belong to.
+                         */
+                        connectionId: string;
+                        /** @description True when no warning/error diagnostics were detected (informational diagnostics do not affect health). */
+                        healthy: boolean;
+                        /** @description The diagnostics detected for this connection (possibly empty). */
+                        diagnostics: {
+                            /**
+                             * @description How serious the diagnostic is.
+                             * @enum {string}
+                             */
+                            severity: "info" | "warning" | "error";
+                            /**
+                             * @description The controller this diagnostic concerns, when applicable.
+                             * @enum {string}
+                             */
+                            controller?: "OPERATOR" | "MESHSYNC" | "BROKER";
+                            /** @description Stable machine-readable code for this diagnostic (e.g. `broker_unreachable`), for the UI to key on. */
+                            code: string;
+                            /** @description Short, human-readable title for the diagnostic. */
+                            summary: string;
+                            /** @description A fuller explanation of what is wrong and why. */
+                            description?: string;
+                            /** @description Ordered, concrete steps the user can take to resolve the issue. */
+                            remediation?: string[];
+                            /** @description A relevant endpoint for the diagnostic, when applicable (e.g. the broker's published address the user needs to make reachable). */
+                            endpoint?: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error while resolving controller diagnostics. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    subscribeControllersStatus: {
+        parameters: {
+            query?: {
+                /** @description Kubernetes connection IDs to watch. Repeatable (connectionIds=<id>&connectionIds=<id>). */
+                connectionIds?: string[];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description An open text/event-stream of controller status snapshots. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/event-stream": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
             };
         };
     };

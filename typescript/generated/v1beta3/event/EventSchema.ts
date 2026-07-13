@@ -116,7 +116,7 @@ const EventSchema: Record<string, unknown> = {
                 "description": "Payload for creating a new event.",
                 "additionalProperties": true,
                 "properties": {
-                  "userId": {
+                  "owner": {
                     "type": "string",
                     "format": "uuid",
                     "description": "UUID of the user associated with the event.",
@@ -124,9 +124,10 @@ const EventSchema: Record<string, unknown> = {
                     "x-go-type-import": {
                       "path": "github.com/gofrs/uuid"
                     },
-                    "x-go-name": "UserID",
+                    "x-go-name": "Owner",
                     "x-oapi-codegen-extra-tags": {
-                      "json": "userId,omitempty"
+                      "db": "owner",
+                      "json": "owner,omitempty"
                     }
                   },
                   "category": {
@@ -549,9 +550,19 @@ const EventSchema: Record<string, unknown> = {
             }
           },
           {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
             "name": "pagesize",
             "in": "query",
-            "description": "Get responses by pagesize",
+            "description": "Get responses by pagesize. Deprecated alias of pageSize.",
+            "deprecated": true,
             "schema": {
               "type": "string"
             }
@@ -1098,9 +1109,19 @@ const EventSchema: Record<string, unknown> = {
             }
           },
           {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
             "name": "pagesize",
             "in": "query",
-            "description": "Get responses by pagesize",
+            "description": "Get responses by pagesize. Deprecated alias of pageSize.",
+            "deprecated": true,
             "schema": {
               "type": "string"
             }
@@ -1228,10 +1249,28 @@ const EventSchema: Record<string, unknown> = {
           "type": "string"
         }
       },
+      "pageSize": {
+        "name": "pageSize",
+        "in": "query",
+        "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
       "pagesize": {
         "name": "pagesize",
         "in": "query",
         "description": "Get responses by pagesize",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "pagesizeLegacy": {
+        "name": "pagesize",
+        "in": "query",
+        "description": "Get responses by pagesize. Deprecated alias of pageSize.",
+        "deprecated": true,
         "schema": {
           "type": "string"
         }
@@ -1291,7 +1330,7 @@ const EventSchema: Record<string, unknown> = {
         "description": "Payload for creating a new event.",
         "additionalProperties": true,
         "properties": {
-          "userId": {
+          "owner": {
             "type": "string",
             "format": "uuid",
             "description": "UUID of the user associated with the event.",
@@ -1299,9 +1338,10 @@ const EventSchema: Record<string, unknown> = {
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
             },
-            "x-go-name": "UserID",
+            "x-go-name": "Owner",
             "x-oapi-codegen-extra-tags": {
-              "json": "userId,omitempty"
+              "db": "owner",
+              "json": "owner,omitempty"
             }
           },
           "category": {

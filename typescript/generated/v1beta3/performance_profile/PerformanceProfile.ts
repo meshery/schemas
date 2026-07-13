@@ -197,7 +197,7 @@ export interface components {
              * Format: uuid
              * @description Owner user ID. When omitted, the server infers it from the authenticated user.
              */
-            userId?: string;
+            owner?: string;
             /**
              * Format: uuid
              * @description Optional schedule ID associating the profile with a recurring run.
@@ -337,7 +337,7 @@ export interface components {
              * Format: uuid
              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
-            userId?: string;
+            owner?: string;
             /**
              * Format: date-time
              * @description Timestamp when the performance result was created.
@@ -396,7 +396,7 @@ export interface components {
                  * Format: uuid
                  * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
-                userId?: string;
+                owner?: string;
                 /**
                  * Format: date-time
                  * @description Timestamp when the performance result was created.
@@ -568,7 +568,7 @@ export interface components {
                      * Format: uuid
                      * @description Owner user ID. When omitted, the server infers it from the authenticated user.
                      */
-                    userId?: string;
+                    owner?: string;
                     /**
                      * Format: uuid
                      * @description Optional schedule ID associating the profile with a recurring run.
@@ -753,7 +753,7 @@ export interface operations {
                      * Format: uuid
                      * @description Owner user ID. When omitted, the server infers it from the authenticated user.
                      */
-                    userId?: string;
+                    owner?: string;
                     /**
                      * Format: uuid
                      * @description Optional schedule ID associating the profile with a recurring run.
@@ -1027,7 +1027,7 @@ export interface operations {
                      * Format: uuid
                      * @description Owner user ID. When omitted, the server infers it from the authenticated user.
                      */
-                    userId?: string;
+                    owner?: string;
                     /**
                      * Format: uuid
                      * @description Optional schedule ID associating the profile with a recurring run.
@@ -1297,7 +1297,7 @@ export interface operations {
                              * Format: uuid
                              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
-                            userId?: string;
+                            owner?: string;
                             /**
                              * Format: date-time
                              * @description Timestamp when the performance result was created.
@@ -1408,7 +1408,7 @@ export interface operations {
                          * Format: uuid
                          * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
-                        userId?: string;
+                        owner?: string;
                         /**
                          * Format: date-time
                          * @description Timestamp when the performance result was created.
@@ -1534,7 +1534,7 @@ export interface operations {
                              * Format: uuid
                              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
-                            userId?: string;
+                            owner?: string;
                             /**
                              * Format: date-time
                              * @description Timestamp when the performance result was created.

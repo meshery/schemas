@@ -6,20 +6,10 @@ package user
 import (
 	"time"
 
+	"github.com/lib/pq"
 	"github.com/meshery/schemas/models/core"
 	openapi_types "github.com/oapi-codegen/runtime/types"
-)
-
-// Defines values for UserRoleNames.
-const (
-	UserRoleNamesAdmin             UserRoleNames = "admin"
-	UserRoleNamesCurator           UserRoleNames = "curator"
-	UserRoleNamesMeshmap           UserRoleNames = "meshmap"
-	UserRoleNamesOrganizationAdmin UserRoleNames = "organization admin"
-	UserRoleNamesTeamAdmin         UserRoleNames = "team admin"
-	UserRoleNamesUser              UserRoleNames = "user"
-	UserRoleNamesWorkspaceAdmin    UserRoleNames = "workspace admin"
-	UserRoleNamesWorkspaceManager  UserRoleNames = "workspace manager"
+	"github.com/gofrs/uuid"
 )
 
 // Defines values for UserStatus.
@@ -30,8 +20,82 @@ const (
 	Pending   UserStatus = "pending"
 )
 
+// Defines values for UserEmailAddressSource.
+const (
+	Backfill      UserEmailAddressSource = "backfill"
+	Consolidation UserEmailAddressSource = "consolidation"
+	Manual        UserEmailAddressSource = "manual"
+	Signup        UserEmailAddressSource = "signup"
+)
+
+// AccountDeletionEligibility Pre-check result returned before an account self-deletion is confirmed. Describes whether deleting the caller's account would also require or permit hard-deleting their organization and quantifies the blast radius. All fields are always present so the client can render the confirmation state deterministically.
+type AccountDeletionEligibility struct {
+	// CrossTenantSharedResourceCount Count of resources reachable from this organization that are also shared into a different, surviving organization; destroying them affects other tenants. When greater than zero the client must set confirmSharedResourceDestruction to proceed.
+	CrossTenantSharedResourceCount int `json:"crossTenantSharedResourceCount" yaml:"crossTenantSharedResourceCount"`
+
+	// HasActivePaidSubscription True when the organization has an active paid (non-"Personal"/free) plan subscription that must be cancelled before the organization can be hard-deleted.
+	HasActivePaidSubscription bool `json:"hasActivePaidSubscription" yaml:"hasActivePaidSubscription"`
+
+	// Impact Per-resource counts of the objects that would be destroyed when an organization is hard-deleted alongside the account.
+	Impact AccountDeletionImpact `json:"impact" yaml:"impact"`
+
+	// IsProviderOrg True when this is the shared Layer5 provider organization, which is never deletable regardless of membership.
+	IsProviderOrg bool `json:"isProviderOrg" yaml:"isProviderOrg"`
+
+	// IsSoleActiveMember True when the caller is the only active member of the organization, so deleting their account would leave the organization without any active members.
+	IsSoleActiveMember bool `json:"isSoleActiveMember" yaml:"isSoleActiveMember"`
+
+	// OrganizationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	OrganizationId core.Uuid `json:"organizationId" yaml:"organizationId"`
+
+	// OrganizationName Human-readable name of the organization evaluated for deletion. The client echoes this value back as organizationNameConfirmation when requesting deletion.
+	OrganizationName string `json:"organizationName" yaml:"organizationName"`
+}
+
+// AccountDeletionImpact Per-resource counts of the objects that would be destroyed when an organization is hard-deleted alongside the account.
+type AccountDeletionImpact struct {
+	// AcademyRecords Number of academy records (challenges, certifications) that would be destroyed.
+	AcademyRecords int `json:"academyRecords" yaml:"academyRecords"`
+
+	// Connections Number of connections that would be destroyed.
+	Connections int `json:"connections" yaml:"connections"`
+
+	// Credentials Number of credentials that would be destroyed.
+	Credentials int `json:"credentials" yaml:"credentials"`
+
+	// Designs Number of designs that would be destroyed.
+	Designs int `json:"designs" yaml:"designs"`
+
+	// Environments Number of environments that would be destroyed.
+	Environments int `json:"environments" yaml:"environments"`
+
+	// Invitations Number of pending invitations that would be revoked.
+	Invitations int `json:"invitations" yaml:"invitations"`
+
+	// Members Number of organization members that would lose access.
+	Members int `json:"members" yaml:"members"`
+
+	// Views Number of views that would be destroyed.
+	Views int `json:"views" yaml:"views"`
+
+	// Workspaces Number of workspaces that would be destroyed.
+	Workspaces int `json:"workspaces" yaml:"workspaces"`
+}
+
 // Adapter Placeholder for Adapter struct definition.
 type Adapter = map[string]interface{}
+
+// AnonymousFlowResponse Response returned after minting an anonymous user session: the session access token, the ID of the synthetic anonymous user, and the capability document for the session.
+type AnonymousFlowResponse struct {
+	// AccessToken JWT access token for the anonymous session.
+	AccessToken string `json:"accessToken" yaml:"accessToken"`
+
+	// Capabilities Capability document for the anonymous session. Untyped pending the provider-capabilities schema tracked separately in the identifier-uniformity program.
+	Capabilities *map[string]interface{} `json:"capability,omitempty" yaml:"capability,omitempty"`
+
+	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	UserID core.Uuid `json:"userId" yaml:"userId"`
+}
 
 // Grafana defines model for Grafana.
 type Grafana struct {
@@ -63,6 +127,72 @@ type LoadTestPreferences struct {
 	T *string `json:"t,omitempty" yaml:"t,omitempty"`
 }
 
+// MentionMessage A single comment message included in a mention notification.
+type MentionMessage struct {
+	// AvatarURL URL to the comment author's avatar image.
+	AvatarURL *string `json:"avatarUrl,omitempty" yaml:"avatarUrl,omitempty"`
+
+	// FirstName First name of the comment author.
+	FirstName *string `json:"firstName,omitempty" yaml:"firstName,omitempty"`
+
+	// LastName Last name of the comment author.
+	LastName *string `json:"lastName,omitempty" yaml:"lastName,omitempty"`
+
+	// Message Text of the comment message.
+	Message   *string           `json:"message,omitempty" yaml:"message,omitempty"`
+	Timestamp core.Time `json:"timestamp,omitempty" yaml:"timestamp,omitempty"`
+
+	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	UserID *core.Uuid `json:"userId,omitempty" yaml:"userId,omitempty"`
+}
+
+// MentionNotificationPayload Request body for notifying users about a design comment: the users mentioned in the comment, the thread participants, and the comment messages to include in the notification email.
+type MentionNotificationPayload struct {
+	// DesignId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	DesignID core.Uuid `json:"designId" yaml:"designId"`
+
+	// MentionUsers IDs of the users explicitly mentioned in the comment.
+	MentionUsers *[]core.Uuid `json:"mentionUsers,omitempty" yaml:"mentionUsers,omitempty"`
+
+	// Messages The comment messages to include in the notification email.
+	Messages *[]MentionMessage `json:"messages,omitempty" yaml:"messages,omitempty"`
+
+	// Participants IDs of the users participating in the comment thread.
+	Participants *[]core.Uuid `json:"participants,omitempty" yaml:"participants,omitempty"`
+
+	// UsersOptedOutOfNotifications IDs of the users who opted out of mention notifications.
+	UsersOptedOutOfNotifications *[]core.Uuid `json:"usersOptedOutOfNotifications,omitempty" yaml:"usersOptedOutOfNotifications,omitempty"`
+}
+
+// OrganizationWithRoles An organization the user is a member of, together with the names of the roles assigned to that user within the organization. Returned as an item of User.organizations.organizationsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).
+type OrganizationWithRoles struct {
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID core.Uuid `db:"id" json:"id,omitempty" yaml:"id"`
+
+	// Name Name of the organization.
+	Name string `db:"name" json:"name,omitempty" yaml:"name,omitempty"`
+
+	// Description Human readable description of the organization.
+	Description *string `db:"description" json:"description,omitempty" yaml:"description,omitempty"`
+
+	// Country Country associated with the organization.
+	Country *string `db:"country" json:"country,omitempty" yaml:"country,omitempty"`
+
+	// Region Region associated with the organization.
+	Region *string `db:"region" json:"region,omitempty" yaml:"region,omitempty"`
+
+	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	Owner     *core.Uuid `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
+	CreatedAt core.Time  `db:"created_at" json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
+	UpdatedAt core.Time  `db:"updated_at" json:"updatedAt,omitempty" yaml:"updatedAt,omitempty"`
+
+	// DeletedAt Timestamp when the organization was soft-deleted (null if not deleted).
+	DeletedAt *core.NullTime `db:"deleted_at" json:"deletedAt,omitempty" yaml:"deletedAt,omitempty"`
+
+	// RoleNames Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.
+	RoleNames pq.StringArray `db:"role_names" json:"roleNames" yaml:"roleNames"`
+}
+
 // Panel Grafana panel structure imported from github.com/grafana-tools/sdk
 type Panel = map[string]interface{}
 
@@ -87,7 +217,7 @@ type Preference struct {
 	RemoteProviderPreferences map[string]interface{} `json:"remoteProviderPreferences" yaml:"remoteProviderPreferences"`
 
 	// SelectedOrganizationId ID of the associated selectedOrganization.
-	SelectedOrganizationId openapi_types.UUID `json:"selectedOrganizationId" yaml:"selectedOrganizationId"`
+	SelectedOrganizationId uuid.UUID `json:"selectedOrganizationId" yaml:"selectedOrganizationId"`
 
 	// SelectedWorkspaceForOrganizations The selected workspace for organizations of the preference.
 	SelectedWorkspaceForOrganizations map[string]string `json:"selectedWorkspaceForOrganizations" yaml:"selectedWorkspaceForOrganizations"`
@@ -99,6 +229,15 @@ type Preference struct {
 	UsersExtensionPreferences map[string]interface{} `json:"usersExtensionPreferences" yaml:"usersExtensionPreferences"`
 }
 
+// ProfileOverview Aggregate counts shown on the current user's profile overview.
+type ProfileOverview struct {
+	// KubernetesContexts Number of Kubernetes contexts owned by the user.
+	KubernetesContexts int `json:"k8sCount" yaml:"k8sCount"`
+
+	// PatternsCount Number of designs owned by the user.
+	PatternsCount int `json:"patternCount" yaml:"patternCount"`
+}
+
 // Prometheus defines model for Prometheus.
 type Prometheus struct {
 	// PrometheusUrl The prometheus URL of the prometheus.
@@ -106,6 +245,21 @@ type Prometheus struct {
 
 	// SelectedPrometheusBoardsConfigs The selected prometheus boards configs of the prometheus.
 	SelectedPrometheusBoardsConfigs *[]SelectedGrafanaConfig `json:"selectedPrometheusBoardsConfigs,omitempty" yaml:"selectedPrometheusBoardsConfigs,omitempty"`
+}
+
+// RecentActivityPage Paginated recent-activity feed for a user's public profile.
+type RecentActivityPage struct {
+	// Activities The activity entries on the current page.
+	Activities *[]UserActivity `json:"activities,omitempty" yaml:"activities,omitempty"`
+
+	// Page Current page number of the result set.
+	Page *int `json:"page,omitempty" yaml:"page,omitempty"`
+
+	// PageSize Number of items per page.
+	PageSize *int `json:"pageSize,omitempty" yaml:"pageSize,omitempty"`
+
+	// TotalCount Total number of items available.
+	TotalCount *int `json:"totalCount,omitempty" yaml:"totalCount,omitempty"`
 }
 
 // SelectedGrafanaConfig defines model for SelectedGrafanaConfig.
@@ -127,6 +281,32 @@ type Social struct {
 
 	// Site The site of the social.
 	Site string `json:"site" yaml:"site"`
+}
+
+// TeamWithRoles A team the user is a member of, together with the names of the roles assigned to that user within the team. Returned as an item of User.teams.teamsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).
+type TeamWithRoles struct {
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID core.Uuid `db:"id" json:"id,omitempty" yaml:"id"`
+
+	// Name Name of the team.
+	Name string `db:"name" json:"name,omitempty" yaml:"name,omitempty"`
+
+	// Description Human readable description of the team.
+	Description *string `db:"description" json:"description,omitempty" yaml:"description,omitempty"`
+
+	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	Owner *core.Uuid `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
+
+	// Metadata Free-form metadata associated with the team.
+	Metadata  core.Map          `db:"metadata" json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	CreatedAt core.Time `db:"created_at" json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
+	UpdatedAt core.Time `db:"updated_at" json:"updatedAt,omitempty" yaml:"updatedAt,omitempty"`
+
+	// DeletedAt Timestamp when the team was soft-deleted (null if not deleted).
+	DeletedAt *core.NullTime `db:"deleted_at" json:"deletedAt,omitempty" yaml:"deletedAt,omitempty"`
+
+	// RoleNames Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.
+	RoleNames pq.StringArray `db:"role_names" json:"roleNames" yaml:"roleNames"`
 }
 
 // User Represents a user
@@ -163,7 +343,7 @@ type User struct {
 	// Organizations Organizations the user belongs to with role information
 	Organizations *struct {
 		// OrganizationsWithRoles Organization memberships for the user with their assigned roles.
-		OrganizationsWithRoles *[]map[string]interface{} `db:"organizations_with_roles" json:"organizationsWithRoles" yaml:"organizationsWithRoles"`
+		OrganizationsWithRoles *[]OrganizationWithRoles `db:"organizations_with_roles" json:"organizationsWithRoles" yaml:"organizationsWithRoles"`
 
 		// TotalCount Total number of organization memberships returned for the user.
 		TotalCount *int `db:"total_count" json:"totalCount" yaml:"totalCount"`
@@ -176,8 +356,8 @@ type User struct {
 	// Region User's region information stored as JSONB
 	Region core.Map `db:"region" json:"region" yaml:"region"`
 
-	// RoleNames List of global roles assigned to the user
-	RoleNames *[]UserRoleNames `db:"role_names" json:"roleNames" yaml:"roleNames"`
+	// RoleNames Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set.
+	RoleNames pq.StringArray `db:"role_names" json:"roleNames" yaml:"roleNames"`
 
 	// Socials Various online profiles associated with the user account
 	Socials *UserSocials `db:"socials" json:"socials" yaml:"socials"`
@@ -188,22 +368,70 @@ type User struct {
 	// Teams Teams the user belongs to with role information
 	Teams *struct {
 		// TeamsWithRoles Team memberships for the user with their assigned roles.
-		TeamsWithRoles *[]map[string]interface{} `db:"teams_with_roles" json:"teamsWithRoles" yaml:"teamsWithRoles"`
+		TeamsWithRoles *[]TeamWithRoles `db:"teams_with_roles" json:"teamsWithRoles" yaml:"teamsWithRoles"`
 
 		// TotalCount Total number of team memberships returned for the user.
 		TotalCount *int `db:"total_count" json:"totalCount" yaml:"totalCount"`
 	} `db:"teams" json:"teams" yaml:"teams"`
 	UpdatedAt core.Time `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
 
-	// UserId User identifier (username or external ID)
+	// UserId Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.
+	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UserId string `db:"user_id" json:"userId" yaml:"userId"`
 }
 
-// UserRoleNames defines model for User.RoleNames.
-type UserRoleNames string
-
 // UserStatus User account status
 type UserStatus string
+
+// UserActivity A single entry in a user's recent-activity feed. A narrow projection of the stored event record (id, category, action, description, owner and timestamps). The pre-migration meshery-cloud serialization emitted additional zero-valued event fields; those disappear once the server consumes this generated type.
+type UserActivity struct {
+	// Action Action recorded by the activity.
+	Action *string `db:"action" json:"action" yaml:"action"`
+
+	// Category Resource category on which the activity occurred.
+	Category  *string           `db:"category" json:"category" yaml:"category"`
+	CreatedAt core.Time `db:"created_at" json:"createdAt" yaml:"createdAt,omitempty"`
+
+	// Description Human-readable description of the activity. Email addresses are redacted for non-privileged viewers.
+	Description *string `db:"description" json:"description" yaml:"description"`
+
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID *core.Uuid `db:"id" json:"id" yaml:"id,omitempty"`
+
+	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	Owner     *core.Uuid `db:"owner" json:"owner" yaml:"owner,omitempty"`
+	UpdatedAt core.Time  `db:"updated_at" json:"updatedAt" yaml:"updatedAt,omitempty"`
+}
+
+// UserEmailAddress One email address associated with a user account. A user has exactly one primary address (mirrored in users.email) and any number of secondary addresses accumulated from account consolidation or explicit addition. Uniqueness across live addresses is enforced case-insensitively.
+type UserEmailAddress struct {
+	CreatedAt core.Time `db:"created_at" json:"createdAt" yaml:"createdAt"`
+
+	// DeletedAt SQL null Timestamp to handle null values of time.
+	DeletedAt core.NullTime `db:"deleted_at" json:"deletedAt" yaml:"deletedAt,omitempty"`
+
+	// Email The email address
+	Email openapi_types.Email `db:"email" json:"email" yaml:"email"`
+
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID core.Uuid `db:"id" json:"id" yaml:"id"`
+
+	// IsPrimary Exactly one live primary address per user; mirrors users.email
+	IsPrimary bool `db:"is_primary" json:"isPrimary" yaml:"isPrimary"`
+
+	// Source How this address became associated with the account
+	Source    UserEmailAddressSource `db:"source" json:"source" yaml:"source"`
+	UpdatedAt core.Time      `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
+
+	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	UserID core.Uuid `db:"owner" json:"userId" yaml:"userId"`
+
+	// Verified Whether the address was verified (per Kratos verifiable addresses) at record time
+	Verified bool `db:"verified" json:"verified" yaml:"verified"`
+}
+
+// UserEmailAddressSource How this address became associated with the account
+type UserEmailAddressSource string
 
 // UsersPageForAdmin Paginated list of users with organization and team role context
 type UsersPageForAdmin struct {
@@ -240,7 +468,7 @@ type Filter = string
 
 // Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 // Id defines model for id.
-type Id = openapi_types.UUID
+type Id = uuid.UUID
 
 // Order defines model for order.
 type Order = string
@@ -255,4 +483,7 @@ type PageSize = string
 type Search = string
 
 // TeamId defines model for teamId.
-type TeamId = openapi_types.UUID
+type TeamId = uuid.UUID
+
+// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+type UserId = core.Uuid

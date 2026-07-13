@@ -5,7 +5,7 @@ package environment
 
 import (
 	"github.com/meshery/schemas/models/core"
-	openapi_types "github.com/oapi-codegen/runtime/types"
+	"github.com/gofrs/uuid"
 )
 
 // Environment Environments allow you to logically group related Connections and their associated Credentials. Learn more at https://docs.meshery.io/concepts/logical/environments
@@ -56,6 +56,21 @@ type EnvironmentConnectionMapping struct {
 	UpdatedAt     core.Time      `db:"updated_at" json:"updatedAt" yaml:"updatedAt,omitempty"`
 }
 
+// EnvironmentConnectionMappingPage Paginated list of environment-to-connection mapping records, returned when a connection is assigned to or unassigned from an environment. Distinct from EnvironmentConnectionsPage, which lists the connections themselves rather than the junction records.
+type EnvironmentConnectionMappingPage struct {
+	// EnvironmentConnectionMapping Environment-to-connection mapping records in this page.
+	EnvironmentConnectionMapping []EnvironmentConnectionMapping `json:"environmentConnectionMapping" yaml:"environmentConnectionMapping"`
+
+	// Page Zero-based page index returned in this response.
+	Page int `json:"page" yaml:"page"`
+
+	// PageSize Maximum number of items returned on each page.
+	PageSize int `json:"pageSize" yaml:"pageSize"`
+
+	// TotalCount Total number of items across all pages.
+	TotalCount int `json:"totalCount" yaml:"totalCount"`
+}
+
 // EnvironmentConnectionsPage Paginated list of connections associated with an environment.
 type EnvironmentConnectionsPage struct {
 	// Connections The connections of the environmentconnectionspage.
@@ -85,8 +100,8 @@ type EnvironmentPayload struct {
 	Description core.Text `json:"description,omitempty" yaml:"description,omitempty"`
 	Name        core.Text `json:"name" yaml:"name"`
 
-	// OrgId Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
-	OrgId openapi_types.UUID `json:"organizationId" yaml:"organizationId"`
+	// OrgID Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
+	OrgID uuid.UUID `json:"organizationId" yaml:"organizationId"`
 }
 
 // EnvironmentId defines model for environmentId.
@@ -96,10 +111,13 @@ type EnvironmentId = core.Id
 type Order = string
 
 // OrgIdQuery defines model for orgIdQuery.
-type OrgIdQuery = openapi_types.UUID
+type OrgIdQuery = uuid.UUID
 
 // Page defines model for page.
 type Page = string
+
+// PageSize defines model for pageSize.
+type PageSize = int
 
 // Pagesize defines model for pagesize.
 type Pagesize = string

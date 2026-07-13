@@ -181,6 +181,44 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
+  /api/integrations/connections/{connectionId}/actions:
+    post:
+      x-internal: ["meshery"]
+      tags:
+        - Connections
+      operationId: performConnectionAction
+      summary: Perform an action on a connection
+      description: >-
+        Perform a side-effecting operation on a connection (as opposed to a
+        field update via PUT). The action is selected by the `action`
+        discriminator in the request body. Currently supports switching the
+        MeshSync deployment mode for a kubernetes connection, which redeploys
+        MeshSync (operator vs embedded) for the connection's cluster; the server
+        owns the connection metadata merge so callers only send the intent.
+      parameters:
+        - $ref: "#/components/parameters/connectionId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConnectionActionRequest"
+      responses:
+        "200":
+          description: The updated connection after the action was applied.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Connection"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
   /api/integrations/connections/meshery/{mesheryServerId}:
     delete:
       x-internal: ["cloud", "meshery"]
@@ -217,7 +255,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                $ref: "#/components/schemas/K8sContextPage"
         "401":
           $ref: "#/components/responses/401"
         "404":
@@ -321,7 +359,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ConnectionDefinition"
+              $ref: "#/components/schemas/ConnectionDefinitionPayload"
       responses:
         "201":
           description: Connection definition registered
@@ -374,7 +412,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ConnectionDefinition"
+              $ref: "#/components/schemas/ConnectionDefinitionPayload"
       responses:
         "200":
           description: Connection definition updated
@@ -526,7 +564,16 @@ components:
 
     ConnectionDefinition:
       description: A connection definition is an uninitialized connection, authored per-model (in a model's `connections/` folder) and registered into the registry alongside components and relationships. It conforms to the connection schema; the dynamic, kind-specific shape is carried in `metadata`. The `model` association scopes the definition to its owning model.
-      x-go-type: "Connection"
+      # Self-referential x-go-type: oapi-codegen emits `type ConnectionDefinition =
+      # ConnectionDefinition`, which the generator's removeSelfReferentialAliases pass
+      # comments out, deferring to the hand-written definition in
+      # connection_definition_helper.go. ConnectionDefinition MUST be a DISTINCT Go type
+      # (not an alias of Connection): the registry-entity methods on it - notably
+      # TableName() => "connection_definition_dbs" - would otherwise leak onto the
+      # wire/runtime Connection type via Go's type-alias method-set sharing, redirecting
+      # every Pop/GORM save of a Connection (the `connections` table) to the
+      # registry-only `connection_definition_dbs` table and 500-ing connection writes.
+      x-go-type: "ConnectionDefinition"
 
     ConnectionDefinitionPage:
       description: Represents a page of connection definitions with meta information about the total count
@@ -564,6 +611,129 @@ components:
             json: pageSize
           x-order: 4
           minimum: 1
+
+    ConnectionDefinitionPayload:
+      type: object
+      description: Payload for registering (creating) or updating a connection definition. Contains only client-settable fields; server-generated fields such as createdAt, updatedAt, and deletedAt are excluded.
+      required:
+        - name
+        - kind
+        - type
+        - subType
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Existing connection definition ID for updates; omit on create.
+          x-go-name: ID
+          x-oapi-codegen-extra-tags:
+            json: "id,omitempty"
+        schemaVersion:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/VersionString
+          description: Specifies the version of the schema the definition conforms to.
+          default: connections.meshery.io/v1beta3
+          x-oapi-codegen-extra-tags:
+            json: "schemaVersion,omitempty"
+        name:
+          type: string
+          description: Connection definition name
+          minLength: 1
+          maxLength: 255
+          x-oapi-codegen-extra-tags:
+            json: "name"
+        description:
+          type: string
+          description: Human-readable description of the connection definition and its purpose.
+          maxLength: 1000
+          x-oapi-codegen-extra-tags:
+            json: "description,omitempty"
+        url:
+          type: string
+          format: uri
+          description: URL of the remote resource connections of this kind point to.
+          maxLength: 2048
+          x-oapi-codegen-extra-tags:
+            json: "url,omitempty"
+        kind:
+          type: string
+          description: Connection kind (e.g., kubernetes, prometheus, grafana)
+          maxLength: 255
+          x-oapi-codegen-extra-tags:
+            json: "kind"
+        type:
+          type: string
+          description: Connection type (platform, telemetry, collaboration)
+          maxLength: 255
+          x-oapi-codegen-extra-tags:
+            json: "type"
+        subType:
+          type: string
+          description: Connection sub-type (cloud, identity, metrics, chat, git, orchestration)
+          maxLength: 255
+          x-oapi-codegen-extra-tags:
+            json: "subType"
+        status:
+          $ref: "#/components/schemas/ConnectionStatusValue"
+          description: Initial status for connections instantiated from this definition.
+          x-go-name: Status
+          x-oapi-codegen-extra-tags:
+            json: "status"
+        modelReference:
+          $ref: ../../v1beta1/model/api.yml#/components/schemas/ModelReference
+          x-go-type: modelv1beta1.ModelReference
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/v1beta1/model
+            name: modelv1beta1
+          description: Reference to the registered model that owns this connection definition.
+          x-oapi-codegen-extra-tags:
+            json: "modelReference,omitempty"
+        metadata:
+          type: object
+          description: Kind-specific connection metadata
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "metadata"
+        credentialSchema:
+          type: object
+          description: Schema for the credential associated with connections of this kind.
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "credentialSchema"
+        connectionSchema:
+          type: object
+          description: Schema for connections of this kind.
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "connectionSchema"
+        styles:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/ComponentStyles
+          x-go-type: core.ComponentStyles
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
+          description: Visualization styles for the connection, including svgColor and svgWhite used for UI representation.
+          x-oapi-codegen-extra-tags:
+            json: "styles,omitempty"
+        transitionMap:
+          type: object
+          description: Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status.
+          additionalProperties:
+            type: array
+            items:
+              $ref: "#/components/schemas/ConnectionStateTransition"
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "transitionMap,omitempty"
 
     ConnectionPage:
       description: Represents a page of connections with meta information about connections count
@@ -644,6 +814,37 @@ components:
           x-oapi-codegen-extra-tags:
             json: "description,omitempty"
           x-order: 2
+
+    ConnectionActionRequest:
+      type: object
+      description: >-
+        A side-effecting operation to perform on a connection via
+        POST /api/integrations/connections/{connectionId}/actions. The `action`
+        field selects the operation; operation-specific fields carry its
+        parameters. Unlike PUT (which updates resource fields), the server owns
+        any resulting metadata merge and cluster-side effects.
+      additionalProperties: false
+      required:
+        - action
+      properties:
+        action:
+          type: string
+          description: The operation to perform on the connection.
+          enum:
+            - setMeshsyncMode
+          x-oapi-codegen-extra-tags:
+            json: "action"
+        mode:
+          type: string
+          description: >-
+            Target MeshSync deployment mode. Required when `action` is
+            `setMeshsyncMode`; the server redeploys MeshSync (operator vs
+            embedded) for the connection's cluster.
+          enum:
+            - operator
+            - embedded
+          x-oapi-codegen-extra-tags:
+            json: "mode,omitempty"
 
     ConnectionPayload:
       type: object
@@ -908,3 +1109,152 @@ components:
           description: Whether to check compatibility
           x-oapi-codegen-extra-tags:
             json: "checkCompatibility,omitempty"
+
+    K8sContext:
+      type: object
+      description: >-
+        Kubernetes-specific authentication context projected from a kubernetes
+        connection and its credential. Connection metadata supplies the context
+        identity (id, name, server, version, deployment type, instance and
+        server IDs); the credential secret supplies the auth and cluster
+        material. This is a response projection, not a stored table row.
+      properties:
+        id:
+          type: string
+          description: >-
+            Stable identifier of the Kubernetes context, assigned when the
+            context is registered. Not a UUID; carried in connection metadata.
+          x-id-format: external
+          maxLength: 255
+          x-go-name: ID
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "id,omitempty"
+        name:
+          type: string
+          description: Human-readable name of the Kubernetes context.
+          maxLength: 255
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "name,omitempty"
+        auth:
+          type: object
+          description: >-
+            Authentication material for the context (token or kubeconfig
+            reference), sourced from the connection's credential secret.
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "auth,omitempty"
+        cluster:
+          type: object
+          description: >-
+            Cluster definition for the context (certificate authority and
+            server details), sourced from the connection's credential secret.
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "cluster,omitempty"
+        server:
+          type: string
+          description: API server URL of the Kubernetes cluster.
+          maxLength: 2048
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "server,omitempty"
+        owner:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+          description: ID of the user who owns the underlying connection.
+          x-oapi-codegen-extra-tags:
+            json: "owner,omitempty"
+        createdBy:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+          description: ID of the user who registered the context.
+          x-oapi-codegen-extra-tags:
+            json: "createdBy,omitempty"
+        mesheryInstanceId:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+          description: ID of the Meshery instance the context is registered with.
+          x-go-name: MesheryInstanceID
+          x-oapi-codegen-extra-tags:
+            json: "mesheryInstanceId,omitempty"
+        kubernetesServerId:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+          description: ID of the Kubernetes server associated with the context.
+          x-go-name: KubernetesServerID
+          x-oapi-codegen-extra-tags:
+            json: "kubernetesServerId,omitempty"
+        deploymentType:
+          type: string
+          description: How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster).
+          maxLength: 64
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "deploymentType"
+        version:
+          type: string
+          description: Kubernetes server version of the cluster.
+          maxLength: 64
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "version"
+        createdAt:
+          type: string
+          description: Timestamp when the underlying connection was created.
+          format: date-time
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "createdAt,omitempty"
+        updatedAt:
+          type: string
+          description: Timestamp when the underlying connection was last updated.
+          format: date-time
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "updatedAt,omitempty"
+        connectionId:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+          description: ID of the connection this context was projected from.
+          x-go-name: ConnectionID
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "connectionId,omitempty"
+
+    K8sContextPage:
+      type: object
+      description: Paginated list of Kubernetes contexts.
+      required:
+        - page
+        - pageSize
+        - totalCount
+        - contexts
+      properties:
+        page:
+          type: integer
+          description: Zero-based page index returned in this response.
+          minimum: 0
+          x-oapi-codegen-extra-tags:
+            json: "page"
+        pageSize:
+          type: integer
+          description: Maximum number of items returned on each page.
+          minimum: 1
+          x-oapi-codegen-extra-tags:
+            json: "pageSize"
+        totalCount:
+          type: integer
+          description: Total number of items across all pages.
+          minimum: 0
+          x-oapi-codegen-extra-tags:
+            json: "totalCount"
+        contexts:
+          type: array
+          description: Kubernetes contexts in this page.
+          items:
+            $ref: "#/components/schemas/K8sContext"
+          x-oapi-codegen-extra-tags:
+            json: "contexts"

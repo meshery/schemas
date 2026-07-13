@@ -19,9 +19,10 @@ jobs:
       contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@master
+        uses: actions/checkout@v4
         with:
           ref: 'master'
+          token: ${{ secrets.GH_ACCESS_TOKEN }}
       - uses: actions/setup-go@v6
         with:
           go-version: '1.26'   # match your local version
@@ -32,13 +33,23 @@ jobs:
           npm i
           go version 
           go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.5.1
-          echo "$HOME/go/bin" >> $GITHUB_PATH  # ✅ Add oapi-codegen to PATH
+          echo "$HOME/go/bin" >> $GITHUB_PATH
 
 
       - name: Run Make build
         shell: bash
         run: |
           make build
+
+      - name: Site data tests
+        shell: bash
+        run: |
+          make site-data-test
+
+      - name: Site data generation
+        shell: bash
+        run: |
+          make site-data-generate
 
       - name: Pull changes from remote
         run: git pull origin master

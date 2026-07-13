@@ -317,12 +317,13 @@ components:
           x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
             json: name
-        userId:
+        owner:
           $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
           description: Owner user ID. When omitted, the server infers it from the authenticated user.
-          x-go-name: UserID
+          x-go-name: Owner
           x-oapi-codegen-extra-tags:
-            json: "userId,omitempty"
+            db: owner
+            json: "owner,omitempty"
         schedule:
           $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
           description: Optional schedule ID associating the profile with a recurring run.
@@ -545,13 +546,13 @@ components:
           x-oapi-codegen-extra-tags:
             db: test_start_time
             json: "testStartTime,omitempty"
-        userId:
+        owner:
           $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
           description: User ID of the result owner.
-          x-go-name: UserID
+          x-go-name: Owner
           x-oapi-codegen-extra-tags:
-            db: user_id
-            json: "userId,omitempty"
+            db: owner
+            json: "owner,omitempty"
         createdAt:
           $ref: "../../v1alpha1/core/api.yml#/components/schemas/created_at"
           description: Timestamp when the performance result was created.

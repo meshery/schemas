@@ -283,7 +283,7 @@ const DesignSchema: Record<string, unknown> = {
                           "userId": {
                             "description": "Owning user ID.",
                             "x-oapi-codegen-extra-tags": {
-                              "db": "user_id"
+                              "db": "owner"
                             },
                             "type": "string",
                             "format": "uuid",
@@ -336,7 +336,8 @@ const DesignSchema: Record<string, unknown> = {
                               "userId": {
                                 "type": "string",
                                 "maxLength": 200,
-                                "description": "User identifier (username or external ID)",
+                                "deprecated": true,
+                                "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "user_id",
                                   "json": "userId"
@@ -717,23 +718,18 @@ const DesignSchema: Record<string, unknown> = {
                               },
                               "roleNames": {
                                 "type": "array",
-                                "items": {
-                                  "type": "string",
-                                  "enum": [
-                                    "admin",
-                                    "meshmap",
-                                    "curator",
-                                    "team admin",
-                                    "workspace admin",
-                                    "workspace manager",
-                                    "organization admin",
-                                    "user"
-                                  ]
+                                "x-go-type": "pq.StringArray",
+                                "x-go-type-import": {
+                                  "path": "github.com/lib/pq"
                                 },
-                                "description": "List of global roles assigned to the user",
+                                "x-go-type-skip-optional-pointer": true,
+                                "items": {
+                                  "type": "string"
+                                },
+                                "description": "Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as \"admin\", \"organization admin\" and \"user\" are a subset, not the whole set.",
                                 "example": [
-                                  "admin",
-                                  "meshmap"
+                                  "organization admin",
+                                  "user"
                                 ],
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "role_names",
@@ -752,7 +748,125 @@ const DesignSchema: Record<string, unknown> = {
                                     "type": "array",
                                     "description": "Team memberships for the user with their assigned roles.",
                                     "items": {
-                                      "type": "object"
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "description": "A team the user is a member of, together with the names of the roles assigned to that user within the team. Returned as an item of User.teams.teamsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                                      "required": [
+                                        "id",
+                                        "name",
+                                        "roleNames"
+                                      ],
+                                      "properties": {
+                                        "id": {
+                                          "description": "Unique identifier of the team.",
+                                          "x-go-name": "ID",
+                                          "x-order": 1,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "id",
+                                            "json": "id,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "uuid",
+                                          "x-go-type": "uuid.UUID",
+                                          "x-go-type-import": {
+                                            "path": "github.com/gofrs/uuid"
+                                          }
+                                        },
+                                        "name": {
+                                          "type": "string",
+                                          "description": "Name of the team.",
+                                          "x-order": 2,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "name",
+                                            "json": "name,omitempty"
+                                          }
+                                        },
+                                        "description": {
+                                          "type": "string",
+                                          "description": "Human readable description of the team.",
+                                          "x-order": 3,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "description",
+                                            "json": "description,omitempty"
+                                          }
+                                        },
+                                        "owner": {
+                                          "description": "Identifier of the team owner.",
+                                          "x-order": 4,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "owner",
+                                            "json": "owner,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "uuid",
+                                          "x-go-type": "uuid.UUID",
+                                          "x-go-type-import": {
+                                            "path": "github.com/gofrs/uuid"
+                                          }
+                                        },
+                                        "metadata": {
+                                          "type": "object",
+                                          "additionalProperties": true,
+                                          "description": "Free-form metadata associated with the team.",
+                                          "x-go-type": "core.Map",
+                                          "x-go-type-skip-optional-pointer": true,
+                                          "x-order": 5,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "metadata",
+                                            "json": "metadata,omitempty"
+                                          }
+                                        },
+                                        "createdAt": {
+                                          "description": "Timestamp when the team was created.",
+                                          "x-order": 6,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "created_at",
+                                            "json": "createdAt,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "date-time",
+                                          "x-go-type-skip-optional-pointer": true
+                                        },
+                                        "updatedAt": {
+                                          "description": "Timestamp when the team was last updated.",
+                                          "x-order": 7,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "updated_at",
+                                            "json": "updatedAt,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "date-time",
+                                          "x-go-type-skip-optional-pointer": true
+                                        },
+                                        "deletedAt": {
+                                          "type": "string",
+                                          "format": "date-time",
+                                          "nullable": true,
+                                          "description": "Timestamp when the team was soft-deleted (null if not deleted).",
+                                          "x-go-type": "core.NullTime",
+                                          "x-order": 8,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "deleted_at",
+                                            "json": "deletedAt,omitempty"
+                                          }
+                                        },
+                                        "roleNames": {
+                                          "type": "array",
+                                          "x-go-type": "pq.StringArray",
+                                          "x-go-type-import": {
+                                            "path": "github.com/lib/pq"
+                                          },
+                                          "description": "Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.",
+                                          "items": {
+                                            "type": "string"
+                                          },
+                                          "x-order": 9,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "role_names",
+                                            "json": "roleNames"
+                                          }
+                                        }
+                                      }
                                     },
                                     "x-oapi-codegen-extra-tags": {
                                       "db": "teams_with_roles",
@@ -782,7 +896,131 @@ const DesignSchema: Record<string, unknown> = {
                                     "type": "array",
                                     "description": "Organization memberships for the user with their assigned roles.",
                                     "items": {
-                                      "type": "object"
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "description": "An organization the user is a member of, together with the names of the roles assigned to that user within the organization. Returned as an item of User.organizations.organizationsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                                      "required": [
+                                        "id",
+                                        "name",
+                                        "roleNames"
+                                      ],
+                                      "properties": {
+                                        "id": {
+                                          "description": "Unique identifier of the organization.",
+                                          "x-go-name": "ID",
+                                          "x-order": 1,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "id",
+                                            "json": "id,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "uuid",
+                                          "x-go-type": "uuid.UUID",
+                                          "x-go-type-import": {
+                                            "path": "github.com/gofrs/uuid"
+                                          }
+                                        },
+                                        "name": {
+                                          "type": "string",
+                                          "description": "Name of the organization.",
+                                          "x-order": 2,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "name",
+                                            "json": "name,omitempty"
+                                          }
+                                        },
+                                        "description": {
+                                          "type": "string",
+                                          "description": "Human readable description of the organization.",
+                                          "x-order": 3,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "description",
+                                            "json": "description,omitempty"
+                                          }
+                                        },
+                                        "country": {
+                                          "type": "string",
+                                          "description": "Country associated with the organization.",
+                                          "x-order": 4,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "country",
+                                            "json": "country,omitempty"
+                                          }
+                                        },
+                                        "region": {
+                                          "type": "string",
+                                          "description": "Region associated with the organization.",
+                                          "x-order": 5,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "region",
+                                            "json": "region,omitempty"
+                                          }
+                                        },
+                                        "owner": {
+                                          "description": "Identifier of the organization owner.",
+                                          "x-order": 6,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "owner",
+                                            "json": "owner,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "uuid",
+                                          "x-go-type": "uuid.UUID",
+                                          "x-go-type-import": {
+                                            "path": "github.com/gofrs/uuid"
+                                          }
+                                        },
+                                        "createdAt": {
+                                          "description": "Timestamp when the organization was created.",
+                                          "x-order": 7,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "created_at",
+                                            "json": "createdAt,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "date-time",
+                                          "x-go-type-skip-optional-pointer": true
+                                        },
+                                        "updatedAt": {
+                                          "description": "Timestamp when the organization was last updated.",
+                                          "x-order": 8,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "updated_at",
+                                            "json": "updatedAt,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "date-time",
+                                          "x-go-type-skip-optional-pointer": true
+                                        },
+                                        "deletedAt": {
+                                          "type": "string",
+                                          "format": "date-time",
+                                          "nullable": true,
+                                          "description": "Timestamp when the organization was soft-deleted (null if not deleted).",
+                                          "x-go-type": "core.NullTime",
+                                          "x-order": 9,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "deleted_at",
+                                            "json": "deletedAt,omitempty"
+                                          }
+                                        },
+                                        "roleNames": {
+                                          "type": "array",
+                                          "x-go-type": "pq.StringArray",
+                                          "x-go-type-import": {
+                                            "path": "github.com/lib/pq"
+                                          },
+                                          "description": "Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.",
+                                          "items": {
+                                            "type": "string"
+                                          },
+                                          "x-order": 10,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "role_names",
+                                            "json": "roleNames"
+                                          }
+                                        }
+                                      }
                                     },
                                     "x-oapi-codegen-extra-tags": {
                                       "db": "organizations_with_roles",
@@ -1297,7 +1535,7 @@ const DesignSchema: Record<string, unknown> = {
                     "userId": {
                       "description": "Owning user ID.",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id"
+                        "db": "owner"
                       },
                       "type": "string",
                       "format": "uuid",
@@ -1350,7 +1588,8 @@ const DesignSchema: Record<string, unknown> = {
                         "userId": {
                           "type": "string",
                           "maxLength": 200,
-                          "description": "User identifier (username or external ID)",
+                          "deprecated": true,
+                          "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
                           "x-oapi-codegen-extra-tags": {
                             "db": "user_id",
                             "json": "userId"
@@ -1731,23 +1970,18 @@ const DesignSchema: Record<string, unknown> = {
                         },
                         "roleNames": {
                           "type": "array",
-                          "items": {
-                            "type": "string",
-                            "enum": [
-                              "admin",
-                              "meshmap",
-                              "curator",
-                              "team admin",
-                              "workspace admin",
-                              "workspace manager",
-                              "organization admin",
-                              "user"
-                            ]
+                          "x-go-type": "pq.StringArray",
+                          "x-go-type-import": {
+                            "path": "github.com/lib/pq"
                           },
-                          "description": "List of global roles assigned to the user",
+                          "x-go-type-skip-optional-pointer": true,
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as \"admin\", \"organization admin\" and \"user\" are a subset, not the whole set.",
                           "example": [
-                            "admin",
-                            "meshmap"
+                            "organization admin",
+                            "user"
                           ],
                           "x-oapi-codegen-extra-tags": {
                             "db": "role_names",
@@ -1766,7 +2000,125 @@ const DesignSchema: Record<string, unknown> = {
                               "type": "array",
                               "description": "Team memberships for the user with their assigned roles.",
                               "items": {
-                                "type": "object"
+                                "type": "object",
+                                "additionalProperties": false,
+                                "description": "A team the user is a member of, together with the names of the roles assigned to that user within the team. Returned as an item of User.teams.teamsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                                "required": [
+                                  "id",
+                                  "name",
+                                  "roleNames"
+                                ],
+                                "properties": {
+                                  "id": {
+                                    "description": "Unique identifier of the team.",
+                                    "x-go-name": "ID",
+                                    "x-order": 1,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "id",
+                                      "json": "id,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    }
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Name of the team.",
+                                    "x-order": 2,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "name",
+                                      "json": "name,omitempty"
+                                    }
+                                  },
+                                  "description": {
+                                    "type": "string",
+                                    "description": "Human readable description of the team.",
+                                    "x-order": 3,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "description",
+                                      "json": "description,omitempty"
+                                    }
+                                  },
+                                  "owner": {
+                                    "description": "Identifier of the team owner.",
+                                    "x-order": 4,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "owner",
+                                      "json": "owner,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    }
+                                  },
+                                  "metadata": {
+                                    "type": "object",
+                                    "additionalProperties": true,
+                                    "description": "Free-form metadata associated with the team.",
+                                    "x-go-type": "core.Map",
+                                    "x-go-type-skip-optional-pointer": true,
+                                    "x-order": 5,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "metadata",
+                                      "json": "metadata,omitempty"
+                                    }
+                                  },
+                                  "createdAt": {
+                                    "description": "Timestamp when the team was created.",
+                                    "x-order": 6,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "created_at",
+                                      "json": "createdAt,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "x-go-type-skip-optional-pointer": true
+                                  },
+                                  "updatedAt": {
+                                    "description": "Timestamp when the team was last updated.",
+                                    "x-order": 7,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "updated_at",
+                                      "json": "updatedAt,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "x-go-type-skip-optional-pointer": true
+                                  },
+                                  "deletedAt": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "nullable": true,
+                                    "description": "Timestamp when the team was soft-deleted (null if not deleted).",
+                                    "x-go-type": "core.NullTime",
+                                    "x-order": 8,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "deleted_at",
+                                      "json": "deletedAt,omitempty"
+                                    }
+                                  },
+                                  "roleNames": {
+                                    "type": "array",
+                                    "x-go-type": "pq.StringArray",
+                                    "x-go-type-import": {
+                                      "path": "github.com/lib/pq"
+                                    },
+                                    "description": "Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.",
+                                    "items": {
+                                      "type": "string"
+                                    },
+                                    "x-order": 9,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "role_names",
+                                      "json": "roleNames"
+                                    }
+                                  }
+                                }
                               },
                               "x-oapi-codegen-extra-tags": {
                                 "db": "teams_with_roles",
@@ -1796,7 +2148,131 @@ const DesignSchema: Record<string, unknown> = {
                               "type": "array",
                               "description": "Organization memberships for the user with their assigned roles.",
                               "items": {
-                                "type": "object"
+                                "type": "object",
+                                "additionalProperties": false,
+                                "description": "An organization the user is a member of, together with the names of the roles assigned to that user within the organization. Returned as an item of User.organizations.organizationsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                                "required": [
+                                  "id",
+                                  "name",
+                                  "roleNames"
+                                ],
+                                "properties": {
+                                  "id": {
+                                    "description": "Unique identifier of the organization.",
+                                    "x-go-name": "ID",
+                                    "x-order": 1,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "id",
+                                      "json": "id,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    }
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Name of the organization.",
+                                    "x-order": 2,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "name",
+                                      "json": "name,omitempty"
+                                    }
+                                  },
+                                  "description": {
+                                    "type": "string",
+                                    "description": "Human readable description of the organization.",
+                                    "x-order": 3,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "description",
+                                      "json": "description,omitempty"
+                                    }
+                                  },
+                                  "country": {
+                                    "type": "string",
+                                    "description": "Country associated with the organization.",
+                                    "x-order": 4,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "country",
+                                      "json": "country,omitempty"
+                                    }
+                                  },
+                                  "region": {
+                                    "type": "string",
+                                    "description": "Region associated with the organization.",
+                                    "x-order": 5,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "region",
+                                      "json": "region,omitempty"
+                                    }
+                                  },
+                                  "owner": {
+                                    "description": "Identifier of the organization owner.",
+                                    "x-order": 6,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "owner",
+                                      "json": "owner,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    }
+                                  },
+                                  "createdAt": {
+                                    "description": "Timestamp when the organization was created.",
+                                    "x-order": 7,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "created_at",
+                                      "json": "createdAt,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "x-go-type-skip-optional-pointer": true
+                                  },
+                                  "updatedAt": {
+                                    "description": "Timestamp when the organization was last updated.",
+                                    "x-order": 8,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "updated_at",
+                                      "json": "updatedAt,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "x-go-type-skip-optional-pointer": true
+                                  },
+                                  "deletedAt": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "nullable": true,
+                                    "description": "Timestamp when the organization was soft-deleted (null if not deleted).",
+                                    "x-go-type": "core.NullTime",
+                                    "x-order": 9,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "deleted_at",
+                                      "json": "deletedAt,omitempty"
+                                    }
+                                  },
+                                  "roleNames": {
+                                    "type": "array",
+                                    "x-go-type": "pq.StringArray",
+                                    "x-go-type-import": {
+                                      "path": "github.com/lib/pq"
+                                    },
+                                    "description": "Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.",
+                                    "items": {
+                                      "type": "string"
+                                    },
+                                    "x-order": 10,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "role_names",
+                                      "json": "roleNames"
+                                    }
+                                  }
+                                }
                               },
                               "x-oapi-codegen-extra-tags": {
                                 "db": "organizations_with_roles",
@@ -2066,251 +2542,6 @@ const DesignSchema: Record<string, unknown> = {
         }
       }
     },
-    "/api/content/patterns/resource": {
-      "get": {
-        "x-internal": [
-          "cloud"
-        ],
-        "tags": [
-          "designs"
-        ],
-        "summary": "Get pattern resources",
-        "operationId": "getPatternResources",
-        "description": "Returns pattern resource definitions.",
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "description": "Get responses by page",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "pageSize",
-            "in": "query",
-            "description": "Number of items per page (canonical camelCase form).",
-            "schema": {
-              "type": "integer",
-              "minimum": 1
-            }
-          },
-          {
-            "name": "search",
-            "in": "query",
-            "description": "Get responses that match search param value",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "order",
-            "in": "query",
-            "description": "Get ordered responses",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Pattern resources response"
-          },
-          "401": {
-            "description": "Expired JWT token used or insufficient privilege",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "x-internal": [
-          "cloud"
-        ],
-        "tags": [
-          "designs"
-        ],
-        "summary": "Save pattern resource",
-        "operationId": "upsertPatternResource",
-        "description": "Creates or updates a pattern resource definition.",
-        "responses": {
-          "200": {
-            "description": "Pattern resource saved"
-          },
-          "400": {
-            "description": "Invalid request body or request param",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Expired JWT token used or insufficient privilege",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/content/patterns/resource/{designId}": {
-      "get": {
-        "x-internal": [
-          "cloud"
-        ],
-        "tags": [
-          "designs"
-        ],
-        "summary": "Get pattern resource by ID",
-        "operationId": "getPatternResource",
-        "parameters": [
-          {
-            "name": "designId",
-            "in": "path",
-            "description": "Design (Pattern) ID",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-              "x-go-type": "uuid.UUID",
-              "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Pattern resource response"
-          },
-          "401": {
-            "description": "Expired JWT token used or insufficient privilege",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Result not found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "x-internal": [
-          "cloud"
-        ],
-        "tags": [
-          "designs"
-        ],
-        "summary": "Delete pattern resource",
-        "operationId": "deletePatternResource",
-        "parameters": [
-          {
-            "name": "designId",
-            "in": "path",
-            "description": "Design (Pattern) ID",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-              "x-go-type": "uuid.UUID",
-              "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
-              }
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Pattern resource deleted"
-          },
-          "401": {
-            "description": "Expired JWT token used or insufficient privilege",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Result not found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/content/patterns/{designId}": {
       "get": {
         "x-internal": [
@@ -2458,7 +2689,7 @@ const DesignSchema: Record<string, unknown> = {
                     "userId": {
                       "description": "Owning user ID.",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id"
+                        "db": "owner"
                       },
                       "type": "string",
                       "format": "uuid",
@@ -2511,7 +2742,8 @@ const DesignSchema: Record<string, unknown> = {
                         "userId": {
                           "type": "string",
                           "maxLength": 200,
-                          "description": "User identifier (username or external ID)",
+                          "deprecated": true,
+                          "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
                           "x-oapi-codegen-extra-tags": {
                             "db": "user_id",
                             "json": "userId"
@@ -2892,23 +3124,18 @@ const DesignSchema: Record<string, unknown> = {
                         },
                         "roleNames": {
                           "type": "array",
-                          "items": {
-                            "type": "string",
-                            "enum": [
-                              "admin",
-                              "meshmap",
-                              "curator",
-                              "team admin",
-                              "workspace admin",
-                              "workspace manager",
-                              "organization admin",
-                              "user"
-                            ]
+                          "x-go-type": "pq.StringArray",
+                          "x-go-type-import": {
+                            "path": "github.com/lib/pq"
                           },
-                          "description": "List of global roles assigned to the user",
+                          "x-go-type-skip-optional-pointer": true,
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as \"admin\", \"organization admin\" and \"user\" are a subset, not the whole set.",
                           "example": [
-                            "admin",
-                            "meshmap"
+                            "organization admin",
+                            "user"
                           ],
                           "x-oapi-codegen-extra-tags": {
                             "db": "role_names",
@@ -2927,7 +3154,125 @@ const DesignSchema: Record<string, unknown> = {
                               "type": "array",
                               "description": "Team memberships for the user with their assigned roles.",
                               "items": {
-                                "type": "object"
+                                "type": "object",
+                                "additionalProperties": false,
+                                "description": "A team the user is a member of, together with the names of the roles assigned to that user within the team. Returned as an item of User.teams.teamsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                                "required": [
+                                  "id",
+                                  "name",
+                                  "roleNames"
+                                ],
+                                "properties": {
+                                  "id": {
+                                    "description": "Unique identifier of the team.",
+                                    "x-go-name": "ID",
+                                    "x-order": 1,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "id",
+                                      "json": "id,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    }
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Name of the team.",
+                                    "x-order": 2,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "name",
+                                      "json": "name,omitempty"
+                                    }
+                                  },
+                                  "description": {
+                                    "type": "string",
+                                    "description": "Human readable description of the team.",
+                                    "x-order": 3,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "description",
+                                      "json": "description,omitempty"
+                                    }
+                                  },
+                                  "owner": {
+                                    "description": "Identifier of the team owner.",
+                                    "x-order": 4,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "owner",
+                                      "json": "owner,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    }
+                                  },
+                                  "metadata": {
+                                    "type": "object",
+                                    "additionalProperties": true,
+                                    "description": "Free-form metadata associated with the team.",
+                                    "x-go-type": "core.Map",
+                                    "x-go-type-skip-optional-pointer": true,
+                                    "x-order": 5,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "metadata",
+                                      "json": "metadata,omitempty"
+                                    }
+                                  },
+                                  "createdAt": {
+                                    "description": "Timestamp when the team was created.",
+                                    "x-order": 6,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "created_at",
+                                      "json": "createdAt,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "x-go-type-skip-optional-pointer": true
+                                  },
+                                  "updatedAt": {
+                                    "description": "Timestamp when the team was last updated.",
+                                    "x-order": 7,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "updated_at",
+                                      "json": "updatedAt,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "x-go-type-skip-optional-pointer": true
+                                  },
+                                  "deletedAt": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "nullable": true,
+                                    "description": "Timestamp when the team was soft-deleted (null if not deleted).",
+                                    "x-go-type": "core.NullTime",
+                                    "x-order": 8,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "deleted_at",
+                                      "json": "deletedAt,omitempty"
+                                    }
+                                  },
+                                  "roleNames": {
+                                    "type": "array",
+                                    "x-go-type": "pq.StringArray",
+                                    "x-go-type-import": {
+                                      "path": "github.com/lib/pq"
+                                    },
+                                    "description": "Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.",
+                                    "items": {
+                                      "type": "string"
+                                    },
+                                    "x-order": 9,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "role_names",
+                                      "json": "roleNames"
+                                    }
+                                  }
+                                }
                               },
                               "x-oapi-codegen-extra-tags": {
                                 "db": "teams_with_roles",
@@ -2957,7 +3302,131 @@ const DesignSchema: Record<string, unknown> = {
                               "type": "array",
                               "description": "Organization memberships for the user with their assigned roles.",
                               "items": {
-                                "type": "object"
+                                "type": "object",
+                                "additionalProperties": false,
+                                "description": "An organization the user is a member of, together with the names of the roles assigned to that user within the organization. Returned as an item of User.organizations.organizationsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                                "required": [
+                                  "id",
+                                  "name",
+                                  "roleNames"
+                                ],
+                                "properties": {
+                                  "id": {
+                                    "description": "Unique identifier of the organization.",
+                                    "x-go-name": "ID",
+                                    "x-order": 1,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "id",
+                                      "json": "id,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    }
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Name of the organization.",
+                                    "x-order": 2,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "name",
+                                      "json": "name,omitempty"
+                                    }
+                                  },
+                                  "description": {
+                                    "type": "string",
+                                    "description": "Human readable description of the organization.",
+                                    "x-order": 3,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "description",
+                                      "json": "description,omitempty"
+                                    }
+                                  },
+                                  "country": {
+                                    "type": "string",
+                                    "description": "Country associated with the organization.",
+                                    "x-order": 4,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "country",
+                                      "json": "country,omitempty"
+                                    }
+                                  },
+                                  "region": {
+                                    "type": "string",
+                                    "description": "Region associated with the organization.",
+                                    "x-order": 5,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "region",
+                                      "json": "region,omitempty"
+                                    }
+                                  },
+                                  "owner": {
+                                    "description": "Identifier of the organization owner.",
+                                    "x-order": 6,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "owner",
+                                      "json": "owner,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    }
+                                  },
+                                  "createdAt": {
+                                    "description": "Timestamp when the organization was created.",
+                                    "x-order": 7,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "created_at",
+                                      "json": "createdAt,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "x-go-type-skip-optional-pointer": true
+                                  },
+                                  "updatedAt": {
+                                    "description": "Timestamp when the organization was last updated.",
+                                    "x-order": 8,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "updated_at",
+                                      "json": "updatedAt,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "x-go-type-skip-optional-pointer": true
+                                  },
+                                  "deletedAt": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "nullable": true,
+                                    "description": "Timestamp when the organization was soft-deleted (null if not deleted).",
+                                    "x-go-type": "core.NullTime",
+                                    "x-order": 9,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "deleted_at",
+                                      "json": "deletedAt,omitempty"
+                                    }
+                                  },
+                                  "roleNames": {
+                                    "type": "array",
+                                    "x-go-type": "pq.StringArray",
+                                    "x-go-type-import": {
+                                      "path": "github.com/lib/pq"
+                                    },
+                                    "description": "Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.",
+                                    "items": {
+                                      "type": "string"
+                                    },
+                                    "x-order": 10,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "role_names",
+                                      "json": "roleNames"
+                                    }
+                                  }
+                                }
                               },
                               "x-oapi-codegen-extra-tags": {
                                 "db": "organizations_with_roles",
@@ -3350,7 +3819,7 @@ const DesignSchema: Record<string, unknown> = {
                     "userId": {
                       "description": "Owning user ID.",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id"
+                        "db": "owner"
                       },
                       "type": "string",
                       "format": "uuid",
@@ -3403,7 +3872,8 @@ const DesignSchema: Record<string, unknown> = {
                         "userId": {
                           "type": "string",
                           "maxLength": 200,
-                          "description": "User identifier (username or external ID)",
+                          "deprecated": true,
+                          "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
                           "x-oapi-codegen-extra-tags": {
                             "db": "user_id",
                             "json": "userId"
@@ -3784,23 +4254,18 @@ const DesignSchema: Record<string, unknown> = {
                         },
                         "roleNames": {
                           "type": "array",
-                          "items": {
-                            "type": "string",
-                            "enum": [
-                              "admin",
-                              "meshmap",
-                              "curator",
-                              "team admin",
-                              "workspace admin",
-                              "workspace manager",
-                              "organization admin",
-                              "user"
-                            ]
+                          "x-go-type": "pq.StringArray",
+                          "x-go-type-import": {
+                            "path": "github.com/lib/pq"
                           },
-                          "description": "List of global roles assigned to the user",
+                          "x-go-type-skip-optional-pointer": true,
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as \"admin\", \"organization admin\" and \"user\" are a subset, not the whole set.",
                           "example": [
-                            "admin",
-                            "meshmap"
+                            "organization admin",
+                            "user"
                           ],
                           "x-oapi-codegen-extra-tags": {
                             "db": "role_names",
@@ -3819,7 +4284,125 @@ const DesignSchema: Record<string, unknown> = {
                               "type": "array",
                               "description": "Team memberships for the user with their assigned roles.",
                               "items": {
-                                "type": "object"
+                                "type": "object",
+                                "additionalProperties": false,
+                                "description": "A team the user is a member of, together with the names of the roles assigned to that user within the team. Returned as an item of User.teams.teamsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                                "required": [
+                                  "id",
+                                  "name",
+                                  "roleNames"
+                                ],
+                                "properties": {
+                                  "id": {
+                                    "description": "Unique identifier of the team.",
+                                    "x-go-name": "ID",
+                                    "x-order": 1,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "id",
+                                      "json": "id,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    }
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Name of the team.",
+                                    "x-order": 2,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "name",
+                                      "json": "name,omitempty"
+                                    }
+                                  },
+                                  "description": {
+                                    "type": "string",
+                                    "description": "Human readable description of the team.",
+                                    "x-order": 3,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "description",
+                                      "json": "description,omitempty"
+                                    }
+                                  },
+                                  "owner": {
+                                    "description": "Identifier of the team owner.",
+                                    "x-order": 4,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "owner",
+                                      "json": "owner,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    }
+                                  },
+                                  "metadata": {
+                                    "type": "object",
+                                    "additionalProperties": true,
+                                    "description": "Free-form metadata associated with the team.",
+                                    "x-go-type": "core.Map",
+                                    "x-go-type-skip-optional-pointer": true,
+                                    "x-order": 5,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "metadata",
+                                      "json": "metadata,omitempty"
+                                    }
+                                  },
+                                  "createdAt": {
+                                    "description": "Timestamp when the team was created.",
+                                    "x-order": 6,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "created_at",
+                                      "json": "createdAt,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "x-go-type-skip-optional-pointer": true
+                                  },
+                                  "updatedAt": {
+                                    "description": "Timestamp when the team was last updated.",
+                                    "x-order": 7,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "updated_at",
+                                      "json": "updatedAt,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "x-go-type-skip-optional-pointer": true
+                                  },
+                                  "deletedAt": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "nullable": true,
+                                    "description": "Timestamp when the team was soft-deleted (null if not deleted).",
+                                    "x-go-type": "core.NullTime",
+                                    "x-order": 8,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "deleted_at",
+                                      "json": "deletedAt,omitempty"
+                                    }
+                                  },
+                                  "roleNames": {
+                                    "type": "array",
+                                    "x-go-type": "pq.StringArray",
+                                    "x-go-type-import": {
+                                      "path": "github.com/lib/pq"
+                                    },
+                                    "description": "Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.",
+                                    "items": {
+                                      "type": "string"
+                                    },
+                                    "x-order": 9,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "role_names",
+                                      "json": "roleNames"
+                                    }
+                                  }
+                                }
                               },
                               "x-oapi-codegen-extra-tags": {
                                 "db": "teams_with_roles",
@@ -3849,7 +4432,131 @@ const DesignSchema: Record<string, unknown> = {
                               "type": "array",
                               "description": "Organization memberships for the user with their assigned roles.",
                               "items": {
-                                "type": "object"
+                                "type": "object",
+                                "additionalProperties": false,
+                                "description": "An organization the user is a member of, together with the names of the roles assigned to that user within the organization. Returned as an item of User.organizations.organizationsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                                "required": [
+                                  "id",
+                                  "name",
+                                  "roleNames"
+                                ],
+                                "properties": {
+                                  "id": {
+                                    "description": "Unique identifier of the organization.",
+                                    "x-go-name": "ID",
+                                    "x-order": 1,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "id",
+                                      "json": "id,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    }
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Name of the organization.",
+                                    "x-order": 2,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "name",
+                                      "json": "name,omitempty"
+                                    }
+                                  },
+                                  "description": {
+                                    "type": "string",
+                                    "description": "Human readable description of the organization.",
+                                    "x-order": 3,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "description",
+                                      "json": "description,omitempty"
+                                    }
+                                  },
+                                  "country": {
+                                    "type": "string",
+                                    "description": "Country associated with the organization.",
+                                    "x-order": 4,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "country",
+                                      "json": "country,omitempty"
+                                    }
+                                  },
+                                  "region": {
+                                    "type": "string",
+                                    "description": "Region associated with the organization.",
+                                    "x-order": 5,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "region",
+                                      "json": "region,omitempty"
+                                    }
+                                  },
+                                  "owner": {
+                                    "description": "Identifier of the organization owner.",
+                                    "x-order": 6,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "owner",
+                                      "json": "owner,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    }
+                                  },
+                                  "createdAt": {
+                                    "description": "Timestamp when the organization was created.",
+                                    "x-order": 7,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "created_at",
+                                      "json": "createdAt,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "x-go-type-skip-optional-pointer": true
+                                  },
+                                  "updatedAt": {
+                                    "description": "Timestamp when the organization was last updated.",
+                                    "x-order": 8,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "updated_at",
+                                      "json": "updatedAt,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "x-go-type-skip-optional-pointer": true
+                                  },
+                                  "deletedAt": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "nullable": true,
+                                    "description": "Timestamp when the organization was soft-deleted (null if not deleted).",
+                                    "x-go-type": "core.NullTime",
+                                    "x-order": 9,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "deleted_at",
+                                      "json": "deletedAt,omitempty"
+                                    }
+                                  },
+                                  "roleNames": {
+                                    "type": "array",
+                                    "x-go-type": "pq.StringArray",
+                                    "x-go-type-import": {
+                                      "path": "github.com/lib/pq"
+                                    },
+                                    "description": "Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.",
+                                    "items": {
+                                      "type": "string"
+                                    },
+                                    "x-order": 10,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "role_names",
+                                      "json": "roleNames"
+                                    }
+                                  }
+                                }
                               },
                               "x-oapi-codegen-extra-tags": {
                                 "db": "organizations_with_roles",
@@ -4576,7 +5283,7 @@ const DesignSchema: Record<string, unknown> = {
                           "userId": {
                             "description": "Owning user ID.",
                             "x-oapi-codegen-extra-tags": {
-                              "db": "user_id"
+                              "db": "owner"
                             },
                             "type": "string",
                             "format": "uuid",
@@ -4629,7 +5336,8 @@ const DesignSchema: Record<string, unknown> = {
                               "userId": {
                                 "type": "string",
                                 "maxLength": 200,
-                                "description": "User identifier (username or external ID)",
+                                "deprecated": true,
+                                "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "user_id",
                                   "json": "userId"
@@ -5010,23 +5718,18 @@ const DesignSchema: Record<string, unknown> = {
                               },
                               "roleNames": {
                                 "type": "array",
-                                "items": {
-                                  "type": "string",
-                                  "enum": [
-                                    "admin",
-                                    "meshmap",
-                                    "curator",
-                                    "team admin",
-                                    "workspace admin",
-                                    "workspace manager",
-                                    "organization admin",
-                                    "user"
-                                  ]
+                                "x-go-type": "pq.StringArray",
+                                "x-go-type-import": {
+                                  "path": "github.com/lib/pq"
                                 },
-                                "description": "List of global roles assigned to the user",
+                                "x-go-type-skip-optional-pointer": true,
+                                "items": {
+                                  "type": "string"
+                                },
+                                "description": "Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as \"admin\", \"organization admin\" and \"user\" are a subset, not the whole set.",
                                 "example": [
-                                  "admin",
-                                  "meshmap"
+                                  "organization admin",
+                                  "user"
                                 ],
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "role_names",
@@ -5045,7 +5748,125 @@ const DesignSchema: Record<string, unknown> = {
                                     "type": "array",
                                     "description": "Team memberships for the user with their assigned roles.",
                                     "items": {
-                                      "type": "object"
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "description": "A team the user is a member of, together with the names of the roles assigned to that user within the team. Returned as an item of User.teams.teamsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                                      "required": [
+                                        "id",
+                                        "name",
+                                        "roleNames"
+                                      ],
+                                      "properties": {
+                                        "id": {
+                                          "description": "Unique identifier of the team.",
+                                          "x-go-name": "ID",
+                                          "x-order": 1,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "id",
+                                            "json": "id,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "uuid",
+                                          "x-go-type": "uuid.UUID",
+                                          "x-go-type-import": {
+                                            "path": "github.com/gofrs/uuid"
+                                          }
+                                        },
+                                        "name": {
+                                          "type": "string",
+                                          "description": "Name of the team.",
+                                          "x-order": 2,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "name",
+                                            "json": "name,omitempty"
+                                          }
+                                        },
+                                        "description": {
+                                          "type": "string",
+                                          "description": "Human readable description of the team.",
+                                          "x-order": 3,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "description",
+                                            "json": "description,omitempty"
+                                          }
+                                        },
+                                        "owner": {
+                                          "description": "Identifier of the team owner.",
+                                          "x-order": 4,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "owner",
+                                            "json": "owner,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "uuid",
+                                          "x-go-type": "uuid.UUID",
+                                          "x-go-type-import": {
+                                            "path": "github.com/gofrs/uuid"
+                                          }
+                                        },
+                                        "metadata": {
+                                          "type": "object",
+                                          "additionalProperties": true,
+                                          "description": "Free-form metadata associated with the team.",
+                                          "x-go-type": "core.Map",
+                                          "x-go-type-skip-optional-pointer": true,
+                                          "x-order": 5,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "metadata",
+                                            "json": "metadata,omitempty"
+                                          }
+                                        },
+                                        "createdAt": {
+                                          "description": "Timestamp when the team was created.",
+                                          "x-order": 6,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "created_at",
+                                            "json": "createdAt,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "date-time",
+                                          "x-go-type-skip-optional-pointer": true
+                                        },
+                                        "updatedAt": {
+                                          "description": "Timestamp when the team was last updated.",
+                                          "x-order": 7,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "updated_at",
+                                            "json": "updatedAt,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "date-time",
+                                          "x-go-type-skip-optional-pointer": true
+                                        },
+                                        "deletedAt": {
+                                          "type": "string",
+                                          "format": "date-time",
+                                          "nullable": true,
+                                          "description": "Timestamp when the team was soft-deleted (null if not deleted).",
+                                          "x-go-type": "core.NullTime",
+                                          "x-order": 8,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "deleted_at",
+                                            "json": "deletedAt,omitempty"
+                                          }
+                                        },
+                                        "roleNames": {
+                                          "type": "array",
+                                          "x-go-type": "pq.StringArray",
+                                          "x-go-type-import": {
+                                            "path": "github.com/lib/pq"
+                                          },
+                                          "description": "Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.",
+                                          "items": {
+                                            "type": "string"
+                                          },
+                                          "x-order": 9,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "role_names",
+                                            "json": "roleNames"
+                                          }
+                                        }
+                                      }
                                     },
                                     "x-oapi-codegen-extra-tags": {
                                       "db": "teams_with_roles",
@@ -5075,7 +5896,131 @@ const DesignSchema: Record<string, unknown> = {
                                     "type": "array",
                                     "description": "Organization memberships for the user with their assigned roles.",
                                     "items": {
-                                      "type": "object"
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "description": "An organization the user is a member of, together with the names of the roles assigned to that user within the organization. Returned as an item of User.organizations.organizationsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                                      "required": [
+                                        "id",
+                                        "name",
+                                        "roleNames"
+                                      ],
+                                      "properties": {
+                                        "id": {
+                                          "description": "Unique identifier of the organization.",
+                                          "x-go-name": "ID",
+                                          "x-order": 1,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "id",
+                                            "json": "id,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "uuid",
+                                          "x-go-type": "uuid.UUID",
+                                          "x-go-type-import": {
+                                            "path": "github.com/gofrs/uuid"
+                                          }
+                                        },
+                                        "name": {
+                                          "type": "string",
+                                          "description": "Name of the organization.",
+                                          "x-order": 2,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "name",
+                                            "json": "name,omitempty"
+                                          }
+                                        },
+                                        "description": {
+                                          "type": "string",
+                                          "description": "Human readable description of the organization.",
+                                          "x-order": 3,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "description",
+                                            "json": "description,omitempty"
+                                          }
+                                        },
+                                        "country": {
+                                          "type": "string",
+                                          "description": "Country associated with the organization.",
+                                          "x-order": 4,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "country",
+                                            "json": "country,omitempty"
+                                          }
+                                        },
+                                        "region": {
+                                          "type": "string",
+                                          "description": "Region associated with the organization.",
+                                          "x-order": 5,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "region",
+                                            "json": "region,omitempty"
+                                          }
+                                        },
+                                        "owner": {
+                                          "description": "Identifier of the organization owner.",
+                                          "x-order": 6,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "owner",
+                                            "json": "owner,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "uuid",
+                                          "x-go-type": "uuid.UUID",
+                                          "x-go-type-import": {
+                                            "path": "github.com/gofrs/uuid"
+                                          }
+                                        },
+                                        "createdAt": {
+                                          "description": "Timestamp when the organization was created.",
+                                          "x-order": 7,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "created_at",
+                                            "json": "createdAt,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "date-time",
+                                          "x-go-type-skip-optional-pointer": true
+                                        },
+                                        "updatedAt": {
+                                          "description": "Timestamp when the organization was last updated.",
+                                          "x-order": 8,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "updated_at",
+                                            "json": "updatedAt,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "date-time",
+                                          "x-go-type-skip-optional-pointer": true
+                                        },
+                                        "deletedAt": {
+                                          "type": "string",
+                                          "format": "date-time",
+                                          "nullable": true,
+                                          "description": "Timestamp when the organization was soft-deleted (null if not deleted).",
+                                          "x-go-type": "core.NullTime",
+                                          "x-order": 9,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "deleted_at",
+                                            "json": "deletedAt,omitempty"
+                                          }
+                                        },
+                                        "roleNames": {
+                                          "type": "array",
+                                          "x-go-type": "pq.StringArray",
+                                          "x-go-type-import": {
+                                            "path": "github.com/lib/pq"
+                                          },
+                                          "description": "Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.",
+                                          "items": {
+                                            "type": "string"
+                                          },
+                                          "x-order": 10,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "role_names",
+                                            "json": "roleNames"
+                                          }
+                                        }
+                                      }
                                     },
                                     "x-oapi-codegen-extra-tags": {
                                       "db": "organizations_with_roles",
@@ -5516,7 +6461,892 @@ const DesignSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "additionalProperties": true
+                  "description": "Server-returned catalog publish request as persisted by\nmeshery-cloud (`catalog_requests` table). Records a user's\nrequest to publish a design or filter to the catalog, along\nwith the reviewer-visible requester identity and the request's\napproval status.\n",
+                  "additionalProperties": false,
+                  "required": [
+                    "id",
+                    "contentId",
+                    "contentName",
+                    "contentType",
+                    "firstName",
+                    "lastName",
+                    "email",
+                    "status",
+                    "createdAt",
+                    "updatedAt"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    },
+                    "contentId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "x-go-name": "ContentID",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "content_id"
+                      }
+                    },
+                    "contentName": {
+                      "type": "string",
+                      "description": "Human-readable name of the content at request time.",
+                      "minLength": 1,
+                      "maxLength": 300,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "content_name"
+                      }
+                    },
+                    "contentType": {
+                      "description": "Kind of catalog content the request refers to.",
+                      "x-go-type": "CatalogContentType",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "content_type"
+                      },
+                      "type": "string",
+                      "enum": [
+                        "pattern",
+                        "filter"
+                      ],
+                      "x-enum-varnames": [
+                        "CatalogContentTypePattern",
+                        "CatalogContentTypeFilter"
+                      ]
+                    },
+                    "contentClass": {
+                      "type": "string",
+                      "description": "Support-level classification of the content, stored in the\n`content_class` column (a Postgres enum). Nullable — legacy\nrequests predate the column.\n",
+                      "nullable": true,
+                      "enum": [
+                        "official",
+                        "verified",
+                        "project",
+                        "community"
+                      ],
+                      "x-enum-varnames": [
+                        "CatalogContentClassOfficial",
+                        "CatalogContentClassVerified",
+                        "CatalogContentClassProject",
+                        "CatalogContentClassCommunity"
+                      ],
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "content_class"
+                      }
+                    },
+                    "firstName": {
+                      "type": "string",
+                      "description": "Requesting user's first name at request time.",
+                      "maxLength": 200,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "first_name"
+                      }
+                    },
+                    "lastName": {
+                      "type": "string",
+                      "description": "Requesting user's last name at request time.",
+                      "maxLength": 300,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "last_name"
+                      }
+                    },
+                    "email": {
+                      "type": "string",
+                      "format": "email",
+                      "description": "Requesting user's email address at request time.",
+                      "maxLength": 300
+                    },
+                    "user": {
+                      "description": "Requesting user record, joined inline by the catalog-request list handler when shaping responses. Server-projected from the users table; not a column on the catalog_requests table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
+                      "nullable": true,
+                      "x-go-type": "*userV1beta.User",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/v1beta2/user",
+                        "name": "userV1beta"
+                      },
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "-"
+                      },
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "userId",
+                        "provider",
+                        "email",
+                        "firstName",
+                        "lastName",
+                        "status",
+                        "createdAt",
+                        "updatedAt",
+                        "lastLoginTime",
+                        "deletedAt"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "Unique identifier for the user",
+                          "x-go-name": "ID",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "id",
+                            "json": "id"
+                          },
+                          "type": "string",
+                          "format": "uuid",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          }
+                        },
+                        "userId": {
+                          "type": "string",
+                          "maxLength": 200,
+                          "deprecated": true,
+                          "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "user_id",
+                            "json": "userId"
+                          },
+                          "x-id-format": "external"
+                        },
+                        "provider": {
+                          "type": "string",
+                          "maxLength": 100,
+                          "description": "Authentication provider (e.g., Google, Github)",
+                          "example": [
+                            "local",
+                            "github",
+                            "google",
+                            "twitter"
+                          ],
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "provider",
+                            "json": "provider"
+                          }
+                        },
+                        "email": {
+                          "type": "string",
+                          "format": "email",
+                          "maxLength": 300,
+                          "description": "User's email address",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "email",
+                            "json": "email"
+                          }
+                        },
+                        "firstName": {
+                          "type": "string",
+                          "maxLength": 200,
+                          "description": "User's first name",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "first_name",
+                            "json": "firstName"
+                          }
+                        },
+                        "lastName": {
+                          "type": "string",
+                          "maxLength": 300,
+                          "description": "User's last name",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "last_name",
+                            "json": "lastName"
+                          }
+                        },
+                        "avatarUrl": {
+                          "type": "string",
+                          "format": "uri",
+                          "maxLength": 500,
+                          "description": "URL to user's avatar image",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "avatar_url",
+                            "json": "avatarUrl"
+                          }
+                        },
+                        "status": {
+                          "type": "string",
+                          "maxLength": 100,
+                          "enum": [
+                            "active",
+                            "inactive",
+                            "pending",
+                            "anonymous"
+                          ],
+                          "description": "User account status",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "status",
+                            "json": "status"
+                          }
+                        },
+                        "bio": {
+                          "type": "string",
+                          "maxLength": 1000,
+                          "default": "",
+                          "description": "User's biography or description",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "bio",
+                            "json": "bio"
+                          }
+                        },
+                        "country": {
+                          "type": "object",
+                          "description": "User's country information stored as JSONB",
+                          "additionalProperties": true,
+                          "x-go-type": "core.Map",
+                          "x-go-type-skip-optional-pointer": true,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "country",
+                            "json": "country"
+                          }
+                        },
+                        "region": {
+                          "type": "object",
+                          "description": "User's region information stored as JSONB",
+                          "additionalProperties": true,
+                          "x-go-type": "core.Map",
+                          "x-go-type-skip-optional-pointer": true,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "region",
+                            "json": "region"
+                          }
+                        },
+                        "preferences": {
+                          "x-go-type": "Preference",
+                          "description": "User preferences stored as JSONB",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "preferences",
+                            "json": "preferences"
+                          },
+                          "x-generate-db-helpers": true,
+                          "type": "object",
+                          "required": [
+                            "anonymousUsageStats",
+                            "anonymousPerfResults",
+                            "updatedAt",
+                            "dashboardPreferences",
+                            "selectedOrganizationId",
+                            "selectedWorkspaceForOrganizations",
+                            "usersExtensionPreferences",
+                            "remoteProviderPreferences"
+                          ],
+                          "properties": {
+                            "meshAdapters": {
+                              "type": "array",
+                              "items": {
+                                "x-go-type": "Adapter",
+                                "type": "object",
+                                "description": "Placeholder for Adapter struct definition."
+                              },
+                              "description": "The mesh adapters of the preference."
+                            },
+                            "grafana": {
+                              "x-go-type": "Grafana",
+                              "type": "object",
+                              "properties": {
+                                "grafanaUrl": {
+                                  "type": "string",
+                                  "description": "Grafana URL for the user configuration.",
+                                  "maxLength": 500
+                                },
+                                "grafanaApiKey": {
+                                  "type": "string",
+                                  "description": "Grafana API key for the user configuration.",
+                                  "maxLength": 500
+                                },
+                                "selectedBoardsConfigs": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "board": {
+                                        "type": "object",
+                                        "description": "Placeholder for GrafanaBoard definition (define fields as needed)"
+                                      },
+                                      "panels": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "description": "Grafana panel structure imported from github.com/grafana-tools/sdk"
+                                        },
+                                        "description": "Panels selected for the Grafana board configuration."
+                                      },
+                                      "templateVars": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "string"
+                                        },
+                                        "description": "Template variables applied to the selected Grafana board configuration."
+                                      }
+                                    }
+                                  },
+                                  "description": "Selected Grafana board configurations for the user."
+                                }
+                              }
+                            },
+                            "prometheus": {
+                              "x-go-type": "Prometheus",
+                              "type": "object",
+                              "properties": {
+                                "prometheusUrl": {
+                                  "type": "string",
+                                  "description": "The prometheus URL of the prometheus.",
+                                  "maxLength": 500
+                                },
+                                "selectedPrometheusBoardsConfigs": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "board": {
+                                        "type": "object",
+                                        "description": "Placeholder for GrafanaBoard definition (define fields as needed)"
+                                      },
+                                      "panels": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "description": "Grafana panel structure imported from github.com/grafana-tools/sdk"
+                                        },
+                                        "description": "Panels selected for the Grafana board configuration."
+                                      },
+                                      "templateVars": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "string"
+                                        },
+                                        "description": "Template variables applied to the selected Grafana board configuration."
+                                      }
+                                    }
+                                  },
+                                  "description": "The selected prometheus boards configs of the prometheus."
+                                }
+                              }
+                            },
+                            "loadTestPrefs": {
+                              "x-go-type": "LoadTestPreferences",
+                              "type": "object",
+                              "properties": {
+                                "c": {
+                                  "type": "integer",
+                                  "description": "Concurrent requests",
+                                  "minimum": 0
+                                },
+                                "qps": {
+                                  "type": "integer",
+                                  "description": "Queries per second",
+                                  "minimum": 0
+                                },
+                                "t": {
+                                  "type": "string",
+                                  "description": "Duration",
+                                  "maxLength": 500
+                                },
+                                "gen": {
+                                  "type": "string",
+                                  "description": "Load generator",
+                                  "maxLength": 500
+                                }
+                              }
+                            },
+                            "anonymousUsageStats": {
+                              "type": "boolean",
+                              "description": "The anonymous usage stats of the preference."
+                            },
+                            "anonymousPerfResults": {
+                              "type": "boolean",
+                              "description": "The anonymous perf results of the preference."
+                            },
+                            "updatedAt": {
+                              "type": "string",
+                              "format": "date-time",
+                              "description": "Timestamp of when the resource was last updated."
+                            },
+                            "dashboardPreferences": {
+                              "type": "object",
+                              "additionalProperties": true,
+                              "description": "The dashboard preferences of the preference."
+                            },
+                            "selectedOrganizationId": {
+                              "type": "string",
+                              "description": "ID of the associated selectedOrganization.",
+                              "maxLength": 500,
+                              "format": "uuid"
+                            },
+                            "selectedWorkspaceForOrganizations": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "string"
+                              },
+                              "description": "The selected workspace for organizations of the preference."
+                            },
+                            "usersExtensionPreferences": {
+                              "type": "object",
+                              "additionalProperties": true,
+                              "description": "The users extension preferences of the preference."
+                            },
+                            "remoteProviderPreferences": {
+                              "type": "object",
+                              "additionalProperties": true,
+                              "description": "The remote provider preferences of the preference."
+                            }
+                          }
+                        },
+                        "acceptedTermsAt": {
+                          "description": "Timestamp when user accepted terms and conditions",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "accepted_terms_at",
+                            "json": "acceptedTermsAt"
+                          },
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
+                        },
+                        "firstLoginTime": {
+                          "description": "Timestamp of user's first login",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "first_login_time",
+                            "json": "firstLoginTime"
+                          },
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
+                        },
+                        "lastLoginTime": {
+                          "description": "Timestamp of user's most recent login",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "last_login_time",
+                            "json": "lastLoginTime"
+                          },
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
+                        },
+                        "createdAt": {
+                          "description": "Timestamp when the user record was created",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "created_at",
+                            "json": "createdAt"
+                          },
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
+                        },
+                        "updatedAt": {
+                          "description": "Timestamp when the user record was last updated",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "updated_at",
+                            "json": "updatedAt"
+                          },
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
+                        },
+                        "socials": {
+                          "type": "array",
+                          "description": "Various online profiles associated with the user account",
+                          "x-go-type": "UserSocials",
+                          "items": {
+                            "x-go-type": "Social",
+                            "description": "Various online profiles associated with the user account, like GitHub, LinkedIn, X, and so on.",
+                            "type": "object",
+                            "properties": {
+                              "site": {
+                                "type": "string",
+                                "maxLength": 50,
+                                "description": "The site of the social."
+                              },
+                              "link": {
+                                "type": "string",
+                                "format": "uri",
+                                "description": "The link of the social."
+                              }
+                            },
+                            "required": [
+                              "site",
+                              "link"
+                            ]
+                          },
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "socials",
+                            "json": "socials"
+                          }
+                        },
+                        "deletedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "nullable": true,
+                          "description": "Timestamp when the user record was soft-deleted (null if not deleted)",
+                          "x-go-type": "core.NullTime",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "deleted_at",
+                            "json": "deletedAt"
+                          }
+                        },
+                        "roleNames": {
+                          "type": "array",
+                          "x-go-type": "pq.StringArray",
+                          "x-go-type-import": {
+                            "path": "github.com/lib/pq"
+                          },
+                          "x-go-type-skip-optional-pointer": true,
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as \"admin\", \"organization admin\" and \"user\" are a subset, not the whole set.",
+                          "example": [
+                            "organization admin",
+                            "user"
+                          ],
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "role_names",
+                            "json": "roleNames"
+                          }
+                        },
+                        "teams": {
+                          "type": "object",
+                          "description": "Teams the user belongs to with role information",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "teams",
+                            "json": "teams"
+                          },
+                          "properties": {
+                            "teamsWithRoles": {
+                              "type": "array",
+                              "description": "Team memberships for the user with their assigned roles.",
+                              "items": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "description": "A team the user is a member of, together with the names of the roles assigned to that user within the team. Returned as an item of User.teams.teamsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                                "required": [
+                                  "id",
+                                  "name",
+                                  "roleNames"
+                                ],
+                                "properties": {
+                                  "id": {
+                                    "description": "Unique identifier of the team.",
+                                    "x-go-name": "ID",
+                                    "x-order": 1,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "id",
+                                      "json": "id,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    }
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Name of the team.",
+                                    "x-order": 2,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "name",
+                                      "json": "name,omitempty"
+                                    }
+                                  },
+                                  "description": {
+                                    "type": "string",
+                                    "description": "Human readable description of the team.",
+                                    "x-order": 3,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "description",
+                                      "json": "description,omitempty"
+                                    }
+                                  },
+                                  "owner": {
+                                    "description": "Identifier of the team owner.",
+                                    "x-order": 4,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "owner",
+                                      "json": "owner,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    }
+                                  },
+                                  "metadata": {
+                                    "type": "object",
+                                    "additionalProperties": true,
+                                    "description": "Free-form metadata associated with the team.",
+                                    "x-go-type": "core.Map",
+                                    "x-go-type-skip-optional-pointer": true,
+                                    "x-order": 5,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "metadata",
+                                      "json": "metadata,omitempty"
+                                    }
+                                  },
+                                  "createdAt": {
+                                    "description": "Timestamp when the team was created.",
+                                    "x-order": 6,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "created_at",
+                                      "json": "createdAt,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "x-go-type-skip-optional-pointer": true
+                                  },
+                                  "updatedAt": {
+                                    "description": "Timestamp when the team was last updated.",
+                                    "x-order": 7,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "updated_at",
+                                      "json": "updatedAt,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "x-go-type-skip-optional-pointer": true
+                                  },
+                                  "deletedAt": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "nullable": true,
+                                    "description": "Timestamp when the team was soft-deleted (null if not deleted).",
+                                    "x-go-type": "core.NullTime",
+                                    "x-order": 8,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "deleted_at",
+                                      "json": "deletedAt,omitempty"
+                                    }
+                                  },
+                                  "roleNames": {
+                                    "type": "array",
+                                    "x-go-type": "pq.StringArray",
+                                    "x-go-type-import": {
+                                      "path": "github.com/lib/pq"
+                                    },
+                                    "description": "Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.",
+                                    "items": {
+                                      "type": "string"
+                                    },
+                                    "x-order": 9,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "role_names",
+                                      "json": "roleNames"
+                                    }
+                                  }
+                                }
+                              },
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "teams_with_roles",
+                                "json": "teamsWithRoles"
+                              }
+                            },
+                            "totalCount": {
+                              "type": "integer",
+                              "description": "Total number of team memberships returned for the user.",
+                              "minimum": 0,
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "total_count",
+                                "json": "totalCount"
+                              }
+                            }
+                          }
+                        },
+                        "organizations": {
+                          "type": "object",
+                          "description": "Organizations the user belongs to with role information",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "organizations",
+                            "json": "organizations"
+                          },
+                          "properties": {
+                            "organizationsWithRoles": {
+                              "type": "array",
+                              "description": "Organization memberships for the user with their assigned roles.",
+                              "items": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "description": "An organization the user is a member of, together with the names of the roles assigned to that user within the organization. Returned as an item of User.organizations.organizationsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                                "required": [
+                                  "id",
+                                  "name",
+                                  "roleNames"
+                                ],
+                                "properties": {
+                                  "id": {
+                                    "description": "Unique identifier of the organization.",
+                                    "x-go-name": "ID",
+                                    "x-order": 1,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "id",
+                                      "json": "id,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    }
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Name of the organization.",
+                                    "x-order": 2,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "name",
+                                      "json": "name,omitempty"
+                                    }
+                                  },
+                                  "description": {
+                                    "type": "string",
+                                    "description": "Human readable description of the organization.",
+                                    "x-order": 3,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "description",
+                                      "json": "description,omitempty"
+                                    }
+                                  },
+                                  "country": {
+                                    "type": "string",
+                                    "description": "Country associated with the organization.",
+                                    "x-order": 4,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "country",
+                                      "json": "country,omitempty"
+                                    }
+                                  },
+                                  "region": {
+                                    "type": "string",
+                                    "description": "Region associated with the organization.",
+                                    "x-order": 5,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "region",
+                                      "json": "region,omitempty"
+                                    }
+                                  },
+                                  "owner": {
+                                    "description": "Identifier of the organization owner.",
+                                    "x-order": 6,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "owner",
+                                      "json": "owner,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    }
+                                  },
+                                  "createdAt": {
+                                    "description": "Timestamp when the organization was created.",
+                                    "x-order": 7,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "created_at",
+                                      "json": "createdAt,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "x-go-type-skip-optional-pointer": true
+                                  },
+                                  "updatedAt": {
+                                    "description": "Timestamp when the organization was last updated.",
+                                    "x-order": 8,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "updated_at",
+                                      "json": "updatedAt,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "x-go-type-skip-optional-pointer": true
+                                  },
+                                  "deletedAt": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "nullable": true,
+                                    "description": "Timestamp when the organization was soft-deleted (null if not deleted).",
+                                    "x-go-type": "core.NullTime",
+                                    "x-order": 9,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "deleted_at",
+                                      "json": "deletedAt,omitempty"
+                                    }
+                                  },
+                                  "roleNames": {
+                                    "type": "array",
+                                    "x-go-type": "pq.StringArray",
+                                    "x-go-type-import": {
+                                      "path": "github.com/lib/pq"
+                                    },
+                                    "description": "Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.",
+                                    "items": {
+                                      "type": "string"
+                                    },
+                                    "x-order": 10,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "role_names",
+                                      "json": "roleNames"
+                                    }
+                                  }
+                                }
+                              },
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "organizations_with_roles",
+                                "json": "organizationsWithRoles"
+                              }
+                            },
+                            "totalCount": {
+                              "type": "integer",
+                              "description": "Total number of organization memberships returned for the user.",
+                              "minimum": 0,
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "total_count",
+                                "json": "totalCount"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "status": {
+                      "description": "Approval status of the request.",
+                      "x-go-type": "CatalogRequestStatus",
+                      "type": "string",
+                      "enum": [
+                        "pending",
+                        "approved",
+                        "denied"
+                      ],
+                      "x-enum-varnames": [
+                        "CatalogRequestStatusPending",
+                        "CatalogRequestStatusApproved",
+                        "CatalogRequestStatusDenied"
+                      ]
+                    },
+                    "createdAt": {
+                      "description": "Timestamp of request creation.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "updatedAt": {
+                      "description": "Timestamp of last request modification (approval or denial).",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    }
+                  }
                 }
               }
             }
@@ -5605,7 +7435,892 @@ const DesignSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "additionalProperties": true
+                  "description": "Server-returned catalog publish request as persisted by\nmeshery-cloud (`catalog_requests` table). Records a user's\nrequest to publish a design or filter to the catalog, along\nwith the reviewer-visible requester identity and the request's\napproval status.\n",
+                  "additionalProperties": false,
+                  "required": [
+                    "id",
+                    "contentId",
+                    "contentName",
+                    "contentType",
+                    "firstName",
+                    "lastName",
+                    "email",
+                    "status",
+                    "createdAt",
+                    "updatedAt"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    },
+                    "contentId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "x-go-name": "ContentID",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "content_id"
+                      }
+                    },
+                    "contentName": {
+                      "type": "string",
+                      "description": "Human-readable name of the content at request time.",
+                      "minLength": 1,
+                      "maxLength": 300,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "content_name"
+                      }
+                    },
+                    "contentType": {
+                      "description": "Kind of catalog content the request refers to.",
+                      "x-go-type": "CatalogContentType",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "content_type"
+                      },
+                      "type": "string",
+                      "enum": [
+                        "pattern",
+                        "filter"
+                      ],
+                      "x-enum-varnames": [
+                        "CatalogContentTypePattern",
+                        "CatalogContentTypeFilter"
+                      ]
+                    },
+                    "contentClass": {
+                      "type": "string",
+                      "description": "Support-level classification of the content, stored in the\n`content_class` column (a Postgres enum). Nullable — legacy\nrequests predate the column.\n",
+                      "nullable": true,
+                      "enum": [
+                        "official",
+                        "verified",
+                        "project",
+                        "community"
+                      ],
+                      "x-enum-varnames": [
+                        "CatalogContentClassOfficial",
+                        "CatalogContentClassVerified",
+                        "CatalogContentClassProject",
+                        "CatalogContentClassCommunity"
+                      ],
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "content_class"
+                      }
+                    },
+                    "firstName": {
+                      "type": "string",
+                      "description": "Requesting user's first name at request time.",
+                      "maxLength": 200,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "first_name"
+                      }
+                    },
+                    "lastName": {
+                      "type": "string",
+                      "description": "Requesting user's last name at request time.",
+                      "maxLength": 300,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "last_name"
+                      }
+                    },
+                    "email": {
+                      "type": "string",
+                      "format": "email",
+                      "description": "Requesting user's email address at request time.",
+                      "maxLength": 300
+                    },
+                    "user": {
+                      "description": "Requesting user record, joined inline by the catalog-request list handler when shaping responses. Server-projected from the users table; not a column on the catalog_requests table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
+                      "nullable": true,
+                      "x-go-type": "*userV1beta.User",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/v1beta2/user",
+                        "name": "userV1beta"
+                      },
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "-"
+                      },
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "userId",
+                        "provider",
+                        "email",
+                        "firstName",
+                        "lastName",
+                        "status",
+                        "createdAt",
+                        "updatedAt",
+                        "lastLoginTime",
+                        "deletedAt"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "Unique identifier for the user",
+                          "x-go-name": "ID",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "id",
+                            "json": "id"
+                          },
+                          "type": "string",
+                          "format": "uuid",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          }
+                        },
+                        "userId": {
+                          "type": "string",
+                          "maxLength": 200,
+                          "deprecated": true,
+                          "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "user_id",
+                            "json": "userId"
+                          },
+                          "x-id-format": "external"
+                        },
+                        "provider": {
+                          "type": "string",
+                          "maxLength": 100,
+                          "description": "Authentication provider (e.g., Google, Github)",
+                          "example": [
+                            "local",
+                            "github",
+                            "google",
+                            "twitter"
+                          ],
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "provider",
+                            "json": "provider"
+                          }
+                        },
+                        "email": {
+                          "type": "string",
+                          "format": "email",
+                          "maxLength": 300,
+                          "description": "User's email address",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "email",
+                            "json": "email"
+                          }
+                        },
+                        "firstName": {
+                          "type": "string",
+                          "maxLength": 200,
+                          "description": "User's first name",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "first_name",
+                            "json": "firstName"
+                          }
+                        },
+                        "lastName": {
+                          "type": "string",
+                          "maxLength": 300,
+                          "description": "User's last name",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "last_name",
+                            "json": "lastName"
+                          }
+                        },
+                        "avatarUrl": {
+                          "type": "string",
+                          "format": "uri",
+                          "maxLength": 500,
+                          "description": "URL to user's avatar image",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "avatar_url",
+                            "json": "avatarUrl"
+                          }
+                        },
+                        "status": {
+                          "type": "string",
+                          "maxLength": 100,
+                          "enum": [
+                            "active",
+                            "inactive",
+                            "pending",
+                            "anonymous"
+                          ],
+                          "description": "User account status",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "status",
+                            "json": "status"
+                          }
+                        },
+                        "bio": {
+                          "type": "string",
+                          "maxLength": 1000,
+                          "default": "",
+                          "description": "User's biography or description",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "bio",
+                            "json": "bio"
+                          }
+                        },
+                        "country": {
+                          "type": "object",
+                          "description": "User's country information stored as JSONB",
+                          "additionalProperties": true,
+                          "x-go-type": "core.Map",
+                          "x-go-type-skip-optional-pointer": true,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "country",
+                            "json": "country"
+                          }
+                        },
+                        "region": {
+                          "type": "object",
+                          "description": "User's region information stored as JSONB",
+                          "additionalProperties": true,
+                          "x-go-type": "core.Map",
+                          "x-go-type-skip-optional-pointer": true,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "region",
+                            "json": "region"
+                          }
+                        },
+                        "preferences": {
+                          "x-go-type": "Preference",
+                          "description": "User preferences stored as JSONB",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "preferences",
+                            "json": "preferences"
+                          },
+                          "x-generate-db-helpers": true,
+                          "type": "object",
+                          "required": [
+                            "anonymousUsageStats",
+                            "anonymousPerfResults",
+                            "updatedAt",
+                            "dashboardPreferences",
+                            "selectedOrganizationId",
+                            "selectedWorkspaceForOrganizations",
+                            "usersExtensionPreferences",
+                            "remoteProviderPreferences"
+                          ],
+                          "properties": {
+                            "meshAdapters": {
+                              "type": "array",
+                              "items": {
+                                "x-go-type": "Adapter",
+                                "type": "object",
+                                "description": "Placeholder for Adapter struct definition."
+                              },
+                              "description": "The mesh adapters of the preference."
+                            },
+                            "grafana": {
+                              "x-go-type": "Grafana",
+                              "type": "object",
+                              "properties": {
+                                "grafanaUrl": {
+                                  "type": "string",
+                                  "description": "Grafana URL for the user configuration.",
+                                  "maxLength": 500
+                                },
+                                "grafanaApiKey": {
+                                  "type": "string",
+                                  "description": "Grafana API key for the user configuration.",
+                                  "maxLength": 500
+                                },
+                                "selectedBoardsConfigs": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "board": {
+                                        "type": "object",
+                                        "description": "Placeholder for GrafanaBoard definition (define fields as needed)"
+                                      },
+                                      "panels": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "description": "Grafana panel structure imported from github.com/grafana-tools/sdk"
+                                        },
+                                        "description": "Panels selected for the Grafana board configuration."
+                                      },
+                                      "templateVars": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "string"
+                                        },
+                                        "description": "Template variables applied to the selected Grafana board configuration."
+                                      }
+                                    }
+                                  },
+                                  "description": "Selected Grafana board configurations for the user."
+                                }
+                              }
+                            },
+                            "prometheus": {
+                              "x-go-type": "Prometheus",
+                              "type": "object",
+                              "properties": {
+                                "prometheusUrl": {
+                                  "type": "string",
+                                  "description": "The prometheus URL of the prometheus.",
+                                  "maxLength": 500
+                                },
+                                "selectedPrometheusBoardsConfigs": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "board": {
+                                        "type": "object",
+                                        "description": "Placeholder for GrafanaBoard definition (define fields as needed)"
+                                      },
+                                      "panels": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "description": "Grafana panel structure imported from github.com/grafana-tools/sdk"
+                                        },
+                                        "description": "Panels selected for the Grafana board configuration."
+                                      },
+                                      "templateVars": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "string"
+                                        },
+                                        "description": "Template variables applied to the selected Grafana board configuration."
+                                      }
+                                    }
+                                  },
+                                  "description": "The selected prometheus boards configs of the prometheus."
+                                }
+                              }
+                            },
+                            "loadTestPrefs": {
+                              "x-go-type": "LoadTestPreferences",
+                              "type": "object",
+                              "properties": {
+                                "c": {
+                                  "type": "integer",
+                                  "description": "Concurrent requests",
+                                  "minimum": 0
+                                },
+                                "qps": {
+                                  "type": "integer",
+                                  "description": "Queries per second",
+                                  "minimum": 0
+                                },
+                                "t": {
+                                  "type": "string",
+                                  "description": "Duration",
+                                  "maxLength": 500
+                                },
+                                "gen": {
+                                  "type": "string",
+                                  "description": "Load generator",
+                                  "maxLength": 500
+                                }
+                              }
+                            },
+                            "anonymousUsageStats": {
+                              "type": "boolean",
+                              "description": "The anonymous usage stats of the preference."
+                            },
+                            "anonymousPerfResults": {
+                              "type": "boolean",
+                              "description": "The anonymous perf results of the preference."
+                            },
+                            "updatedAt": {
+                              "type": "string",
+                              "format": "date-time",
+                              "description": "Timestamp of when the resource was last updated."
+                            },
+                            "dashboardPreferences": {
+                              "type": "object",
+                              "additionalProperties": true,
+                              "description": "The dashboard preferences of the preference."
+                            },
+                            "selectedOrganizationId": {
+                              "type": "string",
+                              "description": "ID of the associated selectedOrganization.",
+                              "maxLength": 500,
+                              "format": "uuid"
+                            },
+                            "selectedWorkspaceForOrganizations": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "string"
+                              },
+                              "description": "The selected workspace for organizations of the preference."
+                            },
+                            "usersExtensionPreferences": {
+                              "type": "object",
+                              "additionalProperties": true,
+                              "description": "The users extension preferences of the preference."
+                            },
+                            "remoteProviderPreferences": {
+                              "type": "object",
+                              "additionalProperties": true,
+                              "description": "The remote provider preferences of the preference."
+                            }
+                          }
+                        },
+                        "acceptedTermsAt": {
+                          "description": "Timestamp when user accepted terms and conditions",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "accepted_terms_at",
+                            "json": "acceptedTermsAt"
+                          },
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
+                        },
+                        "firstLoginTime": {
+                          "description": "Timestamp of user's first login",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "first_login_time",
+                            "json": "firstLoginTime"
+                          },
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
+                        },
+                        "lastLoginTime": {
+                          "description": "Timestamp of user's most recent login",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "last_login_time",
+                            "json": "lastLoginTime"
+                          },
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
+                        },
+                        "createdAt": {
+                          "description": "Timestamp when the user record was created",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "created_at",
+                            "json": "createdAt"
+                          },
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
+                        },
+                        "updatedAt": {
+                          "description": "Timestamp when the user record was last updated",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "updated_at",
+                            "json": "updatedAt"
+                          },
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
+                        },
+                        "socials": {
+                          "type": "array",
+                          "description": "Various online profiles associated with the user account",
+                          "x-go-type": "UserSocials",
+                          "items": {
+                            "x-go-type": "Social",
+                            "description": "Various online profiles associated with the user account, like GitHub, LinkedIn, X, and so on.",
+                            "type": "object",
+                            "properties": {
+                              "site": {
+                                "type": "string",
+                                "maxLength": 50,
+                                "description": "The site of the social."
+                              },
+                              "link": {
+                                "type": "string",
+                                "format": "uri",
+                                "description": "The link of the social."
+                              }
+                            },
+                            "required": [
+                              "site",
+                              "link"
+                            ]
+                          },
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "socials",
+                            "json": "socials"
+                          }
+                        },
+                        "deletedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "nullable": true,
+                          "description": "Timestamp when the user record was soft-deleted (null if not deleted)",
+                          "x-go-type": "core.NullTime",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "deleted_at",
+                            "json": "deletedAt"
+                          }
+                        },
+                        "roleNames": {
+                          "type": "array",
+                          "x-go-type": "pq.StringArray",
+                          "x-go-type-import": {
+                            "path": "github.com/lib/pq"
+                          },
+                          "x-go-type-skip-optional-pointer": true,
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as \"admin\", \"organization admin\" and \"user\" are a subset, not the whole set.",
+                          "example": [
+                            "organization admin",
+                            "user"
+                          ],
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "role_names",
+                            "json": "roleNames"
+                          }
+                        },
+                        "teams": {
+                          "type": "object",
+                          "description": "Teams the user belongs to with role information",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "teams",
+                            "json": "teams"
+                          },
+                          "properties": {
+                            "teamsWithRoles": {
+                              "type": "array",
+                              "description": "Team memberships for the user with their assigned roles.",
+                              "items": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "description": "A team the user is a member of, together with the names of the roles assigned to that user within the team. Returned as an item of User.teams.teamsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                                "required": [
+                                  "id",
+                                  "name",
+                                  "roleNames"
+                                ],
+                                "properties": {
+                                  "id": {
+                                    "description": "Unique identifier of the team.",
+                                    "x-go-name": "ID",
+                                    "x-order": 1,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "id",
+                                      "json": "id,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    }
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Name of the team.",
+                                    "x-order": 2,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "name",
+                                      "json": "name,omitempty"
+                                    }
+                                  },
+                                  "description": {
+                                    "type": "string",
+                                    "description": "Human readable description of the team.",
+                                    "x-order": 3,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "description",
+                                      "json": "description,omitempty"
+                                    }
+                                  },
+                                  "owner": {
+                                    "description": "Identifier of the team owner.",
+                                    "x-order": 4,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "owner",
+                                      "json": "owner,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    }
+                                  },
+                                  "metadata": {
+                                    "type": "object",
+                                    "additionalProperties": true,
+                                    "description": "Free-form metadata associated with the team.",
+                                    "x-go-type": "core.Map",
+                                    "x-go-type-skip-optional-pointer": true,
+                                    "x-order": 5,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "metadata",
+                                      "json": "metadata,omitempty"
+                                    }
+                                  },
+                                  "createdAt": {
+                                    "description": "Timestamp when the team was created.",
+                                    "x-order": 6,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "created_at",
+                                      "json": "createdAt,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "x-go-type-skip-optional-pointer": true
+                                  },
+                                  "updatedAt": {
+                                    "description": "Timestamp when the team was last updated.",
+                                    "x-order": 7,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "updated_at",
+                                      "json": "updatedAt,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "x-go-type-skip-optional-pointer": true
+                                  },
+                                  "deletedAt": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "nullable": true,
+                                    "description": "Timestamp when the team was soft-deleted (null if not deleted).",
+                                    "x-go-type": "core.NullTime",
+                                    "x-order": 8,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "deleted_at",
+                                      "json": "deletedAt,omitempty"
+                                    }
+                                  },
+                                  "roleNames": {
+                                    "type": "array",
+                                    "x-go-type": "pq.StringArray",
+                                    "x-go-type-import": {
+                                      "path": "github.com/lib/pq"
+                                    },
+                                    "description": "Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.",
+                                    "items": {
+                                      "type": "string"
+                                    },
+                                    "x-order": 9,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "role_names",
+                                      "json": "roleNames"
+                                    }
+                                  }
+                                }
+                              },
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "teams_with_roles",
+                                "json": "teamsWithRoles"
+                              }
+                            },
+                            "totalCount": {
+                              "type": "integer",
+                              "description": "Total number of team memberships returned for the user.",
+                              "minimum": 0,
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "total_count",
+                                "json": "totalCount"
+                              }
+                            }
+                          }
+                        },
+                        "organizations": {
+                          "type": "object",
+                          "description": "Organizations the user belongs to with role information",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "organizations",
+                            "json": "organizations"
+                          },
+                          "properties": {
+                            "organizationsWithRoles": {
+                              "type": "array",
+                              "description": "Organization memberships for the user with their assigned roles.",
+                              "items": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "description": "An organization the user is a member of, together with the names of the roles assigned to that user within the organization. Returned as an item of User.organizations.organizationsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                                "required": [
+                                  "id",
+                                  "name",
+                                  "roleNames"
+                                ],
+                                "properties": {
+                                  "id": {
+                                    "description": "Unique identifier of the organization.",
+                                    "x-go-name": "ID",
+                                    "x-order": 1,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "id",
+                                      "json": "id,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    }
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Name of the organization.",
+                                    "x-order": 2,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "name",
+                                      "json": "name,omitempty"
+                                    }
+                                  },
+                                  "description": {
+                                    "type": "string",
+                                    "description": "Human readable description of the organization.",
+                                    "x-order": 3,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "description",
+                                      "json": "description,omitempty"
+                                    }
+                                  },
+                                  "country": {
+                                    "type": "string",
+                                    "description": "Country associated with the organization.",
+                                    "x-order": 4,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "country",
+                                      "json": "country,omitempty"
+                                    }
+                                  },
+                                  "region": {
+                                    "type": "string",
+                                    "description": "Region associated with the organization.",
+                                    "x-order": 5,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "region",
+                                      "json": "region,omitempty"
+                                    }
+                                  },
+                                  "owner": {
+                                    "description": "Identifier of the organization owner.",
+                                    "x-order": 6,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "owner",
+                                      "json": "owner,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    }
+                                  },
+                                  "createdAt": {
+                                    "description": "Timestamp when the organization was created.",
+                                    "x-order": 7,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "created_at",
+                                      "json": "createdAt,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "x-go-type-skip-optional-pointer": true
+                                  },
+                                  "updatedAt": {
+                                    "description": "Timestamp when the organization was last updated.",
+                                    "x-order": 8,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "updated_at",
+                                      "json": "updatedAt,omitempty"
+                                    },
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "x-go-type-skip-optional-pointer": true
+                                  },
+                                  "deletedAt": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "nullable": true,
+                                    "description": "Timestamp when the organization was soft-deleted (null if not deleted).",
+                                    "x-go-type": "core.NullTime",
+                                    "x-order": 9,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "deleted_at",
+                                      "json": "deletedAt,omitempty"
+                                    }
+                                  },
+                                  "roleNames": {
+                                    "type": "array",
+                                    "x-go-type": "pq.StringArray",
+                                    "x-go-type-import": {
+                                      "path": "github.com/lib/pq"
+                                    },
+                                    "description": "Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.",
+                                    "items": {
+                                      "type": "string"
+                                    },
+                                    "x-order": 10,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "role_names",
+                                      "json": "roleNames"
+                                    }
+                                  }
+                                }
+                              },
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "organizations_with_roles",
+                                "json": "organizationsWithRoles"
+                              }
+                            },
+                            "totalCount": {
+                              "type": "integer",
+                              "description": "Total number of organization memberships returned for the user.",
+                              "minimum": 0,
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "total_count",
+                                "json": "totalCount"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "status": {
+                      "description": "Approval status of the request.",
+                      "x-go-type": "CatalogRequestStatus",
+                      "type": "string",
+                      "enum": [
+                        "pending",
+                        "approved",
+                        "denied"
+                      ],
+                      "x-enum-varnames": [
+                        "CatalogRequestStatusPending",
+                        "CatalogRequestStatusApproved",
+                        "CatalogRequestStatusDenied"
+                      ]
+                    },
+                    "createdAt": {
+                      "description": "Timestamp of request creation.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "updatedAt": {
+                      "description": "Timestamp of last request modification (approval or denial).",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    }
+                  }
                 }
               }
             }
@@ -6249,7 +8964,893 @@ const DesignSchema: Record<string, unknown> = {
                       "type": "array",
                       "items": {
                         "type": "object",
-                        "additionalProperties": true
+                        "description": "Server-returned catalog publish request as persisted by\nmeshery-cloud (`catalog_requests` table). Records a user's\nrequest to publish a design or filter to the catalog, along\nwith the reviewer-visible requester identity and the request's\napproval status.\n",
+                        "additionalProperties": false,
+                        "required": [
+                          "id",
+                          "contentId",
+                          "contentName",
+                          "contentType",
+                          "firstName",
+                          "lastName",
+                          "email",
+                          "status",
+                          "createdAt",
+                          "updatedAt"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "contentId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-name": "ContentID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "content_id"
+                            }
+                          },
+                          "contentName": {
+                            "type": "string",
+                            "description": "Human-readable name of the content at request time.",
+                            "minLength": 1,
+                            "maxLength": 300,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "content_name"
+                            }
+                          },
+                          "contentType": {
+                            "description": "Kind of catalog content the request refers to.",
+                            "x-go-type": "CatalogContentType",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "content_type"
+                            },
+                            "type": "string",
+                            "enum": [
+                              "pattern",
+                              "filter"
+                            ],
+                            "x-enum-varnames": [
+                              "CatalogContentTypePattern",
+                              "CatalogContentTypeFilter"
+                            ]
+                          },
+                          "contentClass": {
+                            "type": "string",
+                            "description": "Support-level classification of the content, stored in the\n`content_class` column (a Postgres enum). Nullable — legacy\nrequests predate the column.\n",
+                            "nullable": true,
+                            "enum": [
+                              "official",
+                              "verified",
+                              "project",
+                              "community"
+                            ],
+                            "x-enum-varnames": [
+                              "CatalogContentClassOfficial",
+                              "CatalogContentClassVerified",
+                              "CatalogContentClassProject",
+                              "CatalogContentClassCommunity"
+                            ],
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "content_class"
+                            }
+                          },
+                          "firstName": {
+                            "type": "string",
+                            "description": "Requesting user's first name at request time.",
+                            "maxLength": 200,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "first_name"
+                            }
+                          },
+                          "lastName": {
+                            "type": "string",
+                            "description": "Requesting user's last name at request time.",
+                            "maxLength": 300,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "last_name"
+                            }
+                          },
+                          "email": {
+                            "type": "string",
+                            "format": "email",
+                            "description": "Requesting user's email address at request time.",
+                            "maxLength": 300
+                          },
+                          "user": {
+                            "description": "Requesting user record, joined inline by the catalog-request list handler when shaping responses. Server-projected from the users table; not a column on the catalog_requests table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
+                            "nullable": true,
+                            "x-go-type": "*userV1beta.User",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/v1beta2/user",
+                              "name": "userV1beta"
+                            },
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "-"
+                            },
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "userId",
+                              "provider",
+                              "email",
+                              "firstName",
+                              "lastName",
+                              "status",
+                              "createdAt",
+                              "updatedAt",
+                              "lastLoginTime",
+                              "deletedAt"
+                            ],
+                            "properties": {
+                              "id": {
+                                "description": "Unique identifier for the user",
+                                "x-go-name": "ID",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "id",
+                                  "json": "id"
+                                },
+                                "type": "string",
+                                "format": "uuid",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                }
+                              },
+                              "userId": {
+                                "type": "string",
+                                "maxLength": 200,
+                                "deprecated": true,
+                                "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "user_id",
+                                  "json": "userId"
+                                },
+                                "x-id-format": "external"
+                              },
+                              "provider": {
+                                "type": "string",
+                                "maxLength": 100,
+                                "description": "Authentication provider (e.g., Google, Github)",
+                                "example": [
+                                  "local",
+                                  "github",
+                                  "google",
+                                  "twitter"
+                                ],
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "provider",
+                                  "json": "provider"
+                                }
+                              },
+                              "email": {
+                                "type": "string",
+                                "format": "email",
+                                "maxLength": 300,
+                                "description": "User's email address",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "email",
+                                  "json": "email"
+                                }
+                              },
+                              "firstName": {
+                                "type": "string",
+                                "maxLength": 200,
+                                "description": "User's first name",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "first_name",
+                                  "json": "firstName"
+                                }
+                              },
+                              "lastName": {
+                                "type": "string",
+                                "maxLength": 300,
+                                "description": "User's last name",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "last_name",
+                                  "json": "lastName"
+                                }
+                              },
+                              "avatarUrl": {
+                                "type": "string",
+                                "format": "uri",
+                                "maxLength": 500,
+                                "description": "URL to user's avatar image",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "avatar_url",
+                                  "json": "avatarUrl"
+                                }
+                              },
+                              "status": {
+                                "type": "string",
+                                "maxLength": 100,
+                                "enum": [
+                                  "active",
+                                  "inactive",
+                                  "pending",
+                                  "anonymous"
+                                ],
+                                "description": "User account status",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "status",
+                                  "json": "status"
+                                }
+                              },
+                              "bio": {
+                                "type": "string",
+                                "maxLength": 1000,
+                                "default": "",
+                                "description": "User's biography or description",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "bio",
+                                  "json": "bio"
+                                }
+                              },
+                              "country": {
+                                "type": "object",
+                                "description": "User's country information stored as JSONB",
+                                "additionalProperties": true,
+                                "x-go-type": "core.Map",
+                                "x-go-type-skip-optional-pointer": true,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "country",
+                                  "json": "country"
+                                }
+                              },
+                              "region": {
+                                "type": "object",
+                                "description": "User's region information stored as JSONB",
+                                "additionalProperties": true,
+                                "x-go-type": "core.Map",
+                                "x-go-type-skip-optional-pointer": true,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "region",
+                                  "json": "region"
+                                }
+                              },
+                              "preferences": {
+                                "x-go-type": "Preference",
+                                "description": "User preferences stored as JSONB",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "preferences",
+                                  "json": "preferences"
+                                },
+                                "x-generate-db-helpers": true,
+                                "type": "object",
+                                "required": [
+                                  "anonymousUsageStats",
+                                  "anonymousPerfResults",
+                                  "updatedAt",
+                                  "dashboardPreferences",
+                                  "selectedOrganizationId",
+                                  "selectedWorkspaceForOrganizations",
+                                  "usersExtensionPreferences",
+                                  "remoteProviderPreferences"
+                                ],
+                                "properties": {
+                                  "meshAdapters": {
+                                    "type": "array",
+                                    "items": {
+                                      "x-go-type": "Adapter",
+                                      "type": "object",
+                                      "description": "Placeholder for Adapter struct definition."
+                                    },
+                                    "description": "The mesh adapters of the preference."
+                                  },
+                                  "grafana": {
+                                    "x-go-type": "Grafana",
+                                    "type": "object",
+                                    "properties": {
+                                      "grafanaUrl": {
+                                        "type": "string",
+                                        "description": "Grafana URL for the user configuration.",
+                                        "maxLength": 500
+                                      },
+                                      "grafanaApiKey": {
+                                        "type": "string",
+                                        "description": "Grafana API key for the user configuration.",
+                                        "maxLength": 500
+                                      },
+                                      "selectedBoardsConfigs": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "properties": {
+                                            "board": {
+                                              "type": "object",
+                                              "description": "Placeholder for GrafanaBoard definition (define fields as needed)"
+                                            },
+                                            "panels": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "object",
+                                                "description": "Grafana panel structure imported from github.com/grafana-tools/sdk"
+                                              },
+                                              "description": "Panels selected for the Grafana board configuration."
+                                            },
+                                            "templateVars": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "string"
+                                              },
+                                              "description": "Template variables applied to the selected Grafana board configuration."
+                                            }
+                                          }
+                                        },
+                                        "description": "Selected Grafana board configurations for the user."
+                                      }
+                                    }
+                                  },
+                                  "prometheus": {
+                                    "x-go-type": "Prometheus",
+                                    "type": "object",
+                                    "properties": {
+                                      "prometheusUrl": {
+                                        "type": "string",
+                                        "description": "The prometheus URL of the prometheus.",
+                                        "maxLength": 500
+                                      },
+                                      "selectedPrometheusBoardsConfigs": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "properties": {
+                                            "board": {
+                                              "type": "object",
+                                              "description": "Placeholder for GrafanaBoard definition (define fields as needed)"
+                                            },
+                                            "panels": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "object",
+                                                "description": "Grafana panel structure imported from github.com/grafana-tools/sdk"
+                                              },
+                                              "description": "Panels selected for the Grafana board configuration."
+                                            },
+                                            "templateVars": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "string"
+                                              },
+                                              "description": "Template variables applied to the selected Grafana board configuration."
+                                            }
+                                          }
+                                        },
+                                        "description": "The selected prometheus boards configs of the prometheus."
+                                      }
+                                    }
+                                  },
+                                  "loadTestPrefs": {
+                                    "x-go-type": "LoadTestPreferences",
+                                    "type": "object",
+                                    "properties": {
+                                      "c": {
+                                        "type": "integer",
+                                        "description": "Concurrent requests",
+                                        "minimum": 0
+                                      },
+                                      "qps": {
+                                        "type": "integer",
+                                        "description": "Queries per second",
+                                        "minimum": 0
+                                      },
+                                      "t": {
+                                        "type": "string",
+                                        "description": "Duration",
+                                        "maxLength": 500
+                                      },
+                                      "gen": {
+                                        "type": "string",
+                                        "description": "Load generator",
+                                        "maxLength": 500
+                                      }
+                                    }
+                                  },
+                                  "anonymousUsageStats": {
+                                    "type": "boolean",
+                                    "description": "The anonymous usage stats of the preference."
+                                  },
+                                  "anonymousPerfResults": {
+                                    "type": "boolean",
+                                    "description": "The anonymous perf results of the preference."
+                                  },
+                                  "updatedAt": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "description": "Timestamp of when the resource was last updated."
+                                  },
+                                  "dashboardPreferences": {
+                                    "type": "object",
+                                    "additionalProperties": true,
+                                    "description": "The dashboard preferences of the preference."
+                                  },
+                                  "selectedOrganizationId": {
+                                    "type": "string",
+                                    "description": "ID of the associated selectedOrganization.",
+                                    "maxLength": 500,
+                                    "format": "uuid"
+                                  },
+                                  "selectedWorkspaceForOrganizations": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                      "type": "string"
+                                    },
+                                    "description": "The selected workspace for organizations of the preference."
+                                  },
+                                  "usersExtensionPreferences": {
+                                    "type": "object",
+                                    "additionalProperties": true,
+                                    "description": "The users extension preferences of the preference."
+                                  },
+                                  "remoteProviderPreferences": {
+                                    "type": "object",
+                                    "additionalProperties": true,
+                                    "description": "The remote provider preferences of the preference."
+                                  }
+                                }
+                              },
+                              "acceptedTermsAt": {
+                                "description": "Timestamp when user accepted terms and conditions",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "accepted_terms_at",
+                                  "json": "acceptedTermsAt"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "firstLoginTime": {
+                                "description": "Timestamp of user's first login",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "first_login_time",
+                                  "json": "firstLoginTime"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "lastLoginTime": {
+                                "description": "Timestamp of user's most recent login",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "last_login_time",
+                                  "json": "lastLoginTime"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "createdAt": {
+                                "description": "Timestamp when the user record was created",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "created_at",
+                                  "json": "createdAt"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "updatedAt": {
+                                "description": "Timestamp when the user record was last updated",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "updated_at",
+                                  "json": "updatedAt"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "socials": {
+                                "type": "array",
+                                "description": "Various online profiles associated with the user account",
+                                "x-go-type": "UserSocials",
+                                "items": {
+                                  "x-go-type": "Social",
+                                  "description": "Various online profiles associated with the user account, like GitHub, LinkedIn, X, and so on.",
+                                  "type": "object",
+                                  "properties": {
+                                    "site": {
+                                      "type": "string",
+                                      "maxLength": 50,
+                                      "description": "The site of the social."
+                                    },
+                                    "link": {
+                                      "type": "string",
+                                      "format": "uri",
+                                      "description": "The link of the social."
+                                    }
+                                  },
+                                  "required": [
+                                    "site",
+                                    "link"
+                                  ]
+                                },
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "socials",
+                                  "json": "socials"
+                                }
+                              },
+                              "deletedAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "nullable": true,
+                                "description": "Timestamp when the user record was soft-deleted (null if not deleted)",
+                                "x-go-type": "core.NullTime",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "deleted_at",
+                                  "json": "deletedAt"
+                                }
+                              },
+                              "roleNames": {
+                                "type": "array",
+                                "x-go-type": "pq.StringArray",
+                                "x-go-type-import": {
+                                  "path": "github.com/lib/pq"
+                                },
+                                "x-go-type-skip-optional-pointer": true,
+                                "items": {
+                                  "type": "string"
+                                },
+                                "description": "Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as \"admin\", \"organization admin\" and \"user\" are a subset, not the whole set.",
+                                "example": [
+                                  "organization admin",
+                                  "user"
+                                ],
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "role_names",
+                                  "json": "roleNames"
+                                }
+                              },
+                              "teams": {
+                                "type": "object",
+                                "description": "Teams the user belongs to with role information",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "teams",
+                                  "json": "teams"
+                                },
+                                "properties": {
+                                  "teamsWithRoles": {
+                                    "type": "array",
+                                    "description": "Team memberships for the user with their assigned roles.",
+                                    "items": {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "description": "A team the user is a member of, together with the names of the roles assigned to that user within the team. Returned as an item of User.teams.teamsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                                      "required": [
+                                        "id",
+                                        "name",
+                                        "roleNames"
+                                      ],
+                                      "properties": {
+                                        "id": {
+                                          "description": "Unique identifier of the team.",
+                                          "x-go-name": "ID",
+                                          "x-order": 1,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "id",
+                                            "json": "id,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "uuid",
+                                          "x-go-type": "uuid.UUID",
+                                          "x-go-type-import": {
+                                            "path": "github.com/gofrs/uuid"
+                                          }
+                                        },
+                                        "name": {
+                                          "type": "string",
+                                          "description": "Name of the team.",
+                                          "x-order": 2,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "name",
+                                            "json": "name,omitempty"
+                                          }
+                                        },
+                                        "description": {
+                                          "type": "string",
+                                          "description": "Human readable description of the team.",
+                                          "x-order": 3,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "description",
+                                            "json": "description,omitempty"
+                                          }
+                                        },
+                                        "owner": {
+                                          "description": "Identifier of the team owner.",
+                                          "x-order": 4,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "owner",
+                                            "json": "owner,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "uuid",
+                                          "x-go-type": "uuid.UUID",
+                                          "x-go-type-import": {
+                                            "path": "github.com/gofrs/uuid"
+                                          }
+                                        },
+                                        "metadata": {
+                                          "type": "object",
+                                          "additionalProperties": true,
+                                          "description": "Free-form metadata associated with the team.",
+                                          "x-go-type": "core.Map",
+                                          "x-go-type-skip-optional-pointer": true,
+                                          "x-order": 5,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "metadata",
+                                            "json": "metadata,omitempty"
+                                          }
+                                        },
+                                        "createdAt": {
+                                          "description": "Timestamp when the team was created.",
+                                          "x-order": 6,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "created_at",
+                                            "json": "createdAt,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "date-time",
+                                          "x-go-type-skip-optional-pointer": true
+                                        },
+                                        "updatedAt": {
+                                          "description": "Timestamp when the team was last updated.",
+                                          "x-order": 7,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "updated_at",
+                                            "json": "updatedAt,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "date-time",
+                                          "x-go-type-skip-optional-pointer": true
+                                        },
+                                        "deletedAt": {
+                                          "type": "string",
+                                          "format": "date-time",
+                                          "nullable": true,
+                                          "description": "Timestamp when the team was soft-deleted (null if not deleted).",
+                                          "x-go-type": "core.NullTime",
+                                          "x-order": 8,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "deleted_at",
+                                            "json": "deletedAt,omitempty"
+                                          }
+                                        },
+                                        "roleNames": {
+                                          "type": "array",
+                                          "x-go-type": "pq.StringArray",
+                                          "x-go-type-import": {
+                                            "path": "github.com/lib/pq"
+                                          },
+                                          "description": "Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.",
+                                          "items": {
+                                            "type": "string"
+                                          },
+                                          "x-order": 9,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "role_names",
+                                            "json": "roleNames"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "teams_with_roles",
+                                      "json": "teamsWithRoles"
+                                    }
+                                  },
+                                  "totalCount": {
+                                    "type": "integer",
+                                    "description": "Total number of team memberships returned for the user.",
+                                    "minimum": 0,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "total_count",
+                                      "json": "totalCount"
+                                    }
+                                  }
+                                }
+                              },
+                              "organizations": {
+                                "type": "object",
+                                "description": "Organizations the user belongs to with role information",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "organizations",
+                                  "json": "organizations"
+                                },
+                                "properties": {
+                                  "organizationsWithRoles": {
+                                    "type": "array",
+                                    "description": "Organization memberships for the user with their assigned roles.",
+                                    "items": {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "description": "An organization the user is a member of, together with the names of the roles assigned to that user within the organization. Returned as an item of User.organizations.organizationsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                                      "required": [
+                                        "id",
+                                        "name",
+                                        "roleNames"
+                                      ],
+                                      "properties": {
+                                        "id": {
+                                          "description": "Unique identifier of the organization.",
+                                          "x-go-name": "ID",
+                                          "x-order": 1,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "id",
+                                            "json": "id,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "uuid",
+                                          "x-go-type": "uuid.UUID",
+                                          "x-go-type-import": {
+                                            "path": "github.com/gofrs/uuid"
+                                          }
+                                        },
+                                        "name": {
+                                          "type": "string",
+                                          "description": "Name of the organization.",
+                                          "x-order": 2,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "name",
+                                            "json": "name,omitempty"
+                                          }
+                                        },
+                                        "description": {
+                                          "type": "string",
+                                          "description": "Human readable description of the organization.",
+                                          "x-order": 3,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "description",
+                                            "json": "description,omitempty"
+                                          }
+                                        },
+                                        "country": {
+                                          "type": "string",
+                                          "description": "Country associated with the organization.",
+                                          "x-order": 4,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "country",
+                                            "json": "country,omitempty"
+                                          }
+                                        },
+                                        "region": {
+                                          "type": "string",
+                                          "description": "Region associated with the organization.",
+                                          "x-order": 5,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "region",
+                                            "json": "region,omitempty"
+                                          }
+                                        },
+                                        "owner": {
+                                          "description": "Identifier of the organization owner.",
+                                          "x-order": 6,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "owner",
+                                            "json": "owner,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "uuid",
+                                          "x-go-type": "uuid.UUID",
+                                          "x-go-type-import": {
+                                            "path": "github.com/gofrs/uuid"
+                                          }
+                                        },
+                                        "createdAt": {
+                                          "description": "Timestamp when the organization was created.",
+                                          "x-order": 7,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "created_at",
+                                            "json": "createdAt,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "date-time",
+                                          "x-go-type-skip-optional-pointer": true
+                                        },
+                                        "updatedAt": {
+                                          "description": "Timestamp when the organization was last updated.",
+                                          "x-order": 8,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "updated_at",
+                                            "json": "updatedAt,omitempty"
+                                          },
+                                          "type": "string",
+                                          "format": "date-time",
+                                          "x-go-type-skip-optional-pointer": true
+                                        },
+                                        "deletedAt": {
+                                          "type": "string",
+                                          "format": "date-time",
+                                          "nullable": true,
+                                          "description": "Timestamp when the organization was soft-deleted (null if not deleted).",
+                                          "x-go-type": "core.NullTime",
+                                          "x-order": 9,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "deleted_at",
+                                            "json": "deletedAt,omitempty"
+                                          }
+                                        },
+                                        "roleNames": {
+                                          "type": "array",
+                                          "x-go-type": "pq.StringArray",
+                                          "x-go-type-import": {
+                                            "path": "github.com/lib/pq"
+                                          },
+                                          "description": "Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.",
+                                          "items": {
+                                            "type": "string"
+                                          },
+                                          "x-order": 10,
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "role_names",
+                                            "json": "roleNames"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "organizations_with_roles",
+                                      "json": "organizationsWithRoles"
+                                    }
+                                  },
+                                  "totalCount": {
+                                    "type": "integer",
+                                    "description": "Total number of organization memberships returned for the user.",
+                                    "minimum": 0,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "total_count",
+                                      "json": "totalCount"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "additionalProperties": false
+                          },
+                          "status": {
+                            "description": "Approval status of the request.",
+                            "x-go-type": "CatalogRequestStatus",
+                            "type": "string",
+                            "enum": [
+                              "pending",
+                              "approved",
+                              "denied"
+                            ],
+                            "x-enum-varnames": [
+                              "CatalogRequestStatusPending",
+                              "CatalogRequestStatusApproved",
+                              "CatalogRequestStatusDenied"
+                            ]
+                          },
+                          "createdAt": {
+                            "description": "Timestamp of request creation.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "updatedAt": {
+                            "description": "Timestamp of last request modification (approval or denial).",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          }
+                        },
+                        "x-go-type": "CatalogRequest"
                       },
                       "description": "Catalog requests included on this page."
                     }
@@ -6443,7 +10044,7 @@ const DesignSchema: Record<string, unknown> = {
             "type": "string",
             "minLength": 2,
             "maxLength": 100,
-            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
             "example": [
               "v1",
               "v1alpha1",
@@ -6599,7 +10200,7 @@ const DesignSchema: Record<string, unknown> = {
                       "type": "string",
                       "minLength": 2,
                       "maxLength": 100,
-                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                       "example": [
                         "v1",
                         "v1alpha1",
@@ -6698,7 +10299,7 @@ const DesignSchema: Record<string, unknown> = {
                           "type": "string",
                           "minLength": 2,
                           "maxLength": 100,
-                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                           "example": [
                             "v1",
                             "v1alpha1",
@@ -6908,7 +10509,7 @@ const DesignSchema: Record<string, unknown> = {
                             "user_id": {
                               "x-go-name": "UserID",
                               "x-oapi-codegen-extra-tags": {
-                                "db": "user_id",
+                                "db": "owner",
                                 "yaml": "user_id"
                               },
                               "x-order": 9,
@@ -7018,7 +10619,7 @@ const DesignSchema: Record<string, unknown> = {
                                     "type": "string",
                                     "minLength": 2,
                                     "maxLength": 100,
-                                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                     "example": [
                                       "v1",
                                       "v1alpha1",
@@ -7154,7 +10755,7 @@ const DesignSchema: Record<string, unknown> = {
                               "type": "string",
                               "minLength": 2,
                               "maxLength": 100,
-                              "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                              "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                               "example": [
                                 "v1",
                                 "v1alpha1",
@@ -7240,6 +10841,7 @@ const DesignSchema: Record<string, unknown> = {
                               },
                               "default": "Uncategorized",
                               "description": "The category of the model that determines the main grouping.",
+                              "helperText": "Select a model category",
                               "enum": [
                                 "Analytics",
                                 "App Definition and Development",
@@ -7382,7 +10984,7 @@ const DesignSchema: Record<string, unknown> = {
                                     "type": "string",
                                     "minLength": 2,
                                     "maxLength": 100,
-                                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                     "example": [
                                       "v1",
                                       "v1alpha1",
@@ -7770,6 +11372,7 @@ const DesignSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "gorm": "-"
                       },
+                      "x-generate-db-helpers": true,
                       "type": "object",
                       "required": [
                         "id",
@@ -8356,7 +11959,7 @@ const DesignSchema: Record<string, unknown> = {
                             "type": "string",
                             "minLength": 2,
                             "maxLength": 100,
-                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                             "example": [
                               "v1",
                               "v1alpha1",
@@ -8860,7 +12463,7 @@ const DesignSchema: Record<string, unknown> = {
                       "type": "string",
                       "minLength": 2,
                       "maxLength": 100,
-                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                       "example": [
                         "v1",
                         "v1alpha1",
@@ -8972,7 +12575,7 @@ const DesignSchema: Record<string, unknown> = {
                             "type": "string",
                             "minLength": 2,
                             "maxLength": 100,
-                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                             "example": [
                               "v1",
                               "v1alpha1",
@@ -9507,11 +13110,13 @@ const DesignSchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true,
                       "x-order": 6,
                       "description": "Model Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
+                      "helperText": "Select a model",
                       "x-oapi-codegen-extra-tags": {
                         "yaml": "model",
                         "json": "model",
                         "gorm": "type:bytes;serializer:json"
                       },
+                      "x-generate-db-helpers": true,
                       "type": "object",
                       "required": [
                         "id",
@@ -9853,6 +13458,7 @@ const DesignSchema: Record<string, unknown> = {
                                       "x-oapi-codegen-extra-tags": {
                                         "json": "model,omitempty"
                                       },
+                                      "x-generate-db-helpers": true,
                                       "type": "object",
                                       "required": [
                                         "id",
@@ -10198,6 +13804,7 @@ const DesignSchema: Record<string, unknown> = {
                                       "x-oapi-codegen-extra-tags": {
                                         "json": "model,omitempty"
                                       },
+                                      "x-generate-db-helpers": true,
                                       "type": "object",
                                       "required": [
                                         "id",
@@ -10557,6 +14164,7 @@ const DesignSchema: Record<string, unknown> = {
                                       "x-oapi-codegen-extra-tags": {
                                         "json": "model,omitempty"
                                       },
+                                      "x-generate-db-helpers": true,
                                       "type": "object",
                                       "required": [
                                         "id",
@@ -10902,6 +14510,7 @@ const DesignSchema: Record<string, unknown> = {
                                       "x-oapi-codegen-extra-tags": {
                                         "json": "model,omitempty"
                                       },
+                                      "x-generate-db-helpers": true,
                                       "type": "object",
                                       "required": [
                                         "id",
@@ -11180,7 +14789,7 @@ const DesignSchema: Record<string, unknown> = {
           "userId": {
             "description": "Owning user ID.",
             "x-oapi-codegen-extra-tags": {
-              "db": "user_id"
+              "db": "owner"
             },
             "type": "string",
             "format": "uuid",
@@ -11233,7 +14842,8 @@ const DesignSchema: Record<string, unknown> = {
               "userId": {
                 "type": "string",
                 "maxLength": 200,
-                "description": "User identifier (username or external ID)",
+                "deprecated": true,
+                "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
                 "x-oapi-codegen-extra-tags": {
                   "db": "user_id",
                   "json": "userId"
@@ -11614,23 +15224,18 @@ const DesignSchema: Record<string, unknown> = {
               },
               "roleNames": {
                 "type": "array",
-                "items": {
-                  "type": "string",
-                  "enum": [
-                    "admin",
-                    "meshmap",
-                    "curator",
-                    "team admin",
-                    "workspace admin",
-                    "workspace manager",
-                    "organization admin",
-                    "user"
-                  ]
+                "x-go-type": "pq.StringArray",
+                "x-go-type-import": {
+                  "path": "github.com/lib/pq"
                 },
-                "description": "List of global roles assigned to the user",
+                "x-go-type-skip-optional-pointer": true,
+                "items": {
+                  "type": "string"
+                },
+                "description": "Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as \"admin\", \"organization admin\" and \"user\" are a subset, not the whole set.",
                 "example": [
-                  "admin",
-                  "meshmap"
+                  "organization admin",
+                  "user"
                 ],
                 "x-oapi-codegen-extra-tags": {
                   "db": "role_names",
@@ -11649,7 +15254,125 @@ const DesignSchema: Record<string, unknown> = {
                     "type": "array",
                     "description": "Team memberships for the user with their assigned roles.",
                     "items": {
-                      "type": "object"
+                      "type": "object",
+                      "additionalProperties": false,
+                      "description": "A team the user is a member of, together with the names of the roles assigned to that user within the team. Returned as an item of User.teams.teamsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                      "required": [
+                        "id",
+                        "name",
+                        "roleNames"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "Unique identifier of the team.",
+                          "x-go-name": "ID",
+                          "x-order": 1,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "id",
+                            "json": "id,omitempty"
+                          },
+                          "type": "string",
+                          "format": "uuid",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          }
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "Name of the team.",
+                          "x-order": 2,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "name",
+                            "json": "name,omitempty"
+                          }
+                        },
+                        "description": {
+                          "type": "string",
+                          "description": "Human readable description of the team.",
+                          "x-order": 3,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "description",
+                            "json": "description,omitempty"
+                          }
+                        },
+                        "owner": {
+                          "description": "Identifier of the team owner.",
+                          "x-order": 4,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "owner",
+                            "json": "owner,omitempty"
+                          },
+                          "type": "string",
+                          "format": "uuid",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          }
+                        },
+                        "metadata": {
+                          "type": "object",
+                          "additionalProperties": true,
+                          "description": "Free-form metadata associated with the team.",
+                          "x-go-type": "core.Map",
+                          "x-go-type-skip-optional-pointer": true,
+                          "x-order": 5,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "metadata",
+                            "json": "metadata,omitempty"
+                          }
+                        },
+                        "createdAt": {
+                          "description": "Timestamp when the team was created.",
+                          "x-order": 6,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "created_at",
+                            "json": "createdAt,omitempty"
+                          },
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
+                        },
+                        "updatedAt": {
+                          "description": "Timestamp when the team was last updated.",
+                          "x-order": 7,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "updated_at",
+                            "json": "updatedAt,omitempty"
+                          },
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
+                        },
+                        "deletedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "nullable": true,
+                          "description": "Timestamp when the team was soft-deleted (null if not deleted).",
+                          "x-go-type": "core.NullTime",
+                          "x-order": 8,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "deleted_at",
+                            "json": "deletedAt,omitempty"
+                          }
+                        },
+                        "roleNames": {
+                          "type": "array",
+                          "x-go-type": "pq.StringArray",
+                          "x-go-type-import": {
+                            "path": "github.com/lib/pq"
+                          },
+                          "description": "Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.",
+                          "items": {
+                            "type": "string"
+                          },
+                          "x-order": 9,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "role_names",
+                            "json": "roleNames"
+                          }
+                        }
+                      }
                     },
                     "x-oapi-codegen-extra-tags": {
                       "db": "teams_with_roles",
@@ -11679,7 +15402,131 @@ const DesignSchema: Record<string, unknown> = {
                     "type": "array",
                     "description": "Organization memberships for the user with their assigned roles.",
                     "items": {
-                      "type": "object"
+                      "type": "object",
+                      "additionalProperties": false,
+                      "description": "An organization the user is a member of, together with the names of the roles assigned to that user within the organization. Returned as an item of User.organizations.organizationsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                      "required": [
+                        "id",
+                        "name",
+                        "roleNames"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "Unique identifier of the organization.",
+                          "x-go-name": "ID",
+                          "x-order": 1,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "id",
+                            "json": "id,omitempty"
+                          },
+                          "type": "string",
+                          "format": "uuid",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          }
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "Name of the organization.",
+                          "x-order": 2,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "name",
+                            "json": "name,omitempty"
+                          }
+                        },
+                        "description": {
+                          "type": "string",
+                          "description": "Human readable description of the organization.",
+                          "x-order": 3,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "description",
+                            "json": "description,omitempty"
+                          }
+                        },
+                        "country": {
+                          "type": "string",
+                          "description": "Country associated with the organization.",
+                          "x-order": 4,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "country",
+                            "json": "country,omitempty"
+                          }
+                        },
+                        "region": {
+                          "type": "string",
+                          "description": "Region associated with the organization.",
+                          "x-order": 5,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "region",
+                            "json": "region,omitempty"
+                          }
+                        },
+                        "owner": {
+                          "description": "Identifier of the organization owner.",
+                          "x-order": 6,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "owner",
+                            "json": "owner,omitempty"
+                          },
+                          "type": "string",
+                          "format": "uuid",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          }
+                        },
+                        "createdAt": {
+                          "description": "Timestamp when the organization was created.",
+                          "x-order": 7,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "created_at",
+                            "json": "createdAt,omitempty"
+                          },
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
+                        },
+                        "updatedAt": {
+                          "description": "Timestamp when the organization was last updated.",
+                          "x-order": 8,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "updated_at",
+                            "json": "updatedAt,omitempty"
+                          },
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
+                        },
+                        "deletedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "nullable": true,
+                          "description": "Timestamp when the organization was soft-deleted (null if not deleted).",
+                          "x-go-type": "core.NullTime",
+                          "x-order": 9,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "deleted_at",
+                            "json": "deletedAt,omitempty"
+                          }
+                        },
+                        "roleNames": {
+                          "type": "array",
+                          "x-go-type": "pq.StringArray",
+                          "x-go-type-import": {
+                            "path": "github.com/lib/pq"
+                          },
+                          "description": "Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.",
+                          "items": {
+                            "type": "string"
+                          },
+                          "x-order": 10,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "role_names",
+                            "json": "roleNames"
+                          }
+                        }
+                      }
                     },
                     "x-oapi-codegen-extra-tags": {
                       "db": "organizations_with_roles",
@@ -11963,7 +15810,7 @@ const DesignSchema: Record<string, unknown> = {
                 "userId": {
                   "description": "Owning user ID.",
                   "x-oapi-codegen-extra-tags": {
-                    "db": "user_id"
+                    "db": "owner"
                   },
                   "type": "string",
                   "format": "uuid",
@@ -12016,7 +15863,8 @@ const DesignSchema: Record<string, unknown> = {
                     "userId": {
                       "type": "string",
                       "maxLength": 200,
-                      "description": "User identifier (username or external ID)",
+                      "deprecated": true,
+                      "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
                       "x-oapi-codegen-extra-tags": {
                         "db": "user_id",
                         "json": "userId"
@@ -12397,23 +16245,18 @@ const DesignSchema: Record<string, unknown> = {
                     },
                     "roleNames": {
                       "type": "array",
-                      "items": {
-                        "type": "string",
-                        "enum": [
-                          "admin",
-                          "meshmap",
-                          "curator",
-                          "team admin",
-                          "workspace admin",
-                          "workspace manager",
-                          "organization admin",
-                          "user"
-                        ]
+                      "x-go-type": "pq.StringArray",
+                      "x-go-type-import": {
+                        "path": "github.com/lib/pq"
                       },
-                      "description": "List of global roles assigned to the user",
+                      "x-go-type-skip-optional-pointer": true,
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as \"admin\", \"organization admin\" and \"user\" are a subset, not the whole set.",
                       "example": [
-                        "admin",
-                        "meshmap"
+                        "organization admin",
+                        "user"
                       ],
                       "x-oapi-codegen-extra-tags": {
                         "db": "role_names",
@@ -12432,7 +16275,125 @@ const DesignSchema: Record<string, unknown> = {
                           "type": "array",
                           "description": "Team memberships for the user with their assigned roles.",
                           "items": {
-                            "type": "object"
+                            "type": "object",
+                            "additionalProperties": false,
+                            "description": "A team the user is a member of, together with the names of the roles assigned to that user within the team. Returned as an item of User.teams.teamsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                            "required": [
+                              "id",
+                              "name",
+                              "roleNames"
+                            ],
+                            "properties": {
+                              "id": {
+                                "description": "Unique identifier of the team.",
+                                "x-go-name": "ID",
+                                "x-order": 1,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "id",
+                                  "json": "id,omitempty"
+                                },
+                                "type": "string",
+                                "format": "uuid",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                }
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "Name of the team.",
+                                "x-order": 2,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "name",
+                                  "json": "name,omitempty"
+                                }
+                              },
+                              "description": {
+                                "type": "string",
+                                "description": "Human readable description of the team.",
+                                "x-order": 3,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "description",
+                                  "json": "description,omitempty"
+                                }
+                              },
+                              "owner": {
+                                "description": "Identifier of the team owner.",
+                                "x-order": 4,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "owner",
+                                  "json": "owner,omitempty"
+                                },
+                                "type": "string",
+                                "format": "uuid",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                }
+                              },
+                              "metadata": {
+                                "type": "object",
+                                "additionalProperties": true,
+                                "description": "Free-form metadata associated with the team.",
+                                "x-go-type": "core.Map",
+                                "x-go-type-skip-optional-pointer": true,
+                                "x-order": 5,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "metadata",
+                                  "json": "metadata,omitempty"
+                                }
+                              },
+                              "createdAt": {
+                                "description": "Timestamp when the team was created.",
+                                "x-order": 6,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "created_at",
+                                  "json": "createdAt,omitempty"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "updatedAt": {
+                                "description": "Timestamp when the team was last updated.",
+                                "x-order": 7,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "updated_at",
+                                  "json": "updatedAt,omitempty"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "deletedAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "nullable": true,
+                                "description": "Timestamp when the team was soft-deleted (null if not deleted).",
+                                "x-go-type": "core.NullTime",
+                                "x-order": 8,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "deleted_at",
+                                  "json": "deletedAt,omitempty"
+                                }
+                              },
+                              "roleNames": {
+                                "type": "array",
+                                "x-go-type": "pq.StringArray",
+                                "x-go-type-import": {
+                                  "path": "github.com/lib/pq"
+                                },
+                                "description": "Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "x-order": 9,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "role_names",
+                                  "json": "roleNames"
+                                }
+                              }
+                            }
                           },
                           "x-oapi-codegen-extra-tags": {
                             "db": "teams_with_roles",
@@ -12462,7 +16423,131 @@ const DesignSchema: Record<string, unknown> = {
                           "type": "array",
                           "description": "Organization memberships for the user with their assigned roles.",
                           "items": {
-                            "type": "object"
+                            "type": "object",
+                            "additionalProperties": false,
+                            "description": "An organization the user is a member of, together with the names of the roles assigned to that user within the organization. Returned as an item of User.organizations.organizationsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                            "required": [
+                              "id",
+                              "name",
+                              "roleNames"
+                            ],
+                            "properties": {
+                              "id": {
+                                "description": "Unique identifier of the organization.",
+                                "x-go-name": "ID",
+                                "x-order": 1,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "id",
+                                  "json": "id,omitempty"
+                                },
+                                "type": "string",
+                                "format": "uuid",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                }
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "Name of the organization.",
+                                "x-order": 2,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "name",
+                                  "json": "name,omitempty"
+                                }
+                              },
+                              "description": {
+                                "type": "string",
+                                "description": "Human readable description of the organization.",
+                                "x-order": 3,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "description",
+                                  "json": "description,omitempty"
+                                }
+                              },
+                              "country": {
+                                "type": "string",
+                                "description": "Country associated with the organization.",
+                                "x-order": 4,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "country",
+                                  "json": "country,omitempty"
+                                }
+                              },
+                              "region": {
+                                "type": "string",
+                                "description": "Region associated with the organization.",
+                                "x-order": 5,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "region",
+                                  "json": "region,omitempty"
+                                }
+                              },
+                              "owner": {
+                                "description": "Identifier of the organization owner.",
+                                "x-order": 6,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "owner",
+                                  "json": "owner,omitempty"
+                                },
+                                "type": "string",
+                                "format": "uuid",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                }
+                              },
+                              "createdAt": {
+                                "description": "Timestamp when the organization was created.",
+                                "x-order": 7,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "created_at",
+                                  "json": "createdAt,omitempty"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "updatedAt": {
+                                "description": "Timestamp when the organization was last updated.",
+                                "x-order": 8,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "updated_at",
+                                  "json": "updatedAt,omitempty"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "deletedAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "nullable": true,
+                                "description": "Timestamp when the organization was soft-deleted (null if not deleted).",
+                                "x-go-type": "core.NullTime",
+                                "x-order": 9,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "deleted_at",
+                                  "json": "deletedAt,omitempty"
+                                }
+                              },
+                              "roleNames": {
+                                "type": "array",
+                                "x-go-type": "pq.StringArray",
+                                "x-go-type-import": {
+                                  "path": "github.com/lib/pq"
+                                },
+                                "description": "Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "x-order": 10,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "role_names",
+                                  "json": "roleNames"
+                                }
+                              }
+                            }
                           },
                           "x-oapi-codegen-extra-tags": {
                             "db": "organizations_with_roles",
@@ -13307,7 +17392,7 @@ const DesignSchema: Record<string, unknown> = {
                 "userId": {
                   "description": "Owning user ID.",
                   "x-oapi-codegen-extra-tags": {
-                    "db": "user_id"
+                    "db": "owner"
                   },
                   "type": "string",
                   "format": "uuid",
@@ -13360,7 +17445,8 @@ const DesignSchema: Record<string, unknown> = {
                     "userId": {
                       "type": "string",
                       "maxLength": 200,
-                      "description": "User identifier (username or external ID)",
+                      "deprecated": true,
+                      "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
                       "x-oapi-codegen-extra-tags": {
                         "db": "user_id",
                         "json": "userId"
@@ -13741,23 +17827,18 @@ const DesignSchema: Record<string, unknown> = {
                     },
                     "roleNames": {
                       "type": "array",
-                      "items": {
-                        "type": "string",
-                        "enum": [
-                          "admin",
-                          "meshmap",
-                          "curator",
-                          "team admin",
-                          "workspace admin",
-                          "workspace manager",
-                          "organization admin",
-                          "user"
-                        ]
+                      "x-go-type": "pq.StringArray",
+                      "x-go-type-import": {
+                        "path": "github.com/lib/pq"
                       },
-                      "description": "List of global roles assigned to the user",
+                      "x-go-type-skip-optional-pointer": true,
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as \"admin\", \"organization admin\" and \"user\" are a subset, not the whole set.",
                       "example": [
-                        "admin",
-                        "meshmap"
+                        "organization admin",
+                        "user"
                       ],
                       "x-oapi-codegen-extra-tags": {
                         "db": "role_names",
@@ -13776,7 +17857,125 @@ const DesignSchema: Record<string, unknown> = {
                           "type": "array",
                           "description": "Team memberships for the user with their assigned roles.",
                           "items": {
-                            "type": "object"
+                            "type": "object",
+                            "additionalProperties": false,
+                            "description": "A team the user is a member of, together with the names of the roles assigned to that user within the team. Returned as an item of User.teams.teamsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                            "required": [
+                              "id",
+                              "name",
+                              "roleNames"
+                            ],
+                            "properties": {
+                              "id": {
+                                "description": "Unique identifier of the team.",
+                                "x-go-name": "ID",
+                                "x-order": 1,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "id",
+                                  "json": "id,omitempty"
+                                },
+                                "type": "string",
+                                "format": "uuid",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                }
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "Name of the team.",
+                                "x-order": 2,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "name",
+                                  "json": "name,omitempty"
+                                }
+                              },
+                              "description": {
+                                "type": "string",
+                                "description": "Human readable description of the team.",
+                                "x-order": 3,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "description",
+                                  "json": "description,omitempty"
+                                }
+                              },
+                              "owner": {
+                                "description": "Identifier of the team owner.",
+                                "x-order": 4,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "owner",
+                                  "json": "owner,omitempty"
+                                },
+                                "type": "string",
+                                "format": "uuid",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                }
+                              },
+                              "metadata": {
+                                "type": "object",
+                                "additionalProperties": true,
+                                "description": "Free-form metadata associated with the team.",
+                                "x-go-type": "core.Map",
+                                "x-go-type-skip-optional-pointer": true,
+                                "x-order": 5,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "metadata",
+                                  "json": "metadata,omitempty"
+                                }
+                              },
+                              "createdAt": {
+                                "description": "Timestamp when the team was created.",
+                                "x-order": 6,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "created_at",
+                                  "json": "createdAt,omitempty"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "updatedAt": {
+                                "description": "Timestamp when the team was last updated.",
+                                "x-order": 7,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "updated_at",
+                                  "json": "updatedAt,omitempty"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "deletedAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "nullable": true,
+                                "description": "Timestamp when the team was soft-deleted (null if not deleted).",
+                                "x-go-type": "core.NullTime",
+                                "x-order": 8,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "deleted_at",
+                                  "json": "deletedAt,omitempty"
+                                }
+                              },
+                              "roleNames": {
+                                "type": "array",
+                                "x-go-type": "pq.StringArray",
+                                "x-go-type-import": {
+                                  "path": "github.com/lib/pq"
+                                },
+                                "description": "Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "x-order": 9,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "role_names",
+                                  "json": "roleNames"
+                                }
+                              }
+                            }
                           },
                           "x-oapi-codegen-extra-tags": {
                             "db": "teams_with_roles",
@@ -13806,7 +18005,131 @@ const DesignSchema: Record<string, unknown> = {
                           "type": "array",
                           "description": "Organization memberships for the user with their assigned roles.",
                           "items": {
-                            "type": "object"
+                            "type": "object",
+                            "additionalProperties": false,
+                            "description": "An organization the user is a member of, together with the names of the roles assigned to that user within the organization. Returned as an item of User.organizations.organizationsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                            "required": [
+                              "id",
+                              "name",
+                              "roleNames"
+                            ],
+                            "properties": {
+                              "id": {
+                                "description": "Unique identifier of the organization.",
+                                "x-go-name": "ID",
+                                "x-order": 1,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "id",
+                                  "json": "id,omitempty"
+                                },
+                                "type": "string",
+                                "format": "uuid",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                }
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "Name of the organization.",
+                                "x-order": 2,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "name",
+                                  "json": "name,omitempty"
+                                }
+                              },
+                              "description": {
+                                "type": "string",
+                                "description": "Human readable description of the organization.",
+                                "x-order": 3,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "description",
+                                  "json": "description,omitempty"
+                                }
+                              },
+                              "country": {
+                                "type": "string",
+                                "description": "Country associated with the organization.",
+                                "x-order": 4,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "country",
+                                  "json": "country,omitempty"
+                                }
+                              },
+                              "region": {
+                                "type": "string",
+                                "description": "Region associated with the organization.",
+                                "x-order": 5,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "region",
+                                  "json": "region,omitempty"
+                                }
+                              },
+                              "owner": {
+                                "description": "Identifier of the organization owner.",
+                                "x-order": 6,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "owner",
+                                  "json": "owner,omitempty"
+                                },
+                                "type": "string",
+                                "format": "uuid",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                }
+                              },
+                              "createdAt": {
+                                "description": "Timestamp when the organization was created.",
+                                "x-order": 7,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "created_at",
+                                  "json": "createdAt,omitempty"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "updatedAt": {
+                                "description": "Timestamp when the organization was last updated.",
+                                "x-order": 8,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "updated_at",
+                                  "json": "updatedAt,omitempty"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "deletedAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "nullable": true,
+                                "description": "Timestamp when the organization was soft-deleted (null if not deleted).",
+                                "x-go-type": "core.NullTime",
+                                "x-order": 9,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "deleted_at",
+                                  "json": "deletedAt,omitempty"
+                                }
+                              },
+                              "roleNames": {
+                                "type": "array",
+                                "x-go-type": "pq.StringArray",
+                                "x-go-type-import": {
+                                  "path": "github.com/lib/pq"
+                                },
+                                "description": "Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "x-order": 10,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "role_names",
+                                  "json": "roleNames"
+                                }
+                              }
+                            }
                           },
                           "x-oapi-codegen-extra-tags": {
                             "db": "organizations_with_roles",
@@ -14185,9 +18508,920 @@ const DesignSchema: Record<string, unknown> = {
           }
         }
       },
+      "CatalogContentType": {
+        "type": "string",
+        "description": "Kind of catalog content a publish request refers to. Matches the\n`content_type` column of the meshery-cloud `catalog_requests`\ntable.\n",
+        "enum": [
+          "pattern",
+          "filter"
+        ],
+        "x-enum-varnames": [
+          "CatalogContentTypePattern",
+          "CatalogContentTypeFilter"
+        ]
+      },
+      "CatalogRequestStatus": {
+        "type": "string",
+        "description": "Lifecycle status of a catalog publish request. Requests are\ncreated `pending`; approving or denying a request is terminal —\na request that is no longer pending cannot be re-approved or\nre-denied.\n",
+        "enum": [
+          "pending",
+          "approved",
+          "denied"
+        ],
+        "x-enum-varnames": [
+          "CatalogRequestStatusPending",
+          "CatalogRequestStatusApproved",
+          "CatalogRequestStatusDenied"
+        ]
+      },
       "CatalogRequest": {
         "type": "object",
-        "additionalProperties": true
+        "description": "Server-returned catalog publish request as persisted by\nmeshery-cloud (`catalog_requests` table). Records a user's\nrequest to publish a design or filter to the catalog, along\nwith the reviewer-visible requester identity and the request's\napproval status.\n",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "contentId",
+          "contentName",
+          "contentType",
+          "firstName",
+          "lastName",
+          "email",
+          "status",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
+          "contentId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-name": "ContentID",
+            "x-oapi-codegen-extra-tags": {
+              "db": "content_id"
+            }
+          },
+          "contentName": {
+            "type": "string",
+            "description": "Human-readable name of the content at request time.",
+            "minLength": 1,
+            "maxLength": 300,
+            "x-oapi-codegen-extra-tags": {
+              "db": "content_name"
+            }
+          },
+          "contentType": {
+            "description": "Kind of catalog content the request refers to.",
+            "x-go-type": "CatalogContentType",
+            "x-oapi-codegen-extra-tags": {
+              "db": "content_type"
+            },
+            "type": "string",
+            "enum": [
+              "pattern",
+              "filter"
+            ],
+            "x-enum-varnames": [
+              "CatalogContentTypePattern",
+              "CatalogContentTypeFilter"
+            ]
+          },
+          "contentClass": {
+            "type": "string",
+            "description": "Support-level classification of the content, stored in the\n`content_class` column (a Postgres enum). Nullable — legacy\nrequests predate the column.\n",
+            "nullable": true,
+            "enum": [
+              "official",
+              "verified",
+              "project",
+              "community"
+            ],
+            "x-enum-varnames": [
+              "CatalogContentClassOfficial",
+              "CatalogContentClassVerified",
+              "CatalogContentClassProject",
+              "CatalogContentClassCommunity"
+            ],
+            "x-oapi-codegen-extra-tags": {
+              "db": "content_class"
+            }
+          },
+          "firstName": {
+            "type": "string",
+            "description": "Requesting user's first name at request time.",
+            "maxLength": 200,
+            "x-oapi-codegen-extra-tags": {
+              "db": "first_name"
+            }
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Requesting user's last name at request time.",
+            "maxLength": 300,
+            "x-oapi-codegen-extra-tags": {
+              "db": "last_name"
+            }
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Requesting user's email address at request time.",
+            "maxLength": 300
+          },
+          "user": {
+            "description": "Requesting user record, joined inline by the catalog-request list handler when shaping responses. Server-projected from the users table; not a column on the catalog_requests table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
+            "nullable": true,
+            "x-go-type": "*userV1beta.User",
+            "x-go-type-import": {
+              "path": "github.com/meshery/schemas/models/v1beta2/user",
+              "name": "userV1beta"
+            },
+            "x-oapi-codegen-extra-tags": {
+              "db": "-"
+            },
+            "type": "object",
+            "required": [
+              "id",
+              "userId",
+              "provider",
+              "email",
+              "firstName",
+              "lastName",
+              "status",
+              "createdAt",
+              "updatedAt",
+              "lastLoginTime",
+              "deletedAt"
+            ],
+            "properties": {
+              "id": {
+                "description": "Unique identifier for the user",
+                "x-go-name": "ID",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "id",
+                  "json": "id"
+                },
+                "type": "string",
+                "format": "uuid",
+                "x-go-type": "uuid.UUID",
+                "x-go-type-import": {
+                  "path": "github.com/gofrs/uuid"
+                }
+              },
+              "userId": {
+                "type": "string",
+                "maxLength": 200,
+                "deprecated": true,
+                "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "user_id",
+                  "json": "userId"
+                },
+                "x-id-format": "external"
+              },
+              "provider": {
+                "type": "string",
+                "maxLength": 100,
+                "description": "Authentication provider (e.g., Google, Github)",
+                "example": [
+                  "local",
+                  "github",
+                  "google",
+                  "twitter"
+                ],
+                "x-oapi-codegen-extra-tags": {
+                  "db": "provider",
+                  "json": "provider"
+                }
+              },
+              "email": {
+                "type": "string",
+                "format": "email",
+                "maxLength": 300,
+                "description": "User's email address",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "email",
+                  "json": "email"
+                }
+              },
+              "firstName": {
+                "type": "string",
+                "maxLength": 200,
+                "description": "User's first name",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "first_name",
+                  "json": "firstName"
+                }
+              },
+              "lastName": {
+                "type": "string",
+                "maxLength": 300,
+                "description": "User's last name",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "last_name",
+                  "json": "lastName"
+                }
+              },
+              "avatarUrl": {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 500,
+                "description": "URL to user's avatar image",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "avatar_url",
+                  "json": "avatarUrl"
+                }
+              },
+              "status": {
+                "type": "string",
+                "maxLength": 100,
+                "enum": [
+                  "active",
+                  "inactive",
+                  "pending",
+                  "anonymous"
+                ],
+                "description": "User account status",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "status",
+                  "json": "status"
+                }
+              },
+              "bio": {
+                "type": "string",
+                "maxLength": 1000,
+                "default": "",
+                "description": "User's biography or description",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "bio",
+                  "json": "bio"
+                }
+              },
+              "country": {
+                "type": "object",
+                "description": "User's country information stored as JSONB",
+                "additionalProperties": true,
+                "x-go-type": "core.Map",
+                "x-go-type-skip-optional-pointer": true,
+                "x-oapi-codegen-extra-tags": {
+                  "db": "country",
+                  "json": "country"
+                }
+              },
+              "region": {
+                "type": "object",
+                "description": "User's region information stored as JSONB",
+                "additionalProperties": true,
+                "x-go-type": "core.Map",
+                "x-go-type-skip-optional-pointer": true,
+                "x-oapi-codegen-extra-tags": {
+                  "db": "region",
+                  "json": "region"
+                }
+              },
+              "preferences": {
+                "x-go-type": "Preference",
+                "description": "User preferences stored as JSONB",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "preferences",
+                  "json": "preferences"
+                },
+                "x-generate-db-helpers": true,
+                "type": "object",
+                "required": [
+                  "anonymousUsageStats",
+                  "anonymousPerfResults",
+                  "updatedAt",
+                  "dashboardPreferences",
+                  "selectedOrganizationId",
+                  "selectedWorkspaceForOrganizations",
+                  "usersExtensionPreferences",
+                  "remoteProviderPreferences"
+                ],
+                "properties": {
+                  "meshAdapters": {
+                    "type": "array",
+                    "items": {
+                      "x-go-type": "Adapter",
+                      "type": "object",
+                      "description": "Placeholder for Adapter struct definition."
+                    },
+                    "description": "The mesh adapters of the preference."
+                  },
+                  "grafana": {
+                    "x-go-type": "Grafana",
+                    "type": "object",
+                    "properties": {
+                      "grafanaUrl": {
+                        "type": "string",
+                        "description": "Grafana URL for the user configuration.",
+                        "maxLength": 500
+                      },
+                      "grafanaApiKey": {
+                        "type": "string",
+                        "description": "Grafana API key for the user configuration.",
+                        "maxLength": 500
+                      },
+                      "selectedBoardsConfigs": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "board": {
+                              "type": "object",
+                              "description": "Placeholder for GrafanaBoard definition (define fields as needed)"
+                            },
+                            "panels": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "description": "Grafana panel structure imported from github.com/grafana-tools/sdk"
+                              },
+                              "description": "Panels selected for the Grafana board configuration."
+                            },
+                            "templateVars": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "Template variables applied to the selected Grafana board configuration."
+                            }
+                          }
+                        },
+                        "description": "Selected Grafana board configurations for the user."
+                      }
+                    }
+                  },
+                  "prometheus": {
+                    "x-go-type": "Prometheus",
+                    "type": "object",
+                    "properties": {
+                      "prometheusUrl": {
+                        "type": "string",
+                        "description": "The prometheus URL of the prometheus.",
+                        "maxLength": 500
+                      },
+                      "selectedPrometheusBoardsConfigs": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "board": {
+                              "type": "object",
+                              "description": "Placeholder for GrafanaBoard definition (define fields as needed)"
+                            },
+                            "panels": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "description": "Grafana panel structure imported from github.com/grafana-tools/sdk"
+                              },
+                              "description": "Panels selected for the Grafana board configuration."
+                            },
+                            "templateVars": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "Template variables applied to the selected Grafana board configuration."
+                            }
+                          }
+                        },
+                        "description": "The selected prometheus boards configs of the prometheus."
+                      }
+                    }
+                  },
+                  "loadTestPrefs": {
+                    "x-go-type": "LoadTestPreferences",
+                    "type": "object",
+                    "properties": {
+                      "c": {
+                        "type": "integer",
+                        "description": "Concurrent requests",
+                        "minimum": 0
+                      },
+                      "qps": {
+                        "type": "integer",
+                        "description": "Queries per second",
+                        "minimum": 0
+                      },
+                      "t": {
+                        "type": "string",
+                        "description": "Duration",
+                        "maxLength": 500
+                      },
+                      "gen": {
+                        "type": "string",
+                        "description": "Load generator",
+                        "maxLength": 500
+                      }
+                    }
+                  },
+                  "anonymousUsageStats": {
+                    "type": "boolean",
+                    "description": "The anonymous usage stats of the preference."
+                  },
+                  "anonymousPerfResults": {
+                    "type": "boolean",
+                    "description": "The anonymous perf results of the preference."
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Timestamp of when the resource was last updated."
+                  },
+                  "dashboardPreferences": {
+                    "type": "object",
+                    "additionalProperties": true,
+                    "description": "The dashboard preferences of the preference."
+                  },
+                  "selectedOrganizationId": {
+                    "type": "string",
+                    "description": "ID of the associated selectedOrganization.",
+                    "maxLength": 500,
+                    "format": "uuid"
+                  },
+                  "selectedWorkspaceForOrganizations": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string"
+                    },
+                    "description": "The selected workspace for organizations of the preference."
+                  },
+                  "usersExtensionPreferences": {
+                    "type": "object",
+                    "additionalProperties": true,
+                    "description": "The users extension preferences of the preference."
+                  },
+                  "remoteProviderPreferences": {
+                    "type": "object",
+                    "additionalProperties": true,
+                    "description": "The remote provider preferences of the preference."
+                  }
+                }
+              },
+              "acceptedTermsAt": {
+                "description": "Timestamp when user accepted terms and conditions",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "accepted_terms_at",
+                  "json": "acceptedTermsAt"
+                },
+                "type": "string",
+                "format": "date-time",
+                "x-go-type-skip-optional-pointer": true
+              },
+              "firstLoginTime": {
+                "description": "Timestamp of user's first login",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "first_login_time",
+                  "json": "firstLoginTime"
+                },
+                "type": "string",
+                "format": "date-time",
+                "x-go-type-skip-optional-pointer": true
+              },
+              "lastLoginTime": {
+                "description": "Timestamp of user's most recent login",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "last_login_time",
+                  "json": "lastLoginTime"
+                },
+                "type": "string",
+                "format": "date-time",
+                "x-go-type-skip-optional-pointer": true
+              },
+              "createdAt": {
+                "description": "Timestamp when the user record was created",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "created_at",
+                  "json": "createdAt"
+                },
+                "type": "string",
+                "format": "date-time",
+                "x-go-type-skip-optional-pointer": true
+              },
+              "updatedAt": {
+                "description": "Timestamp when the user record was last updated",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "updated_at",
+                  "json": "updatedAt"
+                },
+                "type": "string",
+                "format": "date-time",
+                "x-go-type-skip-optional-pointer": true
+              },
+              "socials": {
+                "type": "array",
+                "description": "Various online profiles associated with the user account",
+                "x-go-type": "UserSocials",
+                "items": {
+                  "x-go-type": "Social",
+                  "description": "Various online profiles associated with the user account, like GitHub, LinkedIn, X, and so on.",
+                  "type": "object",
+                  "properties": {
+                    "site": {
+                      "type": "string",
+                      "maxLength": 50,
+                      "description": "The site of the social."
+                    },
+                    "link": {
+                      "type": "string",
+                      "format": "uri",
+                      "description": "The link of the social."
+                    }
+                  },
+                  "required": [
+                    "site",
+                    "link"
+                  ]
+                },
+                "x-oapi-codegen-extra-tags": {
+                  "db": "socials",
+                  "json": "socials"
+                }
+              },
+              "deletedAt": {
+                "type": "string",
+                "format": "date-time",
+                "nullable": true,
+                "description": "Timestamp when the user record was soft-deleted (null if not deleted)",
+                "x-go-type": "core.NullTime",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "deleted_at",
+                  "json": "deletedAt"
+                }
+              },
+              "roleNames": {
+                "type": "array",
+                "x-go-type": "pq.StringArray",
+                "x-go-type-import": {
+                  "path": "github.com/lib/pq"
+                },
+                "x-go-type-skip-optional-pointer": true,
+                "items": {
+                  "type": "string"
+                },
+                "description": "Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as \"admin\", \"organization admin\" and \"user\" are a subset, not the whole set.",
+                "example": [
+                  "organization admin",
+                  "user"
+                ],
+                "x-oapi-codegen-extra-tags": {
+                  "db": "role_names",
+                  "json": "roleNames"
+                }
+              },
+              "teams": {
+                "type": "object",
+                "description": "Teams the user belongs to with role information",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "teams",
+                  "json": "teams"
+                },
+                "properties": {
+                  "teamsWithRoles": {
+                    "type": "array",
+                    "description": "Team memberships for the user with their assigned roles.",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "description": "A team the user is a member of, together with the names of the roles assigned to that user within the team. Returned as an item of User.teams.teamsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                      "required": [
+                        "id",
+                        "name",
+                        "roleNames"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "Unique identifier of the team.",
+                          "x-go-name": "ID",
+                          "x-order": 1,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "id",
+                            "json": "id,omitempty"
+                          },
+                          "type": "string",
+                          "format": "uuid",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          }
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "Name of the team.",
+                          "x-order": 2,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "name",
+                            "json": "name,omitempty"
+                          }
+                        },
+                        "description": {
+                          "type": "string",
+                          "description": "Human readable description of the team.",
+                          "x-order": 3,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "description",
+                            "json": "description,omitempty"
+                          }
+                        },
+                        "owner": {
+                          "description": "Identifier of the team owner.",
+                          "x-order": 4,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "owner",
+                            "json": "owner,omitempty"
+                          },
+                          "type": "string",
+                          "format": "uuid",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          }
+                        },
+                        "metadata": {
+                          "type": "object",
+                          "additionalProperties": true,
+                          "description": "Free-form metadata associated with the team.",
+                          "x-go-type": "core.Map",
+                          "x-go-type-skip-optional-pointer": true,
+                          "x-order": 5,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "metadata",
+                            "json": "metadata,omitempty"
+                          }
+                        },
+                        "createdAt": {
+                          "description": "Timestamp when the team was created.",
+                          "x-order": 6,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "created_at",
+                            "json": "createdAt,omitempty"
+                          },
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
+                        },
+                        "updatedAt": {
+                          "description": "Timestamp when the team was last updated.",
+                          "x-order": 7,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "updated_at",
+                            "json": "updatedAt,omitempty"
+                          },
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
+                        },
+                        "deletedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "nullable": true,
+                          "description": "Timestamp when the team was soft-deleted (null if not deleted).",
+                          "x-go-type": "core.NullTime",
+                          "x-order": 8,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "deleted_at",
+                            "json": "deletedAt,omitempty"
+                          }
+                        },
+                        "roleNames": {
+                          "type": "array",
+                          "x-go-type": "pq.StringArray",
+                          "x-go-type-import": {
+                            "path": "github.com/lib/pq"
+                          },
+                          "description": "Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.",
+                          "items": {
+                            "type": "string"
+                          },
+                          "x-order": 9,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "role_names",
+                            "json": "roleNames"
+                          }
+                        }
+                      }
+                    },
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "teams_with_roles",
+                      "json": "teamsWithRoles"
+                    }
+                  },
+                  "totalCount": {
+                    "type": "integer",
+                    "description": "Total number of team memberships returned for the user.",
+                    "minimum": 0,
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "total_count",
+                      "json": "totalCount"
+                    }
+                  }
+                }
+              },
+              "organizations": {
+                "type": "object",
+                "description": "Organizations the user belongs to with role information",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "organizations",
+                  "json": "organizations"
+                },
+                "properties": {
+                  "organizationsWithRoles": {
+                    "type": "array",
+                    "description": "Organization memberships for the user with their assigned roles.",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "description": "An organization the user is a member of, together with the names of the roles assigned to that user within the organization. Returned as an item of User.organizations.organizationsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                      "required": [
+                        "id",
+                        "name",
+                        "roleNames"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "Unique identifier of the organization.",
+                          "x-go-name": "ID",
+                          "x-order": 1,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "id",
+                            "json": "id,omitempty"
+                          },
+                          "type": "string",
+                          "format": "uuid",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          }
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "Name of the organization.",
+                          "x-order": 2,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "name",
+                            "json": "name,omitempty"
+                          }
+                        },
+                        "description": {
+                          "type": "string",
+                          "description": "Human readable description of the organization.",
+                          "x-order": 3,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "description",
+                            "json": "description,omitempty"
+                          }
+                        },
+                        "country": {
+                          "type": "string",
+                          "description": "Country associated with the organization.",
+                          "x-order": 4,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "country",
+                            "json": "country,omitempty"
+                          }
+                        },
+                        "region": {
+                          "type": "string",
+                          "description": "Region associated with the organization.",
+                          "x-order": 5,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "region",
+                            "json": "region,omitempty"
+                          }
+                        },
+                        "owner": {
+                          "description": "Identifier of the organization owner.",
+                          "x-order": 6,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "owner",
+                            "json": "owner,omitempty"
+                          },
+                          "type": "string",
+                          "format": "uuid",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          }
+                        },
+                        "createdAt": {
+                          "description": "Timestamp when the organization was created.",
+                          "x-order": 7,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "created_at",
+                            "json": "createdAt,omitempty"
+                          },
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
+                        },
+                        "updatedAt": {
+                          "description": "Timestamp when the organization was last updated.",
+                          "x-order": 8,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "updated_at",
+                            "json": "updatedAt,omitempty"
+                          },
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
+                        },
+                        "deletedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "nullable": true,
+                          "description": "Timestamp when the organization was soft-deleted (null if not deleted).",
+                          "x-go-type": "core.NullTime",
+                          "x-order": 9,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "deleted_at",
+                            "json": "deletedAt,omitempty"
+                          }
+                        },
+                        "roleNames": {
+                          "type": "array",
+                          "x-go-type": "pq.StringArray",
+                          "x-go-type-import": {
+                            "path": "github.com/lib/pq"
+                          },
+                          "description": "Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.",
+                          "items": {
+                            "type": "string"
+                          },
+                          "x-order": 10,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "role_names",
+                            "json": "roleNames"
+                          }
+                        }
+                      }
+                    },
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "organizations_with_roles",
+                      "json": "organizationsWithRoles"
+                    }
+                  },
+                  "totalCount": {
+                    "type": "integer",
+                    "description": "Total number of organization memberships returned for the user.",
+                    "minimum": 0,
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "total_count",
+                      "json": "totalCount"
+                    }
+                  }
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          "status": {
+            "description": "Approval status of the request.",
+            "x-go-type": "CatalogRequestStatus",
+            "type": "string",
+            "enum": [
+              "pending",
+              "approved",
+              "denied"
+            ],
+            "x-enum-varnames": [
+              "CatalogRequestStatusPending",
+              "CatalogRequestStatusApproved",
+              "CatalogRequestStatusDenied"
+            ]
+          },
+          "createdAt": {
+            "description": "Timestamp of request creation.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "created_at"
+            },
+            "type": "string",
+            "format": "date-time",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "updatedAt": {
+            "description": "Timestamp of last request modification (approval or denial).",
+            "x-oapi-codegen-extra-tags": {
+              "db": "updated_at"
+            },
+            "type": "string",
+            "format": "date-time",
+            "x-go-type-skip-optional-pointer": true
+          }
+        }
       },
       "CatalogRequestsPage": {
         "type": "object",
@@ -14212,7 +19446,893 @@ const DesignSchema: Record<string, unknown> = {
             "type": "array",
             "items": {
               "type": "object",
-              "additionalProperties": true
+              "description": "Server-returned catalog publish request as persisted by\nmeshery-cloud (`catalog_requests` table). Records a user's\nrequest to publish a design or filter to the catalog, along\nwith the reviewer-visible requester identity and the request's\napproval status.\n",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "contentId",
+                "contentName",
+                "contentType",
+                "firstName",
+                "lastName",
+                "email",
+                "status",
+                "createdAt",
+                "updatedAt"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "contentId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-go-name": "ContentID",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "content_id"
+                  }
+                },
+                "contentName": {
+                  "type": "string",
+                  "description": "Human-readable name of the content at request time.",
+                  "minLength": 1,
+                  "maxLength": 300,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "content_name"
+                  }
+                },
+                "contentType": {
+                  "description": "Kind of catalog content the request refers to.",
+                  "x-go-type": "CatalogContentType",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "content_type"
+                  },
+                  "type": "string",
+                  "enum": [
+                    "pattern",
+                    "filter"
+                  ],
+                  "x-enum-varnames": [
+                    "CatalogContentTypePattern",
+                    "CatalogContentTypeFilter"
+                  ]
+                },
+                "contentClass": {
+                  "type": "string",
+                  "description": "Support-level classification of the content, stored in the\n`content_class` column (a Postgres enum). Nullable — legacy\nrequests predate the column.\n",
+                  "nullable": true,
+                  "enum": [
+                    "official",
+                    "verified",
+                    "project",
+                    "community"
+                  ],
+                  "x-enum-varnames": [
+                    "CatalogContentClassOfficial",
+                    "CatalogContentClassVerified",
+                    "CatalogContentClassProject",
+                    "CatalogContentClassCommunity"
+                  ],
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "content_class"
+                  }
+                },
+                "firstName": {
+                  "type": "string",
+                  "description": "Requesting user's first name at request time.",
+                  "maxLength": 200,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "first_name"
+                  }
+                },
+                "lastName": {
+                  "type": "string",
+                  "description": "Requesting user's last name at request time.",
+                  "maxLength": 300,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "last_name"
+                  }
+                },
+                "email": {
+                  "type": "string",
+                  "format": "email",
+                  "description": "Requesting user's email address at request time.",
+                  "maxLength": 300
+                },
+                "user": {
+                  "description": "Requesting user record, joined inline by the catalog-request list handler when shaping responses. Server-projected from the users table; not a column on the catalog_requests table itself, so the generated Go field is tagged `db:\"-\"` to keep it out of ORM column scans.\n",
+                  "nullable": true,
+                  "x-go-type": "*userV1beta.User",
+                  "x-go-type-import": {
+                    "path": "github.com/meshery/schemas/models/v1beta2/user",
+                    "name": "userV1beta"
+                  },
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "-"
+                  },
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "userId",
+                    "provider",
+                    "email",
+                    "firstName",
+                    "lastName",
+                    "status",
+                    "createdAt",
+                    "updatedAt",
+                    "lastLoginTime",
+                    "deletedAt"
+                  ],
+                  "properties": {
+                    "id": {
+                      "description": "Unique identifier for the user",
+                      "x-go-name": "ID",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "id",
+                        "json": "id"
+                      },
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    },
+                    "userId": {
+                      "type": "string",
+                      "maxLength": 200,
+                      "deprecated": true,
+                      "description": "Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "user_id",
+                        "json": "userId"
+                      },
+                      "x-id-format": "external"
+                    },
+                    "provider": {
+                      "type": "string",
+                      "maxLength": 100,
+                      "description": "Authentication provider (e.g., Google, Github)",
+                      "example": [
+                        "local",
+                        "github",
+                        "google",
+                        "twitter"
+                      ],
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "provider",
+                        "json": "provider"
+                      }
+                    },
+                    "email": {
+                      "type": "string",
+                      "format": "email",
+                      "maxLength": 300,
+                      "description": "User's email address",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "email",
+                        "json": "email"
+                      }
+                    },
+                    "firstName": {
+                      "type": "string",
+                      "maxLength": 200,
+                      "description": "User's first name",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "first_name",
+                        "json": "firstName"
+                      }
+                    },
+                    "lastName": {
+                      "type": "string",
+                      "maxLength": 300,
+                      "description": "User's last name",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "last_name",
+                        "json": "lastName"
+                      }
+                    },
+                    "avatarUrl": {
+                      "type": "string",
+                      "format": "uri",
+                      "maxLength": 500,
+                      "description": "URL to user's avatar image",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "avatar_url",
+                        "json": "avatarUrl"
+                      }
+                    },
+                    "status": {
+                      "type": "string",
+                      "maxLength": 100,
+                      "enum": [
+                        "active",
+                        "inactive",
+                        "pending",
+                        "anonymous"
+                      ],
+                      "description": "User account status",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "status",
+                        "json": "status"
+                      }
+                    },
+                    "bio": {
+                      "type": "string",
+                      "maxLength": 1000,
+                      "default": "",
+                      "description": "User's biography or description",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "bio",
+                        "json": "bio"
+                      }
+                    },
+                    "country": {
+                      "type": "object",
+                      "description": "User's country information stored as JSONB",
+                      "additionalProperties": true,
+                      "x-go-type": "core.Map",
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "country",
+                        "json": "country"
+                      }
+                    },
+                    "region": {
+                      "type": "object",
+                      "description": "User's region information stored as JSONB",
+                      "additionalProperties": true,
+                      "x-go-type": "core.Map",
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "region",
+                        "json": "region"
+                      }
+                    },
+                    "preferences": {
+                      "x-go-type": "Preference",
+                      "description": "User preferences stored as JSONB",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "preferences",
+                        "json": "preferences"
+                      },
+                      "x-generate-db-helpers": true,
+                      "type": "object",
+                      "required": [
+                        "anonymousUsageStats",
+                        "anonymousPerfResults",
+                        "updatedAt",
+                        "dashboardPreferences",
+                        "selectedOrganizationId",
+                        "selectedWorkspaceForOrganizations",
+                        "usersExtensionPreferences",
+                        "remoteProviderPreferences"
+                      ],
+                      "properties": {
+                        "meshAdapters": {
+                          "type": "array",
+                          "items": {
+                            "x-go-type": "Adapter",
+                            "type": "object",
+                            "description": "Placeholder for Adapter struct definition."
+                          },
+                          "description": "The mesh adapters of the preference."
+                        },
+                        "grafana": {
+                          "x-go-type": "Grafana",
+                          "type": "object",
+                          "properties": {
+                            "grafanaUrl": {
+                              "type": "string",
+                              "description": "Grafana URL for the user configuration.",
+                              "maxLength": 500
+                            },
+                            "grafanaApiKey": {
+                              "type": "string",
+                              "description": "Grafana API key for the user configuration.",
+                              "maxLength": 500
+                            },
+                            "selectedBoardsConfigs": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "board": {
+                                    "type": "object",
+                                    "description": "Placeholder for GrafanaBoard definition (define fields as needed)"
+                                  },
+                                  "panels": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "description": "Grafana panel structure imported from github.com/grafana-tools/sdk"
+                                    },
+                                    "description": "Panels selected for the Grafana board configuration."
+                                  },
+                                  "templateVars": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    },
+                                    "description": "Template variables applied to the selected Grafana board configuration."
+                                  }
+                                }
+                              },
+                              "description": "Selected Grafana board configurations for the user."
+                            }
+                          }
+                        },
+                        "prometheus": {
+                          "x-go-type": "Prometheus",
+                          "type": "object",
+                          "properties": {
+                            "prometheusUrl": {
+                              "type": "string",
+                              "description": "The prometheus URL of the prometheus.",
+                              "maxLength": 500
+                            },
+                            "selectedPrometheusBoardsConfigs": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "board": {
+                                    "type": "object",
+                                    "description": "Placeholder for GrafanaBoard definition (define fields as needed)"
+                                  },
+                                  "panels": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "description": "Grafana panel structure imported from github.com/grafana-tools/sdk"
+                                    },
+                                    "description": "Panels selected for the Grafana board configuration."
+                                  },
+                                  "templateVars": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    },
+                                    "description": "Template variables applied to the selected Grafana board configuration."
+                                  }
+                                }
+                              },
+                              "description": "The selected prometheus boards configs of the prometheus."
+                            }
+                          }
+                        },
+                        "loadTestPrefs": {
+                          "x-go-type": "LoadTestPreferences",
+                          "type": "object",
+                          "properties": {
+                            "c": {
+                              "type": "integer",
+                              "description": "Concurrent requests",
+                              "minimum": 0
+                            },
+                            "qps": {
+                              "type": "integer",
+                              "description": "Queries per second",
+                              "minimum": 0
+                            },
+                            "t": {
+                              "type": "string",
+                              "description": "Duration",
+                              "maxLength": 500
+                            },
+                            "gen": {
+                              "type": "string",
+                              "description": "Load generator",
+                              "maxLength": 500
+                            }
+                          }
+                        },
+                        "anonymousUsageStats": {
+                          "type": "boolean",
+                          "description": "The anonymous usage stats of the preference."
+                        },
+                        "anonymousPerfResults": {
+                          "type": "boolean",
+                          "description": "The anonymous perf results of the preference."
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "Timestamp of when the resource was last updated."
+                        },
+                        "dashboardPreferences": {
+                          "type": "object",
+                          "additionalProperties": true,
+                          "description": "The dashboard preferences of the preference."
+                        },
+                        "selectedOrganizationId": {
+                          "type": "string",
+                          "description": "ID of the associated selectedOrganization.",
+                          "maxLength": 500,
+                          "format": "uuid"
+                        },
+                        "selectedWorkspaceForOrganizations": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "string"
+                          },
+                          "description": "The selected workspace for organizations of the preference."
+                        },
+                        "usersExtensionPreferences": {
+                          "type": "object",
+                          "additionalProperties": true,
+                          "description": "The users extension preferences of the preference."
+                        },
+                        "remoteProviderPreferences": {
+                          "type": "object",
+                          "additionalProperties": true,
+                          "description": "The remote provider preferences of the preference."
+                        }
+                      }
+                    },
+                    "acceptedTermsAt": {
+                      "description": "Timestamp when user accepted terms and conditions",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "accepted_terms_at",
+                        "json": "acceptedTermsAt"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "firstLoginTime": {
+                      "description": "Timestamp of user's first login",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "first_login_time",
+                        "json": "firstLoginTime"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "lastLoginTime": {
+                      "description": "Timestamp of user's most recent login",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "last_login_time",
+                        "json": "lastLoginTime"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "createdAt": {
+                      "description": "Timestamp when the user record was created",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at",
+                        "json": "createdAt"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "updatedAt": {
+                      "description": "Timestamp when the user record was last updated",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at",
+                        "json": "updatedAt"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "socials": {
+                      "type": "array",
+                      "description": "Various online profiles associated with the user account",
+                      "x-go-type": "UserSocials",
+                      "items": {
+                        "x-go-type": "Social",
+                        "description": "Various online profiles associated with the user account, like GitHub, LinkedIn, X, and so on.",
+                        "type": "object",
+                        "properties": {
+                          "site": {
+                            "type": "string",
+                            "maxLength": 50,
+                            "description": "The site of the social."
+                          },
+                          "link": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "The link of the social."
+                          }
+                        },
+                        "required": [
+                          "site",
+                          "link"
+                        ]
+                      },
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "socials",
+                        "json": "socials"
+                      }
+                    },
+                    "deletedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": true,
+                      "description": "Timestamp when the user record was soft-deleted (null if not deleted)",
+                      "x-go-type": "core.NullTime",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "deleted_at",
+                        "json": "deletedAt"
+                      }
+                    },
+                    "roleNames": {
+                      "type": "array",
+                      "x-go-type": "pq.StringArray",
+                      "x-go-type-import": {
+                        "path": "github.com/lib/pq"
+                      },
+                      "x-go-type-skip-optional-pointer": true,
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as \"admin\", \"organization admin\" and \"user\" are a subset, not the whole set.",
+                      "example": [
+                        "organization admin",
+                        "user"
+                      ],
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "role_names",
+                        "json": "roleNames"
+                      }
+                    },
+                    "teams": {
+                      "type": "object",
+                      "description": "Teams the user belongs to with role information",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "teams",
+                        "json": "teams"
+                      },
+                      "properties": {
+                        "teamsWithRoles": {
+                          "type": "array",
+                          "description": "Team memberships for the user with their assigned roles.",
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "description": "A team the user is a member of, together with the names of the roles assigned to that user within the team. Returned as an item of User.teams.teamsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                            "required": [
+                              "id",
+                              "name",
+                              "roleNames"
+                            ],
+                            "properties": {
+                              "id": {
+                                "description": "Unique identifier of the team.",
+                                "x-go-name": "ID",
+                                "x-order": 1,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "id",
+                                  "json": "id,omitempty"
+                                },
+                                "type": "string",
+                                "format": "uuid",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                }
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "Name of the team.",
+                                "x-order": 2,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "name",
+                                  "json": "name,omitempty"
+                                }
+                              },
+                              "description": {
+                                "type": "string",
+                                "description": "Human readable description of the team.",
+                                "x-order": 3,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "description",
+                                  "json": "description,omitempty"
+                                }
+                              },
+                              "owner": {
+                                "description": "Identifier of the team owner.",
+                                "x-order": 4,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "owner",
+                                  "json": "owner,omitempty"
+                                },
+                                "type": "string",
+                                "format": "uuid",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                }
+                              },
+                              "metadata": {
+                                "type": "object",
+                                "additionalProperties": true,
+                                "description": "Free-form metadata associated with the team.",
+                                "x-go-type": "core.Map",
+                                "x-go-type-skip-optional-pointer": true,
+                                "x-order": 5,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "metadata",
+                                  "json": "metadata,omitempty"
+                                }
+                              },
+                              "createdAt": {
+                                "description": "Timestamp when the team was created.",
+                                "x-order": 6,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "created_at",
+                                  "json": "createdAt,omitempty"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "updatedAt": {
+                                "description": "Timestamp when the team was last updated.",
+                                "x-order": 7,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "updated_at",
+                                  "json": "updatedAt,omitempty"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "deletedAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "nullable": true,
+                                "description": "Timestamp when the team was soft-deleted (null if not deleted).",
+                                "x-go-type": "core.NullTime",
+                                "x-order": 8,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "deleted_at",
+                                  "json": "deletedAt,omitempty"
+                                }
+                              },
+                              "roleNames": {
+                                "type": "array",
+                                "x-go-type": "pq.StringArray",
+                                "x-go-type-import": {
+                                  "path": "github.com/lib/pq"
+                                },
+                                "description": "Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration.",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "x-order": 9,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "role_names",
+                                  "json": "roleNames"
+                                }
+                              }
+                            }
+                          },
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "teams_with_roles",
+                            "json": "teamsWithRoles"
+                          }
+                        },
+                        "totalCount": {
+                          "type": "integer",
+                          "description": "Total number of team memberships returned for the user.",
+                          "minimum": 0,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "total_count",
+                            "json": "totalCount"
+                          }
+                        }
+                      }
+                    },
+                    "organizations": {
+                      "type": "object",
+                      "description": "Organizations the user belongs to with role information",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "organizations",
+                        "json": "organizations"
+                      },
+                      "properties": {
+                        "organizationsWithRoles": {
+                          "type": "array",
+                          "description": "Organization memberships for the user with their assigned roles.",
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "description": "An organization the user is a member of, together with the names of the roles assigned to that user within the organization. Returned as an item of User.organizations.organizationsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration).",
+                            "required": [
+                              "id",
+                              "name",
+                              "roleNames"
+                            ],
+                            "properties": {
+                              "id": {
+                                "description": "Unique identifier of the organization.",
+                                "x-go-name": "ID",
+                                "x-order": 1,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "id",
+                                  "json": "id,omitempty"
+                                },
+                                "type": "string",
+                                "format": "uuid",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                }
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "Name of the organization.",
+                                "x-order": 2,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "name",
+                                  "json": "name,omitempty"
+                                }
+                              },
+                              "description": {
+                                "type": "string",
+                                "description": "Human readable description of the organization.",
+                                "x-order": 3,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "description",
+                                  "json": "description,omitempty"
+                                }
+                              },
+                              "country": {
+                                "type": "string",
+                                "description": "Country associated with the organization.",
+                                "x-order": 4,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "country",
+                                  "json": "country,omitempty"
+                                }
+                              },
+                              "region": {
+                                "type": "string",
+                                "description": "Region associated with the organization.",
+                                "x-order": 5,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "region",
+                                  "json": "region,omitempty"
+                                }
+                              },
+                              "owner": {
+                                "description": "Identifier of the organization owner.",
+                                "x-order": 6,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "owner",
+                                  "json": "owner,omitempty"
+                                },
+                                "type": "string",
+                                "format": "uuid",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                }
+                              },
+                              "createdAt": {
+                                "description": "Timestamp when the organization was created.",
+                                "x-order": 7,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "created_at",
+                                  "json": "createdAt,omitempty"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "updatedAt": {
+                                "description": "Timestamp when the organization was last updated.",
+                                "x-order": 8,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "updated_at",
+                                  "json": "updatedAt,omitempty"
+                                },
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "deletedAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "nullable": true,
+                                "description": "Timestamp when the organization was soft-deleted (null if not deleted).",
+                                "x-go-type": "core.NullTime",
+                                "x-order": 9,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "deleted_at",
+                                  "json": "deletedAt,omitempty"
+                                }
+                              },
+                              "roleNames": {
+                                "type": "array",
+                                "x-go-type": "pq.StringArray",
+                                "x-go-type-import": {
+                                  "path": "github.com/lib/pq"
+                                },
+                                "description": "Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration.",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "x-order": 10,
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "role_names",
+                                  "json": "roleNames"
+                                }
+                              }
+                            }
+                          },
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "organizations_with_roles",
+                            "json": "organizationsWithRoles"
+                          }
+                        },
+                        "totalCount": {
+                          "type": "integer",
+                          "description": "Total number of organization memberships returned for the user.",
+                          "minimum": 0,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "total_count",
+                            "json": "totalCount"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "status": {
+                  "description": "Approval status of the request.",
+                  "x-go-type": "CatalogRequestStatus",
+                  "type": "string",
+                  "enum": [
+                    "pending",
+                    "approved",
+                    "denied"
+                  ],
+                  "x-enum-varnames": [
+                    "CatalogRequestStatusPending",
+                    "CatalogRequestStatusApproved",
+                    "CatalogRequestStatusDenied"
+                  ]
+                },
+                "createdAt": {
+                  "description": "Timestamp of request creation.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "created_at"
+                  },
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "updatedAt": {
+                  "description": "Timestamp of last request modification (approval or denial).",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "updated_at"
+                  },
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                }
+              },
+              "x-go-type": "CatalogRequest"
             },
             "description": "Catalog requests included on this page."
           }

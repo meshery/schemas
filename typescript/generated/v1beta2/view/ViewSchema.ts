@@ -142,10 +142,20 @@ const ViewSchema: Record<string, unknown> = {
           "type": "string"
         }
       },
+      "pageSize": {
+        "name": "pageSize",
+        "in": "query",
+        "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
       "pagesize": {
         "name": "pagesize",
         "in": "query",
-        "description": "Get responses by pagesize",
+        "description": "Get responses by pagesize. Deprecated alias of pageSize.",
+        "deprecated": true,
         "schema": {
           "type": "string"
         }
@@ -277,7 +287,7 @@ const ViewSchema: Record<string, unknown> = {
             "x-go-type-skip-optional-pointer": true,
             "x-order": 6,
             "x-oapi-codegen-extra-tags": {
-              "db": "user_id",
+              "db": "owner",
               "json": "userId"
             },
             "type": "string",
@@ -404,7 +414,7 @@ const ViewSchema: Record<string, unknown> = {
             "x-go-name": "UserID",
             "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
-              "db": "user_id",
+              "db": "owner",
               "json": "userId,omitempty"
             },
             "type": "string",
@@ -708,7 +718,7 @@ const ViewSchema: Record<string, unknown> = {
                   "x-go-name": "UserID",
                   "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
-                    "db": "user_id",
+                    "db": "owner",
                     "json": "userId,omitempty"
                   },
                   "type": "string",
@@ -1106,7 +1116,7 @@ const ViewSchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true,
                       "x-order": 6,
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id",
+                        "db": "owner",
                         "json": "userId"
                       },
                       "type": "string",
@@ -1229,9 +1239,19 @@ const ViewSchema: Record<string, unknown> = {
             }
           },
           {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
             "name": "pagesize",
             "in": "query",
-            "description": "Get responses by pagesize",
+            "description": "Get responses by pagesize. Deprecated alias of pageSize.",
+            "deprecated": true,
             "schema": {
               "type": "string"
             }
@@ -1394,7 +1414,7 @@ const ViewSchema: Record<string, unknown> = {
                             "x-go-name": "UserID",
                             "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
-                              "db": "user_id",
+                              "db": "owner",
                               "json": "userId,omitempty"
                             },
                             "type": "string",
@@ -1776,7 +1796,7 @@ const ViewSchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true,
                       "x-order": 6,
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id",
+                        "db": "owner",
                         "json": "userId"
                       },
                       "type": "string",
@@ -2070,7 +2090,7 @@ const ViewSchema: Record<string, unknown> = {
                       "x-go-type-skip-optional-pointer": true,
                       "x-order": 6,
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id",
+                        "db": "owner",
                         "json": "userId"
                       },
                       "type": "string",

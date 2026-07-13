@@ -331,7 +331,12 @@ export interface components {
         order: string;
         /** @description Get responses by page */
         page: string;
-        /** @description Get responses by pagesize */
+        /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+        pageSize: number;
+        /**
+         * @deprecated
+         * @description Get responses by pagesize. Deprecated alias of pageSize.
+         */
         pagesize: string;
         /** @description Organization ID to scope the request. */
         orgIdQuery: string;
@@ -394,7 +399,12 @@ export interface operations {
                 order?: string;
                 /** @description Get responses by page */
                 page?: string;
-                /** @description Get responses by pagesize */
+                /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+                pageSize?: number;
+                /**
+                 * @deprecated
+                 * @description Get responses by pagesize. Deprecated alias of pageSize.
+                 */
                 pagesize?: string;
                 /** @description JSON-encoded filter string for assignment and soft-delete filters. */
                 filter?: string;

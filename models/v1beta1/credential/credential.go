@@ -17,7 +17,7 @@ type Credential struct {
 	Name string `db:"name" json:"name" yaml:"name"`
 
 	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	UserId *core.Uuid `db:"user_id" json:"user_id,omitempty" yaml:"user_id,omitempty"`
+	UserId *core.Uuid `db:"owner" json:"user_id,omitempty" yaml:"user_id,omitempty"`
 
 	// Type Credential type (e.g. token, basic, AWS).
 	Type string `db:"type" json:"type" yaml:"type"`

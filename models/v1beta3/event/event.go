@@ -10,7 +10,6 @@ import (
 
 	"github.com/gofrs/uuid"
 	core "github.com/meshery/schemas/models/core"
-	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 // BulkDeleteRequest Payload for bulk-deleting events by ID.
@@ -22,7 +21,7 @@ type BulkDeleteRequest struct {
 // BulkDeleteResponse Response body returned after bulk event deletion.
 type BulkDeleteResponse struct {
 	// Deleted UUIDs of events that were deleted.
-	Deleted *[]openapi_types.UUID `json:"deleted,omitempty" yaml:"deleted,omitempty"`
+	Deleted *[]uuid.UUID `json:"deleted,omitempty" yaml:"deleted,omitempty"`
 }
 
 // BulkUpdateStatusRequest Payload for bulk-updating the status of events.
@@ -37,7 +36,7 @@ type BulkUpdateStatusRequest struct {
 // BulkUpdateStatusResponse Response body returned after bulk event status update.
 type BulkUpdateStatusResponse struct {
 	// Updated UUIDs of events whose status was updated.
-	Updated *[]openapi_types.UUID `json:"updated,omitempty" yaml:"updated,omitempty"`
+	Updated *[]uuid.UUID `json:"updated,omitempty" yaml:"updated,omitempty"`
 }
 
 // ErrorResponse Generic error envelope returned for non-2xx responses.
@@ -57,8 +56,8 @@ type EventPayload struct {
 	// Description Description of the event.
 	Description *string `json:"description,omitempty" yaml:"description,omitempty"`
 
-	// UserID UUID of the user associated with the event.
-	UserID               *uuid.UUID             `json:"userId,omitempty" yaml:"userId,omitempty"`
+	// Owner UUID of the user associated with the event.
+	Owner                *uuid.UUID             `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
 	AdditionalProperties map[string]interface{} `json:"-" yaml:"-"`
 }
 
@@ -147,7 +146,7 @@ type UpdateEventStatusRequest struct {
 // UpdateEventStatusResponse Response body returned after updating an event's status.
 type UpdateEventStatusResponse struct {
 	// EventId UUID of the event whose status was updated.
-	EventId *openapi_types.UUID `json:"eventId,omitempty" yaml:"eventId,omitempty"`
+	EventId *uuid.UUID `json:"eventId,omitempty" yaml:"eventId,omitempty"`
 
 	// Message Human-readable status message.
 	Message *string `json:"message,omitempty" yaml:"message,omitempty"`
@@ -160,7 +159,7 @@ type UpdateEventStatusResponse struct {
 type Cumulative = bool
 
 // EventId defines model for eventId.
-type EventId = openapi_types.UUID
+type EventId = uuid.UUID
 
 // Filter defines model for filter.
 type Filter = string
@@ -171,8 +170,14 @@ type Order = string
 // Page defines model for page.
 type Page = string
 
+// PageSize defines model for pageSize.
+type PageSize = int
+
 // Pagesize defines model for pagesize.
 type Pagesize = string
+
+// PagesizeLegacy defines model for pagesizeLegacy.
+type PagesizeLegacy = string
 
 // Search defines model for search.
 type Search = string
@@ -229,12 +234,12 @@ func (a *EventPayload) UnmarshalJSON(b []byte) error {
 		delete(object, "description")
 	}
 
-	if raw, found := object["userId"]; found {
-		err = json.Unmarshal(raw, &a.UserID)
+	if raw, found := object["owner"]; found {
+		err = json.Unmarshal(raw, &a.Owner)
 		if err != nil {
-			return fmt.Errorf("error reading 'userId': %w", err)
+			return fmt.Errorf("error reading 'owner': %w", err)
 		}
-		delete(object, "userId")
+		delete(object, "owner")
 	}
 
 	if len(object) != 0 {
@@ -277,10 +282,10 @@ func (a EventPayload) MarshalJSON() ([]byte, error) {
 		}
 	}
 
-	if a.UserID != nil {
-		object["userId"], err = json.Marshal(a.UserID)
+	if a.Owner != nil {
+		object["owner"], err = json.Marshal(a.Owner)
 		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'userId': %w", err)
+			return nil, fmt.Errorf("error marshaling 'owner': %w", err)
 		}
 	}
 

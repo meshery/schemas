@@ -56,7 +56,7 @@ const ComponentSchema: Record<string, unknown> = {
             "type": "string",
             "minLength": 2,
             "maxLength": 100,
-            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
             "example": [
               "v1",
               "v1alpha1",
@@ -154,7 +154,7 @@ const ComponentSchema: Record<string, unknown> = {
                 "type": "string",
                 "minLength": 2,
                 "maxLength": 100,
-                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                 "example": [
                   "v1",
                   "v1alpha1",
@@ -364,7 +364,7 @@ const ComponentSchema: Record<string, unknown> = {
                   "user_id": {
                     "x-go-name": "UserID",
                     "x-oapi-codegen-extra-tags": {
-                      "db": "user_id",
+                      "db": "owner",
                       "yaml": "user_id"
                     },
                     "x-order": 9,
@@ -474,7 +474,7 @@ const ComponentSchema: Record<string, unknown> = {
                           "type": "string",
                           "minLength": 2,
                           "maxLength": 100,
-                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                           "example": [
                             "v1",
                             "v1alpha1",
@@ -610,7 +610,7 @@ const ComponentSchema: Record<string, unknown> = {
                     "type": "string",
                     "minLength": 2,
                     "maxLength": 100,
-                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                    "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                     "example": [
                       "v1",
                       "v1alpha1",
@@ -696,6 +696,7 @@ const ComponentSchema: Record<string, unknown> = {
                     },
                     "default": "Uncategorized",
                     "description": "The category of the model that determines the main grouping.",
+                    "helperText": "Select a model category",
                     "enum": [
                       "Analytics",
                       "App Definition and Development",
@@ -838,7 +839,7 @@ const ComponentSchema: Record<string, unknown> = {
                           "type": "string",
                           "minLength": 2,
                           "maxLength": 100,
-                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                          "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                           "example": [
                             "v1",
                             "v1alpha1",
@@ -1226,6 +1227,7 @@ const ComponentSchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "gorm": "-"
             },
+            "x-generate-db-helpers": true,
             "type": "object",
             "required": [
               "id",
@@ -1743,7 +1745,7 @@ const ComponentSchema: Record<string, unknown> = {
                   "type": "string",
                   "minLength": 2,
                   "maxLength": 100,
-                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                   "example": [
                     "v1",
                     "v1alpha1",

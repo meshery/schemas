@@ -5,7 +5,7 @@ package badge
 
 import (
 	"github.com/meshery/schemas/models/core"
-	openapi_types "github.com/oapi-codegen/runtime/types"
+	"github.com/gofrs/uuid"
 )
 
 // Badge defines model for Badge.
@@ -47,7 +47,7 @@ type BadgeAssignmentPayload struct {
 	Notify *bool `json:"notify,omitempty" yaml:"notify,omitempty"`
 
 	// UserId ID of the user who owns or created this resource.
-	UserId *openapi_types.UUID `json:"user_id,omitempty" yaml:"user_id,omitempty"`
+	UserId *uuid.UUID `json:"user_id,omitempty" yaml:"user_id,omitempty"`
 }
 
 // BadgePayload Payload for creating or updating a badge.

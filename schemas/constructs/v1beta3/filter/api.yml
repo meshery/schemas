@@ -52,7 +52,7 @@ paths:
             type: array
             items:
               type: string
-        - name: userId
+        - name: owner
           in: query
           required: false
           description: |

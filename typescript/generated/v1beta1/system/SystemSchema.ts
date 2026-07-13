@@ -303,6 +303,111 @@ const SystemSchema: Record<string, unknown> = {
         }
       }
     },
+    "/api/system/email/test": {
+      "post": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "System"
+        ],
+        "summary": "Send a test email",
+        "description": "Sends a test email through the configured SMTP provider to verify the email configuration. Restricted to provider administrators.",
+        "operationId": "sendTestEmail",
+        "requestBody": {
+          "description": "Recipient and optional subject for the test email.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "Request body for sending a test email through the configured SMTP provider.",
+                "additionalProperties": false,
+                "required": [
+                  "to"
+                ],
+                "properties": {
+                  "to": {
+                    "type": "string",
+                    "description": "Recipient email address for the test message.",
+                    "format": "email",
+                    "maxLength": 320
+                  },
+                  "subject": {
+                    "type": "string",
+                    "description": "Subject line for the test message. A default subject is used when omitted.",
+                    "maxLength": 998,
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "subject,omitempty"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Test email sent",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Result of a test email send attempt.",
+                  "additionalProperties": false,
+                  "required": [
+                    "status",
+                    "message",
+                    "timestamp",
+                    "sentTo"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "description": "Outcome status of the send attempt (e.g. `success`).",
+                      "maxLength": 64
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Human-readable result message.",
+                      "maxLength": 1024
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "description": "Unix-epoch seconds, as a decimal string, when the test email was sent.",
+                      "pattern": "^[0-9]+$",
+                      "maxLength": 20
+                    },
+                    "sentTo": {
+                      "type": "string",
+                      "description": "Recipient address the test email was sent to.",
+                      "format": "email",
+                      "maxLength": 320
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload or malformed recipient email address."
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Email configuration validation failed or the send attempt errored."
+          }
+        }
+      }
+    },
     "/api/system/sync": {
       "get": {
         "x-internal": [
@@ -410,6 +515,459 @@ const SystemSchema: Record<string, unknown> = {
           }
         }
       }
+    },
+    "/api/system/controllers/operator/status": {
+      "get": {
+        "x-internal": [
+          "meshery"
+        ],
+        "tags": [
+          "System"
+        ],
+        "summary": "Get the Meshery Operator status for a connection",
+        "description": "Returns the current status of the Meshery Operator controller for the given kubernetes connection. Replaces the getOperatorStatus GraphQL query.",
+        "operationId": "getOperatorControllerStatus",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "query",
+            "description": "The kubernetes connection ID whose operator status is requested.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operator controller status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Status of a single Meshery controller (operator, MeshSync, or broker) for a kubernetes connection. Element type of the controller-status SSE stream and the operator status response.",
+                  "additionalProperties": false,
+                  "required": [
+                    "connectionId",
+                    "controller",
+                    "status",
+                    "version"
+                  ],
+                  "properties": {
+                    "connectionId": {
+                      "description": "The kubernetes connection ID this status belongs to.",
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    },
+                    "controller": {
+                      "type": "string",
+                      "description": "The controller this status describes.",
+                      "enum": [
+                        "OPERATOR",
+                        "MESHSYNC",
+                        "BROKER"
+                      ]
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "Current controller status (e.g. DEPLOYED, NOTDEPLOYED, RUNNING, CONNECTED, UNKNOWN).",
+                      "maxLength": 255
+                    },
+                    "version": {
+                      "type": "string",
+                      "description": "Deployed controller version, when known.",
+                      "maxLength": 255
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error while resolving controller status."
+          }
+        }
+      }
+    },
+    "/api/system/controllers/meshsync/status": {
+      "get": {
+        "x-internal": [
+          "meshery"
+        ],
+        "tags": [
+          "System"
+        ],
+        "summary": "Get the MeshSync controller status for a connection",
+        "description": "Returns the current status of the MeshSync controller for the given kubernetes connection. Replaces the getMeshsyncStatus GraphQL query.",
+        "operationId": "getMeshsyncControllerStatus",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "query",
+            "description": "The kubernetes connection ID whose MeshSync status is requested.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "MeshSync controller status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Detailed status of a named Meshery controller (MeshSync or Broker) for a kubernetes connection.",
+                  "additionalProperties": false,
+                  "required": [
+                    "name",
+                    "version",
+                    "status",
+                    "connectionId"
+                  ],
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Controller name (e.g. MeshSync, MesheryBroker).",
+                      "maxLength": 255
+                    },
+                    "version": {
+                      "type": "string",
+                      "description": "Deployed controller version, when known.",
+                      "maxLength": 255
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "Current controller status. May be composed, e.g. \"Connected <endpoint>\".",
+                      "maxLength": 1024
+                    },
+                    "connectionId": {
+                      "description": "The kubernetes connection ID this status belongs to.",
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error while resolving controller status."
+          }
+        }
+      }
+    },
+    "/api/system/controllers/broker/status": {
+      "get": {
+        "x-internal": [
+          "meshery"
+        ],
+        "tags": [
+          "System"
+        ],
+        "summary": "Get the Meshery Broker (NATS) controller status for a connection",
+        "description": "Returns the current status of the Meshery Broker (NATS) controller for the given kubernetes connection. Replaces the getNatsStatus GraphQL query.",
+        "operationId": "getBrokerControllerStatus",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "query",
+            "description": "The kubernetes connection ID whose broker status is requested.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Broker controller status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Detailed status of a named Meshery controller (MeshSync or Broker) for a kubernetes connection.",
+                  "additionalProperties": false,
+                  "required": [
+                    "name",
+                    "version",
+                    "status",
+                    "connectionId"
+                  ],
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Controller name (e.g. MeshSync, MesheryBroker).",
+                      "maxLength": 255
+                    },
+                    "version": {
+                      "type": "string",
+                      "description": "Deployed controller version, when known.",
+                      "maxLength": 255
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "Current controller status. May be composed, e.g. \"Connected <endpoint>\".",
+                      "maxLength": 1024
+                    },
+                    "connectionId": {
+                      "description": "The kubernetes connection ID this status belongs to.",
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error while resolving controller status."
+          }
+        }
+      }
+    },
+    "/api/system/controllers/diagnostics": {
+      "get": {
+        "x-internal": [
+          "meshery"
+        ],
+        "tags": [
+          "System"
+        ],
+        "summary": "Get controller diagnostics and remediation for a connection",
+        "description": "Returns human-actionable diagnostics for a kubernetes connection's Meshery controllers (operator, MeshSync, broker), derived from their current status and Meshery's live broker connection. Each diagnostic carries a severity, a summary, an explanation, and concrete remediation steps so the UI can render a \"Diagnostics\" section in the connection detail view. An empty diagnostics list (with healthy=true) means no problems were detected.",
+        "operationId": "getControllerDiagnostics",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "query",
+            "description": "The kubernetes connection ID whose diagnostics are requested.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Connection controller diagnostics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Diagnostics for a kubernetes connection's Meshery controllers, for rendering a \"Diagnostics\" section in the connection detail view.",
+                  "additionalProperties": false,
+                  "required": [
+                    "connectionId",
+                    "healthy",
+                    "diagnostics"
+                  ],
+                  "properties": {
+                    "connectionId": {
+                      "description": "The kubernetes connection ID these diagnostics belong to.",
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    },
+                    "healthy": {
+                      "type": "boolean",
+                      "description": "True when no warning/error diagnostics were detected (informational diagnostics do not affect health)."
+                    },
+                    "diagnostics": {
+                      "type": "array",
+                      "description": "The diagnostics detected for this connection (possibly empty).",
+                      "items": {
+                        "type": "object",
+                        "description": "A single human-actionable diagnostic about a kubernetes connection's Meshery controllers, with an explanation and remediation steps.",
+                        "additionalProperties": false,
+                        "required": [
+                          "severity",
+                          "code",
+                          "summary"
+                        ],
+                        "properties": {
+                          "severity": {
+                            "type": "string",
+                            "description": "How serious the diagnostic is.",
+                            "enum": [
+                              "info",
+                              "warning",
+                              "error"
+                            ]
+                          },
+                          "controller": {
+                            "type": "string",
+                            "description": "The controller this diagnostic concerns, when applicable.",
+                            "enum": [
+                              "OPERATOR",
+                              "MESHSYNC",
+                              "BROKER"
+                            ],
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "controller,omitempty"
+                            }
+                          },
+                          "code": {
+                            "type": "string",
+                            "description": "Stable machine-readable code for this diagnostic (e.g. `broker_unreachable`), for the UI to key on.",
+                            "maxLength": 128
+                          },
+                          "summary": {
+                            "type": "string",
+                            "description": "Short, human-readable title for the diagnostic.",
+                            "maxLength": 255
+                          },
+                          "description": {
+                            "type": "string",
+                            "description": "A fuller explanation of what is wrong and why.",
+                            "maxLength": 2048,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "description,omitempty"
+                            }
+                          },
+                          "remediation": {
+                            "type": "array",
+                            "description": "Ordered, concrete steps the user can take to resolve the issue.",
+                            "items": {
+                              "type": "string",
+                              "maxLength": 1024
+                            },
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "remediation,omitempty"
+                            }
+                          },
+                          "endpoint": {
+                            "type": "string",
+                            "description": "A relevant endpoint for the diagnostic, when applicable (e.g. the broker's published address the user needs to make reachable).",
+                            "maxLength": 512,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "endpoint,omitempty"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error while resolving controller diagnostics."
+          }
+        }
+      }
+    },
+    "/api/system/controllers/status/subscribe": {
+      "get": {
+        "x-internal": [
+          "meshery"
+        ],
+        "tags": [
+          "System"
+        ],
+        "summary": "Stream Meshery controller status over Server-Sent Events",
+        "description": "Server-Sent Events (SSE) stream of controller status (operator, MeshSync, broker) for the requested kubernetes connections. Replaces the subscribeMesheryControllersStatus GraphQL subscription. The server emits the full status array as an unnamed SSE event (`data: <json>` followed by a blank line) on subscribe and again whenever any controller's status changes; a comment keepalive is sent periodically. Consume with a native EventSource, not a buffered JSON client.",
+        "operationId": "subscribeControllersStatus",
+        "parameters": [
+          {
+            "name": "connectionIds",
+            "in": "query",
+            "description": "Kubernetes connection IDs to watch. Repeatable (connectionIds=<id>&connectionIds=<id>).",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uuid"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An open text/event-stream of controller status snapshots.",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "SSE frames. Each `data:` line is a JSON array of ControllerStatus items."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -433,6 +991,65 @@ const SystemSchema: Record<string, unknown> = {
       }
     },
     "schemas": {
+      "EmailTestRequest": {
+        "type": "object",
+        "description": "Request body for sending a test email through the configured SMTP provider.",
+        "additionalProperties": false,
+        "required": [
+          "to"
+        ],
+        "properties": {
+          "to": {
+            "type": "string",
+            "description": "Recipient email address for the test message.",
+            "format": "email",
+            "maxLength": 320
+          },
+          "subject": {
+            "type": "string",
+            "description": "Subject line for the test message. A default subject is used when omitted.",
+            "maxLength": 998,
+            "x-oapi-codegen-extra-tags": {
+              "json": "subject,omitempty"
+            }
+          }
+        }
+      },
+      "EmailTestResponse": {
+        "type": "object",
+        "description": "Result of a test email send attempt.",
+        "additionalProperties": false,
+        "required": [
+          "status",
+          "message",
+          "timestamp",
+          "sentTo"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Outcome status of the send attempt (e.g. `success`).",
+            "maxLength": 64
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable result message.",
+            "maxLength": 1024
+          },
+          "timestamp": {
+            "type": "string",
+            "description": "Unix-epoch seconds, as a decimal string, when the test email was sent.",
+            "pattern": "^[0-9]+$",
+            "maxLength": 20
+          },
+          "sentTo": {
+            "type": "string",
+            "description": "Recipient address the test email was sent to.",
+            "format": "email",
+            "maxLength": 320
+          }
+        }
+      },
       "SystemMessageResponse": {
         "type": "object",
         "description": "Status message response.",
@@ -446,6 +1063,253 @@ const SystemSchema: Record<string, unknown> = {
             "description": "Human-readable status message.",
             "minLength": 1,
             "maxLength": 1024
+          }
+        }
+      },
+      "ControllerStatus": {
+        "type": "object",
+        "description": "Status of a single Meshery controller (operator, MeshSync, or broker) for a kubernetes connection. Element type of the controller-status SSE stream and the operator status response.",
+        "additionalProperties": false,
+        "required": [
+          "connectionId",
+          "controller",
+          "status",
+          "version"
+        ],
+        "properties": {
+          "connectionId": {
+            "description": "The kubernetes connection ID this status belongs to.",
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
+          "controller": {
+            "type": "string",
+            "description": "The controller this status describes.",
+            "enum": [
+              "OPERATOR",
+              "MESHSYNC",
+              "BROKER"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "description": "Current controller status (e.g. DEPLOYED, NOTDEPLOYED, RUNNING, CONNECTED, UNKNOWN).",
+            "maxLength": 255
+          },
+          "version": {
+            "type": "string",
+            "description": "Deployed controller version, when known.",
+            "maxLength": 255
+          }
+        }
+      },
+      "ControllerInfo": {
+        "type": "object",
+        "description": "Detailed status of a named Meshery controller (MeshSync or Broker) for a kubernetes connection.",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "version",
+          "status",
+          "connectionId"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Controller name (e.g. MeshSync, MesheryBroker).",
+            "maxLength": 255
+          },
+          "version": {
+            "type": "string",
+            "description": "Deployed controller version, when known.",
+            "maxLength": 255
+          },
+          "status": {
+            "type": "string",
+            "description": "Current controller status. May be composed, e.g. \"Connected <endpoint>\".",
+            "maxLength": 1024
+          },
+          "connectionId": {
+            "description": "The kubernetes connection ID this status belongs to.",
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          }
+        }
+      },
+      "ControllerDiagnostic": {
+        "type": "object",
+        "description": "A single human-actionable diagnostic about a kubernetes connection's Meshery controllers, with an explanation and remediation steps.",
+        "additionalProperties": false,
+        "required": [
+          "severity",
+          "code",
+          "summary"
+        ],
+        "properties": {
+          "severity": {
+            "type": "string",
+            "description": "How serious the diagnostic is.",
+            "enum": [
+              "info",
+              "warning",
+              "error"
+            ]
+          },
+          "controller": {
+            "type": "string",
+            "description": "The controller this diagnostic concerns, when applicable.",
+            "enum": [
+              "OPERATOR",
+              "MESHSYNC",
+              "BROKER"
+            ],
+            "x-oapi-codegen-extra-tags": {
+              "json": "controller,omitempty"
+            }
+          },
+          "code": {
+            "type": "string",
+            "description": "Stable machine-readable code for this diagnostic (e.g. `broker_unreachable`), for the UI to key on.",
+            "maxLength": 128
+          },
+          "summary": {
+            "type": "string",
+            "description": "Short, human-readable title for the diagnostic.",
+            "maxLength": 255
+          },
+          "description": {
+            "type": "string",
+            "description": "A fuller explanation of what is wrong and why.",
+            "maxLength": 2048,
+            "x-oapi-codegen-extra-tags": {
+              "json": "description,omitempty"
+            }
+          },
+          "remediation": {
+            "type": "array",
+            "description": "Ordered, concrete steps the user can take to resolve the issue.",
+            "items": {
+              "type": "string",
+              "maxLength": 1024
+            },
+            "x-oapi-codegen-extra-tags": {
+              "json": "remediation,omitempty"
+            }
+          },
+          "endpoint": {
+            "type": "string",
+            "description": "A relevant endpoint for the diagnostic, when applicable (e.g. the broker's published address the user needs to make reachable).",
+            "maxLength": 512,
+            "x-oapi-codegen-extra-tags": {
+              "json": "endpoint,omitempty"
+            }
+          }
+        }
+      },
+      "ConnectionDiagnostics": {
+        "type": "object",
+        "description": "Diagnostics for a kubernetes connection's Meshery controllers, for rendering a \"Diagnostics\" section in the connection detail view.",
+        "additionalProperties": false,
+        "required": [
+          "connectionId",
+          "healthy",
+          "diagnostics"
+        ],
+        "properties": {
+          "connectionId": {
+            "description": "The kubernetes connection ID these diagnostics belong to.",
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
+          "healthy": {
+            "type": "boolean",
+            "description": "True when no warning/error diagnostics were detected (informational diagnostics do not affect health)."
+          },
+          "diagnostics": {
+            "type": "array",
+            "description": "The diagnostics detected for this connection (possibly empty).",
+            "items": {
+              "type": "object",
+              "description": "A single human-actionable diagnostic about a kubernetes connection's Meshery controllers, with an explanation and remediation steps.",
+              "additionalProperties": false,
+              "required": [
+                "severity",
+                "code",
+                "summary"
+              ],
+              "properties": {
+                "severity": {
+                  "type": "string",
+                  "description": "How serious the diagnostic is.",
+                  "enum": [
+                    "info",
+                    "warning",
+                    "error"
+                  ]
+                },
+                "controller": {
+                  "type": "string",
+                  "description": "The controller this diagnostic concerns, when applicable.",
+                  "enum": [
+                    "OPERATOR",
+                    "MESHSYNC",
+                    "BROKER"
+                  ],
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "controller,omitempty"
+                  }
+                },
+                "code": {
+                  "type": "string",
+                  "description": "Stable machine-readable code for this diagnostic (e.g. `broker_unreachable`), for the UI to key on.",
+                  "maxLength": 128
+                },
+                "summary": {
+                  "type": "string",
+                  "description": "Short, human-readable title for the diagnostic.",
+                  "maxLength": 255
+                },
+                "description": {
+                  "type": "string",
+                  "description": "A fuller explanation of what is wrong and why.",
+                  "maxLength": 2048,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "description,omitempty"
+                  }
+                },
+                "remediation": {
+                  "type": "array",
+                  "description": "Ordered, concrete steps the user can take to resolve the issue.",
+                  "items": {
+                    "type": "string",
+                    "maxLength": 1024
+                  },
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "remediation,omitempty"
+                  }
+                },
+                "endpoint": {
+                  "type": "string",
+                  "description": "A relevant endpoint for the diagnostic, when applicable (e.g. the broker's published address the user needs to make reachable).",
+                  "maxLength": 512,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "endpoint,omitempty"
+                  }
+                }
+              }
+            }
           }
         }
       },

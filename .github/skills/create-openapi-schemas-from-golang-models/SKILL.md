@@ -5,7 +5,7 @@ description: 'Create OpenAPI schemas from Golang models in Meshery Cloud, genera
 
 # Create OpenAPI Schemas from Golang Models
 
-> Canonical naming contract — see `docs/identifier-naming-contributor-guide.md` in `meshery/schemas` (<https://github.com/meshery/schemas/blob/master/docs/identifier-naming-contributor-guide.md>) for the full directory (26-row naming table with before/after and do/don't examples). The inline rules below remain the skill's authority for its workflow scope; the guide is the reader-friendly cross-repo reference.
+> Canonical naming contract - see `docs/identifier-naming-contributor-guide.md` in `meshery/schemas` (<https://github.com/meshery/schemas/blob/master/docs/identifier-naming-contributor-guide.md>) for the full directory (26-row naming table with before/after and do/don't examples). The inline rules below remain the skill's authority for its workflow scope; the guide is the reader-friendly cross-repo reference.
 
 ## Overview
 
@@ -59,7 +59,7 @@ Response descriptions and response message text must not include the word `succe
 
 In `meshery/schemas`, create these files for the target construct:
 
-> **Dual-Schema Pattern (required):** Every entity needs two schemas — `<construct>.yaml` (full response entity) and `{Construct}Payload` in `api.yml` (write request body). Never use the entity schema as a `POST`/`PUT` requestBody. See AGENTS.md § "The Dual-Schema Pattern" for full rules.
+> **Dual-Schema Pattern (required):** Every entity needs two schemas - `<construct>.yaml` (full response entity) and `{Construct}Payload` in `api.yml` (write request body). Never use the entity schema as a `POST`/`PUT` requestBody. See AGENTS.md § "The Dual-Schema Pattern" for full rules.
 
 ```
 schemas/constructs/v1beta1/<construct_name>/
@@ -71,7 +71,7 @@ schemas/constructs/v1beta1/<construct_name>/
 
 #### Schema Definition (`<construct_name>.yaml`)
 
-This is the **response schema** — the full persisted object as the API returns it. It must:
+This is the **response schema** - the full persisted object as the API returns it. It must:
 - Have `additionalProperties: false` at the top level
 - Include all server-generated fields (`id`, `created_at`, `updated_at`, `deleted_at`) in `properties` and `required`
 
@@ -116,7 +116,7 @@ properties:
 
 #### API Definition (`api.yml`)
 
-Define endpoints matching the Meshery Cloud router. All `POST`/`PUT` operations **must** use a `{Construct}Payload` request body — never the full entity schema.
+Define endpoints matching the Meshery Cloud router. All `POST`/`PUT` operations **must** use a `{Construct}Payload` request body - never the full entity schema.
 
 ```yaml
 openapi: 3.0.3
@@ -179,7 +179,7 @@ components:
           type: string
           format: uuid
           x-oapi-codegen-extra-tags:
-            json: "id,omitempty"                        # optional — for upsert
+            json: "id,omitempty"                        # optional - for upsert
         roleName:
           type: string
         description:
@@ -222,7 +222,7 @@ make generate-golang
 **Verification Steps:**
 
 1. Ensure generated models are in `models/v1beta1/<construct_name>/`
-2. If a schema type within the construct is stored as a **JSON blob in a database column** and has a **dedicated schema definition with explicit properties**, add `x-generate-db-helpers: true` at the schema component level in `api.yml`. This instructs the generator to produce `Scan()` and `Value()` SQL driver methods automatically in `zz_generated.helpers.go` — no manual `helpers.go` is needed for that type.
+2. If a schema type within the construct is stored as a **JSON blob in a database column** and has a **dedicated schema definition with explicit properties**, add `x-generate-db-helpers: true` at the schema component level in `api.yml`. This instructs the generator to produce `Scan()` and `Value()` SQL driver methods automatically in `zz_generated.helpers.go` - no manual `helpers.go` is needed for that type.
 
    ```yaml
    # In api.yml, under components/schemas:
@@ -236,10 +236,10 @@ make generate-golang
          type: string
    ```
 
-   For amorphous JSON blob fields that lack a fixed schema definition (e.g., a freeform `metadata` map), use `x-go-type: "core.Map"` on the property instead — do not use `x-generate-db-helpers` for those.
+   For amorphous JSON blob fields that lack a fixed schema definition (e.g., a freeform `metadata` map), use `x-go-type: "core.Map"` on the property instead - do not use `x-generate-db-helpers` for those.
 
 3. If helpers are still needed for non-generated behavior (e.g., `TableName()`, custom business logic), create `helpers.go` manually. When implementing `Scan`/`Value`, follow these rules (see docs/schema-authoring-reference.md § "SQL Driver (`Scan`/`Value`) Implementation Rules"):
-   - `Value()` must always marshal — never return `(nil, nil)`. A nil map produces JSON `"null"`, not SQL NULL.
+   - `Value()` must always marshal - never return `(nil, nil)`. A nil map produces JSON `"null"`, not SQL NULL.
    - `Scan()` must zero the receiver (`*m = nil`) when `src` is nil, not silently return.
 
 ```go
@@ -255,7 +255,7 @@ func (r Role) TableName() string {
     return "roles"
 }
 
-// Value implements driver.Valuer. Always marshals — never returns SQL NULL.
+// Value implements driver.Valuer. Always marshals - never returns SQL NULL.
 func (r Role) Value() (driver.Value, error) {
     b, err := json.Marshal(r)
     if err != nil {

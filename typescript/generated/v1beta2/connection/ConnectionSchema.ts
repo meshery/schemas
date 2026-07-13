@@ -288,7 +288,7 @@ const ConnectionSchema: Record<string, unknown> = {
                           "user_id": {
                             "x-go-name": "UserID",
                             "x-oapi-codegen-extra-tags": {
-                              "db": "user_id",
+                              "db": "owner",
                               "yaml": "user_id"
                             },
                             "x-order": 9,
@@ -398,7 +398,7 @@ const ConnectionSchema: Record<string, unknown> = {
                                   "type": "string",
                                   "minLength": 2,
                                   "maxLength": 100,
-                                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                                   "example": [
                                     "v1",
                                     "v1alpha1",
@@ -534,7 +534,7 @@ const ConnectionSchema: Record<string, unknown> = {
                             "type": "string",
                             "minLength": 2,
                             "maxLength": 100,
-                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                             "example": [
                               "v1",
                               "v1alpha1",
@@ -847,7 +847,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "user_id": {
                       "x-go-name": "UserID",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id",
+                        "db": "owner",
                         "yaml": "user_id"
                       },
                       "x-order": 9,
@@ -957,7 +957,7 @@ const ConnectionSchema: Record<string, unknown> = {
                             "type": "string",
                             "minLength": 2,
                             "maxLength": 100,
-                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                             "example": [
                               "v1",
                               "v1alpha1",
@@ -1093,7 +1093,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "type": "string",
                       "minLength": 2,
                       "maxLength": 100,
-                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                       "example": [
                         "v1",
                         "v1alpha1",
@@ -1293,7 +1293,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "user_id": {
                       "x-go-name": "UserID",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id",
+                        "db": "owner",
                         "yaml": "user_id"
                       },
                       "x-order": 9,
@@ -1403,7 +1403,7 @@ const ConnectionSchema: Record<string, unknown> = {
                             "type": "string",
                             "minLength": 2,
                             "maxLength": 100,
-                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                             "example": [
                               "v1",
                               "v1alpha1",
@@ -1539,7 +1539,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "type": "string",
                       "minLength": 2,
                       "maxLength": 100,
-                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                       "example": [
                         "v1",
                         "v1alpha1",
@@ -1840,7 +1840,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "user_id": {
                       "x-go-name": "UserID",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id",
+                        "db": "owner",
                         "yaml": "user_id"
                       },
                       "x-order": 9,
@@ -1950,7 +1950,7 @@ const ConnectionSchema: Record<string, unknown> = {
                             "type": "string",
                             "minLength": 2,
                             "maxLength": 100,
-                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                             "example": [
                               "v1",
                               "v1alpha1",
@@ -2086,7 +2086,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "type": "string",
                       "minLength": 2,
                       "maxLength": 100,
-                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                       "example": [
                         "v1",
                         "v1alpha1",
@@ -2726,7 +2726,7 @@ const ConnectionSchema: Record<string, unknown> = {
           "user_id": {
             "x-go-name": "UserID",
             "x-oapi-codegen-extra-tags": {
-              "db": "user_id",
+              "db": "owner",
               "yaml": "user_id"
             },
             "x-order": 9,
@@ -2836,7 +2836,7 @@ const ConnectionSchema: Record<string, unknown> = {
                   "type": "string",
                   "minLength": 2,
                   "maxLength": 100,
-                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                   "example": [
                     "v1",
                     "v1alpha1",
@@ -2972,7 +2972,7 @@ const ConnectionSchema: Record<string, unknown> = {
             "type": "string",
             "minLength": 2,
             "maxLength": 100,
-            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
             "example": [
               "v1",
               "v1alpha1",
@@ -3122,7 +3122,7 @@ const ConnectionSchema: Record<string, unknown> = {
                 "user_id": {
                   "x-go-name": "UserID",
                   "x-oapi-codegen-extra-tags": {
-                    "db": "user_id",
+                    "db": "owner",
                     "yaml": "user_id"
                   },
                   "x-order": 9,
@@ -3232,7 +3232,7 @@ const ConnectionSchema: Record<string, unknown> = {
                         "type": "string",
                         "minLength": 2,
                         "maxLength": 100,
-                        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                         "example": [
                           "v1",
                           "v1alpha1",
@@ -3368,7 +3368,7 @@ const ConnectionSchema: Record<string, unknown> = {
                   "type": "string",
                   "minLength": 2,
                   "maxLength": 100,
-                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+(alpha[0-9]*|beta[0-9]*|rc[0-9]*)?)([.-][a-z0-9]+)*$",
                   "example": [
                     "v1",
                     "v1alpha1",
