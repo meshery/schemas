@@ -149,6 +149,7 @@ properties:
     type: string
     format: date-time
     readOnly: true
+    nullable: true
     description: Timestamp when the invitation was deleted, if applicable.
     x-go-type: core.NullTime
     x-go-type-skip-optional-pointer: true
