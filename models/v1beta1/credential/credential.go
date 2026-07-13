@@ -4,8 +4,8 @@
 package credential
 
 import (
-	"github.com/meshery/schemas/models/core"
 	"github.com/gofrs/uuid"
+	"github.com/meshery/schemas/models/core"
 )
 
 // Credential Meshery Credentials store sensitive information such as API keys, tokens, and passwords used by connections to external systems.

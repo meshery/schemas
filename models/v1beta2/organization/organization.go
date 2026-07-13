@@ -6,8 +6,8 @@ package organization
 import (
 	"time"
 
-	"github.com/meshery/schemas/models/core"
 	"github.com/gofrs/uuid"
+	"github.com/meshery/schemas/models/core"
 )
 
 // Defines values for OrgTeamActionPayloadAction.
@@ -44,14 +44,14 @@ type AvailableOrganization struct {
 
 // AvailableTeam Team listing record used in team listings associated with an organization.
 type AvailableTeam struct {
-	CreatedAt   Time                   `json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
-	DeletedAt   NullableTime           `json:"deletedAt,omitempty" yaml:"deletedAt,omitempty"`
-	Description Text                   `json:"description,omitempty" yaml:"description,omitempty"`
+	CreatedAt   Time           `json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
+	DeletedAt   NullableTime   `json:"deletedAt,omitempty" yaml:"deletedAt,omitempty"`
+	Description Text           `json:"description,omitempty" yaml:"description,omitempty"`
 	ID          core.GeneralId `db:"id" json:"id" yaml:"id"`
-	Metadata    MapObject              `json:"metadata,omitempty" yaml:"metadata,omitempty"`
-	Name        Text                   `json:"name,omitempty" yaml:"name,omitempty"`
-	Owner       Text                   `json:"owner,omitempty" yaml:"owner,omitempty"`
-	UpdatedAt   Time                   `json:"updatedAt,omitempty" yaml:"updatedAt,omitempty"`
+	Metadata    MapObject      `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Name        Text           `json:"name,omitempty" yaml:"name,omitempty"`
+	Owner       Text           `json:"owner,omitempty" yaml:"owner,omitempty"`
+	UpdatedAt   Time           `json:"updatedAt,omitempty" yaml:"updatedAt,omitempty"`
 }
 
 // CarouselSlide A single slide in the auth-page feature carousel.
@@ -235,8 +235,8 @@ type Preferences struct {
 
 // TeamsOrganizationsMapping Junction record linking a team to an organization.
 type TeamsOrganizationsMapping struct {
-	CreatedAt Time                   `db:"created_at" json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
-	DeletedAt NullableTime           `db:"deleted_at" json:"deletedAt,omitempty" yaml:"deletedAt,omitempty"`
+	CreatedAt Time           `db:"created_at" json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
+	DeletedAt NullableTime   `db:"deleted_at" json:"deletedAt,omitempty" yaml:"deletedAt,omitempty"`
 	ID        core.GeneralId `db:"id" json:"id" yaml:"id"`
 
 	// OrgId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -300,8 +300,8 @@ type UUID = core.Uuid
 
 // UsersOrganizationsMapping Junction record linking a user to an organization, optionally carrying the role the user holds in that organization. Backed by the users_organizations_mappings table, whose user foreign-key column is named owner.
 type UsersOrganizationsMapping struct {
-	CreatedAt Time                   `db:"created_at" json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
-	DeletedAt NullableTime           `db:"deleted_at" json:"deletedAt,omitempty" yaml:"deletedAt,omitempty"`
+	CreatedAt Time           `db:"created_at" json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
+	DeletedAt NullableTime   `db:"deleted_at" json:"deletedAt,omitempty" yaml:"deletedAt,omitempty"`
 	ID        core.GeneralId `db:"id" json:"id" yaml:"id"`
 
 	// OrganizationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.

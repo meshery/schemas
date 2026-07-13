@@ -4,8 +4,8 @@
 package environment
 
 import (
-	"github.com/meshery/schemas/models/core"
 	"github.com/gofrs/uuid"
+	"github.com/meshery/schemas/models/core"
 )
 
 // Environment Environments allow you to logically group related Connections and their associated Credentials. Learn more at https://docs.meshery.io/concepts/logical/environments
@@ -89,10 +89,10 @@ type EnvironmentConnectionsPage struct {
 // EnvironmentPage Paginated list of environments.
 type EnvironmentPage struct {
 	// Environments Environments associated with this resource.
-	Environments []Environment       `json:"environments,omitempty" yaml:"environments,omitempty"`
-	Page         core.Number `json:"page,omitempty" yaml:"page,omitempty"`
-	PageSize     core.Number `json:"pageSize" yaml:"pageSize,omitempty"`
-	TotalCount   core.Number `json:"totalCount" yaml:"totalCount,omitempty"`
+	Environments []Environment `json:"environments,omitempty" yaml:"environments,omitempty"`
+	Page         core.Number   `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize     core.Number   `json:"pageSize" yaml:"pageSize,omitempty"`
+	TotalCount   core.Number   `json:"totalCount" yaml:"totalCount,omitempty"`
 }
 
 // EnvironmentPayload Payload for creating or updating an environment.
