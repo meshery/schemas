@@ -180,7 +180,7 @@ export interface components {
                 /** @description Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
                 description: string;
                 /** @description Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-                emails: string[];
+                emails: string[] | null;
                 /**
                  * Format: uuid
                  * @description ID of the organization to which the user is invited.
@@ -190,7 +190,7 @@ export interface components {
                  * Format: date-time
                  * @description Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.
                  */
-                expiresAt?: string;
+                expiresAt?: string | null;
                 /** @description Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
                 quota?: number;
                 /** @description List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
@@ -446,7 +446,7 @@ export interface components {
             /** @description Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
             description: string;
             /** @description Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-            emails: string[];
+            emails: string[] | null;
             /**
              * Format: uuid
              * @description ID of the organization to which the user is invited.
@@ -456,7 +456,7 @@ export interface components {
              * Format: date-time
              * @description Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.
              */
-            expiresAt?: string;
+            expiresAt?: string | null;
             /** @description Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
             quota?: number;
             /** @description List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
@@ -573,7 +573,7 @@ export interface operations {
                         /** @description Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
                         description: string;
                         /** @description Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-                        emails: string[];
+                        emails: string[] | null;
                         /**
                          * Format: uuid
                          * @description ID of the organization to which the user is invited.
@@ -583,7 +583,7 @@ export interface operations {
                          * Format: date-time
                          * @description Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.
                          */
-                        expiresAt?: string;
+                        expiresAt?: string | null;
                         /** @description Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
                         quota?: number;
                         /** @description List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
@@ -733,7 +733,7 @@ export interface operations {
                         /** @description Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
                         description: string;
                         /** @description Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-                        emails: string[];
+                        emails: string[] | null;
                         /**
                          * Format: uuid
                          * @description ID of the organization to which the user is invited.
@@ -743,7 +743,7 @@ export interface operations {
                          * Format: date-time
                          * @description Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.
                          */
-                        expiresAt?: string;
+                        expiresAt?: string | null;
                         /** @description Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
                         quota?: number;
                         /** @description List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
@@ -922,7 +922,7 @@ export interface operations {
                             /** @description Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
                             description: string;
                             /** @description Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-                            emails: string[];
+                            emails: string[] | null;
                             /**
                              * Format: uuid
                              * @description ID of the organization to which the user is invited.
@@ -932,7 +932,7 @@ export interface operations {
                              * Format: date-time
                              * @description Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.
                              */
-                            expiresAt?: string;
+                            expiresAt?: string | null;
                             /** @description Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
                             quota?: number;
                             /** @description List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
@@ -1071,7 +1071,7 @@ export interface operations {
                         /** @description Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
                         description: string;
                         /** @description Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-                        emails: string[];
+                        emails: string[] | null;
                         /**
                          * Format: uuid
                          * @description ID of the organization to which the user is invited.
@@ -1081,7 +1081,7 @@ export interface operations {
                          * Format: date-time
                          * @description Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.
                          */
-                        expiresAt?: string;
+                        expiresAt?: string | null;
                         /** @description Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
                         quota?: number;
                         /** @description List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
@@ -1178,7 +1178,7 @@ export interface operations {
                         /** @description Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
                         description: string;
                         /** @description Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-                        emails: string[];
+                        emails: string[] | null;
                         /**
                          * Format: uuid
                          * @description ID of the organization to which the user is invited.
@@ -1188,7 +1188,7 @@ export interface operations {
                          * Format: date-time
                          * @description Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.
                          */
-                        expiresAt?: string;
+                        expiresAt?: string | null;
                         /** @description Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
                         quota?: number;
                         /** @description List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */

@@ -127,11 +127,13 @@ const InvitationSchema: Record<string, unknown> = {
                     },
                     "emails": {
                       "type": "array",
+                      "nullable": true,
                       "description": "Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address.",
                       "x-go-type": "pq.StringArray",
                       "x-go-type-import": {
                         "path": "github.com/lib/pq"
                       },
+                      "x-go-type-skip-optional-pointer": true,
                       "items": {
                         "type": "string",
                         "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
@@ -156,6 +158,7 @@ const InvitationSchema: Record<string, unknown> = {
                     "expiresAt": {
                       "type": "string",
                       "format": "date-time",
+                      "nullable": true,
                       "description": "Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.",
                       "x-oapi-codegen-extra-tags": {
                         "db": "expires_at",
@@ -595,11 +598,13 @@ const InvitationSchema: Record<string, unknown> = {
                     },
                     "emails": {
                       "type": "array",
+                      "nullable": true,
                       "description": "Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address.",
                       "x-go-type": "pq.StringArray",
                       "x-go-type-import": {
                         "path": "github.com/lib/pq"
                       },
+                      "x-go-type-skip-optional-pointer": true,
                       "items": {
                         "type": "string",
                         "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
@@ -624,6 +629,7 @@ const InvitationSchema: Record<string, unknown> = {
                     "expiresAt": {
                       "type": "string",
                       "format": "date-time",
+                      "nullable": true,
                       "description": "Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.",
                       "x-oapi-codegen-extra-tags": {
                         "db": "expires_at",
@@ -918,11 +924,13 @@ const InvitationSchema: Record<string, unknown> = {
                           },
                           "emails": {
                             "type": "array",
+                            "nullable": true,
                             "description": "Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address.",
                             "x-go-type": "pq.StringArray",
                             "x-go-type-import": {
                               "path": "github.com/lib/pq"
                             },
+                            "x-go-type-skip-optional-pointer": true,
                             "items": {
                               "type": "string",
                               "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
@@ -947,6 +955,7 @@ const InvitationSchema: Record<string, unknown> = {
                           "expiresAt": {
                             "type": "string",
                             "format": "date-time",
+                            "nullable": true,
                             "description": "Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.",
                             "x-oapi-codegen-extra-tags": {
                               "db": "expires_at",
@@ -1305,11 +1314,13 @@ const InvitationSchema: Record<string, unknown> = {
                     },
                     "emails": {
                       "type": "array",
+                      "nullable": true,
                       "description": "Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address.",
                       "x-go-type": "pq.StringArray",
                       "x-go-type-import": {
                         "path": "github.com/lib/pq"
                       },
+                      "x-go-type-skip-optional-pointer": true,
                       "items": {
                         "type": "string",
                         "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
@@ -1334,6 +1345,7 @@ const InvitationSchema: Record<string, unknown> = {
                     "expiresAt": {
                       "type": "string",
                       "format": "date-time",
+                      "nullable": true,
                       "description": "Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.",
                       "x-oapi-codegen-extra-tags": {
                         "db": "expires_at",
@@ -1558,11 +1570,13 @@ const InvitationSchema: Record<string, unknown> = {
                     },
                     "emails": {
                       "type": "array",
+                      "nullable": true,
                       "description": "Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address.",
                       "x-go-type": "pq.StringArray",
                       "x-go-type-import": {
                         "path": "github.com/lib/pq"
                       },
+                      "x-go-type-skip-optional-pointer": true,
                       "items": {
                         "type": "string",
                         "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
@@ -1587,6 +1601,7 @@ const InvitationSchema: Record<string, unknown> = {
                     "expiresAt": {
                       "type": "string",
                       "format": "date-time",
+                      "nullable": true,
                       "description": "Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.",
                       "x-oapi-codegen-extra-tags": {
                         "db": "expires_at",
@@ -2492,11 +2507,13 @@ const InvitationSchema: Record<string, unknown> = {
                 },
                 "emails": {
                   "type": "array",
+                  "nullable": true,
                   "description": "Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address.",
                   "x-go-type": "pq.StringArray",
                   "x-go-type-import": {
                     "path": "github.com/lib/pq"
                   },
+                  "x-go-type-skip-optional-pointer": true,
                   "items": {
                     "type": "string",
                     "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
@@ -2521,6 +2538,7 @@ const InvitationSchema: Record<string, unknown> = {
                 "expiresAt": {
                   "type": "string",
                   "format": "date-time",
+                  "nullable": true,
                   "description": "Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.",
                   "x-oapi-codegen-extra-tags": {
                     "db": "expires_at",
@@ -3322,11 +3340,13 @@ const InvitationSchema: Record<string, unknown> = {
           },
           "emails": {
             "type": "array",
+            "nullable": true,
             "description": "Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address.",
             "x-go-type": "pq.StringArray",
             "x-go-type-import": {
               "path": "github.com/lib/pq"
             },
+            "x-go-type-skip-optional-pointer": true,
             "items": {
               "type": "string",
               "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
@@ -3351,6 +3371,7 @@ const InvitationSchema: Record<string, unknown> = {
           "expiresAt": {
             "type": "string",
             "format": "date-time",
+            "nullable": true,
             "description": "Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.",
             "x-oapi-codegen-extra-tags": {
               "db": "expires_at",
