@@ -182,11 +182,19 @@ function loadExistingDocsHrefs(outputPath) {
   }
   try {
     const existing = JSON.parse(fs.readFileSync(outputPath, "utf8"));
+
+    if (!Array.isArray(existing)) {
+      throw new Error("Invalid configuration: existing docs hrefs must be an array.");
+    }
+
     return Object.fromEntries(
-      existing.filter((e) => e.docs_href).map((e) => [e.construct, e.docs_href])
+      existing
+        .filter((e) => e && typeof e === "object" && e.construct && e.docs_href)
+        .map((e) => [e.construct, e.docs_href])
     );
-  } catch {
-    return {};
+  } catch (error) {
+
+    throw new Error("Failed to load existing docs hrefs: " + error.message);
   }
 }
 
