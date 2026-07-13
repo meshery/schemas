@@ -14,6 +14,7 @@ export const addTagTypes = [
   "Environment_environments",
   "Events_events",
   "Performance_Profile_performance",
+  "provider_capabilities_provider",
   "Workspace_workspaces",
   "Workspace_designs",
   "Workspace_views",
@@ -553,6 +554,10 @@ const injectedRtkApi = api
           },
         }),
         providesTags: ["Performance_Profile_performance"],
+      }),
+      getProviderCapabilities: build.query<GetProviderCapabilitiesApiResponse, GetProviderCapabilitiesApiArg>({
+        query: () => ({ url: `/api/provider/capabilities` }),
+        providesTags: ["provider_capabilities_provider"],
       }),
       getWorkspaces: build.query<GetWorkspacesApiResponse, GetWorkspacesApiArg>({
         query: (queryArg) => ({
@@ -8294,6 +8299,41 @@ export type GetPerformanceResultsApiArg = {
   /** End date for filtering results by test start time, in YYYY-MM-DD format. */
   to?: string;
 };
+export type GetProviderCapabilitiesApiResponse = /** status 200 Provider capabilities response */ {
+  /** Kind of provider currently in use. */
+  providerType: "local" | "remote";
+  /** Human-readable name of the provider. */
+  providerName: string;
+  /** Description lines describing the provider. */
+  providerDescription?: string[];
+  /** Base URL of the provider. */
+  providerUrl?: string;
+  /** Version of the provider capabilities package. */
+  packageVersion?: string;
+  /** URL of the provider capabilities package. */
+  packageUrl?: string;
+  /** Features the provider supports and the endpoints that back them. */
+  capabilities?: {
+    /** Provider feature identifier (for example persist-results, sync-prefs, or persist-events). */
+    feature?: string;
+    /** Endpoint that backs the feature. */
+    endpoint?: string;
+  }[];
+  /** UI extension points contributed by the provider (navigator, user preferences, GraphQL, account, collaborator, and so on). An open, plugin-defined object interpreted by the Meshery UI extension-point loader; its inner shape is intentionally not fixed by this schema. */
+  extensions?: object;
+  /** Access restrictions the provider imposes on the Meshery UI. */
+  restrictedAccess?: {
+    /** Whether the Meshery UI is restricted for this provider. */
+    isMesheryUiRestricted?: boolean;
+    /** UI components permitted when the Meshery UI is restricted. An open, UI-defined object (navigator and header component toggles) whose inner shape is intentionally not fixed by this schema. */
+    allowedComponents?: object;
+  };
+  /** Redirect path mappings the provider defines. */
+  redirects?: {
+    [key: string]: string;
+  };
+};
+export type GetProviderCapabilitiesApiArg = void;
 export type GetWorkspacesApiResponse = /** status 200 Workspaces */ {
   /** Zero-based page index returned in this response. */
   page?: number;
@@ -9821,6 +9861,7 @@ export const {
   useDeletePerformanceProfileMutation,
   useGetPerformanceProfileResultsQuery,
   useGetPerformanceResultsQuery,
+  useGetProviderCapabilitiesQuery,
   useGetWorkspacesQuery,
   useCreateWorkspaceMutation,
   useGetWorkspaceByIdQuery,
