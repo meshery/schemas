@@ -176,13 +176,34 @@ function resolveConstructClassification(repoRoot, version, construct) {
   };
 }
 
-function buildSiteData(repoRoot, constructs) {
-  return constructs.map(({ construct, version }) => ({
-    construct,
-    version,
-    href: resolveSchemaHref(repoRoot, version, construct),
-    ...resolveConstructClassification(repoRoot, version, construct),
-  }));
+function loadExistingDocsHrefs(outputPath) {
+  if (!fs.existsSync(outputPath)) {
+    return {};
+  }
+  try {
+    const existing = JSON.parse(fs.readFileSync(outputPath, "utf8"));
+    return Object.fromEntries(
+      existing.filter((e) => e.docs_href).map((e) => [e.construct, e.docs_href])
+    );
+  } catch {
+    return {};
+  }
+}
+
+function buildSiteData(repoRoot, constructs, docsHrefs = {}) {
+  return constructs.map(({ construct, version }) => {
+    const entry = {
+      construct,
+      version,
+      href: resolveSchemaHref(repoRoot, version, construct),
+    };
+
+    if (docsHrefs[construct]) {
+      entry.docs_href = docsHrefs[construct];
+    }
+
+    return { ...entry, ...resolveConstructClassification(repoRoot, version, construct) };
+  });
 }
 
 function writeSiteData(outputPath, siteData) {
@@ -194,7 +215,8 @@ function main(argv = process.argv.slice(2)) {
   const repoRoot = paths.getProjectRoot();
   const outputPath = resolveOutputPath(argv, repoRoot);
   const constructs = loadLatestConstructs(repoRoot);
-  const siteData = buildSiteData(repoRoot, constructs);
+  const docsHrefs = loadExistingDocsHrefs(outputPath);
+  const siteData = buildSiteData(repoRoot, constructs, docsHrefs);
 
   writeSiteData(outputPath, siteData);
   process.stdout.write(`Wrote ${path.relative(repoRoot, outputPath)}\n`);
@@ -208,6 +230,7 @@ module.exports = {
   DEFAULT_OUTPUT_RELATIVE_PATH,
   buildSiteData,
   collectXInternalTags,
+  loadExistingDocsHrefs,
   loadLatestConstructs,
   main,
   parseLatestConstructs,
