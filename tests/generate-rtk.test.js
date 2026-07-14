@@ -5,6 +5,7 @@ const os = require("node:os");
 const path = require("node:path");
 
 const {
+  addCrossConstructInvalidation,
   findUnguardedQueryParamAccesses,
   guardOptionalQueryParams,
 } = require("../build/generate-rtk");
@@ -43,6 +44,61 @@ test("guardOptionalQueryParams fails loudly when a params block still contains a
     assert.throws(
       () => guardOptionalQueryParams(workingPath),
       /unguarded queryArg access\(es\) remain/,
+    );
+  });
+});
+
+test("addCrossConstructInvalidation adds Environment_environments to all cross-construct connection operations", () => {
+  withFixtureCopy("cross-construct-invalidation.fixture.ts", (workingPath) => {
+    const patchedCount = addCrossConstructInvalidation(workingPath);
+    const output = fs.readFileSync(workingPath, "utf8");
+
+    assert.equal(patchedCount, 4);
+    assert.match(
+      output,
+      /addConnectionToEnvironment:[\s\S]*?invalidatesTags: \["Connection_API_Connections", "Environment_environments"\]/,
+    );
+    assert.match(
+      output,
+      /removeConnectionFromEnvironment:[\s\S]*?invalidatesTags: \["Connection_API_Connections", "Environment_environments"\]/,
+    );
+    assert.match(
+      output,
+      /deleteConnection:[\s\S]*?invalidatesTags: \["Connection_API_Connections", "Environment_environments"\]/,
+    );
+    assert.match(
+      output,
+      /deleteMesheryConnection:[\s\S]*?invalidatesTags: \["Connection_API_Connections", "Environment_environments"\]/,
+    );
+    // performConnectionAction is not a cross-construct target and must be untouched.
+    assert.match(
+      output,
+      /performConnectionAction:[\s\S]*?invalidatesTags: \["Connection_API_Connections"\]/,
+    );
+  });
+});
+
+test("addCrossConstructInvalidation is idempotent on a second run", () => {
+  withFixtureCopy("cross-construct-invalidation.fixture.ts", (workingPath) => {
+    const firstRun = addCrossConstructInvalidation(workingPath);
+    const secondRun = addCrossConstructInvalidation(workingPath);
+    const output = fs.readFileSync(workingPath, "utf8");
+
+    assert.equal(firstRun, 4);
+    assert.equal(secondRun, 0);
+    // 1 pre-existing occurrence (getEnvironmentConnections' own providesTags)
+    // + 4 injected into the target mutations' invalidatesTags. A second run
+    // must not add any more.
+    const tagOccurrences = output.match(/"Environment_environments"/g) || [];
+    assert.equal(tagOccurrences.length, 5);
+  });
+});
+
+test("addCrossConstructInvalidation fails loudly when a target operation cannot be located", () => {
+  withFixtureCopy("cross-construct-invalidation-missing-op.fixture.ts", (workingPath) => {
+    assert.throws(
+      () => addCrossConstructInvalidation(workingPath),
+      /cross-construct invalidation target\(s\) could not be located.*deleteMesheryConnection/,
     );
   });
 });

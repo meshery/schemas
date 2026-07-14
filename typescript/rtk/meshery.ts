@@ -329,7 +329,7 @@ const injectedRtkApi = api
       }),
       deleteConnection: build.mutation<DeleteConnectionApiResponse, DeleteConnectionApiArg>({
         query: (queryArg) => ({ url: `/api/integrations/connections/${queryArg.connectionId}`, method: "DELETE" }),
-        invalidatesTags: ["Connection_API_Connections"],
+        invalidatesTags: ["Connection_API_Connections", "Environment_environments"],
       }),
       performConnectionAction: build.mutation<PerformConnectionActionApiResponse, PerformConnectionActionApiArg>({
         query: (queryArg) => ({
@@ -344,7 +344,7 @@ const injectedRtkApi = api
           url: `/api/integrations/connections/meshery/${queryArg.mesheryServerId}`,
           method: "DELETE",
         }),
-        invalidatesTags: ["Connection_API_Connections"],
+        invalidatesTags: ["Connection_API_Connections", "Environment_environments"],
       }),
       getKubernetesContext: build.query<GetKubernetesContextApiResponse, GetKubernetesContextApiArg>({
         query: (queryArg) => ({ url: `/api/integrations/connections/kubernetes/${queryArg.connectionId}/context` }),

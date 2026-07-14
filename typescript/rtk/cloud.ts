@@ -790,14 +790,14 @@ const injectedRtkApi = api
       }),
       deleteConnection: build.mutation<DeleteConnectionApiResponse, DeleteConnectionApiArg>({
         query: (queryArg) => ({ url: `/api/integrations/connections/${queryArg.connectionId}`, method: "DELETE" }),
-        invalidatesTags: ["Connection_API_Connections"],
+        invalidatesTags: ["Connection_API_Connections", "Environment_environments"],
       }),
       deleteMesheryConnection: build.mutation<DeleteMesheryConnectionApiResponse, DeleteMesheryConnectionApiArg>({
         query: (queryArg) => ({
           url: `/api/integrations/connections/meshery/${queryArg.mesheryServerId}`,
           method: "DELETE",
         }),
-        invalidatesTags: ["Connection_API_Connections"],
+        invalidatesTags: ["Connection_API_Connections", "Environment_environments"],
       }),
       getKubernetesContext: build.query<GetKubernetesContextApiResponse, GetKubernetesContextApiArg>({
         query: (queryArg) => ({ url: `/api/integrations/connections/kubernetes/${queryArg.connectionId}/context` }),
@@ -811,7 +811,7 @@ const injectedRtkApi = api
           url: `/api/environments/${queryArg.environmentId}/connections/${queryArg.connectionId}`,
           method: "POST",
         }),
-        invalidatesTags: ["Connection_API_Connections"],
+        invalidatesTags: ["Connection_API_Connections", "Environment_environments"],
       }),
       removeConnectionFromEnvironment: build.mutation<
         RemoveConnectionFromEnvironmentApiResponse,
@@ -821,7 +821,7 @@ const injectedRtkApi = api
           url: `/api/environments/${queryArg.environmentId}/connections/${queryArg.connectionId}`,
           method: "DELETE",
         }),
-        invalidatesTags: ["Connection_API_Connections"],
+        invalidatesTags: ["Connection_API_Connections", "Environment_environments"],
       }),
       listConnectionDefinitions: build.query<ListConnectionDefinitionsApiResponse, ListConnectionDefinitionsApiArg>({
         query: (queryArg) => ({

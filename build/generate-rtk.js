@@ -248,25 +248,35 @@ function guardOptionalQueryParams(filePath) {
 }
 
 /**
- * Post-process generated RTK file to add cross-construct cache invalidation
+ * Post-process a generated RTK file to add cross-construct cache invalidation
  * for operations whose OpenAPI tags cannot express it.
  *
- * `addConnectionToEnvironment` / `removeConnectionFromEnvironment` live in
- * the `connection` construct (schemas/constructs/<version>/connection/api.yml), so
+ * `addConnectionToEnvironment` / `removeConnectionFromEnvironment` /
+ * `deleteConnection` / `deleteMesheryConnection` live in the `connection`
+ * construct (schemas/constructs/<version>/connection/api.yml), so
  * bundle-openapi.js's prefixTags() namespaces their tags under
  * `Connection_API_*`. There is no mechanism for a tag declared in one
  * construct file to resolve to another construct's namespace, so these
  * mutations can never automatically invalidate `Environment_environments`,
- * the tag `getEnvironmentConnections` provides -- even though assigning or
- * removing a connection changes exactly that data. Without this, the
- * Environment UI's "Assigned Connections" count silently goes stale after
- * every assign/remove action.
+ * the tag `getEnvironmentConnections` provides -- even though assigning,
+ * removing, or deleting a connection changes exactly that data (a Connection
+ * embeds its own `environments` membership -- see connection.yaml). Without
+ * this, the Environment UI's "Assigned Connections" count silently goes
+ * stale after every assign/remove/delete action. Both generated clients
+ * define these operations identically, so this runs against both
+ * typescript/rtk/meshery.ts and typescript/rtk/cloud.ts.
  *
  * This manually injects the missing tag into `invalidatesTags` for the
- * affected operations after codegen runs.
+ * affected operations after codegen runs. Every target operation must
+ * either already carry the tag (from a prior run) or be successfully
+ * patched -- if upstream codegen ever renames an operation or reshapes its
+ * output so a target can't be matched, this throws rather than silently
+ * shipping a file missing the fix (mirroring guardOptionalQueryParams's
+ * fail-loud contract above).
  *
  * @param {string} filePath - Absolute path to the generated TS file
- * @returns {number} count of operations patched
+ * @returns {number} count of operations patched (excludes operations that
+ *   already carried the tag from a prior run)
  */
 function addCrossConstructInvalidation(filePath) {
   if (!paths.fileExists(filePath)) {
@@ -275,11 +285,17 @@ function addCrossConstructInvalidation(filePath) {
   }
   const content = fs.readFileSync(filePath, "utf8");
 
-  const targets = ["addConnectionToEnvironment", "removeConnectionFromEnvironment"];
+  const targets = [
+    "addConnectionToEnvironment",
+    "removeConnectionFromEnvironment",
+    "deleteConnection",
+    "deleteMesheryConnection",
+  ];
   const extraTag = "Environment_environments";
 
   let patched = content;
   let count = 0;
+  const unmatched = [];
 
   for (const opName of targets) {
     // Find the operation's starting position, then look for invalidatesTags
@@ -289,13 +305,13 @@ function addCrossConstructInvalidation(filePath) {
     // can match before reaching the operation's actual invalidatesTags line).
     const opStart = patched.indexOf(`${opName}: build.mutation`);
     if (opStart === -1) {
-      logger.warn(`Post-process note: ${opName} not found; skipping cross-construct tag injection.`);
+      unmatched.push(`${opName} (operation not found)`);
       continue;
     }
     const searchWindow = patched.slice(opStart, opStart + 2000);
     const tagsMatch = /invalidatesTags:\s*\[([^\]]*)\]/.exec(searchWindow);
     if (!tagsMatch) {
-      logger.warn(`Post-process note: ${opName} has no invalidatesTags array within range; skipping.`);
+      unmatched.push(`${opName} (no invalidatesTags array within range)`);
       continue;
     }
     if (tagsMatch[1].includes(extraTag)) {
@@ -312,11 +328,24 @@ function addCrossConstructInvalidation(filePath) {
     count += 1;
   }
 
+  // Fail loud: a target that can't be found or patched means this file is
+  // shipping without the fix it needs, silently. Match
+  // guardOptionalQueryParams's contract above rather than letting `make
+  // build`/CI stay green while the stale-cache bug this exists to fix
+  // quietly regresses.
+  if (unmatched.length > 0) {
+    throw new Error(
+      `Post-process failed: cross-construct invalidation target(s) could not be located in ${filePath}: ${unmatched.join(", ")}`,
+    );
+  }
+
   if (count > 0) {
     fs.writeFileSync(filePath, patched, "utf8");
     logger.success(
       `Post-processed: added cross-construct invalidatesTags to ${count} operation(s) in ${filePath}`,
     );
+  } else {
+    logger.info(`Post-process note: cross-construct invalidatesTags already present in ${filePath}.`);
   }
   return count;
 }
@@ -364,7 +393,7 @@ async function generateRtkClient(rtk) {
     if (rtk.outputFile) {
       guardOptionalQueryParams(paths.fromRoot(rtk.outputFile));
     }
-    if (rtk.name === "meshery" && rtk.outputFile) {
+    if ((rtk.name === "meshery" || rtk.name === "cloud") && rtk.outputFile) {
       addCrossConstructInvalidation(paths.fromRoot(rtk.outputFile));
     }
     if (rtk.outputFile && rtk.outputExportName) {
