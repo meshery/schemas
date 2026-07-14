@@ -6,7 +6,9 @@ const config: ConfigFile = {
   apiImport: "cloudBaseApi",
   outputFile: "./cloud.ts",
   exportName: "cloudApi",
-  hooks: true,
+  // lazyQueries makes useLazy*Query hooks first-class exports - consumers
+  // (meshery-cloud UI) trigger org- and user-scoped list queries imperatively.
+  hooks: { queries: true, lazyQueries: true, mutations: true },
   tag: true,
 };
 
