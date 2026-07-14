@@ -94,6 +94,36 @@ test("addCrossConstructInvalidation is idempotent on a second run", () => {
   });
 });
 
+test("addCrossConstructInvalidation is robust to spacing, quote style, and substring tag names", () => {
+  withFixtureCopy("cross-construct-invalidation-robustness.fixture.ts", (workingPath) => {
+    const patchedCount = addCrossConstructInvalidation(workingPath);
+    const output = fs.readFileSync(workingPath, "utf8");
+
+    // All four targets patched despite the formatting variations.
+    assert.equal(patchedCount, 4);
+    // Extra spaces around the `:` after the op name must not defeat matching.
+    assert.match(
+      output,
+      /addConnectionToEnvironment[\s\S]*?invalidatesTags: \["Connection_API_Connections", "Environment_environments"\]/,
+    );
+    // Single-quoted tags: the injected tag matches the file's quote style.
+    assert.match(
+      output,
+      /removeConnectionFromEnvironment:[\s\S]*?invalidatesTags: \['Connection_API_Connections', 'Environment_environments'\]/,
+    );
+    // A tag that merely CONTAINS the target as a substring must not be treated
+    // as already-present; the exact tag is still injected.
+    assert.match(
+      output,
+      /deleteConnection:[\s\S]*?invalidatesTags: \["Connection_API_Connections", "Environment_environmentsLegacy", "Environment_environments"\]/,
+    );
+    assert.match(
+      output,
+      /deleteMesheryConnection:[\s\S]*?invalidatesTags: \["Connection_API_Connections", "Environment_environments"\]/,
+    );
+  });
+});
+
 test("addCrossConstructInvalidation fails loudly when a target operation cannot be located", () => {
   withFixtureCopy("cross-construct-invalidation-missing-op.fixture.ts", (workingPath) => {
     assert.throws(

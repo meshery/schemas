@@ -303,24 +303,38 @@ function addCrossConstructInvalidation(filePath) {
     // cross-operation matching risk and the inner-brace false-match issue
     // (query blocks close with their own "}),", which a naive block regex
     // can match before reaching the operation's actual invalidatesTags line).
-    const opStart = patched.indexOf(`${opName}: build.mutation`);
-    if (opStart === -1) {
+    // Match the operation start with a regex rather than a fixed string so
+    // arbitrary spacing around the `:` (e.g. a prettier/codegen config change)
+    // doesn't silently stop matching. `\b` prevents a shorter target name from
+    // matching inside a longer one.
+    const opMatch = new RegExp(`\\b${opName}\\s*:\\s*build\\.mutation`).exec(patched);
+    if (!opMatch) {
       unmatched.push(`${opName} (operation not found)`);
       continue;
     }
+    const opStart = opMatch.index;
     const searchWindow = patched.slice(opStart, opStart + 2000);
     const tagsMatch = /invalidatesTags:\s*\[([^\]]*)\]/.exec(searchWindow);
     if (!tagsMatch) {
       unmatched.push(`${opName} (no invalidatesTags array within range)`);
       continue;
     }
-    if (tagsMatch[1].includes(extraTag)) {
+    const existingTags = tagsMatch[1].trim();
+    // Compare per tag (quotes stripped) so a tag whose name merely *contains*
+    // `extraTag` as a substring can't yield a false "already present".
+    const currentTags = existingTags
+      .split(",")
+      .map((t) => t.trim().replace(/^['"]|['"]$/g, ""))
+      .filter(Boolean);
+    if (currentTags.includes(extraTag)) {
       continue;
     }
-    const existingTags = tagsMatch[1].trim();
+    // Match the file's quote style so the injected tag stays consistent with
+    // whatever the codegen/formatter emits.
+    const quote = existingTags.includes("'") ? "'" : '"';
     const newTagsInner = existingTags.length > 0
-      ? `${existingTags}, "${extraTag}"`
-      : `"${extraTag}"`;
+      ? `${existingTags}, ${quote}${extraTag}${quote}`
+      : `${quote}${extraTag}${quote}`;
     const oldFull = tagsMatch[0];
     const newFull = `invalidatesTags: [${newTagsInner}]`;
     const absoluteIndex = opStart + tagsMatch.index;
