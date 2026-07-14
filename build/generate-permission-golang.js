@@ -175,7 +175,7 @@ const goContent = generateGoFile(index.items, index.id);
     paths.ensureParentDir(outputPath);
     fs.writeFileSync(outputPath, goContent, "utf-8");
 
-    execSync(`gofmt -w "${outputPath}"`);
+    execSync(`gofmt -w "${outputPath}"`, { stdio: "inherit" });
 
     logger.success(`Generated: ${paths.relativePath(outputPath)}`);
 
