@@ -5964,7 +5964,7 @@ export type UpdateAcademyCurriculaByIdApiResponse = /** status 200 updated the c
     /** Timestamp when the invitation was last updated. */
     updatedAt: string;
     /** Timestamp when the invitation was deleted, if applicable. */
-    deletedAt: string;
+    deletedAt: string | null;
   };
 };
 export type UpdateAcademyCurriculaByIdApiArg = {
@@ -6179,7 +6179,7 @@ export type GetAcademyCurriculaByIdApiResponse = /** status 200 A single curricu
     /** Timestamp when the invitation was last updated. */
     updatedAt: string;
     /** Timestamp when the invitation was deleted, if applicable. */
-    deletedAt: string;
+    deletedAt: string | null;
   };
 };
 export type GetAcademyCurriculaByIdApiArg = {
@@ -12074,7 +12074,7 @@ export type GetInvitationApiResponse = /** status 200 Invitation fetched */ {
   /** Timestamp when the invitation was last updated. */
   updatedAt: string;
   /** Timestamp when the invitation was deleted, if applicable. */
-  deletedAt: string;
+  deletedAt: string | null;
 };
 export type GetInvitationApiArg = {
   /** The ID of the invitation. */
@@ -12117,7 +12117,7 @@ export type UpdateInvitationApiResponse = /** status 200 Invitation updated */ {
   /** Timestamp when the invitation was last updated. */
   updatedAt: string;
   /** Timestamp when the invitation was deleted, if applicable. */
-  deletedAt: string;
+  deletedAt: string | null;
 };
 export type UpdateInvitationApiArg = {
   /** The ID of the invitation. */
@@ -12189,7 +12189,7 @@ export type GetInvitationsApiResponse = /** status 200 Invitations page */ {
     /** Timestamp when the invitation was last updated. */
     updatedAt: string;
     /** Timestamp when the invitation was deleted, if applicable. */
-    deletedAt: string;
+    deletedAt: string | null;
   }[];
 };
 export type GetInvitationsApiArg = {
@@ -12236,7 +12236,7 @@ export type CreateInvitationApiResponse = /** status 201 Invitation created */ {
   /** Timestamp when the invitation was last updated. */
   updatedAt: string;
   /** Timestamp when the invitation was deleted, if applicable. */
-  deletedAt: string;
+  deletedAt: string | null;
 };
 export type CreateInvitationApiArg = {
   body: {
@@ -12298,7 +12298,7 @@ export type AcceptInvitationApiResponse = /** status 200 Invitation accepted */ 
   /** Timestamp when the invitation was last updated. */
   updatedAt: string;
   /** Timestamp when the invitation was deleted, if applicable. */
-  deletedAt: string;
+  deletedAt: string | null;
 };
 export type AcceptInvitationApiArg = {
   /** The ID of the invitation. */

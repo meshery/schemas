@@ -4091,6 +4091,7 @@ const AcademySchema: Record<string, unknown> = {
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
                               },
+                              "readOnly": true,
                               "x-go-name": "ID",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "id",
@@ -4105,6 +4106,7 @@ const AcademySchema: Record<string, unknown> = {
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
                               },
+                              "readOnly": true,
                               "x-go-name": "Owner",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "owner",
@@ -4154,6 +4156,7 @@ const AcademySchema: Record<string, unknown> = {
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
                               },
+                              "readOnly": true,
                               "x-go-name": "OrgID",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "org_id",
@@ -4177,11 +4180,13 @@ const AcademySchema: Record<string, unknown> = {
                             },
                             "acceptedBy": {
                               "type": "array",
+                              "readOnly": true,
                               "description": "List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet.",
                               "x-go-type": "pq.StringArray",
                               "x-go-type-import": {
                                 "path": "github.com/lib/pq"
                               },
+                              "x-go-type-skip-optional-pointer": true,
                               "items": {
                                 "type": "string"
                               },
@@ -4226,7 +4231,9 @@ const AcademySchema: Record<string, unknown> = {
                             "createdAt": {
                               "type": "string",
                               "format": "date-time",
+                              "readOnly": true,
                               "description": "Timestamp when the invitation was created.",
+                              "x-go-type-skip-optional-pointer": true,
                               "x-oapi-codegen-extra-tags": {
                                 "db": "created_at",
                                 "json": "createdAt"
@@ -4235,7 +4242,9 @@ const AcademySchema: Record<string, unknown> = {
                             "updatedAt": {
                               "type": "string",
                               "format": "date-time",
+                              "readOnly": true,
                               "description": "Timestamp when the invitation was last updated.",
+                              "x-go-type-skip-optional-pointer": true,
                               "x-oapi-codegen-extra-tags": {
                                 "db": "updated_at",
                                 "json": "updatedAt"
@@ -4244,8 +4253,11 @@ const AcademySchema: Record<string, unknown> = {
                             "deletedAt": {
                               "type": "string",
                               "format": "date-time",
+                              "readOnly": true,
+                              "nullable": true,
                               "description": "Timestamp when the invitation was deleted, if applicable.",
                               "x-go-type": "core.NullTime",
+                              "x-go-type-skip-optional-pointer": true,
                               "x-go-type-import": {
                                 "path": "github.com/meshery/schemas/models/core"
                               },
@@ -4849,6 +4861,7 @@ const AcademySchema: Record<string, unknown> = {
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
                               },
+                              "readOnly": true,
                               "x-go-name": "ID",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "id",
@@ -4863,6 +4876,7 @@ const AcademySchema: Record<string, unknown> = {
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
                               },
+                              "readOnly": true,
                               "x-go-name": "Owner",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "owner",
@@ -4912,6 +4926,7 @@ const AcademySchema: Record<string, unknown> = {
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
                               },
+                              "readOnly": true,
                               "x-go-name": "OrgID",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "org_id",
@@ -4935,11 +4950,13 @@ const AcademySchema: Record<string, unknown> = {
                             },
                             "acceptedBy": {
                               "type": "array",
+                              "readOnly": true,
                               "description": "List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet.",
                               "x-go-type": "pq.StringArray",
                               "x-go-type-import": {
                                 "path": "github.com/lib/pq"
                               },
+                              "x-go-type-skip-optional-pointer": true,
                               "items": {
                                 "type": "string"
                               },
@@ -4984,7 +5001,9 @@ const AcademySchema: Record<string, unknown> = {
                             "createdAt": {
                               "type": "string",
                               "format": "date-time",
+                              "readOnly": true,
                               "description": "Timestamp when the invitation was created.",
+                              "x-go-type-skip-optional-pointer": true,
                               "x-oapi-codegen-extra-tags": {
                                 "db": "created_at",
                                 "json": "createdAt"
@@ -4993,7 +5012,9 @@ const AcademySchema: Record<string, unknown> = {
                             "updatedAt": {
                               "type": "string",
                               "format": "date-time",
+                              "readOnly": true,
                               "description": "Timestamp when the invitation was last updated.",
+                              "x-go-type-skip-optional-pointer": true,
                               "x-oapi-codegen-extra-tags": {
                                 "db": "updated_at",
                                 "json": "updatedAt"
@@ -5002,8 +5023,11 @@ const AcademySchema: Record<string, unknown> = {
                             "deletedAt": {
                               "type": "string",
                               "format": "date-time",
+                              "readOnly": true,
+                              "nullable": true,
                               "description": "Timestamp when the invitation was deleted, if applicable.",
                               "x-go-type": "core.NullTime",
+                              "x-go-type-skip-optional-pointer": true,
                               "x-go-type-import": {
                                 "path": "github.com/meshery/schemas/models/core"
                               },
@@ -9808,6 +9832,7 @@ const AcademySchema: Record<string, unknown> = {
                     "x-go-type-import": {
                       "path": "github.com/gofrs/uuid"
                     },
+                    "readOnly": true,
                     "x-go-name": "ID",
                     "x-oapi-codegen-extra-tags": {
                       "db": "id",
@@ -9822,6 +9847,7 @@ const AcademySchema: Record<string, unknown> = {
                     "x-go-type-import": {
                       "path": "github.com/gofrs/uuid"
                     },
+                    "readOnly": true,
                     "x-go-name": "Owner",
                     "x-oapi-codegen-extra-tags": {
                       "db": "owner",
@@ -9871,6 +9897,7 @@ const AcademySchema: Record<string, unknown> = {
                     "x-go-type-import": {
                       "path": "github.com/gofrs/uuid"
                     },
+                    "readOnly": true,
                     "x-go-name": "OrgID",
                     "x-oapi-codegen-extra-tags": {
                       "db": "org_id",
@@ -9894,11 +9921,13 @@ const AcademySchema: Record<string, unknown> = {
                   },
                   "acceptedBy": {
                     "type": "array",
+                    "readOnly": true,
                     "description": "List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet.",
                     "x-go-type": "pq.StringArray",
                     "x-go-type-import": {
                       "path": "github.com/lib/pq"
                     },
+                    "x-go-type-skip-optional-pointer": true,
                     "items": {
                       "type": "string"
                     },
@@ -9943,7 +9972,9 @@ const AcademySchema: Record<string, unknown> = {
                   "createdAt": {
                     "type": "string",
                     "format": "date-time",
+                    "readOnly": true,
                     "description": "Timestamp when the invitation was created.",
+                    "x-go-type-skip-optional-pointer": true,
                     "x-oapi-codegen-extra-tags": {
                       "db": "created_at",
                       "json": "createdAt"
@@ -9952,7 +9983,9 @@ const AcademySchema: Record<string, unknown> = {
                   "updatedAt": {
                     "type": "string",
                     "format": "date-time",
+                    "readOnly": true,
                     "description": "Timestamp when the invitation was last updated.",
+                    "x-go-type-skip-optional-pointer": true,
                     "x-oapi-codegen-extra-tags": {
                       "db": "updated_at",
                       "json": "updatedAt"
@@ -9961,8 +9994,11 @@ const AcademySchema: Record<string, unknown> = {
                   "deletedAt": {
                     "type": "string",
                     "format": "date-time",
+                    "readOnly": true,
+                    "nullable": true,
                     "description": "Timestamp when the invitation was deleted, if applicable.",
                     "x-go-type": "core.NullTime",
+                    "x-go-type-skip-optional-pointer": true,
                     "x-go-type-import": {
                       "path": "github.com/meshery/schemas/models/core"
                     },
