@@ -231,8 +231,6 @@ jobs:
             const lines = [];
             lines.push('## Consumer audit report');
             lines.push('');
-            lines.push('Coverage of OpenAPI operations (`schemas`) vs registered handlers in each consumer.');
-            lines.push('');
             lines.push('| Metric | schemas | meshery | cloud |');
             lines.push('|---|---|---|---|');
             lines.push(`| Total endpoints | ${totals[0]} | ${totals[1]} | ${totals[2]} |`);
@@ -242,21 +240,9 @@ jobs:
             lines.push(`| Spec without consumer handler | ${missingHandler[0]} | ${missingHandler[1]} | ${missingHandler[2]} |`);
             lines.push(`| Handler only (no spec) | ${handlerOnly[0]} | ${handlerOnly[1]} | ${handlerOnly[2]} |`);
             lines.push('');
-            lines.push('<details>');
-            lines.push('<summary>What each metric means</summary>');
-            lines.push('');
-            lines.push('| Metric | Meaning |');
-            lines.push('|---|---|');
-            lines.push('| **Total endpoints** | Endpoints discovered in that source (OpenAPI ops / registered routes). |');
-            lines.push('| **Spec applies to consumer** | Schema operations whose `x-internal` targets this consumer (eligible there). Not "how many handlers already match a schema." |');
-            lines.push('| **Spec passes validation** | Schema-defined endpoints whose construct has no blocking schema-audit violations. |');
-            lines.push('| **Spec only (no handlers)** | In schemas, but no matching handler in **any** audited consumer. |');
-            lines.push('| **Spec without consumer handler** | Spec targets this consumer, but **that** consumer has no matching route yet (may still exist elsewhere). |');
-            lines.push('| **Handler only (no spec)** | Route registered in the consumer with no matching schema operation. |');
-            lines.push('');
-            lines.push('A `-` means the metric does not apply to that column. Full per-endpoint detail (including x-internal scope breakdown) is in the artifact.');
-            lines.push('');
-            lines.push('</details>');
+            lines.push('**Note:**');
+            lines.push('Spec only (no handlers) --> no matching handler in any audited consumer.');
+            lines.push('Spec without consumer handler --> this consumer is missing it (may exist elsewhere).');
             lines.push('');
 
             if (totalTs > 0) {

@@ -114,10 +114,9 @@ func newTable(out io.Writer, cols ...any) table.Table {
 }
 
 // printAuditReport renders the top-level summary: one row per audit metric.
-// Columns are mutually exclusive sources: Schema (OpenAPI ops in this repo),
-// Meshery (Gorilla routes), Cloud (Echo routes). A "-" means the metric is
-// not applicable to that source. Metric labels are fixed strings also parsed
-// by .github/workflows/schema-audit.yml when posting the PR comment.
+// Columns are Schema (OpenAPI ops), Meshery (Gorilla routes), and Cloud
+// (Echo routes). Metric labels are fixed strings also parsed by
+// .github/workflows/schema-audit.yml when posting the PR comment.
 func printAuditReport(out io.Writer, result *validation.ConsumerAuditResult) {
 	s := result.Summary
 
@@ -132,7 +131,7 @@ func printAuditReport(out io.Writer, result *validation.ConsumerAuditResult) {
 	fmt.Fprintln(out, "Consumer Audit Report")
 	fmt.Fprintln(out)
 
-	// Keep labels stable: the CI comment job matches these exact strings.
+	// Keep metric labels stable: the CI comment job matches these exact strings.
 	t := newTable(out, "Metric", "Schema", "Meshery", "Cloud")
 	t.AddRow("Total endpoints", s.SchemaEndpoints, s.MesheryEndpoints, s.CloudEndpoints)
 	t.AddRow("Spec applies to consumer", "-", s.AnnotatedMeshery+s.AnnotatedBoth, s.AnnotatedCloud+s.AnnotatedBoth)
@@ -148,37 +147,12 @@ func printAuditReport(out io.Writer, result *validation.ConsumerAuditResult) {
 	t.AddRow("Handler only (no spec)", "-", s.ConsumerOnlyMeshery, s.ConsumerOnlyCloud)
 	t.Print()
 
+	// Only the two "missing handler" metrics need disambiguation; the rest
+	// are self-explanatory from the label.
 	fmt.Fprintln(out)
-	printAuditLegend(out)
-}
-
-// printAuditLegend explains each summary metric so the report is readable
-// without tribal knowledge of the consumer-audit pipeline.
-func printAuditLegend(out io.Writer) {
-	fmt.Fprintln(out, "What each metric means")
-	fmt.Fprintln(out, "  Columns: Schema = OpenAPI operations in meshery/schemas;")
-	fmt.Fprintln(out, "           Meshery = routes in meshery/meshery;")
-	fmt.Fprintln(out, "           Cloud = routes in meshery-cloud.")
-	fmt.Fprintln(out, "  \"-\" means the metric does not apply to that column.")
-	fmt.Fprintln(out)
-	fmt.Fprintln(out, "  Total endpoints")
-	fmt.Fprintln(out, "    Count of endpoints discovered in that source.")
-	fmt.Fprintln(out, "  Spec applies to consumer")
-	fmt.Fprintln(out, "    Schema operations whose x-internal targets this consumer")
-	fmt.Fprintln(out, "    (eligible to be implemented there). Not \"how many handlers")
-	fmt.Fprintln(out, "    already match a schema.\"")
-	fmt.Fprintln(out, "  Spec targets Meshery only / Cloud only / both consumers")
-	fmt.Fprintln(out, "    Breakdown of schema ops by x-internal scope (Schema column).")
-	fmt.Fprintln(out, "  Spec passes validation")
-	fmt.Fprintln(out, "    Schema-defined endpoints whose construct has no blocking")
-	fmt.Fprintln(out, "    schema-audit violations (Schema Completeness = TRUE).")
-	fmt.Fprintln(out, "  Spec only (no handlers)")
-	fmt.Fprintln(out, "    In schemas, but no matching handler in any audited consumer.")
-	fmt.Fprintln(out, "  Spec without consumer handler")
-	fmt.Fprintln(out, "    Spec targets this consumer, but that consumer has no route")
-	fmt.Fprintln(out, "    for it yet (per-consumer gap; may still exist elsewhere).")
-	fmt.Fprintln(out, "  Handler only (no spec)")
-	fmt.Fprintln(out, "    Route registered in the consumer with no matching schema op.")
+	fmt.Fprintln(out, "Note:")
+	fmt.Fprintln(out, "Spec only (no handlers) --> no matching handler in any audited consumer.")
+	fmt.Fprintln(out, "Spec without consumer handler --> this consumer is missing it (may exist elsewhere).")
 }
 
 type consumerActionSummary struct {

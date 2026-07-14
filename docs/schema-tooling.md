@@ -75,26 +75,17 @@ On each run the job:
 1. Checks out `meshery/schemas` (the repo under test), then `meshery/meshery`, `layer5io/meshery-cloud`, and `layer5labs/meshery-extensions` under `./_consumer/`. The sibling checkouts use a PAT secret named `CI_CONSUMER_PAT` for private-repo access (`meshery-cloud` and `meshery-extensions` are private). Each sibling checkout has `continue-on-error: true`, so a missing PAT, insufficient scopes, or a temporary GitHub outage simply results in that column being skipped - the job still runs and posts a comment against whatever consumers *are* available. A skipped checkout does not fail the audit itself: the Go tool treats an unset `*_REPO` path as "not provided", not as an error.
 2. Invokes `make consumer-audit MESHERY_REPO=_consumer/meshery CLOUD_REPO=_consumer/meshery-cloud EXTENSIONS_REPO=_consumer/meshery-extensions VERBOSE=1` and pipes the output to both `/tmp/consumer-audit.txt` and the job log via `tee`. A non-zero exit fails the step - and therefore the job.
 3. Uploads the captured output as a build artifact named `consumer-audit-output` (retained for 14 days) so reviewers can download the raw per-endpoint list. This step runs on `if: always()`, so the artifact is available even when the audit step fails.
-4. Posts a summary comment on the PR listing the per-repo metrics pulled from the audit report table (see [summary metrics](#summary-metrics) below), plus a rolled-up count of TypeScript findings by kind (`case-flip`, `snake-case-wrapper`, `snake-case-param`) and the set of repos those findings span. The comment includes a collapsible legend for each metric. The comment step also runs on `if: always()` so reviewers see the divergence summary that explains why CI went red. The comment is keyed by an HTML marker and is upserted across runs so repeat pushes to the same PR update the existing comment rather than spamming new ones. Any sibling repo whose checkout failed is surfaced in a "Skipped consumer checkouts" note under the table so a zero in that column cannot be mistaken for perfect alignment.
+4. Posts a summary comment on the PR listing the per-repo metrics pulled from the audit report table (see [summary metrics](#summary-metrics) below), plus a rolled-up count of TypeScript findings by kind (`case-flip`, `snake-case-wrapper`, `snake-case-param`) and the set of repos those findings span. The comment includes a one-line note distinguishing the two "missing handler" metrics. The comment step also runs on `if: always()` so reviewers see the divergence summary that explains why CI went red. The comment is keyed by an HTML marker and is upserted across runs so repeat pushes to the same PR update the existing comment rather than spamming new ones. Any sibling repo whose checkout failed is surfaced in a "Skipped consumer checkouts" note under the table so a zero in that column cannot be mistaken for perfect alignment.
 
 ### Summary metrics
 
-The CLI (`cmd/consumer-audit`) and the PR comment share the same metric labels. Columns are sources: **Schema** (OpenAPI ops in this repo), **Meshery** (Gorilla routes), **Cloud** (Echo routes). A `-` means the metric does not apply to that column.
+The CLI (`cmd/consumer-audit`) and the PR comment share the same metric labels. Columns are sources: **Schema** (OpenAPI ops in this repo), **Meshery** (Gorilla routes), **Cloud** (Echo routes). Most labels are self-explanatory. The only pair that needs disambiguation:
 
-| Metric | What it counts |
-|---|---|
-| **Total endpoints** | Endpoints discovered in that source. |
-| **Spec applies to consumer** | Schema operations whose `x-internal` targets this consumer (eligible to be implemented there). *Not* "how many consumer handlers already match a schema." |
-| **Spec targets Meshery only / Cloud only / both consumers** | Breakdown of schema ops by `x-internal` scope (Schema column only; CLI full table). |
-| **Spec passes validation** | Schema-defined endpoints whose construct has no blocking schema-audit violations (formerly labeled "Schema Completeness (TRUE)"). |
-| **Spec only (no handlers)** | In schemas, but no matching handler in **any** audited consumer. |
-| **Spec without consumer handler** | Spec targets this consumer, but **that** consumer has no matching route yet (may still be implemented elsewhere). Formerly "Unimplemented With Schema." |
-| **Handler only (no spec)** | Route registered in the consumer with no matching schema operation. Formerly "Consumer Only." |
-
-These two gap rows are easy to mix up:
-
-- **Spec only (no handlers)** = global gap (nobody implements it).
-- **Spec without consumer handler** = per-consumer gap (this consumer is missing it).
+```
+Note:
+Spec only (no handlers) --> no matching handler in any audited consumer.
+Spec without consumer handler --> this consumer is missing it (may exist elsewhere).
+```
 
 ### Provisioning `CI_CONSUMER_PAT`
 
