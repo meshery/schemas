@@ -124,6 +124,20 @@ test("addCrossConstructInvalidation is robust to spacing, quote style, and subst
   });
 });
 
+test("post-processors fail loud when the generated output file is missing", () => {
+  // After a successful codegen the output file must exist; a missing file means
+  // the codegen output path drifted, so skipping silently must not be allowed.
+  const missing = path.join(os.tmpdir(), `rtk-missing-${Date.now()}`, "generated.ts");
+  assert.throws(
+    () => addCrossConstructInvalidation(missing),
+    /expected generated file not found/,
+  );
+  assert.throws(
+    () => guardOptionalQueryParams(missing),
+    /expected generated file not found/,
+  );
+});
+
 test("addCrossConstructInvalidation fails loudly when a target operation cannot be located", () => {
   withFixtureCopy("cross-construct-invalidation-missing-op.fixture.ts", (workingPath) => {
     assert.throws(

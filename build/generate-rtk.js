@@ -167,8 +167,11 @@ function findUnguardedQueryParamAccesses(content) {
  */
 function guardOptionalQueryParams(filePath) {
   if (!paths.fileExists(filePath)) {
-    logger.warn(`Post-process skipped: ${filePath} not found.`);
-    return 0;
+    // Fail loud: after a successful codegen the output file must exist. A
+    // missing file means the RTK codegen output path has drifted (e.g. the
+    // config's outputFile changed), so silently skipping would let `make
+    // build`/CI stay green while this post-processing quietly stops applying.
+    throw new Error(`Post-process failed: expected generated file not found: ${filePath}.`);
   }
   const content = fs.readFileSync(filePath, "utf8");
 
@@ -280,8 +283,11 @@ function guardOptionalQueryParams(filePath) {
  */
 function addCrossConstructInvalidation(filePath) {
   if (!paths.fileExists(filePath)) {
-    logger.warn(`Post-process skipped: ${filePath} not found.`);
-    return 0;
+    // Fail loud: after a successful codegen the output file must exist. A
+    // missing file means the RTK codegen output path has drifted (e.g. the
+    // config's outputFile changed), so silently skipping would let `make
+    // build`/CI stay green while this post-processing quietly stops applying.
+    throw new Error(`Post-process failed: expected generated file not found: ${filePath}.`);
   }
   const content = fs.readFileSync(filePath, "utf8");
 
@@ -374,8 +380,10 @@ function addCrossConstructInvalidation(filePath) {
  */
 function addInjectedRtkApiExport(filePath, exportName) {
   if (!paths.fileExists(filePath)) {
-    logger.warn(`Post-process skipped: ${filePath} not found.`);
-    return;
+    // Fail loud (see the other post-processors): a missing output file after
+    // codegen means the path drifted, and skipping the export injection would
+    // silently ship a client without its `injectedRtkApi` export.
+    throw new Error(`Post-process failed: expected generated file not found: ${filePath}.`);
   }
   const content = fs.readFileSync(filePath, "utf8");
   const original = `export { injectedRtkApi as ${exportName} };`;
