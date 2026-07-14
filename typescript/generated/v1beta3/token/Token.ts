@@ -200,7 +200,7 @@ export interface components {
         /** @description ID of the token to delete. */
         tokenIdQuery: string;
         /** @description UUID of the user to issue the indefinite token for. */
-        ownerQuery: string;
+        userIdQuery: string;
         /** @description Authentication provider to associate with the indefinite token. */
         providerQuery: string;
         /** @description Get responses by page */
@@ -598,7 +598,7 @@ export interface operations {
         parameters: {
             query: {
                 /** @description UUID of the user to issue the indefinite token for. */
-                owner: string;
+                userId: string;
                 /** @description Authentication provider to associate with the indefinite token. */
                 provider: string;
             };

@@ -530,6 +530,28 @@ export interface components {
         orgId: string;
         /** @description The ID of the invitation. */
         invitationId: string;
+        /** @description The ID of the signup request being approved or denied. */
+        signupRequestId: string;
+        /** @description First name of the requester. */
+        signupFirstName: string;
+        /** @description Last name of the requester. */
+        signupLastName: string;
+        /** @description Email address of the requester. */
+        signupEmail: string;
+        /** @description Occupation of the requester. */
+        signupOccupation: string;
+        /** @description Organization of the requester. */
+        signupOrganization: string;
+        /** @description Requested role. */
+        signupRole: string;
+        /** @description The signup form variant the request originated from. */
+        signupFormType: string;
+        /** @description Status to record on the signup request. */
+        signupStatus: string;
+        /** @description Tracking task identifier associated with the request. */
+        signupTaskId: string;
+        /** @description Tracking task link associated with the request. */
+        signupTaskLink: string;
     };
     requestBodies: never;
     headers: never;
@@ -1442,7 +1464,30 @@ export interface operations {
     };
     approveSignupRequest: {
         parameters: {
-            query?: never;
+            query: {
+                /** @description The ID of the signup request being approved or denied. */
+                id: string;
+                /** @description First name of the requester. */
+                firstName?: string;
+                /** @description Last name of the requester. */
+                lastName?: string;
+                /** @description Email address of the requester. */
+                email?: string;
+                /** @description Occupation of the requester. */
+                occupation?: string;
+                /** @description Organization of the requester. */
+                organization?: string;
+                /** @description Requested role. */
+                role?: string;
+                /** @description The signup form variant the request originated from. */
+                formType?: string;
+                /** @description Status to record on the signup request. */
+                status?: string;
+                /** @description Tracking task identifier associated with the request. */
+                taskId?: string;
+                /** @description Tracking task link associated with the request. */
+                taskLink?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -1491,7 +1536,30 @@ export interface operations {
     };
     denySignupRequest: {
         parameters: {
-            query?: never;
+            query: {
+                /** @description The ID of the signup request being approved or denied. */
+                id: string;
+                /** @description First name of the requester. */
+                firstName?: string;
+                /** @description Last name of the requester. */
+                lastName?: string;
+                /** @description Email address of the requester. */
+                email?: string;
+                /** @description Occupation of the requester. */
+                occupation?: string;
+                /** @description Organization of the requester. */
+                organization?: string;
+                /** @description Requested role. */
+                role?: string;
+                /** @description The signup form variant the request originated from. */
+                formType?: string;
+                /** @description Status to record on the signup request. */
+                status?: string;
+                /** @description Tracking task identifier associated with the request. */
+                taskId?: string;
+                /** @description Tracking task link associated with the request. */
+                taskLink?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;

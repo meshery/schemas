@@ -1023,7 +1023,7 @@ const TokenSchema: Record<string, unknown> = {
         "description": "Creates a non-expiring user token for provider admin use cases.",
         "parameters": [
           {
-            "name": "owner",
+            "name": "userId",
             "in": "query",
             "description": "UUID of the user to issue the indefinite token for.",
             "required": true,
@@ -1348,8 +1348,8 @@ const TokenSchema: Record<string, unknown> = {
           }
         }
       },
-      "ownerQuery": {
-        "name": "owner",
+      "userIdQuery": {
+        "name": "userId",
         "in": "query",
         "description": "UUID of the user to issue the indefinite token for.",
         "required": true,

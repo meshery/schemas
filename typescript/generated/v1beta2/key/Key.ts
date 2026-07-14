@@ -42,7 +42,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/auth/key/{keyId}": {
+    "/api/auth/keys/{keyId}": {
         parameters: {
             query?: never;
             header?: never;

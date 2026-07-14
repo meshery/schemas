@@ -794,7 +794,7 @@ const KeySchema: Record<string, unknown> = {
         }
       }
     },
-    "/api/auth/key/{keyId}": {
+    "/api/auth/keys/{keyId}": {
       "get": {
         "x-internal": [
           "cloud"

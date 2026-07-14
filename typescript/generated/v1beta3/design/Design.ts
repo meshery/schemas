@@ -4970,7 +4970,10 @@ export interface operations {
     };
     getPattern: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Whether to include usage metrics in the response. */
+                metrics?: boolean;
+            };
             header?: never;
             path: {
                 /** @description Design (Pattern) ID */

@@ -2567,6 +2567,15 @@ const DesignSchema: Record<string, unknown> = {
                 "path": "github.com/gofrs/uuid"
               }
             }
+          },
+          {
+            "name": "metrics",
+            "in": "query",
+            "required": false,
+            "description": "Whether to include usage metrics in the response.",
+            "schema": {
+              "type": "boolean"
+            }
           }
         ],
         "responses": {
