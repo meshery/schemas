@@ -264,6 +264,20 @@ paths:
       tags:
       - Invitation
       summary: Approve a signup request
+      # The deployed handler (parseSignupRequestParams) reads the signup
+      # payload from query params, not a request body (schema/handler parity).
+      parameters:
+      - $ref: '#/components/parameters/signupRequestId'
+      - $ref: '#/components/parameters/signupFirstName'
+      - $ref: '#/components/parameters/signupLastName'
+      - $ref: '#/components/parameters/signupEmail'
+      - $ref: '#/components/parameters/signupOccupation'
+      - $ref: '#/components/parameters/signupOrganization'
+      - $ref: '#/components/parameters/signupRole'
+      - $ref: '#/components/parameters/signupFormType'
+      - $ref: '#/components/parameters/signupStatus'
+      - $ref: '#/components/parameters/signupTaskId'
+      - $ref: '#/components/parameters/signupTaskLink'
       responses:
         '200':
           description: Signup request approved
@@ -286,6 +300,20 @@ paths:
       tags:
       - Invitation
       summary: Deny a signup request
+      # Same wire contract as approveSignupRequest: the handler reads the
+      # signup payload from query params (schema/handler parity).
+      parameters:
+      - $ref: '#/components/parameters/signupRequestId'
+      - $ref: '#/components/parameters/signupFirstName'
+      - $ref: '#/components/parameters/signupLastName'
+      - $ref: '#/components/parameters/signupEmail'
+      - $ref: '#/components/parameters/signupOccupation'
+      - $ref: '#/components/parameters/signupOrganization'
+      - $ref: '#/components/parameters/signupRole'
+      - $ref: '#/components/parameters/signupFormType'
+      - $ref: '#/components/parameters/signupStatus'
+      - $ref: '#/components/parameters/signupTaskId'
+      - $ref: '#/components/parameters/signupTaskLink'
       responses:
         '200':
           description: Signup request denied
@@ -339,6 +367,87 @@ components:
       schema:
         type: string
         format: uuid
+    # Signup approve/deny wire contract: the handler reads the signup payload
+    # from these query params (users.go parseSignupRequestParams).
+    signupRequestId:
+      name: id
+      in: query
+      required: true
+      description: The ID of the signup request being approved or denied.
+      schema:
+        type: string
+        format: uuid
+    signupFirstName:
+      name: firstName
+      in: query
+      required: false
+      description: First name of the requester.
+      schema:
+        type: string
+    signupLastName:
+      name: lastName
+      in: query
+      required: false
+      description: Last name of the requester.
+      schema:
+        type: string
+    signupEmail:
+      name: email
+      in: query
+      required: false
+      description: Email address of the requester.
+      schema:
+        type: string
+        format: email
+    signupOccupation:
+      name: occupation
+      in: query
+      required: false
+      description: Occupation of the requester.
+      schema:
+        type: string
+    signupOrganization:
+      name: organization
+      in: query
+      required: false
+      description: Organization of the requester.
+      schema:
+        type: string
+    signupRole:
+      name: role
+      in: query
+      required: false
+      description: Requested role.
+      schema:
+        type: string
+    signupFormType:
+      name: formType
+      in: query
+      required: false
+      description: The signup form variant the request originated from.
+      schema:
+        type: string
+    signupStatus:
+      name: status
+      in: query
+      required: false
+      description: Status to record on the signup request.
+      schema:
+        type: string
+    signupTaskId:
+      name: taskId
+      in: query
+      required: false
+      description: Tracking task identifier associated with the request.
+      schema:
+        type: string
+    signupTaskLink:
+      name: taskLink
+      in: query
+      required: false
+      description: Tracking task link associated with the request.
+      schema:
+        type: string
   responses:
     400:
       $ref: ../../v1beta2/core/api.yml#/components/responses/400

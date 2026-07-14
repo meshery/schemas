@@ -154,11 +154,11 @@ const injectedRtkApi = api
         invalidatesTags: ["Key_Key"],
       }),
       getKeyById: build.query<GetKeyByIdApiResponse, GetKeyByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/auth/key/${queryArg.keyId}` }),
+        query: (queryArg) => ({ url: `/api/auth/keys/${queryArg.keyId}` }),
         providesTags: ["Key_Key"],
       }),
       deleteKey: build.mutation<DeleteKeyApiResponse, DeleteKeyApiArg>({
-        query: (queryArg) => ({ url: `/api/auth/key/${queryArg.keyId}`, method: "DELETE" }),
+        query: (queryArg) => ({ url: `/api/auth/keys/${queryArg.keyId}`, method: "DELETE" }),
         invalidatesTags: ["Key_Key"],
       }),
       getKeychains: build.query<GetKeychainsApiResponse, GetKeychainsApiArg>({
@@ -897,7 +897,12 @@ const injectedRtkApi = api
         invalidatesTags: ["Design_designs"],
       }),
       getPattern: build.query<GetPatternApiResponse, GetPatternApiArg>({
-        query: (queryArg) => ({ url: `/api/content/patterns/${queryArg.designId}` }),
+        query: (queryArg) => ({
+          url: `/api/content/patterns/${queryArg.designId}`,
+          params: {
+            metrics: queryArg?.metrics,
+          },
+        }),
         providesTags: ["Design_designs"],
       }),
       deletePattern: build.mutation<DeletePatternApiResponse, DeletePatternApiArg>({
@@ -1257,11 +1262,43 @@ const injectedRtkApi = api
         providesTags: ["Invitation_Invitation"],
       }),
       approveSignupRequest: build.mutation<ApproveSignupRequestApiResponse, ApproveSignupRequestApiArg>({
-        query: () => ({ url: `/api/identity/users/request/approve`, method: "POST" }),
+        query: (queryArg) => ({
+          url: `/api/identity/users/request/approve`,
+          method: "POST",
+          params: {
+            id: queryArg?.id,
+            firstName: queryArg?.firstName,
+            lastName: queryArg?.lastName,
+            email: queryArg?.email,
+            occupation: queryArg?.occupation,
+            organization: queryArg?.organization,
+            role: queryArg?.role,
+            formType: queryArg?.formType,
+            status: queryArg?.status,
+            taskId: queryArg?.taskId,
+            taskLink: queryArg?.taskLink,
+          },
+        }),
         invalidatesTags: ["Invitation_Invitation"],
       }),
       denySignupRequest: build.mutation<DenySignupRequestApiResponse, DenySignupRequestApiArg>({
-        query: () => ({ url: `/api/identity/users/request/deny`, method: "POST" }),
+        query: (queryArg) => ({
+          url: `/api/identity/users/request/deny`,
+          method: "POST",
+          params: {
+            id: queryArg?.id,
+            firstName: queryArg?.firstName,
+            lastName: queryArg?.lastName,
+            email: queryArg?.email,
+            occupation: queryArg?.occupation,
+            organization: queryArg?.organization,
+            role: queryArg?.role,
+            formType: queryArg?.formType,
+            status: queryArg?.status,
+            taskId: queryArg?.taskId,
+            taskLink: queryArg?.taskLink,
+          },
+        }),
         invalidatesTags: ["Invitation_Invitation"],
       }),
       getSignupRequestNotification: build.query<
@@ -1478,7 +1515,7 @@ const injectedRtkApi = api
         query: (queryArg) => ({
           url: `/api/identity/tokens/infinite`,
           params: {
-            owner: queryArg?.owner,
+            userId: queryArg?.userId,
             provider: queryArg?.provider,
           },
         }),
@@ -9881,6 +9918,8 @@ export type GetPatternApiResponse = /** status 200 Design response */ {
 export type GetPatternApiArg = {
   /** Design (Pattern) ID */
   designId: string;
+  /** Whether to include usage metrics in the response. */
+  metrics?: boolean;
 };
 export type DeletePatternApiResponse = unknown;
 export type DeletePatternApiArg = {
@@ -12349,11 +12388,57 @@ export type GetSignupRequestsApiArg = {
 export type ApproveSignupRequestApiResponse = /** status 200 Signup request approved */ {
   [key: string]: any;
 };
-export type ApproveSignupRequestApiArg = void;
+export type ApproveSignupRequestApiArg = {
+  /** The ID of the signup request being approved or denied. */
+  id: string;
+  /** First name of the requester. */
+  firstName?: string;
+  /** Last name of the requester. */
+  lastName?: string;
+  /** Email address of the requester. */
+  email?: string;
+  /** Occupation of the requester. */
+  occupation?: string;
+  /** Organization of the requester. */
+  organization?: string;
+  /** Requested role. */
+  role?: string;
+  /** The signup form variant the request originated from. */
+  formType?: string;
+  /** Status to record on the signup request. */
+  status?: string;
+  /** Tracking task identifier associated with the request. */
+  taskId?: string;
+  /** Tracking task link associated with the request. */
+  taskLink?: string;
+};
 export type DenySignupRequestApiResponse = /** status 200 Signup request denied */ {
   [key: string]: any;
 };
-export type DenySignupRequestApiArg = void;
+export type DenySignupRequestApiArg = {
+  /** The ID of the signup request being approved or denied. */
+  id: string;
+  /** First name of the requester. */
+  firstName?: string;
+  /** Last name of the requester. */
+  lastName?: string;
+  /** Email address of the requester. */
+  email?: string;
+  /** Occupation of the requester. */
+  occupation?: string;
+  /** Organization of the requester. */
+  organization?: string;
+  /** Requested role. */
+  role?: string;
+  /** The signup form variant the request originated from. */
+  formType?: string;
+  /** Status to record on the signup request. */
+  status?: string;
+  /** Tracking task identifier associated with the request. */
+  taskId?: string;
+  /** Tracking task link associated with the request. */
+  taskLink?: string;
+};
 export type GetSignupRequestNotificationApiResponse = /** status 200 Signup request notification payload */ {
   /** The signup request the notification refers to. */
   signupData: {
@@ -13391,7 +13476,7 @@ export type IssueIndefiniteLifetimeTokenApiResponse = /** status 200 Token gener
 };
 export type IssueIndefiniteLifetimeTokenApiArg = {
   /** UUID of the user to issue the indefinite token for. */
-  owner: string;
+  userId: string;
   /** Authentication provider to associate with the indefinite token. */
   provider: string;
 };
