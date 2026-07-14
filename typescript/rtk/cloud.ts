@@ -154,11 +154,11 @@ const injectedRtkApi = api
         invalidatesTags: ["Key_Key"],
       }),
       getKeyById: build.query<GetKeyByIdApiResponse, GetKeyByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/auth/keys/${queryArg.keyId}` }),
+        query: (queryArg) => ({ url: `/api/auth/key/${queryArg.keyId}` }),
         providesTags: ["Key_Key"],
       }),
       deleteKey: build.mutation<DeleteKeyApiResponse, DeleteKeyApiArg>({
-        query: (queryArg) => ({ url: `/api/auth/keys/${queryArg.keyId}`, method: "DELETE" }),
+        query: (queryArg) => ({ url: `/api/auth/key/${queryArg.keyId}`, method: "DELETE" }),
         invalidatesTags: ["Key_Key"],
       }),
       getKeychains: build.query<GetKeychainsApiResponse, GetKeychainsApiArg>({
@@ -897,12 +897,7 @@ const injectedRtkApi = api
         invalidatesTags: ["Design_designs"],
       }),
       getPattern: build.query<GetPatternApiResponse, GetPatternApiArg>({
-        query: (queryArg) => ({
-          url: `/api/content/patterns/${queryArg.designId}`,
-          params: {
-            metrics: queryArg?.metrics,
-          },
-        }),
+        query: (queryArg) => ({ url: `/api/content/patterns/${queryArg.designId}` }),
         providesTags: ["Design_designs"],
       }),
       deletePattern: build.mutation<DeletePatternApiResponse, DeletePatternApiArg>({
@@ -1262,43 +1257,11 @@ const injectedRtkApi = api
         providesTags: ["Invitation_Invitation"],
       }),
       approveSignupRequest: build.mutation<ApproveSignupRequestApiResponse, ApproveSignupRequestApiArg>({
-        query: (queryArg) => ({
-          url: `/api/identity/users/request/approve`,
-          method: "POST",
-          params: {
-            id: queryArg?.id,
-            firstName: queryArg?.firstName,
-            lastName: queryArg?.lastName,
-            email: queryArg?.email,
-            occupation: queryArg?.occupation,
-            organization: queryArg?.organization,
-            role: queryArg?.role,
-            formType: queryArg?.formType,
-            status: queryArg?.status,
-            taskId: queryArg?.taskId,
-            taskLink: queryArg?.taskLink,
-          },
-        }),
+        query: () => ({ url: `/api/identity/users/request/approve`, method: "POST" }),
         invalidatesTags: ["Invitation_Invitation"],
       }),
       denySignupRequest: build.mutation<DenySignupRequestApiResponse, DenySignupRequestApiArg>({
-        query: (queryArg) => ({
-          url: `/api/identity/users/request/deny`,
-          method: "POST",
-          params: {
-            id: queryArg?.id,
-            firstName: queryArg?.firstName,
-            lastName: queryArg?.lastName,
-            email: queryArg?.email,
-            occupation: queryArg?.occupation,
-            organization: queryArg?.organization,
-            role: queryArg?.role,
-            formType: queryArg?.formType,
-            status: queryArg?.status,
-            taskId: queryArg?.taskId,
-            taskLink: queryArg?.taskLink,
-          },
-        }),
+        query: () => ({ url: `/api/identity/users/request/deny`, method: "POST" }),
         invalidatesTags: ["Invitation_Invitation"],
       }),
       getSignupRequestNotification: build.query<
@@ -1515,7 +1478,7 @@ const injectedRtkApi = api
         query: (queryArg) => ({
           url: `/api/identity/tokens/infinite`,
           params: {
-            userId: queryArg?.userId,
+            owner: queryArg?.owner,
             provider: queryArg?.provider,
           },
         }),
@@ -9918,8 +9881,6 @@ export type GetPatternApiResponse = /** status 200 Design response */ {
 export type GetPatternApiArg = {
   /** Design (Pattern) ID */
   designId: string;
-  /** Whether to include usage metrics in the response. */
-  metrics?: boolean;
 };
 export type DeletePatternApiResponse = unknown;
 export type DeletePatternApiArg = {
@@ -12388,57 +12349,11 @@ export type GetSignupRequestsApiArg = {
 export type ApproveSignupRequestApiResponse = /** status 200 Signup request approved */ {
   [key: string]: any;
 };
-export type ApproveSignupRequestApiArg = {
-  /** The ID of the signup request being approved or denied. */
-  id: string;
-  /** First name of the requester. */
-  firstName?: string;
-  /** Last name of the requester. */
-  lastName?: string;
-  /** Email address of the requester. */
-  email?: string;
-  /** Occupation of the requester. */
-  occupation?: string;
-  /** Organization of the requester. */
-  organization?: string;
-  /** Requested role. */
-  role?: string;
-  /** The signup form variant the request originated from. */
-  formType?: string;
-  /** Status to record on the signup request. */
-  status?: string;
-  /** Tracking task identifier associated with the request. */
-  taskId?: string;
-  /** Tracking task link associated with the request. */
-  taskLink?: string;
-};
+export type ApproveSignupRequestApiArg = void;
 export type DenySignupRequestApiResponse = /** status 200 Signup request denied */ {
   [key: string]: any;
 };
-export type DenySignupRequestApiArg = {
-  /** The ID of the signup request being approved or denied. */
-  id: string;
-  /** First name of the requester. */
-  firstName?: string;
-  /** Last name of the requester. */
-  lastName?: string;
-  /** Email address of the requester. */
-  email?: string;
-  /** Occupation of the requester. */
-  occupation?: string;
-  /** Organization of the requester. */
-  organization?: string;
-  /** Requested role. */
-  role?: string;
-  /** The signup form variant the request originated from. */
-  formType?: string;
-  /** Status to record on the signup request. */
-  status?: string;
-  /** Tracking task identifier associated with the request. */
-  taskId?: string;
-  /** Tracking task link associated with the request. */
-  taskLink?: string;
-};
+export type DenySignupRequestApiArg = void;
 export type GetSignupRequestNotificationApiResponse = /** status 200 Signup request notification payload */ {
   /** The signup request the notification refers to. */
   signupData: {
@@ -13476,7 +13391,7 @@ export type IssueIndefiniteLifetimeTokenApiResponse = /** status 200 Token gener
 };
 export type IssueIndefiniteLifetimeTokenApiArg = {
   /** UUID of the user to issue the indefinite token for. */
-  userId: string;
+  owner: string;
   /** Authentication provider to associate with the indefinite token. */
   provider: string;
 };
@@ -14937,63 +14852,44 @@ export type UnassignViewFromWorkspaceApiArg = {
 };
 export const {
   useGetFeaturesQuery,
-  useLazyGetFeaturesQuery,
   useGetFeaturesByOrganizationQuery,
-  useLazyGetFeaturesByOrganizationQuery,
   useSubmitSupportRequestMutation,
   useGetSystemVersionQuery,
-  useLazyGetSystemVersionQuery,
   useSendTestEmailMutation,
   useDeleteBadgeByIdMutation,
   useGetBadgeByIdQuery,
-  useLazyGetBadgeByIdQuery,
   useCreateOrUpdateBadgeMutation,
   useGetAvailableBadgesQuery,
-  useLazyGetAvailableBadgesQuery,
   useAssignBadgesMutation,
   useGetUserCredentialsQuery,
-  useLazyGetUserCredentialsQuery,
   useSaveUserCredentialMutation,
   useUpdateUserCredentialMutation,
   useDeleteUserCredentialMutation,
   useGetCredentialByIdQuery,
-  useLazyGetCredentialByIdQuery,
   useGetUserKeysQuery,
-  useLazyGetUserKeysQuery,
   useGetKeysQuery,
-  useLazyGetKeysQuery,
   useUpsertKeyMutation,
   useGetKeyByIdQuery,
-  useLazyGetKeyByIdQuery,
   useDeleteKeyMutation,
   useGetKeychainsQuery,
-  useLazyGetKeychainsQuery,
   useCreateKeychainMutation,
   useGetKeychainByIdQuery,
-  useLazyGetKeychainByIdQuery,
   useUpdateKeychainMutation,
   useDeleteKeychainMutation,
   useAddKeyToKeychainMutation,
   useRemoveKeyFromKeychainMutation,
   useGetKeysOfKeychainQuery,
-  useLazyGetKeysOfKeychainQuery,
   useRegisterMeshmodelsMutation,
   useGetMeshModelModelsQuery,
-  useLazyGetMeshModelModelsQuery,
   useGetOrgsQuery,
-  useLazyGetOrgsQuery,
   useCreateOrgMutation,
   useGetOrgByDomainQuery,
-  useLazyGetOrgByDomainQuery,
   useGetOrgQuery,
-  useLazyGetOrgQuery,
   useDeleteOrgMutation,
   useUpdateOrgMutation,
   useGetOrgPreferencesQuery,
-  useLazyGetOrgPreferencesQuery,
   useAddTeamToOrgMutation,
   useGetTeamByIdQuery,
-  useLazyGetTeamByIdQuery,
   useUpdateTeamMutation,
   useDeleteTeamMutation,
   useRemoveTeamFromOrgMutation,
@@ -15002,236 +14898,164 @@ export const {
   useAddRoleHolderMutation,
   useDeleteRoleMutation,
   useGetAllRolesQuery,
-  useLazyGetAllRolesQuery,
   useUpsertRoleMutation,
   useBulkEditRoleHolderMutation,
   useGetRoleKeychainsQuery,
-  useLazyGetRoleKeychainsQuery,
   useAssignKeychainToRoleMutation,
   useUnassignKeychainFromRoleMutation,
   useGetSchedulesQuery,
-  useLazyGetSchedulesQuery,
   useUpsertScheduleMutation,
   useGetScheduleQuery,
-  useLazyGetScheduleQuery,
   useDeleteScheduleMutation,
   useGetTeamsQuery,
-  useLazyGetTeamsQuery,
   useCreateTeamMutation,
   useGetTeamUsersQuery,
-  useLazyGetTeamUsersQuery,
   useAddUserToTeamMutation,
   useRemoveUserFromTeamMutation,
   useListUsersNotInTeamQuery,
-  useLazyListUsersNotInTeamQuery,
   useGetUsersForOrgQuery,
-  useLazyGetUsersForOrgQuery,
   useGetUsersQuery,
-  useLazyGetUsersQuery,
   useGetUserProfileByIdQuery,
-  useLazyGetUserProfileByIdQuery,
   useGetUserQuery,
-  useLazyGetUserQuery,
   useGetUserProfileOverviewQuery,
-  useLazyGetUserProfileOverviewQuery,
   useGetUserRecentActivitiesQuery,
-  useLazyGetUserRecentActivitiesQuery,
   useNotifyMentionUsersMutation,
   useCreateAnonymousUserSessionMutation,
   useGetAccountDeletionEligibilityQuery,
-  useLazyGetAccountDeletionEligibilityQuery,
   useGetUserEmailAddressesQuery,
-  useLazyGetUserEmailAddressesQuery,
   useDeleteUserAccountMutation,
   useCreateViewMutation,
   useGetViewsQuery,
-  useLazyGetViewsQuery,
   useShareViewMutation,
   useGetViewByIdQuery,
-  useLazyGetViewByIdQuery,
   useUpdateViewMutation,
   useDeleteViewMutation,
   useGetMyAcademyCurriculaQuery,
-  useLazyGetMyAcademyCurriculaQuery,
   useCreateAcademyCurriculaMutation,
   useGetAcademyCurriculaQuery,
-  useLazyGetAcademyCurriculaQuery,
   useGetAcademyContentQuery,
-  useLazyGetAcademyContentQuery,
   useRegisterToAcademyContentMutation,
   useWithdrawFromAcademyContentMutation,
   useUpdateAcademyCurriculaByIdMutation,
   useDeleteAcademyCurriculaByIdMutation,
   useGetAcademyCurriculaByIdQuery,
-  useLazyGetAcademyCurriculaByIdQuery,
   useGetApiAcademyRegistrationsByContentIdQuery,
-  useLazyGetApiAcademyRegistrationsByContentIdQuery,
   useUpdateCurrentItemInProgressTrackerMutation,
   useGetTestByAbsPathQuery,
-  useLazyGetTestByAbsPathQuery,
   useStartTestByIdMutation,
   useGetAllTestSessionsForRegistrationQuery,
-  useLazyGetAllTestSessionsForRegistrationQuery,
   useSubmitQuizMutation,
   useGetAcademyAdminSummaryQuery,
-  useLazyGetAcademyAdminSummaryQuery,
   useGetAcademyAdminRegistrationsQuery,
-  useLazyGetAcademyAdminRegistrationsQuery,
   useGetCertificateByIdQuery,
-  useLazyGetCertificateByIdQuery,
   useGetConnectionsQuery,
-  useLazyGetConnectionsQuery,
   useRegisterConnectionMutation,
   useGetConnectionByIdQuery,
-  useLazyGetConnectionByIdQuery,
   useUpdateConnectionMutation,
   useDeleteConnectionMutation,
   useDeleteMesheryConnectionMutation,
   useGetKubernetesContextQuery,
-  useLazyGetKubernetesContextQuery,
   useAddConnectionToEnvironmentMutation,
   useRemoveConnectionFromEnvironmentMutation,
   useListConnectionDefinitionsQuery,
-  useLazyListConnectionDefinitionsQuery,
   useRegisterConnectionDefinitionMutation,
   useGetConnectionDefinitionQuery,
-  useLazyGetConnectionDefinitionQuery,
   useUpdateConnectionDefinitionMutation,
   useDeleteConnectionDefinitionMutation,
   useGetPatternsQuery,
-  useLazyGetPatternsQuery,
   useUpsertPatternMutation,
   useDeletePatternsMutation,
   useGetPatternQuery,
-  useLazyGetPatternQuery,
   useDeletePatternMutation,
   useClonePatternMutation,
   useGetDesignPatternFileQuery,
-  useLazyGetDesignPatternFileQuery,
   useUpsertPatternSourceContentMutation,
   useImportDesignMutation,
   useGetCatalogContentQuery,
-  useLazyGetCatalogContentQuery,
   usePublishCatalogContentMutation,
   useUnPublishCatalogContentMutation,
   useGetCatalogContentClassesQuery,
-  useLazyGetCatalogContentClassesQuery,
   useApproveCatalogRequestMutation,
   useDenyCatalogRequestMutation,
   useHandleResourceShareMutation,
   useGetResourceAccessActorsByTypeQuery,
-  useLazyGetResourceAccessActorsByTypeQuery,
   useShareDesignMutation,
   useGetCatalogRequestQuery,
-  useLazyGetCatalogRequestQuery,
   useCreateEnvironmentMutation,
   useGetEnvironmentsQuery,
-  useLazyGetEnvironmentsQuery,
   useGetEnvironmentByIdQuery,
-  useLazyGetEnvironmentByIdQuery,
   useUpdateEnvironmentMutation,
   useDeleteEnvironmentMutation,
   useGetEnvironmentConnectionsQuery,
-  useLazyGetEnvironmentConnectionsQuery,
   useDeleteEventMutation,
   useCreateEventMutation,
   useBulkDeleteEventsMutation,
   useBulkUpdateEventStatusMutation,
   useUpdateEventStatusMutation,
   useGetEventsOfWorkspaceQuery,
-  useLazyGetEventsOfWorkspaceQuery,
   useGetEventsAggregateQuery,
-  useLazyGetEventsAggregateQuery,
   useGetEventsQuery,
-  useLazyGetEventsQuery,
   useGetEventSummaryByUserQuery,
-  useLazyGetEventSummaryByUserQuery,
   useGetEventTypesQuery,
-  useLazyGetEventTypesQuery,
   useGetFiltersQuery,
-  useLazyGetFiltersQuery,
   useUpsertFilterMutation,
   useDeleteFiltersMutation,
   useGetFilterQuery,
-  useLazyGetFilterQuery,
   useUpdateFilterMutation,
   useDeleteFilterMutation,
   useCloneFilterMutation,
   useGetFilterFileQuery,
-  useLazyGetFilterFileQuery,
   useGetInvitationQuery,
-  useLazyGetInvitationQuery,
   useDeleteInvitationMutation,
   useUpdateInvitationMutation,
   useGetInvitationsQuery,
-  useLazyGetInvitationsQuery,
   useCreateInvitationMutation,
   useAcceptInvitationMutation,
   useHandleUserInviteMutation,
   useSignupRequestMutation,
   useGetSignupRequestsQuery,
-  useLazyGetSignupRequestsQuery,
   useApproveSignupRequestMutation,
   useDenySignupRequestMutation,
   useGetSignupRequestNotificationQuery,
-  useLazyGetSignupRequestNotificationQuery,
   useGetPatternResourcesQuery,
-  useLazyGetPatternResourcesQuery,
   useUpsertPatternResourceMutation,
   useGetPatternResourceQuery,
-  useLazyGetPatternResourceQuery,
   useDeletePatternResourceMutation,
   useGetPerformanceProfilesQuery,
-  useLazyGetPerformanceProfilesQuery,
   useUpsertPerformanceProfileMutation,
   useGetPerformanceProfileQuery,
-  useLazyGetPerformanceProfileQuery,
   useUpdatePerformanceProfileMutation,
   useDeletePerformanceProfileMutation,
   useGetPerformanceProfileResultsQuery,
-  useLazyGetPerformanceProfileResultsQuery,
   useGetPerformanceProfileResultQuery,
-  useLazyGetPerformanceProfileResultQuery,
   useGetPerformanceResultsQuery,
-  useLazyGetPerformanceResultsQuery,
   useGetPlansQuery,
-  useLazyGetPlansQuery,
   useGetSubscriptionsQuery,
-  useLazyGetSubscriptionsQuery,
   useCancelSubscriptionMutation,
   useCreateSubscriptionMutation,
   useUpgradeSubscriptionMutation,
   usePreviewSubscriptionUpgradeMutation,
   useHandleSubscriptionWebhookMutation,
   useGetUserTokensQuery,
-  useLazyGetUserTokensQuery,
   useGenerateTokenMutation,
   useDeleteUserTokenMutation,
   useDownloadTokenQuery,
-  useLazyDownloadTokenQuery,
   useIssueIndefiniteLifetimeTokenQuery,
-  useLazyIssueIndefiniteLifetimeTokenQuery,
   useGetWorkspacesQuery,
-  useLazyGetWorkspacesQuery,
   useCreateWorkspaceMutation,
   useGetWorkspaceByIdQuery,
-  useLazyGetWorkspaceByIdQuery,
   useUpdateWorkspaceMutation,
   useDeleteWorkspaceMutation,
   useGetTeamsOfWorkspaceQuery,
-  useLazyGetTeamsOfWorkspaceQuery,
   useAssignTeamToWorkspaceMutation,
   useUnassignTeamFromWorkspaceMutation,
   useGetEnvironmentsOfWorkspaceQuery,
-  useLazyGetEnvironmentsOfWorkspaceQuery,
   useAssignEnvironmentToWorkspaceMutation,
   useUnassignEnvironmentFromWorkspaceMutation,
   useGetDesignsOfWorkspaceQuery,
-  useLazyGetDesignsOfWorkspaceQuery,
   useAssignDesignToWorkspaceMutation,
   useUnassignDesignFromWorkspaceMutation,
   useGetViewsOfWorkspaceQuery,
-  useLazyGetViewsOfWorkspaceQuery,
   useAssignViewToWorkspaceMutation,
   useUnassignViewFromWorkspaceMutation,
 } = injectedRtkApi;

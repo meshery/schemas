@@ -66,6 +66,9 @@ type Name = string
 // Order defines model for order.
 type Order = string
 
+// OwnerQuery A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+type OwnerQuery = core.Uuid
+
 // Page defines model for page.
 type Page = string
 
@@ -89,6 +92,3 @@ type TokenId = core.Uuid
 
 // TokenIdQuery A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 type TokenIdQuery = core.Uuid
-
-// UserIdQuery A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-type UserIdQuery = core.Uuid

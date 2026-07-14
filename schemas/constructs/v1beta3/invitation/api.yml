@@ -375,8 +375,7 @@ components:
       required: true
       description: The ID of the signup request being approved or denied.
       schema:
-        type: string
-        format: uuid
+        $ref: '#/components/schemas/Uuid'
     signupFirstName:
       name: firstName
       in: query
