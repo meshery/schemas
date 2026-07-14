@@ -5944,11 +5944,11 @@ export type UpdateAcademyCurriculaByIdApiResponse = /** status 200 updated the c
     /** Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
     description: string;
     /** Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-    emails: string[];
+    emails: string[] | null;
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     orgId: string;
     /** Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire. */
-    expiresAt?: string;
+    expiresAt?: string | null;
     /** Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
     quota?: number;
     /** List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
@@ -5964,7 +5964,7 @@ export type UpdateAcademyCurriculaByIdApiResponse = /** status 200 updated the c
     /** Timestamp when the invitation was last updated. */
     updatedAt: string;
     /** Timestamp when the invitation was deleted, if applicable. */
-    deletedAt: string;
+    deletedAt: string | null;
   };
 };
 export type UpdateAcademyCurriculaByIdApiArg = {
@@ -6159,11 +6159,11 @@ export type GetAcademyCurriculaByIdApiResponse = /** status 200 A single curricu
     /** Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
     description: string;
     /** Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-    emails: string[];
+    emails: string[] | null;
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     orgId: string;
     /** Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire. */
-    expiresAt?: string;
+    expiresAt?: string | null;
     /** Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
     quota?: number;
     /** List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
@@ -6179,7 +6179,7 @@ export type GetAcademyCurriculaByIdApiResponse = /** status 200 A single curricu
     /** Timestamp when the invitation was last updated. */
     updatedAt: string;
     /** Timestamp when the invitation was deleted, if applicable. */
-    deletedAt: string;
+    deletedAt: string | null;
   };
 };
 export type GetAcademyCurriculaByIdApiArg = {
@@ -12054,11 +12054,11 @@ export type GetInvitationApiResponse = /** status 200 Invitation fetched */ {
   /** Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
   description: string;
   /** Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-  emails: string[];
+  emails: string[] | null;
   /** ID of the organization to which the user is invited. */
   orgId: string;
   /** Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire. */
-  expiresAt?: string;
+  expiresAt?: string | null;
   /** Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
   quota?: number;
   /** List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
@@ -12074,7 +12074,7 @@ export type GetInvitationApiResponse = /** status 200 Invitation fetched */ {
   /** Timestamp when the invitation was last updated. */
   updatedAt: string;
   /** Timestamp when the invitation was deleted, if applicable. */
-  deletedAt: string;
+  deletedAt: string | null;
 };
 export type GetInvitationApiArg = {
   /** The ID of the invitation. */
@@ -12097,11 +12097,11 @@ export type UpdateInvitationApiResponse = /** status 200 Invitation updated */ {
   /** Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
   description: string;
   /** Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-  emails: string[];
+  emails: string[] | null;
   /** ID of the organization to which the user is invited. */
   orgId: string;
   /** Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire. */
-  expiresAt?: string;
+  expiresAt?: string | null;
   /** Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
   quota?: number;
   /** List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
@@ -12117,7 +12117,7 @@ export type UpdateInvitationApiResponse = /** status 200 Invitation updated */ {
   /** Timestamp when the invitation was last updated. */
   updatedAt: string;
   /** Timestamp when the invitation was deleted, if applicable. */
-  deletedAt: string;
+  deletedAt: string | null;
 };
 export type UpdateInvitationApiArg = {
   /** The ID of the invitation. */
@@ -12169,11 +12169,11 @@ export type GetInvitationsApiResponse = /** status 200 Invitations page */ {
     /** Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
     description: string;
     /** Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-    emails: string[];
+    emails: string[] | null;
     /** ID of the organization to which the user is invited. */
     orgId: string;
     /** Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire. */
-    expiresAt?: string;
+    expiresAt?: string | null;
     /** Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
     quota?: number;
     /** List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
@@ -12189,7 +12189,7 @@ export type GetInvitationsApiResponse = /** status 200 Invitations page */ {
     /** Timestamp when the invitation was last updated. */
     updatedAt: string;
     /** Timestamp when the invitation was deleted, if applicable. */
-    deletedAt: string;
+    deletedAt: string | null;
   }[];
 };
 export type GetInvitationsApiArg = {
@@ -12216,11 +12216,11 @@ export type CreateInvitationApiResponse = /** status 201 Invitation created */ {
   /** Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
   description: string;
   /** Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-  emails: string[];
+  emails: string[] | null;
   /** ID of the organization to which the user is invited. */
   orgId: string;
   /** Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire. */
-  expiresAt?: string;
+  expiresAt?: string | null;
   /** Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
   quota?: number;
   /** List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
@@ -12236,7 +12236,7 @@ export type CreateInvitationApiResponse = /** status 201 Invitation created */ {
   /** Timestamp when the invitation was last updated. */
   updatedAt: string;
   /** Timestamp when the invitation was deleted, if applicable. */
-  deletedAt: string;
+  deletedAt: string | null;
 };
 export type CreateInvitationApiArg = {
   body: {
@@ -12278,11 +12278,11 @@ export type AcceptInvitationApiResponse = /** status 200 Invitation accepted */ 
   /** Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
   description: string;
   /** Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-  emails: string[];
+  emails: string[] | null;
   /** ID of the organization to which the user is invited. */
   orgId: string;
   /** Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire. */
-  expiresAt?: string;
+  expiresAt?: string | null;
   /** Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
   quota?: number;
   /** List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
@@ -12298,7 +12298,7 @@ export type AcceptInvitationApiResponse = /** status 200 Invitation accepted */ 
   /** Timestamp when the invitation was last updated. */
   updatedAt: string;
   /** Timestamp when the invitation was deleted, if applicable. */
-  deletedAt: string;
+  deletedAt: string | null;
 };
 export type AcceptInvitationApiArg = {
   /** The ID of the invitation. */

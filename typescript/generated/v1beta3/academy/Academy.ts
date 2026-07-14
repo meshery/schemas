@@ -1063,12 +1063,12 @@ export interface components {
                  * Format: uuid
                  * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
-                id: string;
+                readonly id: string;
                 /**
                  * Format: uuid
                  * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
-                owner: string;
+                readonly owner: string;
                 /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
                 isDefault?: boolean;
                 /** @description Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
@@ -1076,21 +1076,21 @@ export interface components {
                 /** @description Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
                 description: string;
                 /** @description Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-                emails: string[];
+                emails: string[] | null;
                 /**
                  * Format: uuid
                  * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
-                orgId: string;
+                readonly orgId: string;
                 /**
                  * Format: date-time
                  * @description Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.
                  */
-                expiresAt?: string;
+                expiresAt?: string | null;
                 /** @description Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
                 quota?: number;
                 /** @description List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
-                acceptedBy: string[];
+                readonly acceptedBy: string[];
                 /** @description Roles that the user will have when accepting the invitation. Empty means the invitation does not specify any roles. */
                 roles: string[];
                 /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
@@ -1104,17 +1104,17 @@ export interface components {
                  * Format: date-time
                  * @description Timestamp when the invitation was created.
                  */
-                createdAt: string;
+                readonly createdAt: string;
                 /**
                  * Format: date-time
                  * @description Timestamp when the invitation was last updated.
                  */
-                updatedAt: string;
+                readonly updatedAt: string;
                 /**
                  * Format: date-time
                  * @description Timestamp when the invitation was deleted, if applicable.
                  */
-                deletedAt: string;
+                readonly deletedAt: string | null;
             };
         };
         CreateAcademyCurriculaRequest: {
@@ -6280,12 +6280,12 @@ export interface operations {
                              * Format: uuid
                              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
-                            id: string;
+                            readonly id: string;
                             /**
                              * Format: uuid
                              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
-                            owner: string;
+                            readonly owner: string;
                             /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
                             isDefault?: boolean;
                             /** @description Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
@@ -6293,21 +6293,21 @@ export interface operations {
                             /** @description Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
                             description: string;
                             /** @description Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-                            emails: string[];
+                            emails: string[] | null;
                             /**
                              * Format: uuid
                              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
-                            orgId: string;
+                            readonly orgId: string;
                             /**
                              * Format: date-time
                              * @description Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.
                              */
-                            expiresAt?: string;
+                            expiresAt?: string | null;
                             /** @description Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
                             quota?: number;
                             /** @description List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
-                            acceptedBy: string[];
+                            readonly acceptedBy: string[];
                             /** @description Roles that the user will have when accepting the invitation. Empty means the invitation does not specify any roles. */
                             roles: string[];
                             /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
@@ -6321,17 +6321,17 @@ export interface operations {
                              * Format: date-time
                              * @description Timestamp when the invitation was created.
                              */
-                            createdAt: string;
+                            readonly createdAt: string;
                             /**
                              * Format: date-time
                              * @description Timestamp when the invitation was last updated.
                              */
-                            updatedAt: string;
+                            readonly updatedAt: string;
                             /**
                              * Format: date-time
                              * @description Timestamp when the invitation was deleted, if applicable.
                              */
-                            deletedAt: string;
+                            readonly deletedAt: string | null;
                         };
                     };
                 };
@@ -6773,12 +6773,12 @@ export interface operations {
                              * Format: uuid
                              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
-                            id: string;
+                            readonly id: string;
                             /**
                              * Format: uuid
                              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
-                            owner: string;
+                            readonly owner: string;
                             /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain. An organization can only have one default invitation. */
                             isDefault?: boolean;
                             /** @description Name of the invitation, which can be used to identify it. Required; cannot be an empty string. */
@@ -6786,21 +6786,21 @@ export interface operations {
                             /** @description Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
                             description: string;
                             /** @description Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-                            emails: string[];
+                            emails: string[] | null;
                             /**
                              * Format: uuid
                              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
-                            orgId: string;
+                            readonly orgId: string;
                             /**
                              * Format: date-time
                              * @description Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire.
                              */
-                            expiresAt?: string;
+                            expiresAt?: string | null;
                             /** @description Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
                             quota?: number;
                             /** @description List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
-                            acceptedBy: string[];
+                            readonly acceptedBy: string[];
                             /** @description Roles that the user will have when accepting the invitation. Empty means the invitation does not specify any roles. */
                             roles: string[];
                             /** @description Teams that the user will be added to when accepting the invitation. Empty means the invitation does not specify any teams. */
@@ -6814,17 +6814,17 @@ export interface operations {
                              * Format: date-time
                              * @description Timestamp when the invitation was created.
                              */
-                            createdAt: string;
+                            readonly createdAt: string;
                             /**
                              * Format: date-time
                              * @description Timestamp when the invitation was last updated.
                              */
-                            updatedAt: string;
+                            readonly updatedAt: string;
                             /**
                              * Format: date-time
                              * @description Timestamp when the invitation was deleted, if applicable.
                              */
-                            deletedAt: string;
+                            readonly deletedAt: string | null;
                         };
                     };
                 };
