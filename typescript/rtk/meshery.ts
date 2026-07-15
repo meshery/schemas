@@ -1,6 +1,7 @@
 import { mesheryBaseApi as api } from "./api";
 export const addTagTypes = [
   "Meshery_Controllers_Configuration_controllers",
+  "Console_API_Console",
   "Evaluation_Evaluation",
   "System_API_System",
   "credential_credentials",
@@ -55,6 +56,48 @@ const injectedRtkApi = api
           body: queryArg.body,
         }),
         invalidatesTags: ["Meshery_Controllers_Configuration_controllers"],
+      }),
+      getConsoleCapabilities: build.query<GetConsoleCapabilitiesApiResponse, GetConsoleCapabilitiesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/connections/${queryArg.connectionId}/console/capabilities`,
+          params: {
+            resource: queryArg?.resource,
+            name: queryArg?.name,
+            namespace: queryArg?.["namespace"],
+            container: queryArg?.container,
+          },
+        }),
+        providesTags: ["Console_API_Console"],
+      }),
+      openTerminalConsole: build.query<OpenTerminalConsoleApiResponse, OpenTerminalConsoleApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/connections/${queryArg.connectionId}/console/terminal`,
+          params: {
+            resource: queryArg?.resource,
+            name: queryArg?.name,
+            namespace: queryArg?.["namespace"],
+            container: queryArg?.container,
+            command: queryArg?.command,
+          },
+        }),
+        providesTags: ["Console_API_Console"],
+      }),
+      openLogConsole: build.query<OpenLogConsoleApiResponse, OpenLogConsoleApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/connections/${queryArg.connectionId}/console/logs`,
+          params: {
+            resource: queryArg?.resource,
+            name: queryArg?.name,
+            namespace: queryArg?.["namespace"],
+            container: queryArg?.container,
+            follow: queryArg?.follow,
+            previous: queryArg?.previous,
+            timestamps: queryArg?.timestamps,
+            tailLines: queryArg?.tailLines,
+            sinceSeconds: queryArg?.sinceSeconds,
+          },
+        }),
+        providesTags: ["Console_API_Console"],
       }),
       evaluateRelationships: build.mutation<EvaluateRelationshipsApiResponse, EvaluateRelationshipsApiArg>({
         query: (queryArg) => ({ url: `/api/meshmodels/relationships/evaluate`, method: "POST", body: queryArg.body }),
@@ -1350,6 +1393,68 @@ export type UpdateConnectionControllersConfigApiArg = {
       };
     };
   };
+};
+export type GetConsoleCapabilitiesApiResponse = /** status 200 The console kinds the target admits. */ {
+  /** Whether an interactive terminal can be opened. */
+  terminal: boolean;
+  /** Whether a log stream can be opened. */
+  logs: boolean;
+  /** The addressable sub-targets, if the resource has any. */
+  containers?: string[];
+  /** The sub-target used when ConsoleTarget.container is empty. */
+  defaultContainer?: string;
+  /** Explains, for a human, why an unsupported console kind is unsupported — e.g. that the pod is not running. */
+  reason?: string;
+};
+export type GetConsoleCapabilitiesApiArg = {
+  /** The connection whose resources the console addresses. */
+  connectionId: string;
+  /** The driver-specific resource type, e.g. `pod` for a kubernetes connection. */
+  resource: string;
+  /** The resource's name within its scope. */
+  name: string;
+  /** The resource's parent scope, where it has one. Required for namespaced Kubernetes resources. */
+  namespace?: string;
+  /** A sub-target within the resource, e.g. a container within a pod. The driver's default sub-target is used when omitted. */
+  container?: string;
+};
+export type OpenTerminalConsoleApiResponse = unknown;
+export type OpenTerminalConsoleApiArg = {
+  /** The connection whose resources the console addresses. */
+  connectionId: string;
+  /** The driver-specific resource type, e.g. `pod` for a kubernetes connection. */
+  resource: string;
+  /** The resource's name within its scope. */
+  name: string;
+  /** The resource's parent scope, where it has one. Required for namespaced Kubernetes resources. */
+  namespace?: string;
+  /** A sub-target within the resource, e.g. a container within a pod. The driver's default sub-target is used when omitted. */
+  container?: string;
+  /** The argv to execute, one query parameter per element. When omitted the driver picks a sensible interactive shell for the target. */
+  command?: string[];
+};
+export type OpenLogConsoleApiResponse = unknown;
+export type OpenLogConsoleApiArg = {
+  /** The connection whose resources the console addresses. */
+  connectionId: string;
+  /** The driver-specific resource type, e.g. `pod` for a kubernetes connection. */
+  resource: string;
+  /** The resource's name within its scope. */
+  name: string;
+  /** The resource's parent scope, where it has one. Required for namespaced Kubernetes resources. */
+  namespace?: string;
+  /** A sub-target within the resource, e.g. a container within a pod. The driver's default sub-target is used when omitted. */
+  container?: string;
+  /** Keep the stream open and append new output as it is produced. */
+  follow?: boolean;
+  /** Return the logs of the target's prior instance, if any. */
+  previous?: boolean;
+  /** Prefix each line with an RFC 3339 timestamp. */
+  timestamps?: boolean;
+  /** Cap how many lines of history are replayed before following. Omit for no limit. */
+  tailLines?: number;
+  /** Bound history to output produced within the last N seconds. Omit for no bound; a value of 0 is treated as omitted. */
+  sinceSeconds?: number;
 };
 export type EvaluateRelationshipsApiResponse = /** status 200 Successful evaluation */ {
   /** Specifies the version of the schema to which the evaluation response conforms. */
@@ -9764,6 +9869,9 @@ export const {
   useGetConnectionControllersConfigQuery,
   useLazyGetConnectionControllersConfigQuery,
   useUpdateConnectionControllersConfigMutation,
+  useGetConsoleCapabilitiesQuery,
+  useOpenTerminalConsoleQuery,
+  useOpenLogConsoleQuery,
   useEvaluateRelationshipsMutation,
   useGetSystemDatabaseQuery,
   useLazyGetSystemDatabaseQuery,
