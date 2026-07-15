@@ -944,7 +944,7 @@ components:
       in: query
       description: Get responses by page
       schema:
-        type: string
+        type: integer
     userId:
       name: userId
       in: query
@@ -968,13 +968,13 @@ components:
       in: query
       description: Get responses by pagesize
       schema:
-        type: string
+        type: integer
     pagesizeWithAll:
       name: pagesize
       in: query
       description: Get responses by pagesize (pass all to get all responses)
       schema:
-        type: string
+        type: integer
     pageSize:
       name: pageSize
       in: query

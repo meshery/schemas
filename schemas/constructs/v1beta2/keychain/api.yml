@@ -252,7 +252,7 @@ components:
       description: Get responses by pagesize. Deprecated alias of pageSize.
       deprecated: true
       schema:
-        type: string
+        type: integer
     order:
       $ref: ../../v1alpha1/core/api.yml#/components/parameters/order
     search:

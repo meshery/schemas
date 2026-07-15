@@ -441,13 +441,13 @@ components:
       in: query
       description: Get responses by page
       schema:
-        type: string
+        type: integer
     pageSize:
       name: pageSize
       in: query
       description: Get responses by page size
       schema:
-        type: string
+        type: integer
     search:
       $ref: "../core/api.yml#/components/parameters/search"
     order:
