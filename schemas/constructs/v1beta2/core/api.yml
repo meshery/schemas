@@ -974,7 +974,9 @@ components:
       in: query
       description: Get responses by pagesize (pass all to get all responses)
       schema:
-        type: integer
+        # Stays string: the contract admits the literal "all" sentinel,
+        # which the server middleware expands to an uncapped page.
+        type: string
     pageSize:
       name: pageSize
       in: query
