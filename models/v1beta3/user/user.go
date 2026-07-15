@@ -135,6 +135,78 @@ type Prometheus struct {
 	SelectedPrometheusBoardsConfigs *[]SelectedGrafanaConfig `json:"selectedPrometheusBoardsConfigs,omitempty" yaml:"selectedPrometheusBoardsConfigs,omitempty"`
 }
 
+// PublicUser Publicly viewable projection of User served by the unauthenticated public users directory. Deliberately excludes email, real names, and every other personally identifying or account-internal field.
+type PublicUser struct {
+	// AvatarUrl URL to user's avatar image
+	AvatarUrl string `db:"avatar_url" json:"avatarUrl,omitempty" yaml:"avatarUrl,omitempty"`
+
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID core.Uuid `db:"id" json:"id" yaml:"id"`
+
+	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	UserID *core.Uuid `db:"user_id" json:"userId,omitempty" yaml:"userId,omitempty"`
+
+	// Username Public username of the user
+	Username *string `db:"username" json:"username,omitempty" yaml:"username,omitempty"`
+}
+
+// PublicUsersPage Paginated list of publicly viewable user records
+type PublicUsersPage struct {
+	// Data Public user records for the requested page.
+	Data *[]PublicUser `json:"data,omitempty" yaml:"data,omitempty"`
+
+	// Page Current page number of the result set.
+	Page *int `json:"page,omitempty" yaml:"page,omitempty"`
+
+	// PageSize Number of items per page.
+	PageSize *int `json:"pageSize,omitempty" yaml:"pageSize,omitempty"`
+
+	// TotalCount Total number of items available.
+	TotalCount *int `json:"totalCount,omitempty" yaml:"totalCount,omitempty"`
+}
+
+// SearchableUser Minimal collaboration projection of User served by the authenticated user-search endpoints (people-picker flows such as sharing a design). Carries just enough to identify and display a person - name, username, email, avatar - and deliberately excludes roles, organization and team membership, preferences, and login metadata.
+type SearchableUser struct {
+	// AvatarUrl URL to user's avatar image
+	AvatarUrl string `db:"avatar_url" json:"avatarUrl,omitempty" yaml:"avatarUrl,omitempty"`
+
+	// DeletedAt SQL null Timestamp to handle null values of time.
+	DeletedAt core.NullTime `db:"deleted_at" json:"deletedAt,omitempty" yaml:"deletedAt,omitempty"`
+
+	// Email User's email address
+	Email *openapi_types.Email `db:"email" json:"email,omitempty" yaml:"email,omitempty"`
+
+	// FirstName User's first name
+	FirstName *string `db:"first_name" json:"firstName,omitempty" yaml:"firstName,omitempty"`
+
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID core.Uuid `db:"id" json:"id" yaml:"id"`
+
+	// LastName User's last name
+	LastName *string `db:"last_name" json:"lastName,omitempty" yaml:"lastName,omitempty"`
+
+	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	UserID *core.Uuid `db:"user_id" json:"userId,omitempty" yaml:"userId,omitempty"`
+
+	// Username Public username of the user
+	Username *string `db:"username" json:"username,omitempty" yaml:"username,omitempty"`
+}
+
+// SearchableUsersPage Paginated list of users in the searchable collaboration projection
+type SearchableUsersPage struct {
+	// Data Matching user records for the requested page.
+	Data *[]SearchableUser `json:"data,omitempty" yaml:"data,omitempty"`
+
+	// Page Current page number of the result set.
+	Page *int `json:"page,omitempty" yaml:"page,omitempty"`
+
+	// PageSize Number of items per page.
+	PageSize *int `json:"pageSize,omitempty" yaml:"pageSize,omitempty"`
+
+	// TotalCount Total number of items available.
+	TotalCount *int `json:"totalCount,omitempty" yaml:"totalCount,omitempty"`
+}
+
 // SelectedGrafanaConfig defines model for SelectedGrafanaConfig.
 type SelectedGrafanaConfig struct {
 	// Board Placeholder for GrafanaBoard definition (define fields as needed)
@@ -281,3 +353,21 @@ type UserEmailAddress struct {
 
 // UserEmailAddressSource How this address became associated with the account
 type UserEmailAddressSource string
+
+// Filter defines model for filter.
+type Filter = string
+
+// Order defines model for order.
+type Order = string
+
+// OrgId defines model for orgId.
+type OrgId = uuid.UUID
+
+// Page defines model for page.
+type Page = int
+
+// PageSize defines model for pageSize.
+type PageSize = int
+
+// Search defines model for search.
+type Search = string

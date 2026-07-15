@@ -448,7 +448,7 @@ type UsersPageForAdmin struct {
 	TotalCount *int `json:"totalCount,omitempty" yaml:"totalCount,omitempty"`
 }
 
-// UsersPageForNonAdmin Paginated list of public user records
+// UsersPageForNonAdmin Deprecated: the public users directory (/api/users, getUsers) is documented by the v1beta3 user construct's PublicUsersPage, which reflects the reduced projection actually served since the directory was hardened. This full-User page shape was never what the endpoint returned post-hardening and is retained only for compatibility with existing type imports.
 type UsersPageForNonAdmin struct {
 	// Data The data of the userspagefornonadmin.
 	Data *[]User `json:"data,omitempty" yaml:"data,omitempty"`

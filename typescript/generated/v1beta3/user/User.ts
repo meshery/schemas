@@ -3,7 +3,68 @@
  * Do not make direct changes to the file.
  */
 
-export type paths = Record<string, never>;
+export interface paths {
+    "/api/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get public users
+         * @description Returns the publicly viewable user directory. Records are reduced to the PublicUser projection (username and avatar); personally identifying fields such as email and real names are never served on this unauthenticated path.
+         */
+        get: operations["getUsers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/users/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Search users
+         * @description Searches user accounts by name, username, or email and returns the SearchableUser collaboration projection. Serves authenticated people-picker flows such as sharing a design with other users. A blank search returns an empty page.
+         */
+        get: operations["searchUsers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/identity/orgs/{orgId}/users/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Search users within an organization scope
+         * @description Searches user accounts on behalf of an organization context and returns the SearchableUser collaboration projection. A blank search returns an empty page.
+         */
+        get: operations["searchUsersInOrg"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+}
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
@@ -264,6 +325,136 @@ export interface components {
                 totalCount?: number;
             };
         };
+        /** @description Publicly viewable projection of User served by the unauthenticated public users directory. Deliberately excludes email, real names, and every other personally identifying or account-internal field. */
+        PublicUser: {
+            /**
+             * Format: uuid
+             * @description Unique identifier for the user
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @deprecated
+             * @description Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id.
+             */
+            userId?: string;
+            /** @description Public username of the user */
+            username?: string;
+            /**
+             * Format: uri
+             * @description URL to user's avatar image
+             */
+            avatarUrl?: string;
+        };
+        /** @description Paginated list of publicly viewable user records */
+        PublicUsersPage: {
+            /** @description Current page number of the result set. */
+            page?: number;
+            /** @description Number of items per page. */
+            pageSize?: number;
+            /** @description Total number of items available. */
+            totalCount?: number;
+            /** @description Public user records for the requested page. */
+            data?: {
+                /**
+                 * Format: uuid
+                 * @description Unique identifier for the user
+                 */
+                id: string;
+                /**
+                 * Format: uuid
+                 * @deprecated
+                 * @description Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id.
+                 */
+                userId?: string;
+                /** @description Public username of the user */
+                username?: string;
+                /**
+                 * Format: uri
+                 * @description URL to user's avatar image
+                 */
+                avatarUrl?: string;
+            }[];
+        };
+        /** @description Minimal collaboration projection of User served by the authenticated user-search endpoints (people-picker flows such as sharing a design). Carries just enough to identify and display a person - name, username, email, avatar - and deliberately excludes roles, organization and team membership, preferences, and login metadata. */
+        SearchableUser: {
+            /**
+             * Format: uuid
+             * @description Unique identifier for the user
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @deprecated
+             * @description Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id.
+             */
+            userId?: string;
+            /** @description Public username of the user */
+            username?: string;
+            /** @description User's first name */
+            firstName?: string;
+            /** @description User's last name */
+            lastName?: string;
+            /**
+             * Format: email
+             * @description User's email address
+             */
+            email?: string;
+            /**
+             * Format: uri
+             * @description URL to user's avatar image
+             */
+            avatarUrl?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the user record was soft-deleted (null if not deleted)
+             */
+            deletedAt?: string;
+        };
+        /** @description Paginated list of users in the searchable collaboration projection */
+        SearchableUsersPage: {
+            /** @description Current page number of the result set. */
+            page?: number;
+            /** @description Number of items per page. */
+            pageSize?: number;
+            /** @description Total number of items available. */
+            totalCount?: number;
+            /** @description Matching user records for the requested page. */
+            data?: {
+                /**
+                 * Format: uuid
+                 * @description Unique identifier for the user
+                 */
+                id: string;
+                /**
+                 * Format: uuid
+                 * @deprecated
+                 * @description Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id.
+                 */
+                userId?: string;
+                /** @description Public username of the user */
+                username?: string;
+                /** @description User's first name */
+                firstName?: string;
+                /** @description User's last name */
+                lastName?: string;
+                /**
+                 * Format: email
+                 * @description User's email address
+                 */
+                email?: string;
+                /**
+                 * Format: uri
+                 * @description URL to user's avatar image
+                 */
+                avatarUrl?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the user record was soft-deleted (null if not deleted)
+                 */
+                deletedAt?: string;
+            }[];
+        };
         /** @description One email address associated with a user account. A user has exactly one primary address (mirrored in users.email) and any number of secondary addresses accumulated from account consolidation or explicit addition. Uniqueness across live addresses is enforced case-insensitively. */
         UserEmailAddress: {
             /**
@@ -517,11 +708,351 @@ export interface components {
             link: string;
         };
     };
-    responses: never;
-    parameters: never;
+    responses: {
+        /** @description Invalid request body or request param */
+        400: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Expired JWT token used or insufficient privilege */
+        401: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Result not found */
+        404: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Internal server error */
+        500: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+    };
+    parameters: {
+        /** @description Organization ID */
+        orgId: string;
+        /** @description Get responses by page */
+        page: number;
+        /** @description Get responses by page size */
+        pageSize: number;
+        /** @description Get responses that match search param value */
+        search: string;
+        /** @description Get ordered responses */
+        order: string;
+        /** @description Get filtered reponses */
+        filter: string;
+    };
     requestBodies: never;
     headers: never;
     pathItems: never;
 }
 export type $defs = Record<string, never>;
-export type operations = Record<string, never>;
+export interface operations {
+    getUsers: {
+        parameters: {
+            query?: {
+                /** @description Get responses by page */
+                page?: number;
+                /** @description Get responses by page size */
+                pageSize?: number;
+                /** @description Get responses that match search param value */
+                search?: string;
+                /** @description Get ordered responses */
+                order?: string;
+                /** @description Get filtered reponses */
+                filter?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated list of public users */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Current page number of the result set. */
+                        page?: number;
+                        /** @description Number of items per page. */
+                        pageSize?: number;
+                        /** @description Total number of items available. */
+                        totalCount?: number;
+                        /** @description Public user records for the requested page. */
+                        data?: {
+                            /**
+                             * Format: uuid
+                             * @description Unique identifier for the user
+                             */
+                            id: string;
+                            /**
+                             * Format: uuid
+                             * @deprecated
+                             * @description Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id.
+                             */
+                            userId?: string;
+                            /** @description Public username of the user */
+                            username?: string;
+                            /**
+                             * Format: uri
+                             * @description URL to user's avatar image
+                             */
+                            avatarUrl?: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    searchUsers: {
+        parameters: {
+            query?: {
+                /** @description Get responses by page */
+                page?: number;
+                /** @description Get responses by page size */
+                pageSize?: number;
+                /** @description Get responses that match search param value */
+                search?: string;
+                /** @description Get ordered responses */
+                order?: string;
+                /** @description Get filtered reponses */
+                filter?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated list of matching users in the searchable projection */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Current page number of the result set. */
+                        page?: number;
+                        /** @description Number of items per page. */
+                        pageSize?: number;
+                        /** @description Total number of items available. */
+                        totalCount?: number;
+                        /** @description Matching user records for the requested page. */
+                        data?: {
+                            /**
+                             * Format: uuid
+                             * @description Unique identifier for the user
+                             */
+                            id: string;
+                            /**
+                             * Format: uuid
+                             * @deprecated
+                             * @description Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id.
+                             */
+                            userId?: string;
+                            /** @description Public username of the user */
+                            username?: string;
+                            /** @description User's first name */
+                            firstName?: string;
+                            /** @description User's last name */
+                            lastName?: string;
+                            /**
+                             * Format: email
+                             * @description User's email address
+                             */
+                            email?: string;
+                            /**
+                             * Format: uri
+                             * @description URL to user's avatar image
+                             */
+                            avatarUrl?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was soft-deleted (null if not deleted)
+                             */
+                            deletedAt?: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    searchUsersInOrg: {
+        parameters: {
+            query?: {
+                /** @description Get responses by page */
+                page?: number;
+                /** @description Get responses by page size */
+                pageSize?: number;
+                /** @description Get responses that match search param value */
+                search?: string;
+                /** @description Get ordered responses */
+                order?: string;
+                /** @description Get filtered reponses */
+                filter?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Organization ID */
+                orgId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated list of matching users in the searchable projection */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description Current page number of the result set. */
+                        page?: number;
+                        /** @description Number of items per page. */
+                        pageSize?: number;
+                        /** @description Total number of items available. */
+                        totalCount?: number;
+                        /** @description Matching user records for the requested page. */
+                        data?: {
+                            /**
+                             * Format: uuid
+                             * @description Unique identifier for the user
+                             */
+                            id: string;
+                            /**
+                             * Format: uuid
+                             * @deprecated
+                             * @description Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id.
+                             */
+                            userId?: string;
+                            /** @description Public username of the user */
+                            username?: string;
+                            /** @description User's first name */
+                            firstName?: string;
+                            /** @description User's last name */
+                            lastName?: string;
+                            /**
+                             * Format: email
+                             * @description User's email address
+                             */
+                            email?: string;
+                            /**
+                             * Format: uri
+                             * @description URL to user's avatar image
+                             */
+                            avatarUrl?: string;
+                            /**
+                             * Format: date-time
+                             * @description Timestamp when the user record was soft-deleted (null if not deleted)
+                             */
+                            deletedAt?: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Invalid request body or request param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+}

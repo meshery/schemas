@@ -19,8 +19,754 @@ const UserSchema: Record<string, unknown> = {
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     }
   },
-  "paths": {},
+  "security": [
+    {
+      "jwt": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "users",
+      "description": "Operations related to users"
+    }
+  ],
+  "paths": {
+    "/api/users": {
+      "get": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
+        "tags": [
+          "users"
+        ],
+        "operationId": "getUsers",
+        "summary": "Get public users",
+        "description": "Returns the publicly viewable user directory. Records are reduced to the PublicUser projection (username and avatar); personally identifying fields such as email and real names are never served on this unauthenticated path.",
+        "security": [],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Get responses by page",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Get responses by page size",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Get responses that match search param value",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "Get ordered responses",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "Get filtered reponses",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of public users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Paginated list of publicly viewable user records",
+                  "properties": {
+                    "page": {
+                      "type": "integer",
+                      "description": "Current page number of the result set.",
+                      "minimum": 0
+                    },
+                    "pageSize": {
+                      "type": "integer",
+                      "description": "Number of items per page.",
+                      "minimum": 1
+                    },
+                    "totalCount": {
+                      "type": "integer",
+                      "description": "Total number of items available.",
+                      "minimum": 0
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "description": "Publicly viewable projection of User served by the unauthenticated public users directory. Deliberately excludes email, real names, and every other personally identifying or account-internal field.",
+                        "required": [
+                          "id"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "Unique identifier for the user",
+                            "x-go-name": "ID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "id",
+                              "json": "id"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "userId": {
+                            "deprecated": true,
+                            "description": "Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id.",
+                            "x-go-name": "UserID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "user_id",
+                              "json": "userId,omitempty"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "username": {
+                            "type": "string",
+                            "maxLength": 200,
+                            "description": "Public username of the user",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "username",
+                              "json": "username,omitempty"
+                            }
+                          },
+                          "avatarUrl": {
+                            "type": "string",
+                            "format": "uri",
+                            "maxLength": 500,
+                            "description": "URL to user's avatar image",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "avatar_url",
+                              "json": "avatarUrl,omitempty"
+                            }
+                          }
+                        }
+                      },
+                      "description": "Public user records for the requested page."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/identity/users/search": {
+      "get": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
+        "tags": [
+          "users"
+        ],
+        "operationId": "searchUsers",
+        "summary": "Search users",
+        "description": "Searches user accounts by name, username, or email and returns the SearchableUser collaboration projection. Serves authenticated people-picker flows such as sharing a design with other users. A blank search returns an empty page.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Get responses by page",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Get responses by page size",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Get responses that match search param value",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "Get ordered responses",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "Get filtered reponses",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of matching users in the searchable projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Paginated list of users in the searchable collaboration projection",
+                  "properties": {
+                    "page": {
+                      "type": "integer",
+                      "description": "Current page number of the result set.",
+                      "minimum": 0
+                    },
+                    "pageSize": {
+                      "type": "integer",
+                      "description": "Number of items per page.",
+                      "minimum": 1
+                    },
+                    "totalCount": {
+                      "type": "integer",
+                      "description": "Total number of items available.",
+                      "minimum": 0
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "description": "Minimal collaboration projection of User served by the authenticated user-search endpoints (people-picker flows such as sharing a design). Carries just enough to identify and display a person - name, username, email, avatar - and deliberately excludes roles, organization and team membership, preferences, and login metadata.",
+                        "required": [
+                          "id"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "Unique identifier for the user",
+                            "x-go-name": "ID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "id",
+                              "json": "id"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "userId": {
+                            "deprecated": true,
+                            "description": "Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id.",
+                            "x-go-name": "UserID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "user_id",
+                              "json": "userId,omitempty"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "username": {
+                            "type": "string",
+                            "maxLength": 200,
+                            "description": "Public username of the user",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "username",
+                              "json": "username,omitempty"
+                            }
+                          },
+                          "firstName": {
+                            "type": "string",
+                            "maxLength": 200,
+                            "description": "User's first name",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "first_name",
+                              "json": "firstName,omitempty"
+                            }
+                          },
+                          "lastName": {
+                            "type": "string",
+                            "maxLength": 300,
+                            "description": "User's last name",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "last_name",
+                              "json": "lastName,omitempty"
+                            }
+                          },
+                          "email": {
+                            "type": "string",
+                            "format": "email",
+                            "maxLength": 300,
+                            "description": "User's email address",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "email",
+                              "json": "email,omitempty"
+                            }
+                          },
+                          "avatarUrl": {
+                            "type": "string",
+                            "format": "uri",
+                            "maxLength": 500,
+                            "description": "URL to user's avatar image",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "avatar_url",
+                              "json": "avatarUrl,omitempty"
+                            }
+                          },
+                          "deletedAt": {
+                            "description": "Timestamp when the user record was soft-deleted (null if not deleted)",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "deleted_at",
+                              "json": "deletedAt,omitempty"
+                            },
+                            "x-go-type": "meshcore.NullTime",
+                            "x-go-type-import": {
+                              "name": "meshcore",
+                              "path": "github.com/meshery/schemas/models/core"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          }
+                        }
+                      },
+                      "description": "Matching user records for the requested page."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/identity/orgs/{orgId}/users/search": {
+      "get": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "users"
+        ],
+        "operationId": "searchUsersInOrg",
+        "summary": "Search users within an organization scope",
+        "description": "Searches user accounts on behalf of an organization context and returns the SearchableUser collaboration projection. A blank search returns an empty page.",
+        "parameters": [
+          {
+            "name": "orgId",
+            "in": "path",
+            "required": true,
+            "description": "Organization ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Get responses by page",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Get responses by page size",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Get responses that match search param value",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "Get ordered responses",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "Get filtered reponses",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of matching users in the searchable projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Paginated list of users in the searchable collaboration projection",
+                  "properties": {
+                    "page": {
+                      "type": "integer",
+                      "description": "Current page number of the result set.",
+                      "minimum": 0
+                    },
+                    "pageSize": {
+                      "type": "integer",
+                      "description": "Number of items per page.",
+                      "minimum": 1
+                    },
+                    "totalCount": {
+                      "type": "integer",
+                      "description": "Total number of items available.",
+                      "minimum": 0
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "description": "Minimal collaboration projection of User served by the authenticated user-search endpoints (people-picker flows such as sharing a design). Carries just enough to identify and display a person - name, username, email, avatar - and deliberately excludes roles, organization and team membership, preferences, and login metadata.",
+                        "required": [
+                          "id"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "Unique identifier for the user",
+                            "x-go-name": "ID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "id",
+                              "json": "id"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "userId": {
+                            "deprecated": true,
+                            "description": "Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id.",
+                            "x-go-name": "UserID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "user_id",
+                              "json": "userId,omitempty"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "username": {
+                            "type": "string",
+                            "maxLength": 200,
+                            "description": "Public username of the user",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "username",
+                              "json": "username,omitempty"
+                            }
+                          },
+                          "firstName": {
+                            "type": "string",
+                            "maxLength": 200,
+                            "description": "User's first name",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "first_name",
+                              "json": "firstName,omitempty"
+                            }
+                          },
+                          "lastName": {
+                            "type": "string",
+                            "maxLength": 300,
+                            "description": "User's last name",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "last_name",
+                              "json": "lastName,omitempty"
+                            }
+                          },
+                          "email": {
+                            "type": "string",
+                            "format": "email",
+                            "maxLength": 300,
+                            "description": "User's email address",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "email",
+                              "json": "email,omitempty"
+                            }
+                          },
+                          "avatarUrl": {
+                            "type": "string",
+                            "format": "uri",
+                            "maxLength": 500,
+                            "description": "URL to user's avatar image",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "avatar_url",
+                              "json": "avatarUrl,omitempty"
+                            }
+                          },
+                          "deletedAt": {
+                            "description": "Timestamp when the user record was soft-deleted (null if not deleted)",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "deleted_at",
+                              "json": "deletedAt,omitempty"
+                            },
+                            "x-go-type": "meshcore.NullTime",
+                            "x-go-type-import": {
+                              "name": "meshcore",
+                              "path": "github.com/meshery/schemas/models/core"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          }
+                        }
+                      },
+                      "description": "Matching user records for the requested page."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
   "components": {
+    "securitySchemes": {
+      "jwt": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "responses": {
+      "400": {
+        "description": "Invalid request body or request param",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Expired JWT token used or insufficient privilege",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Result not found",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal server error",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "parameters": {
+      "orgId": {
+        "name": "orgId",
+        "in": "path",
+        "required": true,
+        "description": "Organization ID",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "page": {
+        "name": "page",
+        "in": "query",
+        "description": "Get responses by page",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "pageSize": {
+        "name": "pageSize",
+        "in": "query",
+        "description": "Get responses by page size",
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "search": {
+        "name": "search",
+        "in": "query",
+        "description": "Get responses that match search param value",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "order": {
+        "name": "order",
+        "in": "query",
+        "description": "Get ordered responses",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "filter": {
+        "name": "filter",
+        "in": "query",
+        "description": "Get filtered reponses",
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
     "schemas": {
       "User": {
         "type": "object",
@@ -748,6 +1494,378 @@ const UserSchema: Record<string, unknown> = {
           }
         },
         "additionalProperties": false
+      },
+      "PublicUser": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Publicly viewable projection of User served by the unauthenticated public users directory. Deliberately excludes email, real names, and every other personally identifying or account-internal field.",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "description": "Unique identifier for the user",
+            "x-go-name": "ID",
+            "x-oapi-codegen-extra-tags": {
+              "db": "id",
+              "json": "id"
+            },
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
+          "userId": {
+            "deprecated": true,
+            "description": "Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id.",
+            "x-go-name": "UserID",
+            "x-oapi-codegen-extra-tags": {
+              "db": "user_id",
+              "json": "userId,omitempty"
+            },
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
+          "username": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Public username of the user",
+            "x-oapi-codegen-extra-tags": {
+              "db": "username",
+              "json": "username,omitempty"
+            }
+          },
+          "avatarUrl": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 500,
+            "description": "URL to user's avatar image",
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "avatar_url",
+              "json": "avatarUrl,omitempty"
+            }
+          }
+        }
+      },
+      "PublicUsersPage": {
+        "type": "object",
+        "description": "Paginated list of publicly viewable user records",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "description": "Current page number of the result set.",
+            "minimum": 0
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Number of items per page.",
+            "minimum": 1
+          },
+          "totalCount": {
+            "type": "integer",
+            "description": "Total number of items available.",
+            "minimum": 0
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "Publicly viewable projection of User served by the unauthenticated public users directory. Deliberately excludes email, real names, and every other personally identifying or account-internal field.",
+              "required": [
+                "id"
+              ],
+              "properties": {
+                "id": {
+                  "description": "Unique identifier for the user",
+                  "x-go-name": "ID",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "id",
+                    "json": "id"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "userId": {
+                  "deprecated": true,
+                  "description": "Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id.",
+                  "x-go-name": "UserID",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "user_id",
+                    "json": "userId,omitempty"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "username": {
+                  "type": "string",
+                  "maxLength": 200,
+                  "description": "Public username of the user",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "username",
+                    "json": "username,omitempty"
+                  }
+                },
+                "avatarUrl": {
+                  "type": "string",
+                  "format": "uri",
+                  "maxLength": 500,
+                  "description": "URL to user's avatar image",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "avatar_url",
+                    "json": "avatarUrl,omitempty"
+                  }
+                }
+              }
+            },
+            "description": "Public user records for the requested page."
+          }
+        }
+      },
+      "SearchableUser": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Minimal collaboration projection of User served by the authenticated user-search endpoints (people-picker flows such as sharing a design). Carries just enough to identify and display a person - name, username, email, avatar - and deliberately excludes roles, organization and team membership, preferences, and login metadata.",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "description": "Unique identifier for the user",
+            "x-go-name": "ID",
+            "x-oapi-codegen-extra-tags": {
+              "db": "id",
+              "json": "id"
+            },
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
+          "userId": {
+            "deprecated": true,
+            "description": "Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id.",
+            "x-go-name": "UserID",
+            "x-oapi-codegen-extra-tags": {
+              "db": "user_id",
+              "json": "userId,omitempty"
+            },
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
+          "username": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Public username of the user",
+            "x-oapi-codegen-extra-tags": {
+              "db": "username",
+              "json": "username,omitempty"
+            }
+          },
+          "firstName": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "User's first name",
+            "x-oapi-codegen-extra-tags": {
+              "db": "first_name",
+              "json": "firstName,omitempty"
+            }
+          },
+          "lastName": {
+            "type": "string",
+            "maxLength": 300,
+            "description": "User's last name",
+            "x-oapi-codegen-extra-tags": {
+              "db": "last_name",
+              "json": "lastName,omitempty"
+            }
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 300,
+            "description": "User's email address",
+            "x-oapi-codegen-extra-tags": {
+              "db": "email",
+              "json": "email,omitempty"
+            }
+          },
+          "avatarUrl": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 500,
+            "description": "URL to user's avatar image",
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "avatar_url",
+              "json": "avatarUrl,omitempty"
+            }
+          },
+          "deletedAt": {
+            "description": "Timestamp when the user record was soft-deleted (null if not deleted)",
+            "x-oapi-codegen-extra-tags": {
+              "db": "deleted_at",
+              "json": "deletedAt,omitempty"
+            },
+            "x-go-type": "meshcore.NullTime",
+            "x-go-type-import": {
+              "name": "meshcore",
+              "path": "github.com/meshery/schemas/models/core"
+            },
+            "type": "string",
+            "format": "date-time",
+            "x-go-type-skip-optional-pointer": true
+          }
+        }
+      },
+      "SearchableUsersPage": {
+        "type": "object",
+        "description": "Paginated list of users in the searchable collaboration projection",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "description": "Current page number of the result set.",
+            "minimum": 0
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Number of items per page.",
+            "minimum": 1
+          },
+          "totalCount": {
+            "type": "integer",
+            "description": "Total number of items available.",
+            "minimum": 0
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "Minimal collaboration projection of User served by the authenticated user-search endpoints (people-picker flows such as sharing a design). Carries just enough to identify and display a person - name, username, email, avatar - and deliberately excludes roles, organization and team membership, preferences, and login metadata.",
+              "required": [
+                "id"
+              ],
+              "properties": {
+                "id": {
+                  "description": "Unique identifier for the user",
+                  "x-go-name": "ID",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "id",
+                    "json": "id"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "userId": {
+                  "deprecated": true,
+                  "description": "Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id.",
+                  "x-go-name": "UserID",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "user_id",
+                    "json": "userId,omitempty"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "username": {
+                  "type": "string",
+                  "maxLength": 200,
+                  "description": "Public username of the user",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "username",
+                    "json": "username,omitempty"
+                  }
+                },
+                "firstName": {
+                  "type": "string",
+                  "maxLength": 200,
+                  "description": "User's first name",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "first_name",
+                    "json": "firstName,omitempty"
+                  }
+                },
+                "lastName": {
+                  "type": "string",
+                  "maxLength": 300,
+                  "description": "User's last name",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "last_name",
+                    "json": "lastName,omitempty"
+                  }
+                },
+                "email": {
+                  "type": "string",
+                  "format": "email",
+                  "maxLength": 300,
+                  "description": "User's email address",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "email",
+                    "json": "email,omitempty"
+                  }
+                },
+                "avatarUrl": {
+                  "type": "string",
+                  "format": "uri",
+                  "maxLength": 500,
+                  "description": "URL to user's avatar image",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "avatar_url",
+                    "json": "avatarUrl,omitempty"
+                  }
+                },
+                "deletedAt": {
+                  "description": "Timestamp when the user record was soft-deleted (null if not deleted)",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "deleted_at",
+                    "json": "deletedAt,omitempty"
+                  },
+                  "x-go-type": "meshcore.NullTime",
+                  "x-go-type-import": {
+                    "name": "meshcore",
+                    "path": "github.com/meshery/schemas/models/core"
+                  },
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                }
+              }
+            },
+            "description": "Matching user records for the requested page."
+          }
+        }
       },
       "UserEmailAddress": {
         "type": "object",
