@@ -145,7 +145,7 @@ components:
       schema:
         $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
     page:
-      $ref: "../../v1alpha1/core/api.yml#/components/parameters/page"
+      $ref: "../core/api.yml#/components/parameters/page"
     pageSize:
       name: pageSize
       in: query
