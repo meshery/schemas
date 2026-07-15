@@ -143,17 +143,9 @@ components:
         type: string
         format: uuid
     page:
-      name: page
-      in: query
-      description: Get responses by page
-      schema:
-        type: integer
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/page"
     pageSize:
-      name: pageSize
-      in: query
-      description: Get responses by page size
-      schema:
-        type: integer
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/pageSize"
     search:
       $ref: "../../v1beta2/core/api.yml#/components/parameters/search"
     order:
@@ -417,6 +409,7 @@ components:
           type: string
           maxLength: 200
           description: Public username of the user
+          x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
             db: "username"
             json: "username,omitempty"
@@ -433,6 +426,11 @@ components:
     PublicUsersPage:
       type: object
       description: Paginated list of publicly viewable user records
+      required:
+        - page
+        - pageSize
+        - totalCount
+        - data
       properties:
         page:
           type: integer
@@ -485,6 +483,7 @@ components:
           type: string
           maxLength: 200
           description: Public username of the user
+          x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
             db: "username"
             json: "username,omitempty"
@@ -492,6 +491,7 @@ components:
           type: string
           maxLength: 200
           description: User's first name
+          x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
             db: "first_name"
             json: "firstName,omitempty"
@@ -499,6 +499,7 @@ components:
           type: string
           maxLength: 300
           description: User's last name
+          x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
             db: "last_name"
             json: "lastName,omitempty"
@@ -507,6 +508,7 @@ components:
           format: email
           maxLength: 300
           description: User's email address
+          x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
             db: "email"
             json: "email,omitempty"
@@ -529,6 +531,11 @@ components:
     SearchableUsersPage:
       type: object
       description: Paginated list of users in the searchable collaboration projection
+      required:
+        - page
+        - pageSize
+        - totalCount
+        - data
       properties:
         page:
           type: integer

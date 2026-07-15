@@ -3921,6 +3921,7 @@ const UserSchema: Record<string, unknown> = {
                         },
                         "type": "string",
                         "format": "date-time",
+                        "nullable": true,
                         "x-go-type-skip-optional-pointer": true
                       }
                     }
@@ -5093,6 +5094,7 @@ const UserSchema: Record<string, unknown> = {
             },
             "type": "string",
             "format": "date-time",
+            "nullable": true,
             "x-go-type-skip-optional-pointer": true
           }
         }

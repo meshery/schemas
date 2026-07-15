@@ -408,7 +408,7 @@ type UserEmailAddress struct {
 	CreatedAt core.Time `db:"created_at" json:"createdAt" yaml:"createdAt"`
 
 	// DeletedAt SQL null Timestamp to handle null values of time.
-	DeletedAt core.NullTime `db:"deleted_at" json:"deletedAt" yaml:"deletedAt,omitempty"`
+	DeletedAt core.NullTime `db:"deleted_at" json:"deletedAt" yaml:"deletedAt"`
 
 	// Email The email address
 	Email openapi_types.Email `db:"email" json:"email" yaml:"email"`

@@ -504,7 +504,7 @@ export interface components {
              * Format: date-time
              * @description SQL null Timestamp to handle null values of time.
              */
-            deletedAt?: string;
+            deletedAt?: string | null;
         };
         /** @description An organization the user is a member of, together with the names of the roles assigned to that user within the organization. Returned as an item of User.organizations.organizationsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration). */
         OrganizationWithRoles: {
@@ -3128,7 +3128,7 @@ export interface operations {
                          * Format: date-time
                          * @description SQL null Timestamp to handle null values of time.
                          */
-                        deletedAt?: string;
+                        deletedAt?: string | null;
                     }[];
                 };
             };

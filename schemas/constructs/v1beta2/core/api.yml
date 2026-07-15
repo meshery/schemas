@@ -433,6 +433,7 @@ components:
         path: github.com/meshery/schemas/models/core
       type: string
       format: date-time
+      nullable: true
       x-go-type-skip-optional-pointer: true
 
     Styles:
@@ -945,6 +946,7 @@ components:
       description: Get responses by page
       schema:
         type: integer
+        minimum: 0
     userId:
       name: userId
       in: query

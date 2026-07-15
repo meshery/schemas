@@ -50,15 +50,17 @@ const UserSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 0
             }
           },
           {
             "name": "pageSize",
             "in": "query",
-            "description": "Get responses by page size",
+            "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 1
             }
           },
           {
@@ -94,6 +96,12 @@ const UserSchema: Record<string, unknown> = {
                 "schema": {
                   "type": "object",
                   "description": "Paginated list of publicly viewable user records",
+                  "required": [
+                    "page",
+                    "pageSize",
+                    "totalCount",
+                    "data"
+                  ],
                   "properties": {
                     "page": {
                       "type": "integer",
@@ -153,6 +161,7 @@ const UserSchema: Record<string, unknown> = {
                             "type": "string",
                             "maxLength": 200,
                             "description": "Public username of the user",
+                            "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "username",
                               "json": "username,omitempty"
@@ -229,15 +238,17 @@ const UserSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 0
             }
           },
           {
             "name": "pageSize",
             "in": "query",
-            "description": "Get responses by page size",
+            "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 1
             }
           },
           {
@@ -273,6 +284,12 @@ const UserSchema: Record<string, unknown> = {
                 "schema": {
                   "type": "object",
                   "description": "Paginated list of users in the searchable collaboration projection",
+                  "required": [
+                    "page",
+                    "pageSize",
+                    "totalCount",
+                    "data"
+                  ],
                   "properties": {
                     "page": {
                       "type": "integer",
@@ -332,6 +349,7 @@ const UserSchema: Record<string, unknown> = {
                             "type": "string",
                             "maxLength": 200,
                             "description": "Public username of the user",
+                            "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "username",
                               "json": "username,omitempty"
@@ -341,6 +359,7 @@ const UserSchema: Record<string, unknown> = {
                             "type": "string",
                             "maxLength": 200,
                             "description": "User's first name",
+                            "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "first_name",
                               "json": "firstName,omitempty"
@@ -350,6 +369,7 @@ const UserSchema: Record<string, unknown> = {
                             "type": "string",
                             "maxLength": 300,
                             "description": "User's last name",
+                            "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "last_name",
                               "json": "lastName,omitempty"
@@ -360,6 +380,7 @@ const UserSchema: Record<string, unknown> = {
                             "format": "email",
                             "maxLength": 300,
                             "description": "User's email address",
+                            "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "email",
                               "json": "email,omitempty"
@@ -389,6 +410,7 @@ const UserSchema: Record<string, unknown> = {
                             },
                             "type": "string",
                             "format": "date-time",
+                            "nullable": true,
                             "x-go-type-skip-optional-pointer": true
                           }
                         }
@@ -460,15 +482,17 @@ const UserSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 0
             }
           },
           {
             "name": "pageSize",
             "in": "query",
-            "description": "Get responses by page size",
+            "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 1
             }
           },
           {
@@ -504,6 +528,12 @@ const UserSchema: Record<string, unknown> = {
                 "schema": {
                   "type": "object",
                   "description": "Paginated list of users in the searchable collaboration projection",
+                  "required": [
+                    "page",
+                    "pageSize",
+                    "totalCount",
+                    "data"
+                  ],
                   "properties": {
                     "page": {
                       "type": "integer",
@@ -563,6 +593,7 @@ const UserSchema: Record<string, unknown> = {
                             "type": "string",
                             "maxLength": 200,
                             "description": "Public username of the user",
+                            "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "username",
                               "json": "username,omitempty"
@@ -572,6 +603,7 @@ const UserSchema: Record<string, unknown> = {
                             "type": "string",
                             "maxLength": 200,
                             "description": "User's first name",
+                            "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "first_name",
                               "json": "firstName,omitempty"
@@ -581,6 +613,7 @@ const UserSchema: Record<string, unknown> = {
                             "type": "string",
                             "maxLength": 300,
                             "description": "User's last name",
+                            "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "last_name",
                               "json": "lastName,omitempty"
@@ -591,6 +624,7 @@ const UserSchema: Record<string, unknown> = {
                             "format": "email",
                             "maxLength": 300,
                             "description": "User's email address",
+                            "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "email",
                               "json": "email,omitempty"
@@ -620,6 +654,7 @@ const UserSchema: Record<string, unknown> = {
                             },
                             "type": "string",
                             "format": "date-time",
+                            "nullable": true,
                             "x-go-type-skip-optional-pointer": true
                           }
                         }
@@ -731,15 +766,17 @@ const UserSchema: Record<string, unknown> = {
         "in": "query",
         "description": "Get responses by page",
         "schema": {
-          "type": "integer"
+          "type": "integer",
+          "minimum": 0
         }
       },
       "pageSize": {
         "name": "pageSize",
         "in": "query",
-        "description": "Get responses by page size",
+        "description": "Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`.",
         "schema": {
-          "type": "integer"
+          "type": "integer",
+          "minimum": 1
         }
       },
       "search": {
@@ -1536,6 +1573,7 @@ const UserSchema: Record<string, unknown> = {
             "type": "string",
             "maxLength": 200,
             "description": "Public username of the user",
+            "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "username",
               "json": "username,omitempty"
@@ -1557,6 +1595,12 @@ const UserSchema: Record<string, unknown> = {
       "PublicUsersPage": {
         "type": "object",
         "description": "Paginated list of publicly viewable user records",
+        "required": [
+          "page",
+          "pageSize",
+          "totalCount",
+          "data"
+        ],
         "properties": {
           "page": {
             "type": "integer",
@@ -1616,6 +1660,7 @@ const UserSchema: Record<string, unknown> = {
                   "type": "string",
                   "maxLength": 200,
                   "description": "Public username of the user",
+                  "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "username",
                     "json": "username,omitempty"
@@ -1679,6 +1724,7 @@ const UserSchema: Record<string, unknown> = {
             "type": "string",
             "maxLength": 200,
             "description": "Public username of the user",
+            "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "username",
               "json": "username,omitempty"
@@ -1688,6 +1734,7 @@ const UserSchema: Record<string, unknown> = {
             "type": "string",
             "maxLength": 200,
             "description": "User's first name",
+            "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "first_name",
               "json": "firstName,omitempty"
@@ -1697,6 +1744,7 @@ const UserSchema: Record<string, unknown> = {
             "type": "string",
             "maxLength": 300,
             "description": "User's last name",
+            "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "last_name",
               "json": "lastName,omitempty"
@@ -1707,6 +1755,7 @@ const UserSchema: Record<string, unknown> = {
             "format": "email",
             "maxLength": 300,
             "description": "User's email address",
+            "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "email",
               "json": "email,omitempty"
@@ -1736,6 +1785,7 @@ const UserSchema: Record<string, unknown> = {
             },
             "type": "string",
             "format": "date-time",
+            "nullable": true,
             "x-go-type-skip-optional-pointer": true
           }
         }
@@ -1743,6 +1793,12 @@ const UserSchema: Record<string, unknown> = {
       "SearchableUsersPage": {
         "type": "object",
         "description": "Paginated list of users in the searchable collaboration projection",
+        "required": [
+          "page",
+          "pageSize",
+          "totalCount",
+          "data"
+        ],
         "properties": {
           "page": {
             "type": "integer",
@@ -1802,6 +1858,7 @@ const UserSchema: Record<string, unknown> = {
                   "type": "string",
                   "maxLength": 200,
                   "description": "Public username of the user",
+                  "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "username",
                     "json": "username,omitempty"
@@ -1811,6 +1868,7 @@ const UserSchema: Record<string, unknown> = {
                   "type": "string",
                   "maxLength": 200,
                   "description": "User's first name",
+                  "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "first_name",
                     "json": "firstName,omitempty"
@@ -1820,6 +1878,7 @@ const UserSchema: Record<string, unknown> = {
                   "type": "string",
                   "maxLength": 300,
                   "description": "User's last name",
+                  "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "last_name",
                     "json": "lastName,omitempty"
@@ -1830,6 +1889,7 @@ const UserSchema: Record<string, unknown> = {
                   "format": "email",
                   "maxLength": 300,
                   "description": "User's email address",
+                  "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "email",
                     "json": "email,omitempty"
@@ -1859,6 +1919,7 @@ const UserSchema: Record<string, unknown> = {
                   },
                   "type": "string",
                   "format": "date-time",
+                  "nullable": true,
                   "x-go-type-skip-optional-pointer": true
                 }
               }
@@ -1983,6 +2044,7 @@ const UserSchema: Record<string, unknown> = {
             },
             "type": "string",
             "format": "date-time",
+            "nullable": true,
             "x-go-type-skip-optional-pointer": true
           }
         }

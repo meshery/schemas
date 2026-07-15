@@ -145,7 +145,7 @@ export interface components {
          * Format: date-time
          * @description SQL null Timestamp to handle null values of time.
          */
-        NullTime: string;
+        NullTime: string | null;
         /** @description Common styles for all entities */
         Styles: {
             /** @description Primary color of the component used for UI representation. */

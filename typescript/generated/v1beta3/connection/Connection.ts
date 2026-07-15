@@ -468,7 +468,7 @@ export interface components {
              * Format: date-time
              * @description Timestamp when the connection was soft-deleted, if applicable.
              */
-            deletedAt?: string;
+            deletedAt?: string | null;
             /** @description Associated environments for this connection */
             environments?: {
                 /**
@@ -1084,7 +1084,7 @@ export interface components {
                  * Format: date-time
                  * @description Timestamp when the connection was soft-deleted, if applicable.
                  */
-                deletedAt?: string;
+                deletedAt?: string | null;
                 /** @description Associated environments for this connection */
                 environments?: {
                     /**
@@ -1991,7 +1991,7 @@ export interface operations {
                              * Format: date-time
                              * @description Timestamp when the connection was soft-deleted, if applicable.
                              */
-                            deletedAt?: string;
+                            deletedAt?: string | null;
                             /** @description Associated environments for this connection */
                             environments?: {
                                 /**
@@ -2580,7 +2580,7 @@ export interface operations {
                          * Format: date-time
                          * @description Timestamp when the connection was soft-deleted, if applicable.
                          */
-                        deletedAt?: string;
+                        deletedAt?: string | null;
                         /** @description Associated environments for this connection */
                         environments?: {
                             /**
@@ -2967,7 +2967,7 @@ export interface operations {
                          * Format: date-time
                          * @description Timestamp when the connection was soft-deleted, if applicable.
                          */
-                        deletedAt?: string;
+                        deletedAt?: string | null;
                         /** @description Associated environments for this connection */
                         environments?: {
                             /**
@@ -3557,7 +3557,7 @@ export interface operations {
                          * Format: date-time
                          * @description Timestamp when the connection was soft-deleted, if applicable.
                          */
-                        deletedAt?: string;
+                        deletedAt?: string | null;
                         /** @description Associated environments for this connection */
                         environments?: {
                             /**
@@ -4016,7 +4016,7 @@ export interface operations {
                          * Format: date-time
                          * @description Timestamp when the connection was soft-deleted, if applicable.
                          */
-                        deletedAt?: string;
+                        deletedAt?: string | null;
                         /** @description Associated environments for this connection */
                         environments?: {
                             /**

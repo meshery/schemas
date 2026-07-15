@@ -4918,7 +4918,7 @@ export type GetUserEmailAddressesApiResponse = /** status 200 Email addresses as
   createdAt: string;
   updatedAt: string;
   /** SQL null Timestamp to handle null values of time. */
-  deletedAt?: string;
+  deletedAt?: string | null;
 }[];
 export type GetUserEmailAddressesApiArg = {
   /** ID of the user */
@@ -7342,7 +7342,7 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
     /** Timestamp when the connection was last updated. */
     updatedAt?: string;
     /** Timestamp when the connection was soft-deleted, if applicable. */
-    deletedAt?: string;
+    deletedAt?: string | null;
     /** Associated environments for this connection */
     environments?: {
       /** ID */
@@ -7649,7 +7649,7 @@ export type RegisterConnectionApiResponse = /** status 201 Connection registered
   /** Timestamp when the connection was last updated. */
   updatedAt?: string;
   /** Timestamp when the connection was soft-deleted, if applicable. */
-  deletedAt?: string;
+  deletedAt?: string | null;
   /** Associated environments for this connection */
   environments?: {
     /** ID */
@@ -8097,7 +8097,7 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
   /** Timestamp when the connection was last updated. */
   updatedAt?: string;
   /** Timestamp when the connection was soft-deleted, if applicable. */
-  deletedAt?: string;
+  deletedAt?: string | null;
   /** Associated environments for this connection */
   environments?: {
     /** ID */
@@ -8366,7 +8366,7 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated */ {
   /** Timestamp when the connection was last updated. */
   updatedAt?: string;
   /** Timestamp when the connection was soft-deleted, if applicable. */
-  deletedAt?: string;
+  deletedAt?: string | null;
   /** Associated environments for this connection */
   environments?: {
     /** ID */
@@ -13549,13 +13549,13 @@ export type IssueIndefiniteLifetimeTokenApiArg = {
 };
 export type GetUsersApiResponse = /** status 200 Paginated list of public users */ {
   /** Current page number of the result set. */
-  page?: number;
+  page: number;
   /** Number of items per page. */
-  pageSize?: number;
+  pageSize: number;
   /** Total number of items available. */
-  totalCount?: number;
+  totalCount: number;
   /** Public user records for the requested page. */
-  data?: {
+  data: {
     /** Unique identifier for the user */
     id: string;
     /** Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id. */
@@ -13569,7 +13569,7 @@ export type GetUsersApiResponse = /** status 200 Paginated list of public users 
 export type GetUsersApiArg = {
   /** Get responses by page */
   page?: number;
-  /** Get responses by page size */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses that match search param value */
   search?: string;
@@ -13580,13 +13580,13 @@ export type GetUsersApiArg = {
 };
 export type SearchUsersApiResponse = /** status 200 Paginated list of matching users in the searchable projection */ {
   /** Current page number of the result set. */
-  page?: number;
+  page: number;
   /** Number of items per page. */
-  pageSize?: number;
+  pageSize: number;
   /** Total number of items available. */
-  totalCount?: number;
+  totalCount: number;
   /** Matching user records for the requested page. */
-  data?: {
+  data: {
     /** Unique identifier for the user */
     id: string;
     /** Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id. */
@@ -13602,13 +13602,13 @@ export type SearchUsersApiResponse = /** status 200 Paginated list of matching u
     /** URL to user's avatar image */
     avatarUrl?: string;
     /** Timestamp when the user record was soft-deleted (null if not deleted) */
-    deletedAt?: string;
+    deletedAt?: string | null;
   }[];
 };
 export type SearchUsersApiArg = {
   /** Get responses by page */
   page?: number;
-  /** Get responses by page size */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses that match search param value */
   search?: string;
@@ -13620,13 +13620,13 @@ export type SearchUsersApiArg = {
 export type SearchUsersInOrgApiResponse =
   /** status 200 Paginated list of matching users in the searchable projection */ {
     /** Current page number of the result set. */
-    page?: number;
+    page: number;
     /** Number of items per page. */
-    pageSize?: number;
+    pageSize: number;
     /** Total number of items available. */
-    totalCount?: number;
+    totalCount: number;
     /** Matching user records for the requested page. */
-    data?: {
+    data: {
       /** Unique identifier for the user */
       id: string;
       /** Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id. */
@@ -13642,7 +13642,7 @@ export type SearchUsersInOrgApiResponse =
       /** URL to user's avatar image */
       avatarUrl?: string;
       /** Timestamp when the user record was soft-deleted (null if not deleted) */
-      deletedAt?: string;
+      deletedAt?: string | null;
     }[];
   };
 export type SearchUsersInOrgApiArg = {
@@ -13650,7 +13650,7 @@ export type SearchUsersInOrgApiArg = {
   orgId: string;
   /** Get responses by page */
   page?: number;
-  /** Get responses by page size */
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses that match search param value */
   search?: string;

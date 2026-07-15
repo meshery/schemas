@@ -349,13 +349,13 @@ export interface components {
         /** @description Paginated list of publicly viewable user records */
         PublicUsersPage: {
             /** @description Current page number of the result set. */
-            page?: number;
+            page: number;
             /** @description Number of items per page. */
-            pageSize?: number;
+            pageSize: number;
             /** @description Total number of items available. */
-            totalCount?: number;
+            totalCount: number;
             /** @description Public user records for the requested page. */
-            data?: {
+            data: {
                 /**
                  * Format: uuid
                  * @description Unique identifier for the user
@@ -409,18 +409,18 @@ export interface components {
              * Format: date-time
              * @description Timestamp when the user record was soft-deleted (null if not deleted)
              */
-            deletedAt?: string;
+            deletedAt?: string | null;
         };
         /** @description Paginated list of users in the searchable collaboration projection */
         SearchableUsersPage: {
             /** @description Current page number of the result set. */
-            page?: number;
+            page: number;
             /** @description Number of items per page. */
-            pageSize?: number;
+            pageSize: number;
             /** @description Total number of items available. */
-            totalCount?: number;
+            totalCount: number;
             /** @description Matching user records for the requested page. */
-            data?: {
+            data: {
                 /**
                  * Format: uuid
                  * @description Unique identifier for the user
@@ -452,7 +452,7 @@ export interface components {
                  * Format: date-time
                  * @description Timestamp when the user record was soft-deleted (null if not deleted)
                  */
-                deletedAt?: string;
+                deletedAt?: string | null;
             }[];
         };
         /** @description One email address associated with a user account. A user has exactly one primary address (mirrored in users.email) and any number of secondary addresses accumulated from account consolidation or explicit addition. Uniqueness across live addresses is enforced case-insensitively. */
@@ -495,7 +495,7 @@ export interface components {
              * Format: date-time
              * @description SQL null Timestamp to handle null values of time.
              */
-            deletedAt?: string;
+            deletedAt?: string | null;
         };
         /** @description An organization the user is a member of, together with the names of the roles assigned to that user within the organization. Returned as an item of User.organizations.organizationsWithRoles. The role names are dynamic, user-generated values (no fixed enumeration). */
         OrganizationWithRoles: {
@@ -751,7 +751,7 @@ export interface components {
         orgId: string;
         /** @description Get responses by page */
         page: number;
-        /** @description Get responses by page size */
+        /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
         pageSize: number;
         /** @description Get responses that match search param value */
         search: string;
@@ -771,7 +771,7 @@ export interface operations {
             query?: {
                 /** @description Get responses by page */
                 page?: number;
-                /** @description Get responses by page size */
+                /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
                 pageSize?: number;
                 /** @description Get responses that match search param value */
                 search?: string;
@@ -794,13 +794,13 @@ export interface operations {
                 content: {
                     "application/json": {
                         /** @description Current page number of the result set. */
-                        page?: number;
+                        page: number;
                         /** @description Number of items per page. */
-                        pageSize?: number;
+                        pageSize: number;
                         /** @description Total number of items available. */
-                        totalCount?: number;
+                        totalCount: number;
                         /** @description Public user records for the requested page. */
-                        data?: {
+                        data: {
                             /**
                              * Format: uuid
                              * @description Unique identifier for the user
@@ -857,7 +857,7 @@ export interface operations {
             query?: {
                 /** @description Get responses by page */
                 page?: number;
-                /** @description Get responses by page size */
+                /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
                 pageSize?: number;
                 /** @description Get responses that match search param value */
                 search?: string;
@@ -880,13 +880,13 @@ export interface operations {
                 content: {
                     "application/json": {
                         /** @description Current page number of the result set. */
-                        page?: number;
+                        page: number;
                         /** @description Number of items per page. */
-                        pageSize?: number;
+                        pageSize: number;
                         /** @description Total number of items available. */
-                        totalCount?: number;
+                        totalCount: number;
                         /** @description Matching user records for the requested page. */
-                        data?: {
+                        data: {
                             /**
                              * Format: uuid
                              * @description Unique identifier for the user
@@ -918,7 +918,7 @@ export interface operations {
                              * Format: date-time
                              * @description Timestamp when the user record was soft-deleted (null if not deleted)
                              */
-                            deletedAt?: string;
+                            deletedAt?: string | null;
                         }[];
                     };
                 };
@@ -957,7 +957,7 @@ export interface operations {
             query?: {
                 /** @description Get responses by page */
                 page?: number;
-                /** @description Get responses by page size */
+                /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
                 pageSize?: number;
                 /** @description Get responses that match search param value */
                 search?: string;
@@ -983,13 +983,13 @@ export interface operations {
                 content: {
                     "application/json": {
                         /** @description Current page number of the result set. */
-                        page?: number;
+                        page: number;
                         /** @description Number of items per page. */
-                        pageSize?: number;
+                        pageSize: number;
                         /** @description Total number of items available. */
-                        totalCount?: number;
+                        totalCount: number;
                         /** @description Matching user records for the requested page. */
-                        data?: {
+                        data: {
                             /**
                              * Format: uuid
                              * @description Unique identifier for the user
@@ -1021,7 +1021,7 @@ export interface operations {
                              * Format: date-time
                              * @description Timestamp when the user record was soft-deleted (null if not deleted)
                              */
-                            deletedAt?: string;
+                            deletedAt?: string | null;
                         }[];
                     };
                 };

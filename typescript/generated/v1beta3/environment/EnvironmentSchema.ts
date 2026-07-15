@@ -126,7 +126,8 @@ const EnvironmentSchema: Record<string, unknown> = {
         "in": "query",
         "description": "Get responses by page",
         "schema": {
-          "type": "integer"
+          "type": "integer",
+          "minimum": 0
         }
       },
       "pageSize": {
@@ -1147,7 +1148,8 @@ const EnvironmentSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 0
             }
           },
           {
@@ -2150,7 +2152,8 @@ const EnvironmentSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 0
             }
           },
           {

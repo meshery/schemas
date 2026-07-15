@@ -147,22 +147,22 @@ type PublicUser struct {
 	UserID *core.Uuid `db:"user_id" json:"userId,omitempty" yaml:"userId,omitempty"`
 
 	// Username Public username of the user
-	Username *string `db:"username" json:"username,omitempty" yaml:"username,omitempty"`
+	Username string `db:"username" json:"username,omitempty" yaml:"username,omitempty"`
 }
 
 // PublicUsersPage Paginated list of publicly viewable user records
 type PublicUsersPage struct {
 	// Data Public user records for the requested page.
-	Data *[]PublicUser `json:"data,omitempty" yaml:"data,omitempty"`
+	Data []PublicUser `json:"data" yaml:"data"`
 
 	// Page Current page number of the result set.
-	Page *int `json:"page,omitempty" yaml:"page,omitempty"`
+	Page int `json:"page" yaml:"page"`
 
 	// PageSize Number of items per page.
-	PageSize *int `json:"pageSize,omitempty" yaml:"pageSize,omitempty"`
+	PageSize int `json:"pageSize" yaml:"pageSize"`
 
 	// TotalCount Total number of items available.
-	TotalCount *int `json:"totalCount,omitempty" yaml:"totalCount,omitempty"`
+	TotalCount int `json:"totalCount" yaml:"totalCount"`
 }
 
 // SearchableUser Minimal collaboration projection of User served by the authenticated user-search endpoints (people-picker flows such as sharing a design). Carries just enough to identify and display a person - name, username, email, avatar - and deliberately excludes roles, organization and team membership, preferences, and login metadata.
@@ -171,40 +171,40 @@ type SearchableUser struct {
 	AvatarUrl string `db:"avatar_url" json:"avatarUrl,omitempty" yaml:"avatarUrl,omitempty"`
 
 	// DeletedAt SQL null Timestamp to handle null values of time.
-	DeletedAt core.NullTime `db:"deleted_at" json:"deletedAt,omitempty" yaml:"deletedAt,omitempty"`
+	DeletedAt core.NullTime `db:"deleted_at" json:"deletedAt,omitempty" yaml:"deletedAt"`
 
 	// Email User's email address
-	Email *openapi_types.Email `db:"email" json:"email,omitempty" yaml:"email,omitempty"`
+	Email openapi_types.Email `db:"email" json:"email,omitempty" yaml:"email,omitempty"`
 
 	// FirstName User's first name
-	FirstName *string `db:"first_name" json:"firstName,omitempty" yaml:"firstName,omitempty"`
+	FirstName string `db:"first_name" json:"firstName,omitempty" yaml:"firstName,omitempty"`
 
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	ID core.Uuid `db:"id" json:"id" yaml:"id"`
 
 	// LastName User's last name
-	LastName *string `db:"last_name" json:"lastName,omitempty" yaml:"lastName,omitempty"`
+	LastName string `db:"last_name" json:"lastName,omitempty" yaml:"lastName,omitempty"`
 
 	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	UserID *core.Uuid `db:"user_id" json:"userId,omitempty" yaml:"userId,omitempty"`
 
 	// Username Public username of the user
-	Username *string `db:"username" json:"username,omitempty" yaml:"username,omitempty"`
+	Username string `db:"username" json:"username,omitempty" yaml:"username,omitempty"`
 }
 
 // SearchableUsersPage Paginated list of users in the searchable collaboration projection
 type SearchableUsersPage struct {
 	// Data Matching user records for the requested page.
-	Data *[]SearchableUser `json:"data,omitempty" yaml:"data,omitempty"`
+	Data []SearchableUser `json:"data" yaml:"data"`
 
 	// Page Current page number of the result set.
-	Page *int `json:"page,omitempty" yaml:"page,omitempty"`
+	Page int `json:"page" yaml:"page"`
 
 	// PageSize Number of items per page.
-	PageSize *int `json:"pageSize,omitempty" yaml:"pageSize,omitempty"`
+	PageSize int `json:"pageSize" yaml:"pageSize"`
 
 	// TotalCount Total number of items available.
-	TotalCount *int `json:"totalCount,omitempty" yaml:"totalCount,omitempty"`
+	TotalCount int `json:"totalCount" yaml:"totalCount"`
 }
 
 // SelectedGrafanaConfig defines model for SelectedGrafanaConfig.
@@ -329,7 +329,7 @@ type UserEmailAddress struct {
 	CreatedAt core.Time `db:"created_at" json:"createdAt" yaml:"createdAt"`
 
 	// DeletedAt SQL null Timestamp to handle null values of time.
-	DeletedAt core.NullTime `db:"deleted_at" json:"deletedAt" yaml:"deletedAt,omitempty"`
+	DeletedAt core.NullTime `db:"deleted_at" json:"deletedAt" yaml:"deletedAt"`
 
 	// Email The email address
 	Email openapi_types.Email `db:"email" json:"email" yaml:"email"`
