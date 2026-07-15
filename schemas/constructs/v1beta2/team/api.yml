@@ -65,7 +65,7 @@ components:
     order:
       $ref: ../../v1alpha1/core/api.yml#/components/parameters/order
     page:
-      $ref: ../../v1alpha1/core/api.yml#/components/parameters/page
+      $ref: ../core/api.yml#/components/parameters/page
     pageSize:
       $ref: ../core/api.yml#/components/parameters/pageSize
     pagesize:
