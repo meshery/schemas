@@ -6,7 +6,6 @@
     "name": {
       "type": "string",
       "title": "Design file name",
-      "default": "Untitled Design",
       "description": "Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.",
       "x-rjsf-grid-area": "12"
     },
