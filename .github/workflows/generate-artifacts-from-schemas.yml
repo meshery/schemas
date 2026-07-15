@@ -28,7 +28,7 @@ jobs:
           go-version: '1.26'   # match your local version
 
       - name: Install build dependencies
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
       - run: |
           npm i
           go version 

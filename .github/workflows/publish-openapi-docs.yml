@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout schemas repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: 'master'
           token: ${{ secrets.MESHERY_CI }}
@@ -34,7 +34,7 @@ jobs:
         run: make validate-schemas
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: '24'
 
@@ -68,7 +68,7 @@ jobs:
           name: openapi-build
 
       - name: Checkout meshery repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: meshery/meshery
           path: meshery
@@ -111,7 +111,7 @@ jobs:
           name: openapi-build
 
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: layer5io/docs
           path: cloud-docs
