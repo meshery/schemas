@@ -199,7 +199,7 @@ export interface components {
         /** @description Schedule ID */
         scheduleId: string;
         /** @description Get responses by page */
-        page: string;
+        page: number;
         /** @description Get responses by page size */
         pageSize: number;
         /** @description Get responses that match search param value */
@@ -217,7 +217,7 @@ export interface operations {
         parameters: {
             query?: {
                 /** @description Get responses by page */
-                page?: string;
+                page?: number;
                 /** @description Get responses by page size */
                 pageSize?: number;
                 /** @description Get responses that match search param value */

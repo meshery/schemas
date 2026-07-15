@@ -47,7 +47,7 @@ const KeychainSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
@@ -1100,7 +1100,7 @@ const KeychainSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
@@ -1440,7 +1440,7 @@ const KeychainSchema: Record<string, unknown> = {
         "in": "query",
         "description": "Get responses by page",
         "schema": {
-          "type": "string"
+          "type": "integer"
         }
       },
       "pageSize": {

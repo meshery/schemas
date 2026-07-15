@@ -114,7 +114,7 @@ type Order = string
 type OrgIdQuery = uuid.UUID
 
 // Page defines model for page.
-type Page = string
+type Page = int
 
 // PageSize defines model for pageSize.
 type PageSize = int

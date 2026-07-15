@@ -206,7 +206,7 @@ export interface components {
         /** @description Key ID */
         keyId: string;
         /** @description Get responses by page */
-        page: string;
+        page: number;
         /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
         pageSize: number;
         /**
@@ -229,7 +229,7 @@ export interface operations {
         parameters: {
             query?: {
                 /** @description Get responses by page */
-                page?: string;
+                page?: number;
                 /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
                 pageSize?: number;
                 /**
@@ -332,7 +332,7 @@ export interface operations {
         parameters: {
             query?: {
                 /** @description Get responses by page */
-                page?: string;
+                page?: number;
                 /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
                 pageSize?: number;
                 /**

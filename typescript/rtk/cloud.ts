@@ -1944,7 +1944,7 @@ export type GetUserCredentialsApiResponse = /** status 200 Credentials response 
 };
 export type GetUserCredentialsApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
@@ -2078,7 +2078,7 @@ export type GetUserKeysApiArg = {
   /** Organization ID */
   orgId: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
@@ -2115,7 +2115,7 @@ export type GetKeysApiResponse = /** status 200 Keys fetched */ {
 };
 export type GetKeysApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
@@ -2213,7 +2213,7 @@ export type GetKeychainsApiResponse = /** status 200 Keychain(s) fetched */ {
 };
 export type GetKeychainsApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
@@ -2339,7 +2339,7 @@ export type GetKeysOfKeychainApiArg = {
   /** Keychain ID */
   keychainId: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
@@ -3630,7 +3630,7 @@ export type GetAllRolesApiArg = {
   /** Organization ID */
   orgId: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by page size */
   pageSize?: number;
   /** Get responses that match search param value */
@@ -3725,7 +3725,7 @@ export type GetRoleKeychainsApiArg = {
   /** Role ID */
   roleId: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by page size */
   pageSize?: number;
   /** Get responses that match search param value */
@@ -3783,7 +3783,7 @@ export type GetSchedulesApiResponse = /** status 200 Schedules response */ {
 };
 export type GetSchedulesApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by page size */
   pageSize?: number;
   /** Get responses that match search param value */
@@ -3890,7 +3890,7 @@ export type GetTeamsApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
@@ -3954,7 +3954,7 @@ export type GetTeamUsersApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
@@ -4018,7 +4018,7 @@ export type ListUsersNotInTeamApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
@@ -5177,7 +5177,7 @@ export type GetViewsApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
@@ -11543,7 +11543,7 @@ export type GetEnvironmentsApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
@@ -11657,7 +11657,7 @@ export type GetEnvironmentConnectionsApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
@@ -12942,7 +12942,7 @@ export type GetPerformanceProfilesApiResponse = /** status 200 Performance profi
 };
 export type GetPerformanceProfilesApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by pagesize */
   pagesize?: string;
   /** Get responses that match search param value */
@@ -13206,7 +13206,7 @@ export type GetPerformanceProfileResultsApiArg = {
   /** Performance profile ID. */
   performanceProfileId: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by pagesize */
   pagesize?: string;
   /** Get responses that match search param value */
@@ -13295,7 +13295,7 @@ export type GetPerformanceResultsApiResponse = /** status 200 Performance result
 };
 export type GetPerformanceResultsApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by pagesize */
   pagesize?: string;
   /** Get responses that match search param value */
@@ -13758,7 +13758,7 @@ export type GetWorkspacesApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
@@ -13890,7 +13890,7 @@ export type GetTeamsOfWorkspaceApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
@@ -13972,7 +13972,7 @@ export type GetEnvironmentsOfWorkspaceApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
@@ -15042,7 +15042,7 @@ export type GetDesignsOfWorkspaceApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
@@ -15126,7 +15126,7 @@ export type GetViewsOfWorkspaceApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */

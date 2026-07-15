@@ -170,7 +170,7 @@ const TeamSchema: Record<string, unknown> = {
         "in": "query",
         "description": "Get responses by page",
         "schema": {
-          "type": "string"
+          "type": "integer"
         }
       },
       "pageSize": {
@@ -869,7 +869,7 @@ const TeamSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
@@ -1878,7 +1878,7 @@ const TeamSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
@@ -2381,7 +2381,7 @@ const TeamSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
