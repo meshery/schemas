@@ -2292,7 +2292,7 @@ export interface components {
          * @deprecated
          * @description Get responses by pagesize. Deprecated alias of pageSize.
          */
-        pagesize: string;
+        pagesize: number;
         /** @description JSON-encoded filter string used for assignment and soft-delete filters. */
         filter: string;
     };
@@ -2356,7 +2356,7 @@ export interface operations {
                  * @deprecated
                  * @description Get responses by pagesize. Deprecated alias of pageSize.
                  */
-                pagesize?: string;
+                pagesize?: number;
                 /** @description JSON-encoded filter string used for assignment and soft-delete filters. */
                 filter?: string;
             };
@@ -2834,7 +2834,7 @@ export interface operations {
                  * @deprecated
                  * @description Get responses by pagesize. Deprecated alias of pageSize.
                  */
-                pagesize?: string;
+                pagesize?: number;
                 /** @description JSON-encoded filter string used for assignment and soft-delete filters. */
                 filter?: string;
             };
@@ -3098,7 +3098,7 @@ export interface operations {
                  * @deprecated
                  * @description Get responses by pagesize. Deprecated alias of pageSize.
                  */
-                pagesize?: string;
+                pagesize?: number;
                 /** @description JSON-encoded filter string used for assignment and soft-delete filters. */
                 filter?: string;
             };
@@ -3389,7 +3389,7 @@ export interface operations {
                  * @deprecated
                  * @description Get responses by pagesize. Deprecated alias of pageSize.
                  */
-                pagesize?: string;
+                pagesize?: number;
                 /** @description JSON-encoded filter string used for assignment and soft-delete filters. */
                 filter?: string;
             };
@@ -5053,7 +5053,7 @@ export interface operations {
                  * @deprecated
                  * @description Get responses by pagesize. Deprecated alias of pageSize.
                  */
-                pagesize?: string;
+                pagesize?: number;
                 /** @description JSON-encoded filter string used for assignment and soft-delete filters. */
                 filter?: string;
             };

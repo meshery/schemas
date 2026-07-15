@@ -81,7 +81,7 @@ const CredentialSchema: Record<string, unknown> = {
             "description": "Get responses by pagesize. Deprecated alias of pageSize.",
             "deprecated": true,
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
@@ -1097,7 +1097,7 @@ const CredentialSchema: Record<string, unknown> = {
         "description": "Get responses by pagesize. Deprecated alias of pageSize.",
         "deprecated": true,
         "schema": {
-          "type": "string"
+          "type": "integer"
         }
       },
       "search": {

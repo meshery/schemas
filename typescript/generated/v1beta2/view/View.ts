@@ -337,7 +337,7 @@ export interface components {
          * @deprecated
          * @description Get responses by pagesize. Deprecated alias of pageSize.
          */
-        pagesize: string;
+        pagesize: number;
         /** @description Organization ID to scope the request. */
         orgIdQuery: string;
         /** @description UUID of the user whose views to retrieve. */
@@ -405,7 +405,7 @@ export interface operations {
                  * @deprecated
                  * @description Get responses by pagesize. Deprecated alias of pageSize.
                  */
-                pagesize?: string;
+                pagesize?: number;
                 /** @description JSON-encoded filter string for assignment and soft-delete filters. */
                 filter?: string;
                 /** @description When true, include views shared with the user. */

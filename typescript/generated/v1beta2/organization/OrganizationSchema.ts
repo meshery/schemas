@@ -155,6 +155,11 @@ const OrganizationSchema: Record<string, unknown> = {
                             "type": "string",
                             "x-go-type-skip-optional-pointer": true
                           },
+                          "domain": {
+                            "description": "Custom domain assigned to the organization, when configured.",
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
                           "owner": {
                             "description": "Display name of the organization owner.",
                             "type": "string",
@@ -842,6 +847,11 @@ const OrganizationSchema: Record<string, unknown> = {
                             "type": "string",
                             "x-go-type-skip-optional-pointer": true
                           },
+                          "domain": {
+                            "description": "Custom domain assigned to the organization, when configured.",
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
                           "owner": {
                             "description": "Display name of the organization owner.",
                             "type": "string",
@@ -1465,6 +1475,11 @@ const OrganizationSchema: Record<string, unknown> = {
                           },
                           "region": {
                             "description": "Region of the organization.",
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "domain": {
+                            "description": "Custom domain assigned to the organization, when configured.",
                             "type": "string",
                             "x-go-type-skip-optional-pointer": true
                           },
@@ -2265,6 +2280,11 @@ const OrganizationSchema: Record<string, unknown> = {
                           },
                           "region": {
                             "description": "Region of the organization.",
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "domain": {
+                            "description": "Custom domain assigned to the organization, when configured.",
                             "type": "string",
                             "x-go-type-skip-optional-pointer": true
                           },
@@ -5185,6 +5205,11 @@ const OrganizationSchema: Record<string, unknown> = {
             "type": "string",
             "x-go-type-skip-optional-pointer": true
           },
+          "domain": {
+            "description": "Custom domain assigned to the organization, when configured.",
+            "type": "string",
+            "x-go-type-skip-optional-pointer": true
+          },
           "owner": {
             "description": "Display name of the organization owner.",
             "type": "string",
@@ -5536,6 +5561,11 @@ const OrganizationSchema: Record<string, unknown> = {
                 },
                 "region": {
                   "description": "Region of the organization.",
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "domain": {
+                  "description": "Custom domain assigned to the organization, when configured.",
                   "type": "string",
                   "x-go-type-skip-optional-pointer": true
                 },
@@ -5894,6 +5924,11 @@ const OrganizationSchema: Record<string, unknown> = {
                 },
                 "region": {
                   "description": "Region of the organization.",
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "domain": {
+                  "description": "Custom domain assigned to the organization, when configured.",
                   "type": "string",
                   "x-go-type-skip-optional-pointer": true
                 },

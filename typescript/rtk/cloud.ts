@@ -1948,7 +1948,7 @@ export type GetUserCredentialsApiArg = {
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -2082,7 +2082,7 @@ export type GetUserKeysApiArg = {
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
 };
 export type GetKeysApiResponse = /** status 200 Keys fetched */ {
   /** Zero-based page index returned in this response. */
@@ -2119,7 +2119,7 @@ export type GetKeysApiArg = {
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -2217,7 +2217,7 @@ export type GetKeychainsApiArg = {
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -2343,7 +2343,7 @@ export type GetKeysOfKeychainApiArg = {
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -2662,6 +2662,8 @@ export type GetOrgsApiResponse = /** status 200 Organizations response */ {
     country?: string;
     /** Region of the organization. */
     region?: string;
+    /** Custom domain assigned to the organization, when configured. */
+    domain?: string;
     /** Display name of the organization owner. */
     owner?: string;
     /** Free-form metadata associated with an organization, including preferences. */
@@ -2785,6 +2787,8 @@ export type CreateOrgApiResponse = /** status 201 Single-organization page respo
     country?: string;
     /** Region of the organization. */
     region?: string;
+    /** Custom domain assigned to the organization, when configured. */
+    domain?: string;
     /** Display name of the organization owner. */
     owner?: string;
     /** Free-form metadata associated with an organization, including preferences. */
@@ -3018,6 +3022,8 @@ export type GetOrgApiResponse = /** status 200 Single-organization page response
     country?: string;
     /** Region of the organization. */
     region?: string;
+    /** Custom domain assigned to the organization, when configured. */
+    domain?: string;
     /** Display name of the organization owner. */
     owner?: string;
     /** Free-form metadata associated with an organization, including preferences. */
@@ -3138,6 +3144,8 @@ export type UpdateOrgApiResponse = /** status 200 Single-organization page respo
     country?: string;
     /** Region of the organization. */
     region?: string;
+    /** Custom domain assigned to the organization, when configured. */
+    domain?: string;
     /** Display name of the organization owner. */
     owner?: string;
     /** Free-form metadata associated with an organization, including preferences. */
@@ -3624,7 +3632,7 @@ export type GetAllRolesApiArg = {
   /** Get responses by page */
   page?: string;
   /** Get responses by page size */
-  pageSize?: string;
+  pageSize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -3719,7 +3727,7 @@ export type GetRoleKeychainsApiArg = {
   /** Get responses by page */
   page?: string;
   /** Get responses by page size */
-  pageSize?: string;
+  pageSize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -3777,7 +3785,7 @@ export type GetSchedulesApiArg = {
   /** Get responses by page */
   page?: string;
   /** Get responses by page size */
-  pageSize?: string;
+  pageSize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -3886,7 +3894,7 @@ export type GetTeamsApiArg = {
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
 };
 export type CreateTeamApiResponse = /** status 201 Created team */ {
   /** Team ID */
@@ -3923,29 +3931,19 @@ export type CreateTeamApiArg = {
     };
   };
 };
-export type GetTeamUsersApiResponse = /** status 200 Team users mapping */ {
+export type GetTeamUsersApiResponse = /** status 200 Team members with their roles */ {
   /** Current page number of the result set. */
   page?: number;
   /** Number of items per page. */
   pageSize?: number;
   /** Total number of items available. */
   totalCount?: number;
-  /** The user-team mappings on the current page. */
-  usersTeamsMapping?: {
-    id?: string;
-    /** Team ID */
-    teamId?: string;
-    /** User ID */
-    userId?: string;
-    /** Optional role assigned to this team membership. Nullable because a membership may exist without an explicit role (e.g., team-admin assignments are stamped on insert; non-owner adds may leave `role_id` null until a role is assigned). References `roles.id`.
+  /** The data of the teammemberspage. */
+  data?: {
+    /** Timestamp when the user joined the team. Server-computed from the earliest matching row in `users_teams_mapping` for this (team, user) pair. Server-managed; clients cannot set this.
      */
-    roleId?: string;
-    /** Timestamp when the mapping was created. */
-    createdAt?: string;
-    /** Timestamp when the mapping was last updated. */
-    updatedAt?: string;
-    /** Timestamp when the mapping was soft-deleted, if applicable. */
-    deletedAt?: string;
+    joinedAt?: string;
+    [key: string]: any;
   }[];
 };
 export type GetTeamUsersApiArg = {
@@ -3960,7 +3958,7 @@ export type GetTeamUsersApiArg = {
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
 };
 export type AddUserToTeamApiResponse = /** status 201 User added to team */ {
   id?: string;
@@ -4024,7 +4022,7 @@ export type ListUsersNotInTeamApiArg = {
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
 };
 export type GetUsersForOrgApiResponse = /** status 200 Paginated list of organization users */ {
   /** Current page number of the result set. */
@@ -4211,9 +4209,9 @@ export type GetUsersForOrgApiArg = {
   /** Organization ID */
   orgId: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by page size */
-  pageSize?: string;
+  pageSize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -4406,9 +4404,9 @@ export type GetUsersApiResponse = /** status 200 Paginated list of public users 
 };
 export type GetUsersApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by page size */
-  pageSize?: string;
+  pageSize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -5183,7 +5181,7 @@ export type GetViewsApiArg = {
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** JSON-encoded filter string for assignment and soft-delete filters. */
   filter?: string;
   /** When true, include views shared with the user. */
@@ -6803,9 +6801,9 @@ export type GetAllTestSessionsForRegistrationApiArg = {
   /** The ID of the registration to retrieve tests for */
   id: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by pagesize */
-  pagesize?: string;
+  pagesize?: number;
   /** Filter tests by absolute path */
   testAbsPath?: string;
 };
@@ -6953,7 +6951,243 @@ export type SubmitQuizApiArg = {
   };
 };
 export type GetAcademyAdminSummaryApiResponse =
-  /** status 200 A list of content with total count and registration metrics */ object;
+  /** status 200 A list of content with total count and registration metrics */ {
+    /** Academy module configuration for the organization. */
+    orgConfig?: {
+      /** Academy module assigned to the organization. */
+      module?: string;
+      /** Version of the assigned academy module. */
+      version?: string;
+    };
+    /** Total distinct learners registered for the organization. */
+    totalLearners?: number;
+    /** Learners with at least one active registration. */
+    totalActiveLearners?: number;
+    /** Per-content-type registration counts. */
+    curricula?: {
+      /** Academy content type. */
+      type?: string;
+      /** Registrations for this content type. */
+      totalCount?: number;
+    }[];
+    /** Per-status registration counts. */
+    registrationsSummary?: {
+      /** Registration status. */
+      status?: string;
+      /** Registrations in this status. */
+      totalCount?: number;
+    }[];
+    /** Aggregate test outcomes across the organization. */
+    testsSummary?: {
+      totalPassed?: number;
+      totalFailed?: number;
+      totalAttempts?: number;
+    };
+    /** Per-test outcome counts. */
+    tests?: {
+      /** The test the counts refer to. */
+      test?: {
+        /** Quiz ID. */
+        id: string;
+        /** Organization ID that owns this quiz */
+        orgId: string;
+        /** Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path */
+        final: boolean;
+        /** The title of the quiz. */
+        title: string;
+        /** Description of the quiz. */
+        description: string;
+        /** The slug of the quiz. */
+        slug: string;
+        /** The rel permalink of the quiz. */
+        relPermalink: string;
+        /** The permalink of the quiz. */
+        permalink: string;
+        /** Type of the resource. */
+        type: string;
+        /** The section of the quiz. */
+        section: string;
+        /** The layout of the quiz. */
+        layout: string;
+        /** The date of the quiz. */
+        date: string;
+        /** The lastmod of the quiz. */
+        lastmod: string;
+        /** The draft of the quiz. */
+        draft: boolean;
+        /** The file path of the quiz. */
+        filePath: string;
+        /** The pass percentage of the quiz. */
+        passPercentage: number;
+        /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
+        timeLimit: number;
+        /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
+        maxAttempts: number;
+        /** The questions of the quiz. */
+        questions: {
+          /** Question ID. */
+          id: string;
+          /** The text of the question. */
+          text: string;
+          type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
+          /** The marks of the question. */
+          marks: number;
+          /** The multiple answers of the question. */
+          multipleAnswers?: boolean;
+          /** The options of the question. */
+          options: {
+            /** QuestionOption ID. */
+            id: string;
+            /** The text of the questionoption. */
+            text: string;
+            /** The is correct of the questionoption. */
+            isCorrect: boolean;
+          }[];
+          /** The correct answer of the question. */
+          correctAnswer: string;
+        }[];
+        /** The total questions of the quiz. */
+        totalQuestions: number;
+        /** The total questions in bank of the quiz. */
+        totalQuestionsInBank: number;
+        /** The total question sets of the quiz. */
+        totalQuestionSets: number;
+        /** The total marks of the quiz. */
+        totalMarks: number;
+        /** The prerequisites of the quiz. */
+        prerequisites: {
+          /** Parent ID. */
+          id: string;
+          /** The title of the parent. */
+          title: string;
+          /** The rel permalink of the parent. */
+          relPermalink: string;
+          /** Type of the resource. */
+          type: string;
+        }[];
+        parent?: {
+          /** Parent ID. */
+          id: string;
+          /** The title of the parent. */
+          title: string;
+          /** The rel permalink of the parent. */
+          relPermalink: string;
+          /** Type of the resource. */
+          type: string;
+        };
+        nextPage: {
+          /** Parent ID. */
+          id: string;
+          /** The title of the parent. */
+          title: string;
+          /** The rel permalink of the parent. */
+          relPermalink: string;
+          /** Type of the resource. */
+          type: string;
+        };
+      };
+      passed?: number;
+      failed?: number;
+      attempts?: number;
+    }[];
+    /** Curricula with metrics for the organization. */
+    curriculaList?: {
+      /** Total number of Curricula */
+      total: number;
+      /** The data of the academycurriculawithmetricslistresponse. */
+      data: ({
+        /** Id of the Curricula */
+        id: string;
+        type: "learning-path" | "challenge" | "certification";
+        /** Organization ID that owns this learning path */
+        orgId: string;
+        /** Visibility of the Curricula */
+        visibility: "public" | "private";
+        /** Status of the Curricula */
+        status: "ready" | "archived" | "not_ready";
+        /** slug of the Curricula */
+        slug: string;
+        /** Level of the Curricula */
+        level: "beginner" | "intermediate" | "advanced";
+        /** ID of the badge to be awarded on completion of this curricula */
+        badgeId?: string;
+        /** ID of the invite associated with this Curricula */
+        inviteId?: string;
+        /** ID of the workspace to which this Curricula belongs */
+        workspaceId?: string;
+        /** When the Curricula item was created */
+        createdAt: string;
+        /** When the Curricula was last updated */
+        updatedAt: string;
+        deletedAt: string;
+        /** Additional metadata about the Curricula */
+        metadata: {
+          /** Title of the learning path */
+          title: string;
+          /** Short description of the curricula */
+          description: string;
+          /** Detailed description of the curricula */
+          detailedDescription?: string;
+          /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
+          banner?: string | null;
+          /** Canonical URL for the learning path */
+          permalink: string;
+          certificate?: {
+            /** Unique identifier for the certificate */
+            id: string;
+            /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+            orgId: string;
+            /** ID of the recipient (user) who received the certificate */
+            recipientId: string;
+            /** Name of the recipient (user) who received the certificate */
+            recipientName: string;
+            /** Title of the certificate */
+            title: string;
+            /** Description of the certificate */
+            description: string;
+            /** List of issuing authorities for the certificate */
+            issuingAuthorities: {
+              /** Name of the issuing authority */
+              name: string;
+              /** Role of the issuing authority */
+              role?: string;
+              /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
+              signatureUrl?: string;
+            }[];
+            /** Date when the certificate was issued */
+            issuedDate: string;
+            /** Date when the certificate expires. Dynamically calculated from issued_date and expires_in; not specified by instructors. */
+            expirationDate?: string;
+            /** Number of months after which the certificate expires */
+            expiresIn?: number;
+          };
+          /** List of children items in the top-level curricula */
+          children?: {
+            /** Unique identifier for the course */
+            id: string;
+            /** Title of the course */
+            title: string;
+            /** URL to the course content */
+            permalink: string;
+            /** Course description */
+            description: string;
+            /** A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title. */
+            weight?: number;
+            /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
+            banner?: string | null;
+            /** Type of the content (e.g., learning-path, challenge, certification) */
+            type?: "learning-path" | "challenge" | "certification";
+            /** List of child nodes (sub-courses or modules) */
+            children?: object[];
+          }[];
+          [key: string]: any;
+        };
+      } & {
+        /** Number of registrations associated with this curriculum. */
+        registrationCount: number;
+      })[];
+    };
+  };
 export type GetAcademyAdminSummaryApiArg = void;
 export type GetAcademyAdminRegistrationsApiResponse = /** status 200 List of registrations with pagination info */ {
   /** The data of the curricularegistrationsresponse. */
@@ -9339,7 +9573,7 @@ export type GetPatternsApiResponse = /** status 200 Designs response */ {
 };
 export type GetPatternsApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of items per page (canonical camelCase form). */
   pageSize?: number;
   /** Get responses that match search param value */
@@ -10518,7 +10752,7 @@ export type GetCatalogContentApiResponse = /** status 200 Catalog content page *
 export type GetCatalogContentApiArg = {
   pathType: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of items per page (canonical camelCase form). */
   pageSize?: number;
   /** Get responses that match search param value */
@@ -10958,7 +11192,7 @@ export type GetCatalogContentClassesApiResponse = /** status 200 Catalog content
 }[];
 export type GetCatalogContentClassesApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of items per page (canonical camelCase form). */
   pageSize?: number;
 };
@@ -11230,7 +11464,7 @@ export type GetCatalogRequestApiResponse = /** status 200 Catalog requests page 
 };
 export type GetCatalogRequestApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of items per page (canonical camelCase form). */
   pageSize?: number;
   /** Get responses that match search param value */
@@ -11313,7 +11547,7 @@ export type GetEnvironmentsApiArg = {
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** User's organization ID */
   orgId: string;
 };
@@ -11427,7 +11661,7 @@ export type GetEnvironmentConnectionsApiArg = {
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** JSON-encoded filter string used to scope the connection listing. */
   filter?: string;
 };
@@ -11523,11 +11757,11 @@ export type GetEventsOfWorkspaceApiArg = {
   /** Workspace ID */
   workspaceId: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -11575,9 +11809,9 @@ export type GetEventsApiResponse = /** status 200 Events page */ {
 };
 export type GetEventsApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by pagesize */
-  pagesize?: string;
+  pagesize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -11599,9 +11833,9 @@ export type GetEventSummaryByUserApiResponse = /** status 200 Event summary page
 };
 export type GetEventSummaryByUserApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by pagesize */
-  pagesize?: string;
+  pagesize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -11617,11 +11851,11 @@ export type GetEventTypesApiResponse = /** status 200 Event types */ {
 }[];
 export type GetEventTypesApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
 };
 export type GetFiltersApiResponse = /** status 200 Filters response */ {
   /** Current page number of the result set. */
@@ -11686,7 +11920,7 @@ export type GetFiltersApiResponse = /** status 200 Filters response */ {
 };
 export type GetFiltersApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of items per page (canonical camelCase form). */
   pageSize?: number;
   /** Get responses that match search param value */
@@ -12233,9 +12467,9 @@ export type GetInvitationsApiResponse = /** status 200 Invitations page */ {
 };
 export type GetInvitationsApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by pagesize */
-  pagesize?: string;
+  pagesize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -12375,9 +12609,9 @@ export type GetSignupRequestsApiResponse = /** status 200 Signup requests page *
 };
 export type GetSignupRequestsApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by pagesize */
-  pagesize?: string;
+  pagesize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -12515,7 +12749,7 @@ export type GetPatternResourcesApiResponse = /** status 200 Pattern resources pa
 };
 export type GetPatternResourcesApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of items per page (canonical camelCase form). */
   pageSize?: number;
   /** Number of items per page. Deprecated alias of pageSize kept for
@@ -13091,9 +13325,9 @@ export type GetPlansApiResponse = /** status 200 Plans response */ {
 }[];
 export type GetPlansApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by pagesize */
-  pagesize?: string;
+  pagesize?: number;
 };
 export type GetSubscriptionsApiResponse = /** status 200 Subscriptions response */ {
   /** Current page number of the result set. */
@@ -13147,9 +13381,9 @@ export type GetSubscriptionsApiResponse = /** status 200 Subscriptions response 
 };
 export type GetSubscriptionsApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by pagesize */
-  pagesize?: string;
+  pagesize?: number;
   /** Get ordered responses */
   order?: string;
   /** Filter subscriptions by status */
@@ -13335,11 +13569,11 @@ export type GetUserTokensApiArg = {
   /** Whether to retrieve OAuth-backed sessions instead of API tokens. */
   isOauth?: boolean;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -13528,7 +13762,7 @@ export type GetWorkspacesApiArg = {
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;
 };
@@ -13660,7 +13894,7 @@ export type GetTeamsOfWorkspaceApiArg = {
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;
 };
@@ -13742,7 +13976,7 @@ export type GetEnvironmentsOfWorkspaceApiArg = {
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;
 };
@@ -14812,7 +15046,7 @@ export type GetDesignsOfWorkspaceApiArg = {
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;
 };
@@ -14896,7 +15130,7 @@ export type GetViewsOfWorkspaceApiArg = {
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;
 };

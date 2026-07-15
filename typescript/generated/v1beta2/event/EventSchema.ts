@@ -493,7 +493,7 @@ const EventSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
@@ -501,7 +501,7 @@ const EventSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by pagesize",
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
@@ -733,7 +733,7 @@ const EventSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
@@ -741,7 +741,7 @@ const EventSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by pagesize",
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
@@ -913,7 +913,7 @@ const EventSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
@@ -921,7 +921,7 @@ const EventSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by pagesize",
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
@@ -1013,7 +1013,7 @@ const EventSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
@@ -1021,7 +1021,7 @@ const EventSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by pagesize",
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           }
         ],
@@ -1133,7 +1133,7 @@ const EventSchema: Record<string, unknown> = {
         "in": "query",
         "description": "Get responses by page",
         "schema": {
-          "type": "string"
+          "type": "integer"
         }
       },
       "pagesize": {
@@ -1141,7 +1141,7 @@ const EventSchema: Record<string, unknown> = {
         "in": "query",
         "description": "Get responses by pagesize",
         "schema": {
-          "type": "string"
+          "type": "integer"
         }
       },
       "search": {

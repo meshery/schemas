@@ -359,7 +359,7 @@ export interface components {
          * @deprecated
          * @description Get responses by pagesize. Deprecated alias of pageSize.
          */
-        pagesize: string;
+        pagesize: number;
         /** @description User's organization ID */
         orgIdQuery: string;
     };
@@ -401,7 +401,7 @@ export interface operations {
                  * @deprecated
                  * @description Get responses by pagesize. Deprecated alias of pageSize.
                  */
-                pagesize?: string;
+                pagesize?: number;
                 /** @description User's organization ID */
                 orgId: string;
             };
@@ -937,7 +937,7 @@ export interface operations {
                  * @deprecated
                  * @description Get responses by pagesize. Deprecated alias of pageSize.
                  */
-                pagesize?: string;
+                pagesize?: number;
                 /** @description JSON-encoded filter string used to scope the connection listing. */
                 filter?: string;
             };

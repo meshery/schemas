@@ -62,7 +62,7 @@ const SubscriptionSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
@@ -70,7 +70,7 @@ const SubscriptionSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by pagesize",
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
@@ -1637,7 +1637,7 @@ const SubscriptionSchema: Record<string, unknown> = {
         "in": "query",
         "description": "Get responses by page",
         "schema": {
-          "type": "string"
+          "type": "integer"
         }
       },
       "pagesize": {
@@ -1645,7 +1645,7 @@ const SubscriptionSchema: Record<string, unknown> = {
         "in": "query",
         "description": "Get responses by pagesize",
         "schema": {
-          "type": "string"
+          "type": "integer"
         }
       },
       "pagesizeWithAll": {

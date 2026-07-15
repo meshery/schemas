@@ -70,7 +70,7 @@ const ScheduleSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page size",
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
@@ -789,7 +789,7 @@ const ScheduleSchema: Record<string, unknown> = {
         "in": "query",
         "description": "Get responses by page size",
         "schema": {
-          "type": "string"
+          "type": "integer"
         }
       },
       "search": {

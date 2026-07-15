@@ -59,7 +59,7 @@ const UserSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
@@ -67,7 +67,7 @@ const UserSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page size",
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
@@ -939,7 +939,7 @@ const UserSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
@@ -947,7 +947,7 @@ const UserSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page size",
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
@@ -5044,7 +5044,7 @@ const UserSchema: Record<string, unknown> = {
         "in": "query",
         "description": "Get responses by page",
         "schema": {
-          "type": "string"
+          "type": "integer"
         }
       },
       "pageSize": {
@@ -5052,7 +5052,7 @@ const UserSchema: Record<string, unknown> = {
         "in": "query",
         "description": "Get responses by page size",
         "schema": {
-          "type": "string"
+          "type": "integer"
         }
       },
       "search": {

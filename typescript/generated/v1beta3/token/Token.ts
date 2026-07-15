@@ -204,14 +204,14 @@ export interface components {
         /** @description Authentication provider to associate with the indefinite token. */
         providerQuery: string;
         /** @description Get responses by page */
-        page: string;
+        page: number;
         /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
         pageSize: number;
         /**
          * @deprecated
          * @description Get responses by pagesize. Deprecated alias of pageSize.
          */
-        pagesize: string;
+        pagesize: number;
         /** @description Get responses that match search param value */
         search: string;
         /** @description Get ordered responses */
@@ -235,14 +235,14 @@ export interface operations {
                 /** @description Whether to retrieve OAuth-backed sessions instead of API tokens. */
                 isOauth?: boolean;
                 /** @description Get responses by page */
-                page?: string;
+                page?: number;
                 /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
                 pageSize?: number;
                 /**
                  * @deprecated
                  * @description Get responses by pagesize. Deprecated alias of pageSize.
                  */
-                pagesize?: string;
+                pagesize?: number;
                 /** @description Get responses that match search param value */
                 search?: string;
                 /** @description Get ordered responses */

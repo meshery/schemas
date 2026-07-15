@@ -3513,7 +3513,7 @@ export type GetUserCredentialsApiArg = {
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -3647,7 +3647,7 @@ export type GetUserKeysApiArg = {
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
 };
 export type RegisterMeshmodelsApiResponse = /** status 201 Model registered */ {
   message?: string;
@@ -3702,6 +3702,8 @@ export type GetOrgsApiResponse = /** status 200 Organizations response */ {
     country?: string;
     /** Region of the organization. */
     region?: string;
+    /** Custom domain assigned to the organization, when configured. */
+    domain?: string;
     /** Display name of the organization owner. */
     owner?: string;
     /** Free-form metadata associated with an organization, including preferences. */
@@ -3825,6 +3827,8 @@ export type CreateOrgApiResponse = /** status 201 Single-organization page respo
     country?: string;
     /** Region of the organization. */
     region?: string;
+    /** Custom domain assigned to the organization, when configured. */
+    domain?: string;
     /** Display name of the organization owner. */
     owner?: string;
     /** Free-form metadata associated with an organization, including preferences. */
@@ -4058,6 +4062,8 @@ export type GetOrgApiResponse = /** status 200 Single-organization page response
     country?: string;
     /** Region of the organization. */
     region?: string;
+    /** Custom domain assigned to the organization, when configured. */
+    domain?: string;
     /** Display name of the organization owner. */
     owner?: string;
     /** Free-form metadata associated with an organization, including preferences. */
@@ -4178,6 +4184,8 @@ export type UpdateOrgApiResponse = /** status 200 Single-organization page respo
     country?: string;
     /** Region of the organization. */
     region?: string;
+    /** Custom domain assigned to the organization, when configured. */
+    domain?: string;
     /** Display name of the organization owner. */
     owner?: string;
     /** Free-form metadata associated with an organization, including preferences. */
@@ -4744,9 +4752,9 @@ export type GetUsersForOrgApiArg = {
   /** Organization ID */
   orgId: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by page size */
-  pageSize?: string;
+  pageSize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -4939,9 +4947,9 @@ export type GetUsersApiResponse = /** status 200 Paginated list of public users 
 };
 export type GetUsersApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by page size */
-  pageSize?: string;
+  pageSize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -7739,7 +7747,7 @@ export type GetEnvironmentsApiArg = {
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** User's organization ID */
   orgId: string;
 };
@@ -7853,7 +7861,7 @@ export type GetEnvironmentConnectionsApiArg = {
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** JSON-encoded filter string used to scope the connection listing. */
   filter?: string;
 };
@@ -8342,7 +8350,7 @@ export type GetWorkspacesApiArg = {
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;
 };
@@ -8474,7 +8482,7 @@ export type GetTeamsOfWorkspaceApiArg = {
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;
 };
@@ -8556,7 +8564,7 @@ export type GetEnvironmentsOfWorkspaceApiArg = {
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;
 };
@@ -9626,7 +9634,7 @@ export type GetDesignsOfWorkspaceApiArg = {
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;
 };
@@ -9710,7 +9718,7 @@ export type GetViewsOfWorkspaceApiArg = {
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;
 };

@@ -72,7 +72,7 @@ const TokenSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
@@ -80,7 +80,7 @@ const TokenSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by pagesize",
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
@@ -1220,7 +1220,7 @@ const TokenSchema: Record<string, unknown> = {
         "in": "query",
         "description": "Get responses by page",
         "schema": {
-          "type": "string"
+          "type": "integer"
         }
       },
       "pagesize": {
@@ -1228,7 +1228,7 @@ const TokenSchema: Record<string, unknown> = {
         "in": "query",
         "description": "Get responses by pagesize",
         "schema": {
-          "type": "string"
+          "type": "integer"
         }
       },
       "search": {

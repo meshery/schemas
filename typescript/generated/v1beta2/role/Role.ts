@@ -337,7 +337,7 @@ export interface components {
         /** @description Get responses by page */
         page: string;
         /** @description Get responses by page size */
-        pageSize: string;
+        pageSize: number;
         /** @description Get responses that match search param value */
         search: string;
         /** @description Get ordered responses */
@@ -475,7 +475,7 @@ export interface operations {
                 /** @description Get responses by page */
                 page?: string;
                 /** @description Get responses by page size */
-                pageSize?: string;
+                pageSize?: number;
                 /** @description Get responses that match search param value */
                 search?: string;
                 /** @description Get ordered responses */
@@ -774,7 +774,7 @@ export interface operations {
                 /** @description Get responses by page */
                 page?: string;
                 /** @description Get responses by page size */
-                pageSize?: string;
+                pageSize?: number;
                 /** @description Get responses that match search param value */
                 search?: string;
                 /** @description Get ordered responses */

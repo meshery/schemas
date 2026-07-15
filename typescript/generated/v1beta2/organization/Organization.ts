@@ -565,6 +565,8 @@ export interface components {
             country?: string;
             /** @description Region of the organization. */
             region?: string;
+            /** @description Custom domain assigned to the organization, when configured. */
+            domain?: string;
             /** @description Display name of the organization owner. */
             owner?: string;
             /** @description Free-form metadata associated with an organization, including preferences. */
@@ -703,6 +705,8 @@ export interface components {
                 country?: string;
                 /** @description Region of the organization. */
                 region?: string;
+                /** @description Custom domain assigned to the organization, when configured. */
+                domain?: string;
                 /** @description Display name of the organization owner. */
                 owner?: string;
                 /** @description Free-form metadata associated with an organization, including preferences. */
@@ -842,6 +846,8 @@ export interface components {
                 country?: string;
                 /** @description Region of the organization. */
                 region?: string;
+                /** @description Custom domain assigned to the organization, when configured. */
+                domain?: string;
                 /** @description Display name of the organization owner. */
                 owner?: string;
                 /** @description Free-form metadata associated with an organization, including preferences. */
@@ -1523,6 +1529,8 @@ export interface operations {
                             country?: string;
                             /** @description Region of the organization. */
                             region?: string;
+                            /** @description Custom domain assigned to the organization, when configured. */
+                            domain?: string;
                             /** @description Display name of the organization owner. */
                             owner?: string;
                             /** @description Free-form metadata associated with an organization, including preferences. */
@@ -1815,6 +1823,8 @@ export interface operations {
                             country?: string;
                             /** @description Region of the organization. */
                             region?: string;
+                            /** @description Custom domain assigned to the organization, when configured. */
+                            domain?: string;
                             /** @description Display name of the organization owner. */
                             owner?: string;
                             /** @description Free-form metadata associated with an organization, including preferences. */
@@ -2086,6 +2096,8 @@ export interface operations {
                             country?: string;
                             /** @description Region of the organization. */
                             region?: string;
+                            /** @description Custom domain assigned to the organization, when configured. */
+                            domain?: string;
                             /** @description Display name of the organization owner. */
                             owner?: string;
                             /** @description Free-form metadata associated with an organization, including preferences. */
@@ -2383,6 +2395,8 @@ export interface operations {
                             country?: string;
                             /** @description Region of the organization. */
                             region?: string;
+                            /** @description Custom domain assigned to the organization, when configured. */
+                            domain?: string;
                             /** @description Display name of the organization owner. */
                             owner?: string;
                             /** @description Free-form metadata associated with an organization, including preferences. */

@@ -70,7 +70,7 @@ const TokenSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
@@ -88,7 +88,7 @@ const TokenSchema: Record<string, unknown> = {
             "description": "Get responses by pagesize. Deprecated alias of pageSize.",
             "deprecated": true,
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
@@ -1378,7 +1378,7 @@ const TokenSchema: Record<string, unknown> = {
         "in": "query",
         "description": "Get responses by page",
         "schema": {
-          "type": "string"
+          "type": "integer"
         }
       },
       "pageSize": {
@@ -1396,7 +1396,7 @@ const TokenSchema: Record<string, unknown> = {
         "description": "Get responses by pagesize. Deprecated alias of pageSize.",
         "deprecated": true,
         "schema": {
-          "type": "string"
+          "type": "integer"
         }
       },
       "search": {

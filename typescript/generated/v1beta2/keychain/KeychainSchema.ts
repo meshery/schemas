@@ -65,7 +65,7 @@ const KeychainSchema: Record<string, unknown> = {
             "description": "Get responses by pagesize. Deprecated alias of pageSize.",
             "deprecated": true,
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
@@ -1118,7 +1118,7 @@ const KeychainSchema: Record<string, unknown> = {
             "description": "Get responses by pagesize. Deprecated alias of pageSize.",
             "deprecated": true,
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
@@ -1458,7 +1458,7 @@ const KeychainSchema: Record<string, unknown> = {
         "description": "Get responses by pagesize. Deprecated alias of pageSize.",
         "deprecated": true,
         "schema": {
-          "type": "string"
+          "type": "integer"
         }
       },
       "order": {

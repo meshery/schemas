@@ -1814,7 +1814,7 @@ const CoreSchema: Record<string, unknown> = {
         "in": "query",
         "description": "Get responses by page",
         "schema": {
-          "type": "string"
+          "type": "integer"
         }
       },
       "userId": {
@@ -1846,7 +1846,7 @@ const CoreSchema: Record<string, unknown> = {
         "in": "query",
         "description": "Get responses by pagesize",
         "schema": {
-          "type": "string"
+          "type": "integer"
         }
       },
       "pagesizeWithAll": {

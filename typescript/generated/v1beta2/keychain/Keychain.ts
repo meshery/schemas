@@ -211,7 +211,7 @@ export interface components {
          * @deprecated
          * @description Get responses by pagesize. Deprecated alias of pageSize.
          */
-        pagesize: string;
+        pagesize: number;
         /** @description Get ordered responses */
         order: string;
         /** @description Get responses that match search param value */
@@ -234,7 +234,7 @@ export interface operations {
                  * @deprecated
                  * @description Get responses by pagesize. Deprecated alias of pageSize.
                  */
-                pagesize?: string;
+                pagesize?: number;
                 /** @description Get responses that match search param value */
                 search?: string;
                 /** @description Get ordered responses */
@@ -780,7 +780,7 @@ export interface operations {
                  * @deprecated
                  * @description Get responses by pagesize. Deprecated alias of pageSize.
                  */
-                pagesize?: string;
+                pagesize?: number;
                 /** @description Get responses that match search param value */
                 search?: string;
                 /** @description Get ordered responses */

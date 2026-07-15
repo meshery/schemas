@@ -88,7 +88,7 @@ type Page = string
 type PageSize = int
 
 // Pagesize defines model for pagesize.
-type Pagesize = string
+type Pagesize = int
 
 // Search defines model for search.
 type Search = string
