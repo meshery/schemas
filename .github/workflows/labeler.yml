@@ -13,10 +13,11 @@ jobs:
     runs-on: ubuntu-latest   # ubuntu-24.04 is fine too, but latest is usually better
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Label PR based on changed paths
         uses: actions/labeler@v6
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          # Optional: if you put config somewhere else
-          # configuration-path: .github/my-labels.yml
           # sync-labels: true     # remove labels that no longer match (careful!)
