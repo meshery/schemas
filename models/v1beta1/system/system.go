@@ -32,6 +32,18 @@ const (
 	ControllerStatusControllerOPERATOR ControllerStatusController = "OPERATOR"
 )
 
+// Defines values for ControllerStatusValue.
+const (
+	CONNECTED   ControllerStatusValue = "CONNECTED"
+	DEPLOYED    ControllerStatusValue = "DEPLOYED"
+	DEPLOYING   ControllerStatusValue = "DEPLOYING"
+	ENABLED     ControllerStatusValue = "ENABLED"
+	NOTDEPLOYED ControllerStatusValue = "NOTDEPLOYED"
+	RUNNING     ControllerStatusValue = "RUNNING"
+	UNDEPLOYED  ControllerStatusValue = "UNDEPLOYED"
+	UNKOWN      ControllerStatusValue = "UNKOWN"
+)
+
 // ConnectionDiagnostics Diagnostics for a kubernetes connection's Meshery controllers, for rendering a "Diagnostics" section in the connection detail view.
 type ConnectionDiagnostics struct {
 	// ConnectionId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -97,8 +109,8 @@ type ControllerStatus struct {
 	// Controller The controller this status describes.
 	Controller ControllerStatusController `json:"controller" yaml:"controller"`
 
-	// Status Current controller status (e.g. DEPLOYED, NOTDEPLOYED, RUNNING, CONNECTED, UNKNOWN).
-	Status string `json:"status" yaml:"status"`
+	// Status Current status of a single Meshery controller (operator, MeshSync, or broker). Mirrors the MesheryControllerStatus GraphQL enum (server/internal/graphql/schema/schema.graphql) during the ongoing migration of controller-status consumers from GraphQL to this REST API; the literal values (including the published "UNKOWN" spelling) are load-bearing and must not be changed independently of that enum.
+	Status ControllerStatusValue `json:"status" yaml:"status"`
 
 	// Version Deployed controller version, when known.
 	Version string `json:"version" yaml:"version"`
@@ -106,6 +118,9 @@ type ControllerStatus struct {
 
 // ControllerStatusController The controller this status describes.
 type ControllerStatusController string
+
+// ControllerStatusValue Current status of a single Meshery controller (operator, MeshSync, or broker). Mirrors the MesheryControllerStatus GraphQL enum (server/internal/graphql/schema/schema.graphql) during the ongoing migration of controller-status consumers from GraphQL to this REST API; the literal values (including the published "UNKOWN" spelling) are load-bearing and must not be changed independently of that enum.
+type ControllerStatusValue string
 
 // EmailTestRequest Request body for sending a test email through the configured SMTP provider.
 type EmailTestRequest struct {
