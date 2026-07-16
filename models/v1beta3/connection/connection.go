@@ -94,7 +94,7 @@ type Connection struct {
 	UpdatedAt core.Time  `db:"updated_at" json:"updatedAt" yaml:"updatedAt,omitempty"`
 
 	// DeletedAt SQL null Timestamp to handle null values of time.
-	DeletedAt core.NullTime `db:"deleted_at" json:"deletedAt" yaml:"deletedAt,omitempty"`
+	DeletedAt core.NullTime `db:"deleted_at" json:"deletedAt" yaml:"deletedAt"`
 
 	// Environments Associated environments for this connection
 	Environments []*environmentv1beta3.Environment `db:"-" gorm:"-" json:"environments,omitempty" yaml:"environments,omitempty"`

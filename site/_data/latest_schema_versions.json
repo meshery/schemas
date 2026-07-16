@@ -242,8 +242,8 @@
     "construct": "user",
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/user/api.yml",
-    "core": false,
-    "extension": false
+    "core": true,
+    "extension": true
   },
   {
     "construct": "view",
