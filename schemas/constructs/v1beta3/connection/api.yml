@@ -1223,6 +1223,16 @@ components:
           x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
             json: "connectionId,omitempty"
+        reachable:
+          type: boolean
+          description: >-
+            Whether the context's API server answered a version probe when the
+            kubeconfig was processed. Populated during kubeconfig discovery and
+            import (`/api/system/kubernetes*`); not persisted with the
+            connection.
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "reachable"
 
     K8sContextPage:
       type: object
