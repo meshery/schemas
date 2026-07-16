@@ -163,11 +163,12 @@ paths:
           required: true
           description: Registration process tracker id to discard.
           schema:
-            type: string
-            format: uuid
+            $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
       responses:
         "204":
           description: Registration process discarded.
+        "400":
+          description: registrationId is not a valid UUID.
         "401":
           $ref: "#/components/responses/401"
 
@@ -1007,13 +1008,13 @@ components:
         - status
       properties:
         id:
-          type: string
-          format: uuid
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
           description: >-
             Registration process tracker. Returned by the `initialize`
             bootstrap or minted client-side; echoed on every subsequent event
             for the same registration.
           x-go-name: ID
+          x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
             json: "id,omitempty"
         kind:
@@ -1088,8 +1089,7 @@ components:
           x-oapi-codegen-extra-tags:
             json: "credentialSecret,omitempty"
         credentialId:
-          type: string
-          format: uuid
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
           description: Existing credential to associate instead of a new secret.
           x-go-name: CredentialID
           x-oapi-codegen-extra-tags:
@@ -1116,8 +1116,7 @@ components:
         - connection
       properties:
         id:
-          type: string
-          format: uuid
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
           description: Registration process tracker to echo on subsequent events.
           x-go-name: ID
           x-oapi-codegen-extra-tags:
