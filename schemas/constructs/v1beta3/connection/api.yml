@@ -107,6 +107,70 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
+  /api/integrations/connections/register:
+    post:
+      x-internal: ["meshery"]
+      tags:
+        - Connections
+      summary: Drive the connection registration state machine
+      description: >-
+        Dispatches a lifecycle event for an in-progress connection
+        registration. With status `initialize`, responds with the registration
+        bootstrap - the kind's connection (and credential, when one exists)
+        registry component definitions plus a tracker `id` the client echoes
+        on subsequent events. Every other status is forwarded to the tracked
+        registration's state machine and the response body is empty.
+      operationId: processConnectionRegistration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConnectionRegistrationEvent"
+      responses:
+        "200":
+          description: >-
+            Registration bootstrap for status `initialize`; empty body for
+            every other status.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectionRegistrationBootstrap"
+        "400":
+          description: >-
+            Malformed payload, or no connection component is registered for
+            the requested kind.
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          description: >-
+            Failed to resolve the provider token, or to initialize / signal
+            the registration state machine.
+  /api/integrations/connections/register/{registrationId}:
+    delete:
+      x-internal: ["meshery"]
+      tags:
+        - Connections
+      summary: Cancel a connection registration
+      description: >-
+        Discards the in-progress registration state machine tracked by
+        `registrationId`. Nothing is persisted for the abandoned process.
+        Idempotent: unknown ids are ignored.
+      operationId: cancelConnectionRegister
+      parameters:
+        - name: registrationId
+          in: path
+          required: true
+          description: Registration process tracker id to discard.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Registration process discarded.
+        "401":
+          $ref: "#/components/responses/401"
+
   /api/integrations/connections/{connectionId}:
     get:
       x-internal: ["cloud", "meshery"]
@@ -928,6 +992,159 @@ components:
         - type
         - subType
         - status
+
+    ConnectionRegistrationEvent:
+      type: object
+      description: >-
+        Lifecycle event for the connection registration state machine
+        (POST /api/integrations/connections/register). Unlike
+        `ConnectionPayload`, only `kind` and `status` are always present: an
+        `initialize` event carries just the kind, while `register` / `connect`
+        events carry the connection details assembled so far.
+      additionalProperties: false
+      required:
+        - kind
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: >-
+            Registration process tracker. Returned by the `initialize`
+            bootstrap or minted client-side; echoed on every subsequent event
+            for the same registration.
+          x-go-name: ID
+          x-oapi-codegen-extra-tags:
+            json: "id,omitempty"
+        kind:
+          type: string
+          description: Connection kind (e.g. `kubernetes`, `grafana`, `prometheus`).
+          maxLength: 255
+          x-oapi-codegen-extra-tags:
+            json: "kind"
+        status:
+          type: string
+          description: >-
+            State-machine event to dispatch. `initialize` returns the
+            registration bootstrap; every other event advances the tracked
+            registration. `not found` is the machine's literal event name.
+          enum:
+            - initialize
+            - discovery
+            - register
+            - connect
+            - disconnect
+            - ignore
+            - delete
+            - not found
+            - noop
+            - exit
+          x-oapi-codegen-extra-tags:
+            json: "status"
+        name:
+          type: string
+          description: Connection name.
+          maxLength: 255
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "name,omitempty"
+        type:
+          type: string
+          description: Connection type.
+          maxLength: 255
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "type,omitempty"
+        subType:
+          type: string
+          description: Connection sub-type.
+          maxLength: 255
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "subType,omitempty"
+        model:
+          type: string
+          description: Registry model the connection's definition belongs to.
+          maxLength: 255
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "model,omitempty"
+        metadata:
+          type: object
+          description: Connection metadata gathered so far in the flow.
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "metadata,omitempty"
+        credentialSecret:
+          type: object
+          description: Credential secret material for the connection.
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "credentialSecret,omitempty"
+        credentialId:
+          type: string
+          format: uuid
+          description: Existing credential to associate instead of a new secret.
+          x-go-name: CredentialID
+          x-oapi-codegen-extra-tags:
+            json: "credentialId,omitempty"
+        skipCredentialVerification:
+          type: boolean
+          description: >-
+            When true the server registers the connection without verifying
+            the supplied credential first.
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "skipCredentialVerification"
+
+    ConnectionRegistrationBootstrap:
+      type: object
+      description: >-
+        Response to an `initialize` registration event: the registry component
+        definitions describing the kind's connection and credential, plus the
+        tracker id for the registration process. Component definitions carry
+        their RJSF form schema as a JSON-encoded string under `schema`.
+      additionalProperties: false
+      required:
+        - id
+        - connection
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Registration process tracker to echo on subsequent events.
+          x-go-name: ID
+          x-oapi-codegen-extra-tags:
+            json: "id"
+        connection:
+          type: object
+          description: >-
+            Registry component definition (`{Kind}Connection`) describing the
+            connection, including its JSON-encoded `schema`.
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "connection"
+        credential:
+          type: object
+          description: >-
+            Registry component definition (`{Kind}Credential`) describing the
+            credential, including its JSON-encoded `schema`. Absent when the
+            kind defines no credential component.
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "credential,omitempty"
 
     ConnectionStatusInfo:
       type: object
