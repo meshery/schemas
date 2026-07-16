@@ -575,8 +575,19 @@ const SystemSchema: Record<string, unknown> = {
                     },
                     "status": {
                       "type": "string",
-                      "description": "Current controller status (e.g. DEPLOYED, NOTDEPLOYED, RUNNING, CONNECTED, UNKNOWN).",
-                      "maxLength": 255
+                      "x-go-type": "ControllerStatusValue",
+                      "description": "Current controller status.",
+                      "x-enum-casing-exempt": true,
+                      "enum": [
+                        "DEPLOYED",
+                        "NOTDEPLOYED",
+                        "DEPLOYING",
+                        "UNKOWN",
+                        "UNDEPLOYED",
+                        "ENABLED",
+                        "RUNNING",
+                        "CONNECTED"
+                      ]
                     },
                     "version": {
                       "type": "string",
@@ -1066,6 +1077,21 @@ const SystemSchema: Record<string, unknown> = {
           }
         }
       },
+      "ControllerStatusValue": {
+        "type": "string",
+        "description": "Current status of a single Meshery controller (operator, MeshSync, or broker). Mirrors the MesheryControllerStatus GraphQL enum (server/internal/graphql/schema/schema.graphql) during the ongoing migration of controller-status consumers from GraphQL to this REST API; the literal values (including the published \"UNKOWN\" spelling) are load-bearing and must not be changed independently of that enum.",
+        "x-enum-casing-exempt": true,
+        "enum": [
+          "DEPLOYED",
+          "NOTDEPLOYED",
+          "DEPLOYING",
+          "UNKOWN",
+          "UNDEPLOYED",
+          "ENABLED",
+          "RUNNING",
+          "CONNECTED"
+        ]
+      },
       "ControllerStatus": {
         "type": "object",
         "description": "Status of a single Meshery controller (operator, MeshSync, or broker) for a kubernetes connection. Element type of the controller-status SSE stream and the operator status response.",
@@ -1097,8 +1123,19 @@ const SystemSchema: Record<string, unknown> = {
           },
           "status": {
             "type": "string",
-            "description": "Current controller status (e.g. DEPLOYED, NOTDEPLOYED, RUNNING, CONNECTED, UNKNOWN).",
-            "maxLength": 255
+            "x-go-type": "ControllerStatusValue",
+            "description": "Current controller status.",
+            "x-enum-casing-exempt": true,
+            "enum": [
+              "DEPLOYED",
+              "NOTDEPLOYED",
+              "DEPLOYING",
+              "UNKOWN",
+              "UNDEPLOYED",
+              "ENABLED",
+              "RUNNING",
+              "CONNECTED"
+            ]
           },
           "version": {
             "type": "string",
