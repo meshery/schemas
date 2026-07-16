@@ -237,6 +237,11 @@ export interface components {
             /** @description Human-readable status message. */
             message: string;
         };
+        /**
+         * @description Current status of a single Meshery controller (operator, MeshSync, or broker). Mirrors the MesheryControllerStatus GraphQL enum (server/internal/graphql/schema/schema.graphql) during the ongoing migration of controller-status consumers from GraphQL to this REST API; the literal values (including the published "UNKOWN" spelling) are load-bearing and must not be changed independently of that enum.
+         * @enum {string}
+         */
+        ControllerStatusValue: "DEPLOYED" | "NOTDEPLOYED" | "DEPLOYING" | "UNKOWN" | "UNDEPLOYED" | "ENABLED" | "RUNNING" | "CONNECTED";
         /** @description Status of a single Meshery controller (operator, MeshSync, or broker) for a kubernetes connection. Element type of the controller-status SSE stream and the operator status response. */
         ControllerStatus: {
             /**
@@ -249,8 +254,11 @@ export interface components {
              * @enum {string}
              */
             controller: "OPERATOR" | "MESHSYNC" | "BROKER";
-            /** @description Current controller status (e.g. DEPLOYED, NOTDEPLOYED, RUNNING, CONNECTED, UNKNOWN). */
-            status: string;
+            /**
+             * @description Current controller status.
+             * @enum {string}
+             */
+            status: "DEPLOYED" | "NOTDEPLOYED" | "DEPLOYING" | "UNKOWN" | "UNDEPLOYED" | "ENABLED" | "RUNNING" | "CONNECTED";
             /** @description Deployed controller version, when known. */
             version: string;
         };
@@ -759,8 +767,11 @@ export interface operations {
                          * @enum {string}
                          */
                         controller: "OPERATOR" | "MESHSYNC" | "BROKER";
-                        /** @description Current controller status (e.g. DEPLOYED, NOTDEPLOYED, RUNNING, CONNECTED, UNKNOWN). */
-                        status: string;
+                        /**
+                         * @description Current controller status.
+                         * @enum {string}
+                         */
+                        status: "DEPLOYED" | "NOTDEPLOYED" | "DEPLOYING" | "UNKOWN" | "UNDEPLOYED" | "ENABLED" | "RUNNING" | "CONNECTED";
                         /** @description Deployed controller version, when known. */
                         version: string;
                     };
