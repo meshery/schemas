@@ -485,19 +485,6 @@ const injectedRtkApi = api
         }),
         providesTags: ["User_users"],
       }),
-      getUsers: build.query<GetUsersApiResponse, GetUsersApiArg>({
-        query: (queryArg) => ({
-          url: `/api/users`,
-          params: {
-            page: queryArg?.page,
-            pageSize: queryArg?.pageSize,
-            search: queryArg?.search,
-            order: queryArg?.order,
-            filter: queryArg?.filter,
-          },
-        }),
-        providesTags: ["User_users"],
-      }),
       getUserProfileById: build.query<GetUserProfileByIdApiResponse, GetUserProfileByIdApiArg>({
         query: (queryArg) => ({ url: `/api/identity/users/profile/${queryArg.id}` }),
         providesTags: ["User_users"],
@@ -1520,6 +1507,45 @@ const injectedRtkApi = api
           },
         }),
         providesTags: ["token_tokens"],
+      }),
+      getUsers: build.query<GetUsersApiResponse, GetUsersApiArg>({
+        query: (queryArg) => ({
+          url: `/api/users`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            filter: queryArg?.filter,
+          },
+        }),
+        providesTags: ["User_users"],
+      }),
+      searchUsers: build.query<SearchUsersApiResponse, SearchUsersApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/users/search`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            filter: queryArg?.filter,
+          },
+        }),
+        providesTags: ["User_users"],
+      }),
+      searchUsersInOrg: build.query<SearchUsersInOrgApiResponse, SearchUsersInOrgApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/users/search`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            filter: queryArg?.filter,
+          },
+        }),
+        providesTags: ["User_users"],
       }),
       getWorkspaces: build.query<GetWorkspacesApiResponse, GetWorkspacesApiArg>({
         query: (queryArg) => ({
@@ -4221,199 +4247,6 @@ export type GetUsersForOrgApiArg = {
   /** Optional team filter when listing organization users */
   teamId?: string;
 };
-export type GetUsersApiResponse = /** status 200 Paginated list of public users */ {
-  /** Current page number of the result set. */
-  page?: number;
-  /** Number of items per page. */
-  pageSize?: number;
-  /** Total number of items available. */
-  totalCount?: number;
-  /** The data of the userspagefornonadmin. */
-  data?: {
-    /** Unique identifier for the user */
-    id: string;
-    /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
-    userId: string;
-    /** Authentication provider (e.g., Google, Github) */
-    provider: string;
-    /** User's email address */
-    email: string;
-    /** User's first name */
-    firstName: string;
-    /** User's last name */
-    lastName: string;
-    /** URL to user's avatar image */
-    avatarUrl?: string;
-    /** User account status */
-    status: "active" | "inactive" | "pending" | "anonymous";
-    /** User's biography or description */
-    bio?: string;
-    /** User's country information stored as JSONB */
-    country?: {
-      [key: string]: any;
-    };
-    /** User's region information stored as JSONB */
-    region?: {
-      [key: string]: any;
-    };
-    /** User preferences stored as JSONB */
-    preferences?: {
-      /** The mesh adapters of the preference. */
-      meshAdapters?: object[];
-      grafana?: {
-        /** Grafana URL for the user configuration. */
-        grafanaUrl?: string;
-        /** Grafana API key for the user configuration. */
-        grafanaApiKey?: string;
-        /** Selected Grafana board configurations for the user. */
-        selectedBoardsConfigs?: {
-          /** Placeholder for GrafanaBoard definition (define fields as needed) */
-          board?: object;
-          /** Panels selected for the Grafana board configuration. */
-          panels?: object[];
-          /** Template variables applied to the selected Grafana board configuration. */
-          templateVars?: string[];
-        }[];
-      };
-      prometheus?: {
-        /** The prometheus URL of the prometheus. */
-        prometheusUrl?: string;
-        /** The selected prometheus boards configs of the prometheus. */
-        selectedPrometheusBoardsConfigs?: {
-          /** Placeholder for GrafanaBoard definition (define fields as needed) */
-          board?: object;
-          /** Panels selected for the Grafana board configuration. */
-          panels?: object[];
-          /** Template variables applied to the selected Grafana board configuration. */
-          templateVars?: string[];
-        }[];
-      };
-      loadTestPrefs?: {
-        /** Concurrent requests */
-        c?: number;
-        /** Queries per second */
-        qps?: number;
-        /** Duration */
-        t?: string;
-        /** Load generator */
-        gen?: string;
-      };
-      /** The anonymous usage stats of the preference. */
-      anonymousUsageStats: boolean;
-      /** The anonymous perf results of the preference. */
-      anonymousPerfResults: boolean;
-      /** Timestamp of when the resource was last updated. */
-      updatedAt: string;
-      /** The dashboard preferences of the preference. */
-      dashboardPreferences: {
-        [key: string]: any;
-      };
-      /** ID of the associated selectedOrganization. */
-      selectedOrganizationId: string;
-      /** The selected workspace for organizations of the preference. */
-      selectedWorkspaceForOrganizations: {
-        [key: string]: string;
-      };
-      /** The users extension preferences of the preference. */
-      usersExtensionPreferences: {
-        [key: string]: any;
-      };
-      /** The remote provider preferences of the preference. */
-      remoteProviderPreferences: {
-        [key: string]: any;
-      };
-    };
-    /** Timestamp when user accepted terms and conditions */
-    acceptedTermsAt?: string;
-    /** Timestamp of user's first login */
-    firstLoginTime?: string;
-    /** Timestamp of user's most recent login */
-    lastLoginTime: string;
-    /** Timestamp when the user record was created */
-    createdAt: string;
-    /** Timestamp when the user record was last updated */
-    updatedAt: string;
-    /** Various online profiles associated with the user account */
-    socials?: {
-      /** The site of the social. */
-      site: string;
-      /** The link of the social. */
-      link: string;
-    }[];
-    /** Timestamp when the user record was soft-deleted (null if not deleted) */
-    deletedAt: string | null;
-    /** Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set. */
-    roleNames?: string[];
-    /** Teams the user belongs to with role information */
-    teams?: {
-      /** Team memberships for the user with their assigned roles. */
-      teamsWithRoles?: {
-        /** Unique identifier of the team. */
-        id: string;
-        /** Name of the team. */
-        name: string;
-        /** Human readable description of the team. */
-        description?: string;
-        /** Identifier of the team owner. */
-        owner?: string;
-        /** Free-form metadata associated with the team. */
-        metadata?: {
-          [key: string]: any;
-        };
-        /** Timestamp when the team was created. */
-        createdAt?: string;
-        /** Timestamp when the team was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the team was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of team memberships returned for the user. */
-      totalCount?: number;
-    };
-    /** Organizations the user belongs to with role information */
-    organizations?: {
-      /** Organization memberships for the user with their assigned roles. */
-      organizationsWithRoles?: {
-        /** Unique identifier of the organization. */
-        id: string;
-        /** Name of the organization. */
-        name: string;
-        /** Human readable description of the organization. */
-        description?: string;
-        /** Country associated with the organization. */
-        country?: string;
-        /** Region associated with the organization. */
-        region?: string;
-        /** Identifier of the organization owner. */
-        owner?: string;
-        /** Timestamp when the organization was created. */
-        createdAt?: string;
-        /** Timestamp when the organization was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the organization was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of organization memberships returned for the user. */
-      totalCount?: number;
-    };
-  }[];
-};
-export type GetUsersApiArg = {
-  /** Get responses by page */
-  page?: number;
-  /** Get responses by page size */
-  pageSize?: number;
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-  /** Get filtered reponses */
-  filter?: string;
-};
 export type GetUserProfileByIdApiResponse = /** status 200 User profile for the requested ID */ {
   /** Unique identifier for the user */
   id: string;
@@ -5085,7 +4918,7 @@ export type GetUserEmailAddressesApiResponse = /** status 200 Email addresses as
   createdAt: string;
   updatedAt: string;
   /** SQL null Timestamp to handle null values of time. */
-  deletedAt?: string;
+  deletedAt?: string | null;
 }[];
 export type GetUserEmailAddressesApiArg = {
   /** ID of the user */
@@ -7509,7 +7342,7 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
     /** Timestamp when the connection was last updated. */
     updatedAt?: string;
     /** Timestamp when the connection was soft-deleted, if applicable. */
-    deletedAt?: string;
+    deletedAt?: string | null;
     /** Associated environments for this connection */
     environments?: {
       /** ID */
@@ -7816,7 +7649,7 @@ export type RegisterConnectionApiResponse = /** status 201 Connection registered
   /** Timestamp when the connection was last updated. */
   updatedAt?: string;
   /** Timestamp when the connection was soft-deleted, if applicable. */
-  deletedAt?: string;
+  deletedAt?: string | null;
   /** Associated environments for this connection */
   environments?: {
     /** ID */
@@ -8264,7 +8097,7 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
   /** Timestamp when the connection was last updated. */
   updatedAt?: string;
   /** Timestamp when the connection was soft-deleted, if applicable. */
-  deletedAt?: string;
+  deletedAt?: string | null;
   /** Associated environments for this connection */
   environments?: {
     /** ID */
@@ -8533,7 +8366,7 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated */ {
   /** Timestamp when the connection was last updated. */
   updatedAt?: string;
   /** Timestamp when the connection was soft-deleted, if applicable. */
-  deletedAt?: string;
+  deletedAt?: string | null;
   /** Associated environments for this connection */
   environments?: {
     /** ID */
@@ -13714,6 +13547,118 @@ export type IssueIndefiniteLifetimeTokenApiArg = {
   /** Authentication provider to associate with the indefinite token. */
   provider: string;
 };
+export type GetUsersApiResponse = /** status 200 Paginated list of public users */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Public user records for the requested page. */
+  data: {
+    /** Unique identifier for the user */
+    id: string;
+    /** Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id. */
+    userId?: string;
+    /** Public username of the user */
+    username?: string;
+    /** URL to user's avatar image */
+    avatarUrl?: string;
+  }[];
+};
+export type GetUsersApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get filtered reponses */
+  filter?: string;
+};
+export type SearchUsersApiResponse = /** status 200 Paginated list of matching users in the searchable projection */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Matching user records for the requested page. */
+  data: {
+    /** Unique identifier for the user */
+    id: string;
+    /** Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id. */
+    userId?: string;
+    /** Public username of the user */
+    username?: string;
+    /** User's first name */
+    firstName?: string;
+    /** User's last name */
+    lastName?: string;
+    /** User's email address */
+    email?: string;
+    /** URL to user's avatar image */
+    avatarUrl?: string;
+    /** Timestamp when the user record was soft-deleted (null if not deleted) */
+    deletedAt?: string | null;
+  }[];
+};
+export type SearchUsersApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get filtered reponses */
+  filter?: string;
+};
+export type SearchUsersInOrgApiResponse =
+  /** status 200 Paginated list of matching users in the searchable projection */ {
+    /** Current page number of the result set. */
+    page: number;
+    /** Number of items per page. */
+    pageSize: number;
+    /** Total number of items available. */
+    totalCount: number;
+    /** Matching user records for the requested page. */
+    data: {
+      /** Unique identifier for the user */
+      id: string;
+      /** Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id. */
+      userId?: string;
+      /** Public username of the user */
+      username?: string;
+      /** User's first name */
+      firstName?: string;
+      /** User's last name */
+      lastName?: string;
+      /** User's email address */
+      email?: string;
+      /** URL to user's avatar image */
+      avatarUrl?: string;
+      /** Timestamp when the user record was soft-deleted (null if not deleted) */
+      deletedAt?: string | null;
+    }[];
+  };
+export type SearchUsersInOrgApiArg = {
+  /** Organization ID */
+  orgId: string;
+  /** Get responses by page */
+  page?: number;
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get filtered reponses */
+  filter?: string;
+};
 export type GetWorkspacesApiResponse = /** status 200 Workspaces */ {
   /** Zero-based page index returned in this response. */
   page?: number;
@@ -15260,8 +15205,6 @@ export const {
   useLazyListUsersNotInTeamQuery,
   useGetUsersForOrgQuery,
   useLazyGetUsersForOrgQuery,
-  useGetUsersQuery,
-  useLazyGetUsersQuery,
   useGetUserProfileByIdQuery,
   useLazyGetUserProfileByIdQuery,
   useGetUserQuery,
@@ -15445,6 +15388,12 @@ export const {
   useLazyDownloadTokenQuery,
   useIssueIndefiniteLifetimeTokenQuery,
   useLazyIssueIndefiniteLifetimeTokenQuery,
+  useGetUsersQuery,
+  useLazyGetUsersQuery,
+  useSearchUsersQuery,
+  useLazySearchUsersQuery,
+  useSearchUsersInOrgQuery,
+  useLazySearchUsersInOrgQuery,
   useGetWorkspacesQuery,
   useLazyGetWorkspacesQuery,
   useCreateWorkspaceMutation,
