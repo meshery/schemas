@@ -472,6 +472,7 @@ const UserSchema: Record<string, unknown> = {
             "in": "path",
             "required": true,
             "description": "Organization ID",
+            "x-go-name": "OrgID",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -756,6 +757,7 @@ const UserSchema: Record<string, unknown> = {
         "in": "path",
         "required": true,
         "description": "Organization ID",
+        "x-go-name": "OrgID",
         "schema": {
           "type": "string",
           "format": "uuid"

@@ -360,8 +360,8 @@ type Filter = string
 // Order defines model for order.
 type Order = string
 
-// OrgId defines model for orgId.
-type OrgId = uuid.UUID
+// OrgID defines model for orgId.
+type OrgID = uuid.UUID
 
 // Page defines model for page.
 type Page = int
