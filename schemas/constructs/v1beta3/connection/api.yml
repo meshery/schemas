@@ -1224,15 +1224,25 @@ components:
           x-oapi-codegen-extra-tags:
             json: "connectionId,omitempty"
         reachable:
-          type: boolean
+          $ref: "#/components/schemas/ConnectionReachability"
           description: >-
-            Whether the context's API server answered a version probe when the
-            kubeconfig was processed. Populated during kubeconfig discovery and
-            import (`/api/system/kubernetes*`); not persisted with the
-            connection.
+            Whether this context's API server answered the probe run while its
+            kubeconfig was processed. Discovery and import surface unreachable
+            contexts too, so they can still be registered; reachability only
+            gates the connected transition.
+          x-go-type: bool
           x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
             json: "reachable"
+
+    ConnectionReachability:
+      type: boolean
+      description: >-
+        Whether the system behind a connection answered an ad hoc connectivity
+        probe. Connectivity checks run against many kinds of connections and
+        systems (Kubernetes API servers, telemetry systems such as Prometheus
+        and Grafana, and other managed platforms); a probe result is
+        point-in-time and never persisted with the connection.
 
     K8sContextPage:
       type: object
