@@ -1239,10 +1239,10 @@ components:
       type: boolean
       description: >-
         Whether the system behind a connection answered an ad hoc connectivity
-        probe. Connectivity checks run against many kinds of connections and
-        systems (Kubernetes API servers, telemetry systems such as Prometheus
-        and Grafana, and other managed platforms); a probe result is
-        point-in-time and never persisted with the connection.
+        probe. A probe is a point-in-time check of the connected system's
+        endpoint; its result is never persisted with the connection. For
+        example, probing a Kubernetes connection checks the cluster's API
+        server.
 
     K8sContextPage:
       type: object
