@@ -3424,8 +3424,8 @@ export type GetOperatorControllerStatusApiResponse = /** status 200 Operator con
   connectionId: string;
   /** The controller this status describes. */
   controller: "OPERATOR" | "MESHSYNC" | "BROKER";
-  /** Current controller status. */
-  status: "DEPLOYED" | "NOTDEPLOYED" | "DEPLOYING" | "UNKOWN" | "UNDEPLOYED" | "ENABLED" | "RUNNING" | "CONNECTED";
+  /** Current controller status (e.g. DEPLOYED, NOTDEPLOYED, RUNNING, CONNECTED, UNKNOWN). */
+  status: string;
   /** Deployed controller version, when known. */
   version: string;
 };
