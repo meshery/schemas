@@ -2,7 +2,7 @@
 !.claude/skills/
 .claude/worktrees/
 .claude/settings.local.json
-
+.superpowers/
 
 # api-audit local binary (built via `go build ./cmd/api-audit`)
 /api-audit
