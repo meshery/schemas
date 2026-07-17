@@ -67,8 +67,19 @@ jobs:
           cache: true
       - name: Bump schemas dependency
         run: |
+          set -eo pipefail
           go get "github.com/meshery/schemas@v${{ env.RELEASE_VERSION }}"
           go mod tidy
+          # The wasm engine is a separate Go module that pins meshery/schemas
+          # independently; bump it too so the repo stays on one schemas version
+          # (see server/policies/wasm/go.mod).
+          if [ -f server/policies/wasm/go.mod ]; then
+            (
+              cd server/policies/wasm
+              go get "github.com/meshery/schemas@v${{ env.RELEASE_VERSION }}"
+              go mod tidy
+            )
+          fi
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v8
         with:
@@ -83,6 +94,8 @@ jobs:
           add-paths: |
             go.mod
             go.sum
+            server/policies/wasm/go.mod
+            server/policies/wasm/go.sum
           body: |
             Bump `github.com/meshery/schemas` to v${{ env.RELEASE_VERSION }}
 
