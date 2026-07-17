@@ -1439,6 +1439,26 @@ components:
           x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
             json: "connectionId,omitempty"
+        reachable:
+          $ref: "#/components/schemas/ConnectionReachability"
+          description: >-
+            Whether this context's API server answered the probe run while its
+            kubeconfig was processed. Discovery and import surface unreachable
+            contexts too, so they can still be registered; reachability only
+            gates the connected transition.
+          x-go-type: bool
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "reachable"
+
+    ConnectionReachability:
+      type: boolean
+      description: >-
+        Whether the system behind a connection answered an ad hoc connectivity
+        probe. A probe is a point-in-time check of the connected system's
+        endpoint; its result is never persisted with the connection. For
+        example, probing a Kubernetes connection checks the cluster's API
+        server.
 
     K8sContextPage:
       type: object
