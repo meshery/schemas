@@ -1639,7 +1639,11 @@ export interface components {
              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             connectionId?: string;
+            /** @description Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition. */
+            reachable?: boolean;
         };
+        /** @description Whether the system behind a connection answered an ad hoc connectivity probe. A probe is a point-in-time check of the connected system's endpoint; its result is never persisted with the connection. For example, probing a Kubernetes connection checks the cluster's API server. */
+        ConnectionReachability: boolean;
         /** @description Paginated list of Kubernetes contexts. */
         K8sContextPage: {
             /** @description Zero-based page index returned in this response. */
@@ -1699,6 +1703,8 @@ export interface components {
                  * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
                 connectionId?: string;
+                /** @description Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition. */
+                reachable?: boolean;
             }[];
         };
     };
@@ -4459,6 +4465,8 @@ export interface operations {
                              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
                             connectionId?: string;
+                            /** @description Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition. */
+                            reachable?: boolean;
                         }[];
                     };
                 };

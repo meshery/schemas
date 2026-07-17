@@ -8625,6 +8625,8 @@ export type GetKubernetesContextApiResponse = /** status 200 Kubernetes context 
     updatedAt?: string;
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     connectionId?: string;
+    /** Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition. */
+    reachable?: boolean;
   }[];
 };
 export type GetKubernetesContextApiArg = {

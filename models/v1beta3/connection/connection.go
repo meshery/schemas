@@ -257,6 +257,9 @@ type ConnectionPayload struct {
 	Type string `json:"type" yaml:"type"`
 }
 
+// ConnectionReachability Whether the system behind a connection answered an ad hoc connectivity probe. A probe is a point-in-time check of the connected system's endpoint; its result is never persisted with the connection. For example, probing a Kubernetes connection checks the cluster's API server.
+type ConnectionReachability = bool
+
 // ConnectionRegistrationBootstrap Response to an `initialize` registration event: the registry component definitions describing the kind's connection and credential, plus the tracker id for the registration process. Component definitions carry their RJSF form schema as a JSON-encoded string under `schema`.
 type ConnectionRegistrationBootstrap struct {
 	// Connection Registry component definition (`{Kind}Connection`) describing the connection, including its JSON-encoded `schema`.
@@ -378,6 +381,9 @@ type K8sContext struct {
 
 	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	Owner *core.Uuid `json:"owner,omitempty" yaml:"owner,omitempty"`
+
+	// Reachable Whether the system behind a connection answered an ad hoc connectivity probe. A probe is a point-in-time check of the connected system's endpoint; its result is never persisted with the connection. For example, probing a Kubernetes connection checks the cluster's API server.
+	Reachable bool `json:"reachable" yaml:"reachable,omitempty"`
 
 	// Server API server URL of the Kubernetes cluster.
 	Server string `json:"server,omitempty" yaml:"server,omitempty"`

@@ -81,6 +81,26 @@ const injectedRtkApi = api
         query: () => ({ url: `/api/system/version` }),
         providesTags: ["System_API_System"],
       }),
+      addKubernetesConfig: build.mutation<AddKubernetesConfigApiResponse, AddKubernetesConfigApiArg>({
+        query: (queryArg) => ({ url: `/api/system/kubernetes`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["System_API_System"],
+      }),
+      discoverKubernetesContexts: build.mutation<
+        DiscoverKubernetesContextsApiResponse,
+        DiscoverKubernetesContextsApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/system/kubernetes/contexts`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["System_API_System"],
+      }),
+      pingKubernetes: build.query<PingKubernetesApiResponse, PingKubernetesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/system/kubernetes/ping`,
+          params: {
+            connectionId: queryArg?.connectionId,
+          },
+        }),
+        providesTags: ["System_API_System"],
+      }),
       getSystemSync: build.query<GetSystemSyncApiResponse, GetSystemSyncApiArg>({
         query: () => ({ url: `/api/system/sync` }),
         providesTags: ["System_API_System"],
@@ -3412,6 +3432,196 @@ export type GetSystemVersionApiResponse = /** status 200 Server version metadata
   releaseChannel?: string;
 };
 export type GetSystemVersionApiArg = void;
+export type AddKubernetesConfigApiResponse = /** status 200 Discovered contexts bucketed by import outcome. */ {
+  /** Contexts newly registered as discovered connections. */
+  registeredContexts: {
+    /** Stable identifier of the Kubernetes context, assigned when the context is registered. Not a UUID; carried in connection metadata. */
+    id?: string;
+    /** Human-readable name of the Kubernetes context. */
+    name?: string;
+    /** Authentication material for the context (token or kubeconfig reference), sourced from the connection's credential secret. */
+    auth?: object;
+    /** Cluster definition for the context (certificate authority and server details), sourced from the connection's credential secret. */
+    cluster?: object;
+    /** API server URL of the Kubernetes cluster. */
+    server?: string;
+    /** ID of the user who owns the underlying connection. */
+    owner?: string;
+    /** ID of the user who registered the context. */
+    createdBy?: string;
+    /** ID of the Meshery instance the context is registered with. */
+    mesheryInstanceId?: string;
+    /** ID of the Kubernetes server associated with the context. */
+    kubernetesServerId?: string;
+    /** How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster). */
+    deploymentType?: string;
+    /** Kubernetes server version of the cluster. */
+    version?: string;
+    /** Timestamp when the underlying connection was created. */
+    createdAt?: string;
+    /** Timestamp when the underlying connection was last updated. */
+    updatedAt?: string;
+    /** ID of the connection this context was projected from. */
+    connectionId?: string;
+    /** Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition. */
+    reachable?: boolean;
+  }[];
+  /** Contexts whose connection already exists in (or transitioned to) the connected state. */
+  connectedContexts: {
+    /** Stable identifier of the Kubernetes context, assigned when the context is registered. Not a UUID; carried in connection metadata. */
+    id?: string;
+    /** Human-readable name of the Kubernetes context. */
+    name?: string;
+    /** Authentication material for the context (token or kubeconfig reference), sourced from the connection's credential secret. */
+    auth?: object;
+    /** Cluster definition for the context (certificate authority and server details), sourced from the connection's credential secret. */
+    cluster?: object;
+    /** API server URL of the Kubernetes cluster. */
+    server?: string;
+    /** ID of the user who owns the underlying connection. */
+    owner?: string;
+    /** ID of the user who registered the context. */
+    createdBy?: string;
+    /** ID of the Meshery instance the context is registered with. */
+    mesheryInstanceId?: string;
+    /** ID of the Kubernetes server associated with the context. */
+    kubernetesServerId?: string;
+    /** How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster). */
+    deploymentType?: string;
+    /** Kubernetes server version of the cluster. */
+    version?: string;
+    /** Timestamp when the underlying connection was created. */
+    createdAt?: string;
+    /** Timestamp when the underlying connection was last updated. */
+    updatedAt?: string;
+    /** ID of the connection this context was projected from. */
+    connectionId?: string;
+    /** Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition. */
+    reachable?: boolean;
+  }[];
+  /** Contexts whose connection is in the ignored state. */
+  ignoredContexts: {
+    /** Stable identifier of the Kubernetes context, assigned when the context is registered. Not a UUID; carried in connection metadata. */
+    id?: string;
+    /** Human-readable name of the Kubernetes context. */
+    name?: string;
+    /** Authentication material for the context (token or kubeconfig reference), sourced from the connection's credential secret. */
+    auth?: object;
+    /** Cluster definition for the context (certificate authority and server details), sourced from the connection's credential secret. */
+    cluster?: object;
+    /** API server URL of the Kubernetes cluster. */
+    server?: string;
+    /** ID of the user who owns the underlying connection. */
+    owner?: string;
+    /** ID of the user who registered the context. */
+    createdBy?: string;
+    /** ID of the Meshery instance the context is registered with. */
+    mesheryInstanceId?: string;
+    /** ID of the Kubernetes server associated with the context. */
+    kubernetesServerId?: string;
+    /** How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster). */
+    deploymentType?: string;
+    /** Kubernetes server version of the cluster. */
+    version?: string;
+    /** Timestamp when the underlying connection was created. */
+    createdAt?: string;
+    /** Timestamp when the underlying connection was last updated. */
+    updatedAt?: string;
+    /** ID of the connection this context was projected from. */
+    connectionId?: string;
+    /** Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition. */
+    reachable?: boolean;
+  }[];
+  /** Contexts that could not be saved as connections. The failure detail is recorded in the emitted event's metadata, not on the context object. */
+  erroredContexts: {
+    /** Stable identifier of the Kubernetes context, assigned when the context is registered. Not a UUID; carried in connection metadata. */
+    id?: string;
+    /** Human-readable name of the Kubernetes context. */
+    name?: string;
+    /** Authentication material for the context (token or kubeconfig reference), sourced from the connection's credential secret. */
+    auth?: object;
+    /** Cluster definition for the context (certificate authority and server details), sourced from the connection's credential secret. */
+    cluster?: object;
+    /** API server URL of the Kubernetes cluster. */
+    server?: string;
+    /** ID of the user who owns the underlying connection. */
+    owner?: string;
+    /** ID of the user who registered the context. */
+    createdBy?: string;
+    /** ID of the Meshery instance the context is registered with. */
+    mesheryInstanceId?: string;
+    /** ID of the Kubernetes server associated with the context. */
+    kubernetesServerId?: string;
+    /** How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster). */
+    deploymentType?: string;
+    /** Kubernetes server version of the cluster. */
+    version?: string;
+    /** Timestamp when the underlying connection was created. */
+    createdAt?: string;
+    /** Timestamp when the underlying connection was last updated. */
+    updatedAt?: string;
+    /** ID of the connection this context was projected from. */
+    connectionId?: string;
+    /** Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition. */
+    reachable?: boolean;
+  }[];
+};
+export type AddKubernetesConfigApiArg = {
+  body: {
+    /** Kubeconfig file contents. */
+    k8sfile: Blob;
+    /** JSON-encoded object mapping a discovered context ID to per-context import options, e.g. `{"<contextId>": {"meshsyncDeploymentMode": "operator", "name": "my-cluster"}}`. `meshsyncDeploymentMode` selects how MeshSync runs for the resulting connection; `name` overrides the connection name. */
+    contexts?: string;
+    /** JSON-encoded array of discovered context IDs to import. When absent, every context discovered in the kubeconfig is imported. */
+    selectedContexts?: string;
+  };
+};
+export type DiscoverKubernetesContextsApiResponse = /** status 200 Contexts discovered in the uploaded kubeconfig. */ {
+  /** Stable identifier of the Kubernetes context, assigned when the context is registered. Not a UUID; carried in connection metadata. */
+  id?: string;
+  /** Human-readable name of the Kubernetes context. */
+  name?: string;
+  /** Authentication material for the context (token or kubeconfig reference), sourced from the connection's credential secret. */
+  auth?: object;
+  /** Cluster definition for the context (certificate authority and server details), sourced from the connection's credential secret. */
+  cluster?: object;
+  /** API server URL of the Kubernetes cluster. */
+  server?: string;
+  /** ID of the user who owns the underlying connection. */
+  owner?: string;
+  /** ID of the user who registered the context. */
+  createdBy?: string;
+  /** ID of the Meshery instance the context is registered with. */
+  mesheryInstanceId?: string;
+  /** ID of the Kubernetes server associated with the context. */
+  kubernetesServerId?: string;
+  /** How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster). */
+  deploymentType?: string;
+  /** Kubernetes server version of the cluster. */
+  version?: string;
+  /** Timestamp when the underlying connection was created. */
+  createdAt?: string;
+  /** Timestamp when the underlying connection was last updated. */
+  updatedAt?: string;
+  /** ID of the connection this context was projected from. */
+  connectionId?: string;
+  /** Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition. */
+  reachable?: boolean;
+}[];
+export type DiscoverKubernetesContextsApiArg = {
+  body: {
+    /** Kubeconfig file contents. */
+    k8sfile: Blob;
+  };
+};
+export type PingKubernetesApiResponse = /** status 200 Cluster is reachable. */ {
+  /** Version string reported by the cluster's API server. The wire field is `server_version` - this endpoint's published wire casing predates the camelCase convention and is preserved within this API version. */
+  server_version: string;
+};
+export type PingKubernetesApiArg = {
+  /** ID of the Kubernetes connection whose cluster to ping. */
+  connectionId: string;
+};
 export type GetSystemSyncApiResponse = /** status 200 Session sync payload */ {
   /** Kubernetes contexts currently tracked by the Meshery server. */
   k8sConfig?: {
@@ -3423,7 +3633,7 @@ export type GetSystemSyncApiResponse = /** status 200 Session sync payload */ {
     clusterConfigured?: boolean;
     /** API server URL for the Kubernetes context. */
     server?: string;
-    /** Kubernetes server ID associated with this context. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     clusterId?: string;
     /** When the context was first registered with Meshery. */
     createdAt?: string;
@@ -3434,7 +3644,7 @@ export type GetSystemSyncApiResponse = /** status 200 Session sync payload */ {
 };
 export type GetSystemSyncApiArg = void;
 export type GetOperatorControllerStatusApiResponse = /** status 200 Operator controller status */ {
-  /** The kubernetes connection ID this status belongs to. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   connectionId: string;
   /** The controller this status describes. */
   controller: "OPERATOR" | "MESHSYNC" | "BROKER";
@@ -3454,7 +3664,7 @@ export type GetMeshsyncControllerStatusApiResponse = /** status 200 MeshSync con
   version: string;
   /** Current controller status. May be composed, e.g. "Connected <endpoint>". */
   status: string;
-  /** The kubernetes connection ID this status belongs to. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   connectionId: string;
 };
 export type GetMeshsyncControllerStatusApiArg = {
@@ -3468,7 +3678,7 @@ export type GetBrokerControllerStatusApiResponse = /** status 200 Broker control
   version: string;
   /** Current controller status. May be composed, e.g. "Connected <endpoint>". */
   status: string;
-  /** The kubernetes connection ID this status belongs to. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   connectionId: string;
 };
 export type GetBrokerControllerStatusApiArg = {
@@ -3476,7 +3686,7 @@ export type GetBrokerControllerStatusApiArg = {
   connectionId: string;
 };
 export type GetControllerDiagnosticsApiResponse = /** status 200 Connection controller diagnostics */ {
-  /** The kubernetes connection ID these diagnostics belong to. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   connectionId: string;
   /** True when no warning/error diagnostics were detected (informational diagnostics do not affect health). */
   healthy: boolean;
@@ -7011,6 +7221,8 @@ export type GetKubernetesContextApiResponse = /** status 200 Kubernetes context 
     updatedAt?: string;
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     connectionId?: string;
+    /** Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition. */
+    reachable?: boolean;
   }[];
 };
 export type GetKubernetesContextApiArg = {
@@ -9724,6 +9936,10 @@ export const {
   useResetSystemDatabaseMutation,
   useGetSystemVersionQuery,
   useLazyGetSystemVersionQuery,
+  useAddKubernetesConfigMutation,
+  useDiscoverKubernetesContextsMutation,
+  usePingKubernetesQuery,
+  useLazyPingKubernetesQuery,
   useGetSystemSyncQuery,
   useLazyGetSystemSyncQuery,
   useGetOperatorControllerStatusQuery,

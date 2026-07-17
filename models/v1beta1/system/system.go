@@ -8,6 +8,7 @@ import (
 	"fmt"
 
 	core "github.com/meshery/schemas/models/core"
+	connectionv1beta3 "github.com/meshery/schemas/models/v1beta3/connection"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
@@ -43,6 +44,33 @@ const (
 	UNDEPLOYED  ControllerStatusValue = "UNDEPLOYED"
 	UNKOWN      ControllerStatusValue = "UNKOWN"
 )
+
+// AddKubernetesConfigPayload Multipart form payload for importing a kubeconfig. `contexts` and `selectedContexts` are JSON-encoded strings because they travel as multipart form fields alongside the file.
+type AddKubernetesConfigPayload struct {
+	// Contexts JSON-encoded object mapping a discovered context ID to per-context import options, e.g. `{"<contextId>": {"meshsyncDeploymentMode": "operator", "name": "my-cluster"}}`. `meshsyncDeploymentMode` selects how MeshSync runs for the resulting connection; `name` overrides the connection name.
+	Contexts *string `json:"contexts,omitempty" yaml:"contexts,omitempty"`
+
+	// K8sfile Kubeconfig file contents.
+	K8sfile openapi_types.File `json:"k8sfile" yaml:"k8sfile"`
+
+	// SelectedContexts JSON-encoded array of discovered context IDs to import. When absent, every context discovered in the kubeconfig is imported.
+	SelectedContexts *string `json:"selectedContexts,omitempty" yaml:"selectedContexts,omitempty"`
+}
+
+// AddKubernetesConfigResponse Discovered kubeconfig contexts bucketed by import outcome. Every bucket is always present (empty when no context landed in it).
+type AddKubernetesConfigResponse struct {
+	// ConnectedContexts Contexts whose connection already exists in (or transitioned to) the connected state.
+	ConnectedContexts []connectionv1beta3.K8sContext `json:"connectedContexts" yaml:"connectedContexts"`
+
+	// ErroredContexts Contexts that could not be saved as connections. The failure detail is recorded in the emitted event's metadata, not on the context object.
+	ErroredContexts []connectionv1beta3.K8sContext `json:"erroredContexts" yaml:"erroredContexts"`
+
+	// IgnoredContexts Contexts whose connection is in the ignored state.
+	IgnoredContexts []connectionv1beta3.K8sContext `json:"ignoredContexts" yaml:"ignoredContexts"`
+
+	// RegisteredContexts Contexts newly registered as discovered connections.
+	RegisteredContexts []connectionv1beta3.K8sContext `json:"registeredContexts" yaml:"registeredContexts"`
+}
 
 // ConnectionDiagnostics Diagnostics for a kubernetes connection's Meshery controllers, for rendering a "Diagnostics" section in the connection detail view.
 type ConnectionDiagnostics struct {
@@ -122,6 +150,12 @@ type ControllerStatusController string
 // ControllerStatusValue Current status of a single Meshery controller (operator, MeshSync, or broker). Mirrors the MesheryControllerStatus GraphQL enum (server/internal/graphql/schema/schema.graphql) during the ongoing migration of controller-status consumers from GraphQL to this REST API; the literal values (including the published "UNKOWN" spelling) are load-bearing and must not be changed independently of that enum.
 type ControllerStatusValue string
 
+// DiscoverKubernetesContextsPayload Multipart form payload for kubeconfig context discovery.
+type DiscoverKubernetesContextsPayload struct {
+	// K8sfile Kubeconfig file contents.
+	K8sfile openapi_types.File `json:"k8sfile" yaml:"k8sfile"`
+}
+
 // EmailTestRequest Request body for sending a test email through the configured SMTP provider.
 type EmailTestRequest struct {
 	// Subject Subject line for the test message. A default subject is used when omitted.
@@ -144,6 +178,12 @@ type EmailTestResponse struct {
 
 	// Timestamp Unix-epoch seconds, as a decimal string, when the test email was sent.
 	Timestamp string `json:"timestamp" yaml:"timestamp"`
+}
+
+// KubernetesPingResponse Result of pinging a Kubernetes connection's API server.
+type KubernetesPingResponse struct {
+	// ServerVersion Version string reported by the cluster's API server. The wire field is `server_version` - this endpoint's published wire casing predates the camelCase convention and is preserved within this API version.
+	ServerVersion string `json:"server_version" yaml:"server_version"`
 }
 
 // SystemDatabaseSummary Paginated summary of the Meshery server's embedded database.
