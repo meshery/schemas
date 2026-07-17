@@ -28,6 +28,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/integrations/connections/register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Drive the connection registration state machine
+         * @description Dispatches a lifecycle event for an in-progress connection registration. With status `initialize`, responds with the registration bootstrap - the kind's connection (and credential, when one exists) registry component definitions plus a tracker `id` the client echoes on subsequent events. Every other status is forwarded to the tracked registration's state machine and the response body is empty.
+         */
+        post: operations["processConnectionRegistration"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/integrations/connections/register/{registrationId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Cancel a connection registration
+         * @description Discards the in-progress registration state machine tracked by `registrationId`. Nothing is persisted for the abandoned process. Idempotent: unknown ids are ignored.
+         */
+        delete: operations["cancelConnectionRegister"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/integrations/connections/{connectionId}": {
         parameters: {
             query?: never;
@@ -1391,6 +1431,52 @@ export interface components {
              */
             credentialId?: string;
         };
+        /** @description Lifecycle event for the connection registration state machine (POST /api/integrations/connections/register). Unlike `ConnectionPayload`, only `kind` and `status` are always present: an `initialize` event carries just the kind, while `register` / `connect` events carry the connection details assembled so far. */
+        ConnectionRegistrationEvent: {
+            /**
+             * Format: uuid
+             * @description Registration process tracker. Returned by the `initialize` bootstrap or minted client-side; echoed on every subsequent event for the same registration.
+             */
+            id?: string;
+            /** @description Connection kind (e.g. `kubernetes`, `grafana`, `prometheus`). */
+            kind: string;
+            /**
+             * @description State-machine event to dispatch. `initialize` returns the registration bootstrap; every other event advances the tracked registration. `not found` is the machine's literal event name.
+             * @enum {string}
+             */
+            status: "initialize" | "discovery" | "register" | "connect" | "disconnect" | "ignore" | "delete" | "not found" | "noop" | "exit";
+            /** @description Connection name. */
+            name?: string;
+            /** @description Connection type. */
+            type?: string;
+            /** @description Connection sub-type. */
+            subType?: string;
+            /** @description Registry model the connection's definition belongs to. */
+            model?: string;
+            /** @description Connection metadata gathered so far in the flow. */
+            metadata?: Record<string, never>;
+            /** @description Credential secret material for the connection. */
+            credentialSecret?: Record<string, never>;
+            /**
+             * Format: uuid
+             * @description Existing credential to associate instead of a new secret.
+             */
+            credentialId?: string;
+            /** @description When true the server registers the connection without verifying the supplied credential first. */
+            skipCredentialVerification?: boolean;
+        };
+        /** @description Response to an `initialize` registration event: the registry component definitions describing the kind's connection and credential, plus the tracker id for the registration process. Component definitions carry their RJSF form schema as a JSON-encoded string under `schema`. */
+        ConnectionRegistrationBootstrap: {
+            /**
+             * Format: uuid
+             * @description Registration process tracker to echo on subsequent events.
+             */
+            id: string;
+            /** @description Registry component definition (`{Kind}Connection`) describing the connection, including its JSON-encoded `schema`. */
+            connection: Record<string, never>;
+            /** @description Registry component definition (`{Kind}Credential`) describing the credential, including its JSON-encoded `schema`. Absent when the kind defines no credential component. */
+            credential?: Record<string, never>;
+        };
         /** @description Status count information for connections */
         ConnectionStatusInfo: {
             /** @description Status value */
@@ -1516,22 +1602,22 @@ export interface components {
             server?: string;
             /**
              * Format: uuid
-             * @description ID of the user who owns the underlying connection.
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             owner?: string;
             /**
              * Format: uuid
-             * @description ID of the user who registered the context.
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             createdBy?: string;
             /**
              * Format: uuid
-             * @description ID of the Meshery instance the context is registered with.
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             mesheryInstanceId?: string;
             /**
              * Format: uuid
-             * @description ID of the Kubernetes server associated with the context.
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             kubernetesServerId?: string;
             /** @description How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster). */
@@ -1550,10 +1636,14 @@ export interface components {
             updatedAt?: string;
             /**
              * Format: uuid
-             * @description ID of the connection this context was projected from.
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             connectionId?: string;
+            /** @description Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition. */
+            reachable?: boolean;
         };
+        /** @description Whether the system behind a connection answered an ad hoc connectivity probe. A probe is a point-in-time check of the connected system's endpoint; its result is never persisted with the connection. For example, probing a Kubernetes connection checks the cluster's API server. */
+        ConnectionReachability: boolean;
         /** @description Paginated list of Kubernetes contexts. */
         K8sContextPage: {
             /** @description Zero-based page index returned in this response. */
@@ -1576,22 +1666,22 @@ export interface components {
                 server?: string;
                 /**
                  * Format: uuid
-                 * @description ID of the user who owns the underlying connection.
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
                 owner?: string;
                 /**
                  * Format: uuid
-                 * @description ID of the user who registered the context.
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
                 createdBy?: string;
                 /**
                  * Format: uuid
-                 * @description ID of the Meshery instance the context is registered with.
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
                 mesheryInstanceId?: string;
                 /**
                  * Format: uuid
-                 * @description ID of the Kubernetes server associated with the context.
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
                 kubernetesServerId?: string;
                 /** @description How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster). */
@@ -1610,9 +1700,11 @@ export interface components {
                 updatedAt?: string;
                 /**
                  * Format: uuid
-                 * @description ID of the connection this context was projected from.
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
                 connectionId?: string;
+                /** @description Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition. */
+                reachable?: boolean;
             }[];
         };
     };
@@ -2669,6 +2761,132 @@ export interface operations {
             };
             /** @description Internal server error */
             500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    processConnectionRegistration: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * Format: uuid
+                     * @description Registration process tracker. Returned by the `initialize` bootstrap or minted client-side; echoed on every subsequent event for the same registration.
+                     */
+                    id?: string;
+                    /** @description Connection kind (e.g. `kubernetes`, `grafana`, `prometheus`). */
+                    kind: string;
+                    /**
+                     * @description State-machine event to dispatch. `initialize` returns the registration bootstrap; every other event advances the tracked registration. `not found` is the machine's literal event name.
+                     * @enum {string}
+                     */
+                    status: "initialize" | "discovery" | "register" | "connect" | "disconnect" | "ignore" | "delete" | "not found" | "noop" | "exit";
+                    /** @description Connection name. */
+                    name?: string;
+                    /** @description Connection type. */
+                    type?: string;
+                    /** @description Connection sub-type. */
+                    subType?: string;
+                    /** @description Registry model the connection's definition belongs to. */
+                    model?: string;
+                    /** @description Connection metadata gathered so far in the flow. */
+                    metadata?: Record<string, never>;
+                    /** @description Credential secret material for the connection. */
+                    credentialSecret?: Record<string, never>;
+                    /**
+                     * Format: uuid
+                     * @description Existing credential to associate instead of a new secret.
+                     */
+                    credentialId?: string;
+                    /** @description When true the server registers the connection without verifying the supplied credential first. */
+                    skipCredentialVerification?: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description Registration bootstrap for status `initialize`; empty body for every other status. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description Registration process tracker to echo on subsequent events.
+                         */
+                        id: string;
+                        /** @description Registry component definition (`{Kind}Connection`) describing the connection, including its JSON-encoded `schema`. */
+                        connection: Record<string, never>;
+                        /** @description Registry component definition (`{Kind}Credential`) describing the credential, including its JSON-encoded `schema`. Absent when the kind defines no credential component. */
+                        credential?: Record<string, never>;
+                    };
+                };
+            };
+            /** @description Malformed payload, or no connection component is registered for the requested kind. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Failed to resolve the provider token, or to initialize / signal the registration state machine. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    cancelConnectionRegister: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Registration process tracker id to discard. */
+                registrationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Registration process discarded. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description registrationId is not a valid UUID. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Expired JWT token used or insufficient privilege */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4210,22 +4428,22 @@ export interface operations {
                             server?: string;
                             /**
                              * Format: uuid
-                             * @description ID of the user who owns the underlying connection.
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
                             owner?: string;
                             /**
                              * Format: uuid
-                             * @description ID of the user who registered the context.
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
                             createdBy?: string;
                             /**
                              * Format: uuid
-                             * @description ID of the Meshery instance the context is registered with.
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
                             mesheryInstanceId?: string;
                             /**
                              * Format: uuid
-                             * @description ID of the Kubernetes server associated with the context.
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
                             kubernetesServerId?: string;
                             /** @description How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster). */
@@ -4244,9 +4462,11 @@ export interface operations {
                             updatedAt?: string;
                             /**
                              * Format: uuid
-                             * @description ID of the connection this context was projected from.
+                             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                              */
                             connectionId?: string;
+                            /** @description Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition. */
+                            reachable?: boolean;
                         }[];
                     };
                 };

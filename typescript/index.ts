@@ -23,6 +23,7 @@ import { components as KeychainComponents } from "./generated/v1beta1/keychain/K
 import { components as OrganizationComponents } from "./generated/v1beta1/organization/Organization";
 import { components as RoleComponents } from "./generated/v1beta1/role/Role";
 import { components as ScheduleComponents } from "./generated/v1beta1/schedule/Schedule";
+import { components as SystemComponents } from "./generated/v1beta1/system/System";
 import { components as TeamComponents } from "./generated/v1beta1/team/Team";
 import { components as WorkspaceComponents } from "./generated/v1beta1/workspace/Workspace";
 import { components as InvitationComponents } from "./generated/v1beta1/invitation/Invitation";
@@ -130,6 +131,10 @@ export namespace v1beta1 {
   export type Category = CategoryComponents["schemas"]["CategoryDefinition"];
   export type Component = ComponentComponents["schemas"]["ComponentDefinition"];
   export type Connection = ConnectionComponents["schemas"]["Connection"];
+  export type ConnectionStatusValue =
+    ConnectionComponents["schemas"]["ConnectionStatusValue"];
+  export type ControllerStatusValue =
+    SystemComponents["schemas"]["ControllerStatusValue"];
   export type Credential = CredentialComponents["schemas"]["Credential"];
   export type Design = PatternComponents["schemas"]["PatternFile"];
   export type Environment = EnvironmentComponents["schemas"]["Environment"];

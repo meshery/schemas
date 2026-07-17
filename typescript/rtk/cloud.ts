@@ -8607,13 +8607,13 @@ export type GetKubernetesContextApiResponse = /** status 200 Kubernetes context 
     cluster?: object;
     /** API server URL of the Kubernetes cluster. */
     server?: string;
-    /** ID of the user who owns the underlying connection. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     owner?: string;
-    /** ID of the user who registered the context. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     createdBy?: string;
-    /** ID of the Meshery instance the context is registered with. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     mesheryInstanceId?: string;
-    /** ID of the Kubernetes server associated with the context. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     kubernetesServerId?: string;
     /** How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster). */
     deploymentType?: string;
@@ -8623,8 +8623,10 @@ export type GetKubernetesContextApiResponse = /** status 200 Kubernetes context 
     createdAt?: string;
     /** Timestamp when the underlying connection was last updated. */
     updatedAt?: string;
-    /** ID of the connection this context was projected from. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     connectionId?: string;
+    /** Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition. */
+    reachable?: boolean;
   }[];
 };
 export type GetKubernetesContextApiArg = {

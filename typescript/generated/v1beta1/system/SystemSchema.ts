@@ -408,6 +408,1081 @@ const SystemSchema: Record<string, unknown> = {
         }
       }
     },
+    "/api/system/kubernetes": {
+      "post": {
+        "x-internal": [
+          "meshery"
+        ],
+        "tags": [
+          "System"
+        ],
+        "summary": "Import a kubeconfig",
+        "description": "Uploads a kubeconfig and registers each discovered context as a Kubernetes connection. Unreachable contexts are still registered as discovered connections; reachability only gates the transition to connected. The optional `contexts` and `selectedContexts` form fields scope and configure the import.",
+        "operationId": "addKubernetesConfig",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "description": "Multipart form payload for importing a kubeconfig. `contexts` and `selectedContexts` are JSON-encoded strings because they travel as multipart form fields alongside the file.",
+                "additionalProperties": false,
+                "required": [
+                  "k8sfile"
+                ],
+                "properties": {
+                  "k8sfile": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Kubeconfig file contents."
+                  },
+                  "contexts": {
+                    "type": "string",
+                    "description": "JSON-encoded object mapping a discovered context ID to per-context import options, e.g. `{\"<contextId>\": {\"meshsyncDeploymentMode\": \"operator\", \"name\": \"my-cluster\"}}`. `meshsyncDeploymentMode` selects how MeshSync runs for the resulting connection; `name` overrides the connection name.",
+                    "maxLength": 1048576
+                  },
+                  "selectedContexts": {
+                    "type": "string",
+                    "description": "JSON-encoded array of discovered context IDs to import. When absent, every context discovered in the kubeconfig is imported.",
+                    "maxLength": 1048576
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Discovered contexts bucketed by import outcome.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Discovered kubeconfig contexts bucketed by import outcome. Every bucket is always present (empty when no context landed in it).",
+                  "additionalProperties": false,
+                  "required": [
+                    "registeredContexts",
+                    "connectedContexts",
+                    "ignoredContexts",
+                    "erroredContexts"
+                  ],
+                  "properties": {
+                    "registeredContexts": {
+                      "type": "array",
+                      "description": "Contexts newly registered as discovered connections.",
+                      "items": {
+                        "type": "object",
+                        "description": "Kubernetes-specific authentication context projected from a kubernetes connection and its credential. Connection metadata supplies the context identity (id, name, server, version, deployment type, instance and server IDs); the credential secret supplies the auth and cluster material. This is a response projection, not a stored table row.",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Stable identifier of the Kubernetes context, assigned when the context is registered. Not a UUID; carried in connection metadata.",
+                            "x-id-format": "external",
+                            "maxLength": 255,
+                            "x-go-name": "ID",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "id,omitempty"
+                            }
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Human-readable name of the Kubernetes context.",
+                            "maxLength": 255,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "name,omitempty"
+                            }
+                          },
+                          "auth": {
+                            "type": "object",
+                            "description": "Authentication material for the context (token or kubeconfig reference), sourced from the connection's credential secret.",
+                            "x-go-type": "core.Map",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/core"
+                            },
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "auth,omitempty"
+                            }
+                          },
+                          "cluster": {
+                            "type": "object",
+                            "description": "Cluster definition for the context (certificate authority and server details), sourced from the connection's credential secret.",
+                            "x-go-type": "core.Map",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/core"
+                            },
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "cluster,omitempty"
+                            }
+                          },
+                          "server": {
+                            "type": "string",
+                            "description": "API server URL of the Kubernetes cluster.",
+                            "maxLength": 2048,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "server,omitempty"
+                            }
+                          },
+                          "owner": {
+                            "description": "ID of the user who owns the underlying connection.",
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "owner,omitempty"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "createdBy": {
+                            "description": "ID of the user who registered the context.",
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "createdBy,omitempty"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "mesheryInstanceId": {
+                            "description": "ID of the Meshery instance the context is registered with.",
+                            "x-go-name": "MesheryInstanceID",
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "mesheryInstanceId,omitempty"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "kubernetesServerId": {
+                            "description": "ID of the Kubernetes server associated with the context.",
+                            "x-go-name": "KubernetesServerID",
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "kubernetesServerId,omitempty"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "deploymentType": {
+                            "type": "string",
+                            "description": "How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster).",
+                            "maxLength": 64,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "deploymentType"
+                            }
+                          },
+                          "version": {
+                            "type": "string",
+                            "description": "Kubernetes server version of the cluster.",
+                            "maxLength": 64,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "version"
+                            }
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "description": "Timestamp when the underlying connection was created.",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "createdAt,omitempty"
+                            }
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "description": "Timestamp when the underlying connection was last updated.",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "updatedAt,omitempty"
+                            }
+                          },
+                          "connectionId": {
+                            "description": "ID of the connection this context was projected from.",
+                            "x-go-name": "ConnectionID",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "connectionId,omitempty"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "reachable": {
+                            "description": "Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition.",
+                            "x-go-type": "bool",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "reachable"
+                            },
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    },
+                    "connectedContexts": {
+                      "type": "array",
+                      "description": "Contexts whose connection already exists in (or transitioned to) the connected state.",
+                      "items": {
+                        "type": "object",
+                        "description": "Kubernetes-specific authentication context projected from a kubernetes connection and its credential. Connection metadata supplies the context identity (id, name, server, version, deployment type, instance and server IDs); the credential secret supplies the auth and cluster material. This is a response projection, not a stored table row.",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Stable identifier of the Kubernetes context, assigned when the context is registered. Not a UUID; carried in connection metadata.",
+                            "x-id-format": "external",
+                            "maxLength": 255,
+                            "x-go-name": "ID",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "id,omitempty"
+                            }
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Human-readable name of the Kubernetes context.",
+                            "maxLength": 255,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "name,omitempty"
+                            }
+                          },
+                          "auth": {
+                            "type": "object",
+                            "description": "Authentication material for the context (token or kubeconfig reference), sourced from the connection's credential secret.",
+                            "x-go-type": "core.Map",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/core"
+                            },
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "auth,omitempty"
+                            }
+                          },
+                          "cluster": {
+                            "type": "object",
+                            "description": "Cluster definition for the context (certificate authority and server details), sourced from the connection's credential secret.",
+                            "x-go-type": "core.Map",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/core"
+                            },
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "cluster,omitempty"
+                            }
+                          },
+                          "server": {
+                            "type": "string",
+                            "description": "API server URL of the Kubernetes cluster.",
+                            "maxLength": 2048,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "server,omitempty"
+                            }
+                          },
+                          "owner": {
+                            "description": "ID of the user who owns the underlying connection.",
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "owner,omitempty"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "createdBy": {
+                            "description": "ID of the user who registered the context.",
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "createdBy,omitempty"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "mesheryInstanceId": {
+                            "description": "ID of the Meshery instance the context is registered with.",
+                            "x-go-name": "MesheryInstanceID",
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "mesheryInstanceId,omitempty"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "kubernetesServerId": {
+                            "description": "ID of the Kubernetes server associated with the context.",
+                            "x-go-name": "KubernetesServerID",
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "kubernetesServerId,omitempty"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "deploymentType": {
+                            "type": "string",
+                            "description": "How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster).",
+                            "maxLength": 64,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "deploymentType"
+                            }
+                          },
+                          "version": {
+                            "type": "string",
+                            "description": "Kubernetes server version of the cluster.",
+                            "maxLength": 64,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "version"
+                            }
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "description": "Timestamp when the underlying connection was created.",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "createdAt,omitempty"
+                            }
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "description": "Timestamp when the underlying connection was last updated.",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "updatedAt,omitempty"
+                            }
+                          },
+                          "connectionId": {
+                            "description": "ID of the connection this context was projected from.",
+                            "x-go-name": "ConnectionID",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "connectionId,omitempty"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "reachable": {
+                            "description": "Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition.",
+                            "x-go-type": "bool",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "reachable"
+                            },
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    },
+                    "ignoredContexts": {
+                      "type": "array",
+                      "description": "Contexts whose connection is in the ignored state.",
+                      "items": {
+                        "type": "object",
+                        "description": "Kubernetes-specific authentication context projected from a kubernetes connection and its credential. Connection metadata supplies the context identity (id, name, server, version, deployment type, instance and server IDs); the credential secret supplies the auth and cluster material. This is a response projection, not a stored table row.",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Stable identifier of the Kubernetes context, assigned when the context is registered. Not a UUID; carried in connection metadata.",
+                            "x-id-format": "external",
+                            "maxLength": 255,
+                            "x-go-name": "ID",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "id,omitempty"
+                            }
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Human-readable name of the Kubernetes context.",
+                            "maxLength": 255,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "name,omitempty"
+                            }
+                          },
+                          "auth": {
+                            "type": "object",
+                            "description": "Authentication material for the context (token or kubeconfig reference), sourced from the connection's credential secret.",
+                            "x-go-type": "core.Map",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/core"
+                            },
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "auth,omitempty"
+                            }
+                          },
+                          "cluster": {
+                            "type": "object",
+                            "description": "Cluster definition for the context (certificate authority and server details), sourced from the connection's credential secret.",
+                            "x-go-type": "core.Map",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/core"
+                            },
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "cluster,omitempty"
+                            }
+                          },
+                          "server": {
+                            "type": "string",
+                            "description": "API server URL of the Kubernetes cluster.",
+                            "maxLength": 2048,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "server,omitempty"
+                            }
+                          },
+                          "owner": {
+                            "description": "ID of the user who owns the underlying connection.",
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "owner,omitempty"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "createdBy": {
+                            "description": "ID of the user who registered the context.",
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "createdBy,omitempty"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "mesheryInstanceId": {
+                            "description": "ID of the Meshery instance the context is registered with.",
+                            "x-go-name": "MesheryInstanceID",
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "mesheryInstanceId,omitempty"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "kubernetesServerId": {
+                            "description": "ID of the Kubernetes server associated with the context.",
+                            "x-go-name": "KubernetesServerID",
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "kubernetesServerId,omitempty"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "deploymentType": {
+                            "type": "string",
+                            "description": "How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster).",
+                            "maxLength": 64,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "deploymentType"
+                            }
+                          },
+                          "version": {
+                            "type": "string",
+                            "description": "Kubernetes server version of the cluster.",
+                            "maxLength": 64,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "version"
+                            }
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "description": "Timestamp when the underlying connection was created.",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "createdAt,omitempty"
+                            }
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "description": "Timestamp when the underlying connection was last updated.",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "updatedAt,omitempty"
+                            }
+                          },
+                          "connectionId": {
+                            "description": "ID of the connection this context was projected from.",
+                            "x-go-name": "ConnectionID",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "connectionId,omitempty"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "reachable": {
+                            "description": "Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition.",
+                            "x-go-type": "bool",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "reachable"
+                            },
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    },
+                    "erroredContexts": {
+                      "type": "array",
+                      "description": "Contexts that could not be saved as connections. The failure detail is recorded in the emitted event's metadata, not on the context object.",
+                      "items": {
+                        "type": "object",
+                        "description": "Kubernetes-specific authentication context projected from a kubernetes connection and its credential. Connection metadata supplies the context identity (id, name, server, version, deployment type, instance and server IDs); the credential secret supplies the auth and cluster material. This is a response projection, not a stored table row.",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Stable identifier of the Kubernetes context, assigned when the context is registered. Not a UUID; carried in connection metadata.",
+                            "x-id-format": "external",
+                            "maxLength": 255,
+                            "x-go-name": "ID",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "id,omitempty"
+                            }
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Human-readable name of the Kubernetes context.",
+                            "maxLength": 255,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "name,omitempty"
+                            }
+                          },
+                          "auth": {
+                            "type": "object",
+                            "description": "Authentication material for the context (token or kubeconfig reference), sourced from the connection's credential secret.",
+                            "x-go-type": "core.Map",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/core"
+                            },
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "auth,omitempty"
+                            }
+                          },
+                          "cluster": {
+                            "type": "object",
+                            "description": "Cluster definition for the context (certificate authority and server details), sourced from the connection's credential secret.",
+                            "x-go-type": "core.Map",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/core"
+                            },
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "cluster,omitempty"
+                            }
+                          },
+                          "server": {
+                            "type": "string",
+                            "description": "API server URL of the Kubernetes cluster.",
+                            "maxLength": 2048,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "server,omitempty"
+                            }
+                          },
+                          "owner": {
+                            "description": "ID of the user who owns the underlying connection.",
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "owner,omitempty"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "createdBy": {
+                            "description": "ID of the user who registered the context.",
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "createdBy,omitempty"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "mesheryInstanceId": {
+                            "description": "ID of the Meshery instance the context is registered with.",
+                            "x-go-name": "MesheryInstanceID",
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "mesheryInstanceId,omitempty"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "kubernetesServerId": {
+                            "description": "ID of the Kubernetes server associated with the context.",
+                            "x-go-name": "KubernetesServerID",
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "kubernetesServerId,omitempty"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "deploymentType": {
+                            "type": "string",
+                            "description": "How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster).",
+                            "maxLength": 64,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "deploymentType"
+                            }
+                          },
+                          "version": {
+                            "type": "string",
+                            "description": "Kubernetes server version of the cluster.",
+                            "maxLength": 64,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "version"
+                            }
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "description": "Timestamp when the underlying connection was created.",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "createdAt,omitempty"
+                            }
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "description": "Timestamp when the underlying connection was last updated.",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "updatedAt,omitempty"
+                            }
+                          },
+                          "connectionId": {
+                            "description": "ID of the connection this context was projected from.",
+                            "x-go-name": "ConnectionID",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "connectionId,omitempty"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "reachable": {
+                            "description": "Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition.",
+                            "x-go-type": "bool",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "reachable"
+                            },
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing or unparsable kubeconfig, or malformed `contexts` / `selectedContexts` JSON."
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to retrieve the user token from the request context."
+          }
+        }
+      }
+    },
+    "/api/system/kubernetes/contexts": {
+      "post": {
+        "x-internal": [
+          "meshery"
+        ],
+        "tags": [
+          "System"
+        ],
+        "summary": "Discover kubeconfig contexts",
+        "description": "Parses an uploaded kubeconfig and returns its contexts - including unreachable ones, flagged via `reachable` - without persisting any connection. Lets a client present the discovered contexts for selection before importing them.",
+        "operationId": "discoverKubernetesContexts",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "description": "Multipart form payload for kubeconfig context discovery.",
+                "additionalProperties": false,
+                "required": [
+                  "k8sfile"
+                ],
+                "properties": {
+                  "k8sfile": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Kubeconfig file contents."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Contexts discovered in the uploaded kubeconfig.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "description": "Kubernetes-specific authentication context projected from a kubernetes connection and its credential. Connection metadata supplies the context identity (id, name, server, version, deployment type, instance and server IDs); the credential secret supplies the auth and cluster material. This is a response projection, not a stored table row.",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "Stable identifier of the Kubernetes context, assigned when the context is registered. Not a UUID; carried in connection metadata.",
+                        "x-id-format": "external",
+                        "maxLength": 255,
+                        "x-go-name": "ID",
+                        "x-go-type-skip-optional-pointer": true,
+                        "x-oapi-codegen-extra-tags": {
+                          "json": "id,omitempty"
+                        }
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Human-readable name of the Kubernetes context.",
+                        "maxLength": 255,
+                        "x-go-type-skip-optional-pointer": true,
+                        "x-oapi-codegen-extra-tags": {
+                          "json": "name,omitempty"
+                        }
+                      },
+                      "auth": {
+                        "type": "object",
+                        "description": "Authentication material for the context (token or kubeconfig reference), sourced from the connection's credential secret.",
+                        "x-go-type": "core.Map",
+                        "x-go-type-import": {
+                          "path": "github.com/meshery/schemas/models/core"
+                        },
+                        "x-go-type-skip-optional-pointer": true,
+                        "x-oapi-codegen-extra-tags": {
+                          "json": "auth,omitempty"
+                        }
+                      },
+                      "cluster": {
+                        "type": "object",
+                        "description": "Cluster definition for the context (certificate authority and server details), sourced from the connection's credential secret.",
+                        "x-go-type": "core.Map",
+                        "x-go-type-import": {
+                          "path": "github.com/meshery/schemas/models/core"
+                        },
+                        "x-go-type-skip-optional-pointer": true,
+                        "x-oapi-codegen-extra-tags": {
+                          "json": "cluster,omitempty"
+                        }
+                      },
+                      "server": {
+                        "type": "string",
+                        "description": "API server URL of the Kubernetes cluster.",
+                        "maxLength": 2048,
+                        "x-go-type-skip-optional-pointer": true,
+                        "x-oapi-codegen-extra-tags": {
+                          "json": "server,omitempty"
+                        }
+                      },
+                      "owner": {
+                        "description": "ID of the user who owns the underlying connection.",
+                        "x-oapi-codegen-extra-tags": {
+                          "json": "owner,omitempty"
+                        },
+                        "type": "string",
+                        "format": "uuid",
+                        "x-go-type": "uuid.UUID",
+                        "x-go-type-import": {
+                          "path": "github.com/gofrs/uuid"
+                        }
+                      },
+                      "createdBy": {
+                        "description": "ID of the user who registered the context.",
+                        "x-oapi-codegen-extra-tags": {
+                          "json": "createdBy,omitempty"
+                        },
+                        "type": "string",
+                        "format": "uuid",
+                        "x-go-type": "uuid.UUID",
+                        "x-go-type-import": {
+                          "path": "github.com/gofrs/uuid"
+                        }
+                      },
+                      "mesheryInstanceId": {
+                        "description": "ID of the Meshery instance the context is registered with.",
+                        "x-go-name": "MesheryInstanceID",
+                        "x-oapi-codegen-extra-tags": {
+                          "json": "mesheryInstanceId,omitempty"
+                        },
+                        "type": "string",
+                        "format": "uuid",
+                        "x-go-type": "uuid.UUID",
+                        "x-go-type-import": {
+                          "path": "github.com/gofrs/uuid"
+                        }
+                      },
+                      "kubernetesServerId": {
+                        "description": "ID of the Kubernetes server associated with the context.",
+                        "x-go-name": "KubernetesServerID",
+                        "x-oapi-codegen-extra-tags": {
+                          "json": "kubernetesServerId,omitempty"
+                        },
+                        "type": "string",
+                        "format": "uuid",
+                        "x-go-type": "uuid.UUID",
+                        "x-go-type-import": {
+                          "path": "github.com/gofrs/uuid"
+                        }
+                      },
+                      "deploymentType": {
+                        "type": "string",
+                        "description": "How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster).",
+                        "maxLength": 64,
+                        "x-go-type-skip-optional-pointer": true,
+                        "x-oapi-codegen-extra-tags": {
+                          "json": "deploymentType"
+                        }
+                      },
+                      "version": {
+                        "type": "string",
+                        "description": "Kubernetes server version of the cluster.",
+                        "maxLength": 64,
+                        "x-go-type-skip-optional-pointer": true,
+                        "x-oapi-codegen-extra-tags": {
+                          "json": "version"
+                        }
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "description": "Timestamp when the underlying connection was created.",
+                        "format": "date-time",
+                        "x-go-type-skip-optional-pointer": true,
+                        "x-oapi-codegen-extra-tags": {
+                          "json": "createdAt,omitempty"
+                        }
+                      },
+                      "updatedAt": {
+                        "type": "string",
+                        "description": "Timestamp when the underlying connection was last updated.",
+                        "format": "date-time",
+                        "x-go-type-skip-optional-pointer": true,
+                        "x-oapi-codegen-extra-tags": {
+                          "json": "updatedAt,omitempty"
+                        }
+                      },
+                      "connectionId": {
+                        "description": "ID of the connection this context was projected from.",
+                        "x-go-name": "ConnectionID",
+                        "x-go-type-skip-optional-pointer": true,
+                        "x-oapi-codegen-extra-tags": {
+                          "json": "connectionId,omitempty"
+                        },
+                        "type": "string",
+                        "format": "uuid",
+                        "x-go-type": "uuid.UUID",
+                        "x-go-type-import": {
+                          "path": "github.com/gofrs/uuid"
+                        }
+                      },
+                      "reachable": {
+                        "description": "Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition.",
+                        "x-go-type": "bool",
+                        "x-go-type-skip-optional-pointer": true,
+                        "x-oapi-codegen-extra-tags": {
+                          "json": "reachable"
+                        },
+                        "type": "boolean"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing or unparsable kubeconfig."
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to retrieve the provider token for the request."
+          }
+        }
+      }
+    },
+    "/api/system/kubernetes/ping": {
+      "get": {
+        "x-internal": [
+          "meshery"
+        ],
+        "tags": [
+          "System"
+        ],
+        "summary": "Ping a Kubernetes connection",
+        "description": "Verifies connectivity to the Kubernetes cluster behind a connection by fetching the API server version.",
+        "operationId": "pingKubernetes",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "query",
+            "required": true,
+            "description": "ID of the Kubernetes connection whose cluster to ping.",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cluster is reachable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Result of pinging a Kubernetes connection's API server.",
+                  "additionalProperties": false,
+                  "required": [
+                    "server_version"
+                  ],
+                  "properties": {
+                    "server_version": {
+                      "type": "string",
+                      "description": "Version string reported by the cluster's API server. The wire field is `server_version` - this endpoint's published wire casing predates the camelCase convention and is preserved within this API version.",
+                      "maxLength": 128
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing `connectionId` query parameter, or the stored kubeconfig is invalid."
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No Kubernetes context found for the given connection ID."
+          },
+          "500": {
+            "description": "Failed to reach the cluster or fetch its server version."
+          }
+        }
+      }
+    },
     "/api/system/sync": {
       "get": {
         "x-internal": [
@@ -460,9 +1535,9 @@ const SystemSchema: Record<string, unknown> = {
                             "maxLength": 2048
                           },
                           "clusterId": {
-                            "description": "Kubernetes server ID associated with this context.",
                             "type": "string",
                             "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
@@ -556,9 +1631,9 @@ const SystemSchema: Record<string, unknown> = {
                   ],
                   "properties": {
                     "connectionId": {
-                      "description": "The kubernetes connection ID this status belongs to.",
                       "type": "string",
                       "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
                         "path": "github.com/gofrs/uuid"
@@ -575,8 +1650,19 @@ const SystemSchema: Record<string, unknown> = {
                     },
                     "status": {
                       "type": "string",
-                      "description": "Current controller status (e.g. DEPLOYED, NOTDEPLOYED, RUNNING, CONNECTED, UNKNOWN).",
-                      "maxLength": 255
+                      "x-go-type": "ControllerStatusValue",
+                      "description": "Current controller status.",
+                      "x-enum-casing-exempt": true,
+                      "enum": [
+                        "DEPLOYED",
+                        "NOTDEPLOYED",
+                        "DEPLOYING",
+                        "UNKOWN",
+                        "UNDEPLOYED",
+                        "ENABLED",
+                        "RUNNING",
+                        "CONNECTED"
+                      ]
                     },
                     "version": {
                       "type": "string",
@@ -659,9 +1745,9 @@ const SystemSchema: Record<string, unknown> = {
                       "maxLength": 1024
                     },
                     "connectionId": {
-                      "description": "The kubernetes connection ID this status belongs to.",
                       "type": "string",
                       "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
                         "path": "github.com/gofrs/uuid"
@@ -743,9 +1829,9 @@ const SystemSchema: Record<string, unknown> = {
                       "maxLength": 1024
                     },
                     "connectionId": {
-                      "description": "The kubernetes connection ID this status belongs to.",
                       "type": "string",
                       "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
                         "path": "github.com/gofrs/uuid"
@@ -811,9 +1897,9 @@ const SystemSchema: Record<string, unknown> = {
                   ],
                   "properties": {
                     "connectionId": {
-                      "description": "The kubernetes connection ID these diagnostics belong to.",
                       "type": "string",
                       "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
                         "path": "github.com/gofrs/uuid"
@@ -1066,6 +2152,21 @@ const SystemSchema: Record<string, unknown> = {
           }
         }
       },
+      "ControllerStatusValue": {
+        "type": "string",
+        "description": "Current status of a single Meshery controller (operator, MeshSync, or broker). Mirrors the MesheryControllerStatus GraphQL enum (server/internal/graphql/schema/schema.graphql) during the ongoing migration of controller-status consumers from GraphQL to this REST API; the literal values (including the published \"UNKOWN\" spelling) are load-bearing and must not be changed independently of that enum.",
+        "x-enum-casing-exempt": true,
+        "enum": [
+          "DEPLOYED",
+          "NOTDEPLOYED",
+          "DEPLOYING",
+          "UNKOWN",
+          "UNDEPLOYED",
+          "ENABLED",
+          "RUNNING",
+          "CONNECTED"
+        ]
+      },
       "ControllerStatus": {
         "type": "object",
         "description": "Status of a single Meshery controller (operator, MeshSync, or broker) for a kubernetes connection. Element type of the controller-status SSE stream and the operator status response.",
@@ -1078,9 +2179,9 @@ const SystemSchema: Record<string, unknown> = {
         ],
         "properties": {
           "connectionId": {
-            "description": "The kubernetes connection ID this status belongs to.",
             "type": "string",
             "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
@@ -1097,8 +2198,19 @@ const SystemSchema: Record<string, unknown> = {
           },
           "status": {
             "type": "string",
-            "description": "Current controller status (e.g. DEPLOYED, NOTDEPLOYED, RUNNING, CONNECTED, UNKNOWN).",
-            "maxLength": 255
+            "x-go-type": "ControllerStatusValue",
+            "description": "Current controller status.",
+            "x-enum-casing-exempt": true,
+            "enum": [
+              "DEPLOYED",
+              "NOTDEPLOYED",
+              "DEPLOYING",
+              "UNKOWN",
+              "UNDEPLOYED",
+              "ENABLED",
+              "RUNNING",
+              "CONNECTED"
+            ]
           },
           "version": {
             "type": "string",
@@ -1134,9 +2246,9 @@ const SystemSchema: Record<string, unknown> = {
             "maxLength": 1024
           },
           "connectionId": {
-            "description": "The kubernetes connection ID this status belongs to.",
             "type": "string",
             "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
@@ -1225,9 +2337,9 @@ const SystemSchema: Record<string, unknown> = {
         ],
         "properties": {
           "connectionId": {
-            "description": "The kubernetes connection ID these diagnostics belong to.",
             "type": "string",
             "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
@@ -1471,9 +2583,9 @@ const SystemSchema: Record<string, unknown> = {
             "maxLength": 2048
           },
           "clusterId": {
-            "description": "Kubernetes server ID associated with this context.",
             "type": "string",
             "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
@@ -1541,9 +2653,9 @@ const SystemSchema: Record<string, unknown> = {
                   "maxLength": 2048
                 },
                 "clusterId": {
-                  "description": "Kubernetes server ID associated with this context.",
                   "type": "string",
                   "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
@@ -1575,6 +2687,762 @@ const SystemSchema: Record<string, unknown> = {
                 }
               }
             }
+          }
+        }
+      },
+      "AddKubernetesConfigPayload": {
+        "type": "object",
+        "description": "Multipart form payload for importing a kubeconfig. `contexts` and `selectedContexts` are JSON-encoded strings because they travel as multipart form fields alongside the file.",
+        "additionalProperties": false,
+        "required": [
+          "k8sfile"
+        ],
+        "properties": {
+          "k8sfile": {
+            "type": "string",
+            "format": "binary",
+            "description": "Kubeconfig file contents."
+          },
+          "contexts": {
+            "type": "string",
+            "description": "JSON-encoded object mapping a discovered context ID to per-context import options, e.g. `{\"<contextId>\": {\"meshsyncDeploymentMode\": \"operator\", \"name\": \"my-cluster\"}}`. `meshsyncDeploymentMode` selects how MeshSync runs for the resulting connection; `name` overrides the connection name.",
+            "maxLength": 1048576
+          },
+          "selectedContexts": {
+            "type": "string",
+            "description": "JSON-encoded array of discovered context IDs to import. When absent, every context discovered in the kubeconfig is imported.",
+            "maxLength": 1048576
+          }
+        }
+      },
+      "DiscoverKubernetesContextsPayload": {
+        "type": "object",
+        "description": "Multipart form payload for kubeconfig context discovery.",
+        "additionalProperties": false,
+        "required": [
+          "k8sfile"
+        ],
+        "properties": {
+          "k8sfile": {
+            "type": "string",
+            "format": "binary",
+            "description": "Kubeconfig file contents."
+          }
+        }
+      },
+      "AddKubernetesConfigResponse": {
+        "type": "object",
+        "description": "Discovered kubeconfig contexts bucketed by import outcome. Every bucket is always present (empty when no context landed in it).",
+        "additionalProperties": false,
+        "required": [
+          "registeredContexts",
+          "connectedContexts",
+          "ignoredContexts",
+          "erroredContexts"
+        ],
+        "properties": {
+          "registeredContexts": {
+            "type": "array",
+            "description": "Contexts newly registered as discovered connections.",
+            "items": {
+              "type": "object",
+              "description": "Kubernetes-specific authentication context projected from a kubernetes connection and its credential. Connection metadata supplies the context identity (id, name, server, version, deployment type, instance and server IDs); the credential secret supplies the auth and cluster material. This is a response projection, not a stored table row.",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Stable identifier of the Kubernetes context, assigned when the context is registered. Not a UUID; carried in connection metadata.",
+                  "x-id-format": "external",
+                  "maxLength": 255,
+                  "x-go-name": "ID",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "id,omitempty"
+                  }
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Human-readable name of the Kubernetes context.",
+                  "maxLength": 255,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "name,omitempty"
+                  }
+                },
+                "auth": {
+                  "type": "object",
+                  "description": "Authentication material for the context (token or kubeconfig reference), sourced from the connection's credential secret.",
+                  "x-go-type": "core.Map",
+                  "x-go-type-import": {
+                    "path": "github.com/meshery/schemas/models/core"
+                  },
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "auth,omitempty"
+                  }
+                },
+                "cluster": {
+                  "type": "object",
+                  "description": "Cluster definition for the context (certificate authority and server details), sourced from the connection's credential secret.",
+                  "x-go-type": "core.Map",
+                  "x-go-type-import": {
+                    "path": "github.com/meshery/schemas/models/core"
+                  },
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "cluster,omitempty"
+                  }
+                },
+                "server": {
+                  "type": "string",
+                  "description": "API server URL of the Kubernetes cluster.",
+                  "maxLength": 2048,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "server,omitempty"
+                  }
+                },
+                "owner": {
+                  "description": "ID of the user who owns the underlying connection.",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "owner,omitempty"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "createdBy": {
+                  "description": "ID of the user who registered the context.",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "createdBy,omitempty"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "mesheryInstanceId": {
+                  "description": "ID of the Meshery instance the context is registered with.",
+                  "x-go-name": "MesheryInstanceID",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "mesheryInstanceId,omitempty"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "kubernetesServerId": {
+                  "description": "ID of the Kubernetes server associated with the context.",
+                  "x-go-name": "KubernetesServerID",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "kubernetesServerId,omitempty"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "deploymentType": {
+                  "type": "string",
+                  "description": "How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster).",
+                  "maxLength": 64,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "deploymentType"
+                  }
+                },
+                "version": {
+                  "type": "string",
+                  "description": "Kubernetes server version of the cluster.",
+                  "maxLength": 64,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "version"
+                  }
+                },
+                "createdAt": {
+                  "type": "string",
+                  "description": "Timestamp when the underlying connection was created.",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "createdAt,omitempty"
+                  }
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "description": "Timestamp when the underlying connection was last updated.",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "updatedAt,omitempty"
+                  }
+                },
+                "connectionId": {
+                  "description": "ID of the connection this context was projected from.",
+                  "x-go-name": "ConnectionID",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "connectionId,omitempty"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "reachable": {
+                  "description": "Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition.",
+                  "x-go-type": "bool",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "reachable"
+                  },
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "connectedContexts": {
+            "type": "array",
+            "description": "Contexts whose connection already exists in (or transitioned to) the connected state.",
+            "items": {
+              "type": "object",
+              "description": "Kubernetes-specific authentication context projected from a kubernetes connection and its credential. Connection metadata supplies the context identity (id, name, server, version, deployment type, instance and server IDs); the credential secret supplies the auth and cluster material. This is a response projection, not a stored table row.",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Stable identifier of the Kubernetes context, assigned when the context is registered. Not a UUID; carried in connection metadata.",
+                  "x-id-format": "external",
+                  "maxLength": 255,
+                  "x-go-name": "ID",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "id,omitempty"
+                  }
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Human-readable name of the Kubernetes context.",
+                  "maxLength": 255,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "name,omitempty"
+                  }
+                },
+                "auth": {
+                  "type": "object",
+                  "description": "Authentication material for the context (token or kubeconfig reference), sourced from the connection's credential secret.",
+                  "x-go-type": "core.Map",
+                  "x-go-type-import": {
+                    "path": "github.com/meshery/schemas/models/core"
+                  },
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "auth,omitempty"
+                  }
+                },
+                "cluster": {
+                  "type": "object",
+                  "description": "Cluster definition for the context (certificate authority and server details), sourced from the connection's credential secret.",
+                  "x-go-type": "core.Map",
+                  "x-go-type-import": {
+                    "path": "github.com/meshery/schemas/models/core"
+                  },
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "cluster,omitempty"
+                  }
+                },
+                "server": {
+                  "type": "string",
+                  "description": "API server URL of the Kubernetes cluster.",
+                  "maxLength": 2048,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "server,omitempty"
+                  }
+                },
+                "owner": {
+                  "description": "ID of the user who owns the underlying connection.",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "owner,omitempty"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "createdBy": {
+                  "description": "ID of the user who registered the context.",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "createdBy,omitempty"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "mesheryInstanceId": {
+                  "description": "ID of the Meshery instance the context is registered with.",
+                  "x-go-name": "MesheryInstanceID",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "mesheryInstanceId,omitempty"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "kubernetesServerId": {
+                  "description": "ID of the Kubernetes server associated with the context.",
+                  "x-go-name": "KubernetesServerID",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "kubernetesServerId,omitempty"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "deploymentType": {
+                  "type": "string",
+                  "description": "How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster).",
+                  "maxLength": 64,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "deploymentType"
+                  }
+                },
+                "version": {
+                  "type": "string",
+                  "description": "Kubernetes server version of the cluster.",
+                  "maxLength": 64,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "version"
+                  }
+                },
+                "createdAt": {
+                  "type": "string",
+                  "description": "Timestamp when the underlying connection was created.",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "createdAt,omitempty"
+                  }
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "description": "Timestamp when the underlying connection was last updated.",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "updatedAt,omitempty"
+                  }
+                },
+                "connectionId": {
+                  "description": "ID of the connection this context was projected from.",
+                  "x-go-name": "ConnectionID",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "connectionId,omitempty"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "reachable": {
+                  "description": "Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition.",
+                  "x-go-type": "bool",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "reachable"
+                  },
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "ignoredContexts": {
+            "type": "array",
+            "description": "Contexts whose connection is in the ignored state.",
+            "items": {
+              "type": "object",
+              "description": "Kubernetes-specific authentication context projected from a kubernetes connection and its credential. Connection metadata supplies the context identity (id, name, server, version, deployment type, instance and server IDs); the credential secret supplies the auth and cluster material. This is a response projection, not a stored table row.",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Stable identifier of the Kubernetes context, assigned when the context is registered. Not a UUID; carried in connection metadata.",
+                  "x-id-format": "external",
+                  "maxLength": 255,
+                  "x-go-name": "ID",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "id,omitempty"
+                  }
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Human-readable name of the Kubernetes context.",
+                  "maxLength": 255,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "name,omitempty"
+                  }
+                },
+                "auth": {
+                  "type": "object",
+                  "description": "Authentication material for the context (token or kubeconfig reference), sourced from the connection's credential secret.",
+                  "x-go-type": "core.Map",
+                  "x-go-type-import": {
+                    "path": "github.com/meshery/schemas/models/core"
+                  },
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "auth,omitempty"
+                  }
+                },
+                "cluster": {
+                  "type": "object",
+                  "description": "Cluster definition for the context (certificate authority and server details), sourced from the connection's credential secret.",
+                  "x-go-type": "core.Map",
+                  "x-go-type-import": {
+                    "path": "github.com/meshery/schemas/models/core"
+                  },
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "cluster,omitempty"
+                  }
+                },
+                "server": {
+                  "type": "string",
+                  "description": "API server URL of the Kubernetes cluster.",
+                  "maxLength": 2048,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "server,omitempty"
+                  }
+                },
+                "owner": {
+                  "description": "ID of the user who owns the underlying connection.",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "owner,omitempty"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "createdBy": {
+                  "description": "ID of the user who registered the context.",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "createdBy,omitempty"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "mesheryInstanceId": {
+                  "description": "ID of the Meshery instance the context is registered with.",
+                  "x-go-name": "MesheryInstanceID",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "mesheryInstanceId,omitempty"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "kubernetesServerId": {
+                  "description": "ID of the Kubernetes server associated with the context.",
+                  "x-go-name": "KubernetesServerID",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "kubernetesServerId,omitempty"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "deploymentType": {
+                  "type": "string",
+                  "description": "How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster).",
+                  "maxLength": 64,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "deploymentType"
+                  }
+                },
+                "version": {
+                  "type": "string",
+                  "description": "Kubernetes server version of the cluster.",
+                  "maxLength": 64,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "version"
+                  }
+                },
+                "createdAt": {
+                  "type": "string",
+                  "description": "Timestamp when the underlying connection was created.",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "createdAt,omitempty"
+                  }
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "description": "Timestamp when the underlying connection was last updated.",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "updatedAt,omitempty"
+                  }
+                },
+                "connectionId": {
+                  "description": "ID of the connection this context was projected from.",
+                  "x-go-name": "ConnectionID",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "connectionId,omitempty"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "reachable": {
+                  "description": "Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition.",
+                  "x-go-type": "bool",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "reachable"
+                  },
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "erroredContexts": {
+            "type": "array",
+            "description": "Contexts that could not be saved as connections. The failure detail is recorded in the emitted event's metadata, not on the context object.",
+            "items": {
+              "type": "object",
+              "description": "Kubernetes-specific authentication context projected from a kubernetes connection and its credential. Connection metadata supplies the context identity (id, name, server, version, deployment type, instance and server IDs); the credential secret supplies the auth and cluster material. This is a response projection, not a stored table row.",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Stable identifier of the Kubernetes context, assigned when the context is registered. Not a UUID; carried in connection metadata.",
+                  "x-id-format": "external",
+                  "maxLength": 255,
+                  "x-go-name": "ID",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "id,omitempty"
+                  }
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Human-readable name of the Kubernetes context.",
+                  "maxLength": 255,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "name,omitempty"
+                  }
+                },
+                "auth": {
+                  "type": "object",
+                  "description": "Authentication material for the context (token or kubeconfig reference), sourced from the connection's credential secret.",
+                  "x-go-type": "core.Map",
+                  "x-go-type-import": {
+                    "path": "github.com/meshery/schemas/models/core"
+                  },
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "auth,omitempty"
+                  }
+                },
+                "cluster": {
+                  "type": "object",
+                  "description": "Cluster definition for the context (certificate authority and server details), sourced from the connection's credential secret.",
+                  "x-go-type": "core.Map",
+                  "x-go-type-import": {
+                    "path": "github.com/meshery/schemas/models/core"
+                  },
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "cluster,omitempty"
+                  }
+                },
+                "server": {
+                  "type": "string",
+                  "description": "API server URL of the Kubernetes cluster.",
+                  "maxLength": 2048,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "server,omitempty"
+                  }
+                },
+                "owner": {
+                  "description": "ID of the user who owns the underlying connection.",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "owner,omitempty"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "createdBy": {
+                  "description": "ID of the user who registered the context.",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "createdBy,omitempty"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "mesheryInstanceId": {
+                  "description": "ID of the Meshery instance the context is registered with.",
+                  "x-go-name": "MesheryInstanceID",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "mesheryInstanceId,omitempty"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "kubernetesServerId": {
+                  "description": "ID of the Kubernetes server associated with the context.",
+                  "x-go-name": "KubernetesServerID",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "kubernetesServerId,omitempty"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "deploymentType": {
+                  "type": "string",
+                  "description": "How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster).",
+                  "maxLength": 64,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "deploymentType"
+                  }
+                },
+                "version": {
+                  "type": "string",
+                  "description": "Kubernetes server version of the cluster.",
+                  "maxLength": 64,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "version"
+                  }
+                },
+                "createdAt": {
+                  "type": "string",
+                  "description": "Timestamp when the underlying connection was created.",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "createdAt,omitempty"
+                  }
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "description": "Timestamp when the underlying connection was last updated.",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "updatedAt,omitempty"
+                  }
+                },
+                "connectionId": {
+                  "description": "ID of the connection this context was projected from.",
+                  "x-go-name": "ConnectionID",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "connectionId,omitempty"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "reachable": {
+                  "description": "Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition.",
+                  "x-go-type": "bool",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "reachable"
+                  },
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      },
+      "KubernetesPingResponse": {
+        "type": "object",
+        "description": "Result of pinging a Kubernetes connection's API server.",
+        "additionalProperties": false,
+        "required": [
+          "server_version"
+        ],
+        "properties": {
+          "server_version": {
+            "type": "string",
+            "description": "Version string reported by the cluster's API server. The wire field is `server_version` - this endpoint's published wire casing predates the camelCase convention and is preserved within this API version.",
+            "maxLength": 128
           }
         }
       }
