@@ -99,7 +99,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  /api/auth/key/{keyId}:
+  /api/auth/keys/{keyId}:
     get:
       x-internal: ["cloud"]
       tags:
@@ -170,7 +170,7 @@ components:
       schema:
         $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
     page:
-      $ref: ../../v1alpha1/core/api.yml#/components/parameters/page
+      $ref: ../core/api.yml#/components/parameters/page
     pageSize:
       $ref: ../core/api.yml#/components/parameters/pageSize
     pagesize:
@@ -179,7 +179,7 @@ components:
       description: Get responses by pagesize. Deprecated alias of pageSize.
       deprecated: true
       schema:
-        type: string
+        type: integer
     order:
       $ref: ../../v1alpha1/core/api.yml#/components/parameters/order
     search:

@@ -408,7 +408,7 @@ type UserEmailAddress struct {
 	CreatedAt core.Time `db:"created_at" json:"createdAt" yaml:"createdAt"`
 
 	// DeletedAt SQL null Timestamp to handle null values of time.
-	DeletedAt core.NullTime `db:"deleted_at" json:"deletedAt" yaml:"deletedAt,omitempty"`
+	DeletedAt core.NullTime `db:"deleted_at" json:"deletedAt" yaml:"deletedAt"`
 
 	// Email The email address
 	Email openapi_types.Email `db:"email" json:"email" yaml:"email"`
@@ -448,7 +448,7 @@ type UsersPageForAdmin struct {
 	TotalCount *int `json:"totalCount,omitempty" yaml:"totalCount,omitempty"`
 }
 
-// UsersPageForNonAdmin Paginated list of public user records
+// UsersPageForNonAdmin Deprecated: the public users directory (/api/users, getUsers) is documented by the v1beta3 user construct's PublicUsersPage, which reflects the reduced projection actually served since the directory was hardened. This full-User page shape was never what the endpoint returned post-hardening and is retained only for compatibility with existing type imports.
 type UsersPageForNonAdmin struct {
 	// Data The data of the userspagefornonadmin.
 	Data *[]User `json:"data,omitempty" yaml:"data,omitempty"`
@@ -474,10 +474,10 @@ type Id = uuid.UUID
 type Order = string
 
 // Page defines model for page.
-type Page = string
+type Page = int
 
 // PageSize defines model for pageSize.
-type PageSize = string
+type PageSize = int
 
 // Search defines model for search.
 type Search = string

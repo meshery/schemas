@@ -65,7 +65,7 @@ components:
     order:
       $ref: ../../v1alpha1/core/api.yml#/components/parameters/order
     page:
-      $ref: ../../v1alpha1/core/api.yml#/components/parameters/page
+      $ref: ../core/api.yml#/components/parameters/page
     pageSize:
       $ref: ../core/api.yml#/components/parameters/pageSize
     pagesize:
@@ -74,7 +74,7 @@ components:
       description: Get responses by pagesize. Deprecated alias of pageSize.
       deprecated: true
       schema:
-        type: string
+        type: integer
 
   securitySchemes:
     jwt:
@@ -432,11 +432,15 @@ paths:
         - $ref: "#/components/parameters/pagesize"
       responses:
         "200":
-          description: Team users mapping
+          description: Team members with their roles
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UsersTeamsMappingPage"
+                # The deployed handler (GetUsersOfTeam) serves the
+                # TeamMembersPage projection - user rows with role names
+                # under `data` - not raw users-teams mappings
+                # (schema/handler parity).
+                $ref: "#/components/schemas/TeamMembersPage"
         "400":
           $ref: "#/components/responses/400"
         "401":  

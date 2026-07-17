@@ -204,14 +204,14 @@ export interface components {
         /** @description Keychain ID */
         keychainId: string;
         /** @description Get responses by page */
-        page: string;
+        page: number;
         /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
         pageSize: number;
         /**
          * @deprecated
          * @description Get responses by pagesize. Deprecated alias of pageSize.
          */
-        pagesize: string;
+        pagesize: number;
         /** @description Get ordered responses */
         order: string;
         /** @description Get responses that match search param value */
@@ -227,14 +227,14 @@ export interface operations {
         parameters: {
             query?: {
                 /** @description Get responses by page */
-                page?: string;
+                page?: number;
                 /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
                 pageSize?: number;
                 /**
                  * @deprecated
                  * @description Get responses by pagesize. Deprecated alias of pageSize.
                  */
-                pagesize?: string;
+                pagesize?: number;
                 /** @description Get responses that match search param value */
                 search?: string;
                 /** @description Get ordered responses */
@@ -773,14 +773,14 @@ export interface operations {
         parameters: {
             query?: {
                 /** @description Get responses by page */
-                page?: string;
+                page?: number;
                 /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
                 pageSize?: number;
                 /**
                  * @deprecated
                  * @description Get responses by pagesize. Deprecated alias of pageSize.
                  */
-                pagesize?: string;
+                pagesize?: number;
                 /** @description Get responses that match search param value */
                 search?: string;
                 /** @description Get ordered responses */

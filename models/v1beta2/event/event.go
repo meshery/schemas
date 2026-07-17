@@ -119,10 +119,10 @@ type Filter = string
 type Order = string
 
 // Page defines model for page.
-type Page = string
+type Page = int
 
 // Pagesize defines model for pagesize.
-type Pagesize = string
+type Pagesize = int
 
 // Search defines model for search.
 type Search = string

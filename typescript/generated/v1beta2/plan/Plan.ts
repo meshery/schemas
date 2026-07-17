@@ -131,9 +131,9 @@ export interface operations {
         parameters: {
             query?: {
                 /** @description Get responses by page */
-                page?: string;
+                page?: number;
                 /** @description Get responses by pagesize */
-                pagesize?: string;
+                pagesize?: number;
             };
             header?: never;
             path?: never;

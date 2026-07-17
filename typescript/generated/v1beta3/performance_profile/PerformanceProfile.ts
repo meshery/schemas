@@ -544,7 +544,7 @@ export interface components {
         /** @description Get ordered responses */
         order: string;
         /** @description Get responses by page */
-        page: string;
+        page: number;
         /** @description Get responses by pagesize */
         pagesize: string;
         /** @description Start date for filtering results by test start time, in YYYY-MM-DD format. */
@@ -611,7 +611,7 @@ export interface operations {
         parameters: {
             query?: {
                 /** @description Get responses by page */
-                page?: string;
+                page?: number;
                 /** @description Get responses by pagesize */
                 pagesize?: string;
                 /** @description Get responses that match search param value */
@@ -1228,7 +1228,7 @@ export interface operations {
         parameters: {
             query?: {
                 /** @description Get responses by page */
-                page?: string;
+                page?: number;
                 /** @description Get responses by pagesize */
                 pagesize?: string;
                 /** @description Get responses that match search param value */
@@ -1464,7 +1464,7 @@ export interface operations {
         parameters: {
             query?: {
                 /** @description Get responses by page */
-                page?: string;
+                page?: number;
                 /** @description Get responses by pagesize */
                 pagesize?: string;
                 /** @description Get responses that match search param value */

@@ -81,6 +81,26 @@ const injectedRtkApi = api
         query: () => ({ url: `/api/system/version` }),
         providesTags: ["System_API_System"],
       }),
+      addKubernetesConfig: build.mutation<AddKubernetesConfigApiResponse, AddKubernetesConfigApiArg>({
+        query: (queryArg) => ({ url: `/api/system/kubernetes`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["System_API_System"],
+      }),
+      discoverKubernetesContexts: build.mutation<
+        DiscoverKubernetesContextsApiResponse,
+        DiscoverKubernetesContextsApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/system/kubernetes/contexts`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["System_API_System"],
+      }),
+      pingKubernetes: build.query<PingKubernetesApiResponse, PingKubernetesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/system/kubernetes/ping`,
+          params: {
+            connectionId: queryArg?.connectionId,
+          },
+        }),
+        providesTags: ["System_API_System"],
+      }),
       getSystemSync: build.query<GetSystemSyncApiResponse, GetSystemSyncApiArg>({
         query: () => ({ url: `/api/system/sync` }),
         providesTags: ["System_API_System"],
@@ -268,19 +288,6 @@ const injectedRtkApi = api
         }),
         providesTags: ["User_users"],
       }),
-      getUsers: build.query<GetUsersApiResponse, GetUsersApiArg>({
-        query: (queryArg) => ({
-          url: `/api/users`,
-          params: {
-            page: queryArg?.page,
-            pageSize: queryArg?.pageSize,
-            search: queryArg?.search,
-            order: queryArg?.order,
-            filter: queryArg?.filter,
-          },
-        }),
-        providesTags: ["User_users"],
-      }),
       getUserProfileById: build.query<GetUserProfileByIdApiResponse, GetUserProfileByIdApiArg>({
         query: (queryArg) => ({ url: `/api/identity/users/profile/${queryArg.id}` }),
         providesTags: ["User_users"],
@@ -313,6 +320,20 @@ const injectedRtkApi = api
       }),
       registerConnection: build.mutation<RegisterConnectionApiResponse, RegisterConnectionApiArg>({
         query: (queryArg) => ({ url: `/api/integrations/connections`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Connection_API_Connections"],
+      }),
+      processConnectionRegistration: build.mutation<
+        ProcessConnectionRegistrationApiResponse,
+        ProcessConnectionRegistrationApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/integrations/connections/register`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Connection_API_Connections"],
+      }),
+      cancelConnectionRegister: build.mutation<CancelConnectionRegisterApiResponse, CancelConnectionRegisterApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/connections/register/${queryArg.registrationId}`,
+          method: "DELETE",
+        }),
         invalidatesTags: ["Connection_API_Connections"],
       }),
       getConnectionById: build.query<GetConnectionByIdApiResponse, GetConnectionByIdApiArg>({
@@ -553,6 +574,32 @@ const injectedRtkApi = api
           },
         }),
         providesTags: ["Performance_Profile_performance"],
+      }),
+      getUsers: build.query<GetUsersApiResponse, GetUsersApiArg>({
+        query: (queryArg) => ({
+          url: `/api/users`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            filter: queryArg?.filter,
+          },
+        }),
+        providesTags: ["User_users"],
+      }),
+      searchUsers: build.query<SearchUsersApiResponse, SearchUsersApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/users/search`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            filter: queryArg?.filter,
+          },
+        }),
+        providesTags: ["User_users"],
       }),
       getWorkspaces: build.query<GetWorkspacesApiResponse, GetWorkspacesApiArg>({
         query: (queryArg) => ({
@@ -3385,6 +3432,196 @@ export type GetSystemVersionApiResponse = /** status 200 Server version metadata
   releaseChannel?: string;
 };
 export type GetSystemVersionApiArg = void;
+export type AddKubernetesConfigApiResponse = /** status 200 Discovered contexts bucketed by import outcome. */ {
+  /** Contexts newly registered as discovered connections. */
+  registeredContexts: {
+    /** Stable identifier of the Kubernetes context, assigned when the context is registered. Not a UUID; carried in connection metadata. */
+    id?: string;
+    /** Human-readable name of the Kubernetes context. */
+    name?: string;
+    /** Authentication material for the context (token or kubeconfig reference), sourced from the connection's credential secret. */
+    auth?: object;
+    /** Cluster definition for the context (certificate authority and server details), sourced from the connection's credential secret. */
+    cluster?: object;
+    /** API server URL of the Kubernetes cluster. */
+    server?: string;
+    /** ID of the user who owns the underlying connection. */
+    owner?: string;
+    /** ID of the user who registered the context. */
+    createdBy?: string;
+    /** ID of the Meshery instance the context is registered with. */
+    mesheryInstanceId?: string;
+    /** ID of the Kubernetes server associated with the context. */
+    kubernetesServerId?: string;
+    /** How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster). */
+    deploymentType?: string;
+    /** Kubernetes server version of the cluster. */
+    version?: string;
+    /** Timestamp when the underlying connection was created. */
+    createdAt?: string;
+    /** Timestamp when the underlying connection was last updated. */
+    updatedAt?: string;
+    /** ID of the connection this context was projected from. */
+    connectionId?: string;
+    /** Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition. */
+    reachable?: boolean;
+  }[];
+  /** Contexts whose connection already exists in (or transitioned to) the connected state. */
+  connectedContexts: {
+    /** Stable identifier of the Kubernetes context, assigned when the context is registered. Not a UUID; carried in connection metadata. */
+    id?: string;
+    /** Human-readable name of the Kubernetes context. */
+    name?: string;
+    /** Authentication material for the context (token or kubeconfig reference), sourced from the connection's credential secret. */
+    auth?: object;
+    /** Cluster definition for the context (certificate authority and server details), sourced from the connection's credential secret. */
+    cluster?: object;
+    /** API server URL of the Kubernetes cluster. */
+    server?: string;
+    /** ID of the user who owns the underlying connection. */
+    owner?: string;
+    /** ID of the user who registered the context. */
+    createdBy?: string;
+    /** ID of the Meshery instance the context is registered with. */
+    mesheryInstanceId?: string;
+    /** ID of the Kubernetes server associated with the context. */
+    kubernetesServerId?: string;
+    /** How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster). */
+    deploymentType?: string;
+    /** Kubernetes server version of the cluster. */
+    version?: string;
+    /** Timestamp when the underlying connection was created. */
+    createdAt?: string;
+    /** Timestamp when the underlying connection was last updated. */
+    updatedAt?: string;
+    /** ID of the connection this context was projected from. */
+    connectionId?: string;
+    /** Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition. */
+    reachable?: boolean;
+  }[];
+  /** Contexts whose connection is in the ignored state. */
+  ignoredContexts: {
+    /** Stable identifier of the Kubernetes context, assigned when the context is registered. Not a UUID; carried in connection metadata. */
+    id?: string;
+    /** Human-readable name of the Kubernetes context. */
+    name?: string;
+    /** Authentication material for the context (token or kubeconfig reference), sourced from the connection's credential secret. */
+    auth?: object;
+    /** Cluster definition for the context (certificate authority and server details), sourced from the connection's credential secret. */
+    cluster?: object;
+    /** API server URL of the Kubernetes cluster. */
+    server?: string;
+    /** ID of the user who owns the underlying connection. */
+    owner?: string;
+    /** ID of the user who registered the context. */
+    createdBy?: string;
+    /** ID of the Meshery instance the context is registered with. */
+    mesheryInstanceId?: string;
+    /** ID of the Kubernetes server associated with the context. */
+    kubernetesServerId?: string;
+    /** How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster). */
+    deploymentType?: string;
+    /** Kubernetes server version of the cluster. */
+    version?: string;
+    /** Timestamp when the underlying connection was created. */
+    createdAt?: string;
+    /** Timestamp when the underlying connection was last updated. */
+    updatedAt?: string;
+    /** ID of the connection this context was projected from. */
+    connectionId?: string;
+    /** Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition. */
+    reachable?: boolean;
+  }[];
+  /** Contexts that could not be saved as connections. The failure detail is recorded in the emitted event's metadata, not on the context object. */
+  erroredContexts: {
+    /** Stable identifier of the Kubernetes context, assigned when the context is registered. Not a UUID; carried in connection metadata. */
+    id?: string;
+    /** Human-readable name of the Kubernetes context. */
+    name?: string;
+    /** Authentication material for the context (token or kubeconfig reference), sourced from the connection's credential secret. */
+    auth?: object;
+    /** Cluster definition for the context (certificate authority and server details), sourced from the connection's credential secret. */
+    cluster?: object;
+    /** API server URL of the Kubernetes cluster. */
+    server?: string;
+    /** ID of the user who owns the underlying connection. */
+    owner?: string;
+    /** ID of the user who registered the context. */
+    createdBy?: string;
+    /** ID of the Meshery instance the context is registered with. */
+    mesheryInstanceId?: string;
+    /** ID of the Kubernetes server associated with the context. */
+    kubernetesServerId?: string;
+    /** How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster). */
+    deploymentType?: string;
+    /** Kubernetes server version of the cluster. */
+    version?: string;
+    /** Timestamp when the underlying connection was created. */
+    createdAt?: string;
+    /** Timestamp when the underlying connection was last updated. */
+    updatedAt?: string;
+    /** ID of the connection this context was projected from. */
+    connectionId?: string;
+    /** Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition. */
+    reachable?: boolean;
+  }[];
+};
+export type AddKubernetesConfigApiArg = {
+  body: {
+    /** Kubeconfig file contents. */
+    k8sfile: Blob;
+    /** JSON-encoded object mapping a discovered context ID to per-context import options, e.g. `{"<contextId>": {"meshsyncDeploymentMode": "operator", "name": "my-cluster"}}`. `meshsyncDeploymentMode` selects how MeshSync runs for the resulting connection; `name` overrides the connection name. */
+    contexts?: string;
+    /** JSON-encoded array of discovered context IDs to import. When absent, every context discovered in the kubeconfig is imported. */
+    selectedContexts?: string;
+  };
+};
+export type DiscoverKubernetesContextsApiResponse = /** status 200 Contexts discovered in the uploaded kubeconfig. */ {
+  /** Stable identifier of the Kubernetes context, assigned when the context is registered. Not a UUID; carried in connection metadata. */
+  id?: string;
+  /** Human-readable name of the Kubernetes context. */
+  name?: string;
+  /** Authentication material for the context (token or kubeconfig reference), sourced from the connection's credential secret. */
+  auth?: object;
+  /** Cluster definition for the context (certificate authority and server details), sourced from the connection's credential secret. */
+  cluster?: object;
+  /** API server URL of the Kubernetes cluster. */
+  server?: string;
+  /** ID of the user who owns the underlying connection. */
+  owner?: string;
+  /** ID of the user who registered the context. */
+  createdBy?: string;
+  /** ID of the Meshery instance the context is registered with. */
+  mesheryInstanceId?: string;
+  /** ID of the Kubernetes server associated with the context. */
+  kubernetesServerId?: string;
+  /** How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster). */
+  deploymentType?: string;
+  /** Kubernetes server version of the cluster. */
+  version?: string;
+  /** Timestamp when the underlying connection was created. */
+  createdAt?: string;
+  /** Timestamp when the underlying connection was last updated. */
+  updatedAt?: string;
+  /** ID of the connection this context was projected from. */
+  connectionId?: string;
+  /** Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition. */
+  reachable?: boolean;
+}[];
+export type DiscoverKubernetesContextsApiArg = {
+  body: {
+    /** Kubeconfig file contents. */
+    k8sfile: Blob;
+  };
+};
+export type PingKubernetesApiResponse = /** status 200 Cluster is reachable. */ {
+  /** Version string reported by the cluster's API server. The wire field is `server_version` - this endpoint's published wire casing predates the camelCase convention and is preserved within this API version. */
+  server_version: string;
+};
+export type PingKubernetesApiArg = {
+  /** ID of the Kubernetes connection whose cluster to ping. */
+  connectionId: string;
+};
 export type GetSystemSyncApiResponse = /** status 200 Session sync payload */ {
   /** Kubernetes contexts currently tracked by the Meshery server. */
   k8sConfig?: {
@@ -3396,7 +3633,7 @@ export type GetSystemSyncApiResponse = /** status 200 Session sync payload */ {
     clusterConfigured?: boolean;
     /** API server URL for the Kubernetes context. */
     server?: string;
-    /** Kubernetes server ID associated with this context. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     clusterId?: string;
     /** When the context was first registered with Meshery. */
     createdAt?: string;
@@ -3407,12 +3644,12 @@ export type GetSystemSyncApiResponse = /** status 200 Session sync payload */ {
 };
 export type GetSystemSyncApiArg = void;
 export type GetOperatorControllerStatusApiResponse = /** status 200 Operator controller status */ {
-  /** The kubernetes connection ID this status belongs to. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   connectionId: string;
   /** The controller this status describes. */
   controller: "OPERATOR" | "MESHSYNC" | "BROKER";
-  /** Current controller status (e.g. DEPLOYED, NOTDEPLOYED, RUNNING, CONNECTED, UNKNOWN). */
-  status: string;
+  /** Current controller status. */
+  status: "DEPLOYED" | "NOTDEPLOYED" | "DEPLOYING" | "UNKOWN" | "UNDEPLOYED" | "ENABLED" | "RUNNING" | "CONNECTED";
   /** Deployed controller version, when known. */
   version: string;
 };
@@ -3427,7 +3664,7 @@ export type GetMeshsyncControllerStatusApiResponse = /** status 200 MeshSync con
   version: string;
   /** Current controller status. May be composed, e.g. "Connected <endpoint>". */
   status: string;
-  /** The kubernetes connection ID this status belongs to. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   connectionId: string;
 };
 export type GetMeshsyncControllerStatusApiArg = {
@@ -3441,7 +3678,7 @@ export type GetBrokerControllerStatusApiResponse = /** status 200 Broker control
   version: string;
   /** Current controller status. May be composed, e.g. "Connected <endpoint>". */
   status: string;
-  /** The kubernetes connection ID this status belongs to. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   connectionId: string;
 };
 export type GetBrokerControllerStatusApiArg = {
@@ -3449,7 +3686,7 @@ export type GetBrokerControllerStatusApiArg = {
   connectionId: string;
 };
 export type GetControllerDiagnosticsApiResponse = /** status 200 Connection controller diagnostics */ {
-  /** The kubernetes connection ID these diagnostics belong to. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   connectionId: string;
   /** True when no warning/error diagnostics were detected (informational diagnostics do not affect health). */
   healthy: boolean;
@@ -3509,11 +3746,11 @@ export type GetUserCredentialsApiResponse = /** status 200 Credentials response 
 };
 export type GetUserCredentialsApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -3643,11 +3880,11 @@ export type GetUserKeysApiArg = {
   /** Organization ID */
   orgId: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
 };
 export type RegisterMeshmodelsApiResponse = /** status 201 Model registered */ {
   message?: string;
@@ -3702,6 +3939,8 @@ export type GetOrgsApiResponse = /** status 200 Organizations response */ {
     country?: string;
     /** Region of the organization. */
     region?: string;
+    /** Custom domain assigned to the organization, when configured. */
+    domain?: string;
     /** Display name of the organization owner. */
     owner?: string;
     /** Free-form metadata associated with an organization, including preferences. */
@@ -3825,6 +4064,8 @@ export type CreateOrgApiResponse = /** status 201 Single-organization page respo
     country?: string;
     /** Region of the organization. */
     region?: string;
+    /** Custom domain assigned to the organization, when configured. */
+    domain?: string;
     /** Display name of the organization owner. */
     owner?: string;
     /** Free-form metadata associated with an organization, including preferences. */
@@ -4058,6 +4299,8 @@ export type GetOrgApiResponse = /** status 200 Single-organization page response
     country?: string;
     /** Region of the organization. */
     region?: string;
+    /** Custom domain assigned to the organization, when configured. */
+    domain?: string;
     /** Display name of the organization owner. */
     owner?: string;
     /** Free-form metadata associated with an organization, including preferences. */
@@ -4178,6 +4421,8 @@ export type UpdateOrgApiResponse = /** status 200 Single-organization page respo
     country?: string;
     /** Region of the organization. */
     region?: string;
+    /** Custom domain assigned to the organization, when configured. */
+    domain?: string;
     /** Display name of the organization owner. */
     owner?: string;
     /** Free-form metadata associated with an organization, including preferences. */
@@ -4744,9 +4989,9 @@ export type GetUsersForOrgApiArg = {
   /** Organization ID */
   orgId: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by page size */
-  pageSize?: string;
+  pageSize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -4755,199 +5000,6 @@ export type GetUsersForOrgApiArg = {
   filter?: string;
   /** Optional team filter when listing organization users */
   teamId?: string;
-};
-export type GetUsersApiResponse = /** status 200 Paginated list of public users */ {
-  /** Current page number of the result set. */
-  page?: number;
-  /** Number of items per page. */
-  pageSize?: number;
-  /** Total number of items available. */
-  totalCount?: number;
-  /** The data of the userspagefornonadmin. */
-  data?: {
-    /** Unique identifier for the user */
-    id: string;
-    /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
-    userId: string;
-    /** Authentication provider (e.g., Google, Github) */
-    provider: string;
-    /** User's email address */
-    email: string;
-    /** User's first name */
-    firstName: string;
-    /** User's last name */
-    lastName: string;
-    /** URL to user's avatar image */
-    avatarUrl?: string;
-    /** User account status */
-    status: "active" | "inactive" | "pending" | "anonymous";
-    /** User's biography or description */
-    bio?: string;
-    /** User's country information stored as JSONB */
-    country?: {
-      [key: string]: any;
-    };
-    /** User's region information stored as JSONB */
-    region?: {
-      [key: string]: any;
-    };
-    /** User preferences stored as JSONB */
-    preferences?: {
-      /** The mesh adapters of the preference. */
-      meshAdapters?: object[];
-      grafana?: {
-        /** Grafana URL for the user configuration. */
-        grafanaUrl?: string;
-        /** Grafana API key for the user configuration. */
-        grafanaApiKey?: string;
-        /** Selected Grafana board configurations for the user. */
-        selectedBoardsConfigs?: {
-          /** Placeholder for GrafanaBoard definition (define fields as needed) */
-          board?: object;
-          /** Panels selected for the Grafana board configuration. */
-          panels?: object[];
-          /** Template variables applied to the selected Grafana board configuration. */
-          templateVars?: string[];
-        }[];
-      };
-      prometheus?: {
-        /** The prometheus URL of the prometheus. */
-        prometheusUrl?: string;
-        /** The selected prometheus boards configs of the prometheus. */
-        selectedPrometheusBoardsConfigs?: {
-          /** Placeholder for GrafanaBoard definition (define fields as needed) */
-          board?: object;
-          /** Panels selected for the Grafana board configuration. */
-          panels?: object[];
-          /** Template variables applied to the selected Grafana board configuration. */
-          templateVars?: string[];
-        }[];
-      };
-      loadTestPrefs?: {
-        /** Concurrent requests */
-        c?: number;
-        /** Queries per second */
-        qps?: number;
-        /** Duration */
-        t?: string;
-        /** Load generator */
-        gen?: string;
-      };
-      /** The anonymous usage stats of the preference. */
-      anonymousUsageStats: boolean;
-      /** The anonymous perf results of the preference. */
-      anonymousPerfResults: boolean;
-      /** Timestamp of when the resource was last updated. */
-      updatedAt: string;
-      /** The dashboard preferences of the preference. */
-      dashboardPreferences: {
-        [key: string]: any;
-      };
-      /** ID of the associated selectedOrganization. */
-      selectedOrganizationId: string;
-      /** The selected workspace for organizations of the preference. */
-      selectedWorkspaceForOrganizations: {
-        [key: string]: string;
-      };
-      /** The users extension preferences of the preference. */
-      usersExtensionPreferences: {
-        [key: string]: any;
-      };
-      /** The remote provider preferences of the preference. */
-      remoteProviderPreferences: {
-        [key: string]: any;
-      };
-    };
-    /** Timestamp when user accepted terms and conditions */
-    acceptedTermsAt?: string;
-    /** Timestamp of user's first login */
-    firstLoginTime?: string;
-    /** Timestamp of user's most recent login */
-    lastLoginTime: string;
-    /** Timestamp when the user record was created */
-    createdAt: string;
-    /** Timestamp when the user record was last updated */
-    updatedAt: string;
-    /** Various online profiles associated with the user account */
-    socials?: {
-      /** The site of the social. */
-      site: string;
-      /** The link of the social. */
-      link: string;
-    }[];
-    /** Timestamp when the user record was soft-deleted (null if not deleted) */
-    deletedAt: string | null;
-    /** Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set. */
-    roleNames?: string[];
-    /** Teams the user belongs to with role information */
-    teams?: {
-      /** Team memberships for the user with their assigned roles. */
-      teamsWithRoles?: {
-        /** Unique identifier of the team. */
-        id: string;
-        /** Name of the team. */
-        name: string;
-        /** Human readable description of the team. */
-        description?: string;
-        /** Identifier of the team owner. */
-        owner?: string;
-        /** Free-form metadata associated with the team. */
-        metadata?: {
-          [key: string]: any;
-        };
-        /** Timestamp when the team was created. */
-        createdAt?: string;
-        /** Timestamp when the team was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the team was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of team memberships returned for the user. */
-      totalCount?: number;
-    };
-    /** Organizations the user belongs to with role information */
-    organizations?: {
-      /** Organization memberships for the user with their assigned roles. */
-      organizationsWithRoles?: {
-        /** Unique identifier of the organization. */
-        id: string;
-        /** Name of the organization. */
-        name: string;
-        /** Human readable description of the organization. */
-        description?: string;
-        /** Country associated with the organization. */
-        country?: string;
-        /** Region associated with the organization. */
-        region?: string;
-        /** Identifier of the organization owner. */
-        owner?: string;
-        /** Timestamp when the organization was created. */
-        createdAt?: string;
-        /** Timestamp when the organization was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the organization was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of organization memberships returned for the user. */
-      totalCount?: number;
-    };
-  }[];
-};
-export type GetUsersApiArg = {
-  /** Get responses by page */
-  page?: string;
-  /** Get responses by page size */
-  pageSize?: string;
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-  /** Get filtered reponses */
-  filter?: string;
 };
 export type GetUserProfileByIdApiResponse = /** status 200 User profile for the requested ID */ {
   /** Unique identifier for the user */
@@ -5314,7 +5366,7 @@ export type GetUserEmailAddressesApiResponse = /** status 200 Email addresses as
   createdAt: string;
   updatedAt: string;
   /** SQL null Timestamp to handle null values of time. */
-  deletedAt?: string;
+  deletedAt?: string | null;
 }[];
 export type GetUserEmailAddressesApiArg = {
   /** ID of the user */
@@ -5560,7 +5612,7 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
     /** Timestamp when the connection was last updated. */
     updatedAt?: string;
     /** Timestamp when the connection was soft-deleted, if applicable. */
-    deletedAt?: string;
+    deletedAt?: string | null;
     /** Associated environments for this connection */
     environments?: {
       /** ID */
@@ -5867,7 +5919,7 @@ export type RegisterConnectionApiResponse = /** status 201 Connection registered
   /** Timestamp when the connection was last updated. */
   updatedAt?: string;
   /** Timestamp when the connection was soft-deleted, if applicable. */
-  deletedAt?: string;
+  deletedAt?: string | null;
   /** Associated environments for this connection */
   environments?: {
     /** ID */
@@ -6076,6 +6128,56 @@ export type RegisterConnectionApiArg = {
     /** Associated credential ID */
     credentialId?: string;
   };
+};
+export type ProcessConnectionRegistrationApiResponse =
+  /** status 200 Registration bootstrap for status `initialize`; empty body for every other status. */ {
+    /** Registration process tracker to echo on subsequent events. */
+    id: string;
+    /** Registry component definition (`{Kind}Connection`) describing the connection, including its JSON-encoded `schema`. */
+    connection: object;
+    /** Registry component definition (`{Kind}Credential`) describing the credential, including its JSON-encoded `schema`. Absent when the kind defines no credential component. */
+    credential?: object;
+  };
+export type ProcessConnectionRegistrationApiArg = {
+  body: {
+    /** Registration process tracker. Returned by the `initialize` bootstrap or minted client-side; echoed on every subsequent event for the same registration. */
+    id?: string;
+    /** Connection kind (e.g. `kubernetes`, `grafana`, `prometheus`). */
+    kind: string;
+    /** State-machine event to dispatch. `initialize` returns the registration bootstrap; every other event advances the tracked registration. `not found` is the machine's literal event name. */
+    status:
+      | "initialize"
+      | "discovery"
+      | "register"
+      | "connect"
+      | "disconnect"
+      | "ignore"
+      | "delete"
+      | "not found"
+      | "noop"
+      | "exit";
+    /** Connection name. */
+    name?: string;
+    /** Connection type. */
+    type?: string;
+    /** Connection sub-type. */
+    subType?: string;
+    /** Registry model the connection's definition belongs to. */
+    model?: string;
+    /** Connection metadata gathered so far in the flow. */
+    metadata?: object;
+    /** Credential secret material for the connection. */
+    credentialSecret?: object;
+    /** Existing credential to associate instead of a new secret. */
+    credentialId?: string;
+    /** When true the server registers the connection without verifying the supplied credential first. */
+    skipCredentialVerification?: boolean;
+  };
+};
+export type CancelConnectionRegisterApiResponse = unknown;
+export type CancelConnectionRegisterApiArg = {
+  /** Registration process tracker id to discard. */
+  registrationId: string;
 };
 export type GetConnectionByIdApiResponse = /** status 200 Connection details */ {
   /** Connection ID */
@@ -6315,7 +6417,7 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
   /** Timestamp when the connection was last updated. */
   updatedAt?: string;
   /** Timestamp when the connection was soft-deleted, if applicable. */
-  deletedAt?: string;
+  deletedAt?: string | null;
   /** Associated environments for this connection */
   environments?: {
     /** ID */
@@ -6584,7 +6686,7 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated */ {
   /** Timestamp when the connection was last updated. */
   updatedAt?: string;
   /** Timestamp when the connection was soft-deleted, if applicable. */
-  deletedAt?: string;
+  deletedAt?: string | null;
   /** Associated environments for this connection */
   environments?: {
     /** ID */
@@ -7040,7 +7142,7 @@ export type PerformConnectionActionApiResponse =
     /** Timestamp when the connection was last updated. */
     updatedAt?: string;
     /** Timestamp when the connection was soft-deleted, if applicable. */
-    deletedAt?: string;
+    deletedAt?: string | null;
     /** Associated environments for this connection */
     environments?: {
       /** ID */
@@ -7101,13 +7203,13 @@ export type GetKubernetesContextApiResponse = /** status 200 Kubernetes context 
     cluster?: object;
     /** API server URL of the Kubernetes cluster. */
     server?: string;
-    /** ID of the user who owns the underlying connection. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     owner?: string;
-    /** ID of the user who registered the context. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     createdBy?: string;
-    /** ID of the Meshery instance the context is registered with. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     mesheryInstanceId?: string;
-    /** ID of the Kubernetes server associated with the context. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     kubernetesServerId?: string;
     /** How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster). */
     deploymentType?: string;
@@ -7117,8 +7219,10 @@ export type GetKubernetesContextApiResponse = /** status 200 Kubernetes context 
     createdAt?: string;
     /** Timestamp when the underlying connection was last updated. */
     updatedAt?: string;
-    /** ID of the connection this context was projected from. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     connectionId?: string;
+    /** Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition. */
+    reachable?: boolean;
   }[];
 };
 export type GetKubernetesContextApiArg = {
@@ -7735,11 +7839,11 @@ export type GetEnvironmentsApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** User's organization ID */
   orgId: string;
 };
@@ -7849,11 +7953,11 @@ export type GetEnvironmentConnectionsApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** JSON-encoded filter string used to scope the connection listing. */
   filter?: string;
 };
@@ -7967,7 +8071,7 @@ export type GetPerformanceProfilesApiResponse = /** status 200 Performance profi
 };
 export type GetPerformanceProfilesApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by pagesize */
   pagesize?: string;
   /** Get responses that match search param value */
@@ -8231,7 +8335,7 @@ export type GetPerformanceProfileResultsApiArg = {
   /** Performance profile ID. */
   performanceProfileId: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by pagesize */
   pagesize?: string;
   /** Get responses that match search param value */
@@ -8282,7 +8386,7 @@ export type GetPerformanceResultsApiResponse = /** status 200 Performance result
 };
 export type GetPerformanceResultsApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by pagesize */
   pagesize?: string;
   /** Get responses that match search param value */
@@ -8293,6 +8397,76 @@ export type GetPerformanceResultsApiArg = {
   from?: string;
   /** End date for filtering results by test start time, in YYYY-MM-DD format. */
   to?: string;
+};
+export type GetUsersApiResponse = /** status 200 Paginated list of public users */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Public user records for the requested page. */
+  data: {
+    /** Unique identifier for the user */
+    id: string;
+    /** Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id. */
+    userId?: string;
+    /** Public username of the user */
+    username?: string;
+    /** URL to user's avatar image */
+    avatarUrl?: string;
+  }[];
+};
+export type GetUsersApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get filtered reponses */
+  filter?: string;
+};
+export type SearchUsersApiResponse = /** status 200 Paginated list of matching users in the searchable projection */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Matching user records for the requested page. */
+  data: {
+    /** Unique identifier for the user */
+    id: string;
+    /** Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id. */
+    userId?: string;
+    /** Public username of the user */
+    username?: string;
+    /** User's first name */
+    firstName?: string;
+    /** User's last name */
+    lastName?: string;
+    /** User's email address */
+    email?: string;
+    /** URL to user's avatar image */
+    avatarUrl?: string;
+    /** Timestamp when the user record was soft-deleted (null if not deleted) */
+    deletedAt?: string | null;
+  }[];
+};
+export type SearchUsersApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get filtered reponses */
+  filter?: string;
 };
 export type GetWorkspacesApiResponse = /** status 200 Workspaces */ {
   /** Zero-based page index returned in this response. */
@@ -8338,11 +8512,11 @@ export type GetWorkspacesApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;
 };
@@ -8470,11 +8644,11 @@ export type GetTeamsOfWorkspaceApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;
 };
@@ -8552,11 +8726,11 @@ export type GetEnvironmentsOfWorkspaceApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;
 };
@@ -9622,11 +9796,11 @@ export type GetDesignsOfWorkspaceApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;
 };
@@ -9706,11 +9880,11 @@ export type GetViewsOfWorkspaceApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;
 };
@@ -9751,91 +9925,139 @@ export type UnassignViewFromWorkspaceApiArg = {
 };
 export const {
   useGetControllersDefaultConfigQuery,
+  useLazyGetControllersDefaultConfigQuery,
   useUpdateControllersDefaultConfigMutation,
   useGetConnectionControllersConfigQuery,
+  useLazyGetConnectionControllersConfigQuery,
   useUpdateConnectionControllersConfigMutation,
   useEvaluateRelationshipsMutation,
   useGetSystemDatabaseQuery,
+  useLazyGetSystemDatabaseQuery,
   useResetSystemDatabaseMutation,
   useGetSystemVersionQuery,
+  useLazyGetSystemVersionQuery,
+  useAddKubernetesConfigMutation,
+  useDiscoverKubernetesContextsMutation,
+  usePingKubernetesQuery,
+  useLazyPingKubernetesQuery,
   useGetSystemSyncQuery,
+  useLazyGetSystemSyncQuery,
   useGetOperatorControllerStatusQuery,
+  useLazyGetOperatorControllerStatusQuery,
   useGetMeshsyncControllerStatusQuery,
+  useLazyGetMeshsyncControllerStatusQuery,
   useGetBrokerControllerStatusQuery,
+  useLazyGetBrokerControllerStatusQuery,
   useGetControllerDiagnosticsQuery,
+  useLazyGetControllerDiagnosticsQuery,
   useSubscribeControllersStatusQuery,
+  useLazySubscribeControllersStatusQuery,
   useGetUserCredentialsQuery,
+  useLazyGetUserCredentialsQuery,
   useSaveUserCredentialMutation,
   useUpdateUserCredentialMutation,
   useDeleteUserCredentialMutation,
   useGetCredentialByIdQuery,
+  useLazyGetCredentialByIdQuery,
   useGetUserKeysQuery,
+  useLazyGetUserKeysQuery,
   useRegisterMeshmodelsMutation,
   useGetOrgsQuery,
+  useLazyGetOrgsQuery,
   useCreateOrgMutation,
   useGetOrgByDomainQuery,
+  useLazyGetOrgByDomainQuery,
   useGetOrgQuery,
+  useLazyGetOrgQuery,
   useDeleteOrgMutation,
   useUpdateOrgMutation,
   useGetOrgPreferencesQuery,
+  useLazyGetOrgPreferencesQuery,
   useAddTeamToOrgMutation,
   useRemoveTeamFromOrgMutation,
   useAddUserToOrgMutation,
   useDeleteUserFromOrgMutation,
   useGetUsersForOrgQuery,
-  useGetUsersQuery,
+  useLazyGetUsersForOrgQuery,
   useGetUserProfileByIdQuery,
+  useLazyGetUserProfileByIdQuery,
   useGetUserQuery,
+  useLazyGetUserQuery,
   useGetUserEmailAddressesQuery,
+  useLazyGetUserEmailAddressesQuery,
   useGetConnectionsQuery,
+  useLazyGetConnectionsQuery,
   useRegisterConnectionMutation,
+  useProcessConnectionRegistrationMutation,
+  useCancelConnectionRegisterMutation,
   useGetConnectionByIdQuery,
+  useLazyGetConnectionByIdQuery,
   useUpdateConnectionMutation,
   useDeleteConnectionMutation,
   usePerformConnectionActionMutation,
   useDeleteMesheryConnectionMutation,
   useGetKubernetesContextQuery,
+  useLazyGetKubernetesContextQuery,
   useAddConnectionToEnvironmentMutation,
   useRemoveConnectionFromEnvironmentMutation,
   useListConnectionDefinitionsQuery,
+  useLazyListConnectionDefinitionsQuery,
   useRegisterConnectionDefinitionMutation,
   useGetConnectionDefinitionQuery,
+  useLazyGetConnectionDefinitionQuery,
   useUpdateConnectionDefinitionMutation,
   useDeleteConnectionDefinitionMutation,
   useImportDesignMutation,
   useCreateEnvironmentMutation,
   useGetEnvironmentsQuery,
+  useLazyGetEnvironmentsQuery,
   useGetEnvironmentByIdQuery,
+  useLazyGetEnvironmentByIdQuery,
   useUpdateEnvironmentMutation,
   useDeleteEnvironmentMutation,
   useGetEnvironmentConnectionsQuery,
+  useLazyGetEnvironmentConnectionsQuery,
   useDeleteEventMutation,
   useCreateEventMutation,
   useBulkDeleteEventsMutation,
   useBulkUpdateEventStatusMutation,
   useUpdateEventStatusMutation,
   useGetPerformanceProfilesQuery,
+  useLazyGetPerformanceProfilesQuery,
   useUpsertPerformanceProfileMutation,
   useGetPerformanceProfileQuery,
+  useLazyGetPerformanceProfileQuery,
   useUpdatePerformanceProfileMutation,
   useDeletePerformanceProfileMutation,
   useGetPerformanceProfileResultsQuery,
+  useLazyGetPerformanceProfileResultsQuery,
   useGetPerformanceResultsQuery,
+  useLazyGetPerformanceResultsQuery,
+  useGetUsersQuery,
+  useLazyGetUsersQuery,
+  useSearchUsersQuery,
+  useLazySearchUsersQuery,
   useGetWorkspacesQuery,
+  useLazyGetWorkspacesQuery,
   useCreateWorkspaceMutation,
   useGetWorkspaceByIdQuery,
+  useLazyGetWorkspaceByIdQuery,
   useUpdateWorkspaceMutation,
   useDeleteWorkspaceMutation,
   useGetTeamsOfWorkspaceQuery,
+  useLazyGetTeamsOfWorkspaceQuery,
   useAssignTeamToWorkspaceMutation,
   useUnassignTeamFromWorkspaceMutation,
   useGetEnvironmentsOfWorkspaceQuery,
+  useLazyGetEnvironmentsOfWorkspaceQuery,
   useAssignEnvironmentToWorkspaceMutation,
   useUnassignEnvironmentFromWorkspaceMutation,
   useGetDesignsOfWorkspaceQuery,
+  useLazyGetDesignsOfWorkspaceQuery,
   useAssignDesignToWorkspaceMutation,
   useUnassignDesignFromWorkspaceMutation,
   useGetViewsOfWorkspaceQuery,
+  useLazyGetViewsOfWorkspaceQuery,
   useAssignViewToWorkspaceMutation,
   useUnassignViewFromWorkspaceMutation,
 } = injectedRtkApi;

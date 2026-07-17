@@ -138,10 +138,10 @@ type WebhookEvent = map[string]interface{}
 type Order = string
 
 // Page defines model for page.
-type Page = string
+type Page = int
 
 // Pagesize defines model for pagesize.
-type Pagesize = string
+type Pagesize = int
 
 // PagesizeWithAll defines model for pagesizeWithAll.
 type PagesizeWithAll = string

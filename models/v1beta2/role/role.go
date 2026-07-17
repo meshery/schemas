@@ -132,10 +132,10 @@ type Order = string
 type OrgId = core.Uuid
 
 // Page defines model for page.
-type Page = string
+type Page = int
 
 // PageSize defines model for pageSize.
-type PageSize = string
+type PageSize = int
 
 // RoleId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 type RoleId = core.Uuid

@@ -997,6 +997,7 @@ const ConnectionSchema: Record<string, unknown> = {
                             },
                             "type": "string",
                             "format": "date-time",
+                            "nullable": true,
                             "x-go-type-skip-optional-pointer": true
                           },
                           "environments": {
@@ -2655,6 +2656,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       },
                       "type": "string",
                       "format": "date-time",
+                      "nullable": true,
                       "x-go-type-skip-optional-pointer": true
                     },
                     "environments": {
@@ -2888,6 +2890,280 @@ const ConnectionSchema: Record<string, unknown> = {
           },
           "500": {
             "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/integrations/connections/register": {
+      "post": {
+        "x-internal": [
+          "meshery"
+        ],
+        "tags": [
+          "Connections"
+        ],
+        "summary": "Drive the connection registration state machine",
+        "description": "Dispatches a lifecycle event for an in-progress connection registration. With status `initialize`, responds with the registration bootstrap - the kind's connection (and credential, when one exists) registry component definitions plus a tracker `id` the client echoes on subsequent events. Every other status is forwarded to the tracked registration's state machine and the response body is empty.",
+        "operationId": "processConnectionRegistration",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "Lifecycle event for the connection registration state machine (POST /api/integrations/connections/register). Unlike `ConnectionPayload`, only `kind` and `status` are always present: an `initialize` event carries just the kind, while `register` / `connect` events carry the connection details assembled so far.",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "status"
+                ],
+                "properties": {
+                  "id": {
+                    "description": "Registration process tracker. Returned by the `initialize` bootstrap or minted client-side; echoed on every subsequent event for the same registration.",
+                    "x-go-name": "ID",
+                    "x-go-type-skip-optional-pointer": true,
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "id,omitempty"
+                    },
+                    "type": "string",
+                    "format": "uuid",
+                    "x-go-type": "uuid.UUID",
+                    "x-go-type-import": {
+                      "path": "github.com/gofrs/uuid"
+                    }
+                  },
+                  "kind": {
+                    "type": "string",
+                    "description": "Connection kind (e.g. `kubernetes`, `grafana`, `prometheus`).",
+                    "maxLength": 255,
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "kind"
+                    }
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "State-machine event to dispatch. `initialize` returns the registration bootstrap; every other event advances the tracked registration. `not found` is the machine's literal event name.",
+                    "enum": [
+                      "initialize",
+                      "discovery",
+                      "register",
+                      "connect",
+                      "disconnect",
+                      "ignore",
+                      "delete",
+                      "not found",
+                      "noop",
+                      "exit"
+                    ],
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "status"
+                    }
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Connection name.",
+                    "maxLength": 255,
+                    "x-go-type-skip-optional-pointer": true,
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "name,omitempty"
+                    }
+                  },
+                  "type": {
+                    "type": "string",
+                    "description": "Connection type.",
+                    "maxLength": 255,
+                    "x-go-type-skip-optional-pointer": true,
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "type,omitempty"
+                    }
+                  },
+                  "subType": {
+                    "type": "string",
+                    "description": "Connection sub-type.",
+                    "maxLength": 255,
+                    "x-go-type-skip-optional-pointer": true,
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "subType,omitempty"
+                    }
+                  },
+                  "model": {
+                    "type": "string",
+                    "description": "Registry model the connection's definition belongs to.",
+                    "maxLength": 255,
+                    "x-go-type-skip-optional-pointer": true,
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "model,omitempty"
+                    }
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "description": "Connection metadata gathered so far in the flow.",
+                    "x-go-type": "core.Map",
+                    "x-go-type-import": {
+                      "path": "github.com/meshery/schemas/models/core"
+                    },
+                    "x-go-type-skip-optional-pointer": true,
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "metadata,omitempty"
+                    }
+                  },
+                  "credentialSecret": {
+                    "type": "object",
+                    "description": "Credential secret material for the connection.",
+                    "x-go-type": "core.Map",
+                    "x-go-type-import": {
+                      "path": "github.com/meshery/schemas/models/core"
+                    },
+                    "x-go-type-skip-optional-pointer": true,
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "credentialSecret,omitempty"
+                    }
+                  },
+                  "credentialId": {
+                    "description": "Existing credential to associate instead of a new secret.",
+                    "x-go-name": "CredentialID",
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "credentialId,omitempty"
+                    },
+                    "type": "string",
+                    "format": "uuid",
+                    "x-go-type": "uuid.UUID",
+                    "x-go-type-import": {
+                      "path": "github.com/gofrs/uuid"
+                    }
+                  },
+                  "skipCredentialVerification": {
+                    "type": "boolean",
+                    "description": "When true the server registers the connection without verifying the supplied credential first.",
+                    "x-go-type-skip-optional-pointer": true,
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "skipCredentialVerification"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Registration bootstrap for status `initialize`; empty body for every other status.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Response to an `initialize` registration event: the registry component definitions describing the kind's connection and credential, plus the tracker id for the registration process. Component definitions carry their RJSF form schema as a JSON-encoded string under `schema`.",
+                  "additionalProperties": false,
+                  "required": [
+                    "id",
+                    "connection"
+                  ],
+                  "properties": {
+                    "id": {
+                      "description": "Registration process tracker to echo on subsequent events.",
+                      "x-go-name": "ID",
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "id"
+                      },
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    },
+                    "connection": {
+                      "type": "object",
+                      "description": "Registry component definition (`{Kind}Connection`) describing the connection, including its JSON-encoded `schema`.",
+                      "x-go-type": "core.Map",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/core"
+                      },
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "connection"
+                      }
+                    },
+                    "credential": {
+                      "type": "object",
+                      "description": "Registry component definition (`{Kind}Credential`) describing the credential, including its JSON-encoded `schema`. Absent when the kind defines no credential component.",
+                      "x-go-type": "core.Map",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/core"
+                      },
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "credential,omitempty"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed payload, or no connection component is registered for the requested kind."
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to resolve the provider token, or to initialize / signal the registration state machine."
+          }
+        }
+      }
+    },
+    "/api/integrations/connections/register/{registrationId}": {
+      "delete": {
+        "x-internal": [
+          "meshery"
+        ],
+        "tags": [
+          "Connections"
+        ],
+        "summary": "Cancel a connection registration",
+        "description": "Discards the in-progress registration state machine tracked by `registrationId`. Nothing is persisted for the abandoned process. Idempotent: unknown ids are ignored.",
+        "operationId": "cancelConnectionRegister",
+        "parameters": [
+          {
+            "name": "registrationId",
+            "in": "path",
+            "required": true,
+            "description": "Registration process tracker id to discard.",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Registration process discarded."
+          },
+          "400": {
+            "description": "registrationId is not a valid UUID."
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
             "content": {
               "text/plain": {
                 "schema": {
@@ -3744,6 +4020,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       },
                       "type": "string",
                       "format": "date-time",
+                      "nullable": true,
                       "x-go-type-skip-optional-pointer": true
                     },
                     "environments": {
@@ -5384,6 +5661,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       },
                       "type": "string",
                       "format": "date-time",
+                      "nullable": true,
                       "x-go-type-skip-optional-pointer": true
                     },
                     "environments": {
@@ -6579,6 +6857,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       },
                       "type": "string",
                       "format": "date-time",
+                      "nullable": true,
                       "x-go-type-skip-optional-pointer": true
                     },
                     "environments": {
@@ -7018,53 +7297,53 @@ const ConnectionSchema: Record<string, unknown> = {
                             }
                           },
                           "owner": {
-                            "description": "ID of the user who owns the underlying connection.",
-                            "x-oapi-codegen-extra-tags": {
-                              "json": "owner,omitempty"
-                            },
                             "type": "string",
                             "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
+                            },
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "owner,omitempty"
                             }
                           },
                           "createdBy": {
-                            "description": "ID of the user who registered the context.",
-                            "x-oapi-codegen-extra-tags": {
-                              "json": "createdBy,omitempty"
-                            },
                             "type": "string",
                             "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
+                            },
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "createdBy,omitempty"
                             }
                           },
                           "mesheryInstanceId": {
-                            "description": "ID of the Meshery instance the context is registered with.",
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
                             "x-go-name": "MesheryInstanceID",
                             "x-oapi-codegen-extra-tags": {
                               "json": "mesheryInstanceId,omitempty"
-                            },
-                            "type": "string",
-                            "format": "uuid",
-                            "x-go-type": "uuid.UUID",
-                            "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
                             }
                           },
                           "kubernetesServerId": {
-                            "description": "ID of the Kubernetes server associated with the context.",
-                            "x-go-name": "KubernetesServerID",
-                            "x-oapi-codegen-extra-tags": {
-                              "json": "kubernetesServerId,omitempty"
-                            },
                             "type": "string",
                             "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-name": "KubernetesServerID",
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "kubernetesServerId,omitempty"
                             }
                           },
                           "deploymentType": {
@@ -7104,18 +7383,27 @@ const ConnectionSchema: Record<string, unknown> = {
                             }
                           },
                           "connectionId": {
-                            "description": "ID of the connection this context was projected from.",
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
                             "x-go-name": "ConnectionID",
                             "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "json": "connectionId,omitempty"
-                            },
-                            "type": "string",
-                            "format": "uuid",
-                            "x-go-type": "uuid.UUID",
-                            "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
                             }
+                          },
+                          "reachable": {
+                            "description": "Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition.",
+                            "x-go-type": "bool",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "json": "reachable"
+                            },
+                            "type": "boolean"
                           }
                         }
                       },
@@ -10184,6 +10472,7 @@ const ConnectionSchema: Record<string, unknown> = {
             },
             "type": "string",
             "format": "date-time",
+            "nullable": true,
             "x-go-type-skip-optional-pointer": true
           },
           "environments": {
@@ -12009,6 +12298,7 @@ const ConnectionSchema: Record<string, unknown> = {
                   },
                   "type": "string",
                   "format": "date-time",
+                  "nullable": true,
                   "x-go-type-skip-optional-pointer": true
                 },
                 "environments": {
@@ -12884,6 +13174,187 @@ const ConnectionSchema: Record<string, unknown> = {
           "status"
         ]
       },
+      "ConnectionRegistrationEvent": {
+        "type": "object",
+        "description": "Lifecycle event for the connection registration state machine (POST /api/integrations/connections/register). Unlike `ConnectionPayload`, only `kind` and `status` are always present: an `initialize` event carries just the kind, while `register` / `connect` events carry the connection details assembled so far.",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "description": "Registration process tracker. Returned by the `initialize` bootstrap or minted client-side; echoed on every subsequent event for the same registration.",
+            "x-go-name": "ID",
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "id,omitempty"
+            },
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
+          "kind": {
+            "type": "string",
+            "description": "Connection kind (e.g. `kubernetes`, `grafana`, `prometheus`).",
+            "maxLength": 255,
+            "x-oapi-codegen-extra-tags": {
+              "json": "kind"
+            }
+          },
+          "status": {
+            "type": "string",
+            "description": "State-machine event to dispatch. `initialize` returns the registration bootstrap; every other event advances the tracked registration. `not found` is the machine's literal event name.",
+            "enum": [
+              "initialize",
+              "discovery",
+              "register",
+              "connect",
+              "disconnect",
+              "ignore",
+              "delete",
+              "not found",
+              "noop",
+              "exit"
+            ],
+            "x-oapi-codegen-extra-tags": {
+              "json": "status"
+            }
+          },
+          "name": {
+            "type": "string",
+            "description": "Connection name.",
+            "maxLength": 255,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "name,omitempty"
+            }
+          },
+          "type": {
+            "type": "string",
+            "description": "Connection type.",
+            "maxLength": 255,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "type,omitempty"
+            }
+          },
+          "subType": {
+            "type": "string",
+            "description": "Connection sub-type.",
+            "maxLength": 255,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "subType,omitempty"
+            }
+          },
+          "model": {
+            "type": "string",
+            "description": "Registry model the connection's definition belongs to.",
+            "maxLength": 255,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "model,omitempty"
+            }
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Connection metadata gathered so far in the flow.",
+            "x-go-type": "core.Map",
+            "x-go-type-import": {
+              "path": "github.com/meshery/schemas/models/core"
+            },
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "metadata,omitempty"
+            }
+          },
+          "credentialSecret": {
+            "type": "object",
+            "description": "Credential secret material for the connection.",
+            "x-go-type": "core.Map",
+            "x-go-type-import": {
+              "path": "github.com/meshery/schemas/models/core"
+            },
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "credentialSecret,omitempty"
+            }
+          },
+          "credentialId": {
+            "description": "Existing credential to associate instead of a new secret.",
+            "x-go-name": "CredentialID",
+            "x-oapi-codegen-extra-tags": {
+              "json": "credentialId,omitempty"
+            },
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
+          "skipCredentialVerification": {
+            "type": "boolean",
+            "description": "When true the server registers the connection without verifying the supplied credential first.",
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "skipCredentialVerification"
+            }
+          }
+        }
+      },
+      "ConnectionRegistrationBootstrap": {
+        "type": "object",
+        "description": "Response to an `initialize` registration event: the registry component definitions describing the kind's connection and credential, plus the tracker id for the registration process. Component definitions carry their RJSF form schema as a JSON-encoded string under `schema`.",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "connection"
+        ],
+        "properties": {
+          "id": {
+            "description": "Registration process tracker to echo on subsequent events.",
+            "x-go-name": "ID",
+            "x-oapi-codegen-extra-tags": {
+              "json": "id"
+            },
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
+          "connection": {
+            "type": "object",
+            "description": "Registry component definition (`{Kind}Connection`) describing the connection, including its JSON-encoded `schema`.",
+            "x-go-type": "core.Map",
+            "x-go-type-import": {
+              "path": "github.com/meshery/schemas/models/core"
+            },
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "connection"
+            }
+          },
+          "credential": {
+            "type": "object",
+            "description": "Registry component definition (`{Kind}Credential`) describing the credential, including its JSON-encoded `schema`. Absent when the kind defines no credential component.",
+            "x-go-type": "core.Map",
+            "x-go-type-import": {
+              "path": "github.com/meshery/schemas/models/core"
+            },
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "credential,omitempty"
+            }
+          }
+        }
+      },
       "ConnectionStatusInfo": {
         "type": "object",
         "description": "Status count information for connections",
@@ -13289,53 +13760,53 @@ const ConnectionSchema: Record<string, unknown> = {
             }
           },
           "owner": {
-            "description": "ID of the user who owns the underlying connection.",
-            "x-oapi-codegen-extra-tags": {
-              "json": "owner,omitempty"
-            },
             "type": "string",
             "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
+            },
+            "x-oapi-codegen-extra-tags": {
+              "json": "owner,omitempty"
             }
           },
           "createdBy": {
-            "description": "ID of the user who registered the context.",
-            "x-oapi-codegen-extra-tags": {
-              "json": "createdBy,omitempty"
-            },
             "type": "string",
             "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
+            },
+            "x-oapi-codegen-extra-tags": {
+              "json": "createdBy,omitempty"
             }
           },
           "mesheryInstanceId": {
-            "description": "ID of the Meshery instance the context is registered with.",
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
             "x-go-name": "MesheryInstanceID",
             "x-oapi-codegen-extra-tags": {
               "json": "mesheryInstanceId,omitempty"
-            },
-            "type": "string",
-            "format": "uuid",
-            "x-go-type": "uuid.UUID",
-            "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
             }
           },
           "kubernetesServerId": {
-            "description": "ID of the Kubernetes server associated with the context.",
-            "x-go-name": "KubernetesServerID",
-            "x-oapi-codegen-extra-tags": {
-              "json": "kubernetesServerId,omitempty"
-            },
             "type": "string",
             "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
+            },
+            "x-go-name": "KubernetesServerID",
+            "x-oapi-codegen-extra-tags": {
+              "json": "kubernetesServerId,omitempty"
             }
           },
           "deploymentType": {
@@ -13375,20 +13846,33 @@ const ConnectionSchema: Record<string, unknown> = {
             }
           },
           "connectionId": {
-            "description": "ID of the connection this context was projected from.",
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
             "x-go-name": "ConnectionID",
             "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "json": "connectionId,omitempty"
-            },
-            "type": "string",
-            "format": "uuid",
-            "x-go-type": "uuid.UUID",
-            "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
             }
+          },
+          "reachable": {
+            "description": "Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition.",
+            "x-go-type": "bool",
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "reachable"
+            },
+            "type": "boolean"
           }
         }
+      },
+      "ConnectionReachability": {
+        "type": "boolean",
+        "description": "Whether the system behind a connection answered an ad hoc connectivity probe. A probe is a point-in-time check of the connected system's endpoint; its result is never persisted with the connection. For example, probing a Kubernetes connection checks the cluster's API server."
       },
       "K8sContextPage": {
         "type": "object",
@@ -13485,53 +13969,53 @@ const ConnectionSchema: Record<string, unknown> = {
                   }
                 },
                 "owner": {
-                  "description": "ID of the user who owns the underlying connection.",
-                  "x-oapi-codegen-extra-tags": {
-                    "json": "owner,omitempty"
-                  },
                   "type": "string",
                   "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
+                  },
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "owner,omitempty"
                   }
                 },
                 "createdBy": {
-                  "description": "ID of the user who registered the context.",
-                  "x-oapi-codegen-extra-tags": {
-                    "json": "createdBy,omitempty"
-                  },
                   "type": "string",
                   "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
+                  },
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "createdBy,omitempty"
                   }
                 },
                 "mesheryInstanceId": {
-                  "description": "ID of the Meshery instance the context is registered with.",
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
                   "x-go-name": "MesheryInstanceID",
                   "x-oapi-codegen-extra-tags": {
                     "json": "mesheryInstanceId,omitempty"
-                  },
-                  "type": "string",
-                  "format": "uuid",
-                  "x-go-type": "uuid.UUID",
-                  "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
                   }
                 },
                 "kubernetesServerId": {
-                  "description": "ID of the Kubernetes server associated with the context.",
-                  "x-go-name": "KubernetesServerID",
-                  "x-oapi-codegen-extra-tags": {
-                    "json": "kubernetesServerId,omitempty"
-                  },
                   "type": "string",
                   "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
+                  },
+                  "x-go-name": "KubernetesServerID",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "kubernetesServerId,omitempty"
                   }
                 },
                 "deploymentType": {
@@ -13571,18 +14055,27 @@ const ConnectionSchema: Record<string, unknown> = {
                   }
                 },
                 "connectionId": {
-                  "description": "ID of the connection this context was projected from.",
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
                   "x-go-name": "ConnectionID",
                   "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
                     "json": "connectionId,omitempty"
-                  },
-                  "type": "string",
-                  "format": "uuid",
-                  "x-go-type": "uuid.UUID",
-                  "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
                   }
+                },
+                "reachable": {
+                  "description": "Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition.",
+                  "x-go-type": "bool",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "reachable"
+                  },
+                  "type": "boolean"
                 }
               }
             },

@@ -154,11 +154,11 @@ const injectedRtkApi = api
         invalidatesTags: ["Key_Key"],
       }),
       getKeyById: build.query<GetKeyByIdApiResponse, GetKeyByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/auth/key/${queryArg.keyId}` }),
+        query: (queryArg) => ({ url: `/api/auth/keys/${queryArg.keyId}` }),
         providesTags: ["Key_Key"],
       }),
       deleteKey: build.mutation<DeleteKeyApiResponse, DeleteKeyApiArg>({
-        query: (queryArg) => ({ url: `/api/auth/key/${queryArg.keyId}`, method: "DELETE" }),
+        query: (queryArg) => ({ url: `/api/auth/keys/${queryArg.keyId}`, method: "DELETE" }),
         invalidatesTags: ["Key_Key"],
       }),
       getKeychains: build.query<GetKeychainsApiResponse, GetKeychainsApiArg>({
@@ -481,19 +481,6 @@ const injectedRtkApi = api
             order: queryArg?.order,
             filter: queryArg?.filter,
             teamId: queryArg?.teamId,
-          },
-        }),
-        providesTags: ["User_users"],
-      }),
-      getUsers: build.query<GetUsersApiResponse, GetUsersApiArg>({
-        query: (queryArg) => ({
-          url: `/api/users`,
-          params: {
-            page: queryArg?.page,
-            pageSize: queryArg?.pageSize,
-            search: queryArg?.search,
-            order: queryArg?.order,
-            filter: queryArg?.filter,
           },
         }),
         providesTags: ["User_users"],
@@ -897,7 +884,12 @@ const injectedRtkApi = api
         invalidatesTags: ["Design_designs"],
       }),
       getPattern: build.query<GetPatternApiResponse, GetPatternApiArg>({
-        query: (queryArg) => ({ url: `/api/content/patterns/${queryArg.designId}` }),
+        query: (queryArg) => ({
+          url: `/api/content/patterns/${queryArg.designId}`,
+          params: {
+            metrics: queryArg?.metrics,
+          },
+        }),
         providesTags: ["Design_designs"],
       }),
       deletePattern: build.mutation<DeletePatternApiResponse, DeletePatternApiArg>({
@@ -1257,11 +1249,43 @@ const injectedRtkApi = api
         providesTags: ["Invitation_Invitation"],
       }),
       approveSignupRequest: build.mutation<ApproveSignupRequestApiResponse, ApproveSignupRequestApiArg>({
-        query: () => ({ url: `/api/identity/users/request/approve`, method: "POST" }),
+        query: (queryArg) => ({
+          url: `/api/identity/users/request/approve`,
+          method: "POST",
+          params: {
+            id: queryArg?.id,
+            firstName: queryArg?.firstName,
+            lastName: queryArg?.lastName,
+            email: queryArg?.email,
+            occupation: queryArg?.occupation,
+            organization: queryArg?.organization,
+            role: queryArg?.role,
+            formType: queryArg?.formType,
+            status: queryArg?.status,
+            taskId: queryArg?.taskId,
+            taskLink: queryArg?.taskLink,
+          },
+        }),
         invalidatesTags: ["Invitation_Invitation"],
       }),
       denySignupRequest: build.mutation<DenySignupRequestApiResponse, DenySignupRequestApiArg>({
-        query: () => ({ url: `/api/identity/users/request/deny`, method: "POST" }),
+        query: (queryArg) => ({
+          url: `/api/identity/users/request/deny`,
+          method: "POST",
+          params: {
+            id: queryArg?.id,
+            firstName: queryArg?.firstName,
+            lastName: queryArg?.lastName,
+            email: queryArg?.email,
+            occupation: queryArg?.occupation,
+            organization: queryArg?.organization,
+            role: queryArg?.role,
+            formType: queryArg?.formType,
+            status: queryArg?.status,
+            taskId: queryArg?.taskId,
+            taskLink: queryArg?.taskLink,
+          },
+        }),
         invalidatesTags: ["Invitation_Invitation"],
       }),
       getSignupRequestNotification: build.query<
@@ -1478,11 +1502,50 @@ const injectedRtkApi = api
         query: (queryArg) => ({
           url: `/api/identity/tokens/infinite`,
           params: {
-            owner: queryArg?.owner,
+            userId: queryArg?.userId,
             provider: queryArg?.provider,
           },
         }),
         providesTags: ["token_tokens"],
+      }),
+      getUsers: build.query<GetUsersApiResponse, GetUsersApiArg>({
+        query: (queryArg) => ({
+          url: `/api/users`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            filter: queryArg?.filter,
+          },
+        }),
+        providesTags: ["User_users"],
+      }),
+      searchUsers: build.query<SearchUsersApiResponse, SearchUsersApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/users/search`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            filter: queryArg?.filter,
+          },
+        }),
+        providesTags: ["User_users"],
+      }),
+      searchUsersInOrg: build.query<SearchUsersInOrgApiResponse, SearchUsersInOrgApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/users/search`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            filter: queryArg?.filter,
+          },
+        }),
+        providesTags: ["User_users"],
       }),
       getWorkspaces: build.query<GetWorkspacesApiResponse, GetWorkspacesApiArg>({
         query: (queryArg) => ({
@@ -1907,11 +1970,11 @@ export type GetUserCredentialsApiResponse = /** status 200 Credentials response 
 };
 export type GetUserCredentialsApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -2041,11 +2104,11 @@ export type GetUserKeysApiArg = {
   /** Organization ID */
   orgId: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
 };
 export type GetKeysApiResponse = /** status 200 Keys fetched */ {
   /** Zero-based page index returned in this response. */
@@ -2078,11 +2141,11 @@ export type GetKeysApiResponse = /** status 200 Keys fetched */ {
 };
 export type GetKeysApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -2176,11 +2239,11 @@ export type GetKeychainsApiResponse = /** status 200 Keychain(s) fetched */ {
 };
 export type GetKeychainsApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -2302,11 +2365,11 @@ export type GetKeysOfKeychainApiArg = {
   /** Keychain ID */
   keychainId: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -2625,6 +2688,8 @@ export type GetOrgsApiResponse = /** status 200 Organizations response */ {
     country?: string;
     /** Region of the organization. */
     region?: string;
+    /** Custom domain assigned to the organization, when configured. */
+    domain?: string;
     /** Display name of the organization owner. */
     owner?: string;
     /** Free-form metadata associated with an organization, including preferences. */
@@ -2748,6 +2813,8 @@ export type CreateOrgApiResponse = /** status 201 Single-organization page respo
     country?: string;
     /** Region of the organization. */
     region?: string;
+    /** Custom domain assigned to the organization, when configured. */
+    domain?: string;
     /** Display name of the organization owner. */
     owner?: string;
     /** Free-form metadata associated with an organization, including preferences. */
@@ -2981,6 +3048,8 @@ export type GetOrgApiResponse = /** status 200 Single-organization page response
     country?: string;
     /** Region of the organization. */
     region?: string;
+    /** Custom domain assigned to the organization, when configured. */
+    domain?: string;
     /** Display name of the organization owner. */
     owner?: string;
     /** Free-form metadata associated with an organization, including preferences. */
@@ -3101,6 +3170,8 @@ export type UpdateOrgApiResponse = /** status 200 Single-organization page respo
     country?: string;
     /** Region of the organization. */
     region?: string;
+    /** Custom domain assigned to the organization, when configured. */
+    domain?: string;
     /** Display name of the organization owner. */
     owner?: string;
     /** Free-form metadata associated with an organization, including preferences. */
@@ -3585,9 +3656,9 @@ export type GetAllRolesApiArg = {
   /** Organization ID */
   orgId: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by page size */
-  pageSize?: string;
+  pageSize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -3680,9 +3751,9 @@ export type GetRoleKeychainsApiArg = {
   /** Role ID */
   roleId: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by page size */
-  pageSize?: string;
+  pageSize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -3738,9 +3809,9 @@ export type GetSchedulesApiResponse = /** status 200 Schedules response */ {
 };
 export type GetSchedulesApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by page size */
-  pageSize?: string;
+  pageSize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -3845,11 +3916,11 @@ export type GetTeamsApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
 };
 export type CreateTeamApiResponse = /** status 201 Created team */ {
   /** Team ID */
@@ -3886,29 +3957,19 @@ export type CreateTeamApiArg = {
     };
   };
 };
-export type GetTeamUsersApiResponse = /** status 200 Team users mapping */ {
+export type GetTeamUsersApiResponse = /** status 200 Team members with their roles */ {
   /** Current page number of the result set. */
   page?: number;
   /** Number of items per page. */
   pageSize?: number;
   /** Total number of items available. */
   totalCount?: number;
-  /** The user-team mappings on the current page. */
-  usersTeamsMapping?: {
-    id?: string;
-    /** Team ID */
-    teamId?: string;
-    /** User ID */
-    userId?: string;
-    /** Optional role assigned to this team membership. Nullable because a membership may exist without an explicit role (e.g., team-admin assignments are stamped on insert; non-owner adds may leave `role_id` null until a role is assigned). References `roles.id`.
+  /** The data of the teammemberspage. */
+  data?: {
+    /** Timestamp when the user joined the team. Server-computed from the earliest matching row in `users_teams_mapping` for this (team, user) pair. Server-managed; clients cannot set this.
      */
-    roleId?: string;
-    /** Timestamp when the mapping was created. */
-    createdAt?: string;
-    /** Timestamp when the mapping was last updated. */
-    updatedAt?: string;
-    /** Timestamp when the mapping was soft-deleted, if applicable. */
-    deletedAt?: string;
+    joinedAt?: string;
+    [key: string]: any;
   }[];
 };
 export type GetTeamUsersApiArg = {
@@ -3919,11 +3980,11 @@ export type GetTeamUsersApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
 };
 export type AddUserToTeamApiResponse = /** status 201 User added to team */ {
   id?: string;
@@ -3983,11 +4044,11 @@ export type ListUsersNotInTeamApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
 };
 export type GetUsersForOrgApiResponse = /** status 200 Paginated list of organization users */ {
   /** Current page number of the result set. */
@@ -4174,9 +4235,9 @@ export type GetUsersForOrgApiArg = {
   /** Organization ID */
   orgId: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by page size */
-  pageSize?: string;
+  pageSize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -4185,199 +4246,6 @@ export type GetUsersForOrgApiArg = {
   filter?: string;
   /** Optional team filter when listing organization users */
   teamId?: string;
-};
-export type GetUsersApiResponse = /** status 200 Paginated list of public users */ {
-  /** Current page number of the result set. */
-  page?: number;
-  /** Number of items per page. */
-  pageSize?: number;
-  /** Total number of items available. */
-  totalCount?: number;
-  /** The data of the userspagefornonadmin. */
-  data?: {
-    /** Unique identifier for the user */
-    id: string;
-    /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
-    userId: string;
-    /** Authentication provider (e.g., Google, Github) */
-    provider: string;
-    /** User's email address */
-    email: string;
-    /** User's first name */
-    firstName: string;
-    /** User's last name */
-    lastName: string;
-    /** URL to user's avatar image */
-    avatarUrl?: string;
-    /** User account status */
-    status: "active" | "inactive" | "pending" | "anonymous";
-    /** User's biography or description */
-    bio?: string;
-    /** User's country information stored as JSONB */
-    country?: {
-      [key: string]: any;
-    };
-    /** User's region information stored as JSONB */
-    region?: {
-      [key: string]: any;
-    };
-    /** User preferences stored as JSONB */
-    preferences?: {
-      /** The mesh adapters of the preference. */
-      meshAdapters?: object[];
-      grafana?: {
-        /** Grafana URL for the user configuration. */
-        grafanaUrl?: string;
-        /** Grafana API key for the user configuration. */
-        grafanaApiKey?: string;
-        /** Selected Grafana board configurations for the user. */
-        selectedBoardsConfigs?: {
-          /** Placeholder for GrafanaBoard definition (define fields as needed) */
-          board?: object;
-          /** Panels selected for the Grafana board configuration. */
-          panels?: object[];
-          /** Template variables applied to the selected Grafana board configuration. */
-          templateVars?: string[];
-        }[];
-      };
-      prometheus?: {
-        /** The prometheus URL of the prometheus. */
-        prometheusUrl?: string;
-        /** The selected prometheus boards configs of the prometheus. */
-        selectedPrometheusBoardsConfigs?: {
-          /** Placeholder for GrafanaBoard definition (define fields as needed) */
-          board?: object;
-          /** Panels selected for the Grafana board configuration. */
-          panels?: object[];
-          /** Template variables applied to the selected Grafana board configuration. */
-          templateVars?: string[];
-        }[];
-      };
-      loadTestPrefs?: {
-        /** Concurrent requests */
-        c?: number;
-        /** Queries per second */
-        qps?: number;
-        /** Duration */
-        t?: string;
-        /** Load generator */
-        gen?: string;
-      };
-      /** The anonymous usage stats of the preference. */
-      anonymousUsageStats: boolean;
-      /** The anonymous perf results of the preference. */
-      anonymousPerfResults: boolean;
-      /** Timestamp of when the resource was last updated. */
-      updatedAt: string;
-      /** The dashboard preferences of the preference. */
-      dashboardPreferences: {
-        [key: string]: any;
-      };
-      /** ID of the associated selectedOrganization. */
-      selectedOrganizationId: string;
-      /** The selected workspace for organizations of the preference. */
-      selectedWorkspaceForOrganizations: {
-        [key: string]: string;
-      };
-      /** The users extension preferences of the preference. */
-      usersExtensionPreferences: {
-        [key: string]: any;
-      };
-      /** The remote provider preferences of the preference. */
-      remoteProviderPreferences: {
-        [key: string]: any;
-      };
-    };
-    /** Timestamp when user accepted terms and conditions */
-    acceptedTermsAt?: string;
-    /** Timestamp of user's first login */
-    firstLoginTime?: string;
-    /** Timestamp of user's most recent login */
-    lastLoginTime: string;
-    /** Timestamp when the user record was created */
-    createdAt: string;
-    /** Timestamp when the user record was last updated */
-    updatedAt: string;
-    /** Various online profiles associated with the user account */
-    socials?: {
-      /** The site of the social. */
-      site: string;
-      /** The link of the social. */
-      link: string;
-    }[];
-    /** Timestamp when the user record was soft-deleted (null if not deleted) */
-    deletedAt: string | null;
-    /** Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set. */
-    roleNames?: string[];
-    /** Teams the user belongs to with role information */
-    teams?: {
-      /** Team memberships for the user with their assigned roles. */
-      teamsWithRoles?: {
-        /** Unique identifier of the team. */
-        id: string;
-        /** Name of the team. */
-        name: string;
-        /** Human readable description of the team. */
-        description?: string;
-        /** Identifier of the team owner. */
-        owner?: string;
-        /** Free-form metadata associated with the team. */
-        metadata?: {
-          [key: string]: any;
-        };
-        /** Timestamp when the team was created. */
-        createdAt?: string;
-        /** Timestamp when the team was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the team was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of team memberships returned for the user. */
-      totalCount?: number;
-    };
-    /** Organizations the user belongs to with role information */
-    organizations?: {
-      /** Organization memberships for the user with their assigned roles. */
-      organizationsWithRoles?: {
-        /** Unique identifier of the organization. */
-        id: string;
-        /** Name of the organization. */
-        name: string;
-        /** Human readable description of the organization. */
-        description?: string;
-        /** Country associated with the organization. */
-        country?: string;
-        /** Region associated with the organization. */
-        region?: string;
-        /** Identifier of the organization owner. */
-        owner?: string;
-        /** Timestamp when the organization was created. */
-        createdAt?: string;
-        /** Timestamp when the organization was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the organization was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of organization memberships returned for the user. */
-      totalCount?: number;
-    };
-  }[];
-};
-export type GetUsersApiArg = {
-  /** Get responses by page */
-  page?: string;
-  /** Get responses by page size */
-  pageSize?: string;
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-  /** Get filtered reponses */
-  filter?: string;
 };
 export type GetUserProfileByIdApiResponse = /** status 200 User profile for the requested ID */ {
   /** Unique identifier for the user */
@@ -5050,7 +4918,7 @@ export type GetUserEmailAddressesApiResponse = /** status 200 Email addresses as
   createdAt: string;
   updatedAt: string;
   /** SQL null Timestamp to handle null values of time. */
-  deletedAt?: string;
+  deletedAt?: string | null;
 }[];
 export type GetUserEmailAddressesApiArg = {
   /** ID of the user */
@@ -5142,11 +5010,11 @@ export type GetViewsApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** JSON-encoded filter string for assignment and soft-delete filters. */
   filter?: string;
   /** When true, include views shared with the user. */
@@ -5944,11 +5812,11 @@ export type UpdateAcademyCurriculaByIdApiResponse = /** status 200 updated the c
     /** Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
     description: string;
     /** Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-    emails: string[];
+    emails: string[] | null;
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     orgId: string;
     /** Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire. */
-    expiresAt?: string;
+    expiresAt?: string | null;
     /** Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
     quota?: number;
     /** List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
@@ -5964,7 +5832,7 @@ export type UpdateAcademyCurriculaByIdApiResponse = /** status 200 updated the c
     /** Timestamp when the invitation was last updated. */
     updatedAt: string;
     /** Timestamp when the invitation was deleted, if applicable. */
-    deletedAt: string;
+    deletedAt: string | null;
   };
 };
 export type UpdateAcademyCurriculaByIdApiArg = {
@@ -6159,11 +6027,11 @@ export type GetAcademyCurriculaByIdApiResponse = /** status 200 A single curricu
     /** Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
     description: string;
     /** Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-    emails: string[];
+    emails: string[] | null;
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     orgId: string;
     /** Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire. */
-    expiresAt?: string;
+    expiresAt?: string | null;
     /** Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
     quota?: number;
     /** List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
@@ -6179,7 +6047,7 @@ export type GetAcademyCurriculaByIdApiResponse = /** status 200 A single curricu
     /** Timestamp when the invitation was last updated. */
     updatedAt: string;
     /** Timestamp when the invitation was deleted, if applicable. */
-    deletedAt: string;
+    deletedAt: string | null;
   };
 };
 export type GetAcademyCurriculaByIdApiArg = {
@@ -6766,9 +6634,9 @@ export type GetAllTestSessionsForRegistrationApiArg = {
   /** The ID of the registration to retrieve tests for */
   id: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by pagesize */
-  pagesize?: string;
+  pagesize?: number;
   /** Filter tests by absolute path */
   testAbsPath?: string;
 };
@@ -6916,7 +6784,243 @@ export type SubmitQuizApiArg = {
   };
 };
 export type GetAcademyAdminSummaryApiResponse =
-  /** status 200 A list of content with total count and registration metrics */ object;
+  /** status 200 A list of content with total count and registration metrics */ {
+    /** Academy module configuration for the organization. */
+    orgConfig?: {
+      /** Academy module assigned to the organization. */
+      module?: string;
+      /** Version of the assigned academy module. */
+      version?: string;
+    };
+    /** Total distinct learners registered for the organization. */
+    totalLearners?: number;
+    /** Learners with at least one active registration. */
+    totalActiveLearners?: number;
+    /** Per-content-type registration counts. */
+    curricula?: {
+      /** Academy content type. */
+      type?: string;
+      /** Registrations for this content type. */
+      totalCount?: number;
+    }[];
+    /** Per-status registration counts. */
+    registrationsSummary?: {
+      /** Registration status. */
+      status?: string;
+      /** Registrations in this status. */
+      totalCount?: number;
+    }[];
+    /** Aggregate test outcomes across the organization. */
+    testsSummary?: {
+      totalPassed?: number;
+      totalFailed?: number;
+      totalAttempts?: number;
+    };
+    /** Per-test outcome counts. */
+    tests?: {
+      /** The test the counts refer to. */
+      test?: {
+        /** Quiz ID. */
+        id: string;
+        /** Organization ID that owns this quiz */
+        orgId: string;
+        /** Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path */
+        final: boolean;
+        /** The title of the quiz. */
+        title: string;
+        /** Description of the quiz. */
+        description: string;
+        /** The slug of the quiz. */
+        slug: string;
+        /** The rel permalink of the quiz. */
+        relPermalink: string;
+        /** The permalink of the quiz. */
+        permalink: string;
+        /** Type of the resource. */
+        type: string;
+        /** The section of the quiz. */
+        section: string;
+        /** The layout of the quiz. */
+        layout: string;
+        /** The date of the quiz. */
+        date: string;
+        /** The lastmod of the quiz. */
+        lastmod: string;
+        /** The draft of the quiz. */
+        draft: boolean;
+        /** The file path of the quiz. */
+        filePath: string;
+        /** The pass percentage of the quiz. */
+        passPercentage: number;
+        /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
+        timeLimit: number;
+        /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
+        maxAttempts: number;
+        /** The questions of the quiz. */
+        questions: {
+          /** Question ID. */
+          id: string;
+          /** The text of the question. */
+          text: string;
+          type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
+          /** The marks of the question. */
+          marks: number;
+          /** The multiple answers of the question. */
+          multipleAnswers?: boolean;
+          /** The options of the question. */
+          options: {
+            /** QuestionOption ID. */
+            id: string;
+            /** The text of the questionoption. */
+            text: string;
+            /** The is correct of the questionoption. */
+            isCorrect: boolean;
+          }[];
+          /** The correct answer of the question. */
+          correctAnswer: string;
+        }[];
+        /** The total questions of the quiz. */
+        totalQuestions: number;
+        /** The total questions in bank of the quiz. */
+        totalQuestionsInBank: number;
+        /** The total question sets of the quiz. */
+        totalQuestionSets: number;
+        /** The total marks of the quiz. */
+        totalMarks: number;
+        /** The prerequisites of the quiz. */
+        prerequisites: {
+          /** Parent ID. */
+          id: string;
+          /** The title of the parent. */
+          title: string;
+          /** The rel permalink of the parent. */
+          relPermalink: string;
+          /** Type of the resource. */
+          type: string;
+        }[];
+        parent?: {
+          /** Parent ID. */
+          id: string;
+          /** The title of the parent. */
+          title: string;
+          /** The rel permalink of the parent. */
+          relPermalink: string;
+          /** Type of the resource. */
+          type: string;
+        };
+        nextPage: {
+          /** Parent ID. */
+          id: string;
+          /** The title of the parent. */
+          title: string;
+          /** The rel permalink of the parent. */
+          relPermalink: string;
+          /** Type of the resource. */
+          type: string;
+        };
+      };
+      passed?: number;
+      failed?: number;
+      attempts?: number;
+    }[];
+    /** Curricula with metrics for the organization. */
+    curriculaList?: {
+      /** Total number of Curricula */
+      total: number;
+      /** The data of the academycurriculawithmetricslistresponse. */
+      data: ({
+        /** Id of the Curricula */
+        id: string;
+        type: "learning-path" | "challenge" | "certification";
+        /** Organization ID that owns this learning path */
+        orgId: string;
+        /** Visibility of the Curricula */
+        visibility: "public" | "private";
+        /** Status of the Curricula */
+        status: "ready" | "archived" | "not_ready";
+        /** slug of the Curricula */
+        slug: string;
+        /** Level of the Curricula */
+        level: "beginner" | "intermediate" | "advanced";
+        /** ID of the badge to be awarded on completion of this curricula */
+        badgeId?: string;
+        /** ID of the invite associated with this Curricula */
+        inviteId?: string;
+        /** ID of the workspace to which this Curricula belongs */
+        workspaceId?: string;
+        /** When the Curricula item was created */
+        createdAt: string;
+        /** When the Curricula was last updated */
+        updatedAt: string;
+        deletedAt: string;
+        /** Additional metadata about the Curricula */
+        metadata: {
+          /** Title of the learning path */
+          title: string;
+          /** Short description of the curricula */
+          description: string;
+          /** Detailed description of the curricula */
+          detailedDescription?: string;
+          /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
+          banner?: string | null;
+          /** Canonical URL for the learning path */
+          permalink: string;
+          certificate?: {
+            /** Unique identifier for the certificate */
+            id: string;
+            /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+            orgId: string;
+            /** ID of the recipient (user) who received the certificate */
+            recipientId: string;
+            /** Name of the recipient (user) who received the certificate */
+            recipientName: string;
+            /** Title of the certificate */
+            title: string;
+            /** Description of the certificate */
+            description: string;
+            /** List of issuing authorities for the certificate */
+            issuingAuthorities: {
+              /** Name of the issuing authority */
+              name: string;
+              /** Role of the issuing authority */
+              role?: string;
+              /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
+              signatureUrl?: string;
+            }[];
+            /** Date when the certificate was issued */
+            issuedDate: string;
+            /** Date when the certificate expires. Dynamically calculated from issued_date and expires_in; not specified by instructors. */
+            expirationDate?: string;
+            /** Number of months after which the certificate expires */
+            expiresIn?: number;
+          };
+          /** List of children items in the top-level curricula */
+          children?: {
+            /** Unique identifier for the course */
+            id: string;
+            /** Title of the course */
+            title: string;
+            /** URL to the course content */
+            permalink: string;
+            /** Course description */
+            description: string;
+            /** A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title. */
+            weight?: number;
+            /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
+            banner?: string | null;
+            /** Type of the content (e.g., learning-path, challenge, certification) */
+            type?: "learning-path" | "challenge" | "certification";
+            /** List of child nodes (sub-courses or modules) */
+            children?: object[];
+          }[];
+          [key: string]: any;
+        };
+      } & {
+        /** Number of registrations associated with this curriculum. */
+        registrationCount: number;
+      })[];
+    };
+  };
 export type GetAcademyAdminSummaryApiArg = void;
 export type GetAcademyAdminRegistrationsApiResponse = /** status 200 List of registrations with pagination info */ {
   /** The data of the curricularegistrationsresponse. */
@@ -7238,7 +7342,7 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
     /** Timestamp when the connection was last updated. */
     updatedAt?: string;
     /** Timestamp when the connection was soft-deleted, if applicable. */
-    deletedAt?: string;
+    deletedAt?: string | null;
     /** Associated environments for this connection */
     environments?: {
       /** ID */
@@ -7545,7 +7649,7 @@ export type RegisterConnectionApiResponse = /** status 201 Connection registered
   /** Timestamp when the connection was last updated. */
   updatedAt?: string;
   /** Timestamp when the connection was soft-deleted, if applicable. */
-  deletedAt?: string;
+  deletedAt?: string | null;
   /** Associated environments for this connection */
   environments?: {
     /** ID */
@@ -7993,7 +8097,7 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
   /** Timestamp when the connection was last updated. */
   updatedAt?: string;
   /** Timestamp when the connection was soft-deleted, if applicable. */
-  deletedAt?: string;
+  deletedAt?: string | null;
   /** Associated environments for this connection */
   environments?: {
     /** ID */
@@ -8262,7 +8366,7 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated */ {
   /** Timestamp when the connection was last updated. */
   updatedAt?: string;
   /** Timestamp when the connection was soft-deleted, if applicable. */
-  deletedAt?: string;
+  deletedAt?: string | null;
   /** Associated environments for this connection */
   environments?: {
     /** ID */
@@ -8503,13 +8607,13 @@ export type GetKubernetesContextApiResponse = /** status 200 Kubernetes context 
     cluster?: object;
     /** API server URL of the Kubernetes cluster. */
     server?: string;
-    /** ID of the user who owns the underlying connection. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     owner?: string;
-    /** ID of the user who registered the context. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     createdBy?: string;
-    /** ID of the Meshery instance the context is registered with. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     mesheryInstanceId?: string;
-    /** ID of the Kubernetes server associated with the context. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     kubernetesServerId?: string;
     /** How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster). */
     deploymentType?: string;
@@ -8519,8 +8623,10 @@ export type GetKubernetesContextApiResponse = /** status 200 Kubernetes context 
     createdAt?: string;
     /** Timestamp when the underlying connection was last updated. */
     updatedAt?: string;
-    /** ID of the connection this context was projected from. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     connectionId?: string;
+    /** Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition. */
+    reachable?: boolean;
   }[];
 };
 export type GetKubernetesContextApiArg = {
@@ -9302,7 +9408,7 @@ export type GetPatternsApiResponse = /** status 200 Designs response */ {
 };
 export type GetPatternsApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of items per page (canonical camelCase form). */
   pageSize?: number;
   /** Get responses that match search param value */
@@ -9881,6 +9987,8 @@ export type GetPatternApiResponse = /** status 200 Design response */ {
 export type GetPatternApiArg = {
   /** Design (Pattern) ID */
   designId: string;
+  /** Whether to include usage metrics in the response. */
+  metrics?: boolean;
 };
 export type DeletePatternApiResponse = unknown;
 export type DeletePatternApiArg = {
@@ -10479,7 +10587,7 @@ export type GetCatalogContentApiResponse = /** status 200 Catalog content page *
 export type GetCatalogContentApiArg = {
   pathType: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of items per page (canonical camelCase form). */
   pageSize?: number;
   /** Get responses that match search param value */
@@ -10919,7 +11027,7 @@ export type GetCatalogContentClassesApiResponse = /** status 200 Catalog content
 }[];
 export type GetCatalogContentClassesApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of items per page (canonical camelCase form). */
   pageSize?: number;
 };
@@ -11191,7 +11299,7 @@ export type GetCatalogRequestApiResponse = /** status 200 Catalog requests page 
 };
 export type GetCatalogRequestApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of items per page (canonical camelCase form). */
   pageSize?: number;
   /** Get responses that match search param value */
@@ -11270,11 +11378,11 @@ export type GetEnvironmentsApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** User's organization ID */
   orgId: string;
 };
@@ -11384,11 +11492,11 @@ export type GetEnvironmentConnectionsApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** JSON-encoded filter string used to scope the connection listing. */
   filter?: string;
 };
@@ -11484,11 +11592,11 @@ export type GetEventsOfWorkspaceApiArg = {
   /** Workspace ID */
   workspaceId: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -11536,9 +11644,9 @@ export type GetEventsApiResponse = /** status 200 Events page */ {
 };
 export type GetEventsApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by pagesize */
-  pagesize?: string;
+  pagesize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -11560,9 +11668,9 @@ export type GetEventSummaryByUserApiResponse = /** status 200 Event summary page
 };
 export type GetEventSummaryByUserApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by pagesize */
-  pagesize?: string;
+  pagesize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -11578,11 +11686,11 @@ export type GetEventTypesApiResponse = /** status 200 Event types */ {
 }[];
 export type GetEventTypesApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
 };
 export type GetFiltersApiResponse = /** status 200 Filters response */ {
   /** Current page number of the result set. */
@@ -11647,7 +11755,7 @@ export type GetFiltersApiResponse = /** status 200 Filters response */ {
 };
 export type GetFiltersApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of items per page (canonical camelCase form). */
   pageSize?: number;
   /** Get responses that match search param value */
@@ -12054,11 +12162,11 @@ export type GetInvitationApiResponse = /** status 200 Invitation fetched */ {
   /** Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
   description: string;
   /** Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-  emails: string[];
+  emails: string[] | null;
   /** ID of the organization to which the user is invited. */
   orgId: string;
   /** Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire. */
-  expiresAt?: string;
+  expiresAt?: string | null;
   /** Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
   quota?: number;
   /** List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
@@ -12074,7 +12182,7 @@ export type GetInvitationApiResponse = /** status 200 Invitation fetched */ {
   /** Timestamp when the invitation was last updated. */
   updatedAt: string;
   /** Timestamp when the invitation was deleted, if applicable. */
-  deletedAt: string;
+  deletedAt: string | null;
 };
 export type GetInvitationApiArg = {
   /** The ID of the invitation. */
@@ -12097,11 +12205,11 @@ export type UpdateInvitationApiResponse = /** status 200 Invitation updated */ {
   /** Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
   description: string;
   /** Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-  emails: string[];
+  emails: string[] | null;
   /** ID of the organization to which the user is invited. */
   orgId: string;
   /** Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire. */
-  expiresAt?: string;
+  expiresAt?: string | null;
   /** Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
   quota?: number;
   /** List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
@@ -12117,7 +12225,7 @@ export type UpdateInvitationApiResponse = /** status 200 Invitation updated */ {
   /** Timestamp when the invitation was last updated. */
   updatedAt: string;
   /** Timestamp when the invitation was deleted, if applicable. */
-  deletedAt: string;
+  deletedAt: string | null;
 };
 export type UpdateInvitationApiArg = {
   /** The ID of the invitation. */
@@ -12169,11 +12277,11 @@ export type GetInvitationsApiResponse = /** status 200 Invitations page */ {
     /** Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
     description: string;
     /** Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-    emails: string[];
+    emails: string[] | null;
     /** ID of the organization to which the user is invited. */
     orgId: string;
     /** Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire. */
-    expiresAt?: string;
+    expiresAt?: string | null;
     /** Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
     quota?: number;
     /** List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
@@ -12189,14 +12297,14 @@ export type GetInvitationsApiResponse = /** status 200 Invitations page */ {
     /** Timestamp when the invitation was last updated. */
     updatedAt: string;
     /** Timestamp when the invitation was deleted, if applicable. */
-    deletedAt: string;
+    deletedAt: string | null;
   }[];
 };
 export type GetInvitationsApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by pagesize */
-  pagesize?: string;
+  pagesize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -12216,11 +12324,11 @@ export type CreateInvitationApiResponse = /** status 201 Invitation created */ {
   /** Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
   description: string;
   /** Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-  emails: string[];
+  emails: string[] | null;
   /** ID of the organization to which the user is invited. */
   orgId: string;
   /** Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire. */
-  expiresAt?: string;
+  expiresAt?: string | null;
   /** Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
   quota?: number;
   /** List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
@@ -12236,7 +12344,7 @@ export type CreateInvitationApiResponse = /** status 201 Invitation created */ {
   /** Timestamp when the invitation was last updated. */
   updatedAt: string;
   /** Timestamp when the invitation was deleted, if applicable. */
-  deletedAt: string;
+  deletedAt: string | null;
 };
 export type CreateInvitationApiArg = {
   body: {
@@ -12278,11 +12386,11 @@ export type AcceptInvitationApiResponse = /** status 200 Invitation accepted */ 
   /** Description of the invitation, which can be used to provide additional context. Null or empty string means the invitation does not have a description. */
   description: string;
   /** Email addresses or patterns for which the invitation is valid. Null means the invitation is valid for any email address. */
-  emails: string[];
+  emails: string[] | null;
   /** ID of the organization to which the user is invited. */
   orgId: string;
   /** Timestamp when the invitation expires, if applicable. Null or empty means the invitation does not expire. */
-  expiresAt?: string;
+  expiresAt?: string | null;
   /** Quota for the invitation; limits the number of users that can accept it. Null or empty means the invitation is unlimited. */
   quota?: number;
   /** List of user ids that have already accepted the invitation. Empty means the invitation has not been used yet. */
@@ -12298,7 +12406,7 @@ export type AcceptInvitationApiResponse = /** status 200 Invitation accepted */ 
   /** Timestamp when the invitation was last updated. */
   updatedAt: string;
   /** Timestamp when the invitation was deleted, if applicable. */
-  deletedAt: string;
+  deletedAt: string | null;
 };
 export type AcceptInvitationApiArg = {
   /** The ID of the invitation. */
@@ -12336,9 +12444,9 @@ export type GetSignupRequestsApiResponse = /** status 200 Signup requests page *
 };
 export type GetSignupRequestsApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by pagesize */
-  pagesize?: string;
+  pagesize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -12349,11 +12457,57 @@ export type GetSignupRequestsApiArg = {
 export type ApproveSignupRequestApiResponse = /** status 200 Signup request approved */ {
   [key: string]: any;
 };
-export type ApproveSignupRequestApiArg = void;
+export type ApproveSignupRequestApiArg = {
+  /** The ID of the signup request being approved or denied. */
+  id: string;
+  /** First name of the requester. */
+  firstName?: string;
+  /** Last name of the requester. */
+  lastName?: string;
+  /** Email address of the requester. */
+  email?: string;
+  /** Occupation of the requester. */
+  occupation?: string;
+  /** Organization of the requester. */
+  organization?: string;
+  /** Requested role. */
+  role?: string;
+  /** The signup form variant the request originated from. */
+  formType?: string;
+  /** Status to record on the signup request. */
+  status?: string;
+  /** Tracking task identifier associated with the request. */
+  taskId?: string;
+  /** Tracking task link associated with the request. */
+  taskLink?: string;
+};
 export type DenySignupRequestApiResponse = /** status 200 Signup request denied */ {
   [key: string]: any;
 };
-export type DenySignupRequestApiArg = void;
+export type DenySignupRequestApiArg = {
+  /** The ID of the signup request being approved or denied. */
+  id: string;
+  /** First name of the requester. */
+  firstName?: string;
+  /** Last name of the requester. */
+  lastName?: string;
+  /** Email address of the requester. */
+  email?: string;
+  /** Occupation of the requester. */
+  occupation?: string;
+  /** Organization of the requester. */
+  organization?: string;
+  /** Requested role. */
+  role?: string;
+  /** The signup form variant the request originated from. */
+  formType?: string;
+  /** Status to record on the signup request. */
+  status?: string;
+  /** Tracking task identifier associated with the request. */
+  taskId?: string;
+  /** Tracking task link associated with the request. */
+  taskLink?: string;
+};
 export type GetSignupRequestNotificationApiResponse = /** status 200 Signup request notification payload */ {
   /** The signup request the notification refers to. */
   signupData: {
@@ -12430,7 +12584,7 @@ export type GetPatternResourcesApiResponse = /** status 200 Pattern resources pa
 };
 export type GetPatternResourcesApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of items per page (canonical camelCase form). */
   pageSize?: number;
   /** Number of items per page. Deprecated alias of pageSize kept for
@@ -12623,7 +12777,7 @@ export type GetPerformanceProfilesApiResponse = /** status 200 Performance profi
 };
 export type GetPerformanceProfilesApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by pagesize */
   pagesize?: string;
   /** Get responses that match search param value */
@@ -12887,7 +13041,7 @@ export type GetPerformanceProfileResultsApiArg = {
   /** Performance profile ID. */
   performanceProfileId: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by pagesize */
   pagesize?: string;
   /** Get responses that match search param value */
@@ -12976,7 +13130,7 @@ export type GetPerformanceResultsApiResponse = /** status 200 Performance result
 };
 export type GetPerformanceResultsApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by pagesize */
   pagesize?: string;
   /** Get responses that match search param value */
@@ -13006,9 +13160,9 @@ export type GetPlansApiResponse = /** status 200 Plans response */ {
 }[];
 export type GetPlansApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by pagesize */
-  pagesize?: string;
+  pagesize?: number;
 };
 export type GetSubscriptionsApiResponse = /** status 200 Subscriptions response */ {
   /** Current page number of the result set. */
@@ -13062,9 +13216,9 @@ export type GetSubscriptionsApiResponse = /** status 200 Subscriptions response 
 };
 export type GetSubscriptionsApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by pagesize */
-  pagesize?: string;
+  pagesize?: number;
   /** Get ordered responses */
   order?: string;
   /** Filter subscriptions by status */
@@ -13250,11 +13404,11 @@ export type GetUserTokensApiArg = {
   /** Whether to retrieve OAuth-backed sessions instead of API tokens. */
   isOauth?: boolean;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -13391,9 +13545,121 @@ export type IssueIndefiniteLifetimeTokenApiResponse = /** status 200 Token gener
 };
 export type IssueIndefiniteLifetimeTokenApiArg = {
   /** UUID of the user to issue the indefinite token for. */
-  owner: string;
+  userId: string;
   /** Authentication provider to associate with the indefinite token. */
   provider: string;
+};
+export type GetUsersApiResponse = /** status 200 Paginated list of public users */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Public user records for the requested page. */
+  data: {
+    /** Unique identifier for the user */
+    id: string;
+    /** Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id. */
+    userId?: string;
+    /** Public username of the user */
+    username?: string;
+    /** URL to user's avatar image */
+    avatarUrl?: string;
+  }[];
+};
+export type GetUsersApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get filtered reponses */
+  filter?: string;
+};
+export type SearchUsersApiResponse = /** status 200 Paginated list of matching users in the searchable projection */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Matching user records for the requested page. */
+  data: {
+    /** Unique identifier for the user */
+    id: string;
+    /** Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id. */
+    userId?: string;
+    /** Public username of the user */
+    username?: string;
+    /** User's first name */
+    firstName?: string;
+    /** User's last name */
+    lastName?: string;
+    /** User's email address */
+    email?: string;
+    /** URL to user's avatar image */
+    avatarUrl?: string;
+    /** Timestamp when the user record was soft-deleted (null if not deleted) */
+    deletedAt?: string | null;
+  }[];
+};
+export type SearchUsersApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get filtered reponses */
+  filter?: string;
+};
+export type SearchUsersInOrgApiResponse =
+  /** status 200 Paginated list of matching users in the searchable projection */ {
+    /** Current page number of the result set. */
+    page: number;
+    /** Number of items per page. */
+    pageSize: number;
+    /** Total number of items available. */
+    totalCount: number;
+    /** Matching user records for the requested page. */
+    data: {
+      /** Unique identifier for the user */
+      id: string;
+      /** Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id. */
+      userId?: string;
+      /** Public username of the user */
+      username?: string;
+      /** User's first name */
+      firstName?: string;
+      /** User's last name */
+      lastName?: string;
+      /** User's email address */
+      email?: string;
+      /** URL to user's avatar image */
+      avatarUrl?: string;
+      /** Timestamp when the user record was soft-deleted (null if not deleted) */
+      deletedAt?: string | null;
+    }[];
+  };
+export type SearchUsersInOrgApiArg = {
+  /** Organization ID */
+  orgId: string;
+  /** Get responses by page */
+  page?: number;
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get filtered reponses */
+  filter?: string;
 };
 export type GetWorkspacesApiResponse = /** status 200 Workspaces */ {
   /** Zero-based page index returned in this response. */
@@ -13439,11 +13705,11 @@ export type GetWorkspacesApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;
 };
@@ -13571,11 +13837,11 @@ export type GetTeamsOfWorkspaceApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;
 };
@@ -13653,11 +13919,11 @@ export type GetEnvironmentsOfWorkspaceApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;
 };
@@ -14723,11 +14989,11 @@ export type GetDesignsOfWorkspaceApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;
 };
@@ -14807,11 +15073,11 @@ export type GetViewsOfWorkspaceApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;
 };
@@ -14852,44 +15118,63 @@ export type UnassignViewFromWorkspaceApiArg = {
 };
 export const {
   useGetFeaturesQuery,
+  useLazyGetFeaturesQuery,
   useGetFeaturesByOrganizationQuery,
+  useLazyGetFeaturesByOrganizationQuery,
   useSubmitSupportRequestMutation,
   useGetSystemVersionQuery,
+  useLazyGetSystemVersionQuery,
   useSendTestEmailMutation,
   useDeleteBadgeByIdMutation,
   useGetBadgeByIdQuery,
+  useLazyGetBadgeByIdQuery,
   useCreateOrUpdateBadgeMutation,
   useGetAvailableBadgesQuery,
+  useLazyGetAvailableBadgesQuery,
   useAssignBadgesMutation,
   useGetUserCredentialsQuery,
+  useLazyGetUserCredentialsQuery,
   useSaveUserCredentialMutation,
   useUpdateUserCredentialMutation,
   useDeleteUserCredentialMutation,
   useGetCredentialByIdQuery,
+  useLazyGetCredentialByIdQuery,
   useGetUserKeysQuery,
+  useLazyGetUserKeysQuery,
   useGetKeysQuery,
+  useLazyGetKeysQuery,
   useUpsertKeyMutation,
   useGetKeyByIdQuery,
+  useLazyGetKeyByIdQuery,
   useDeleteKeyMutation,
   useGetKeychainsQuery,
+  useLazyGetKeychainsQuery,
   useCreateKeychainMutation,
   useGetKeychainByIdQuery,
+  useLazyGetKeychainByIdQuery,
   useUpdateKeychainMutation,
   useDeleteKeychainMutation,
   useAddKeyToKeychainMutation,
   useRemoveKeyFromKeychainMutation,
   useGetKeysOfKeychainQuery,
+  useLazyGetKeysOfKeychainQuery,
   useRegisterMeshmodelsMutation,
   useGetMeshModelModelsQuery,
+  useLazyGetMeshModelModelsQuery,
   useGetOrgsQuery,
+  useLazyGetOrgsQuery,
   useCreateOrgMutation,
   useGetOrgByDomainQuery,
+  useLazyGetOrgByDomainQuery,
   useGetOrgQuery,
+  useLazyGetOrgQuery,
   useDeleteOrgMutation,
   useUpdateOrgMutation,
   useGetOrgPreferencesQuery,
+  useLazyGetOrgPreferencesQuery,
   useAddTeamToOrgMutation,
   useGetTeamByIdQuery,
+  useLazyGetTeamByIdQuery,
   useUpdateTeamMutation,
   useDeleteTeamMutation,
   useRemoveTeamFromOrgMutation,
@@ -14898,164 +15183,240 @@ export const {
   useAddRoleHolderMutation,
   useDeleteRoleMutation,
   useGetAllRolesQuery,
+  useLazyGetAllRolesQuery,
   useUpsertRoleMutation,
   useBulkEditRoleHolderMutation,
   useGetRoleKeychainsQuery,
+  useLazyGetRoleKeychainsQuery,
   useAssignKeychainToRoleMutation,
   useUnassignKeychainFromRoleMutation,
   useGetSchedulesQuery,
+  useLazyGetSchedulesQuery,
   useUpsertScheduleMutation,
   useGetScheduleQuery,
+  useLazyGetScheduleQuery,
   useDeleteScheduleMutation,
   useGetTeamsQuery,
+  useLazyGetTeamsQuery,
   useCreateTeamMutation,
   useGetTeamUsersQuery,
+  useLazyGetTeamUsersQuery,
   useAddUserToTeamMutation,
   useRemoveUserFromTeamMutation,
   useListUsersNotInTeamQuery,
+  useLazyListUsersNotInTeamQuery,
   useGetUsersForOrgQuery,
-  useGetUsersQuery,
+  useLazyGetUsersForOrgQuery,
   useGetUserProfileByIdQuery,
+  useLazyGetUserProfileByIdQuery,
   useGetUserQuery,
+  useLazyGetUserQuery,
   useGetUserProfileOverviewQuery,
+  useLazyGetUserProfileOverviewQuery,
   useGetUserRecentActivitiesQuery,
+  useLazyGetUserRecentActivitiesQuery,
   useNotifyMentionUsersMutation,
   useCreateAnonymousUserSessionMutation,
   useGetAccountDeletionEligibilityQuery,
+  useLazyGetAccountDeletionEligibilityQuery,
   useGetUserEmailAddressesQuery,
+  useLazyGetUserEmailAddressesQuery,
   useDeleteUserAccountMutation,
   useCreateViewMutation,
   useGetViewsQuery,
+  useLazyGetViewsQuery,
   useShareViewMutation,
   useGetViewByIdQuery,
+  useLazyGetViewByIdQuery,
   useUpdateViewMutation,
   useDeleteViewMutation,
   useGetMyAcademyCurriculaQuery,
+  useLazyGetMyAcademyCurriculaQuery,
   useCreateAcademyCurriculaMutation,
   useGetAcademyCurriculaQuery,
+  useLazyGetAcademyCurriculaQuery,
   useGetAcademyContentQuery,
+  useLazyGetAcademyContentQuery,
   useRegisterToAcademyContentMutation,
   useWithdrawFromAcademyContentMutation,
   useUpdateAcademyCurriculaByIdMutation,
   useDeleteAcademyCurriculaByIdMutation,
   useGetAcademyCurriculaByIdQuery,
+  useLazyGetAcademyCurriculaByIdQuery,
   useGetApiAcademyRegistrationsByContentIdQuery,
+  useLazyGetApiAcademyRegistrationsByContentIdQuery,
   useUpdateCurrentItemInProgressTrackerMutation,
   useGetTestByAbsPathQuery,
+  useLazyGetTestByAbsPathQuery,
   useStartTestByIdMutation,
   useGetAllTestSessionsForRegistrationQuery,
+  useLazyGetAllTestSessionsForRegistrationQuery,
   useSubmitQuizMutation,
   useGetAcademyAdminSummaryQuery,
+  useLazyGetAcademyAdminSummaryQuery,
   useGetAcademyAdminRegistrationsQuery,
+  useLazyGetAcademyAdminRegistrationsQuery,
   useGetCertificateByIdQuery,
+  useLazyGetCertificateByIdQuery,
   useGetConnectionsQuery,
+  useLazyGetConnectionsQuery,
   useRegisterConnectionMutation,
   useGetConnectionByIdQuery,
+  useLazyGetConnectionByIdQuery,
   useUpdateConnectionMutation,
   useDeleteConnectionMutation,
   useDeleteMesheryConnectionMutation,
   useGetKubernetesContextQuery,
+  useLazyGetKubernetesContextQuery,
   useAddConnectionToEnvironmentMutation,
   useRemoveConnectionFromEnvironmentMutation,
   useListConnectionDefinitionsQuery,
+  useLazyListConnectionDefinitionsQuery,
   useRegisterConnectionDefinitionMutation,
   useGetConnectionDefinitionQuery,
+  useLazyGetConnectionDefinitionQuery,
   useUpdateConnectionDefinitionMutation,
   useDeleteConnectionDefinitionMutation,
   useGetPatternsQuery,
+  useLazyGetPatternsQuery,
   useUpsertPatternMutation,
   useDeletePatternsMutation,
   useGetPatternQuery,
+  useLazyGetPatternQuery,
   useDeletePatternMutation,
   useClonePatternMutation,
   useGetDesignPatternFileQuery,
+  useLazyGetDesignPatternFileQuery,
   useUpsertPatternSourceContentMutation,
   useImportDesignMutation,
   useGetCatalogContentQuery,
+  useLazyGetCatalogContentQuery,
   usePublishCatalogContentMutation,
   useUnPublishCatalogContentMutation,
   useGetCatalogContentClassesQuery,
+  useLazyGetCatalogContentClassesQuery,
   useApproveCatalogRequestMutation,
   useDenyCatalogRequestMutation,
   useHandleResourceShareMutation,
   useGetResourceAccessActorsByTypeQuery,
+  useLazyGetResourceAccessActorsByTypeQuery,
   useShareDesignMutation,
   useGetCatalogRequestQuery,
+  useLazyGetCatalogRequestQuery,
   useCreateEnvironmentMutation,
   useGetEnvironmentsQuery,
+  useLazyGetEnvironmentsQuery,
   useGetEnvironmentByIdQuery,
+  useLazyGetEnvironmentByIdQuery,
   useUpdateEnvironmentMutation,
   useDeleteEnvironmentMutation,
   useGetEnvironmentConnectionsQuery,
+  useLazyGetEnvironmentConnectionsQuery,
   useDeleteEventMutation,
   useCreateEventMutation,
   useBulkDeleteEventsMutation,
   useBulkUpdateEventStatusMutation,
   useUpdateEventStatusMutation,
   useGetEventsOfWorkspaceQuery,
+  useLazyGetEventsOfWorkspaceQuery,
   useGetEventsAggregateQuery,
+  useLazyGetEventsAggregateQuery,
   useGetEventsQuery,
+  useLazyGetEventsQuery,
   useGetEventSummaryByUserQuery,
+  useLazyGetEventSummaryByUserQuery,
   useGetEventTypesQuery,
+  useLazyGetEventTypesQuery,
   useGetFiltersQuery,
+  useLazyGetFiltersQuery,
   useUpsertFilterMutation,
   useDeleteFiltersMutation,
   useGetFilterQuery,
+  useLazyGetFilterQuery,
   useUpdateFilterMutation,
   useDeleteFilterMutation,
   useCloneFilterMutation,
   useGetFilterFileQuery,
+  useLazyGetFilterFileQuery,
   useGetInvitationQuery,
+  useLazyGetInvitationQuery,
   useDeleteInvitationMutation,
   useUpdateInvitationMutation,
   useGetInvitationsQuery,
+  useLazyGetInvitationsQuery,
   useCreateInvitationMutation,
   useAcceptInvitationMutation,
   useHandleUserInviteMutation,
   useSignupRequestMutation,
   useGetSignupRequestsQuery,
+  useLazyGetSignupRequestsQuery,
   useApproveSignupRequestMutation,
   useDenySignupRequestMutation,
   useGetSignupRequestNotificationQuery,
+  useLazyGetSignupRequestNotificationQuery,
   useGetPatternResourcesQuery,
+  useLazyGetPatternResourcesQuery,
   useUpsertPatternResourceMutation,
   useGetPatternResourceQuery,
+  useLazyGetPatternResourceQuery,
   useDeletePatternResourceMutation,
   useGetPerformanceProfilesQuery,
+  useLazyGetPerformanceProfilesQuery,
   useUpsertPerformanceProfileMutation,
   useGetPerformanceProfileQuery,
+  useLazyGetPerformanceProfileQuery,
   useUpdatePerformanceProfileMutation,
   useDeletePerformanceProfileMutation,
   useGetPerformanceProfileResultsQuery,
+  useLazyGetPerformanceProfileResultsQuery,
   useGetPerformanceProfileResultQuery,
+  useLazyGetPerformanceProfileResultQuery,
   useGetPerformanceResultsQuery,
+  useLazyGetPerformanceResultsQuery,
   useGetPlansQuery,
+  useLazyGetPlansQuery,
   useGetSubscriptionsQuery,
+  useLazyGetSubscriptionsQuery,
   useCancelSubscriptionMutation,
   useCreateSubscriptionMutation,
   useUpgradeSubscriptionMutation,
   usePreviewSubscriptionUpgradeMutation,
   useHandleSubscriptionWebhookMutation,
   useGetUserTokensQuery,
+  useLazyGetUserTokensQuery,
   useGenerateTokenMutation,
   useDeleteUserTokenMutation,
   useDownloadTokenQuery,
+  useLazyDownloadTokenQuery,
   useIssueIndefiniteLifetimeTokenQuery,
+  useLazyIssueIndefiniteLifetimeTokenQuery,
+  useGetUsersQuery,
+  useLazyGetUsersQuery,
+  useSearchUsersQuery,
+  useLazySearchUsersQuery,
+  useSearchUsersInOrgQuery,
+  useLazySearchUsersInOrgQuery,
   useGetWorkspacesQuery,
+  useLazyGetWorkspacesQuery,
   useCreateWorkspaceMutation,
   useGetWorkspaceByIdQuery,
+  useLazyGetWorkspaceByIdQuery,
   useUpdateWorkspaceMutation,
   useDeleteWorkspaceMutation,
   useGetTeamsOfWorkspaceQuery,
+  useLazyGetTeamsOfWorkspaceQuery,
   useAssignTeamToWorkspaceMutation,
   useUnassignTeamFromWorkspaceMutation,
   useGetEnvironmentsOfWorkspaceQuery,
+  useLazyGetEnvironmentsOfWorkspaceQuery,
   useAssignEnvironmentToWorkspaceMutation,
   useUnassignEnvironmentFromWorkspaceMutation,
   useGetDesignsOfWorkspaceQuery,
+  useLazyGetDesignsOfWorkspaceQuery,
   useAssignDesignToWorkspaceMutation,
   useUnassignDesignFromWorkspaceMutation,
   useGetViewsOfWorkspaceQuery,
+  useLazyGetViewsOfWorkspaceQuery,
   useAssignViewToWorkspaceMutation,
   useUnassignViewFromWorkspaceMutation,
 } = injectedRtkApi;

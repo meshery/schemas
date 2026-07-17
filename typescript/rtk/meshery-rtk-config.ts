@@ -6,7 +6,9 @@ const config: ConfigFile = {
   apiImport: "mesheryBaseApi",
   outputFile: "./meshery.ts",
   exportName: "mesheryApi",
-  hooks: true,
+  // Keep parity with cloud-rtk-config: lazy query hooks are part of the
+  // exported client surface.
+  hooks: { queries: true, lazyQueries: true, mutations: true },
   tag: true,
 };
 

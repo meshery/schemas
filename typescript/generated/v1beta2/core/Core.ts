@@ -145,7 +145,7 @@ export interface components {
          * Format: date-time
          * @description SQL null Timestamp to handle null values of time.
          */
-        NullTime: string;
+        NullTime: string | null;
         /** @description Common styles for all entities */
         Styles: {
             /** @description Primary color of the component used for UI representation. */
@@ -722,7 +722,7 @@ export interface components {
         /** @description Get all possible entries */
         all: boolean;
         /** @description Get responses by page */
-        page: string;
+        page: number;
         /** @description Filter catalog items by user ID. Pass multiple user IDs to fetch content for several users simultaneously. */
         userId: string;
         /** @description Include metrics associated with the designs. */
@@ -730,7 +730,7 @@ export interface components {
         /** @description Filter catalog items based on their support class. Specify one or more classes per request as needed. Example: 'official' and 'verified' */
         class: string;
         /** @description Get responses by pagesize */
-        pagesize: string;
+        pagesize: number;
         /** @description Get responses by pagesize (pass all to get all responses) */
         pagesizeWithAll: string;
         /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */

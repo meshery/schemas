@@ -650,6 +650,9 @@ components:
         region:
           $ref: "#/components/schemas/Text"
           description: Region of the organization.
+        domain:
+          $ref: "#/components/schemas/Text"
+          description: Custom domain assigned to the organization, when configured.
         owner:
           $ref: "#/components/schemas/Text"
           description: Display name of the organization owner.
