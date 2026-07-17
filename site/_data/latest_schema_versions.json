@@ -3,6 +3,7 @@
     "construct": "academy",
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/academy/academy.yaml",
+    "docs_href": "https://docs.meshery.io/extensions/academies",
     "core": false,
     "extension": true
   },
