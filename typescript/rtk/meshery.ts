@@ -302,6 +302,20 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/integrations/connections`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Connection_API_Connections"],
       }),
+      processConnectionRegistration: build.mutation<
+        ProcessConnectionRegistrationApiResponse,
+        ProcessConnectionRegistrationApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/integrations/connections/register`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Connection_API_Connections"],
+      }),
+      cancelConnectionRegister: build.mutation<CancelConnectionRegisterApiResponse, CancelConnectionRegisterApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/connections/register/${queryArg.registrationId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Connection_API_Connections"],
+      }),
       getConnectionById: build.query<GetConnectionByIdApiResponse, GetConnectionByIdApiArg>({
         query: (queryArg) => ({ url: `/api/integrations/connections/${queryArg.connectionId}` }),
         providesTags: ["Connection_API_Connections"],
@@ -5905,6 +5919,56 @@ export type RegisterConnectionApiArg = {
     credentialId?: string;
   };
 };
+export type ProcessConnectionRegistrationApiResponse =
+  /** status 200 Registration bootstrap for status `initialize`; empty body for every other status. */ {
+    /** Registration process tracker to echo on subsequent events. */
+    id: string;
+    /** Registry component definition (`{Kind}Connection`) describing the connection, including its JSON-encoded `schema`. */
+    connection: object;
+    /** Registry component definition (`{Kind}Credential`) describing the credential, including its JSON-encoded `schema`. Absent when the kind defines no credential component. */
+    credential?: object;
+  };
+export type ProcessConnectionRegistrationApiArg = {
+  body: {
+    /** Registration process tracker. Returned by the `initialize` bootstrap or minted client-side; echoed on every subsequent event for the same registration. */
+    id?: string;
+    /** Connection kind (e.g. `kubernetes`, `grafana`, `prometheus`). */
+    kind: string;
+    /** State-machine event to dispatch. `initialize` returns the registration bootstrap; every other event advances the tracked registration. `not found` is the machine's literal event name. */
+    status:
+      | "initialize"
+      | "discovery"
+      | "register"
+      | "connect"
+      | "disconnect"
+      | "ignore"
+      | "delete"
+      | "not found"
+      | "noop"
+      | "exit";
+    /** Connection name. */
+    name?: string;
+    /** Connection type. */
+    type?: string;
+    /** Connection sub-type. */
+    subType?: string;
+    /** Registry model the connection's definition belongs to. */
+    model?: string;
+    /** Connection metadata gathered so far in the flow. */
+    metadata?: object;
+    /** Credential secret material for the connection. */
+    credentialSecret?: object;
+    /** Existing credential to associate instead of a new secret. */
+    credentialId?: string;
+    /** When true the server registers the connection without verifying the supplied credential first. */
+    skipCredentialVerification?: boolean;
+  };
+};
+export type CancelConnectionRegisterApiResponse = unknown;
+export type CancelConnectionRegisterApiArg = {
+  /** Registration process tracker id to discard. */
+  registrationId: string;
+};
 export type GetConnectionByIdApiResponse = /** status 200 Connection details */ {
   /** Connection ID */
   id: string;
@@ -6929,13 +6993,13 @@ export type GetKubernetesContextApiResponse = /** status 200 Kubernetes context 
     cluster?: object;
     /** API server URL of the Kubernetes cluster. */
     server?: string;
-    /** ID of the user who owns the underlying connection. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     owner?: string;
-    /** ID of the user who registered the context. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     createdBy?: string;
-    /** ID of the Meshery instance the context is registered with. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     mesheryInstanceId?: string;
-    /** ID of the Kubernetes server associated with the context. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     kubernetesServerId?: string;
     /** How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster). */
     deploymentType?: string;
@@ -6945,7 +7009,7 @@ export type GetKubernetesContextApiResponse = /** status 200 Kubernetes context 
     createdAt?: string;
     /** Timestamp when the underlying connection was last updated. */
     updatedAt?: string;
-    /** ID of the connection this context was projected from. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     connectionId?: string;
   }[];
 };
@@ -9708,6 +9772,8 @@ export const {
   useGetConnectionsQuery,
   useLazyGetConnectionsQuery,
   useRegisterConnectionMutation,
+  useProcessConnectionRegistrationMutation,
+  useCancelConnectionRegisterMutation,
   useGetConnectionByIdQuery,
   useLazyGetConnectionByIdQuery,
   useUpdateConnectionMutation,
