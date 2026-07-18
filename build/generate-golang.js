@@ -1517,6 +1517,12 @@ async function generateGoModels(pkg) {
     validateGeneratedJsonTags(outputPath, inputPath);
     writeGeneratedHelperFile(pkg, outputDir);
 
+    execSync(`gofmt -w "${outputPath}"`, { stdio: "inherit" });
+    const helperPath = path.join(outputDir, "zz_generated.helpers.go");
+    if (fs.existsSync(helperPath)) {
+      execSync(`gofmt -w "${helperPath}"`, { stdio: "inherit" });
+    }
+
     logger.success(`Generated: ${paths.relativePath(outputPath)}`);
   } catch (err) {
     throw new Error(

@@ -131,10 +131,10 @@ type EventsAggregate struct {
 // EventsPage Paginated list of events.
 type EventsPage struct {
 	// Data The events returned on the current page.
-	Data       *[]EventResult      `json:"data,omitempty" yaml:"data,omitempty"`
-	Page       core.Number `json:"page,omitempty" yaml:"page,omitempty"`
-	PageSize   core.Number `json:"pageSize,omitempty" yaml:"pageSize,omitempty"`
-	TotalCount core.Number `json:"totalCount,omitempty" yaml:"totalCount,omitempty"`
+	Data       *[]EventResult `json:"data,omitempty" yaml:"data,omitempty"`
+	Page       core.Number    `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize   core.Number    `json:"pageSize,omitempty" yaml:"pageSize,omitempty"`
+	TotalCount core.Number    `json:"totalCount,omitempty" yaml:"totalCount,omitempty"`
 }
 
 // UpdateEventStatusRequest Payload for updating the status of a single event.

@@ -18,7 +18,7 @@ type BulkDeleteRequest struct {
 // BulkUpdateStatusRequest defines model for BulkUpdateStatusRequest.
 type BulkUpdateStatusRequest struct {
 	Ids    []core.Uuid `json:"ids" yaml:"ids"`
-	Status string              `json:"status" yaml:"status"`
+	Status string      `json:"status" yaml:"status"`
 }
 
 // ErrorResponse defines model for ErrorResponse.
@@ -33,12 +33,12 @@ type EventResult struct {
 
 	// CreatedAt Timestamp when the resource was created.
 	CreatedAt   core.CreatedAt `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
-	Description *string                `json:"description,omitempty" yaml:"description,omitempty"`
+	Description *string        `json:"description,omitempty" yaml:"description,omitempty"`
 
 	// Email email
 	Email     core.Email `json:"email,omitempty" yaml:"email,omitempty"`
-	FirstName *string            `json:"firstName,omitempty" yaml:"firstName,omitempty"`
-	LastName  *string            `json:"lastName,omitempty" yaml:"lastName,omitempty"`
+	FirstName *string    `json:"firstName,omitempty" yaml:"firstName,omitempty"`
+	LastName  *string    `json:"lastName,omitempty" yaml:"lastName,omitempty"`
 
 	// Provider One of (x-oapi-codegen-extra-tags-cloud, github, google)
 	Provider core.Provider `json:"provider,omitempty" yaml:"provider,omitempty"`
@@ -71,10 +71,10 @@ type EventsAggregate struct {
 
 // EventsPage defines model for EventsPage.
 type EventsPage struct {
-	Data       *[]EventResult      `json:"data,omitempty" yaml:"data,omitempty"`
-	Page       core.Number `json:"page,omitempty" yaml:"page,omitempty"`
-	PageSize   core.Number `json:"page_size,omitempty" yaml:"page_size,omitempty"`
-	TotalCount core.Number `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+	Data       *[]EventResult `json:"data,omitempty" yaml:"data,omitempty"`
+	Page       core.Number    `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize   core.Number    `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	TotalCount core.Number    `json:"total_count,omitempty" yaml:"total_count,omitempty"`
 }
 
 // UpdateEventStatusRequest defines model for UpdateEventStatusRequest.

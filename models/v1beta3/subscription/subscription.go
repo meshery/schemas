@@ -6,10 +6,10 @@ package subscription
 import (
 	"time"
 
+	"github.com/gofrs/uuid"
 	core "github.com/meshery/schemas/models/core"
 	planv1beta3 "github.com/meshery/schemas/models/v1beta3/plan"
 	openapi_types "github.com/oapi-codegen/runtime/types"
-	"github.com/gofrs/uuid"
 )
 
 // Defines values for PaymentProcessor.
@@ -78,7 +78,7 @@ type Subscription struct {
 	BillingID string `db:"billing_id" json:"billingId" yaml:"billingId"`
 
 	// CreatedAt Timestamp when the subscription was created.
-	CreatedAt time.Time                `db:"created_at" json:"createdAt" yaml:"createdAt"`
+	CreatedAt time.Time        `db:"created_at" json:"createdAt" yaml:"createdAt"`
 	DeletedAt core.SqlNullTime `db:"deleted_at" json:"deletedAt,omitempty" yaml:"deletedAt,omitempty"`
 
 	// EndDate Timestamp when the current subscription period ends.

@@ -97,10 +97,10 @@ type EventsAggregate struct {
 // EventsPage defines model for EventsPage.
 type EventsPage struct {
 	// Data The data of the eventspage.
-	Data       *[]EventResult      `json:"data,omitempty" yaml:"data,omitempty"`
-	Page       core.Number `json:"page,omitempty" yaml:"page,omitempty"`
-	PageSize   core.Number `json:"page_size,omitempty" yaml:"page_size,omitempty"`
-	TotalCount core.Number `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+	Data       *[]EventResult `json:"data,omitempty" yaml:"data,omitempty"`
+	Page       core.Number    `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize   core.Number    `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	TotalCount core.Number    `json:"total_count,omitempty" yaml:"total_count,omitempty"`
 }
 
 // UpdateEventStatusRequest defines model for UpdateEventStatusRequest.
