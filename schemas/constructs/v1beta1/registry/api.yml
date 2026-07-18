@@ -7,9 +7,10 @@ info:
     credentials, and policies (and, in the future, workflows and profiles)
     are registered into service. Registered capabilities can be used in
     designs, views, tests, policies, and workflows. These operations are
-    served under `/api/registry`; the legacy `/api/meshmodels` and
-    `/api/meshmodel` routes remain available on Meshery Server as deprecated
-    aliases of the same operations.
+    served under `/api/registry`; the legacy `/api/meshmodels` routes remain
+    available on Meshery Server as deprecated aliases of the same
+    operations, and the singular `/api/meshmodel/components/register`
+    registrant route is retained for backward compatibility.
   version: v1beta1
   contact:
     name: Meshery Maintainers
