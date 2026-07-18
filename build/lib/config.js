@@ -81,6 +81,13 @@ const excludeFromGoGeneration = [
   // (promoted). The GO_IMPORT_OVERRIDES in generate-golang.js routes
   // v1beta2/catalog imports to models/v1alpha2/catalog.
   "v1beta2/catalog",
+  // v1beta1/registry: API-surface construct for Meshery Server's
+  // /api/registry routes. Meshery Server keeps local Go response
+  // envelopes during the /api/meshmodels deprecation window (they emit
+  // legacy snake_case pagination keys alongside the canonical camelCase
+  // ones), so no Go models are generated yet. Remove this exclusion when
+  // the server adopts the schemas envelopes after the legacy keys drop.
+  "v1beta1/registry",
 ];
 
 /**
