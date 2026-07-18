@@ -1,0 +1,1444 @@
+openapi: 3.0.0
+info:
+  title: Registry
+  description: >-
+    OpenAPI schema for Meshery's capabilities registry. The registry is the
+    catalog into which models, components, relationships, connections,
+    credentials, and policies (and, in the future, workflows and profiles)
+    are registered into service. Registered capabilities can be used in
+    designs, views, tests, policies, and workflows. These operations are
+    served under `/api/registry`; the legacy `/api/meshmodels` and
+    `/api/meshmodel` routes remain available on Meshery Server as deprecated
+    aliases of the same operations.
+  version: v1beta1
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+security:
+  - jwt: []
+
+tags:
+  - name: Registry
+    description: Operations on Meshery's capabilities registry.
+
+paths:
+  /api/registry/models:
+    get:
+      x-internal: ["meshery"]
+      tags:
+        - Registry
+      operationId: getRegistryModels
+      summary: List registered models
+      description: >-
+        Returns a paginated list of models registered in the capabilities
+        registry. Each entry carries a `duplicates` count of other
+        registered entries sharing the same name and version.
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+        - name: status
+          in: query
+          description: Filter by model status (e.g. `registered`, `ignored`, `duplicate`).
+          required: false
+          schema:
+            type: string
+            maxLength: 255
+        - name: id
+          in: query
+          description: Filter by model ID.
+          required: false
+          schema:
+            type: string
+            maxLength: 255
+        - name: registrant
+          in: query
+          description: Filter by the registrant (host) that registered the model.
+          required: false
+          schema:
+            type: string
+            maxLength: 255
+        - $ref: "#/components/parameters/version"
+        - $ref: "#/components/parameters/annotations"
+        - $ref: "#/components/parameters/components"
+        - $ref: "#/components/parameters/relationships"
+        - $ref: "#/components/parameters/trim"
+      responses:
+        "200":
+          description: Paginated list of registered models.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistryModelsPage"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/registry/models/{model}:
+    get:
+      x-internal: ["meshery"]
+      tags:
+        - Registry
+      operationId: getRegistryModelsByName
+      summary: Get registered models by name
+      description: >-
+        Returns the registered model entries matching the given model name.
+        Multiple entries (versions or duplicate registrations) may match.
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/modelName"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - name: search
+          in: query
+          description: When `true`, the model name is matched greedily (substring match).
+          required: false
+          schema:
+            type: string
+            maxLength: 255
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/version"
+        - $ref: "#/components/parameters/annotations"
+        - $ref: "#/components/parameters/components"
+        - $ref: "#/components/parameters/relationships"
+      responses:
+        "200":
+          description: Paginated list of matching registered models.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistryModelsPage"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      x-internal: ["meshery"]
+      tags:
+        - Registry
+      operationId: deleteRegistryModel
+      summary: Delete a registered model
+      description: >-
+        Deletes a model from the registry. The path parameter is the model's
+        ID (UUID), not its name.
+      parameters:
+        - $ref: "#/components/parameters/modelName"
+      responses:
+        "200":
+          description: Model deleted.
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/registry/models/{model}/components:
+    get:
+      x-internal: ["meshery"]
+      tags:
+        - Registry
+      operationId: getRegistryComponentsByModel
+      summary: List components of a model
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/modelName"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/version"
+        - $ref: "#/components/parameters/apiVersion"
+        - $ref: "#/components/parameters/trim"
+        - $ref: "#/components/parameters/annotations"
+      responses:
+        "200":
+          description: Paginated list of components belonging to the model.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistryComponentsPage"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/registry/models/{model}/components/{name}:
+    get:
+      x-internal: ["meshery"]
+      tags:
+        - Registry
+      operationId: getRegistryComponentsByModelAndName
+      summary: Get components of a model by component name
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/modelName"
+        - $ref: "#/components/parameters/componentName"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/version"
+        - $ref: "#/components/parameters/apiVersion"
+        - $ref: "#/components/parameters/trim"
+        - $ref: "#/components/parameters/annotations"
+      responses:
+        "200":
+          description: Paginated list of matching components.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistryComponentsPage"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/registry/models/{model}/relationships:
+    get:
+      x-internal: ["meshery"]
+      tags:
+        - Registry
+      operationId: getRegistryRelationshipsByModel
+      summary: List relationships of a model
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/modelName"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/version"
+      responses:
+        "200":
+          description: Paginated list of relationships belonging to the model.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistryRelationshipsPage"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/registry/models/{model}/relationships/{name}:
+    get:
+      x-internal: ["meshery"]
+      tags:
+        - Registry
+      operationId: getRegistryRelationshipsByModelAndName
+      summary: Get relationships of a model by kind
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/modelName"
+        - name: name
+          in: path
+          description: Kind of the relationship (e.g. `hierarchical`, `edge`, `sibling`).
+          required: true
+          schema:
+            type: string
+            maxLength: 255
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/version"
+      responses:
+        "200":
+          description: Paginated list of matching relationships.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistryRelationshipsPage"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/registry/models/{model}/policies:
+    get:
+      x-internal: ["meshery"]
+      tags:
+        - Registry
+      operationId: getRegistryPoliciesByModel
+      summary: List policies of a model
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/modelName"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+      responses:
+        "200":
+          description: Paginated list of policies belonging to the model.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistryPoliciesPage"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/registry/models/{model}/policies/{name}:
+    get:
+      x-internal: ["meshery"]
+      tags:
+        - Registry
+      operationId: getRegistryPoliciesByModelAndName
+      summary: Get policies of a model by name
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/modelName"
+        - name: name
+          in: path
+          description: Name of the policy.
+          required: true
+          schema:
+            type: string
+            maxLength: 255
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+      responses:
+        "200":
+          description: Paginated list of matching policies.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistryPoliciesPage"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/registry/categories:
+    get:
+      x-internal: ["meshery"]
+      tags:
+        - Registry
+      operationId: getRegistryCategories
+      summary: List registry categories
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+      responses:
+        "200":
+          description: Paginated list of categories.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistryCategoriesPage"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/registry/categories/{category}:
+    get:
+      x-internal: ["meshery"]
+      tags:
+        - Registry
+      operationId: getRegistryCategoriesByName
+      summary: Get registry categories by name
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/categoryName"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - name: search
+          in: query
+          description: When `true`, the category name is matched greedily (substring match).
+          required: false
+          schema:
+            type: string
+            maxLength: 255
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+      responses:
+        "200":
+          description: Paginated list of matching categories.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistryCategoriesPage"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/registry/categories/{category}/models:
+    get:
+      x-internal: ["meshery"]
+      tags:
+        - Registry
+      operationId: getRegistryModelsByCategory
+      summary: List registered models in a category
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/categoryName"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/version"
+        - $ref: "#/components/parameters/annotations"
+        - $ref: "#/components/parameters/components"
+        - $ref: "#/components/parameters/relationships"
+      responses:
+        "200":
+          description: Paginated list of models in the category.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistryModelsPage"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/registry/categories/{category}/models/{model}:
+    get:
+      x-internal: ["meshery"]
+      tags:
+        - Registry
+      operationId: getRegistryModelsByCategoryAndModel
+      summary: Get registered models in a category by model name
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/categoryName"
+        - $ref: "#/components/parameters/modelName"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - name: search
+          in: query
+          description: When `true`, the model name is matched greedily (substring match).
+          required: false
+          schema:
+            type: string
+            maxLength: 255
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/version"
+        - $ref: "#/components/parameters/annotations"
+        - $ref: "#/components/parameters/components"
+        - $ref: "#/components/parameters/relationships"
+      responses:
+        "200":
+          description: Paginated list of matching models in the category.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistryModelsPage"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/registry/categories/{category}/models/{model}/components:
+    get:
+      x-internal: ["meshery"]
+      tags:
+        - Registry
+      operationId: getRegistryComponentsByCategoryAndModel
+      summary: List components of a model in a category
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/categoryName"
+        - $ref: "#/components/parameters/modelName"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/version"
+        - $ref: "#/components/parameters/apiVersion"
+        - $ref: "#/components/parameters/trim"
+        - $ref: "#/components/parameters/annotations"
+      responses:
+        "200":
+          description: Paginated list of components.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistryComponentsPage"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/registry/categories/{category}/models/{model}/components/{name}:
+    get:
+      x-internal: ["meshery"]
+      tags:
+        - Registry
+      operationId: getRegistryComponentsByCategoryAndModelAndName
+      summary: Get components of a model in a category by component name
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/categoryName"
+        - $ref: "#/components/parameters/modelName"
+        - $ref: "#/components/parameters/componentName"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/version"
+        - $ref: "#/components/parameters/apiVersion"
+        - $ref: "#/components/parameters/trim"
+        - $ref: "#/components/parameters/annotations"
+      responses:
+        "200":
+          description: Paginated list of matching components.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistryComponentsPage"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/registry/categories/{category}/components:
+    get:
+      x-internal: ["meshery"]
+      tags:
+        - Registry
+      operationId: getRegistryComponentsByCategory
+      summary: List components in a category
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/categoryName"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/version"
+        - $ref: "#/components/parameters/apiVersion"
+        - $ref: "#/components/parameters/trim"
+        - $ref: "#/components/parameters/annotations"
+      responses:
+        "200":
+          description: Paginated list of components in the category.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistryComponentsPage"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/registry/categories/{category}/components/{name}:
+    get:
+      x-internal: ["meshery"]
+      tags:
+        - Registry
+      operationId: getRegistryComponentsByCategoryAndName
+      summary: Get components in a category by component name
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/categoryName"
+        - $ref: "#/components/parameters/componentName"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/version"
+        - $ref: "#/components/parameters/apiVersion"
+        - $ref: "#/components/parameters/trim"
+        - $ref: "#/components/parameters/annotations"
+      responses:
+        "200":
+          description: Paginated list of matching components.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistryComponentsPage"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/registry/components:
+    get:
+      x-internal: ["meshery"]
+      tags:
+        - Registry
+      operationId: getRegistryComponents
+      summary: List registered components
+      description: >-
+        Returns a paginated list of components registered in the capabilities
+        registry. Each entry carries a `duplicates` count of other registered
+        entries sharing the same kind, version, and model.
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/version"
+        - $ref: "#/components/parameters/apiVersion"
+        - $ref: "#/components/parameters/trim"
+        - $ref: "#/components/parameters/annotations"
+      responses:
+        "200":
+          description: Paginated list of registered components.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistryComponentsPage"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      x-internal: ["meshery"]
+      tags:
+        - Registry
+      operationId: registerRegistryComponent
+      summary: Register a component definition
+      description: >-
+        Registrant-facing channel through which components are registered
+        into the capabilities registry (used by Meshery Adapters and other
+        registrants during capability registration).
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegistrantData"
+      responses:
+        "200":
+          description: Component registration processed.
+        "400":
+          $ref: "#/components/responses/400"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/registry/components/{name}:
+    get:
+      x-internal: ["meshery"]
+      tags:
+        - Registry
+      operationId: getRegistryComponentsByName
+      summary: Get registered components by name
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/componentName"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - name: search
+          in: query
+          description: When `true`, the component name is matched greedily (substring match).
+          required: false
+          schema:
+            type: string
+            maxLength: 255
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/version"
+        - $ref: "#/components/parameters/apiVersion"
+        - $ref: "#/components/parameters/trim"
+        - $ref: "#/components/parameters/annotations"
+      responses:
+        "200":
+          description: Paginated list of matching components.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistryComponentsPage"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/registry/relationships:
+    get:
+      x-internal: ["meshery"]
+      tags:
+        - Registry
+      operationId: getRegistryRelationships
+      summary: List registered relationships
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/version"
+      responses:
+        "200":
+          description: Paginated list of registered relationships.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistryRelationshipsPage"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      x-internal: ["meshery"]
+      tags:
+        - Registry
+      operationId: registerRegistryRelationship
+      summary: Register a relationship definition
+      description: >-
+        Registrant-facing channel through which relationships are registered
+        into the capabilities registry.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegistrantData"
+      responses:
+        "200":
+          description: Relationship registration processed.
+        "400":
+          $ref: "#/components/responses/400"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/registry/registrants:
+    get:
+      x-internal: ["meshery"]
+      tags:
+        - Registry
+      operationId: getRegistryRegistrants
+      summary: List registrants
+      description: >-
+        Returns a paginated list of registrants (hosts) that have registered
+        capabilities into the registry, with a summary count of the entities
+        each has registered.
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+      responses:
+        "200":
+          description: Paginated list of registrants.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistryRegistrantsPage"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/registry/register:
+    post:
+      x-internal: ["meshery"]
+      tags:
+        - Registry
+      operationId: registerRegistryEntities
+      summary: Import entities into the registry
+      description: >-
+        Imports models and their components and relationships into the
+        capabilities registry from a file, URL, or CSV set, optionally
+        registering them for immediate use.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../../v1beta2/model/api.yml#/components/schemas/ImportRequest"
+      responses:
+        "200":
+          description: Import processed; response summarizes registered entities and failures.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistryImportResponse"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/registry/generate:
+    post:
+      x-internal: ["meshery"]
+      tags:
+        - Registry
+      operationId: generateRegistryComponents
+      summary: Generate components for packages
+      description: >-
+        Generates component definitions for the named packages (via Artifact
+        Hub), optionally registering the generated components into the
+        registry.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenerateComponentsRequest"
+      responses:
+        "200":
+          description: Generation results, one item per requested package.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GenerateComponentsResponseItem"
+        "400":
+          $ref: "#/components/responses/400"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/registry/export:
+    get:
+      x-internal: ["meshery"]
+      tags:
+        - Registry
+      operationId: exportRegistryModel
+      summary: Export a registered model
+      description: >-
+        Exports a registered model, including its components and
+        relationships, as a downloadable artifact.
+      security: []
+      parameters:
+        - name: id
+          in: query
+          description: ID of the model to export.
+          required: false
+          schema:
+            type: string
+            maxLength: 255
+        - name: name
+          in: query
+          description: Name of the model to export.
+          required: false
+          schema:
+            type: string
+            maxLength: 255
+        - name: version
+          in: query
+          description: Version of the model to export.
+          required: false
+          schema:
+            type: string
+            maxLength: 255
+        - name: outputFormat
+          in: query
+          description: Format of the definitions inside the exported artifact.
+          required: false
+          schema:
+            type: string
+            x-enum-casing-exempt: true
+            enum: ["json", "yaml"]
+            default: json
+        - name: fileType
+          in: query
+          description: Type of artifact to produce.
+          required: false
+          schema:
+            type: string
+            x-enum-casing-exempt: true
+            enum: ["oci", "tar"]
+            default: oci
+        - name: components
+          in: query
+          description: Whether to include component definitions in the export.
+          required: false
+          schema:
+            type: boolean
+            default: true
+        - name: relationships
+          in: query
+          description: Whether to include relationship definitions in the export.
+          required: false
+          schema:
+            type: boolean
+            default: true
+      responses:
+        "200":
+          description: Exported model artifact.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/registry/validate:
+    post:
+      x-internal: ["meshery"]
+      tags:
+        - Registry
+      operationId: validateRegistryEntities
+      summary: Validate values against schemas
+      description: >-
+        Validates a batch of values against their declared schemas (JSON
+        Schema or CUE) and returns a per-item validation verdict.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ValidationRequest"
+      responses:
+        "200":
+          description: Validation results keyed by the request item identifiers.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationResults"
+        "400":
+          $ref: "#/components/responses/400"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/registry/{entityType}/status:
+    post:
+      x-internal: ["meshery"]
+      tags:
+        - Registry
+      operationId: updateRegistryEntityStatus
+      summary: Update the status of a registered entity
+      description: >-
+        Updates the lifecycle status of a registered entity (for example,
+        ignoring or re-enabling a model).
+      parameters:
+        - name: entityType
+          in: path
+          description: Type of the registered entity whose status is being updated.
+          required: true
+          schema:
+            type: string
+            maxLength: 255
+            examples:
+              - models
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EntityStatusPayload"
+      responses:
+        "204":
+          description: Entity status updated.
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+components:
+  responses:
+    400:
+      description: Bad request.
+    401:
+      $ref: "../core/api.yml#/components/responses/401"
+    404:
+      description: The requested resource was not found.
+    500:
+      description: Internal server error.
+
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    page:
+      name: page
+      in: query
+      description: Zero-indexed page number of the result set.
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+    pageSize:
+      name: pageSize
+      in: query
+      description: Number of items per page, or `all` to return every item.
+      required: false
+      schema:
+        type: string
+        maxLength: 255
+    search:
+      name: search
+      in: query
+      description: Filter results by a case-insensitive substring match on name.
+      required: false
+      schema:
+        type: string
+        maxLength: 255
+    order:
+      name: order
+      in: query
+      description: Field to order the results by.
+      required: false
+      schema:
+        type: string
+        maxLength: 255
+    sort:
+      name: sort
+      in: query
+      description: Sort direction (`asc` or `desc`).
+      required: false
+      schema:
+        type: string
+        maxLength: 255
+    version:
+      name: version
+      in: query
+      description: Filter by model version.
+      required: false
+      schema:
+        type: string
+        maxLength: 255
+    apiVersion:
+      name: apiVersion
+      in: query
+      description: Filter components by their API version.
+      required: false
+      schema:
+        type: string
+        maxLength: 255
+    annotations:
+      name: annotations
+      in: query
+      description: >-
+        Annotation filter: `true` returns only annotation entities, `false`
+        excludes them, and `include` returns both.
+      required: false
+      schema:
+        type: string
+        maxLength: 255
+    components:
+      name: components
+      in: query
+      description: When `true`, embeds the model's component definitions in the response.
+      required: false
+      schema:
+        type: string
+        maxLength: 255
+    relationships:
+      name: relationships
+      in: query
+      description: When `true`, embeds the model's relationship definitions in the response.
+      required: false
+      schema:
+        type: string
+        maxLength: 255
+    trim:
+      name: trim
+      in: query
+      description: When `true`, omits large schema payloads from the returned definitions.
+      required: false
+      schema:
+        type: string
+        maxLength: 255
+    modelName:
+      name: model
+      in: path
+      description: >-
+        Name of the model (for `DELETE /api/registry/models/{model}`, the
+        model's ID).
+      required: true
+      schema:
+        type: string
+        maxLength: 255
+    categoryName:
+      name: category
+      in: path
+      description: Name of the category.
+      required: true
+      schema:
+        type: string
+        maxLength: 255
+    componentName:
+      name: name
+      in: path
+      description: Kind of the component (e.g. `Deployment`).
+      required: true
+      schema:
+        type: string
+        maxLength: 255
+
+  schemas:
+    PageMetadata:
+      type: object
+      description: >-
+        Pagination metadata common to registry list responses. The canonical
+        wire form is camelCase; the snake_case `page_size` and `total_count`
+        keys are emitted alongside during the deprecation window for
+        consumers still reading the legacy spellings.
+      properties:
+        page:
+          type: integer
+          description: Current page number of the result set.
+          minimum: 0
+        pageSize:
+          type: integer
+          description: Number of items in the page.
+          minimum: 0
+        totalCount:
+          type: integer
+          description: Total number of items available.
+          minimum: 0
+        page_size:
+          type: integer
+          description: Deprecated snake_case alias of `pageSize`.
+          minimum: 0
+          deprecated: true
+        total_count:
+          type: integer
+          description: Deprecated snake_case alias of `totalCount`.
+          minimum: 0
+          deprecated: true
+
+    RegistryModel:
+      description: A registered model, annotated with its duplicate count.
+      allOf:
+        - $ref: "../../v1beta2/model/model.yaml"
+        - type: object
+          properties:
+            duplicates:
+              type: integer
+              description: Number of other registered entries sharing this model's name and version.
+              minimum: 0
+
+    RegistryComponent:
+      description: A registered component, annotated with its duplicate count.
+      allOf:
+        - $ref: "../../v1beta3/component/component.yaml"
+        - type: object
+          properties:
+            duplicates:
+              type: integer
+              description: Number of other registered entries sharing this component's kind, version, and model.
+              minimum: 0
+
+    RegistryModelsPage:
+      description: A page of registered models.
+      allOf:
+        - $ref: "#/components/schemas/PageMetadata"
+        - type: object
+          properties:
+            models:
+              type: array
+              items:
+                $ref: "#/components/schemas/RegistryModel"
+              description: The models matching the query.
+
+    RegistryComponentsPage:
+      description: A page of registered components.
+      allOf:
+        - $ref: "#/components/schemas/PageMetadata"
+        - type: object
+          properties:
+            components:
+              type: array
+              items:
+                $ref: "#/components/schemas/RegistryComponent"
+              description: The components matching the query.
+
+    RegistryRelationshipsPage:
+      description: A page of registered relationships.
+      allOf:
+        - $ref: "#/components/schemas/PageMetadata"
+        - type: object
+          properties:
+            relationships:
+              type: array
+              items:
+                $ref: "../../v1alpha3/relationship/relationship.yaml"
+              description: The relationships matching the query.
+
+    RegistryCategoriesPage:
+      description: A page of registry categories.
+      allOf:
+        - $ref: "#/components/schemas/PageMetadata"
+        - type: object
+          properties:
+            categories:
+              type: array
+              items:
+                $ref: "../../v1beta1/category/category.yaml"
+              description: The categories matching the query.
+
+    RegistryPoliciesPage:
+      description: A page of registered policies.
+      allOf:
+        - $ref: "#/components/schemas/PageMetadata"
+        - type: object
+          properties:
+            policies:
+              type: array
+              items:
+                type: object
+                description: A registered policy definition.
+                additionalProperties: true
+              description: The policies matching the query.
+
+    RegistryRegistrant:
+      description: >-
+        A registrant (host) that has registered capabilities into the
+        registry, with a summary of the entities it has registered.
+      allOf:
+        - $ref: "../connection/api.yml#/components/schemas/Connection"
+        - type: object
+          properties:
+            summary:
+              $ref: "#/components/schemas/RegistrantSummary"
+
+    RegistrantSummary:
+      type: object
+      description: Counts of the entities a registrant has registered.
+      properties:
+        models:
+          type: integer
+          description: Number of models registered by this registrant.
+          minimum: 0
+        components:
+          type: integer
+          description: Number of components registered by this registrant.
+          minimum: 0
+        relationships:
+          type: integer
+          description: Number of relationships registered by this registrant.
+          minimum: 0
+        policies:
+          type: integer
+          description: Number of policies registered by this registrant.
+          minimum: 0
+
+    RegistryRegistrantsPage:
+      description: A page of registrants.
+      allOf:
+        - $ref: "#/components/schemas/PageMetadata"
+        - type: object
+          properties:
+            registrants:
+              type: array
+              items:
+                $ref: "#/components/schemas/RegistryRegistrant"
+              description: The registrants matching the query.
+
+    RegistrantData:
+      type: object
+      description: >-
+        Envelope with which a registrant submits an entity definition for
+        registration into the capabilities registry.
+      required:
+        - connection
+        - entityType
+        - entity
+      properties:
+        connection:
+          $ref: "../../v1beta3/connection/api.yml#/components/schemas/Connection"
+          description: Connection identifying the registrant.
+        entityType:
+          type: string
+          description: Type of the entity being registered (e.g. `component`, `relationship`).
+          maxLength: 255
+        entity:
+          type: string
+          format: byte
+          description: Base64-encoded JSON definition of the entity being registered.
+
+    RegistryImportResponse:
+      type: object
+      description: Summary of an import into the capabilities registry.
+      properties:
+        entityCount:
+          $ref: "#/components/schemas/RegistryImportEntityCount"
+        errMsg:
+          type: string
+          description: Aggregated, human-readable description of import failures, if any.
+          maxLength: 65536
+        entityTypeSummary:
+          $ref: "#/components/schemas/RegistryImportEntitySummary"
+        modelName:
+          type: array
+          items:
+            type: string
+            maxLength: 255
+          description: Names of the models processed by the import.
+
+    RegistryImportEntityCount:
+      type: object
+      description: Counts of imported and failed entities by type.
+      properties:
+        compCount:
+          type: integer
+          description: Number of components imported.
+          minimum: 0
+        relCount:
+          type: integer
+          description: Number of relationships imported.
+          minimum: 0
+        modelCount:
+          type: integer
+          description: Number of models imported.
+          minimum: 0
+        errCompCount:
+          type: integer
+          description: Number of components that failed to import.
+          minimum: 0
+        errRelCount:
+          type: integer
+          description: Number of relationships that failed to import.
+          minimum: 0
+        errModelCount:
+          type: integer
+          description: Number of models that failed to import.
+          minimum: 0
+        totalErrCount:
+          type: integer
+          description: Total number of entities that failed to import.
+          minimum: 0
+
+    RegistryImportEntitySummary:
+      type: object
+      description: Per-type summaries of imported entities and failures.
+      properties:
+        successfulComponents:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+          description: Components successfully imported.
+        successfulRelationships:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+          description: Relationships successfully imported.
+        successfulModels:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+          description: Models successfully imported.
+        unsuccessfulComponentNames:
+          type: array
+          items: {}
+          description: Names of entities that failed to import, with their errors.
+
+    GenerateComponentsRequest:
+      type: object
+      description: Request to generate components for a set of packages.
+      required:
+        - data
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/GenerateComponentsRequestItem"
+          description: Packages for which to generate components.
+
+    GenerateComponentsRequestItem:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Name of the package (Artifact Hub package name) to generate components for.
+          maxLength: 255
+        register:
+          type: boolean
+          description: Whether to register the generated components into the registry.
+
+    GenerateComponentsResponseItem:
+      type: object
+      description: Generation result for a single requested package.
+      properties:
+        name:
+          type: string
+          description: Name of the package the components were generated for.
+          maxLength: 255
+        components:
+          type: array
+          items:
+            $ref: "../../v1beta3/component/component.yaml"
+          description: The generated component definitions.
+        errors:
+          type: array
+          items:
+            type: string
+            maxLength: 65536
+          description: Errors encountered while generating components for this package.
+
+    ValidationRequest:
+      type: object
+      description: Batch of values to validate against their schemas.
+      required:
+        - validationItems
+      properties:
+        validationItems:
+          type: object
+          description: Items to validate, keyed by a caller-chosen identifier.
+          additionalProperties:
+            $ref: "#/components/schemas/ValidationItem"
+
+    ValidationItem:
+      type: object
+      required:
+        - schema
+        - value
+      properties:
+        schema:
+          type: string
+          description: Schema (JSON Schema or CUE) to validate the value against.
+          maxLength: 1048576
+        value:
+          type: string
+          description: Value to validate.
+          maxLength: 1048576
+        valueType:
+          type: string
+          x-enum-casing-exempt: true
+          enum: ["JSON", "YAML", "JSONSCHEMA", "CUE"]
+          description: Format of `value`.
+
+    ValidationResults:
+      type: object
+      description: Validation verdicts keyed by the request item identifiers.
+      required:
+        - result
+      properties:
+        result:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/ValidationResult"
+
+    ValidationResult:
+      type: object
+      required:
+        - isValid
+      properties:
+        isValid:
+          type: boolean
+          description: Whether the value conforms to its schema.
+        errors:
+          type: array
+          items:
+            type: string
+            maxLength: 65536
+          description: Validation errors, empty when the value is valid.
+
+    EntityStatusPayload:
+      type: object
+      description: Request to update the lifecycle status of a registered entity.
+      required:
+        - status
+      properties:
+        id:
+          type: string
+          description: ID of the registered entity whose status is being updated.
+          maxLength: 255
+        status:
+          type: string
+          description: New status of the entity (e.g. `registered`, `ignored`).
+          maxLength: 255
+        displayName:
+          type: string
+          description: Display name of the entity, used in the resulting status-change event.
+          maxLength: 255
