@@ -41,7 +41,7 @@ paths:
       security: []
       parameters:
         - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
         - $ref: "#/components/parameters/sort"
@@ -95,7 +95,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/modelName"
         - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/pageSize"
         - name: search
           in: query
           description: When `true`, the model name is matched greedily (substring match).
@@ -148,7 +148,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/modelName"
         - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
         - $ref: "#/components/parameters/sort"
@@ -178,7 +178,7 @@ paths:
         - $ref: "#/components/parameters/modelName"
         - $ref: "#/components/parameters/componentName"
         - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
         - $ref: "#/components/parameters/sort"
@@ -207,7 +207,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/modelName"
         - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
         - $ref: "#/components/parameters/sort"
@@ -240,7 +240,7 @@ paths:
             type: string
             maxLength: 255
         - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
         - $ref: "#/components/parameters/sort"
@@ -266,7 +266,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/modelName"
         - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
         - $ref: "#/components/parameters/sort"
@@ -298,7 +298,7 @@ paths:
             type: string
             maxLength: 255
         - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
         - $ref: "#/components/parameters/sort"
@@ -322,7 +322,7 @@ paths:
       security: []
       parameters:
         - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
         - $ref: "#/components/parameters/sort"
@@ -347,7 +347,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/categoryName"
         - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/pageSize"
         - name: search
           in: query
           description: When `true`, the category name is matched greedily (substring match).
@@ -378,7 +378,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/categoryName"
         - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
         - $ref: "#/components/parameters/sort"
@@ -408,7 +408,7 @@ paths:
         - $ref: "#/components/parameters/categoryName"
         - $ref: "#/components/parameters/modelName"
         - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/pageSize"
         - name: search
           in: query
           description: When `true`, the model name is matched greedily (substring match).
@@ -444,7 +444,7 @@ paths:
         - $ref: "#/components/parameters/categoryName"
         - $ref: "#/components/parameters/modelName"
         - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
         - $ref: "#/components/parameters/sort"
@@ -475,7 +475,7 @@ paths:
         - $ref: "#/components/parameters/modelName"
         - $ref: "#/components/parameters/componentName"
         - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
         - $ref: "#/components/parameters/sort"
@@ -504,7 +504,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/categoryName"
         - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
         - $ref: "#/components/parameters/sort"
@@ -534,7 +534,7 @@ paths:
         - $ref: "#/components/parameters/categoryName"
         - $ref: "#/components/parameters/componentName"
         - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
         - $ref: "#/components/parameters/sort"
@@ -566,7 +566,7 @@ paths:
       security: []
       parameters:
         - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
         - $ref: "#/components/parameters/sort"
@@ -619,7 +619,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/componentName"
         - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/pageSize"
         - name: search
           in: query
           description: When `true`, the component name is matched greedily (substring match).
@@ -653,7 +653,7 @@ paths:
       security: []
       parameters:
         - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
         - $ref: "#/components/parameters/sort"
@@ -705,7 +705,7 @@ paths:
       security: []
       parameters:
         - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
         - $ref: "#/components/parameters/sort"
@@ -815,7 +815,7 @@ paths:
           schema:
             type: string
             maxLength: 255
-        - name: output_format
+        - name: outputFormat
           in: query
           description: Format of the definitions inside the exported artifact.
           required: false
@@ -824,7 +824,7 @@ paths:
             x-enum-casing-exempt: true
             enum: ["json", "yaml"]
             default: json
-        - name: file_type
+        - name: fileType
           in: query
           description: Type of artifact to produce.
           required: false
@@ -951,8 +951,8 @@ components:
       schema:
         type: integer
         minimum: 0
-    pagesize:
-      name: pagesize
+    pageSize:
+      name: pageSize
       in: query
       description: Number of items per page, or `all` to return every item.
       required: false
