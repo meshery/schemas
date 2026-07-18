@@ -4,23 +4,6 @@
  */
 
 export interface paths {
-    "/api/meshmodels/register": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Register mesh models */
-        post: operations["registerMeshmodels"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/integrations/meshmodels/models": {
         parameters: {
             query?: never;
@@ -813,98 +796,6 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    registerMeshmodels: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "multipart/form-data": {
-                    importBody: {
-                        /** @description Name of the file being uploaded. */
-                        fileName: string;
-                        /** @description Supported model file formats are: .tar, .tar.gz, and .tgz. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details */
-                        modelFile: string;
-                    } | {
-                        /**
-                         * Format: uri
-                         * @description A direct URL to a single model file, for example: https://raw.github.com/your-model-file.tar. Supported model file formats are: .tar, .tar.gz, and .tgz. \n\nFor bulk import of your model use the GitHub connection or CSV files. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details
-                         */
-                        url: string;
-                    } | {
-                        /**
-                         * Format: binary
-                         * @description Upload a CSV file containing model definitions
-                         */
-                        modelCsv: string;
-                        /**
-                         * Format: binary
-                         * @description Upload a CSV file containing component definitions
-                         */
-                        componentCsv: string;
-                        /**
-                         * Format: binary
-                         * @description Upload a CSV file containing relationship definitions
-                         */
-                        relationshipCsv: string;
-                    } | {
-                        /**
-                         * Format: uri
-                         * @description URI to the source code or package of the model.
-                         */
-                        url: string;
-                    };
-                    /**
-                     * Upload method
-                     * @description Choose the method you prefer to upload your model file. Select 'File Import' or 'CSV Import' if you have the file on your local system or 'URL Import' if you have the file hosted online.
-                     * @enum {string}
-                     */
-                    uploadType: "file" | "urlImport" | "csv" | "url";
-                    /** @description The register of the importrequest. */
-                    register: boolean;
-                };
-            };
-        };
-        responses: {
-            /** @description Model registered */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        message?: string;
-                    };
-                };
-            };
-            /** @description Invalid request format */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
     getMeshModelModels: {
         parameters: {
             query?: {

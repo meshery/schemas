@@ -7599,7 +7599,7 @@ const ConnectionSchema: Record<string, unknown> = {
         }
       }
     },
-    "/api/meshmodels/connections": {
+    "/api/registry/connections": {
       "get": {
         "x-internal": [
           "cloud",
@@ -8553,7 +8553,7 @@ const ConnectionSchema: Record<string, unknown> = {
         }
       }
     },
-    "/api/meshmodels/connections/{connectionDefinitionId}": {
+    "/api/registry/connections/{connectionDefinitionId}": {
       "get": {
         "x-internal": [
           "cloud",

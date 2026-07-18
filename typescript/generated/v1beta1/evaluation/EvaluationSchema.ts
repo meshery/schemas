@@ -31,7 +31,7 @@ const EvaluationSchema: Record<string, unknown> = {
     }
   ],
   "paths": {
-    "/api/meshmodels/relationships/evaluate": {
+    "/api/registry/relationships/evaluate": {
       "post": {
         "operationId": "evaluateRelationships",
         "x-internal": [

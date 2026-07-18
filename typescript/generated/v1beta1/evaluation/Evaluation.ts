@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-    "/api/meshmodels/relationships/evaluate": {
+    "/api/registry/relationships/evaluate": {
         parameters: {
             query?: never;
             header?: never;

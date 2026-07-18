@@ -142,7 +142,7 @@
     "version": "v1beta2",
     "href": "/schemas/constructs/v1beta2/model/model.yaml",
     "docs_href": "https://docs.meshery.io/concepts/logical/models",
-    "core": true,
+    "core": false,
     "extension": true
   },
   {
@@ -173,6 +173,13 @@
     "href": "/schemas/constructs/v1beta3/plan/plan.yaml",
     "core": false,
     "extension": true
+  },
+  {
+    "construct": "registry",
+    "version": "v1beta1",
+    "href": "/schemas/constructs/v1beta1/registry/api.yml",
+    "core": true,
+    "extension": false
   },
   {
     "construct": "relationship",
