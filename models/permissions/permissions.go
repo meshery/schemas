@@ -5,7 +5,7 @@ package permissions
 import "github.com/gofrs/uuid"
 
 // Index ID used to generate this file
-const IndexID = "8d7905beb07904185485104a47bb9916237daee1dc5573a431103fa4391a8170"
+const IndexID = "2be20cbdd31389d564d60263bd32c01c018d3c2661ffea36e2bdea4bf7b3346c"
 
 
 // PermissionKey represents a permission key identifier.
@@ -754,7 +754,7 @@ var (
 	KanvasResetCommentStyles = PermissionKey(uuid.Must(uuid.FromString("c9c6d2bf-e566-49c8-bee0-bc6cf84cb8a8")))
 
 	// KanvasViewViews - See all views within a workspace
-	KanvasViewViews = PermissionKey(uuid.Must(uuid.FromString("93cba7f8-82ec-4a64-b384-f81d6acc8db3")))
+	KanvasViewViews = PermissionKey(uuid.Must(uuid.FromString("4b3117e6-176c-4d9b-8e09-4278d2f48280")))
 
 	// KanvasCreateView - Create a new view
 	KanvasCreateView = PermissionKey(uuid.Must(uuid.FromString("47ba32dc-aaa3-4c75-afdd-07fb40f38f4f")))
