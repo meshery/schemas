@@ -976,8 +976,7 @@ components:
         users:
           type: array
           items:
-            type: object
-            additionalProperties: true
+            $ref: "../user/api.yml#/components/schemas/User"
 
   requestBodies:
     catalogContentPayload:
