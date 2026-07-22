@@ -180,7 +180,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/meshmodels/connections": {
+    "/api/registry/connections": {
         parameters: {
             query?: never;
             header?: never;
@@ -204,7 +204,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/meshmodels/connections/{connectionDefinitionId}": {
+    "/api/registry/connections/{connectionDefinitionId}": {
         parameters: {
             query?: never;
             header?: never;

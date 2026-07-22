@@ -371,7 +371,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  /api/meshmodels/connections:
+  /api/registry/connections:
     get:
       x-internal: ["cloud", "meshery"]
       tags:
@@ -439,7 +439,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  /api/meshmodels/connections/{connectionDefinitionId}:
+  /api/registry/connections/{connectionDefinitionId}:
     get:
       x-internal: ["cloud", "meshery"]
       tags:

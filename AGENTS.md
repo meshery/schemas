@@ -55,6 +55,13 @@ Generated artifacts (`models/`, `typescript/generated/`) are committed by automa
 
 Always run `make build`, `go test ./...`, and `npm run build` before committing schema changes. See [Common Mistakes](docs/schema-review-checklist.md#common-mistakes-to-avoid) and the [Checklist for Schema Changes](docs/schema-review-checklist.md#checklist-for-schema-changes) for the full pre-PR list.
 
+## AXI Agent Tooling
+
+- Use the `gh-axi` CLI tool to interact with GitHub. Prefer `gh-axi` over `gh`.
+- Use `chrome-devtools-axi` for browser automation (navigate, snapshot, click, fill forms, run JS, inspect console/network) in place of raw Playwright/chrome-devtools MCP for ad hoc tasks.
+- Run `quota-axi` to check local agent-provider quota windows before long-running work.
+- Use the `lavish` skill (`lavish-axi` CLI) to turn a plan, comparison, or report into a reviewable HTML artifact.
+
 ## The Dual-Schema Pattern (REQUIRED)
 
 This is the most critical design rule in this repo. Every agent or contributor MUST follow it.
