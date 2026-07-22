@@ -63,7 +63,8 @@ const CredentialSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "minimum": 0
             }
           },
           {
@@ -81,7 +82,7 @@ const CredentialSchema: Record<string, unknown> = {
             "description": "Get responses by pagesize. Deprecated alias of pageSize.",
             "deprecated": true,
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {
@@ -1079,7 +1080,8 @@ const CredentialSchema: Record<string, unknown> = {
         "in": "query",
         "description": "Get responses by page",
         "schema": {
-          "type": "string"
+          "type": "integer",
+          "minimum": 0
         }
       },
       "pageSize": {
@@ -1097,7 +1099,7 @@ const CredentialSchema: Record<string, unknown> = {
         "description": "Get responses by pagesize. Deprecated alias of pageSize.",
         "deprecated": true,
         "schema": {
-          "type": "string"
+          "type": "integer"
         }
       },
       "search": {

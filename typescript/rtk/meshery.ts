@@ -2,10 +2,10 @@ import { mesheryBaseApi as api } from "./api";
 export const addTagTypes = [
   "Meshery_Controllers_Configuration_controllers",
   "Evaluation_Evaluation",
+  "Registry_Registry",
   "System_API_System",
   "credential_credentials",
   "Key_users",
-  "Model_Models",
   "Organization_Organizations",
   "User_users",
   "Connection_API_Connections",
@@ -57,8 +57,418 @@ const injectedRtkApi = api
         invalidatesTags: ["Meshery_Controllers_Configuration_controllers"],
       }),
       evaluateRelationships: build.mutation<EvaluateRelationshipsApiResponse, EvaluateRelationshipsApiArg>({
-        query: (queryArg) => ({ url: `/api/meshmodels/relationships/evaluate`, method: "POST", body: queryArg.body }),
+        query: (queryArg) => ({ url: `/api/registry/relationships/evaluate`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Evaluation_Evaluation"],
+      }),
+      getRegistryModels: build.query<GetRegistryModelsApiResponse, GetRegistryModelsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/registry/models`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            sort: queryArg?.sort,
+            status: queryArg?.status,
+            id: queryArg?.id,
+            registrant: queryArg?.registrant,
+            version: queryArg?.version,
+            annotations: queryArg?.annotations,
+            components: queryArg?.components,
+            relationships: queryArg?.relationships,
+            trim: queryArg?.trim,
+          },
+        }),
+        providesTags: ["Registry_Registry"],
+      }),
+      getRegistryModelsByName: build.query<GetRegistryModelsByNameApiResponse, GetRegistryModelsByNameApiArg>({
+        query: (queryArg) => ({
+          url: `/api/registry/models/${queryArg.model}`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            sort: queryArg?.sort,
+            version: queryArg?.version,
+            annotations: queryArg?.annotations,
+            components: queryArg?.components,
+            relationships: queryArg?.relationships,
+          },
+        }),
+        providesTags: ["Registry_Registry"],
+      }),
+      deleteRegistryModel: build.mutation<DeleteRegistryModelApiResponse, DeleteRegistryModelApiArg>({
+        query: (queryArg) => ({ url: `/api/registry/models/${queryArg.model}`, method: "DELETE" }),
+        invalidatesTags: ["Registry_Registry"],
+      }),
+      getRegistryComponentsByModel: build.query<
+        GetRegistryComponentsByModelApiResponse,
+        GetRegistryComponentsByModelApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/registry/models/${queryArg.model}/components`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            sort: queryArg?.sort,
+            version: queryArg?.version,
+            apiVersion: queryArg?.apiVersion,
+            trim: queryArg?.trim,
+            annotations: queryArg?.annotations,
+          },
+        }),
+        providesTags: ["Registry_Registry"],
+      }),
+      getRegistryComponentsByModelAndName: build.query<
+        GetRegistryComponentsByModelAndNameApiResponse,
+        GetRegistryComponentsByModelAndNameApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/registry/models/${queryArg.model}/components/${queryArg.name}`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            sort: queryArg?.sort,
+            version: queryArg?.version,
+            apiVersion: queryArg?.apiVersion,
+            trim: queryArg?.trim,
+            annotations: queryArg?.annotations,
+          },
+        }),
+        providesTags: ["Registry_Registry"],
+      }),
+      getRegistryRelationshipsByModel: build.query<
+        GetRegistryRelationshipsByModelApiResponse,
+        GetRegistryRelationshipsByModelApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/registry/models/${queryArg.model}/relationships`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            sort: queryArg?.sort,
+            version: queryArg?.version,
+          },
+        }),
+        providesTags: ["Registry_Registry"],
+      }),
+      getRegistryRelationshipsByModelAndName: build.query<
+        GetRegistryRelationshipsByModelAndNameApiResponse,
+        GetRegistryRelationshipsByModelAndNameApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/registry/models/${queryArg.model}/relationships/${queryArg.name}`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            sort: queryArg?.sort,
+            version: queryArg?.version,
+          },
+        }),
+        providesTags: ["Registry_Registry"],
+      }),
+      getRegistryPoliciesByModel: build.query<GetRegistryPoliciesByModelApiResponse, GetRegistryPoliciesByModelApiArg>({
+        query: (queryArg) => ({
+          url: `/api/registry/models/${queryArg.model}/policies`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            sort: queryArg?.sort,
+          },
+        }),
+        providesTags: ["Registry_Registry"],
+      }),
+      getRegistryPoliciesByModelAndName: build.query<
+        GetRegistryPoliciesByModelAndNameApiResponse,
+        GetRegistryPoliciesByModelAndNameApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/registry/models/${queryArg.model}/policies/${queryArg.name}`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            sort: queryArg?.sort,
+          },
+        }),
+        providesTags: ["Registry_Registry"],
+      }),
+      getRegistryCategories: build.query<GetRegistryCategoriesApiResponse, GetRegistryCategoriesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/registry/categories`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            sort: queryArg?.sort,
+          },
+        }),
+        providesTags: ["Registry_Registry"],
+      }),
+      getRegistryCategoriesByName: build.query<
+        GetRegistryCategoriesByNameApiResponse,
+        GetRegistryCategoriesByNameApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/registry/categories/${queryArg.category}`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            sort: queryArg?.sort,
+          },
+        }),
+        providesTags: ["Registry_Registry"],
+      }),
+      getRegistryModelsByCategory: build.query<
+        GetRegistryModelsByCategoryApiResponse,
+        GetRegistryModelsByCategoryApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/registry/categories/${queryArg.category}/models`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            sort: queryArg?.sort,
+            version: queryArg?.version,
+            annotations: queryArg?.annotations,
+            components: queryArg?.components,
+            relationships: queryArg?.relationships,
+          },
+        }),
+        providesTags: ["Registry_Registry"],
+      }),
+      getRegistryModelsByCategoryAndModel: build.query<
+        GetRegistryModelsByCategoryAndModelApiResponse,
+        GetRegistryModelsByCategoryAndModelApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/registry/categories/${queryArg.category}/models/${queryArg.model}`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            sort: queryArg?.sort,
+            version: queryArg?.version,
+            annotations: queryArg?.annotations,
+            components: queryArg?.components,
+            relationships: queryArg?.relationships,
+          },
+        }),
+        providesTags: ["Registry_Registry"],
+      }),
+      getRegistryComponentsByCategoryAndModel: build.query<
+        GetRegistryComponentsByCategoryAndModelApiResponse,
+        GetRegistryComponentsByCategoryAndModelApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/registry/categories/${queryArg.category}/models/${queryArg.model}/components`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            sort: queryArg?.sort,
+            version: queryArg?.version,
+            apiVersion: queryArg?.apiVersion,
+            trim: queryArg?.trim,
+            annotations: queryArg?.annotations,
+          },
+        }),
+        providesTags: ["Registry_Registry"],
+      }),
+      getRegistryComponentsByCategoryAndModelAndName: build.query<
+        GetRegistryComponentsByCategoryAndModelAndNameApiResponse,
+        GetRegistryComponentsByCategoryAndModelAndNameApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/registry/categories/${queryArg.category}/models/${queryArg.model}/components/${queryArg.name}`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            sort: queryArg?.sort,
+            version: queryArg?.version,
+            apiVersion: queryArg?.apiVersion,
+            trim: queryArg?.trim,
+            annotations: queryArg?.annotations,
+          },
+        }),
+        providesTags: ["Registry_Registry"],
+      }),
+      getRegistryComponentsByCategory: build.query<
+        GetRegistryComponentsByCategoryApiResponse,
+        GetRegistryComponentsByCategoryApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/registry/categories/${queryArg.category}/components`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            sort: queryArg?.sort,
+            version: queryArg?.version,
+            apiVersion: queryArg?.apiVersion,
+            trim: queryArg?.trim,
+            annotations: queryArg?.annotations,
+          },
+        }),
+        providesTags: ["Registry_Registry"],
+      }),
+      getRegistryComponentsByCategoryAndName: build.query<
+        GetRegistryComponentsByCategoryAndNameApiResponse,
+        GetRegistryComponentsByCategoryAndNameApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/registry/categories/${queryArg.category}/components/${queryArg.name}`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            sort: queryArg?.sort,
+            version: queryArg?.version,
+            apiVersion: queryArg?.apiVersion,
+            trim: queryArg?.trim,
+            annotations: queryArg?.annotations,
+          },
+        }),
+        providesTags: ["Registry_Registry"],
+      }),
+      getRegistryComponents: build.query<GetRegistryComponentsApiResponse, GetRegistryComponentsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/registry/components`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            sort: queryArg?.sort,
+            version: queryArg?.version,
+            apiVersion: queryArg?.apiVersion,
+            trim: queryArg?.trim,
+            annotations: queryArg?.annotations,
+          },
+        }),
+        providesTags: ["Registry_Registry"],
+      }),
+      registerRegistryComponent: build.mutation<RegisterRegistryComponentApiResponse, RegisterRegistryComponentApiArg>({
+        query: (queryArg) => ({ url: `/api/registry/components`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Registry_Registry"],
+      }),
+      getRegistryComponentsByName: build.query<
+        GetRegistryComponentsByNameApiResponse,
+        GetRegistryComponentsByNameApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/registry/components/${queryArg.name}`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            sort: queryArg?.sort,
+            version: queryArg?.version,
+            apiVersion: queryArg?.apiVersion,
+            trim: queryArg?.trim,
+            annotations: queryArg?.annotations,
+          },
+        }),
+        providesTags: ["Registry_Registry"],
+      }),
+      getRegistryRelationships: build.query<GetRegistryRelationshipsApiResponse, GetRegistryRelationshipsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/registry/relationships`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            sort: queryArg?.sort,
+            version: queryArg?.version,
+          },
+        }),
+        providesTags: ["Registry_Registry"],
+      }),
+      registerRegistryRelationship: build.mutation<
+        RegisterRegistryRelationshipApiResponse,
+        RegisterRegistryRelationshipApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/registry/relationships`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Registry_Registry"],
+      }),
+      getRegistryRegistrants: build.query<GetRegistryRegistrantsApiResponse, GetRegistryRegistrantsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/registry/registrants`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            sort: queryArg?.sort,
+          },
+        }),
+        providesTags: ["Registry_Registry"],
+      }),
+      registerRegistryEntities: build.mutation<RegisterRegistryEntitiesApiResponse, RegisterRegistryEntitiesApiArg>({
+        query: (queryArg) => ({ url: `/api/registry/register`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Registry_Registry"],
+      }),
+      generateRegistryComponents: build.mutation<
+        GenerateRegistryComponentsApiResponse,
+        GenerateRegistryComponentsApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/registry/generate`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Registry_Registry"],
+      }),
+      exportRegistryModel: build.query<ExportRegistryModelApiResponse, ExportRegistryModelApiArg>({
+        query: (queryArg) => ({
+          url: `/api/registry/export`,
+          params: {
+            id: queryArg?.id,
+            name: queryArg?.name,
+            version: queryArg?.version,
+            outputFormat: queryArg?.outputFormat,
+            fileType: queryArg?.fileType,
+            components: queryArg?.components,
+            relationships: queryArg?.relationships,
+          },
+        }),
+        providesTags: ["Registry_Registry"],
+      }),
+      validateRegistryEntities: build.mutation<ValidateRegistryEntitiesApiResponse, ValidateRegistryEntitiesApiArg>({
+        query: (queryArg) => ({ url: `/api/registry/validate`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Registry_Registry"],
+      }),
+      updateRegistryEntityStatus: build.mutation<
+        UpdateRegistryEntityStatusApiResponse,
+        UpdateRegistryEntityStatusApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/registry/${queryArg.entityType}/status`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Registry_Registry"],
       }),
       getSystemDatabase: build.query<GetSystemDatabaseApiResponse, GetSystemDatabaseApiArg>({
         query: (queryArg) => ({
@@ -79,6 +489,26 @@ const injectedRtkApi = api
       }),
       getSystemVersion: build.query<GetSystemVersionApiResponse, GetSystemVersionApiArg>({
         query: () => ({ url: `/api/system/version` }),
+        providesTags: ["System_API_System"],
+      }),
+      addKubernetesConfig: build.mutation<AddKubernetesConfigApiResponse, AddKubernetesConfigApiArg>({
+        query: (queryArg) => ({ url: `/api/system/kubernetes`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["System_API_System"],
+      }),
+      discoverKubernetesContexts: build.mutation<
+        DiscoverKubernetesContextsApiResponse,
+        DiscoverKubernetesContextsApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/system/kubernetes/contexts`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["System_API_System"],
+      }),
+      pingKubernetes: build.query<PingKubernetesApiResponse, PingKubernetesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/system/kubernetes/ping`,
+          params: {
+            connectionId: queryArg?.connectionId,
+          },
+        }),
         providesTags: ["System_API_System"],
       }),
       getSystemSync: build.query<GetSystemSyncApiResponse, GetSystemSyncApiArg>({
@@ -182,10 +612,6 @@ const injectedRtkApi = api
         }),
         providesTags: ["Key_users"],
       }),
-      registerMeshmodels: build.mutation<RegisterMeshmodelsApiResponse, RegisterMeshmodelsApiArg>({
-        query: (queryArg) => ({ url: `/api/meshmodels/register`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["Model_Models"],
-      }),
       getOrgs: build.query<GetOrgsApiResponse, GetOrgsApiArg>({
         query: (queryArg) => ({
           url: `/api/identity/orgs`,
@@ -268,19 +694,6 @@ const injectedRtkApi = api
         }),
         providesTags: ["User_users"],
       }),
-      getUsers: build.query<GetUsersApiResponse, GetUsersApiArg>({
-        query: (queryArg) => ({
-          url: `/api/users`,
-          params: {
-            page: queryArg?.page,
-            pageSize: queryArg?.pageSize,
-            search: queryArg?.search,
-            order: queryArg?.order,
-            filter: queryArg?.filter,
-          },
-        }),
-        providesTags: ["User_users"],
-      }),
       getUserProfileById: build.query<GetUserProfileByIdApiResponse, GetUserProfileByIdApiArg>({
         query: (queryArg) => ({ url: `/api/identity/users/profile/${queryArg.id}` }),
         providesTags: ["User_users"],
@@ -313,6 +726,20 @@ const injectedRtkApi = api
       }),
       registerConnection: build.mutation<RegisterConnectionApiResponse, RegisterConnectionApiArg>({
         query: (queryArg) => ({ url: `/api/integrations/connections`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Connection_API_Connections"],
+      }),
+      processConnectionRegistration: build.mutation<
+        ProcessConnectionRegistrationApiResponse,
+        ProcessConnectionRegistrationApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/integrations/connections/register`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Connection_API_Connections"],
+      }),
+      cancelConnectionRegister: build.mutation<CancelConnectionRegisterApiResponse, CancelConnectionRegisterApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/connections/register/${queryArg.registrationId}`,
+          method: "DELETE",
+        }),
         invalidatesTags: ["Connection_API_Connections"],
       }),
       getConnectionById: build.query<GetConnectionByIdApiResponse, GetConnectionByIdApiArg>({
@@ -372,7 +799,7 @@ const injectedRtkApi = api
       }),
       listConnectionDefinitions: build.query<ListConnectionDefinitionsApiResponse, ListConnectionDefinitionsApiArg>({
         query: (queryArg) => ({
-          url: `/api/meshmodels/connections`,
+          url: `/api/registry/connections`,
           params: {
             page: queryArg?.page,
             pageSize: queryArg?.pageSize,
@@ -388,11 +815,11 @@ const injectedRtkApi = api
         RegisterConnectionDefinitionApiResponse,
         RegisterConnectionDefinitionApiArg
       >({
-        query: (queryArg) => ({ url: `/api/meshmodels/connections`, method: "POST", body: queryArg.body }),
+        query: (queryArg) => ({ url: `/api/registry/connections`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Connection_API_ConnectionDefinitions"],
       }),
       getConnectionDefinition: build.query<GetConnectionDefinitionApiResponse, GetConnectionDefinitionApiArg>({
-        query: (queryArg) => ({ url: `/api/meshmodels/connections/${queryArg.connectionDefinitionId}` }),
+        query: (queryArg) => ({ url: `/api/registry/connections/${queryArg.connectionDefinitionId}` }),
         providesTags: ["Connection_API_ConnectionDefinitions"],
       }),
       updateConnectionDefinition: build.mutation<
@@ -400,7 +827,7 @@ const injectedRtkApi = api
         UpdateConnectionDefinitionApiArg
       >({
         query: (queryArg) => ({
-          url: `/api/meshmodels/connections/${queryArg.connectionDefinitionId}`,
+          url: `/api/registry/connections/${queryArg.connectionDefinitionId}`,
           method: "PUT",
           body: queryArg.body,
         }),
@@ -411,7 +838,7 @@ const injectedRtkApi = api
         DeleteConnectionDefinitionApiArg
       >({
         query: (queryArg) => ({
-          url: `/api/meshmodels/connections/${queryArg.connectionDefinitionId}`,
+          url: `/api/registry/connections/${queryArg.connectionDefinitionId}`,
           method: "DELETE",
         }),
         invalidatesTags: ["Connection_API_ConnectionDefinitions"],
@@ -553,6 +980,32 @@ const injectedRtkApi = api
           },
         }),
         providesTags: ["Performance_Profile_performance"],
+      }),
+      getUsers: build.query<GetUsersApiResponse, GetUsersApiArg>({
+        query: (queryArg) => ({
+          url: `/api/users`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            filter: queryArg?.filter,
+          },
+        }),
+        providesTags: ["User_users"],
+      }),
+      searchUsers: build.query<SearchUsersApiResponse, SearchUsersApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/users/search`,
+          params: {
+            page: queryArg?.page,
+            pageSize: queryArg?.pageSize,
+            search: queryArg?.search,
+            order: queryArg?.order,
+            filter: queryArg?.filter,
+          },
+        }),
+        providesTags: ["User_users"],
       }),
       getWorkspaces: build.query<GetWorkspacesApiResponse, GetWorkspacesApiArg>({
         query: (queryArg) => ({
@@ -3334,6 +3787,7061 @@ export type EvaluateRelationshipsApiArg = {
     };
   };
 };
+export type GetRegistryModelsApiResponse = /** status 200 Paginated list of registered models. */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items in the page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Deprecated snake_case alias of `pageSize`. */
+  page_size?: number;
+  /** Deprecated snake_case alias of `totalCount`. */
+  total_count?: number;
+} & {
+  /** The models matching the query. */
+  models?: ({
+    /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
+    id: string;
+    /** Specifies the version of the schema used for the definition. */
+    schemaVersion: string;
+    /** Version of the model definition. */
+    version: string;
+    /** The unique name for the model within the scope of a registrant. */
+    name: string;
+    /** Human-readable name for the model. */
+    displayName: string;
+    /** Description of the model. */
+    description: string;
+    /** Status of model, including:
+        - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
+        - maintenance: model is unavailable for a period of time.
+        - enabled: model is available for use for all users of this Meshery Server.
+        - ignored: model is unavailable for use for all users of this Meshery Server. */
+    status: "ignored" | "enabled" | "duplicate";
+    /** Connection identifying the entity that registered this model. */
+    registrant: {
+      /** Connection ID */
+      id: string;
+      /** Connection Name */
+      name: string;
+      /** Associated Credential ID */
+      credentialId?: string;
+      /** Connection Type (platform, telemetry, collaboration) */
+      type: string;
+      /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+      subType: string;
+      /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+      kind: string;
+      /** Additional connection metadata */
+      metadata?: object;
+      /** Connection Status */
+      status:
+        | "discovered"
+        | "registered"
+        | "connected"
+        | "ignored"
+        | "maintenance"
+        | "disconnected"
+        | "deleted"
+        | "not found";
+      /** User ID who owns this connection */
+      user_id?: string;
+      created_at?: string;
+      updated_at?: string;
+      /** SQL null Timestamp to handle null values of time. */
+      deleted_at?: string;
+      /** Associated environments for this connection */
+      environments?: {
+        /** ID */
+        id: string;
+        /** Specifies the version of the schema to which the environment conforms. */
+        schemaVersion: string;
+        /** Environment name */
+        name: string;
+        /** Environment description */
+        description: string;
+        /** Environment organization ID */
+        organization_id: string;
+        /** Environment owner */
+        owner?: string;
+        /** Timestamp when the resource was created. */
+        created_at?: string;
+        /** Additional metadata associated with the environment. */
+        metadata?: object;
+        /** Timestamp when the resource was updated. */
+        updated_at?: string;
+        /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+        deleted_at?: string | null;
+      }[];
+      /** Specifies the version of the schema used for the definition. */
+      schemaVersion: string;
+    };
+    /** ID of the registrant. */
+    registrantId: string;
+    /** ID of the category. */
+    categoryId: string;
+    /** Category the model belongs to. */
+    category: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** The category of the model that determines the main grouping. */
+      name:
+        | "Analytics"
+        | "App Definition and Development"
+        | "Cloud Native Network"
+        | "Cloud Native Storage"
+        | "Database"
+        | "Machine Learning"
+        | "Observability and Analysis"
+        | "Orchestration & Management"
+        | "Platform"
+        | "Provisioning"
+        | "Runtime"
+        | "Security & Compliance"
+        | "Serverless"
+        | "Tools"
+        | "Uncategorized";
+      /** Additional metadata associated with the category. */
+      metadata: object;
+    };
+    /** Sub-category the model belongs to. */
+    subCategory:
+      | "API Gateway"
+      | "API Integration"
+      | "Application Definition & Image Build"
+      | "Automation & Configuration"
+      | "Certified Kubernetes - Distribution"
+      | "Chaos Engineering"
+      | "Cloud Native Storage"
+      | "Cloud Provider"
+      | "CNI"
+      | "Compute"
+      | "Container Registry"
+      | "Container Runtime"
+      | "Container Security"
+      | "Container"
+      | "Content Delivery Network"
+      | "Continuous Integration & Delivery"
+      | "Coordination & Service Discovery"
+      | "Database"
+      | "Flowchart"
+      | "Framework"
+      | "Installable Platform"
+      | "Key Management"
+      | "Key Management Service"
+      | "Kubernetes"
+      | "Logging"
+      | "Machine Learning"
+      | "Management Governance"
+      | "Metrics"
+      | "Monitoring"
+      | "Networking Content Delivery"
+      | "Operating System"
+      | "Query"
+      | "Remote Procedure Call"
+      | "Scheduling & Orchestration"
+      | "Secrets Management"
+      | "Security Identity & Compliance"
+      | "Service Mesh"
+      | "Service Proxy"
+      | "Source Version Control"
+      | "Storage"
+      | "Specifications"
+      | "Streaming & Messaging"
+      | "Tools"
+      | "Tracing"
+      | "Uncategorized"
+      | "Video Conferencing";
+    /** Metadata containing additional information associated with the model. */
+    metadata?: {
+      /** Capabilities associated with the model */
+      capabilities?: {
+        /** Specifies the version of the schema to which the capability definition conforms. */
+        schemaVersion: string;
+        /** Version of the capability definition. */
+        version: string;
+        /** Name of the capability in human-readible format. */
+        displayName: string;
+        /** A written representation of the purpose and characteristics of the capability. */
+        description: string;
+        /** Top-level categorization of the capability */
+        kind: "action" | "mutate" | "view" | "interaction";
+        /** Classification of capabilities. Used to group capabilities similar in nature. */
+        type: string;
+        /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
+        subType: string;
+        /** Key that backs the capability. */
+        key: string;
+        /** State of the entity in which the capability is applicable. */
+        entityState: ("declaration" | "instance")[];
+        /** Status of the capability */
+        status: "enabled" | "disabled";
+        /** Metadata contains additional information associated with the capability. Extension point. */
+        metadata?: {
+          [key: string]: any;
+        };
+      }[];
+      /** Indicates whether the model and its entities should be treated as deployable entities or as logical representations. */
+      isAnnotation?: boolean;
+      /** Primary color associated with the model. */
+      primaryColor?: string;
+      /** Secondary color associated with the model. */
+      secondaryColor?: string;
+      /** SVG representation of the model in white color. */
+      svgWhite: string;
+      /** SVG representation of the model in colored format. */
+      svgColor: string;
+      /** SVG representation of the complete model. */
+      svgComplete?: string;
+      /** Visual shape used to render the model's entities in design canvases. */
+      shape?:
+        | "ellipse"
+        | "triangle"
+        | "round-triangle"
+        | "rectangle"
+        | "round-rectangle"
+        | "bottom-round-rectangle"
+        | "cut-rectangle"
+        | "barrel"
+        | "rhomboid"
+        | "diamond"
+        | "round-diamond"
+        | "pentagon"
+        | "round-pentagon"
+        | "hexagon"
+        | "round-hexagon"
+        | "concave-hexagon"
+        | "heptagon"
+        | "round-heptagon"
+        | "octagon"
+        | "round-octagon"
+        | "star"
+        | "tag"
+        | "round-tag"
+        | "vee"
+        | "polygon";
+      [key: string]: any;
+    };
+    /** Registrant-defined data associated with the model. */
+    model: {
+      /** Version of the model as defined by the registrant. */
+      version: string;
+    };
+    /** The relationships of the model. */
+    relationships: any;
+    /** The components of the model. */
+    components: any;
+    /** Number of components associated with the model. */
+    componentsCount: number;
+    /** Number of relationships associated with the model. */
+    relationshipsCount: number;
+    /** Timestamp when the model was created. */
+    createdAt?: string;
+    /** Timestamp when the model was last updated. */
+    updatedAt?: string;
+  } & {
+    /** Number of other registered entries sharing this model's name and version. */
+    duplicates?: number;
+  })[];
+};
+export type GetRegistryModelsApiArg = {
+  /** Zero-indexed page number of the result set. */
+  page?: number;
+  /** Number of items per page, or `all` to return every item. */
+  pageSize?: string;
+  /** Filter results by a case-insensitive substring match on name. */
+  search?: string;
+  /** Field to order the results by. */
+  order?: string;
+  /** Sort direction (`asc` or `desc`). */
+  sort?: string;
+  /** Filter by model status (e.g. `registered`, `ignored`, `duplicate`). */
+  status?: string;
+  /** Filter by model ID. */
+  id?: string;
+  /** Filter by the registrant (host) that registered the model. */
+  registrant?: string;
+  /** Filter by model version. */
+  version?: string;
+  /** Annotation filter: `true` returns only annotation entities, `false` excludes them, and `include` returns both. */
+  annotations?: string;
+  /** When `true`, embeds the model's component definitions in the response. */
+  components?: string;
+  /** When `true`, embeds the model's relationship definitions in the response. */
+  relationships?: string;
+  /** When `true`, omits large schema payloads from the returned definitions. */
+  trim?: string;
+};
+export type GetRegistryModelsByNameApiResponse = /** status 200 Paginated list of matching registered models. */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items in the page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Deprecated snake_case alias of `pageSize`. */
+  page_size?: number;
+  /** Deprecated snake_case alias of `totalCount`. */
+  total_count?: number;
+} & {
+  /** The models matching the query. */
+  models?: ({
+    /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
+    id: string;
+    /** Specifies the version of the schema used for the definition. */
+    schemaVersion: string;
+    /** Version of the model definition. */
+    version: string;
+    /** The unique name for the model within the scope of a registrant. */
+    name: string;
+    /** Human-readable name for the model. */
+    displayName: string;
+    /** Description of the model. */
+    description: string;
+    /** Status of model, including:
+        - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
+        - maintenance: model is unavailable for a period of time.
+        - enabled: model is available for use for all users of this Meshery Server.
+        - ignored: model is unavailable for use for all users of this Meshery Server. */
+    status: "ignored" | "enabled" | "duplicate";
+    /** Connection identifying the entity that registered this model. */
+    registrant: {
+      /** Connection ID */
+      id: string;
+      /** Connection Name */
+      name: string;
+      /** Associated Credential ID */
+      credentialId?: string;
+      /** Connection Type (platform, telemetry, collaboration) */
+      type: string;
+      /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+      subType: string;
+      /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+      kind: string;
+      /** Additional connection metadata */
+      metadata?: object;
+      /** Connection Status */
+      status:
+        | "discovered"
+        | "registered"
+        | "connected"
+        | "ignored"
+        | "maintenance"
+        | "disconnected"
+        | "deleted"
+        | "not found";
+      /** User ID who owns this connection */
+      user_id?: string;
+      created_at?: string;
+      updated_at?: string;
+      /** SQL null Timestamp to handle null values of time. */
+      deleted_at?: string;
+      /** Associated environments for this connection */
+      environments?: {
+        /** ID */
+        id: string;
+        /** Specifies the version of the schema to which the environment conforms. */
+        schemaVersion: string;
+        /** Environment name */
+        name: string;
+        /** Environment description */
+        description: string;
+        /** Environment organization ID */
+        organization_id: string;
+        /** Environment owner */
+        owner?: string;
+        /** Timestamp when the resource was created. */
+        created_at?: string;
+        /** Additional metadata associated with the environment. */
+        metadata?: object;
+        /** Timestamp when the resource was updated. */
+        updated_at?: string;
+        /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+        deleted_at?: string | null;
+      }[];
+      /** Specifies the version of the schema used for the definition. */
+      schemaVersion: string;
+    };
+    /** ID of the registrant. */
+    registrantId: string;
+    /** ID of the category. */
+    categoryId: string;
+    /** Category the model belongs to. */
+    category: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** The category of the model that determines the main grouping. */
+      name:
+        | "Analytics"
+        | "App Definition and Development"
+        | "Cloud Native Network"
+        | "Cloud Native Storage"
+        | "Database"
+        | "Machine Learning"
+        | "Observability and Analysis"
+        | "Orchestration & Management"
+        | "Platform"
+        | "Provisioning"
+        | "Runtime"
+        | "Security & Compliance"
+        | "Serverless"
+        | "Tools"
+        | "Uncategorized";
+      /** Additional metadata associated with the category. */
+      metadata: object;
+    };
+    /** Sub-category the model belongs to. */
+    subCategory:
+      | "API Gateway"
+      | "API Integration"
+      | "Application Definition & Image Build"
+      | "Automation & Configuration"
+      | "Certified Kubernetes - Distribution"
+      | "Chaos Engineering"
+      | "Cloud Native Storage"
+      | "Cloud Provider"
+      | "CNI"
+      | "Compute"
+      | "Container Registry"
+      | "Container Runtime"
+      | "Container Security"
+      | "Container"
+      | "Content Delivery Network"
+      | "Continuous Integration & Delivery"
+      | "Coordination & Service Discovery"
+      | "Database"
+      | "Flowchart"
+      | "Framework"
+      | "Installable Platform"
+      | "Key Management"
+      | "Key Management Service"
+      | "Kubernetes"
+      | "Logging"
+      | "Machine Learning"
+      | "Management Governance"
+      | "Metrics"
+      | "Monitoring"
+      | "Networking Content Delivery"
+      | "Operating System"
+      | "Query"
+      | "Remote Procedure Call"
+      | "Scheduling & Orchestration"
+      | "Secrets Management"
+      | "Security Identity & Compliance"
+      | "Service Mesh"
+      | "Service Proxy"
+      | "Source Version Control"
+      | "Storage"
+      | "Specifications"
+      | "Streaming & Messaging"
+      | "Tools"
+      | "Tracing"
+      | "Uncategorized"
+      | "Video Conferencing";
+    /** Metadata containing additional information associated with the model. */
+    metadata?: {
+      /** Capabilities associated with the model */
+      capabilities?: {
+        /** Specifies the version of the schema to which the capability definition conforms. */
+        schemaVersion: string;
+        /** Version of the capability definition. */
+        version: string;
+        /** Name of the capability in human-readible format. */
+        displayName: string;
+        /** A written representation of the purpose and characteristics of the capability. */
+        description: string;
+        /** Top-level categorization of the capability */
+        kind: "action" | "mutate" | "view" | "interaction";
+        /** Classification of capabilities. Used to group capabilities similar in nature. */
+        type: string;
+        /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
+        subType: string;
+        /** Key that backs the capability. */
+        key: string;
+        /** State of the entity in which the capability is applicable. */
+        entityState: ("declaration" | "instance")[];
+        /** Status of the capability */
+        status: "enabled" | "disabled";
+        /** Metadata contains additional information associated with the capability. Extension point. */
+        metadata?: {
+          [key: string]: any;
+        };
+      }[];
+      /** Indicates whether the model and its entities should be treated as deployable entities or as logical representations. */
+      isAnnotation?: boolean;
+      /** Primary color associated with the model. */
+      primaryColor?: string;
+      /** Secondary color associated with the model. */
+      secondaryColor?: string;
+      /** SVG representation of the model in white color. */
+      svgWhite: string;
+      /** SVG representation of the model in colored format. */
+      svgColor: string;
+      /** SVG representation of the complete model. */
+      svgComplete?: string;
+      /** Visual shape used to render the model's entities in design canvases. */
+      shape?:
+        | "ellipse"
+        | "triangle"
+        | "round-triangle"
+        | "rectangle"
+        | "round-rectangle"
+        | "bottom-round-rectangle"
+        | "cut-rectangle"
+        | "barrel"
+        | "rhomboid"
+        | "diamond"
+        | "round-diamond"
+        | "pentagon"
+        | "round-pentagon"
+        | "hexagon"
+        | "round-hexagon"
+        | "concave-hexagon"
+        | "heptagon"
+        | "round-heptagon"
+        | "octagon"
+        | "round-octagon"
+        | "star"
+        | "tag"
+        | "round-tag"
+        | "vee"
+        | "polygon";
+      [key: string]: any;
+    };
+    /** Registrant-defined data associated with the model. */
+    model: {
+      /** Version of the model as defined by the registrant. */
+      version: string;
+    };
+    /** The relationships of the model. */
+    relationships: any;
+    /** The components of the model. */
+    components: any;
+    /** Number of components associated with the model. */
+    componentsCount: number;
+    /** Number of relationships associated with the model. */
+    relationshipsCount: number;
+    /** Timestamp when the model was created. */
+    createdAt?: string;
+    /** Timestamp when the model was last updated. */
+    updatedAt?: string;
+  } & {
+    /** Number of other registered entries sharing this model's name and version. */
+    duplicates?: number;
+  })[];
+};
+export type GetRegistryModelsByNameApiArg = {
+  /** Name of the model (for `DELETE /api/registry/models/{model}`, the model's ID). */
+  model: string;
+  /** Zero-indexed page number of the result set. */
+  page?: number;
+  /** Number of items per page, or `all` to return every item. */
+  pageSize?: string;
+  /** When `true`, the model name is matched greedily (substring match). */
+  search?: string;
+  /** Field to order the results by. */
+  order?: string;
+  /** Sort direction (`asc` or `desc`). */
+  sort?: string;
+  /** Filter by model version. */
+  version?: string;
+  /** Annotation filter: `true` returns only annotation entities, `false` excludes them, and `include` returns both. */
+  annotations?: string;
+  /** When `true`, embeds the model's component definitions in the response. */
+  components?: string;
+  /** When `true`, embeds the model's relationship definitions in the response. */
+  relationships?: string;
+};
+export type DeleteRegistryModelApiResponse = unknown;
+export type DeleteRegistryModelApiArg = {
+  /** Name of the model (for `DELETE /api/registry/models/{model}`, the model's ID). */
+  model: string;
+};
+export type GetRegistryComponentsByModelApiResponse =
+  /** status 200 Paginated list of components belonging to the model. */ {
+    /** Current page number of the result set. */
+    page?: number;
+    /** Number of items in the page. */
+    pageSize?: number;
+    /** Total number of items available. */
+    totalCount?: number;
+    /** Deprecated snake_case alias of `pageSize`. */
+    page_size?: number;
+    /** Deprecated snake_case alias of `totalCount`. */
+    total_count?: number;
+  } & {
+    /** The components matching the query. */
+    components?: ({
+      /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
+      id: string;
+      /** Specifies the version of the schema to which the component definition conforms. */
+      schemaVersion: string;
+      /** Version of the component definition. */
+      version: string;
+      /** Name of the component in human-readable format. */
+      displayName: string;
+      /** A written representation of the purpose and characteristics of the component. */
+      description: string;
+      /** Format specifies the format used in the `component.schema` field. JSON is the default. */
+      format: "JSON" | "CUE";
+      /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+      model: {
+        /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
+        id: string;
+        /** Specifies the version of the schema used for the definition. */
+        schemaVersion: string;
+        /** Version of the model definition. */
+        version: string;
+        /** The unique name for the model within the scope of a registrant. */
+        name: string;
+        /** Human-readable name for the model. */
+        displayName: string;
+        /** Description of the model. */
+        description: string;
+        /** Status of model, including:
+            - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
+            - maintenance: model is unavailable for a period of time.
+            - enabled: model is available for use for all users of this Meshery Server.
+            - ignored: model is unavailable for use for all users of this Meshery Server. */
+        status: "ignored" | "enabled" | "duplicate";
+        /** Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections */
+        registrant: {
+          /** Connection ID */
+          id: string;
+          /** Connection Name */
+          name: string;
+          /** Associated Credential ID */
+          credentialId?: string;
+          /** Connection Type (platform, telemetry, collaboration) */
+          type: string;
+          /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+          subType: string;
+          /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+          kind: string;
+          /** Additional connection metadata */
+          metadata?: object;
+          /** Connection Status */
+          status:
+            | "discovered"
+            | "registered"
+            | "connected"
+            | "ignored"
+            | "maintenance"
+            | "disconnected"
+            | "deleted"
+            | "not found";
+          /** User ID who owns this connection */
+          user_id?: string;
+          created_at?: string;
+          updated_at?: string;
+          /** SQL null Timestamp to handle null values of time. */
+          deleted_at?: string;
+          /** Associated environments for this connection */
+          environments?: {
+            /** ID */
+            id: string;
+            /** Specifies the version of the schema to which the environment conforms. */
+            schemaVersion: string;
+            /** Environment name */
+            name: string;
+            /** Environment description */
+            description: string;
+            /** Environment organization ID */
+            organization_id: string;
+            /** Environment owner */
+            owner?: string;
+            /** Timestamp when the resource was created. */
+            created_at?: string;
+            /** Additional metadata associated with the environment. */
+            metadata?: object;
+            /** Timestamp when the resource was updated. */
+            updated_at?: string;
+            /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+            deleted_at?: string | null;
+          }[];
+          /** Specifies the version of the schema used for the definition. */
+          schemaVersion: string;
+        };
+        /** ID of the registrant. */
+        registrantId: string;
+        /** ID of the category. */
+        categoryId: string;
+        /** Category of the model. */
+        category: {
+          /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+          id: string;
+          /** The category of the model that determines the main grouping. */
+          name:
+            | "Analytics"
+            | "App Definition and Development"
+            | "Cloud Native Network"
+            | "Cloud Native Storage"
+            | "Database"
+            | "Machine Learning"
+            | "Observability and Analysis"
+            | "Orchestration & Management"
+            | "Platform"
+            | "Provisioning"
+            | "Runtime"
+            | "Security & Compliance"
+            | "Serverless"
+            | "Tools"
+            | "Uncategorized";
+          /** Additional metadata associated with the category. */
+          metadata: object;
+        };
+        /** Sub category of the model determines the secondary grouping. */
+        subCategory:
+          | "API Gateway"
+          | "API Integration"
+          | "Application Definition & Image Build"
+          | "Automation & Configuration"
+          | "Certified Kubernetes - Distribution"
+          | "Chaos Engineering"
+          | "Cloud Native Storage"
+          | "Cloud Provider"
+          | "CNI"
+          | "Compute"
+          | "Container Registry"
+          | "Container Runtime"
+          | "Container Security"
+          | "Container"
+          | "Content Delivery Network"
+          | "Continuous Integration & Delivery"
+          | "Coordination & Service Discovery"
+          | "Database"
+          | "Flowchart"
+          | "Framework"
+          | "Installable Platform"
+          | "Key Management"
+          | "Key Management Service"
+          | "Kubernetes"
+          | "Logging"
+          | "Machine Learning"
+          | "Management Governance"
+          | "Metrics"
+          | "Monitoring"
+          | "Networking Content Delivery"
+          | "Operating System"
+          | "Query"
+          | "Remote Procedure Call"
+          | "Scheduling & Orchestration"
+          | "Secrets Management"
+          | "Security Identity & Compliance"
+          | "Service Mesh"
+          | "Service Proxy"
+          | "Source Version Control"
+          | "Storage"
+          | "Specifications"
+          | "Streaming & Messaging"
+          | "Tools"
+          | "Tracing"
+          | "Uncategorized"
+          | "Video Conferencing";
+        /** Metadata containing additional information associated with the model. */
+        metadata?: {
+          /** Capabilities associated with the model */
+          capabilities?: {
+            /** Specifies the version of the schema to which the capability definition conforms. */
+            schemaVersion: string;
+            /** Version of the capability definition. */
+            version: string;
+            /** Name of the capability in human-readible format. */
+            displayName: string;
+            /** A written representation of the purpose and characteristics of the capability. */
+            description: string;
+            /** Top-level categorization of the capability */
+            kind: "action" | "mutate" | "view" | "interaction";
+            /** Classification of capabilities. Used to group capabilities similar in nature. */
+            type: string;
+            /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
+            subType: string;
+            /** Key that backs the capability. */
+            key: string;
+            /** State of the entity in which the capability is applicable. */
+            entityState: ("declaration" | "instance")[];
+            /** Status of the capability */
+            status: "enabled" | "disabled";
+            /** Metadata contains additional information associated with the capability. Extension point. */
+            metadata?: {
+              [key: string]: any;
+            };
+          }[];
+          /** Indicates whether the model and its entities should be treated as deployable entities or as logical representations. */
+          isAnnotation?: boolean;
+          /** Primary color associated with the model. */
+          primaryColor?: string;
+          /** Secondary color associated with the model. */
+          secondaryColor?: string;
+          /** SVG representation of the model in white color. */
+          svgWhite: string;
+          /** SVG representation of the model in colored format. */
+          svgColor: string;
+          /** SVG representation of the complete model. */
+          svgComplete?: string;
+          /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+          shape?:
+            | "ellipse"
+            | "triangle"
+            | "round-triangle"
+            | "rectangle"
+            | "round-rectangle"
+            | "bottom-round-rectangle"
+            | "cut-rectangle"
+            | "barrel"
+            | "rhomboid"
+            | "diamond"
+            | "round-diamond"
+            | "pentagon"
+            | "round-pentagon"
+            | "hexagon"
+            | "round-hexagon"
+            | "concave-hexagon"
+            | "heptagon"
+            | "round-heptagon"
+            | "octagon"
+            | "round-octagon"
+            | "star"
+            | "tag"
+            | "round-tag"
+            | "vee"
+            | "polygon";
+          [key: string]: any;
+        };
+        /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+        model: {
+          /** Version of the model as defined by the registrant. */
+          version: string;
+        };
+        /** The relationships of the model. */
+        relationships: any;
+        /** The components of the model. */
+        components: any;
+        /** Number of components associated with the model. */
+        componentsCount: number;
+        /** Number of relationships associated with the model. */
+        relationshipsCount: number;
+        /** Timestamp when the resource was created. */
+        created_at?: string;
+        /** Timestamp when the resource was updated. */
+        updated_at?: string;
+      };
+      /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+      modelReference: {
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        id: string;
+        /** The unique name for the model within the scope of a registrant. */
+        name: string;
+        /** Version of the model definition. */
+        version: string;
+        /** Human-readable name for the model. */
+        displayName: string;
+        /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+        model: {
+          /** Version of the model as defined by the registrant. */
+          version: string;
+        };
+        registrant: {
+          /** Kind of the registrant. */
+          kind: string;
+        };
+      };
+      /** Foreign key to the model to which the component belongs. Populated by the ORM from the `model_id` column and suppressed on the JSON wire; consumers use the nested `model` object for wire-level access. */
+      modelId?: string;
+      /** Visualization styles for a component */
+      styles?: {
+        /** Primary color of the component used for UI representation. */
+        primaryColor: string;
+        /** Secondary color of the entity used for UI representation. */
+        secondaryColor?: string;
+        /** White SVG of the entity used for UI representation on dark background. */
+        svgWhite: string;
+        /** Colored SVG of the entity used for UI representation on light background. */
+        svgColor: string;
+        /** Complete SVG of the entity used for UI representation, often inclusive of background. */
+        svgComplete: string;
+        /** The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+        color?: string;
+        /** The opacity of the label text, including its outline. */
+        textOpacity?: number;
+        /** A comma-separated list of font names to use on the label text. */
+        fontFamily?: string;
+        /** The size of the label text. */
+        fontSize?: string;
+        /** A CSS font style to be applied to the label text. */
+        fontStyle?: string;
+        /** A CSS font weight to be applied to the label text. */
+        fontWeight?: string;
+        /** A transformation to apply to the label text */
+        textTransform?: "none" | "uppercase" | "lowercase";
+        /** The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+        opacity?: number;
+        /** An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+        zIndex?: number;
+        /** The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+        label?: string;
+        /** The animation to apply to the element. example ripple,bounce,etc */
+        animation?: object;
+        [key: string]: any;
+      } & {
+        /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+        shape:
+          | "ellipse"
+          | "triangle"
+          | "round-triangle"
+          | "rectangle"
+          | "round-rectangle"
+          | "bottom-round-rectangle"
+          | "cut-rectangle"
+          | "barrel"
+          | "rhomboid"
+          | "diamond"
+          | "round-diamond"
+          | "pentagon"
+          | "round-pentagon"
+          | "hexagon"
+          | "round-hexagon"
+          | "concave-hexagon"
+          | "heptagon"
+          | "round-heptagon"
+          | "octagon"
+          | "round-octagon"
+          | "star"
+          | "tag"
+          | "round-tag"
+          | "vee"
+          | "polygon";
+        /** The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+        position?: {
+          /** The x-coordinate of the node. */
+          x: number;
+          /** The y-coordinate of the node. */
+          y: number;
+        };
+        /** The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+        bodyText?: string;
+        /** How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
+        bodyTextWrap?: "none" | "wrap" | "ellipsis";
+        /** The maximum width for wrapping text in the node. */
+        bodyTextMaxWidth?: string;
+        /** The opacity of the node's body text, including its outline. */
+        bodyTextOpacity?: number;
+        /** The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+        bodyTextBackgroundColor?: string;
+        /** The size of the node's body text. */
+        bodyTextFontSize?: number;
+        /** The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+        bodyTextColor?: string;
+        /** A CSS font weight to be applied to the node's body text. */
+        bodyTextFontWeight?: string;
+        /** A CSS horizontal alignment to be applied to the node's body text. */
+        bodyTextHorizontalAlign?: string;
+        /** A CSS text decoration to be applied to the node's body text. */
+        bodyTextDecoration?: string;
+        /** A CSS vertical alignment to be applied to the node's body text. */
+        bodyTextVerticalAlign?: string;
+        /** The width of the node's body or the width of an edge's line. */
+        width?: number;
+        /** The height of the node's body */
+        height?: number;
+        /** The URL that points to the image to show in the node. */
+        backgroundImage?: string;
+        /** The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+        backgroundColor?: string;
+        /** Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+        backgroundBlacken?: number;
+        /** The opacity level of the node's background colour */
+        backgroundOpacity?: number;
+        /** The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundPositionX?: string;
+        /** The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundPositionY?: string;
+        /** The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundOffsetX?: string;
+        /** The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundOffsetY?: string;
+        /** How the background image is fit to the node. Can be 'none', 'contain', or 'cover'. */
+        backgroundFit?: "none" | "contain" | "cover";
+        /** How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'. */
+        backgroundClip?: "none" | "node" | "node-border";
+        /** How the background image's width is determined. Can be 'none', 'inner', or 'outer'. */
+        backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+        /** How the background image's height is determined. Can be 'none', 'inner', or 'outer'. */
+        backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+        /** The size of the node's border. */
+        borderWidth?: number;
+        /** The style of the node's border */
+        borderStyle?: "solid" | "dotted" | "dashed" | "double";
+        /** The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+        borderColor?: string;
+        /** The opacity of the node's border */
+        borderOpacity?: number;
+        /** The amount of padding around all sides of the node. */
+        padding?: number;
+        /** The horizontal alignment of a node's label */
+        textHalign?: "left" | "center" | "right";
+        /** The vertical alignment of a node's label */
+        textValign?: "top" | "center" | "bottom";
+        /** Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset. */
+        ghost?: "yes" | "no";
+        /** The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        activeBgColor?: string;
+        /** The opacity of the active background indicator. Selector needs to be *core*. */
+        activeBgOpacity?: string;
+        /** The opacity of the active background indicator. Selector needs to be *core*. */
+        activeBgSize?: string;
+        /** The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        selectionBoxColor?: string;
+        /** The size of the border on the selection box. Selector needs to be *core* */
+        selectionBoxBorderWidth?: number;
+        /** The opacity of the selection box. Selector needs to be *core* */
+        selectionBoxOpacity?: number;
+        /** The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        outsideTextureBgColor?: string;
+        /** The opacity of the area outside the viewport texture. Selector needs to be *core* */
+        outsideTextureBgOpacity?: number;
+        /** An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+        shapePolygonPoints?: string;
+        /** The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+        menuBackgroundColor?: string;
+        /** The opacity of the background of the component menu. */
+        menuBackgroundOpacity?: number;
+        /** The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+        menuForgroundColor?: string;
+      };
+      /** Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management. */
+      capabilities?: {
+        /** Specifies the version of the schema to which the capability definition conforms. */
+        schemaVersion: string;
+        /** Version of the capability definition. */
+        version: string;
+        /** Name of the capability in human-readible format. */
+        displayName: string;
+        /** A written representation of the purpose and characteristics of the capability. */
+        description: string;
+        /** Top-level categorization of the capability */
+        kind: "action" | "mutate" | "view" | "interaction";
+        /** Classification of capabilities. Used to group capabilities similar in nature. */
+        type: string;
+        /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
+        subType: string;
+        /** Key that backs the capability. */
+        key: string;
+        /** State of the entity in which the capability is applicable. */
+        entityState: ("declaration" | "instance")[];
+        /** Status of the capability */
+        status: "enabled" | "disabled";
+        /** Metadata contains additional information associated with the capability. Extension point. */
+        metadata?: {
+          [key: string]: any;
+        };
+      }[];
+      /** Status of component, including:
+        - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
+        - maintenance: model is unavailable for a period of time.
+        - enabled: model is available for use for all users of this Meshery Server.
+        - ignored: model is unavailable for use for all users of this Meshery Server. */
+      status?: "ignored" | "enabled" | "duplicate" | "resolved" | "open";
+      /** Metadata contains additional information associated with the component. */
+      metadata: {
+        /** Genealogy represents the various representational states of the component. */
+        genealogy: string;
+        /** Identifies whether the component is semantically meaningful or not; identifies whether the component should be treated as deployable entity or is for purposes of logical representation. */
+        isAnnotation: boolean;
+        /** Identifies whether the component is scoped to namespace or cluster wide. */
+        isNamespaced: boolean;
+        /** 'published' controls whether the component should be registered in Meshery Registry. When the same 'published' property in Models, is set to 'false', the Model property takes precedence with all Entities in the Model not being registered. */
+        published: boolean;
+        /** InstanceDetails contains information about the instance of the component. */
+        instanceDetails: object;
+        /** Defines the UI schema for rendering the component's configuration. For more details, visit: https://rjsf-team.github.io/react-jsonschema-form/docs/api-reference/uiSchema/ . */
+        configurationUISchema: string;
+        [key: string]: any;
+      };
+      /** The configuration of the component. The configuration is based on the schema defined within the component definition(component.schema). */
+      configuration: object;
+      /** Data related to the third-party capability that a ComponentDefinition wraps; this payload is treated as a hermetically sealed, opaque object. */
+      component: {
+        /** Version of the component produced by the registrant. Example: APIVersion of a Kubernetes Pod. */
+        version: string;
+        /** The unique identifier (name) assigned by the registrant to this component. Example: A Kubernetes Pod is of kind 'Pod'. */
+        kind: string;
+        /** JSON schema of the object as defined by the registrant. */
+        schema: string;
+      };
+      /** Timestamp when the component was created. */
+      createdAt: string;
+      /** Timestamp when the component was last updated. */
+      updatedAt: string;
+      /** Timestamp when the component was soft-deleted. Null while the component is active. */
+      deletedAt?: string;
+    } & {
+      /** Number of other registered entries sharing this component's kind, version, and model. */
+      duplicates?: number;
+    })[];
+  };
+export type GetRegistryComponentsByModelApiArg = {
+  /** Name of the model (for `DELETE /api/registry/models/{model}`, the model's ID). */
+  model: string;
+  /** Zero-indexed page number of the result set. */
+  page?: number;
+  /** Number of items per page, or `all` to return every item. */
+  pageSize?: string;
+  /** Filter results by a case-insensitive substring match on name. */
+  search?: string;
+  /** Field to order the results by. */
+  order?: string;
+  /** Sort direction (`asc` or `desc`). */
+  sort?: string;
+  /** Filter by model version. */
+  version?: string;
+  /** Filter components by their API version. */
+  apiVersion?: string;
+  /** When `true`, omits large schema payloads from the returned definitions. */
+  trim?: string;
+  /** Annotation filter: `true` returns only annotation entities, `false` excludes them, and `include` returns both. */
+  annotations?: string;
+};
+export type GetRegistryComponentsByModelAndNameApiResponse = /** status 200 Paginated list of matching components. */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items in the page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Deprecated snake_case alias of `pageSize`. */
+  page_size?: number;
+  /** Deprecated snake_case alias of `totalCount`. */
+  total_count?: number;
+} & {
+  /** The components matching the query. */
+  components?: ({
+    /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
+    id: string;
+    /** Specifies the version of the schema to which the component definition conforms. */
+    schemaVersion: string;
+    /** Version of the component definition. */
+    version: string;
+    /** Name of the component in human-readable format. */
+    displayName: string;
+    /** A written representation of the purpose and characteristics of the component. */
+    description: string;
+    /** Format specifies the format used in the `component.schema` field. JSON is the default. */
+    format: "JSON" | "CUE";
+    /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+    model: {
+      /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
+      id: string;
+      /** Specifies the version of the schema used for the definition. */
+      schemaVersion: string;
+      /** Version of the model definition. */
+      version: string;
+      /** The unique name for the model within the scope of a registrant. */
+      name: string;
+      /** Human-readable name for the model. */
+      displayName: string;
+      /** Description of the model. */
+      description: string;
+      /** Status of model, including:
+            - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
+            - maintenance: model is unavailable for a period of time.
+            - enabled: model is available for use for all users of this Meshery Server.
+            - ignored: model is unavailable for use for all users of this Meshery Server. */
+      status: "ignored" | "enabled" | "duplicate";
+      /** Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections */
+      registrant: {
+        /** Connection ID */
+        id: string;
+        /** Connection Name */
+        name: string;
+        /** Associated Credential ID */
+        credentialId?: string;
+        /** Connection Type (platform, telemetry, collaboration) */
+        type: string;
+        /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+        subType: string;
+        /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+        kind: string;
+        /** Additional connection metadata */
+        metadata?: object;
+        /** Connection Status */
+        status:
+          | "discovered"
+          | "registered"
+          | "connected"
+          | "ignored"
+          | "maintenance"
+          | "disconnected"
+          | "deleted"
+          | "not found";
+        /** User ID who owns this connection */
+        user_id?: string;
+        created_at?: string;
+        updated_at?: string;
+        /** SQL null Timestamp to handle null values of time. */
+        deleted_at?: string;
+        /** Associated environments for this connection */
+        environments?: {
+          /** ID */
+          id: string;
+          /** Specifies the version of the schema to which the environment conforms. */
+          schemaVersion: string;
+          /** Environment name */
+          name: string;
+          /** Environment description */
+          description: string;
+          /** Environment organization ID */
+          organization_id: string;
+          /** Environment owner */
+          owner?: string;
+          /** Timestamp when the resource was created. */
+          created_at?: string;
+          /** Additional metadata associated with the environment. */
+          metadata?: object;
+          /** Timestamp when the resource was updated. */
+          updated_at?: string;
+          /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+          deleted_at?: string | null;
+        }[];
+        /** Specifies the version of the schema used for the definition. */
+        schemaVersion: string;
+      };
+      /** ID of the registrant. */
+      registrantId: string;
+      /** ID of the category. */
+      categoryId: string;
+      /** Category of the model. */
+      category: {
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        id: string;
+        /** The category of the model that determines the main grouping. */
+        name:
+          | "Analytics"
+          | "App Definition and Development"
+          | "Cloud Native Network"
+          | "Cloud Native Storage"
+          | "Database"
+          | "Machine Learning"
+          | "Observability and Analysis"
+          | "Orchestration & Management"
+          | "Platform"
+          | "Provisioning"
+          | "Runtime"
+          | "Security & Compliance"
+          | "Serverless"
+          | "Tools"
+          | "Uncategorized";
+        /** Additional metadata associated with the category. */
+        metadata: object;
+      };
+      /** Sub category of the model determines the secondary grouping. */
+      subCategory:
+        | "API Gateway"
+        | "API Integration"
+        | "Application Definition & Image Build"
+        | "Automation & Configuration"
+        | "Certified Kubernetes - Distribution"
+        | "Chaos Engineering"
+        | "Cloud Native Storage"
+        | "Cloud Provider"
+        | "CNI"
+        | "Compute"
+        | "Container Registry"
+        | "Container Runtime"
+        | "Container Security"
+        | "Container"
+        | "Content Delivery Network"
+        | "Continuous Integration & Delivery"
+        | "Coordination & Service Discovery"
+        | "Database"
+        | "Flowchart"
+        | "Framework"
+        | "Installable Platform"
+        | "Key Management"
+        | "Key Management Service"
+        | "Kubernetes"
+        | "Logging"
+        | "Machine Learning"
+        | "Management Governance"
+        | "Metrics"
+        | "Monitoring"
+        | "Networking Content Delivery"
+        | "Operating System"
+        | "Query"
+        | "Remote Procedure Call"
+        | "Scheduling & Orchestration"
+        | "Secrets Management"
+        | "Security Identity & Compliance"
+        | "Service Mesh"
+        | "Service Proxy"
+        | "Source Version Control"
+        | "Storage"
+        | "Specifications"
+        | "Streaming & Messaging"
+        | "Tools"
+        | "Tracing"
+        | "Uncategorized"
+        | "Video Conferencing";
+      /** Metadata containing additional information associated with the model. */
+      metadata?: {
+        /** Capabilities associated with the model */
+        capabilities?: {
+          /** Specifies the version of the schema to which the capability definition conforms. */
+          schemaVersion: string;
+          /** Version of the capability definition. */
+          version: string;
+          /** Name of the capability in human-readible format. */
+          displayName: string;
+          /** A written representation of the purpose and characteristics of the capability. */
+          description: string;
+          /** Top-level categorization of the capability */
+          kind: "action" | "mutate" | "view" | "interaction";
+          /** Classification of capabilities. Used to group capabilities similar in nature. */
+          type: string;
+          /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
+          subType: string;
+          /** Key that backs the capability. */
+          key: string;
+          /** State of the entity in which the capability is applicable. */
+          entityState: ("declaration" | "instance")[];
+          /** Status of the capability */
+          status: "enabled" | "disabled";
+          /** Metadata contains additional information associated with the capability. Extension point. */
+          metadata?: {
+            [key: string]: any;
+          };
+        }[];
+        /** Indicates whether the model and its entities should be treated as deployable entities or as logical representations. */
+        isAnnotation?: boolean;
+        /** Primary color associated with the model. */
+        primaryColor?: string;
+        /** Secondary color associated with the model. */
+        secondaryColor?: string;
+        /** SVG representation of the model in white color. */
+        svgWhite: string;
+        /** SVG representation of the model in colored format. */
+        svgColor: string;
+        /** SVG representation of the complete model. */
+        svgComplete?: string;
+        /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+        shape?:
+          | "ellipse"
+          | "triangle"
+          | "round-triangle"
+          | "rectangle"
+          | "round-rectangle"
+          | "bottom-round-rectangle"
+          | "cut-rectangle"
+          | "barrel"
+          | "rhomboid"
+          | "diamond"
+          | "round-diamond"
+          | "pentagon"
+          | "round-pentagon"
+          | "hexagon"
+          | "round-hexagon"
+          | "concave-hexagon"
+          | "heptagon"
+          | "round-heptagon"
+          | "octagon"
+          | "round-octagon"
+          | "star"
+          | "tag"
+          | "round-tag"
+          | "vee"
+          | "polygon";
+        [key: string]: any;
+      };
+      /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+      model: {
+        /** Version of the model as defined by the registrant. */
+        version: string;
+      };
+      /** The relationships of the model. */
+      relationships: any;
+      /** The components of the model. */
+      components: any;
+      /** Number of components associated with the model. */
+      componentsCount: number;
+      /** Number of relationships associated with the model. */
+      relationshipsCount: number;
+      /** Timestamp when the resource was created. */
+      created_at?: string;
+      /** Timestamp when the resource was updated. */
+      updated_at?: string;
+    };
+    /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+    modelReference: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** The unique name for the model within the scope of a registrant. */
+      name: string;
+      /** Version of the model definition. */
+      version: string;
+      /** Human-readable name for the model. */
+      displayName: string;
+      /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+      model: {
+        /** Version of the model as defined by the registrant. */
+        version: string;
+      };
+      registrant: {
+        /** Kind of the registrant. */
+        kind: string;
+      };
+    };
+    /** Foreign key to the model to which the component belongs. Populated by the ORM from the `model_id` column and suppressed on the JSON wire; consumers use the nested `model` object for wire-level access. */
+    modelId?: string;
+    /** Visualization styles for a component */
+    styles?: {
+      /** Primary color of the component used for UI representation. */
+      primaryColor: string;
+      /** Secondary color of the entity used for UI representation. */
+      secondaryColor?: string;
+      /** White SVG of the entity used for UI representation on dark background. */
+      svgWhite: string;
+      /** Colored SVG of the entity used for UI representation on light background. */
+      svgColor: string;
+      /** Complete SVG of the entity used for UI representation, often inclusive of background. */
+      svgComplete: string;
+      /** The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+      color?: string;
+      /** The opacity of the label text, including its outline. */
+      textOpacity?: number;
+      /** A comma-separated list of font names to use on the label text. */
+      fontFamily?: string;
+      /** The size of the label text. */
+      fontSize?: string;
+      /** A CSS font style to be applied to the label text. */
+      fontStyle?: string;
+      /** A CSS font weight to be applied to the label text. */
+      fontWeight?: string;
+      /** A transformation to apply to the label text */
+      textTransform?: "none" | "uppercase" | "lowercase";
+      /** The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+      opacity?: number;
+      /** An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+      zIndex?: number;
+      /** The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+      label?: string;
+      /** The animation to apply to the element. example ripple,bounce,etc */
+      animation?: object;
+      [key: string]: any;
+    } & {
+      /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+      shape:
+        | "ellipse"
+        | "triangle"
+        | "round-triangle"
+        | "rectangle"
+        | "round-rectangle"
+        | "bottom-round-rectangle"
+        | "cut-rectangle"
+        | "barrel"
+        | "rhomboid"
+        | "diamond"
+        | "round-diamond"
+        | "pentagon"
+        | "round-pentagon"
+        | "hexagon"
+        | "round-hexagon"
+        | "concave-hexagon"
+        | "heptagon"
+        | "round-heptagon"
+        | "octagon"
+        | "round-octagon"
+        | "star"
+        | "tag"
+        | "round-tag"
+        | "vee"
+        | "polygon";
+      /** The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+      position?: {
+        /** The x-coordinate of the node. */
+        x: number;
+        /** The y-coordinate of the node. */
+        y: number;
+      };
+      /** The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+      bodyText?: string;
+      /** How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
+      bodyTextWrap?: "none" | "wrap" | "ellipsis";
+      /** The maximum width for wrapping text in the node. */
+      bodyTextMaxWidth?: string;
+      /** The opacity of the node's body text, including its outline. */
+      bodyTextOpacity?: number;
+      /** The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+      bodyTextBackgroundColor?: string;
+      /** The size of the node's body text. */
+      bodyTextFontSize?: number;
+      /** The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+      bodyTextColor?: string;
+      /** A CSS font weight to be applied to the node's body text. */
+      bodyTextFontWeight?: string;
+      /** A CSS horizontal alignment to be applied to the node's body text. */
+      bodyTextHorizontalAlign?: string;
+      /** A CSS text decoration to be applied to the node's body text. */
+      bodyTextDecoration?: string;
+      /** A CSS vertical alignment to be applied to the node's body text. */
+      bodyTextVerticalAlign?: string;
+      /** The width of the node's body or the width of an edge's line. */
+      width?: number;
+      /** The height of the node's body */
+      height?: number;
+      /** The URL that points to the image to show in the node. */
+      backgroundImage?: string;
+      /** The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+      backgroundColor?: string;
+      /** Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+      backgroundBlacken?: number;
+      /** The opacity level of the node's background colour */
+      backgroundOpacity?: number;
+      /** The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundPositionX?: string;
+      /** The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundPositionY?: string;
+      /** The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundOffsetX?: string;
+      /** The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundOffsetY?: string;
+      /** How the background image is fit to the node. Can be 'none', 'contain', or 'cover'. */
+      backgroundFit?: "none" | "contain" | "cover";
+      /** How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'. */
+      backgroundClip?: "none" | "node" | "node-border";
+      /** How the background image's width is determined. Can be 'none', 'inner', or 'outer'. */
+      backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+      /** How the background image's height is determined. Can be 'none', 'inner', or 'outer'. */
+      backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+      /** The size of the node's border. */
+      borderWidth?: number;
+      /** The style of the node's border */
+      borderStyle?: "solid" | "dotted" | "dashed" | "double";
+      /** The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+      borderColor?: string;
+      /** The opacity of the node's border */
+      borderOpacity?: number;
+      /** The amount of padding around all sides of the node. */
+      padding?: number;
+      /** The horizontal alignment of a node's label */
+      textHalign?: "left" | "center" | "right";
+      /** The vertical alignment of a node's label */
+      textValign?: "top" | "center" | "bottom";
+      /** Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset. */
+      ghost?: "yes" | "no";
+      /** The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      activeBgColor?: string;
+      /** The opacity of the active background indicator. Selector needs to be *core*. */
+      activeBgOpacity?: string;
+      /** The opacity of the active background indicator. Selector needs to be *core*. */
+      activeBgSize?: string;
+      /** The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      selectionBoxColor?: string;
+      /** The size of the border on the selection box. Selector needs to be *core* */
+      selectionBoxBorderWidth?: number;
+      /** The opacity of the selection box. Selector needs to be *core* */
+      selectionBoxOpacity?: number;
+      /** The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      outsideTextureBgColor?: string;
+      /** The opacity of the area outside the viewport texture. Selector needs to be *core* */
+      outsideTextureBgOpacity?: number;
+      /** An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+      shapePolygonPoints?: string;
+      /** The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+      menuBackgroundColor?: string;
+      /** The opacity of the background of the component menu. */
+      menuBackgroundOpacity?: number;
+      /** The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+      menuForgroundColor?: string;
+    };
+    /** Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management. */
+    capabilities?: {
+      /** Specifies the version of the schema to which the capability definition conforms. */
+      schemaVersion: string;
+      /** Version of the capability definition. */
+      version: string;
+      /** Name of the capability in human-readible format. */
+      displayName: string;
+      /** A written representation of the purpose and characteristics of the capability. */
+      description: string;
+      /** Top-level categorization of the capability */
+      kind: "action" | "mutate" | "view" | "interaction";
+      /** Classification of capabilities. Used to group capabilities similar in nature. */
+      type: string;
+      /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
+      subType: string;
+      /** Key that backs the capability. */
+      key: string;
+      /** State of the entity in which the capability is applicable. */
+      entityState: ("declaration" | "instance")[];
+      /** Status of the capability */
+      status: "enabled" | "disabled";
+      /** Metadata contains additional information associated with the capability. Extension point. */
+      metadata?: {
+        [key: string]: any;
+      };
+    }[];
+    /** Status of component, including:
+        - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
+        - maintenance: model is unavailable for a period of time.
+        - enabled: model is available for use for all users of this Meshery Server.
+        - ignored: model is unavailable for use for all users of this Meshery Server. */
+    status?: "ignored" | "enabled" | "duplicate" | "resolved" | "open";
+    /** Metadata contains additional information associated with the component. */
+    metadata: {
+      /** Genealogy represents the various representational states of the component. */
+      genealogy: string;
+      /** Identifies whether the component is semantically meaningful or not; identifies whether the component should be treated as deployable entity or is for purposes of logical representation. */
+      isAnnotation: boolean;
+      /** Identifies whether the component is scoped to namespace or cluster wide. */
+      isNamespaced: boolean;
+      /** 'published' controls whether the component should be registered in Meshery Registry. When the same 'published' property in Models, is set to 'false', the Model property takes precedence with all Entities in the Model not being registered. */
+      published: boolean;
+      /** InstanceDetails contains information about the instance of the component. */
+      instanceDetails: object;
+      /** Defines the UI schema for rendering the component's configuration. For more details, visit: https://rjsf-team.github.io/react-jsonschema-form/docs/api-reference/uiSchema/ . */
+      configurationUISchema: string;
+      [key: string]: any;
+    };
+    /** The configuration of the component. The configuration is based on the schema defined within the component definition(component.schema). */
+    configuration: object;
+    /** Data related to the third-party capability that a ComponentDefinition wraps; this payload is treated as a hermetically sealed, opaque object. */
+    component: {
+      /** Version of the component produced by the registrant. Example: APIVersion of a Kubernetes Pod. */
+      version: string;
+      /** The unique identifier (name) assigned by the registrant to this component. Example: A Kubernetes Pod is of kind 'Pod'. */
+      kind: string;
+      /** JSON schema of the object as defined by the registrant. */
+      schema: string;
+    };
+    /** Timestamp when the component was created. */
+    createdAt: string;
+    /** Timestamp when the component was last updated. */
+    updatedAt: string;
+    /** Timestamp when the component was soft-deleted. Null while the component is active. */
+    deletedAt?: string;
+  } & {
+    /** Number of other registered entries sharing this component's kind, version, and model. */
+    duplicates?: number;
+  })[];
+};
+export type GetRegistryComponentsByModelAndNameApiArg = {
+  /** Name of the model (for `DELETE /api/registry/models/{model}`, the model's ID). */
+  model: string;
+  /** Kind of the component (e.g. `Deployment`). */
+  name: string;
+  /** Zero-indexed page number of the result set. */
+  page?: number;
+  /** Number of items per page, or `all` to return every item. */
+  pageSize?: string;
+  /** Filter results by a case-insensitive substring match on name. */
+  search?: string;
+  /** Field to order the results by. */
+  order?: string;
+  /** Sort direction (`asc` or `desc`). */
+  sort?: string;
+  /** Filter by model version. */
+  version?: string;
+  /** Filter components by their API version. */
+  apiVersion?: string;
+  /** When `true`, omits large schema payloads from the returned definitions. */
+  trim?: string;
+  /** Annotation filter: `true` returns only annotation entities, `false` excludes them, and `include` returns both. */
+  annotations?: string;
+};
+export type GetRegistryRelationshipsByModelApiResponse =
+  /** status 200 Paginated list of relationships belonging to the model. */ {
+    /** Current page number of the result set. */
+    page?: number;
+    /** Number of items in the page. */
+    pageSize?: number;
+    /** Total number of items available. */
+    totalCount?: number;
+    /** Deprecated snake_case alias of `pageSize`. */
+    page_size?: number;
+    /** Deprecated snake_case alias of `totalCount`. */
+    total_count?: number;
+  } & {
+    /** The relationships matching the query. */
+    relationships?: any[];
+  };
+export type GetRegistryRelationshipsByModelApiArg = {
+  /** Name of the model (for `DELETE /api/registry/models/{model}`, the model's ID). */
+  model: string;
+  /** Zero-indexed page number of the result set. */
+  page?: number;
+  /** Number of items per page, or `all` to return every item. */
+  pageSize?: string;
+  /** Filter results by a case-insensitive substring match on name. */
+  search?: string;
+  /** Field to order the results by. */
+  order?: string;
+  /** Sort direction (`asc` or `desc`). */
+  sort?: string;
+  /** Filter by model version. */
+  version?: string;
+};
+export type GetRegistryRelationshipsByModelAndNameApiResponse =
+  /** status 200 Paginated list of matching relationships. */ {
+    /** Current page number of the result set. */
+    page?: number;
+    /** Number of items in the page. */
+    pageSize?: number;
+    /** Total number of items available. */
+    totalCount?: number;
+    /** Deprecated snake_case alias of `pageSize`. */
+    page_size?: number;
+    /** Deprecated snake_case alias of `totalCount`. */
+    total_count?: number;
+  } & {
+    /** The relationships matching the query. */
+    relationships?: any[];
+  };
+export type GetRegistryRelationshipsByModelAndNameApiArg = {
+  /** Name of the model (for `DELETE /api/registry/models/{model}`, the model's ID). */
+  model: string;
+  /** Kind of the relationship (e.g. `hierarchical`, `edge`, `sibling`). */
+  name: string;
+  /** Zero-indexed page number of the result set. */
+  page?: number;
+  /** Number of items per page, or `all` to return every item. */
+  pageSize?: string;
+  /** Filter results by a case-insensitive substring match on name. */
+  search?: string;
+  /** Field to order the results by. */
+  order?: string;
+  /** Sort direction (`asc` or `desc`). */
+  sort?: string;
+  /** Filter by model version. */
+  version?: string;
+};
+export type GetRegistryPoliciesByModelApiResponse =
+  /** status 200 Paginated list of policies belonging to the model. */ {
+    /** Current page number of the result set. */
+    page?: number;
+    /** Number of items in the page. */
+    pageSize?: number;
+    /** Total number of items available. */
+    totalCount?: number;
+    /** Deprecated snake_case alias of `pageSize`. */
+    page_size?: number;
+    /** Deprecated snake_case alias of `totalCount`. */
+    total_count?: number;
+  } & {
+    /** The policies matching the query. */
+    policies?: {
+      [key: string]: any;
+    }[];
+  };
+export type GetRegistryPoliciesByModelApiArg = {
+  /** Name of the model (for `DELETE /api/registry/models/{model}`, the model's ID). */
+  model: string;
+  /** Zero-indexed page number of the result set. */
+  page?: number;
+  /** Number of items per page, or `all` to return every item. */
+  pageSize?: string;
+  /** Filter results by a case-insensitive substring match on name. */
+  search?: string;
+  /** Field to order the results by. */
+  order?: string;
+  /** Sort direction (`asc` or `desc`). */
+  sort?: string;
+};
+export type GetRegistryPoliciesByModelAndNameApiResponse = /** status 200 Paginated list of matching policies. */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items in the page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Deprecated snake_case alias of `pageSize`. */
+  page_size?: number;
+  /** Deprecated snake_case alias of `totalCount`. */
+  total_count?: number;
+} & {
+  /** The policies matching the query. */
+  policies?: {
+    [key: string]: any;
+  }[];
+};
+export type GetRegistryPoliciesByModelAndNameApiArg = {
+  /** Name of the model (for `DELETE /api/registry/models/{model}`, the model's ID). */
+  model: string;
+  /** Name of the policy. */
+  name: string;
+  /** Zero-indexed page number of the result set. */
+  page?: number;
+  /** Number of items per page, or `all` to return every item. */
+  pageSize?: string;
+  /** Filter results by a case-insensitive substring match on name. */
+  search?: string;
+  /** Field to order the results by. */
+  order?: string;
+  /** Sort direction (`asc` or `desc`). */
+  sort?: string;
+};
+export type GetRegistryCategoriesApiResponse = /** status 200 Paginated list of categories. */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items in the page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Deprecated snake_case alias of `pageSize`. */
+  page_size?: number;
+  /** Deprecated snake_case alias of `totalCount`. */
+  total_count?: number;
+} & {
+  /** The categories matching the query. */
+  categories?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** The category of the model that determines the main grouping. */
+    name:
+      | "Analytics"
+      | "App Definition and Development"
+      | "Cloud Native Network"
+      | "Cloud Native Storage"
+      | "Database"
+      | "Machine Learning"
+      | "Observability and Analysis"
+      | "Orchestration & Management"
+      | "Platform"
+      | "Provisioning"
+      | "Runtime"
+      | "Security & Compliance"
+      | "Serverless"
+      | "Tools"
+      | "Uncategorized";
+    /** Additional metadata associated with the category. */
+    metadata: object;
+  }[];
+};
+export type GetRegistryCategoriesApiArg = {
+  /** Zero-indexed page number of the result set. */
+  page?: number;
+  /** Number of items per page, or `all` to return every item. */
+  pageSize?: string;
+  /** Filter results by a case-insensitive substring match on name. */
+  search?: string;
+  /** Field to order the results by. */
+  order?: string;
+  /** Sort direction (`asc` or `desc`). */
+  sort?: string;
+};
+export type GetRegistryCategoriesByNameApiResponse = /** status 200 Paginated list of matching categories. */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items in the page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Deprecated snake_case alias of `pageSize`. */
+  page_size?: number;
+  /** Deprecated snake_case alias of `totalCount`. */
+  total_count?: number;
+} & {
+  /** The categories matching the query. */
+  categories?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** The category of the model that determines the main grouping. */
+    name:
+      | "Analytics"
+      | "App Definition and Development"
+      | "Cloud Native Network"
+      | "Cloud Native Storage"
+      | "Database"
+      | "Machine Learning"
+      | "Observability and Analysis"
+      | "Orchestration & Management"
+      | "Platform"
+      | "Provisioning"
+      | "Runtime"
+      | "Security & Compliance"
+      | "Serverless"
+      | "Tools"
+      | "Uncategorized";
+    /** Additional metadata associated with the category. */
+    metadata: object;
+  }[];
+};
+export type GetRegistryCategoriesByNameApiArg = {
+  /** Name of the category. */
+  category: string;
+  /** Zero-indexed page number of the result set. */
+  page?: number;
+  /** Number of items per page, or `all` to return every item. */
+  pageSize?: string;
+  /** When `true`, the category name is matched greedily (substring match). */
+  search?: string;
+  /** Field to order the results by. */
+  order?: string;
+  /** Sort direction (`asc` or `desc`). */
+  sort?: string;
+};
+export type GetRegistryModelsByCategoryApiResponse = /** status 200 Paginated list of models in the category. */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items in the page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Deprecated snake_case alias of `pageSize`. */
+  page_size?: number;
+  /** Deprecated snake_case alias of `totalCount`. */
+  total_count?: number;
+} & {
+  /** The models matching the query. */
+  models?: ({
+    /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
+    id: string;
+    /** Specifies the version of the schema used for the definition. */
+    schemaVersion: string;
+    /** Version of the model definition. */
+    version: string;
+    /** The unique name for the model within the scope of a registrant. */
+    name: string;
+    /** Human-readable name for the model. */
+    displayName: string;
+    /** Description of the model. */
+    description: string;
+    /** Status of model, including:
+        - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
+        - maintenance: model is unavailable for a period of time.
+        - enabled: model is available for use for all users of this Meshery Server.
+        - ignored: model is unavailable for use for all users of this Meshery Server. */
+    status: "ignored" | "enabled" | "duplicate";
+    /** Connection identifying the entity that registered this model. */
+    registrant: {
+      /** Connection ID */
+      id: string;
+      /** Connection Name */
+      name: string;
+      /** Associated Credential ID */
+      credentialId?: string;
+      /** Connection Type (platform, telemetry, collaboration) */
+      type: string;
+      /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+      subType: string;
+      /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+      kind: string;
+      /** Additional connection metadata */
+      metadata?: object;
+      /** Connection Status */
+      status:
+        | "discovered"
+        | "registered"
+        | "connected"
+        | "ignored"
+        | "maintenance"
+        | "disconnected"
+        | "deleted"
+        | "not found";
+      /** User ID who owns this connection */
+      user_id?: string;
+      created_at?: string;
+      updated_at?: string;
+      /** SQL null Timestamp to handle null values of time. */
+      deleted_at?: string;
+      /** Associated environments for this connection */
+      environments?: {
+        /** ID */
+        id: string;
+        /** Specifies the version of the schema to which the environment conforms. */
+        schemaVersion: string;
+        /** Environment name */
+        name: string;
+        /** Environment description */
+        description: string;
+        /** Environment organization ID */
+        organization_id: string;
+        /** Environment owner */
+        owner?: string;
+        /** Timestamp when the resource was created. */
+        created_at?: string;
+        /** Additional metadata associated with the environment. */
+        metadata?: object;
+        /** Timestamp when the resource was updated. */
+        updated_at?: string;
+        /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+        deleted_at?: string | null;
+      }[];
+      /** Specifies the version of the schema used for the definition. */
+      schemaVersion: string;
+    };
+    /** ID of the registrant. */
+    registrantId: string;
+    /** ID of the category. */
+    categoryId: string;
+    /** Category the model belongs to. */
+    category: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** The category of the model that determines the main grouping. */
+      name:
+        | "Analytics"
+        | "App Definition and Development"
+        | "Cloud Native Network"
+        | "Cloud Native Storage"
+        | "Database"
+        | "Machine Learning"
+        | "Observability and Analysis"
+        | "Orchestration & Management"
+        | "Platform"
+        | "Provisioning"
+        | "Runtime"
+        | "Security & Compliance"
+        | "Serverless"
+        | "Tools"
+        | "Uncategorized";
+      /** Additional metadata associated with the category. */
+      metadata: object;
+    };
+    /** Sub-category the model belongs to. */
+    subCategory:
+      | "API Gateway"
+      | "API Integration"
+      | "Application Definition & Image Build"
+      | "Automation & Configuration"
+      | "Certified Kubernetes - Distribution"
+      | "Chaos Engineering"
+      | "Cloud Native Storage"
+      | "Cloud Provider"
+      | "CNI"
+      | "Compute"
+      | "Container Registry"
+      | "Container Runtime"
+      | "Container Security"
+      | "Container"
+      | "Content Delivery Network"
+      | "Continuous Integration & Delivery"
+      | "Coordination & Service Discovery"
+      | "Database"
+      | "Flowchart"
+      | "Framework"
+      | "Installable Platform"
+      | "Key Management"
+      | "Key Management Service"
+      | "Kubernetes"
+      | "Logging"
+      | "Machine Learning"
+      | "Management Governance"
+      | "Metrics"
+      | "Monitoring"
+      | "Networking Content Delivery"
+      | "Operating System"
+      | "Query"
+      | "Remote Procedure Call"
+      | "Scheduling & Orchestration"
+      | "Secrets Management"
+      | "Security Identity & Compliance"
+      | "Service Mesh"
+      | "Service Proxy"
+      | "Source Version Control"
+      | "Storage"
+      | "Specifications"
+      | "Streaming & Messaging"
+      | "Tools"
+      | "Tracing"
+      | "Uncategorized"
+      | "Video Conferencing";
+    /** Metadata containing additional information associated with the model. */
+    metadata?: {
+      /** Capabilities associated with the model */
+      capabilities?: {
+        /** Specifies the version of the schema to which the capability definition conforms. */
+        schemaVersion: string;
+        /** Version of the capability definition. */
+        version: string;
+        /** Name of the capability in human-readible format. */
+        displayName: string;
+        /** A written representation of the purpose and characteristics of the capability. */
+        description: string;
+        /** Top-level categorization of the capability */
+        kind: "action" | "mutate" | "view" | "interaction";
+        /** Classification of capabilities. Used to group capabilities similar in nature. */
+        type: string;
+        /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
+        subType: string;
+        /** Key that backs the capability. */
+        key: string;
+        /** State of the entity in which the capability is applicable. */
+        entityState: ("declaration" | "instance")[];
+        /** Status of the capability */
+        status: "enabled" | "disabled";
+        /** Metadata contains additional information associated with the capability. Extension point. */
+        metadata?: {
+          [key: string]: any;
+        };
+      }[];
+      /** Indicates whether the model and its entities should be treated as deployable entities or as logical representations. */
+      isAnnotation?: boolean;
+      /** Primary color associated with the model. */
+      primaryColor?: string;
+      /** Secondary color associated with the model. */
+      secondaryColor?: string;
+      /** SVG representation of the model in white color. */
+      svgWhite: string;
+      /** SVG representation of the model in colored format. */
+      svgColor: string;
+      /** SVG representation of the complete model. */
+      svgComplete?: string;
+      /** Visual shape used to render the model's entities in design canvases. */
+      shape?:
+        | "ellipse"
+        | "triangle"
+        | "round-triangle"
+        | "rectangle"
+        | "round-rectangle"
+        | "bottom-round-rectangle"
+        | "cut-rectangle"
+        | "barrel"
+        | "rhomboid"
+        | "diamond"
+        | "round-diamond"
+        | "pentagon"
+        | "round-pentagon"
+        | "hexagon"
+        | "round-hexagon"
+        | "concave-hexagon"
+        | "heptagon"
+        | "round-heptagon"
+        | "octagon"
+        | "round-octagon"
+        | "star"
+        | "tag"
+        | "round-tag"
+        | "vee"
+        | "polygon";
+      [key: string]: any;
+    };
+    /** Registrant-defined data associated with the model. */
+    model: {
+      /** Version of the model as defined by the registrant. */
+      version: string;
+    };
+    /** The relationships of the model. */
+    relationships: any;
+    /** The components of the model. */
+    components: any;
+    /** Number of components associated with the model. */
+    componentsCount: number;
+    /** Number of relationships associated with the model. */
+    relationshipsCount: number;
+    /** Timestamp when the model was created. */
+    createdAt?: string;
+    /** Timestamp when the model was last updated. */
+    updatedAt?: string;
+  } & {
+    /** Number of other registered entries sharing this model's name and version. */
+    duplicates?: number;
+  })[];
+};
+export type GetRegistryModelsByCategoryApiArg = {
+  /** Name of the category. */
+  category: string;
+  /** Zero-indexed page number of the result set. */
+  page?: number;
+  /** Number of items per page, or `all` to return every item. */
+  pageSize?: string;
+  /** Filter results by a case-insensitive substring match on name. */
+  search?: string;
+  /** Field to order the results by. */
+  order?: string;
+  /** Sort direction (`asc` or `desc`). */
+  sort?: string;
+  /** Filter by model version. */
+  version?: string;
+  /** Annotation filter: `true` returns only annotation entities, `false` excludes them, and `include` returns both. */
+  annotations?: string;
+  /** When `true`, embeds the model's component definitions in the response. */
+  components?: string;
+  /** When `true`, embeds the model's relationship definitions in the response. */
+  relationships?: string;
+};
+export type GetRegistryModelsByCategoryAndModelApiResponse =
+  /** status 200 Paginated list of matching models in the category. */ {
+    /** Current page number of the result set. */
+    page?: number;
+    /** Number of items in the page. */
+    pageSize?: number;
+    /** Total number of items available. */
+    totalCount?: number;
+    /** Deprecated snake_case alias of `pageSize`. */
+    page_size?: number;
+    /** Deprecated snake_case alias of `totalCount`. */
+    total_count?: number;
+  } & {
+    /** The models matching the query. */
+    models?: ({
+      /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
+      id: string;
+      /** Specifies the version of the schema used for the definition. */
+      schemaVersion: string;
+      /** Version of the model definition. */
+      version: string;
+      /** The unique name for the model within the scope of a registrant. */
+      name: string;
+      /** Human-readable name for the model. */
+      displayName: string;
+      /** Description of the model. */
+      description: string;
+      /** Status of model, including:
+        - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
+        - maintenance: model is unavailable for a period of time.
+        - enabled: model is available for use for all users of this Meshery Server.
+        - ignored: model is unavailable for use for all users of this Meshery Server. */
+      status: "ignored" | "enabled" | "duplicate";
+      /** Connection identifying the entity that registered this model. */
+      registrant: {
+        /** Connection ID */
+        id: string;
+        /** Connection Name */
+        name: string;
+        /** Associated Credential ID */
+        credentialId?: string;
+        /** Connection Type (platform, telemetry, collaboration) */
+        type: string;
+        /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+        subType: string;
+        /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+        kind: string;
+        /** Additional connection metadata */
+        metadata?: object;
+        /** Connection Status */
+        status:
+          | "discovered"
+          | "registered"
+          | "connected"
+          | "ignored"
+          | "maintenance"
+          | "disconnected"
+          | "deleted"
+          | "not found";
+        /** User ID who owns this connection */
+        user_id?: string;
+        created_at?: string;
+        updated_at?: string;
+        /** SQL null Timestamp to handle null values of time. */
+        deleted_at?: string;
+        /** Associated environments for this connection */
+        environments?: {
+          /** ID */
+          id: string;
+          /** Specifies the version of the schema to which the environment conforms. */
+          schemaVersion: string;
+          /** Environment name */
+          name: string;
+          /** Environment description */
+          description: string;
+          /** Environment organization ID */
+          organization_id: string;
+          /** Environment owner */
+          owner?: string;
+          /** Timestamp when the resource was created. */
+          created_at?: string;
+          /** Additional metadata associated with the environment. */
+          metadata?: object;
+          /** Timestamp when the resource was updated. */
+          updated_at?: string;
+          /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+          deleted_at?: string | null;
+        }[];
+        /** Specifies the version of the schema used for the definition. */
+        schemaVersion: string;
+      };
+      /** ID of the registrant. */
+      registrantId: string;
+      /** ID of the category. */
+      categoryId: string;
+      /** Category the model belongs to. */
+      category: {
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        id: string;
+        /** The category of the model that determines the main grouping. */
+        name:
+          | "Analytics"
+          | "App Definition and Development"
+          | "Cloud Native Network"
+          | "Cloud Native Storage"
+          | "Database"
+          | "Machine Learning"
+          | "Observability and Analysis"
+          | "Orchestration & Management"
+          | "Platform"
+          | "Provisioning"
+          | "Runtime"
+          | "Security & Compliance"
+          | "Serverless"
+          | "Tools"
+          | "Uncategorized";
+        /** Additional metadata associated with the category. */
+        metadata: object;
+      };
+      /** Sub-category the model belongs to. */
+      subCategory:
+        | "API Gateway"
+        | "API Integration"
+        | "Application Definition & Image Build"
+        | "Automation & Configuration"
+        | "Certified Kubernetes - Distribution"
+        | "Chaos Engineering"
+        | "Cloud Native Storage"
+        | "Cloud Provider"
+        | "CNI"
+        | "Compute"
+        | "Container Registry"
+        | "Container Runtime"
+        | "Container Security"
+        | "Container"
+        | "Content Delivery Network"
+        | "Continuous Integration & Delivery"
+        | "Coordination & Service Discovery"
+        | "Database"
+        | "Flowchart"
+        | "Framework"
+        | "Installable Platform"
+        | "Key Management"
+        | "Key Management Service"
+        | "Kubernetes"
+        | "Logging"
+        | "Machine Learning"
+        | "Management Governance"
+        | "Metrics"
+        | "Monitoring"
+        | "Networking Content Delivery"
+        | "Operating System"
+        | "Query"
+        | "Remote Procedure Call"
+        | "Scheduling & Orchestration"
+        | "Secrets Management"
+        | "Security Identity & Compliance"
+        | "Service Mesh"
+        | "Service Proxy"
+        | "Source Version Control"
+        | "Storage"
+        | "Specifications"
+        | "Streaming & Messaging"
+        | "Tools"
+        | "Tracing"
+        | "Uncategorized"
+        | "Video Conferencing";
+      /** Metadata containing additional information associated with the model. */
+      metadata?: {
+        /** Capabilities associated with the model */
+        capabilities?: {
+          /** Specifies the version of the schema to which the capability definition conforms. */
+          schemaVersion: string;
+          /** Version of the capability definition. */
+          version: string;
+          /** Name of the capability in human-readible format. */
+          displayName: string;
+          /** A written representation of the purpose and characteristics of the capability. */
+          description: string;
+          /** Top-level categorization of the capability */
+          kind: "action" | "mutate" | "view" | "interaction";
+          /** Classification of capabilities. Used to group capabilities similar in nature. */
+          type: string;
+          /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
+          subType: string;
+          /** Key that backs the capability. */
+          key: string;
+          /** State of the entity in which the capability is applicable. */
+          entityState: ("declaration" | "instance")[];
+          /** Status of the capability */
+          status: "enabled" | "disabled";
+          /** Metadata contains additional information associated with the capability. Extension point. */
+          metadata?: {
+            [key: string]: any;
+          };
+        }[];
+        /** Indicates whether the model and its entities should be treated as deployable entities or as logical representations. */
+        isAnnotation?: boolean;
+        /** Primary color associated with the model. */
+        primaryColor?: string;
+        /** Secondary color associated with the model. */
+        secondaryColor?: string;
+        /** SVG representation of the model in white color. */
+        svgWhite: string;
+        /** SVG representation of the model in colored format. */
+        svgColor: string;
+        /** SVG representation of the complete model. */
+        svgComplete?: string;
+        /** Visual shape used to render the model's entities in design canvases. */
+        shape?:
+          | "ellipse"
+          | "triangle"
+          | "round-triangle"
+          | "rectangle"
+          | "round-rectangle"
+          | "bottom-round-rectangle"
+          | "cut-rectangle"
+          | "barrel"
+          | "rhomboid"
+          | "diamond"
+          | "round-diamond"
+          | "pentagon"
+          | "round-pentagon"
+          | "hexagon"
+          | "round-hexagon"
+          | "concave-hexagon"
+          | "heptagon"
+          | "round-heptagon"
+          | "octagon"
+          | "round-octagon"
+          | "star"
+          | "tag"
+          | "round-tag"
+          | "vee"
+          | "polygon";
+        [key: string]: any;
+      };
+      /** Registrant-defined data associated with the model. */
+      model: {
+        /** Version of the model as defined by the registrant. */
+        version: string;
+      };
+      /** The relationships of the model. */
+      relationships: any;
+      /** The components of the model. */
+      components: any;
+      /** Number of components associated with the model. */
+      componentsCount: number;
+      /** Number of relationships associated with the model. */
+      relationshipsCount: number;
+      /** Timestamp when the model was created. */
+      createdAt?: string;
+      /** Timestamp when the model was last updated. */
+      updatedAt?: string;
+    } & {
+      /** Number of other registered entries sharing this model's name and version. */
+      duplicates?: number;
+    })[];
+  };
+export type GetRegistryModelsByCategoryAndModelApiArg = {
+  /** Name of the category. */
+  category: string;
+  /** Name of the model (for `DELETE /api/registry/models/{model}`, the model's ID). */
+  model: string;
+  /** Zero-indexed page number of the result set. */
+  page?: number;
+  /** Number of items per page, or `all` to return every item. */
+  pageSize?: string;
+  /** When `true`, the model name is matched greedily (substring match). */
+  search?: string;
+  /** Field to order the results by. */
+  order?: string;
+  /** Sort direction (`asc` or `desc`). */
+  sort?: string;
+  /** Filter by model version. */
+  version?: string;
+  /** Annotation filter: `true` returns only annotation entities, `false` excludes them, and `include` returns both. */
+  annotations?: string;
+  /** When `true`, embeds the model's component definitions in the response. */
+  components?: string;
+  /** When `true`, embeds the model's relationship definitions in the response. */
+  relationships?: string;
+};
+export type GetRegistryComponentsByCategoryAndModelApiResponse = /** status 200 Paginated list of components. */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items in the page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Deprecated snake_case alias of `pageSize`. */
+  page_size?: number;
+  /** Deprecated snake_case alias of `totalCount`. */
+  total_count?: number;
+} & {
+  /** The components matching the query. */
+  components?: ({
+    /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
+    id: string;
+    /** Specifies the version of the schema to which the component definition conforms. */
+    schemaVersion: string;
+    /** Version of the component definition. */
+    version: string;
+    /** Name of the component in human-readable format. */
+    displayName: string;
+    /** A written representation of the purpose and characteristics of the component. */
+    description: string;
+    /** Format specifies the format used in the `component.schema` field. JSON is the default. */
+    format: "JSON" | "CUE";
+    /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+    model: {
+      /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
+      id: string;
+      /** Specifies the version of the schema used for the definition. */
+      schemaVersion: string;
+      /** Version of the model definition. */
+      version: string;
+      /** The unique name for the model within the scope of a registrant. */
+      name: string;
+      /** Human-readable name for the model. */
+      displayName: string;
+      /** Description of the model. */
+      description: string;
+      /** Status of model, including:
+            - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
+            - maintenance: model is unavailable for a period of time.
+            - enabled: model is available for use for all users of this Meshery Server.
+            - ignored: model is unavailable for use for all users of this Meshery Server. */
+      status: "ignored" | "enabled" | "duplicate";
+      /** Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections */
+      registrant: {
+        /** Connection ID */
+        id: string;
+        /** Connection Name */
+        name: string;
+        /** Associated Credential ID */
+        credentialId?: string;
+        /** Connection Type (platform, telemetry, collaboration) */
+        type: string;
+        /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+        subType: string;
+        /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+        kind: string;
+        /** Additional connection metadata */
+        metadata?: object;
+        /** Connection Status */
+        status:
+          | "discovered"
+          | "registered"
+          | "connected"
+          | "ignored"
+          | "maintenance"
+          | "disconnected"
+          | "deleted"
+          | "not found";
+        /** User ID who owns this connection */
+        user_id?: string;
+        created_at?: string;
+        updated_at?: string;
+        /** SQL null Timestamp to handle null values of time. */
+        deleted_at?: string;
+        /** Associated environments for this connection */
+        environments?: {
+          /** ID */
+          id: string;
+          /** Specifies the version of the schema to which the environment conforms. */
+          schemaVersion: string;
+          /** Environment name */
+          name: string;
+          /** Environment description */
+          description: string;
+          /** Environment organization ID */
+          organization_id: string;
+          /** Environment owner */
+          owner?: string;
+          /** Timestamp when the resource was created. */
+          created_at?: string;
+          /** Additional metadata associated with the environment. */
+          metadata?: object;
+          /** Timestamp when the resource was updated. */
+          updated_at?: string;
+          /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+          deleted_at?: string | null;
+        }[];
+        /** Specifies the version of the schema used for the definition. */
+        schemaVersion: string;
+      };
+      /** ID of the registrant. */
+      registrantId: string;
+      /** ID of the category. */
+      categoryId: string;
+      /** Category of the model. */
+      category: {
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        id: string;
+        /** The category of the model that determines the main grouping. */
+        name:
+          | "Analytics"
+          | "App Definition and Development"
+          | "Cloud Native Network"
+          | "Cloud Native Storage"
+          | "Database"
+          | "Machine Learning"
+          | "Observability and Analysis"
+          | "Orchestration & Management"
+          | "Platform"
+          | "Provisioning"
+          | "Runtime"
+          | "Security & Compliance"
+          | "Serverless"
+          | "Tools"
+          | "Uncategorized";
+        /** Additional metadata associated with the category. */
+        metadata: object;
+      };
+      /** Sub category of the model determines the secondary grouping. */
+      subCategory:
+        | "API Gateway"
+        | "API Integration"
+        | "Application Definition & Image Build"
+        | "Automation & Configuration"
+        | "Certified Kubernetes - Distribution"
+        | "Chaos Engineering"
+        | "Cloud Native Storage"
+        | "Cloud Provider"
+        | "CNI"
+        | "Compute"
+        | "Container Registry"
+        | "Container Runtime"
+        | "Container Security"
+        | "Container"
+        | "Content Delivery Network"
+        | "Continuous Integration & Delivery"
+        | "Coordination & Service Discovery"
+        | "Database"
+        | "Flowchart"
+        | "Framework"
+        | "Installable Platform"
+        | "Key Management"
+        | "Key Management Service"
+        | "Kubernetes"
+        | "Logging"
+        | "Machine Learning"
+        | "Management Governance"
+        | "Metrics"
+        | "Monitoring"
+        | "Networking Content Delivery"
+        | "Operating System"
+        | "Query"
+        | "Remote Procedure Call"
+        | "Scheduling & Orchestration"
+        | "Secrets Management"
+        | "Security Identity & Compliance"
+        | "Service Mesh"
+        | "Service Proxy"
+        | "Source Version Control"
+        | "Storage"
+        | "Specifications"
+        | "Streaming & Messaging"
+        | "Tools"
+        | "Tracing"
+        | "Uncategorized"
+        | "Video Conferencing";
+      /** Metadata containing additional information associated with the model. */
+      metadata?: {
+        /** Capabilities associated with the model */
+        capabilities?: {
+          /** Specifies the version of the schema to which the capability definition conforms. */
+          schemaVersion: string;
+          /** Version of the capability definition. */
+          version: string;
+          /** Name of the capability in human-readible format. */
+          displayName: string;
+          /** A written representation of the purpose and characteristics of the capability. */
+          description: string;
+          /** Top-level categorization of the capability */
+          kind: "action" | "mutate" | "view" | "interaction";
+          /** Classification of capabilities. Used to group capabilities similar in nature. */
+          type: string;
+          /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
+          subType: string;
+          /** Key that backs the capability. */
+          key: string;
+          /** State of the entity in which the capability is applicable. */
+          entityState: ("declaration" | "instance")[];
+          /** Status of the capability */
+          status: "enabled" | "disabled";
+          /** Metadata contains additional information associated with the capability. Extension point. */
+          metadata?: {
+            [key: string]: any;
+          };
+        }[];
+        /** Indicates whether the model and its entities should be treated as deployable entities or as logical representations. */
+        isAnnotation?: boolean;
+        /** Primary color associated with the model. */
+        primaryColor?: string;
+        /** Secondary color associated with the model. */
+        secondaryColor?: string;
+        /** SVG representation of the model in white color. */
+        svgWhite: string;
+        /** SVG representation of the model in colored format. */
+        svgColor: string;
+        /** SVG representation of the complete model. */
+        svgComplete?: string;
+        /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+        shape?:
+          | "ellipse"
+          | "triangle"
+          | "round-triangle"
+          | "rectangle"
+          | "round-rectangle"
+          | "bottom-round-rectangle"
+          | "cut-rectangle"
+          | "barrel"
+          | "rhomboid"
+          | "diamond"
+          | "round-diamond"
+          | "pentagon"
+          | "round-pentagon"
+          | "hexagon"
+          | "round-hexagon"
+          | "concave-hexagon"
+          | "heptagon"
+          | "round-heptagon"
+          | "octagon"
+          | "round-octagon"
+          | "star"
+          | "tag"
+          | "round-tag"
+          | "vee"
+          | "polygon";
+        [key: string]: any;
+      };
+      /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+      model: {
+        /** Version of the model as defined by the registrant. */
+        version: string;
+      };
+      /** The relationships of the model. */
+      relationships: any;
+      /** The components of the model. */
+      components: any;
+      /** Number of components associated with the model. */
+      componentsCount: number;
+      /** Number of relationships associated with the model. */
+      relationshipsCount: number;
+      /** Timestamp when the resource was created. */
+      created_at?: string;
+      /** Timestamp when the resource was updated. */
+      updated_at?: string;
+    };
+    /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+    modelReference: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** The unique name for the model within the scope of a registrant. */
+      name: string;
+      /** Version of the model definition. */
+      version: string;
+      /** Human-readable name for the model. */
+      displayName: string;
+      /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+      model: {
+        /** Version of the model as defined by the registrant. */
+        version: string;
+      };
+      registrant: {
+        /** Kind of the registrant. */
+        kind: string;
+      };
+    };
+    /** Foreign key to the model to which the component belongs. Populated by the ORM from the `model_id` column and suppressed on the JSON wire; consumers use the nested `model` object for wire-level access. */
+    modelId?: string;
+    /** Visualization styles for a component */
+    styles?: {
+      /** Primary color of the component used for UI representation. */
+      primaryColor: string;
+      /** Secondary color of the entity used for UI representation. */
+      secondaryColor?: string;
+      /** White SVG of the entity used for UI representation on dark background. */
+      svgWhite: string;
+      /** Colored SVG of the entity used for UI representation on light background. */
+      svgColor: string;
+      /** Complete SVG of the entity used for UI representation, often inclusive of background. */
+      svgComplete: string;
+      /** The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+      color?: string;
+      /** The opacity of the label text, including its outline. */
+      textOpacity?: number;
+      /** A comma-separated list of font names to use on the label text. */
+      fontFamily?: string;
+      /** The size of the label text. */
+      fontSize?: string;
+      /** A CSS font style to be applied to the label text. */
+      fontStyle?: string;
+      /** A CSS font weight to be applied to the label text. */
+      fontWeight?: string;
+      /** A transformation to apply to the label text */
+      textTransform?: "none" | "uppercase" | "lowercase";
+      /** The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+      opacity?: number;
+      /** An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+      zIndex?: number;
+      /** The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+      label?: string;
+      /** The animation to apply to the element. example ripple,bounce,etc */
+      animation?: object;
+      [key: string]: any;
+    } & {
+      /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+      shape:
+        | "ellipse"
+        | "triangle"
+        | "round-triangle"
+        | "rectangle"
+        | "round-rectangle"
+        | "bottom-round-rectangle"
+        | "cut-rectangle"
+        | "barrel"
+        | "rhomboid"
+        | "diamond"
+        | "round-diamond"
+        | "pentagon"
+        | "round-pentagon"
+        | "hexagon"
+        | "round-hexagon"
+        | "concave-hexagon"
+        | "heptagon"
+        | "round-heptagon"
+        | "octagon"
+        | "round-octagon"
+        | "star"
+        | "tag"
+        | "round-tag"
+        | "vee"
+        | "polygon";
+      /** The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+      position?: {
+        /** The x-coordinate of the node. */
+        x: number;
+        /** The y-coordinate of the node. */
+        y: number;
+      };
+      /** The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+      bodyText?: string;
+      /** How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
+      bodyTextWrap?: "none" | "wrap" | "ellipsis";
+      /** The maximum width for wrapping text in the node. */
+      bodyTextMaxWidth?: string;
+      /** The opacity of the node's body text, including its outline. */
+      bodyTextOpacity?: number;
+      /** The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+      bodyTextBackgroundColor?: string;
+      /** The size of the node's body text. */
+      bodyTextFontSize?: number;
+      /** The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+      bodyTextColor?: string;
+      /** A CSS font weight to be applied to the node's body text. */
+      bodyTextFontWeight?: string;
+      /** A CSS horizontal alignment to be applied to the node's body text. */
+      bodyTextHorizontalAlign?: string;
+      /** A CSS text decoration to be applied to the node's body text. */
+      bodyTextDecoration?: string;
+      /** A CSS vertical alignment to be applied to the node's body text. */
+      bodyTextVerticalAlign?: string;
+      /** The width of the node's body or the width of an edge's line. */
+      width?: number;
+      /** The height of the node's body */
+      height?: number;
+      /** The URL that points to the image to show in the node. */
+      backgroundImage?: string;
+      /** The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+      backgroundColor?: string;
+      /** Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+      backgroundBlacken?: number;
+      /** The opacity level of the node's background colour */
+      backgroundOpacity?: number;
+      /** The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundPositionX?: string;
+      /** The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundPositionY?: string;
+      /** The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundOffsetX?: string;
+      /** The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundOffsetY?: string;
+      /** How the background image is fit to the node. Can be 'none', 'contain', or 'cover'. */
+      backgroundFit?: "none" | "contain" | "cover";
+      /** How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'. */
+      backgroundClip?: "none" | "node" | "node-border";
+      /** How the background image's width is determined. Can be 'none', 'inner', or 'outer'. */
+      backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+      /** How the background image's height is determined. Can be 'none', 'inner', or 'outer'. */
+      backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+      /** The size of the node's border. */
+      borderWidth?: number;
+      /** The style of the node's border */
+      borderStyle?: "solid" | "dotted" | "dashed" | "double";
+      /** The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+      borderColor?: string;
+      /** The opacity of the node's border */
+      borderOpacity?: number;
+      /** The amount of padding around all sides of the node. */
+      padding?: number;
+      /** The horizontal alignment of a node's label */
+      textHalign?: "left" | "center" | "right";
+      /** The vertical alignment of a node's label */
+      textValign?: "top" | "center" | "bottom";
+      /** Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset. */
+      ghost?: "yes" | "no";
+      /** The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      activeBgColor?: string;
+      /** The opacity of the active background indicator. Selector needs to be *core*. */
+      activeBgOpacity?: string;
+      /** The opacity of the active background indicator. Selector needs to be *core*. */
+      activeBgSize?: string;
+      /** The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      selectionBoxColor?: string;
+      /** The size of the border on the selection box. Selector needs to be *core* */
+      selectionBoxBorderWidth?: number;
+      /** The opacity of the selection box. Selector needs to be *core* */
+      selectionBoxOpacity?: number;
+      /** The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      outsideTextureBgColor?: string;
+      /** The opacity of the area outside the viewport texture. Selector needs to be *core* */
+      outsideTextureBgOpacity?: number;
+      /** An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+      shapePolygonPoints?: string;
+      /** The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+      menuBackgroundColor?: string;
+      /** The opacity of the background of the component menu. */
+      menuBackgroundOpacity?: number;
+      /** The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+      menuForgroundColor?: string;
+    };
+    /** Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management. */
+    capabilities?: {
+      /** Specifies the version of the schema to which the capability definition conforms. */
+      schemaVersion: string;
+      /** Version of the capability definition. */
+      version: string;
+      /** Name of the capability in human-readible format. */
+      displayName: string;
+      /** A written representation of the purpose and characteristics of the capability. */
+      description: string;
+      /** Top-level categorization of the capability */
+      kind: "action" | "mutate" | "view" | "interaction";
+      /** Classification of capabilities. Used to group capabilities similar in nature. */
+      type: string;
+      /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
+      subType: string;
+      /** Key that backs the capability. */
+      key: string;
+      /** State of the entity in which the capability is applicable. */
+      entityState: ("declaration" | "instance")[];
+      /** Status of the capability */
+      status: "enabled" | "disabled";
+      /** Metadata contains additional information associated with the capability. Extension point. */
+      metadata?: {
+        [key: string]: any;
+      };
+    }[];
+    /** Status of component, including:
+        - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
+        - maintenance: model is unavailable for a period of time.
+        - enabled: model is available for use for all users of this Meshery Server.
+        - ignored: model is unavailable for use for all users of this Meshery Server. */
+    status?: "ignored" | "enabled" | "duplicate" | "resolved" | "open";
+    /** Metadata contains additional information associated with the component. */
+    metadata: {
+      /** Genealogy represents the various representational states of the component. */
+      genealogy: string;
+      /** Identifies whether the component is semantically meaningful or not; identifies whether the component should be treated as deployable entity or is for purposes of logical representation. */
+      isAnnotation: boolean;
+      /** Identifies whether the component is scoped to namespace or cluster wide. */
+      isNamespaced: boolean;
+      /** 'published' controls whether the component should be registered in Meshery Registry. When the same 'published' property in Models, is set to 'false', the Model property takes precedence with all Entities in the Model not being registered. */
+      published: boolean;
+      /** InstanceDetails contains information about the instance of the component. */
+      instanceDetails: object;
+      /** Defines the UI schema for rendering the component's configuration. For more details, visit: https://rjsf-team.github.io/react-jsonschema-form/docs/api-reference/uiSchema/ . */
+      configurationUISchema: string;
+      [key: string]: any;
+    };
+    /** The configuration of the component. The configuration is based on the schema defined within the component definition(component.schema). */
+    configuration: object;
+    /** Data related to the third-party capability that a ComponentDefinition wraps; this payload is treated as a hermetically sealed, opaque object. */
+    component: {
+      /** Version of the component produced by the registrant. Example: APIVersion of a Kubernetes Pod. */
+      version: string;
+      /** The unique identifier (name) assigned by the registrant to this component. Example: A Kubernetes Pod is of kind 'Pod'. */
+      kind: string;
+      /** JSON schema of the object as defined by the registrant. */
+      schema: string;
+    };
+    /** Timestamp when the component was created. */
+    createdAt: string;
+    /** Timestamp when the component was last updated. */
+    updatedAt: string;
+    /** Timestamp when the component was soft-deleted. Null while the component is active. */
+    deletedAt?: string;
+  } & {
+    /** Number of other registered entries sharing this component's kind, version, and model. */
+    duplicates?: number;
+  })[];
+};
+export type GetRegistryComponentsByCategoryAndModelApiArg = {
+  /** Name of the category. */
+  category: string;
+  /** Name of the model (for `DELETE /api/registry/models/{model}`, the model's ID). */
+  model: string;
+  /** Zero-indexed page number of the result set. */
+  page?: number;
+  /** Number of items per page, or `all` to return every item. */
+  pageSize?: string;
+  /** Filter results by a case-insensitive substring match on name. */
+  search?: string;
+  /** Field to order the results by. */
+  order?: string;
+  /** Sort direction (`asc` or `desc`). */
+  sort?: string;
+  /** Filter by model version. */
+  version?: string;
+  /** Filter components by their API version. */
+  apiVersion?: string;
+  /** When `true`, omits large schema payloads from the returned definitions. */
+  trim?: string;
+  /** Annotation filter: `true` returns only annotation entities, `false` excludes them, and `include` returns both. */
+  annotations?: string;
+};
+export type GetRegistryComponentsByCategoryAndModelAndNameApiResponse =
+  /** status 200 Paginated list of matching components. */ {
+    /** Current page number of the result set. */
+    page?: number;
+    /** Number of items in the page. */
+    pageSize?: number;
+    /** Total number of items available. */
+    totalCount?: number;
+    /** Deprecated snake_case alias of `pageSize`. */
+    page_size?: number;
+    /** Deprecated snake_case alias of `totalCount`. */
+    total_count?: number;
+  } & {
+    /** The components matching the query. */
+    components?: ({
+      /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
+      id: string;
+      /** Specifies the version of the schema to which the component definition conforms. */
+      schemaVersion: string;
+      /** Version of the component definition. */
+      version: string;
+      /** Name of the component in human-readable format. */
+      displayName: string;
+      /** A written representation of the purpose and characteristics of the component. */
+      description: string;
+      /** Format specifies the format used in the `component.schema` field. JSON is the default. */
+      format: "JSON" | "CUE";
+      /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+      model: {
+        /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
+        id: string;
+        /** Specifies the version of the schema used for the definition. */
+        schemaVersion: string;
+        /** Version of the model definition. */
+        version: string;
+        /** The unique name for the model within the scope of a registrant. */
+        name: string;
+        /** Human-readable name for the model. */
+        displayName: string;
+        /** Description of the model. */
+        description: string;
+        /** Status of model, including:
+            - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
+            - maintenance: model is unavailable for a period of time.
+            - enabled: model is available for use for all users of this Meshery Server.
+            - ignored: model is unavailable for use for all users of this Meshery Server. */
+        status: "ignored" | "enabled" | "duplicate";
+        /** Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections */
+        registrant: {
+          /** Connection ID */
+          id: string;
+          /** Connection Name */
+          name: string;
+          /** Associated Credential ID */
+          credentialId?: string;
+          /** Connection Type (platform, telemetry, collaboration) */
+          type: string;
+          /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+          subType: string;
+          /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+          kind: string;
+          /** Additional connection metadata */
+          metadata?: object;
+          /** Connection Status */
+          status:
+            | "discovered"
+            | "registered"
+            | "connected"
+            | "ignored"
+            | "maintenance"
+            | "disconnected"
+            | "deleted"
+            | "not found";
+          /** User ID who owns this connection */
+          user_id?: string;
+          created_at?: string;
+          updated_at?: string;
+          /** SQL null Timestamp to handle null values of time. */
+          deleted_at?: string;
+          /** Associated environments for this connection */
+          environments?: {
+            /** ID */
+            id: string;
+            /** Specifies the version of the schema to which the environment conforms. */
+            schemaVersion: string;
+            /** Environment name */
+            name: string;
+            /** Environment description */
+            description: string;
+            /** Environment organization ID */
+            organization_id: string;
+            /** Environment owner */
+            owner?: string;
+            /** Timestamp when the resource was created. */
+            created_at?: string;
+            /** Additional metadata associated with the environment. */
+            metadata?: object;
+            /** Timestamp when the resource was updated. */
+            updated_at?: string;
+            /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+            deleted_at?: string | null;
+          }[];
+          /** Specifies the version of the schema used for the definition. */
+          schemaVersion: string;
+        };
+        /** ID of the registrant. */
+        registrantId: string;
+        /** ID of the category. */
+        categoryId: string;
+        /** Category of the model. */
+        category: {
+          /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+          id: string;
+          /** The category of the model that determines the main grouping. */
+          name:
+            | "Analytics"
+            | "App Definition and Development"
+            | "Cloud Native Network"
+            | "Cloud Native Storage"
+            | "Database"
+            | "Machine Learning"
+            | "Observability and Analysis"
+            | "Orchestration & Management"
+            | "Platform"
+            | "Provisioning"
+            | "Runtime"
+            | "Security & Compliance"
+            | "Serverless"
+            | "Tools"
+            | "Uncategorized";
+          /** Additional metadata associated with the category. */
+          metadata: object;
+        };
+        /** Sub category of the model determines the secondary grouping. */
+        subCategory:
+          | "API Gateway"
+          | "API Integration"
+          | "Application Definition & Image Build"
+          | "Automation & Configuration"
+          | "Certified Kubernetes - Distribution"
+          | "Chaos Engineering"
+          | "Cloud Native Storage"
+          | "Cloud Provider"
+          | "CNI"
+          | "Compute"
+          | "Container Registry"
+          | "Container Runtime"
+          | "Container Security"
+          | "Container"
+          | "Content Delivery Network"
+          | "Continuous Integration & Delivery"
+          | "Coordination & Service Discovery"
+          | "Database"
+          | "Flowchart"
+          | "Framework"
+          | "Installable Platform"
+          | "Key Management"
+          | "Key Management Service"
+          | "Kubernetes"
+          | "Logging"
+          | "Machine Learning"
+          | "Management Governance"
+          | "Metrics"
+          | "Monitoring"
+          | "Networking Content Delivery"
+          | "Operating System"
+          | "Query"
+          | "Remote Procedure Call"
+          | "Scheduling & Orchestration"
+          | "Secrets Management"
+          | "Security Identity & Compliance"
+          | "Service Mesh"
+          | "Service Proxy"
+          | "Source Version Control"
+          | "Storage"
+          | "Specifications"
+          | "Streaming & Messaging"
+          | "Tools"
+          | "Tracing"
+          | "Uncategorized"
+          | "Video Conferencing";
+        /** Metadata containing additional information associated with the model. */
+        metadata?: {
+          /** Capabilities associated with the model */
+          capabilities?: {
+            /** Specifies the version of the schema to which the capability definition conforms. */
+            schemaVersion: string;
+            /** Version of the capability definition. */
+            version: string;
+            /** Name of the capability in human-readible format. */
+            displayName: string;
+            /** A written representation of the purpose and characteristics of the capability. */
+            description: string;
+            /** Top-level categorization of the capability */
+            kind: "action" | "mutate" | "view" | "interaction";
+            /** Classification of capabilities. Used to group capabilities similar in nature. */
+            type: string;
+            /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
+            subType: string;
+            /** Key that backs the capability. */
+            key: string;
+            /** State of the entity in which the capability is applicable. */
+            entityState: ("declaration" | "instance")[];
+            /** Status of the capability */
+            status: "enabled" | "disabled";
+            /** Metadata contains additional information associated with the capability. Extension point. */
+            metadata?: {
+              [key: string]: any;
+            };
+          }[];
+          /** Indicates whether the model and its entities should be treated as deployable entities or as logical representations. */
+          isAnnotation?: boolean;
+          /** Primary color associated with the model. */
+          primaryColor?: string;
+          /** Secondary color associated with the model. */
+          secondaryColor?: string;
+          /** SVG representation of the model in white color. */
+          svgWhite: string;
+          /** SVG representation of the model in colored format. */
+          svgColor: string;
+          /** SVG representation of the complete model. */
+          svgComplete?: string;
+          /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+          shape?:
+            | "ellipse"
+            | "triangle"
+            | "round-triangle"
+            | "rectangle"
+            | "round-rectangle"
+            | "bottom-round-rectangle"
+            | "cut-rectangle"
+            | "barrel"
+            | "rhomboid"
+            | "diamond"
+            | "round-diamond"
+            | "pentagon"
+            | "round-pentagon"
+            | "hexagon"
+            | "round-hexagon"
+            | "concave-hexagon"
+            | "heptagon"
+            | "round-heptagon"
+            | "octagon"
+            | "round-octagon"
+            | "star"
+            | "tag"
+            | "round-tag"
+            | "vee"
+            | "polygon";
+          [key: string]: any;
+        };
+        /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+        model: {
+          /** Version of the model as defined by the registrant. */
+          version: string;
+        };
+        /** The relationships of the model. */
+        relationships: any;
+        /** The components of the model. */
+        components: any;
+        /** Number of components associated with the model. */
+        componentsCount: number;
+        /** Number of relationships associated with the model. */
+        relationshipsCount: number;
+        /** Timestamp when the resource was created. */
+        created_at?: string;
+        /** Timestamp when the resource was updated. */
+        updated_at?: string;
+      };
+      /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+      modelReference: {
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        id: string;
+        /** The unique name for the model within the scope of a registrant. */
+        name: string;
+        /** Version of the model definition. */
+        version: string;
+        /** Human-readable name for the model. */
+        displayName: string;
+        /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+        model: {
+          /** Version of the model as defined by the registrant. */
+          version: string;
+        };
+        registrant: {
+          /** Kind of the registrant. */
+          kind: string;
+        };
+      };
+      /** Foreign key to the model to which the component belongs. Populated by the ORM from the `model_id` column and suppressed on the JSON wire; consumers use the nested `model` object for wire-level access. */
+      modelId?: string;
+      /** Visualization styles for a component */
+      styles?: {
+        /** Primary color of the component used for UI representation. */
+        primaryColor: string;
+        /** Secondary color of the entity used for UI representation. */
+        secondaryColor?: string;
+        /** White SVG of the entity used for UI representation on dark background. */
+        svgWhite: string;
+        /** Colored SVG of the entity used for UI representation on light background. */
+        svgColor: string;
+        /** Complete SVG of the entity used for UI representation, often inclusive of background. */
+        svgComplete: string;
+        /** The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+        color?: string;
+        /** The opacity of the label text, including its outline. */
+        textOpacity?: number;
+        /** A comma-separated list of font names to use on the label text. */
+        fontFamily?: string;
+        /** The size of the label text. */
+        fontSize?: string;
+        /** A CSS font style to be applied to the label text. */
+        fontStyle?: string;
+        /** A CSS font weight to be applied to the label text. */
+        fontWeight?: string;
+        /** A transformation to apply to the label text */
+        textTransform?: "none" | "uppercase" | "lowercase";
+        /** The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+        opacity?: number;
+        /** An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+        zIndex?: number;
+        /** The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+        label?: string;
+        /** The animation to apply to the element. example ripple,bounce,etc */
+        animation?: object;
+        [key: string]: any;
+      } & {
+        /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+        shape:
+          | "ellipse"
+          | "triangle"
+          | "round-triangle"
+          | "rectangle"
+          | "round-rectangle"
+          | "bottom-round-rectangle"
+          | "cut-rectangle"
+          | "barrel"
+          | "rhomboid"
+          | "diamond"
+          | "round-diamond"
+          | "pentagon"
+          | "round-pentagon"
+          | "hexagon"
+          | "round-hexagon"
+          | "concave-hexagon"
+          | "heptagon"
+          | "round-heptagon"
+          | "octagon"
+          | "round-octagon"
+          | "star"
+          | "tag"
+          | "round-tag"
+          | "vee"
+          | "polygon";
+        /** The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+        position?: {
+          /** The x-coordinate of the node. */
+          x: number;
+          /** The y-coordinate of the node. */
+          y: number;
+        };
+        /** The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+        bodyText?: string;
+        /** How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
+        bodyTextWrap?: "none" | "wrap" | "ellipsis";
+        /** The maximum width for wrapping text in the node. */
+        bodyTextMaxWidth?: string;
+        /** The opacity of the node's body text, including its outline. */
+        bodyTextOpacity?: number;
+        /** The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+        bodyTextBackgroundColor?: string;
+        /** The size of the node's body text. */
+        bodyTextFontSize?: number;
+        /** The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+        bodyTextColor?: string;
+        /** A CSS font weight to be applied to the node's body text. */
+        bodyTextFontWeight?: string;
+        /** A CSS horizontal alignment to be applied to the node's body text. */
+        bodyTextHorizontalAlign?: string;
+        /** A CSS text decoration to be applied to the node's body text. */
+        bodyTextDecoration?: string;
+        /** A CSS vertical alignment to be applied to the node's body text. */
+        bodyTextVerticalAlign?: string;
+        /** The width of the node's body or the width of an edge's line. */
+        width?: number;
+        /** The height of the node's body */
+        height?: number;
+        /** The URL that points to the image to show in the node. */
+        backgroundImage?: string;
+        /** The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+        backgroundColor?: string;
+        /** Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+        backgroundBlacken?: number;
+        /** The opacity level of the node's background colour */
+        backgroundOpacity?: number;
+        /** The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundPositionX?: string;
+        /** The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundPositionY?: string;
+        /** The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundOffsetX?: string;
+        /** The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundOffsetY?: string;
+        /** How the background image is fit to the node. Can be 'none', 'contain', or 'cover'. */
+        backgroundFit?: "none" | "contain" | "cover";
+        /** How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'. */
+        backgroundClip?: "none" | "node" | "node-border";
+        /** How the background image's width is determined. Can be 'none', 'inner', or 'outer'. */
+        backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+        /** How the background image's height is determined. Can be 'none', 'inner', or 'outer'. */
+        backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+        /** The size of the node's border. */
+        borderWidth?: number;
+        /** The style of the node's border */
+        borderStyle?: "solid" | "dotted" | "dashed" | "double";
+        /** The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+        borderColor?: string;
+        /** The opacity of the node's border */
+        borderOpacity?: number;
+        /** The amount of padding around all sides of the node. */
+        padding?: number;
+        /** The horizontal alignment of a node's label */
+        textHalign?: "left" | "center" | "right";
+        /** The vertical alignment of a node's label */
+        textValign?: "top" | "center" | "bottom";
+        /** Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset. */
+        ghost?: "yes" | "no";
+        /** The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        activeBgColor?: string;
+        /** The opacity of the active background indicator. Selector needs to be *core*. */
+        activeBgOpacity?: string;
+        /** The opacity of the active background indicator. Selector needs to be *core*. */
+        activeBgSize?: string;
+        /** The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        selectionBoxColor?: string;
+        /** The size of the border on the selection box. Selector needs to be *core* */
+        selectionBoxBorderWidth?: number;
+        /** The opacity of the selection box. Selector needs to be *core* */
+        selectionBoxOpacity?: number;
+        /** The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        outsideTextureBgColor?: string;
+        /** The opacity of the area outside the viewport texture. Selector needs to be *core* */
+        outsideTextureBgOpacity?: number;
+        /** An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+        shapePolygonPoints?: string;
+        /** The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+        menuBackgroundColor?: string;
+        /** The opacity of the background of the component menu. */
+        menuBackgroundOpacity?: number;
+        /** The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+        menuForgroundColor?: string;
+      };
+      /** Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management. */
+      capabilities?: {
+        /** Specifies the version of the schema to which the capability definition conforms. */
+        schemaVersion: string;
+        /** Version of the capability definition. */
+        version: string;
+        /** Name of the capability in human-readible format. */
+        displayName: string;
+        /** A written representation of the purpose and characteristics of the capability. */
+        description: string;
+        /** Top-level categorization of the capability */
+        kind: "action" | "mutate" | "view" | "interaction";
+        /** Classification of capabilities. Used to group capabilities similar in nature. */
+        type: string;
+        /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
+        subType: string;
+        /** Key that backs the capability. */
+        key: string;
+        /** State of the entity in which the capability is applicable. */
+        entityState: ("declaration" | "instance")[];
+        /** Status of the capability */
+        status: "enabled" | "disabled";
+        /** Metadata contains additional information associated with the capability. Extension point. */
+        metadata?: {
+          [key: string]: any;
+        };
+      }[];
+      /** Status of component, including:
+        - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
+        - maintenance: model is unavailable for a period of time.
+        - enabled: model is available for use for all users of this Meshery Server.
+        - ignored: model is unavailable for use for all users of this Meshery Server. */
+      status?: "ignored" | "enabled" | "duplicate" | "resolved" | "open";
+      /** Metadata contains additional information associated with the component. */
+      metadata: {
+        /** Genealogy represents the various representational states of the component. */
+        genealogy: string;
+        /** Identifies whether the component is semantically meaningful or not; identifies whether the component should be treated as deployable entity or is for purposes of logical representation. */
+        isAnnotation: boolean;
+        /** Identifies whether the component is scoped to namespace or cluster wide. */
+        isNamespaced: boolean;
+        /** 'published' controls whether the component should be registered in Meshery Registry. When the same 'published' property in Models, is set to 'false', the Model property takes precedence with all Entities in the Model not being registered. */
+        published: boolean;
+        /** InstanceDetails contains information about the instance of the component. */
+        instanceDetails: object;
+        /** Defines the UI schema for rendering the component's configuration. For more details, visit: https://rjsf-team.github.io/react-jsonschema-form/docs/api-reference/uiSchema/ . */
+        configurationUISchema: string;
+        [key: string]: any;
+      };
+      /** The configuration of the component. The configuration is based on the schema defined within the component definition(component.schema). */
+      configuration: object;
+      /** Data related to the third-party capability that a ComponentDefinition wraps; this payload is treated as a hermetically sealed, opaque object. */
+      component: {
+        /** Version of the component produced by the registrant. Example: APIVersion of a Kubernetes Pod. */
+        version: string;
+        /** The unique identifier (name) assigned by the registrant to this component. Example: A Kubernetes Pod is of kind 'Pod'. */
+        kind: string;
+        /** JSON schema of the object as defined by the registrant. */
+        schema: string;
+      };
+      /** Timestamp when the component was created. */
+      createdAt: string;
+      /** Timestamp when the component was last updated. */
+      updatedAt: string;
+      /** Timestamp when the component was soft-deleted. Null while the component is active. */
+      deletedAt?: string;
+    } & {
+      /** Number of other registered entries sharing this component's kind, version, and model. */
+      duplicates?: number;
+    })[];
+  };
+export type GetRegistryComponentsByCategoryAndModelAndNameApiArg = {
+  /** Name of the category. */
+  category: string;
+  /** Name of the model (for `DELETE /api/registry/models/{model}`, the model's ID). */
+  model: string;
+  /** Kind of the component (e.g. `Deployment`). */
+  name: string;
+  /** Zero-indexed page number of the result set. */
+  page?: number;
+  /** Number of items per page, or `all` to return every item. */
+  pageSize?: string;
+  /** Filter results by a case-insensitive substring match on name. */
+  search?: string;
+  /** Field to order the results by. */
+  order?: string;
+  /** Sort direction (`asc` or `desc`). */
+  sort?: string;
+  /** Filter by model version. */
+  version?: string;
+  /** Filter components by their API version. */
+  apiVersion?: string;
+  /** When `true`, omits large schema payloads from the returned definitions. */
+  trim?: string;
+  /** Annotation filter: `true` returns only annotation entities, `false` excludes them, and `include` returns both. */
+  annotations?: string;
+};
+export type GetRegistryComponentsByCategoryApiResponse =
+  /** status 200 Paginated list of components in the category. */ {
+    /** Current page number of the result set. */
+    page?: number;
+    /** Number of items in the page. */
+    pageSize?: number;
+    /** Total number of items available. */
+    totalCount?: number;
+    /** Deprecated snake_case alias of `pageSize`. */
+    page_size?: number;
+    /** Deprecated snake_case alias of `totalCount`. */
+    total_count?: number;
+  } & {
+    /** The components matching the query. */
+    components?: ({
+      /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
+      id: string;
+      /** Specifies the version of the schema to which the component definition conforms. */
+      schemaVersion: string;
+      /** Version of the component definition. */
+      version: string;
+      /** Name of the component in human-readable format. */
+      displayName: string;
+      /** A written representation of the purpose and characteristics of the component. */
+      description: string;
+      /** Format specifies the format used in the `component.schema` field. JSON is the default. */
+      format: "JSON" | "CUE";
+      /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+      model: {
+        /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
+        id: string;
+        /** Specifies the version of the schema used for the definition. */
+        schemaVersion: string;
+        /** Version of the model definition. */
+        version: string;
+        /** The unique name for the model within the scope of a registrant. */
+        name: string;
+        /** Human-readable name for the model. */
+        displayName: string;
+        /** Description of the model. */
+        description: string;
+        /** Status of model, including:
+            - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
+            - maintenance: model is unavailable for a period of time.
+            - enabled: model is available for use for all users of this Meshery Server.
+            - ignored: model is unavailable for use for all users of this Meshery Server. */
+        status: "ignored" | "enabled" | "duplicate";
+        /** Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections */
+        registrant: {
+          /** Connection ID */
+          id: string;
+          /** Connection Name */
+          name: string;
+          /** Associated Credential ID */
+          credentialId?: string;
+          /** Connection Type (platform, telemetry, collaboration) */
+          type: string;
+          /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+          subType: string;
+          /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+          kind: string;
+          /** Additional connection metadata */
+          metadata?: object;
+          /** Connection Status */
+          status:
+            | "discovered"
+            | "registered"
+            | "connected"
+            | "ignored"
+            | "maintenance"
+            | "disconnected"
+            | "deleted"
+            | "not found";
+          /** User ID who owns this connection */
+          user_id?: string;
+          created_at?: string;
+          updated_at?: string;
+          /** SQL null Timestamp to handle null values of time. */
+          deleted_at?: string;
+          /** Associated environments for this connection */
+          environments?: {
+            /** ID */
+            id: string;
+            /** Specifies the version of the schema to which the environment conforms. */
+            schemaVersion: string;
+            /** Environment name */
+            name: string;
+            /** Environment description */
+            description: string;
+            /** Environment organization ID */
+            organization_id: string;
+            /** Environment owner */
+            owner?: string;
+            /** Timestamp when the resource was created. */
+            created_at?: string;
+            /** Additional metadata associated with the environment. */
+            metadata?: object;
+            /** Timestamp when the resource was updated. */
+            updated_at?: string;
+            /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+            deleted_at?: string | null;
+          }[];
+          /** Specifies the version of the schema used for the definition. */
+          schemaVersion: string;
+        };
+        /** ID of the registrant. */
+        registrantId: string;
+        /** ID of the category. */
+        categoryId: string;
+        /** Category of the model. */
+        category: {
+          /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+          id: string;
+          /** The category of the model that determines the main grouping. */
+          name:
+            | "Analytics"
+            | "App Definition and Development"
+            | "Cloud Native Network"
+            | "Cloud Native Storage"
+            | "Database"
+            | "Machine Learning"
+            | "Observability and Analysis"
+            | "Orchestration & Management"
+            | "Platform"
+            | "Provisioning"
+            | "Runtime"
+            | "Security & Compliance"
+            | "Serverless"
+            | "Tools"
+            | "Uncategorized";
+          /** Additional metadata associated with the category. */
+          metadata: object;
+        };
+        /** Sub category of the model determines the secondary grouping. */
+        subCategory:
+          | "API Gateway"
+          | "API Integration"
+          | "Application Definition & Image Build"
+          | "Automation & Configuration"
+          | "Certified Kubernetes - Distribution"
+          | "Chaos Engineering"
+          | "Cloud Native Storage"
+          | "Cloud Provider"
+          | "CNI"
+          | "Compute"
+          | "Container Registry"
+          | "Container Runtime"
+          | "Container Security"
+          | "Container"
+          | "Content Delivery Network"
+          | "Continuous Integration & Delivery"
+          | "Coordination & Service Discovery"
+          | "Database"
+          | "Flowchart"
+          | "Framework"
+          | "Installable Platform"
+          | "Key Management"
+          | "Key Management Service"
+          | "Kubernetes"
+          | "Logging"
+          | "Machine Learning"
+          | "Management Governance"
+          | "Metrics"
+          | "Monitoring"
+          | "Networking Content Delivery"
+          | "Operating System"
+          | "Query"
+          | "Remote Procedure Call"
+          | "Scheduling & Orchestration"
+          | "Secrets Management"
+          | "Security Identity & Compliance"
+          | "Service Mesh"
+          | "Service Proxy"
+          | "Source Version Control"
+          | "Storage"
+          | "Specifications"
+          | "Streaming & Messaging"
+          | "Tools"
+          | "Tracing"
+          | "Uncategorized"
+          | "Video Conferencing";
+        /** Metadata containing additional information associated with the model. */
+        metadata?: {
+          /** Capabilities associated with the model */
+          capabilities?: {
+            /** Specifies the version of the schema to which the capability definition conforms. */
+            schemaVersion: string;
+            /** Version of the capability definition. */
+            version: string;
+            /** Name of the capability in human-readible format. */
+            displayName: string;
+            /** A written representation of the purpose and characteristics of the capability. */
+            description: string;
+            /** Top-level categorization of the capability */
+            kind: "action" | "mutate" | "view" | "interaction";
+            /** Classification of capabilities. Used to group capabilities similar in nature. */
+            type: string;
+            /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
+            subType: string;
+            /** Key that backs the capability. */
+            key: string;
+            /** State of the entity in which the capability is applicable. */
+            entityState: ("declaration" | "instance")[];
+            /** Status of the capability */
+            status: "enabled" | "disabled";
+            /** Metadata contains additional information associated with the capability. Extension point. */
+            metadata?: {
+              [key: string]: any;
+            };
+          }[];
+          /** Indicates whether the model and its entities should be treated as deployable entities or as logical representations. */
+          isAnnotation?: boolean;
+          /** Primary color associated with the model. */
+          primaryColor?: string;
+          /** Secondary color associated with the model. */
+          secondaryColor?: string;
+          /** SVG representation of the model in white color. */
+          svgWhite: string;
+          /** SVG representation of the model in colored format. */
+          svgColor: string;
+          /** SVG representation of the complete model. */
+          svgComplete?: string;
+          /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+          shape?:
+            | "ellipse"
+            | "triangle"
+            | "round-triangle"
+            | "rectangle"
+            | "round-rectangle"
+            | "bottom-round-rectangle"
+            | "cut-rectangle"
+            | "barrel"
+            | "rhomboid"
+            | "diamond"
+            | "round-diamond"
+            | "pentagon"
+            | "round-pentagon"
+            | "hexagon"
+            | "round-hexagon"
+            | "concave-hexagon"
+            | "heptagon"
+            | "round-heptagon"
+            | "octagon"
+            | "round-octagon"
+            | "star"
+            | "tag"
+            | "round-tag"
+            | "vee"
+            | "polygon";
+          [key: string]: any;
+        };
+        /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+        model: {
+          /** Version of the model as defined by the registrant. */
+          version: string;
+        };
+        /** The relationships of the model. */
+        relationships: any;
+        /** The components of the model. */
+        components: any;
+        /** Number of components associated with the model. */
+        componentsCount: number;
+        /** Number of relationships associated with the model. */
+        relationshipsCount: number;
+        /** Timestamp when the resource was created. */
+        created_at?: string;
+        /** Timestamp when the resource was updated. */
+        updated_at?: string;
+      };
+      /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+      modelReference: {
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        id: string;
+        /** The unique name for the model within the scope of a registrant. */
+        name: string;
+        /** Version of the model definition. */
+        version: string;
+        /** Human-readable name for the model. */
+        displayName: string;
+        /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+        model: {
+          /** Version of the model as defined by the registrant. */
+          version: string;
+        };
+        registrant: {
+          /** Kind of the registrant. */
+          kind: string;
+        };
+      };
+      /** Foreign key to the model to which the component belongs. Populated by the ORM from the `model_id` column and suppressed on the JSON wire; consumers use the nested `model` object for wire-level access. */
+      modelId?: string;
+      /** Visualization styles for a component */
+      styles?: {
+        /** Primary color of the component used for UI representation. */
+        primaryColor: string;
+        /** Secondary color of the entity used for UI representation. */
+        secondaryColor?: string;
+        /** White SVG of the entity used for UI representation on dark background. */
+        svgWhite: string;
+        /** Colored SVG of the entity used for UI representation on light background. */
+        svgColor: string;
+        /** Complete SVG of the entity used for UI representation, often inclusive of background. */
+        svgComplete: string;
+        /** The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+        color?: string;
+        /** The opacity of the label text, including its outline. */
+        textOpacity?: number;
+        /** A comma-separated list of font names to use on the label text. */
+        fontFamily?: string;
+        /** The size of the label text. */
+        fontSize?: string;
+        /** A CSS font style to be applied to the label text. */
+        fontStyle?: string;
+        /** A CSS font weight to be applied to the label text. */
+        fontWeight?: string;
+        /** A transformation to apply to the label text */
+        textTransform?: "none" | "uppercase" | "lowercase";
+        /** The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+        opacity?: number;
+        /** An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+        zIndex?: number;
+        /** The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+        label?: string;
+        /** The animation to apply to the element. example ripple,bounce,etc */
+        animation?: object;
+        [key: string]: any;
+      } & {
+        /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+        shape:
+          | "ellipse"
+          | "triangle"
+          | "round-triangle"
+          | "rectangle"
+          | "round-rectangle"
+          | "bottom-round-rectangle"
+          | "cut-rectangle"
+          | "barrel"
+          | "rhomboid"
+          | "diamond"
+          | "round-diamond"
+          | "pentagon"
+          | "round-pentagon"
+          | "hexagon"
+          | "round-hexagon"
+          | "concave-hexagon"
+          | "heptagon"
+          | "round-heptagon"
+          | "octagon"
+          | "round-octagon"
+          | "star"
+          | "tag"
+          | "round-tag"
+          | "vee"
+          | "polygon";
+        /** The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+        position?: {
+          /** The x-coordinate of the node. */
+          x: number;
+          /** The y-coordinate of the node. */
+          y: number;
+        };
+        /** The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+        bodyText?: string;
+        /** How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
+        bodyTextWrap?: "none" | "wrap" | "ellipsis";
+        /** The maximum width for wrapping text in the node. */
+        bodyTextMaxWidth?: string;
+        /** The opacity of the node's body text, including its outline. */
+        bodyTextOpacity?: number;
+        /** The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+        bodyTextBackgroundColor?: string;
+        /** The size of the node's body text. */
+        bodyTextFontSize?: number;
+        /** The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+        bodyTextColor?: string;
+        /** A CSS font weight to be applied to the node's body text. */
+        bodyTextFontWeight?: string;
+        /** A CSS horizontal alignment to be applied to the node's body text. */
+        bodyTextHorizontalAlign?: string;
+        /** A CSS text decoration to be applied to the node's body text. */
+        bodyTextDecoration?: string;
+        /** A CSS vertical alignment to be applied to the node's body text. */
+        bodyTextVerticalAlign?: string;
+        /** The width of the node's body or the width of an edge's line. */
+        width?: number;
+        /** The height of the node's body */
+        height?: number;
+        /** The URL that points to the image to show in the node. */
+        backgroundImage?: string;
+        /** The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+        backgroundColor?: string;
+        /** Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+        backgroundBlacken?: number;
+        /** The opacity level of the node's background colour */
+        backgroundOpacity?: number;
+        /** The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundPositionX?: string;
+        /** The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundPositionY?: string;
+        /** The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundOffsetX?: string;
+        /** The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundOffsetY?: string;
+        /** How the background image is fit to the node. Can be 'none', 'contain', or 'cover'. */
+        backgroundFit?: "none" | "contain" | "cover";
+        /** How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'. */
+        backgroundClip?: "none" | "node" | "node-border";
+        /** How the background image's width is determined. Can be 'none', 'inner', or 'outer'. */
+        backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+        /** How the background image's height is determined. Can be 'none', 'inner', or 'outer'. */
+        backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+        /** The size of the node's border. */
+        borderWidth?: number;
+        /** The style of the node's border */
+        borderStyle?: "solid" | "dotted" | "dashed" | "double";
+        /** The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+        borderColor?: string;
+        /** The opacity of the node's border */
+        borderOpacity?: number;
+        /** The amount of padding around all sides of the node. */
+        padding?: number;
+        /** The horizontal alignment of a node's label */
+        textHalign?: "left" | "center" | "right";
+        /** The vertical alignment of a node's label */
+        textValign?: "top" | "center" | "bottom";
+        /** Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset. */
+        ghost?: "yes" | "no";
+        /** The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        activeBgColor?: string;
+        /** The opacity of the active background indicator. Selector needs to be *core*. */
+        activeBgOpacity?: string;
+        /** The opacity of the active background indicator. Selector needs to be *core*. */
+        activeBgSize?: string;
+        /** The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        selectionBoxColor?: string;
+        /** The size of the border on the selection box. Selector needs to be *core* */
+        selectionBoxBorderWidth?: number;
+        /** The opacity of the selection box. Selector needs to be *core* */
+        selectionBoxOpacity?: number;
+        /** The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        outsideTextureBgColor?: string;
+        /** The opacity of the area outside the viewport texture. Selector needs to be *core* */
+        outsideTextureBgOpacity?: number;
+        /** An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+        shapePolygonPoints?: string;
+        /** The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+        menuBackgroundColor?: string;
+        /** The opacity of the background of the component menu. */
+        menuBackgroundOpacity?: number;
+        /** The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+        menuForgroundColor?: string;
+      };
+      /** Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management. */
+      capabilities?: {
+        /** Specifies the version of the schema to which the capability definition conforms. */
+        schemaVersion: string;
+        /** Version of the capability definition. */
+        version: string;
+        /** Name of the capability in human-readible format. */
+        displayName: string;
+        /** A written representation of the purpose and characteristics of the capability. */
+        description: string;
+        /** Top-level categorization of the capability */
+        kind: "action" | "mutate" | "view" | "interaction";
+        /** Classification of capabilities. Used to group capabilities similar in nature. */
+        type: string;
+        /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
+        subType: string;
+        /** Key that backs the capability. */
+        key: string;
+        /** State of the entity in which the capability is applicable. */
+        entityState: ("declaration" | "instance")[];
+        /** Status of the capability */
+        status: "enabled" | "disabled";
+        /** Metadata contains additional information associated with the capability. Extension point. */
+        metadata?: {
+          [key: string]: any;
+        };
+      }[];
+      /** Status of component, including:
+        - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
+        - maintenance: model is unavailable for a period of time.
+        - enabled: model is available for use for all users of this Meshery Server.
+        - ignored: model is unavailable for use for all users of this Meshery Server. */
+      status?: "ignored" | "enabled" | "duplicate" | "resolved" | "open";
+      /** Metadata contains additional information associated with the component. */
+      metadata: {
+        /** Genealogy represents the various representational states of the component. */
+        genealogy: string;
+        /** Identifies whether the component is semantically meaningful or not; identifies whether the component should be treated as deployable entity or is for purposes of logical representation. */
+        isAnnotation: boolean;
+        /** Identifies whether the component is scoped to namespace or cluster wide. */
+        isNamespaced: boolean;
+        /** 'published' controls whether the component should be registered in Meshery Registry. When the same 'published' property in Models, is set to 'false', the Model property takes precedence with all Entities in the Model not being registered. */
+        published: boolean;
+        /** InstanceDetails contains information about the instance of the component. */
+        instanceDetails: object;
+        /** Defines the UI schema for rendering the component's configuration. For more details, visit: https://rjsf-team.github.io/react-jsonschema-form/docs/api-reference/uiSchema/ . */
+        configurationUISchema: string;
+        [key: string]: any;
+      };
+      /** The configuration of the component. The configuration is based on the schema defined within the component definition(component.schema). */
+      configuration: object;
+      /** Data related to the third-party capability that a ComponentDefinition wraps; this payload is treated as a hermetically sealed, opaque object. */
+      component: {
+        /** Version of the component produced by the registrant. Example: APIVersion of a Kubernetes Pod. */
+        version: string;
+        /** The unique identifier (name) assigned by the registrant to this component. Example: A Kubernetes Pod is of kind 'Pod'. */
+        kind: string;
+        /** JSON schema of the object as defined by the registrant. */
+        schema: string;
+      };
+      /** Timestamp when the component was created. */
+      createdAt: string;
+      /** Timestamp when the component was last updated. */
+      updatedAt: string;
+      /** Timestamp when the component was soft-deleted. Null while the component is active. */
+      deletedAt?: string;
+    } & {
+      /** Number of other registered entries sharing this component's kind, version, and model. */
+      duplicates?: number;
+    })[];
+  };
+export type GetRegistryComponentsByCategoryApiArg = {
+  /** Name of the category. */
+  category: string;
+  /** Zero-indexed page number of the result set. */
+  page?: number;
+  /** Number of items per page, or `all` to return every item. */
+  pageSize?: string;
+  /** Filter results by a case-insensitive substring match on name. */
+  search?: string;
+  /** Field to order the results by. */
+  order?: string;
+  /** Sort direction (`asc` or `desc`). */
+  sort?: string;
+  /** Filter by model version. */
+  version?: string;
+  /** Filter components by their API version. */
+  apiVersion?: string;
+  /** When `true`, omits large schema payloads from the returned definitions. */
+  trim?: string;
+  /** Annotation filter: `true` returns only annotation entities, `false` excludes them, and `include` returns both. */
+  annotations?: string;
+};
+export type GetRegistryComponentsByCategoryAndNameApiResponse =
+  /** status 200 Paginated list of matching components. */ {
+    /** Current page number of the result set. */
+    page?: number;
+    /** Number of items in the page. */
+    pageSize?: number;
+    /** Total number of items available. */
+    totalCount?: number;
+    /** Deprecated snake_case alias of `pageSize`. */
+    page_size?: number;
+    /** Deprecated snake_case alias of `totalCount`. */
+    total_count?: number;
+  } & {
+    /** The components matching the query. */
+    components?: ({
+      /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
+      id: string;
+      /** Specifies the version of the schema to which the component definition conforms. */
+      schemaVersion: string;
+      /** Version of the component definition. */
+      version: string;
+      /** Name of the component in human-readable format. */
+      displayName: string;
+      /** A written representation of the purpose and characteristics of the component. */
+      description: string;
+      /** Format specifies the format used in the `component.schema` field. JSON is the default. */
+      format: "JSON" | "CUE";
+      /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+      model: {
+        /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
+        id: string;
+        /** Specifies the version of the schema used for the definition. */
+        schemaVersion: string;
+        /** Version of the model definition. */
+        version: string;
+        /** The unique name for the model within the scope of a registrant. */
+        name: string;
+        /** Human-readable name for the model. */
+        displayName: string;
+        /** Description of the model. */
+        description: string;
+        /** Status of model, including:
+            - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
+            - maintenance: model is unavailable for a period of time.
+            - enabled: model is available for use for all users of this Meshery Server.
+            - ignored: model is unavailable for use for all users of this Meshery Server. */
+        status: "ignored" | "enabled" | "duplicate";
+        /** Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections */
+        registrant: {
+          /** Connection ID */
+          id: string;
+          /** Connection Name */
+          name: string;
+          /** Associated Credential ID */
+          credentialId?: string;
+          /** Connection Type (platform, telemetry, collaboration) */
+          type: string;
+          /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+          subType: string;
+          /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+          kind: string;
+          /** Additional connection metadata */
+          metadata?: object;
+          /** Connection Status */
+          status:
+            | "discovered"
+            | "registered"
+            | "connected"
+            | "ignored"
+            | "maintenance"
+            | "disconnected"
+            | "deleted"
+            | "not found";
+          /** User ID who owns this connection */
+          user_id?: string;
+          created_at?: string;
+          updated_at?: string;
+          /** SQL null Timestamp to handle null values of time. */
+          deleted_at?: string;
+          /** Associated environments for this connection */
+          environments?: {
+            /** ID */
+            id: string;
+            /** Specifies the version of the schema to which the environment conforms. */
+            schemaVersion: string;
+            /** Environment name */
+            name: string;
+            /** Environment description */
+            description: string;
+            /** Environment organization ID */
+            organization_id: string;
+            /** Environment owner */
+            owner?: string;
+            /** Timestamp when the resource was created. */
+            created_at?: string;
+            /** Additional metadata associated with the environment. */
+            metadata?: object;
+            /** Timestamp when the resource was updated. */
+            updated_at?: string;
+            /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+            deleted_at?: string | null;
+          }[];
+          /** Specifies the version of the schema used for the definition. */
+          schemaVersion: string;
+        };
+        /** ID of the registrant. */
+        registrantId: string;
+        /** ID of the category. */
+        categoryId: string;
+        /** Category of the model. */
+        category: {
+          /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+          id: string;
+          /** The category of the model that determines the main grouping. */
+          name:
+            | "Analytics"
+            | "App Definition and Development"
+            | "Cloud Native Network"
+            | "Cloud Native Storage"
+            | "Database"
+            | "Machine Learning"
+            | "Observability and Analysis"
+            | "Orchestration & Management"
+            | "Platform"
+            | "Provisioning"
+            | "Runtime"
+            | "Security & Compliance"
+            | "Serverless"
+            | "Tools"
+            | "Uncategorized";
+          /** Additional metadata associated with the category. */
+          metadata: object;
+        };
+        /** Sub category of the model determines the secondary grouping. */
+        subCategory:
+          | "API Gateway"
+          | "API Integration"
+          | "Application Definition & Image Build"
+          | "Automation & Configuration"
+          | "Certified Kubernetes - Distribution"
+          | "Chaos Engineering"
+          | "Cloud Native Storage"
+          | "Cloud Provider"
+          | "CNI"
+          | "Compute"
+          | "Container Registry"
+          | "Container Runtime"
+          | "Container Security"
+          | "Container"
+          | "Content Delivery Network"
+          | "Continuous Integration & Delivery"
+          | "Coordination & Service Discovery"
+          | "Database"
+          | "Flowchart"
+          | "Framework"
+          | "Installable Platform"
+          | "Key Management"
+          | "Key Management Service"
+          | "Kubernetes"
+          | "Logging"
+          | "Machine Learning"
+          | "Management Governance"
+          | "Metrics"
+          | "Monitoring"
+          | "Networking Content Delivery"
+          | "Operating System"
+          | "Query"
+          | "Remote Procedure Call"
+          | "Scheduling & Orchestration"
+          | "Secrets Management"
+          | "Security Identity & Compliance"
+          | "Service Mesh"
+          | "Service Proxy"
+          | "Source Version Control"
+          | "Storage"
+          | "Specifications"
+          | "Streaming & Messaging"
+          | "Tools"
+          | "Tracing"
+          | "Uncategorized"
+          | "Video Conferencing";
+        /** Metadata containing additional information associated with the model. */
+        metadata?: {
+          /** Capabilities associated with the model */
+          capabilities?: {
+            /** Specifies the version of the schema to which the capability definition conforms. */
+            schemaVersion: string;
+            /** Version of the capability definition. */
+            version: string;
+            /** Name of the capability in human-readible format. */
+            displayName: string;
+            /** A written representation of the purpose and characteristics of the capability. */
+            description: string;
+            /** Top-level categorization of the capability */
+            kind: "action" | "mutate" | "view" | "interaction";
+            /** Classification of capabilities. Used to group capabilities similar in nature. */
+            type: string;
+            /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
+            subType: string;
+            /** Key that backs the capability. */
+            key: string;
+            /** State of the entity in which the capability is applicable. */
+            entityState: ("declaration" | "instance")[];
+            /** Status of the capability */
+            status: "enabled" | "disabled";
+            /** Metadata contains additional information associated with the capability. Extension point. */
+            metadata?: {
+              [key: string]: any;
+            };
+          }[];
+          /** Indicates whether the model and its entities should be treated as deployable entities or as logical representations. */
+          isAnnotation?: boolean;
+          /** Primary color associated with the model. */
+          primaryColor?: string;
+          /** Secondary color associated with the model. */
+          secondaryColor?: string;
+          /** SVG representation of the model in white color. */
+          svgWhite: string;
+          /** SVG representation of the model in colored format. */
+          svgColor: string;
+          /** SVG representation of the complete model. */
+          svgComplete?: string;
+          /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+          shape?:
+            | "ellipse"
+            | "triangle"
+            | "round-triangle"
+            | "rectangle"
+            | "round-rectangle"
+            | "bottom-round-rectangle"
+            | "cut-rectangle"
+            | "barrel"
+            | "rhomboid"
+            | "diamond"
+            | "round-diamond"
+            | "pentagon"
+            | "round-pentagon"
+            | "hexagon"
+            | "round-hexagon"
+            | "concave-hexagon"
+            | "heptagon"
+            | "round-heptagon"
+            | "octagon"
+            | "round-octagon"
+            | "star"
+            | "tag"
+            | "round-tag"
+            | "vee"
+            | "polygon";
+          [key: string]: any;
+        };
+        /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+        model: {
+          /** Version of the model as defined by the registrant. */
+          version: string;
+        };
+        /** The relationships of the model. */
+        relationships: any;
+        /** The components of the model. */
+        components: any;
+        /** Number of components associated with the model. */
+        componentsCount: number;
+        /** Number of relationships associated with the model. */
+        relationshipsCount: number;
+        /** Timestamp when the resource was created. */
+        created_at?: string;
+        /** Timestamp when the resource was updated. */
+        updated_at?: string;
+      };
+      /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+      modelReference: {
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        id: string;
+        /** The unique name for the model within the scope of a registrant. */
+        name: string;
+        /** Version of the model definition. */
+        version: string;
+        /** Human-readable name for the model. */
+        displayName: string;
+        /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+        model: {
+          /** Version of the model as defined by the registrant. */
+          version: string;
+        };
+        registrant: {
+          /** Kind of the registrant. */
+          kind: string;
+        };
+      };
+      /** Foreign key to the model to which the component belongs. Populated by the ORM from the `model_id` column and suppressed on the JSON wire; consumers use the nested `model` object for wire-level access. */
+      modelId?: string;
+      /** Visualization styles for a component */
+      styles?: {
+        /** Primary color of the component used for UI representation. */
+        primaryColor: string;
+        /** Secondary color of the entity used for UI representation. */
+        secondaryColor?: string;
+        /** White SVG of the entity used for UI representation on dark background. */
+        svgWhite: string;
+        /** Colored SVG of the entity used for UI representation on light background. */
+        svgColor: string;
+        /** Complete SVG of the entity used for UI representation, often inclusive of background. */
+        svgComplete: string;
+        /** The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+        color?: string;
+        /** The opacity of the label text, including its outline. */
+        textOpacity?: number;
+        /** A comma-separated list of font names to use on the label text. */
+        fontFamily?: string;
+        /** The size of the label text. */
+        fontSize?: string;
+        /** A CSS font style to be applied to the label text. */
+        fontStyle?: string;
+        /** A CSS font weight to be applied to the label text. */
+        fontWeight?: string;
+        /** A transformation to apply to the label text */
+        textTransform?: "none" | "uppercase" | "lowercase";
+        /** The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+        opacity?: number;
+        /** An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+        zIndex?: number;
+        /** The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+        label?: string;
+        /** The animation to apply to the element. example ripple,bounce,etc */
+        animation?: object;
+        [key: string]: any;
+      } & {
+        /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+        shape:
+          | "ellipse"
+          | "triangle"
+          | "round-triangle"
+          | "rectangle"
+          | "round-rectangle"
+          | "bottom-round-rectangle"
+          | "cut-rectangle"
+          | "barrel"
+          | "rhomboid"
+          | "diamond"
+          | "round-diamond"
+          | "pentagon"
+          | "round-pentagon"
+          | "hexagon"
+          | "round-hexagon"
+          | "concave-hexagon"
+          | "heptagon"
+          | "round-heptagon"
+          | "octagon"
+          | "round-octagon"
+          | "star"
+          | "tag"
+          | "round-tag"
+          | "vee"
+          | "polygon";
+        /** The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+        position?: {
+          /** The x-coordinate of the node. */
+          x: number;
+          /** The y-coordinate of the node. */
+          y: number;
+        };
+        /** The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+        bodyText?: string;
+        /** How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
+        bodyTextWrap?: "none" | "wrap" | "ellipsis";
+        /** The maximum width for wrapping text in the node. */
+        bodyTextMaxWidth?: string;
+        /** The opacity of the node's body text, including its outline. */
+        bodyTextOpacity?: number;
+        /** The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+        bodyTextBackgroundColor?: string;
+        /** The size of the node's body text. */
+        bodyTextFontSize?: number;
+        /** The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+        bodyTextColor?: string;
+        /** A CSS font weight to be applied to the node's body text. */
+        bodyTextFontWeight?: string;
+        /** A CSS horizontal alignment to be applied to the node's body text. */
+        bodyTextHorizontalAlign?: string;
+        /** A CSS text decoration to be applied to the node's body text. */
+        bodyTextDecoration?: string;
+        /** A CSS vertical alignment to be applied to the node's body text. */
+        bodyTextVerticalAlign?: string;
+        /** The width of the node's body or the width of an edge's line. */
+        width?: number;
+        /** The height of the node's body */
+        height?: number;
+        /** The URL that points to the image to show in the node. */
+        backgroundImage?: string;
+        /** The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+        backgroundColor?: string;
+        /** Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+        backgroundBlacken?: number;
+        /** The opacity level of the node's background colour */
+        backgroundOpacity?: number;
+        /** The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundPositionX?: string;
+        /** The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundPositionY?: string;
+        /** The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundOffsetX?: string;
+        /** The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundOffsetY?: string;
+        /** How the background image is fit to the node. Can be 'none', 'contain', or 'cover'. */
+        backgroundFit?: "none" | "contain" | "cover";
+        /** How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'. */
+        backgroundClip?: "none" | "node" | "node-border";
+        /** How the background image's width is determined. Can be 'none', 'inner', or 'outer'. */
+        backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+        /** How the background image's height is determined. Can be 'none', 'inner', or 'outer'. */
+        backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+        /** The size of the node's border. */
+        borderWidth?: number;
+        /** The style of the node's border */
+        borderStyle?: "solid" | "dotted" | "dashed" | "double";
+        /** The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+        borderColor?: string;
+        /** The opacity of the node's border */
+        borderOpacity?: number;
+        /** The amount of padding around all sides of the node. */
+        padding?: number;
+        /** The horizontal alignment of a node's label */
+        textHalign?: "left" | "center" | "right";
+        /** The vertical alignment of a node's label */
+        textValign?: "top" | "center" | "bottom";
+        /** Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset. */
+        ghost?: "yes" | "no";
+        /** The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        activeBgColor?: string;
+        /** The opacity of the active background indicator. Selector needs to be *core*. */
+        activeBgOpacity?: string;
+        /** The opacity of the active background indicator. Selector needs to be *core*. */
+        activeBgSize?: string;
+        /** The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        selectionBoxColor?: string;
+        /** The size of the border on the selection box. Selector needs to be *core* */
+        selectionBoxBorderWidth?: number;
+        /** The opacity of the selection box. Selector needs to be *core* */
+        selectionBoxOpacity?: number;
+        /** The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        outsideTextureBgColor?: string;
+        /** The opacity of the area outside the viewport texture. Selector needs to be *core* */
+        outsideTextureBgOpacity?: number;
+        /** An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+        shapePolygonPoints?: string;
+        /** The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+        menuBackgroundColor?: string;
+        /** The opacity of the background of the component menu. */
+        menuBackgroundOpacity?: number;
+        /** The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+        menuForgroundColor?: string;
+      };
+      /** Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management. */
+      capabilities?: {
+        /** Specifies the version of the schema to which the capability definition conforms. */
+        schemaVersion: string;
+        /** Version of the capability definition. */
+        version: string;
+        /** Name of the capability in human-readible format. */
+        displayName: string;
+        /** A written representation of the purpose and characteristics of the capability. */
+        description: string;
+        /** Top-level categorization of the capability */
+        kind: "action" | "mutate" | "view" | "interaction";
+        /** Classification of capabilities. Used to group capabilities similar in nature. */
+        type: string;
+        /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
+        subType: string;
+        /** Key that backs the capability. */
+        key: string;
+        /** State of the entity in which the capability is applicable. */
+        entityState: ("declaration" | "instance")[];
+        /** Status of the capability */
+        status: "enabled" | "disabled";
+        /** Metadata contains additional information associated with the capability. Extension point. */
+        metadata?: {
+          [key: string]: any;
+        };
+      }[];
+      /** Status of component, including:
+        - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
+        - maintenance: model is unavailable for a period of time.
+        - enabled: model is available for use for all users of this Meshery Server.
+        - ignored: model is unavailable for use for all users of this Meshery Server. */
+      status?: "ignored" | "enabled" | "duplicate" | "resolved" | "open";
+      /** Metadata contains additional information associated with the component. */
+      metadata: {
+        /** Genealogy represents the various representational states of the component. */
+        genealogy: string;
+        /** Identifies whether the component is semantically meaningful or not; identifies whether the component should be treated as deployable entity or is for purposes of logical representation. */
+        isAnnotation: boolean;
+        /** Identifies whether the component is scoped to namespace or cluster wide. */
+        isNamespaced: boolean;
+        /** 'published' controls whether the component should be registered in Meshery Registry. When the same 'published' property in Models, is set to 'false', the Model property takes precedence with all Entities in the Model not being registered. */
+        published: boolean;
+        /** InstanceDetails contains information about the instance of the component. */
+        instanceDetails: object;
+        /** Defines the UI schema for rendering the component's configuration. For more details, visit: https://rjsf-team.github.io/react-jsonschema-form/docs/api-reference/uiSchema/ . */
+        configurationUISchema: string;
+        [key: string]: any;
+      };
+      /** The configuration of the component. The configuration is based on the schema defined within the component definition(component.schema). */
+      configuration: object;
+      /** Data related to the third-party capability that a ComponentDefinition wraps; this payload is treated as a hermetically sealed, opaque object. */
+      component: {
+        /** Version of the component produced by the registrant. Example: APIVersion of a Kubernetes Pod. */
+        version: string;
+        /** The unique identifier (name) assigned by the registrant to this component. Example: A Kubernetes Pod is of kind 'Pod'. */
+        kind: string;
+        /** JSON schema of the object as defined by the registrant. */
+        schema: string;
+      };
+      /** Timestamp when the component was created. */
+      createdAt: string;
+      /** Timestamp when the component was last updated. */
+      updatedAt: string;
+      /** Timestamp when the component was soft-deleted. Null while the component is active. */
+      deletedAt?: string;
+    } & {
+      /** Number of other registered entries sharing this component's kind, version, and model. */
+      duplicates?: number;
+    })[];
+  };
+export type GetRegistryComponentsByCategoryAndNameApiArg = {
+  /** Name of the category. */
+  category: string;
+  /** Kind of the component (e.g. `Deployment`). */
+  name: string;
+  /** Zero-indexed page number of the result set. */
+  page?: number;
+  /** Number of items per page, or `all` to return every item. */
+  pageSize?: string;
+  /** Filter results by a case-insensitive substring match on name. */
+  search?: string;
+  /** Field to order the results by. */
+  order?: string;
+  /** Sort direction (`asc` or `desc`). */
+  sort?: string;
+  /** Filter by model version. */
+  version?: string;
+  /** Filter components by their API version. */
+  apiVersion?: string;
+  /** When `true`, omits large schema payloads from the returned definitions. */
+  trim?: string;
+  /** Annotation filter: `true` returns only annotation entities, `false` excludes them, and `include` returns both. */
+  annotations?: string;
+};
+export type GetRegistryComponentsApiResponse = /** status 200 Paginated list of registered components. */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items in the page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Deprecated snake_case alias of `pageSize`. */
+  page_size?: number;
+  /** Deprecated snake_case alias of `totalCount`. */
+  total_count?: number;
+} & {
+  /** The components matching the query. */
+  components?: ({
+    /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
+    id: string;
+    /** Specifies the version of the schema to which the component definition conforms. */
+    schemaVersion: string;
+    /** Version of the component definition. */
+    version: string;
+    /** Name of the component in human-readable format. */
+    displayName: string;
+    /** A written representation of the purpose and characteristics of the component. */
+    description: string;
+    /** Format specifies the format used in the `component.schema` field. JSON is the default. */
+    format: "JSON" | "CUE";
+    /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+    model: {
+      /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
+      id: string;
+      /** Specifies the version of the schema used for the definition. */
+      schemaVersion: string;
+      /** Version of the model definition. */
+      version: string;
+      /** The unique name for the model within the scope of a registrant. */
+      name: string;
+      /** Human-readable name for the model. */
+      displayName: string;
+      /** Description of the model. */
+      description: string;
+      /** Status of model, including:
+            - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
+            - maintenance: model is unavailable for a period of time.
+            - enabled: model is available for use for all users of this Meshery Server.
+            - ignored: model is unavailable for use for all users of this Meshery Server. */
+      status: "ignored" | "enabled" | "duplicate";
+      /** Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections */
+      registrant: {
+        /** Connection ID */
+        id: string;
+        /** Connection Name */
+        name: string;
+        /** Associated Credential ID */
+        credentialId?: string;
+        /** Connection Type (platform, telemetry, collaboration) */
+        type: string;
+        /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+        subType: string;
+        /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+        kind: string;
+        /** Additional connection metadata */
+        metadata?: object;
+        /** Connection Status */
+        status:
+          | "discovered"
+          | "registered"
+          | "connected"
+          | "ignored"
+          | "maintenance"
+          | "disconnected"
+          | "deleted"
+          | "not found";
+        /** User ID who owns this connection */
+        user_id?: string;
+        created_at?: string;
+        updated_at?: string;
+        /** SQL null Timestamp to handle null values of time. */
+        deleted_at?: string;
+        /** Associated environments for this connection */
+        environments?: {
+          /** ID */
+          id: string;
+          /** Specifies the version of the schema to which the environment conforms. */
+          schemaVersion: string;
+          /** Environment name */
+          name: string;
+          /** Environment description */
+          description: string;
+          /** Environment organization ID */
+          organization_id: string;
+          /** Environment owner */
+          owner?: string;
+          /** Timestamp when the resource was created. */
+          created_at?: string;
+          /** Additional metadata associated with the environment. */
+          metadata?: object;
+          /** Timestamp when the resource was updated. */
+          updated_at?: string;
+          /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+          deleted_at?: string | null;
+        }[];
+        /** Specifies the version of the schema used for the definition. */
+        schemaVersion: string;
+      };
+      /** ID of the registrant. */
+      registrantId: string;
+      /** ID of the category. */
+      categoryId: string;
+      /** Category of the model. */
+      category: {
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        id: string;
+        /** The category of the model that determines the main grouping. */
+        name:
+          | "Analytics"
+          | "App Definition and Development"
+          | "Cloud Native Network"
+          | "Cloud Native Storage"
+          | "Database"
+          | "Machine Learning"
+          | "Observability and Analysis"
+          | "Orchestration & Management"
+          | "Platform"
+          | "Provisioning"
+          | "Runtime"
+          | "Security & Compliance"
+          | "Serverless"
+          | "Tools"
+          | "Uncategorized";
+        /** Additional metadata associated with the category. */
+        metadata: object;
+      };
+      /** Sub category of the model determines the secondary grouping. */
+      subCategory:
+        | "API Gateway"
+        | "API Integration"
+        | "Application Definition & Image Build"
+        | "Automation & Configuration"
+        | "Certified Kubernetes - Distribution"
+        | "Chaos Engineering"
+        | "Cloud Native Storage"
+        | "Cloud Provider"
+        | "CNI"
+        | "Compute"
+        | "Container Registry"
+        | "Container Runtime"
+        | "Container Security"
+        | "Container"
+        | "Content Delivery Network"
+        | "Continuous Integration & Delivery"
+        | "Coordination & Service Discovery"
+        | "Database"
+        | "Flowchart"
+        | "Framework"
+        | "Installable Platform"
+        | "Key Management"
+        | "Key Management Service"
+        | "Kubernetes"
+        | "Logging"
+        | "Machine Learning"
+        | "Management Governance"
+        | "Metrics"
+        | "Monitoring"
+        | "Networking Content Delivery"
+        | "Operating System"
+        | "Query"
+        | "Remote Procedure Call"
+        | "Scheduling & Orchestration"
+        | "Secrets Management"
+        | "Security Identity & Compliance"
+        | "Service Mesh"
+        | "Service Proxy"
+        | "Source Version Control"
+        | "Storage"
+        | "Specifications"
+        | "Streaming & Messaging"
+        | "Tools"
+        | "Tracing"
+        | "Uncategorized"
+        | "Video Conferencing";
+      /** Metadata containing additional information associated with the model. */
+      metadata?: {
+        /** Capabilities associated with the model */
+        capabilities?: {
+          /** Specifies the version of the schema to which the capability definition conforms. */
+          schemaVersion: string;
+          /** Version of the capability definition. */
+          version: string;
+          /** Name of the capability in human-readible format. */
+          displayName: string;
+          /** A written representation of the purpose and characteristics of the capability. */
+          description: string;
+          /** Top-level categorization of the capability */
+          kind: "action" | "mutate" | "view" | "interaction";
+          /** Classification of capabilities. Used to group capabilities similar in nature. */
+          type: string;
+          /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
+          subType: string;
+          /** Key that backs the capability. */
+          key: string;
+          /** State of the entity in which the capability is applicable. */
+          entityState: ("declaration" | "instance")[];
+          /** Status of the capability */
+          status: "enabled" | "disabled";
+          /** Metadata contains additional information associated with the capability. Extension point. */
+          metadata?: {
+            [key: string]: any;
+          };
+        }[];
+        /** Indicates whether the model and its entities should be treated as deployable entities or as logical representations. */
+        isAnnotation?: boolean;
+        /** Primary color associated with the model. */
+        primaryColor?: string;
+        /** Secondary color associated with the model. */
+        secondaryColor?: string;
+        /** SVG representation of the model in white color. */
+        svgWhite: string;
+        /** SVG representation of the model in colored format. */
+        svgColor: string;
+        /** SVG representation of the complete model. */
+        svgComplete?: string;
+        /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+        shape?:
+          | "ellipse"
+          | "triangle"
+          | "round-triangle"
+          | "rectangle"
+          | "round-rectangle"
+          | "bottom-round-rectangle"
+          | "cut-rectangle"
+          | "barrel"
+          | "rhomboid"
+          | "diamond"
+          | "round-diamond"
+          | "pentagon"
+          | "round-pentagon"
+          | "hexagon"
+          | "round-hexagon"
+          | "concave-hexagon"
+          | "heptagon"
+          | "round-heptagon"
+          | "octagon"
+          | "round-octagon"
+          | "star"
+          | "tag"
+          | "round-tag"
+          | "vee"
+          | "polygon";
+        [key: string]: any;
+      };
+      /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+      model: {
+        /** Version of the model as defined by the registrant. */
+        version: string;
+      };
+      /** The relationships of the model. */
+      relationships: any;
+      /** The components of the model. */
+      components: any;
+      /** Number of components associated with the model. */
+      componentsCount: number;
+      /** Number of relationships associated with the model. */
+      relationshipsCount: number;
+      /** Timestamp when the resource was created. */
+      created_at?: string;
+      /** Timestamp when the resource was updated. */
+      updated_at?: string;
+    };
+    /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+    modelReference: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** The unique name for the model within the scope of a registrant. */
+      name: string;
+      /** Version of the model definition. */
+      version: string;
+      /** Human-readable name for the model. */
+      displayName: string;
+      /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+      model: {
+        /** Version of the model as defined by the registrant. */
+        version: string;
+      };
+      registrant: {
+        /** Kind of the registrant. */
+        kind: string;
+      };
+    };
+    /** Foreign key to the model to which the component belongs. Populated by the ORM from the `model_id` column and suppressed on the JSON wire; consumers use the nested `model` object for wire-level access. */
+    modelId?: string;
+    /** Visualization styles for a component */
+    styles?: {
+      /** Primary color of the component used for UI representation. */
+      primaryColor: string;
+      /** Secondary color of the entity used for UI representation. */
+      secondaryColor?: string;
+      /** White SVG of the entity used for UI representation on dark background. */
+      svgWhite: string;
+      /** Colored SVG of the entity used for UI representation on light background. */
+      svgColor: string;
+      /** Complete SVG of the entity used for UI representation, often inclusive of background. */
+      svgComplete: string;
+      /** The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+      color?: string;
+      /** The opacity of the label text, including its outline. */
+      textOpacity?: number;
+      /** A comma-separated list of font names to use on the label text. */
+      fontFamily?: string;
+      /** The size of the label text. */
+      fontSize?: string;
+      /** A CSS font style to be applied to the label text. */
+      fontStyle?: string;
+      /** A CSS font weight to be applied to the label text. */
+      fontWeight?: string;
+      /** A transformation to apply to the label text */
+      textTransform?: "none" | "uppercase" | "lowercase";
+      /** The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+      opacity?: number;
+      /** An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+      zIndex?: number;
+      /** The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+      label?: string;
+      /** The animation to apply to the element. example ripple,bounce,etc */
+      animation?: object;
+      [key: string]: any;
+    } & {
+      /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+      shape:
+        | "ellipse"
+        | "triangle"
+        | "round-triangle"
+        | "rectangle"
+        | "round-rectangle"
+        | "bottom-round-rectangle"
+        | "cut-rectangle"
+        | "barrel"
+        | "rhomboid"
+        | "diamond"
+        | "round-diamond"
+        | "pentagon"
+        | "round-pentagon"
+        | "hexagon"
+        | "round-hexagon"
+        | "concave-hexagon"
+        | "heptagon"
+        | "round-heptagon"
+        | "octagon"
+        | "round-octagon"
+        | "star"
+        | "tag"
+        | "round-tag"
+        | "vee"
+        | "polygon";
+      /** The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+      position?: {
+        /** The x-coordinate of the node. */
+        x: number;
+        /** The y-coordinate of the node. */
+        y: number;
+      };
+      /** The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+      bodyText?: string;
+      /** How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
+      bodyTextWrap?: "none" | "wrap" | "ellipsis";
+      /** The maximum width for wrapping text in the node. */
+      bodyTextMaxWidth?: string;
+      /** The opacity of the node's body text, including its outline. */
+      bodyTextOpacity?: number;
+      /** The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+      bodyTextBackgroundColor?: string;
+      /** The size of the node's body text. */
+      bodyTextFontSize?: number;
+      /** The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+      bodyTextColor?: string;
+      /** A CSS font weight to be applied to the node's body text. */
+      bodyTextFontWeight?: string;
+      /** A CSS horizontal alignment to be applied to the node's body text. */
+      bodyTextHorizontalAlign?: string;
+      /** A CSS text decoration to be applied to the node's body text. */
+      bodyTextDecoration?: string;
+      /** A CSS vertical alignment to be applied to the node's body text. */
+      bodyTextVerticalAlign?: string;
+      /** The width of the node's body or the width of an edge's line. */
+      width?: number;
+      /** The height of the node's body */
+      height?: number;
+      /** The URL that points to the image to show in the node. */
+      backgroundImage?: string;
+      /** The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+      backgroundColor?: string;
+      /** Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+      backgroundBlacken?: number;
+      /** The opacity level of the node's background colour */
+      backgroundOpacity?: number;
+      /** The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundPositionX?: string;
+      /** The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundPositionY?: string;
+      /** The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundOffsetX?: string;
+      /** The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundOffsetY?: string;
+      /** How the background image is fit to the node. Can be 'none', 'contain', or 'cover'. */
+      backgroundFit?: "none" | "contain" | "cover";
+      /** How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'. */
+      backgroundClip?: "none" | "node" | "node-border";
+      /** How the background image's width is determined. Can be 'none', 'inner', or 'outer'. */
+      backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+      /** How the background image's height is determined. Can be 'none', 'inner', or 'outer'. */
+      backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+      /** The size of the node's border. */
+      borderWidth?: number;
+      /** The style of the node's border */
+      borderStyle?: "solid" | "dotted" | "dashed" | "double";
+      /** The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+      borderColor?: string;
+      /** The opacity of the node's border */
+      borderOpacity?: number;
+      /** The amount of padding around all sides of the node. */
+      padding?: number;
+      /** The horizontal alignment of a node's label */
+      textHalign?: "left" | "center" | "right";
+      /** The vertical alignment of a node's label */
+      textValign?: "top" | "center" | "bottom";
+      /** Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset. */
+      ghost?: "yes" | "no";
+      /** The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      activeBgColor?: string;
+      /** The opacity of the active background indicator. Selector needs to be *core*. */
+      activeBgOpacity?: string;
+      /** The opacity of the active background indicator. Selector needs to be *core*. */
+      activeBgSize?: string;
+      /** The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      selectionBoxColor?: string;
+      /** The size of the border on the selection box. Selector needs to be *core* */
+      selectionBoxBorderWidth?: number;
+      /** The opacity of the selection box. Selector needs to be *core* */
+      selectionBoxOpacity?: number;
+      /** The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      outsideTextureBgColor?: string;
+      /** The opacity of the area outside the viewport texture. Selector needs to be *core* */
+      outsideTextureBgOpacity?: number;
+      /** An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+      shapePolygonPoints?: string;
+      /** The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+      menuBackgroundColor?: string;
+      /** The opacity of the background of the component menu. */
+      menuBackgroundOpacity?: number;
+      /** The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+      menuForgroundColor?: string;
+    };
+    /** Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management. */
+    capabilities?: {
+      /** Specifies the version of the schema to which the capability definition conforms. */
+      schemaVersion: string;
+      /** Version of the capability definition. */
+      version: string;
+      /** Name of the capability in human-readible format. */
+      displayName: string;
+      /** A written representation of the purpose and characteristics of the capability. */
+      description: string;
+      /** Top-level categorization of the capability */
+      kind: "action" | "mutate" | "view" | "interaction";
+      /** Classification of capabilities. Used to group capabilities similar in nature. */
+      type: string;
+      /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
+      subType: string;
+      /** Key that backs the capability. */
+      key: string;
+      /** State of the entity in which the capability is applicable. */
+      entityState: ("declaration" | "instance")[];
+      /** Status of the capability */
+      status: "enabled" | "disabled";
+      /** Metadata contains additional information associated with the capability. Extension point. */
+      metadata?: {
+        [key: string]: any;
+      };
+    }[];
+    /** Status of component, including:
+        - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
+        - maintenance: model is unavailable for a period of time.
+        - enabled: model is available for use for all users of this Meshery Server.
+        - ignored: model is unavailable for use for all users of this Meshery Server. */
+    status?: "ignored" | "enabled" | "duplicate" | "resolved" | "open";
+    /** Metadata contains additional information associated with the component. */
+    metadata: {
+      /** Genealogy represents the various representational states of the component. */
+      genealogy: string;
+      /** Identifies whether the component is semantically meaningful or not; identifies whether the component should be treated as deployable entity or is for purposes of logical representation. */
+      isAnnotation: boolean;
+      /** Identifies whether the component is scoped to namespace or cluster wide. */
+      isNamespaced: boolean;
+      /** 'published' controls whether the component should be registered in Meshery Registry. When the same 'published' property in Models, is set to 'false', the Model property takes precedence with all Entities in the Model not being registered. */
+      published: boolean;
+      /** InstanceDetails contains information about the instance of the component. */
+      instanceDetails: object;
+      /** Defines the UI schema for rendering the component's configuration. For more details, visit: https://rjsf-team.github.io/react-jsonschema-form/docs/api-reference/uiSchema/ . */
+      configurationUISchema: string;
+      [key: string]: any;
+    };
+    /** The configuration of the component. The configuration is based on the schema defined within the component definition(component.schema). */
+    configuration: object;
+    /** Data related to the third-party capability that a ComponentDefinition wraps; this payload is treated as a hermetically sealed, opaque object. */
+    component: {
+      /** Version of the component produced by the registrant. Example: APIVersion of a Kubernetes Pod. */
+      version: string;
+      /** The unique identifier (name) assigned by the registrant to this component. Example: A Kubernetes Pod is of kind 'Pod'. */
+      kind: string;
+      /** JSON schema of the object as defined by the registrant. */
+      schema: string;
+    };
+    /** Timestamp when the component was created. */
+    createdAt: string;
+    /** Timestamp when the component was last updated. */
+    updatedAt: string;
+    /** Timestamp when the component was soft-deleted. Null while the component is active. */
+    deletedAt?: string;
+  } & {
+    /** Number of other registered entries sharing this component's kind, version, and model. */
+    duplicates?: number;
+  })[];
+};
+export type GetRegistryComponentsApiArg = {
+  /** Zero-indexed page number of the result set. */
+  page?: number;
+  /** Number of items per page, or `all` to return every item. */
+  pageSize?: string;
+  /** Filter results by a case-insensitive substring match on name. */
+  search?: string;
+  /** Field to order the results by. */
+  order?: string;
+  /** Sort direction (`asc` or `desc`). */
+  sort?: string;
+  /** Filter by model version. */
+  version?: string;
+  /** Filter components by their API version. */
+  apiVersion?: string;
+  /** When `true`, omits large schema payloads from the returned definitions. */
+  trim?: string;
+  /** Annotation filter: `true` returns only annotation entities, `false` excludes them, and `include` returns both. */
+  annotations?: string;
+};
+export type RegisterRegistryComponentApiResponse = unknown;
+export type RegisterRegistryComponentApiArg = {
+  body: {
+    /** Connection identifying the registrant. */
+    connection: {
+      /** Connection ID */
+      id: string;
+      /** Connection Name */
+      name: string;
+      /** Human-readable description of the connection and its purpose. */
+      description?: string;
+      /** URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL). */
+      url?: string;
+      /** Associated Credential ID */
+      credentialId?: string;
+      /** Connection Type (platform, telemetry, collaboration) */
+      type: string;
+      /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+      subType: string;
+      /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+      kind: string;
+      /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+      modelReference?: {
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        id: string;
+        /** The unique name for the model within the scope of a registrant. */
+        name: string;
+        /** Version of the model definition. */
+        version: string;
+        /** Human-readable name for the model. */
+        displayName: string;
+        /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+        model: {
+          /** Version of the model as defined by the registrant. */
+          version: string;
+        };
+        registrant: {
+          /** Kind of the registrant. */
+          kind: string;
+        };
+      };
+      /** Additional connection metadata */
+      metadata?: object;
+      /** Schema for the credential Associated with the connection */
+      credentialSchema?: object;
+      /** Schema for the connection */
+      connectionSchema?: object;
+      /** Visualization styles for the connection, including svgColor and svgWhite used for UI representation. */
+      styles?: {
+        /** Primary color of the component used for UI representation. */
+        primaryColor: string;
+        /** Secondary color of the entity used for UI representation. */
+        secondaryColor?: string;
+        /** White SVG of the entity used for UI representation on dark background. */
+        svgWhite: string;
+        /** Colored SVG of the entity used for UI representation on light background. */
+        svgColor: string;
+        /** Complete SVG of the entity used for UI representation, often inclusive of background. */
+        svgComplete: string;
+        /** The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+        color?: string;
+        /** The opacity of the label text, including its outline. */
+        textOpacity?: number;
+        /** A comma-separated list of font names to use on the label text. */
+        fontFamily?: string;
+        /** The size of the label text. */
+        fontSize?: string;
+        /** A CSS font style to be applied to the label text. */
+        fontStyle?: string;
+        /** A CSS font weight to be applied to the label text. */
+        fontWeight?: string;
+        /** A transformation to apply to the label text */
+        textTransform?: "none" | "uppercase" | "lowercase";
+        /** The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+        opacity?: number;
+        /** An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+        zIndex?: number;
+        /** The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+        label?: string;
+        /** The animation to apply to the element. example ripple,bounce,etc */
+        animation?: object;
+        [key: string]: any;
+      } & {
+        /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+        shape:
+          | "ellipse"
+          | "triangle"
+          | "round-triangle"
+          | "rectangle"
+          | "round-rectangle"
+          | "bottom-round-rectangle"
+          | "cut-rectangle"
+          | "barrel"
+          | "rhomboid"
+          | "diamond"
+          | "round-diamond"
+          | "pentagon"
+          | "round-pentagon"
+          | "hexagon"
+          | "round-hexagon"
+          | "concave-hexagon"
+          | "heptagon"
+          | "round-heptagon"
+          | "octagon"
+          | "round-octagon"
+          | "star"
+          | "tag"
+          | "round-tag"
+          | "vee"
+          | "polygon";
+        /** The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+        position?: {
+          /** The x-coordinate of the node. */
+          x: number;
+          /** The y-coordinate of the node. */
+          y: number;
+        };
+        /** The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+        bodyText?: string;
+        /** How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
+        bodyTextWrap?: "none" | "wrap" | "ellipsis";
+        /** The maximum width for wrapping text in the node. */
+        bodyTextMaxWidth?: string;
+        /** The opacity of the node's body text, including its outline. */
+        bodyTextOpacity?: number;
+        /** The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+        bodyTextBackgroundColor?: string;
+        /** The size of the node's body text. */
+        bodyTextFontSize?: number;
+        /** The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+        bodyTextColor?: string;
+        /** A CSS font weight to be applied to the node's body text. */
+        bodyTextFontWeight?: string;
+        /** A CSS horizontal alignment to be applied to the node's body text. */
+        bodyTextHorizontalAlign?: string;
+        /** A CSS text decoration to be applied to the node's body text. */
+        bodyTextDecoration?: string;
+        /** A CSS vertical alignment to be applied to the node's body text. */
+        bodyTextVerticalAlign?: string;
+        /** The width of the node's body or the width of an edge's line. */
+        width?: number;
+        /** The height of the node's body */
+        height?: number;
+        /** The URL that points to the image to show in the node. */
+        backgroundImage?: string;
+        /** The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+        backgroundColor?: string;
+        /** Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+        backgroundBlacken?: number;
+        /** The opacity level of the node's background colour */
+        backgroundOpacity?: number;
+        /** The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundPositionX?: string;
+        /** The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundPositionY?: string;
+        /** The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundOffsetX?: string;
+        /** The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundOffsetY?: string;
+        /** How the background image is fit to the node. Can be 'none', 'contain', or 'cover'. */
+        backgroundFit?: "none" | "contain" | "cover";
+        /** How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'. */
+        backgroundClip?: "none" | "node" | "node-border";
+        /** How the background image's width is determined. Can be 'none', 'inner', or 'outer'. */
+        backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+        /** How the background image's height is determined. Can be 'none', 'inner', or 'outer'. */
+        backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+        /** The size of the node's border. */
+        borderWidth?: number;
+        /** The style of the node's border */
+        borderStyle?: "solid" | "dotted" | "dashed" | "double";
+        /** The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+        borderColor?: string;
+        /** The opacity of the node's border */
+        borderOpacity?: number;
+        /** The amount of padding around all sides of the node. */
+        padding?: number;
+        /** The horizontal alignment of a node's label */
+        textHalign?: "left" | "center" | "right";
+        /** The vertical alignment of a node's label */
+        textValign?: "top" | "center" | "bottom";
+        /** Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset. */
+        ghost?: "yes" | "no";
+        /** The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        activeBgColor?: string;
+        /** The opacity of the active background indicator. Selector needs to be *core*. */
+        activeBgOpacity?: string;
+        /** The opacity of the active background indicator. Selector needs to be *core*. */
+        activeBgSize?: string;
+        /** The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        selectionBoxColor?: string;
+        /** The size of the border on the selection box. Selector needs to be *core* */
+        selectionBoxBorderWidth?: number;
+        /** The opacity of the selection box. Selector needs to be *core* */
+        selectionBoxOpacity?: number;
+        /** The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        outsideTextureBgColor?: string;
+        /** The opacity of the area outside the viewport texture. Selector needs to be *core* */
+        outsideTextureBgOpacity?: number;
+        /** An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+        shapePolygonPoints?: string;
+        /** The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+        menuBackgroundColor?: string;
+        /** The opacity of the background of the component menu. */
+        menuBackgroundOpacity?: number;
+        /** The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+        menuForgroundColor?: string;
+      };
+      /** Connection Status */
+      status:
+        | "discovered"
+        | "registered"
+        | "connected"
+        | "ignored"
+        | "maintenance"
+        | "disconnected"
+        | "deleted"
+        | "not found";
+      /** Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status, along with a description of each transition. */
+      transitionMap?: {
+        [key: string]: {
+          /** The connection state reachable from the current state. */
+          nextState:
+            | "discovered"
+            | "registered"
+            | "connected"
+            | "ignored"
+            | "maintenance"
+            | "disconnected"
+            | "deleted"
+            | "not found";
+          /** Human-readable explanation of when or why this transition occurs. */
+          description?: string;
+        }[];
+      };
+      /** User ID who owns this connection */
+      owner?: string;
+      /** Timestamp when the connection was created. */
+      createdAt?: string;
+      /** Timestamp when the connection was last updated. */
+      updatedAt?: string;
+      /** Timestamp when the connection was soft-deleted, if applicable. */
+      deletedAt?: string | null;
+      /** Associated environments for this connection */
+      environments?: {
+        /** ID */
+        id: string;
+        /** Specifies the version of the schema to which the environment conforms. */
+        schemaVersion: string;
+        /** Environment name */
+        name: string;
+        /** Environment description */
+        description: string;
+        /** Environment organization ID */
+        organizationId: string;
+        /** Environment owner */
+        owner?: string;
+        /** Timestamp when the environment was created. */
+        createdAt?: string;
+        /** Additional metadata associated with the environment. */
+        metadata?: object;
+        /** Timestamp when the environment was last updated. */
+        updatedAt?: string;
+        /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+        deletedAt?: string | null;
+      }[];
+      /** Specifies the version of the schema used for the definition. */
+      schemaVersion: string;
+    };
+    /** Type of the entity being registered (e.g. `component`, `relationship`). */
+    entityType: string;
+    /** Base64-encoded JSON definition of the entity being registered. */
+    entity: string;
+  };
+};
+export type GetRegistryComponentsByNameApiResponse = /** status 200 Paginated list of matching components. */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items in the page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Deprecated snake_case alias of `pageSize`. */
+  page_size?: number;
+  /** Deprecated snake_case alias of `totalCount`. */
+  total_count?: number;
+} & {
+  /** The components matching the query. */
+  components?: ({
+    /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
+    id: string;
+    /** Specifies the version of the schema to which the component definition conforms. */
+    schemaVersion: string;
+    /** Version of the component definition. */
+    version: string;
+    /** Name of the component in human-readable format. */
+    displayName: string;
+    /** A written representation of the purpose and characteristics of the component. */
+    description: string;
+    /** Format specifies the format used in the `component.schema` field. JSON is the default. */
+    format: "JSON" | "CUE";
+    /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+    model: {
+      /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
+      id: string;
+      /** Specifies the version of the schema used for the definition. */
+      schemaVersion: string;
+      /** Version of the model definition. */
+      version: string;
+      /** The unique name for the model within the scope of a registrant. */
+      name: string;
+      /** Human-readable name for the model. */
+      displayName: string;
+      /** Description of the model. */
+      description: string;
+      /** Status of model, including:
+            - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
+            - maintenance: model is unavailable for a period of time.
+            - enabled: model is available for use for all users of this Meshery Server.
+            - ignored: model is unavailable for use for all users of this Meshery Server. */
+      status: "ignored" | "enabled" | "duplicate";
+      /** Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections */
+      registrant: {
+        /** Connection ID */
+        id: string;
+        /** Connection Name */
+        name: string;
+        /** Associated Credential ID */
+        credentialId?: string;
+        /** Connection Type (platform, telemetry, collaboration) */
+        type: string;
+        /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+        subType: string;
+        /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+        kind: string;
+        /** Additional connection metadata */
+        metadata?: object;
+        /** Connection Status */
+        status:
+          | "discovered"
+          | "registered"
+          | "connected"
+          | "ignored"
+          | "maintenance"
+          | "disconnected"
+          | "deleted"
+          | "not found";
+        /** User ID who owns this connection */
+        user_id?: string;
+        created_at?: string;
+        updated_at?: string;
+        /** SQL null Timestamp to handle null values of time. */
+        deleted_at?: string;
+        /** Associated environments for this connection */
+        environments?: {
+          /** ID */
+          id: string;
+          /** Specifies the version of the schema to which the environment conforms. */
+          schemaVersion: string;
+          /** Environment name */
+          name: string;
+          /** Environment description */
+          description: string;
+          /** Environment organization ID */
+          organization_id: string;
+          /** Environment owner */
+          owner?: string;
+          /** Timestamp when the resource was created. */
+          created_at?: string;
+          /** Additional metadata associated with the environment. */
+          metadata?: object;
+          /** Timestamp when the resource was updated. */
+          updated_at?: string;
+          /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+          deleted_at?: string | null;
+        }[];
+        /** Specifies the version of the schema used for the definition. */
+        schemaVersion: string;
+      };
+      /** ID of the registrant. */
+      registrantId: string;
+      /** ID of the category. */
+      categoryId: string;
+      /** Category of the model. */
+      category: {
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        id: string;
+        /** The category of the model that determines the main grouping. */
+        name:
+          | "Analytics"
+          | "App Definition and Development"
+          | "Cloud Native Network"
+          | "Cloud Native Storage"
+          | "Database"
+          | "Machine Learning"
+          | "Observability and Analysis"
+          | "Orchestration & Management"
+          | "Platform"
+          | "Provisioning"
+          | "Runtime"
+          | "Security & Compliance"
+          | "Serverless"
+          | "Tools"
+          | "Uncategorized";
+        /** Additional metadata associated with the category. */
+        metadata: object;
+      };
+      /** Sub category of the model determines the secondary grouping. */
+      subCategory:
+        | "API Gateway"
+        | "API Integration"
+        | "Application Definition & Image Build"
+        | "Automation & Configuration"
+        | "Certified Kubernetes - Distribution"
+        | "Chaos Engineering"
+        | "Cloud Native Storage"
+        | "Cloud Provider"
+        | "CNI"
+        | "Compute"
+        | "Container Registry"
+        | "Container Runtime"
+        | "Container Security"
+        | "Container"
+        | "Content Delivery Network"
+        | "Continuous Integration & Delivery"
+        | "Coordination & Service Discovery"
+        | "Database"
+        | "Flowchart"
+        | "Framework"
+        | "Installable Platform"
+        | "Key Management"
+        | "Key Management Service"
+        | "Kubernetes"
+        | "Logging"
+        | "Machine Learning"
+        | "Management Governance"
+        | "Metrics"
+        | "Monitoring"
+        | "Networking Content Delivery"
+        | "Operating System"
+        | "Query"
+        | "Remote Procedure Call"
+        | "Scheduling & Orchestration"
+        | "Secrets Management"
+        | "Security Identity & Compliance"
+        | "Service Mesh"
+        | "Service Proxy"
+        | "Source Version Control"
+        | "Storage"
+        | "Specifications"
+        | "Streaming & Messaging"
+        | "Tools"
+        | "Tracing"
+        | "Uncategorized"
+        | "Video Conferencing";
+      /** Metadata containing additional information associated with the model. */
+      metadata?: {
+        /** Capabilities associated with the model */
+        capabilities?: {
+          /** Specifies the version of the schema to which the capability definition conforms. */
+          schemaVersion: string;
+          /** Version of the capability definition. */
+          version: string;
+          /** Name of the capability in human-readible format. */
+          displayName: string;
+          /** A written representation of the purpose and characteristics of the capability. */
+          description: string;
+          /** Top-level categorization of the capability */
+          kind: "action" | "mutate" | "view" | "interaction";
+          /** Classification of capabilities. Used to group capabilities similar in nature. */
+          type: string;
+          /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
+          subType: string;
+          /** Key that backs the capability. */
+          key: string;
+          /** State of the entity in which the capability is applicable. */
+          entityState: ("declaration" | "instance")[];
+          /** Status of the capability */
+          status: "enabled" | "disabled";
+          /** Metadata contains additional information associated with the capability. Extension point. */
+          metadata?: {
+            [key: string]: any;
+          };
+        }[];
+        /** Indicates whether the model and its entities should be treated as deployable entities or as logical representations. */
+        isAnnotation?: boolean;
+        /** Primary color associated with the model. */
+        primaryColor?: string;
+        /** Secondary color associated with the model. */
+        secondaryColor?: string;
+        /** SVG representation of the model in white color. */
+        svgWhite: string;
+        /** SVG representation of the model in colored format. */
+        svgColor: string;
+        /** SVG representation of the complete model. */
+        svgComplete?: string;
+        /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+        shape?:
+          | "ellipse"
+          | "triangle"
+          | "round-triangle"
+          | "rectangle"
+          | "round-rectangle"
+          | "bottom-round-rectangle"
+          | "cut-rectangle"
+          | "barrel"
+          | "rhomboid"
+          | "diamond"
+          | "round-diamond"
+          | "pentagon"
+          | "round-pentagon"
+          | "hexagon"
+          | "round-hexagon"
+          | "concave-hexagon"
+          | "heptagon"
+          | "round-heptagon"
+          | "octagon"
+          | "round-octagon"
+          | "star"
+          | "tag"
+          | "round-tag"
+          | "vee"
+          | "polygon";
+        [key: string]: any;
+      };
+      /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+      model: {
+        /** Version of the model as defined by the registrant. */
+        version: string;
+      };
+      /** The relationships of the model. */
+      relationships: any;
+      /** The components of the model. */
+      components: any;
+      /** Number of components associated with the model. */
+      componentsCount: number;
+      /** Number of relationships associated with the model. */
+      relationshipsCount: number;
+      /** Timestamp when the resource was created. */
+      created_at?: string;
+      /** Timestamp when the resource was updated. */
+      updated_at?: string;
+    };
+    /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+    modelReference: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** The unique name for the model within the scope of a registrant. */
+      name: string;
+      /** Version of the model definition. */
+      version: string;
+      /** Human-readable name for the model. */
+      displayName: string;
+      /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+      model: {
+        /** Version of the model as defined by the registrant. */
+        version: string;
+      };
+      registrant: {
+        /** Kind of the registrant. */
+        kind: string;
+      };
+    };
+    /** Foreign key to the model to which the component belongs. Populated by the ORM from the `model_id` column and suppressed on the JSON wire; consumers use the nested `model` object for wire-level access. */
+    modelId?: string;
+    /** Visualization styles for a component */
+    styles?: {
+      /** Primary color of the component used for UI representation. */
+      primaryColor: string;
+      /** Secondary color of the entity used for UI representation. */
+      secondaryColor?: string;
+      /** White SVG of the entity used for UI representation on dark background. */
+      svgWhite: string;
+      /** Colored SVG of the entity used for UI representation on light background. */
+      svgColor: string;
+      /** Complete SVG of the entity used for UI representation, often inclusive of background. */
+      svgComplete: string;
+      /** The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+      color?: string;
+      /** The opacity of the label text, including its outline. */
+      textOpacity?: number;
+      /** A comma-separated list of font names to use on the label text. */
+      fontFamily?: string;
+      /** The size of the label text. */
+      fontSize?: string;
+      /** A CSS font style to be applied to the label text. */
+      fontStyle?: string;
+      /** A CSS font weight to be applied to the label text. */
+      fontWeight?: string;
+      /** A transformation to apply to the label text */
+      textTransform?: "none" | "uppercase" | "lowercase";
+      /** The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+      opacity?: number;
+      /** An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+      zIndex?: number;
+      /** The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+      label?: string;
+      /** The animation to apply to the element. example ripple,bounce,etc */
+      animation?: object;
+      [key: string]: any;
+    } & {
+      /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+      shape:
+        | "ellipse"
+        | "triangle"
+        | "round-triangle"
+        | "rectangle"
+        | "round-rectangle"
+        | "bottom-round-rectangle"
+        | "cut-rectangle"
+        | "barrel"
+        | "rhomboid"
+        | "diamond"
+        | "round-diamond"
+        | "pentagon"
+        | "round-pentagon"
+        | "hexagon"
+        | "round-hexagon"
+        | "concave-hexagon"
+        | "heptagon"
+        | "round-heptagon"
+        | "octagon"
+        | "round-octagon"
+        | "star"
+        | "tag"
+        | "round-tag"
+        | "vee"
+        | "polygon";
+      /** The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+      position?: {
+        /** The x-coordinate of the node. */
+        x: number;
+        /** The y-coordinate of the node. */
+        y: number;
+      };
+      /** The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+      bodyText?: string;
+      /** How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
+      bodyTextWrap?: "none" | "wrap" | "ellipsis";
+      /** The maximum width for wrapping text in the node. */
+      bodyTextMaxWidth?: string;
+      /** The opacity of the node's body text, including its outline. */
+      bodyTextOpacity?: number;
+      /** The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+      bodyTextBackgroundColor?: string;
+      /** The size of the node's body text. */
+      bodyTextFontSize?: number;
+      /** The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+      bodyTextColor?: string;
+      /** A CSS font weight to be applied to the node's body text. */
+      bodyTextFontWeight?: string;
+      /** A CSS horizontal alignment to be applied to the node's body text. */
+      bodyTextHorizontalAlign?: string;
+      /** A CSS text decoration to be applied to the node's body text. */
+      bodyTextDecoration?: string;
+      /** A CSS vertical alignment to be applied to the node's body text. */
+      bodyTextVerticalAlign?: string;
+      /** The width of the node's body or the width of an edge's line. */
+      width?: number;
+      /** The height of the node's body */
+      height?: number;
+      /** The URL that points to the image to show in the node. */
+      backgroundImage?: string;
+      /** The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+      backgroundColor?: string;
+      /** Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+      backgroundBlacken?: number;
+      /** The opacity level of the node's background colour */
+      backgroundOpacity?: number;
+      /** The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundPositionX?: string;
+      /** The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundPositionY?: string;
+      /** The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundOffsetX?: string;
+      /** The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+      backgroundOffsetY?: string;
+      /** How the background image is fit to the node. Can be 'none', 'contain', or 'cover'. */
+      backgroundFit?: "none" | "contain" | "cover";
+      /** How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'. */
+      backgroundClip?: "none" | "node" | "node-border";
+      /** How the background image's width is determined. Can be 'none', 'inner', or 'outer'. */
+      backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+      /** How the background image's height is determined. Can be 'none', 'inner', or 'outer'. */
+      backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+      /** The size of the node's border. */
+      borderWidth?: number;
+      /** The style of the node's border */
+      borderStyle?: "solid" | "dotted" | "dashed" | "double";
+      /** The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+      borderColor?: string;
+      /** The opacity of the node's border */
+      borderOpacity?: number;
+      /** The amount of padding around all sides of the node. */
+      padding?: number;
+      /** The horizontal alignment of a node's label */
+      textHalign?: "left" | "center" | "right";
+      /** The vertical alignment of a node's label */
+      textValign?: "top" | "center" | "bottom";
+      /** Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset. */
+      ghost?: "yes" | "no";
+      /** The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      activeBgColor?: string;
+      /** The opacity of the active background indicator. Selector needs to be *core*. */
+      activeBgOpacity?: string;
+      /** The opacity of the active background indicator. Selector needs to be *core*. */
+      activeBgSize?: string;
+      /** The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      selectionBoxColor?: string;
+      /** The size of the border on the selection box. Selector needs to be *core* */
+      selectionBoxBorderWidth?: number;
+      /** The opacity of the selection box. Selector needs to be *core* */
+      selectionBoxOpacity?: number;
+      /** The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+      outsideTextureBgColor?: string;
+      /** The opacity of the area outside the viewport texture. Selector needs to be *core* */
+      outsideTextureBgOpacity?: number;
+      /** An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+      shapePolygonPoints?: string;
+      /** The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+      menuBackgroundColor?: string;
+      /** The opacity of the background of the component menu. */
+      menuBackgroundOpacity?: number;
+      /** The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+      menuForgroundColor?: string;
+    };
+    /** Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management. */
+    capabilities?: {
+      /** Specifies the version of the schema to which the capability definition conforms. */
+      schemaVersion: string;
+      /** Version of the capability definition. */
+      version: string;
+      /** Name of the capability in human-readible format. */
+      displayName: string;
+      /** A written representation of the purpose and characteristics of the capability. */
+      description: string;
+      /** Top-level categorization of the capability */
+      kind: "action" | "mutate" | "view" | "interaction";
+      /** Classification of capabilities. Used to group capabilities similar in nature. */
+      type: string;
+      /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
+      subType: string;
+      /** Key that backs the capability. */
+      key: string;
+      /** State of the entity in which the capability is applicable. */
+      entityState: ("declaration" | "instance")[];
+      /** Status of the capability */
+      status: "enabled" | "disabled";
+      /** Metadata contains additional information associated with the capability. Extension point. */
+      metadata?: {
+        [key: string]: any;
+      };
+    }[];
+    /** Status of component, including:
+        - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
+        - maintenance: model is unavailable for a period of time.
+        - enabled: model is available for use for all users of this Meshery Server.
+        - ignored: model is unavailable for use for all users of this Meshery Server. */
+    status?: "ignored" | "enabled" | "duplicate" | "resolved" | "open";
+    /** Metadata contains additional information associated with the component. */
+    metadata: {
+      /** Genealogy represents the various representational states of the component. */
+      genealogy: string;
+      /** Identifies whether the component is semantically meaningful or not; identifies whether the component should be treated as deployable entity or is for purposes of logical representation. */
+      isAnnotation: boolean;
+      /** Identifies whether the component is scoped to namespace or cluster wide. */
+      isNamespaced: boolean;
+      /** 'published' controls whether the component should be registered in Meshery Registry. When the same 'published' property in Models, is set to 'false', the Model property takes precedence with all Entities in the Model not being registered. */
+      published: boolean;
+      /** InstanceDetails contains information about the instance of the component. */
+      instanceDetails: object;
+      /** Defines the UI schema for rendering the component's configuration. For more details, visit: https://rjsf-team.github.io/react-jsonschema-form/docs/api-reference/uiSchema/ . */
+      configurationUISchema: string;
+      [key: string]: any;
+    };
+    /** The configuration of the component. The configuration is based on the schema defined within the component definition(component.schema). */
+    configuration: object;
+    /** Data related to the third-party capability that a ComponentDefinition wraps; this payload is treated as a hermetically sealed, opaque object. */
+    component: {
+      /** Version of the component produced by the registrant. Example: APIVersion of a Kubernetes Pod. */
+      version: string;
+      /** The unique identifier (name) assigned by the registrant to this component. Example: A Kubernetes Pod is of kind 'Pod'. */
+      kind: string;
+      /** JSON schema of the object as defined by the registrant. */
+      schema: string;
+    };
+    /** Timestamp when the component was created. */
+    createdAt: string;
+    /** Timestamp when the component was last updated. */
+    updatedAt: string;
+    /** Timestamp when the component was soft-deleted. Null while the component is active. */
+    deletedAt?: string;
+  } & {
+    /** Number of other registered entries sharing this component's kind, version, and model. */
+    duplicates?: number;
+  })[];
+};
+export type GetRegistryComponentsByNameApiArg = {
+  /** Kind of the component (e.g. `Deployment`). */
+  name: string;
+  /** Zero-indexed page number of the result set. */
+  page?: number;
+  /** Number of items per page, or `all` to return every item. */
+  pageSize?: string;
+  /** When `true`, the component name is matched greedily (substring match). */
+  search?: string;
+  /** Field to order the results by. */
+  order?: string;
+  /** Sort direction (`asc` or `desc`). */
+  sort?: string;
+  /** Filter by model version. */
+  version?: string;
+  /** Filter components by their API version. */
+  apiVersion?: string;
+  /** When `true`, omits large schema payloads from the returned definitions. */
+  trim?: string;
+  /** Annotation filter: `true` returns only annotation entities, `false` excludes them, and `include` returns both. */
+  annotations?: string;
+};
+export type GetRegistryRelationshipsApiResponse = /** status 200 Paginated list of registered relationships. */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items in the page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Deprecated snake_case alias of `pageSize`. */
+  page_size?: number;
+  /** Deprecated snake_case alias of `totalCount`. */
+  total_count?: number;
+} & {
+  /** The relationships matching the query. */
+  relationships?: any[];
+};
+export type GetRegistryRelationshipsApiArg = {
+  /** Zero-indexed page number of the result set. */
+  page?: number;
+  /** Number of items per page, or `all` to return every item. */
+  pageSize?: string;
+  /** Filter results by a case-insensitive substring match on name. */
+  search?: string;
+  /** Field to order the results by. */
+  order?: string;
+  /** Sort direction (`asc` or `desc`). */
+  sort?: string;
+  /** Filter by model version. */
+  version?: string;
+};
+export type RegisterRegistryRelationshipApiResponse = unknown;
+export type RegisterRegistryRelationshipApiArg = {
+  body: {
+    /** Connection identifying the registrant. */
+    connection: {
+      /** Connection ID */
+      id: string;
+      /** Connection Name */
+      name: string;
+      /** Human-readable description of the connection and its purpose. */
+      description?: string;
+      /** URL of the remote resource this connection points to (e.g. the Helm repository URL, the Kubernetes API server endpoint, the Grafana instance URL). */
+      url?: string;
+      /** Associated Credential ID */
+      credentialId?: string;
+      /** Connection Type (platform, telemetry, collaboration) */
+      type: string;
+      /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+      subType: string;
+      /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+      kind: string;
+      /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+      modelReference?: {
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        id: string;
+        /** The unique name for the model within the scope of a registrant. */
+        name: string;
+        /** Version of the model definition. */
+        version: string;
+        /** Human-readable name for the model. */
+        displayName: string;
+        /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+        model: {
+          /** Version of the model as defined by the registrant. */
+          version: string;
+        };
+        registrant: {
+          /** Kind of the registrant. */
+          kind: string;
+        };
+      };
+      /** Additional connection metadata */
+      metadata?: object;
+      /** Schema for the credential Associated with the connection */
+      credentialSchema?: object;
+      /** Schema for the connection */
+      connectionSchema?: object;
+      /** Visualization styles for the connection, including svgColor and svgWhite used for UI representation. */
+      styles?: {
+        /** Primary color of the component used for UI representation. */
+        primaryColor: string;
+        /** Secondary color of the entity used for UI representation. */
+        secondaryColor?: string;
+        /** White SVG of the entity used for UI representation on dark background. */
+        svgWhite: string;
+        /** Colored SVG of the entity used for UI representation on light background. */
+        svgColor: string;
+        /** Complete SVG of the entity used for UI representation, often inclusive of background. */
+        svgComplete: string;
+        /** The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+        color?: string;
+        /** The opacity of the label text, including its outline. */
+        textOpacity?: number;
+        /** A comma-separated list of font names to use on the label text. */
+        fontFamily?: string;
+        /** The size of the label text. */
+        fontSize?: string;
+        /** A CSS font style to be applied to the label text. */
+        fontStyle?: string;
+        /** A CSS font weight to be applied to the label text. */
+        fontWeight?: string;
+        /** A transformation to apply to the label text */
+        textTransform?: "none" | "uppercase" | "lowercase";
+        /** The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+        opacity?: number;
+        /** An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+        zIndex?: number;
+        /** The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+        label?: string;
+        /** The animation to apply to the element. example ripple,bounce,etc */
+        animation?: object;
+        [key: string]: any;
+      } & {
+        /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+        shape:
+          | "ellipse"
+          | "triangle"
+          | "round-triangle"
+          | "rectangle"
+          | "round-rectangle"
+          | "bottom-round-rectangle"
+          | "cut-rectangle"
+          | "barrel"
+          | "rhomboid"
+          | "diamond"
+          | "round-diamond"
+          | "pentagon"
+          | "round-pentagon"
+          | "hexagon"
+          | "round-hexagon"
+          | "concave-hexagon"
+          | "heptagon"
+          | "round-heptagon"
+          | "octagon"
+          | "round-octagon"
+          | "star"
+          | "tag"
+          | "round-tag"
+          | "vee"
+          | "polygon";
+        /** The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+        position?: {
+          /** The x-coordinate of the node. */
+          x: number;
+          /** The y-coordinate of the node. */
+          y: number;
+        };
+        /** The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+        bodyText?: string;
+        /** How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
+        bodyTextWrap?: "none" | "wrap" | "ellipsis";
+        /** The maximum width for wrapping text in the node. */
+        bodyTextMaxWidth?: string;
+        /** The opacity of the node's body text, including its outline. */
+        bodyTextOpacity?: number;
+        /** The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+        bodyTextBackgroundColor?: string;
+        /** The size of the node's body text. */
+        bodyTextFontSize?: number;
+        /** The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+        bodyTextColor?: string;
+        /** A CSS font weight to be applied to the node's body text. */
+        bodyTextFontWeight?: string;
+        /** A CSS horizontal alignment to be applied to the node's body text. */
+        bodyTextHorizontalAlign?: string;
+        /** A CSS text decoration to be applied to the node's body text. */
+        bodyTextDecoration?: string;
+        /** A CSS vertical alignment to be applied to the node's body text. */
+        bodyTextVerticalAlign?: string;
+        /** The width of the node's body or the width of an edge's line. */
+        width?: number;
+        /** The height of the node's body */
+        height?: number;
+        /** The URL that points to the image to show in the node. */
+        backgroundImage?: string;
+        /** The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+        backgroundColor?: string;
+        /** Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+        backgroundBlacken?: number;
+        /** The opacity level of the node's background colour */
+        backgroundOpacity?: number;
+        /** The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundPositionX?: string;
+        /** The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundPositionY?: string;
+        /** The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundOffsetX?: string;
+        /** The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundOffsetY?: string;
+        /** How the background image is fit to the node. Can be 'none', 'contain', or 'cover'. */
+        backgroundFit?: "none" | "contain" | "cover";
+        /** How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'. */
+        backgroundClip?: "none" | "node" | "node-border";
+        /** How the background image's width is determined. Can be 'none', 'inner', or 'outer'. */
+        backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+        /** How the background image's height is determined. Can be 'none', 'inner', or 'outer'. */
+        backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+        /** The size of the node's border. */
+        borderWidth?: number;
+        /** The style of the node's border */
+        borderStyle?: "solid" | "dotted" | "dashed" | "double";
+        /** The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+        borderColor?: string;
+        /** The opacity of the node's border */
+        borderOpacity?: number;
+        /** The amount of padding around all sides of the node. */
+        padding?: number;
+        /** The horizontal alignment of a node's label */
+        textHalign?: "left" | "center" | "right";
+        /** The vertical alignment of a node's label */
+        textValign?: "top" | "center" | "bottom";
+        /** Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset. */
+        ghost?: "yes" | "no";
+        /** The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        activeBgColor?: string;
+        /** The opacity of the active background indicator. Selector needs to be *core*. */
+        activeBgOpacity?: string;
+        /** The opacity of the active background indicator. Selector needs to be *core*. */
+        activeBgSize?: string;
+        /** The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        selectionBoxColor?: string;
+        /** The size of the border on the selection box. Selector needs to be *core* */
+        selectionBoxBorderWidth?: number;
+        /** The opacity of the selection box. Selector needs to be *core* */
+        selectionBoxOpacity?: number;
+        /** The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        outsideTextureBgColor?: string;
+        /** The opacity of the area outside the viewport texture. Selector needs to be *core* */
+        outsideTextureBgOpacity?: number;
+        /** An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+        shapePolygonPoints?: string;
+        /** The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+        menuBackgroundColor?: string;
+        /** The opacity of the background of the component menu. */
+        menuBackgroundOpacity?: number;
+        /** The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+        menuForgroundColor?: string;
+      };
+      /** Connection Status */
+      status:
+        | "discovered"
+        | "registered"
+        | "connected"
+        | "ignored"
+        | "maintenance"
+        | "disconnected"
+        | "deleted"
+        | "not found";
+      /** Map describing the connection state machine. Each key is a current connection status and its value is the list of states the connection may transition to from that status, along with a description of each transition. */
+      transitionMap?: {
+        [key: string]: {
+          /** The connection state reachable from the current state. */
+          nextState:
+            | "discovered"
+            | "registered"
+            | "connected"
+            | "ignored"
+            | "maintenance"
+            | "disconnected"
+            | "deleted"
+            | "not found";
+          /** Human-readable explanation of when or why this transition occurs. */
+          description?: string;
+        }[];
+      };
+      /** User ID who owns this connection */
+      owner?: string;
+      /** Timestamp when the connection was created. */
+      createdAt?: string;
+      /** Timestamp when the connection was last updated. */
+      updatedAt?: string;
+      /** Timestamp when the connection was soft-deleted, if applicable. */
+      deletedAt?: string | null;
+      /** Associated environments for this connection */
+      environments?: {
+        /** ID */
+        id: string;
+        /** Specifies the version of the schema to which the environment conforms. */
+        schemaVersion: string;
+        /** Environment name */
+        name: string;
+        /** Environment description */
+        description: string;
+        /** Environment organization ID */
+        organizationId: string;
+        /** Environment owner */
+        owner?: string;
+        /** Timestamp when the environment was created. */
+        createdAt?: string;
+        /** Additional metadata associated with the environment. */
+        metadata?: object;
+        /** Timestamp when the environment was last updated. */
+        updatedAt?: string;
+        /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+        deletedAt?: string | null;
+      }[];
+      /** Specifies the version of the schema used for the definition. */
+      schemaVersion: string;
+    };
+    /** Type of the entity being registered (e.g. `component`, `relationship`). */
+    entityType: string;
+    /** Base64-encoded JSON definition of the entity being registered. */
+    entity: string;
+  };
+};
+export type GetRegistryRegistrantsApiResponse = /** status 200 Paginated list of registrants. */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items in the page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Deprecated snake_case alias of `pageSize`. */
+  page_size?: number;
+  /** Deprecated snake_case alias of `totalCount`. */
+  total_count?: number;
+} & {
+  /** The registrants matching the query. */
+  registrants?: ({
+    /** Connection ID */
+    id: string;
+    /** Connection Name */
+    name: string;
+    /** Associated Credential ID */
+    credentialId?: string;
+    /** Connection Type (platform, telemetry, collaboration) */
+    type: string;
+    /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+    subType: string;
+    /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+    kind: string;
+    /** Additional connection metadata */
+    metadata?: object;
+    /** Connection Status */
+    status:
+      | "discovered"
+      | "registered"
+      | "connected"
+      | "ignored"
+      | "maintenance"
+      | "disconnected"
+      | "deleted"
+      | "not found";
+    /** User ID who owns this connection */
+    user_id?: string;
+    created_at?: string;
+    updated_at?: string;
+    /** SQL null Timestamp to handle null values of time. */
+    deleted_at?: string;
+    /** Associated environments for this connection */
+    environments?: {
+      /** ID */
+      id: string;
+      /** Specifies the version of the schema to which the environment conforms. */
+      schemaVersion: string;
+      /** Environment name */
+      name: string;
+      /** Environment description */
+      description: string;
+      /** Environment organization ID */
+      organization_id: string;
+      /** Environment owner */
+      owner?: string;
+      /** Timestamp when the resource was created. */
+      created_at?: string;
+      /** Additional metadata associated with the environment. */
+      metadata?: object;
+      /** Timestamp when the resource was updated. */
+      updated_at?: string;
+      /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+      deleted_at?: string | null;
+    }[];
+    /** Specifies the version of the schema used for the definition. */
+    schemaVersion: string;
+  } & {
+    /** Counts of the entities a registrant has registered. */
+    summary?: {
+      /** Number of models registered by this registrant. */
+      models?: number;
+      /** Number of components registered by this registrant. */
+      components?: number;
+      /** Number of relationships registered by this registrant. */
+      relationships?: number;
+      /** Number of policies registered by this registrant. */
+      policies?: number;
+    };
+  })[];
+};
+export type GetRegistryRegistrantsApiArg = {
+  /** Zero-indexed page number of the result set. */
+  page?: number;
+  /** Number of items per page, or `all` to return every item. */
+  pageSize?: string;
+  /** Filter results by a case-insensitive substring match on name. */
+  search?: string;
+  /** Field to order the results by. */
+  order?: string;
+  /** Sort direction (`asc` or `desc`). */
+  sort?: string;
+};
+export type RegisterRegistryEntitiesApiResponse =
+  /** status 200 Import processed; response summarizes registered entities and failures. */ {
+    /** Counts of imported and failed entities by type. */
+    entityCount?: {
+      /** Number of components imported. */
+      compCount?: number;
+      /** Number of relationships imported. */
+      relCount?: number;
+      /** Number of models imported. */
+      modelCount?: number;
+      /** Number of components that failed to import. */
+      errCompCount?: number;
+      /** Number of relationships that failed to import. */
+      errRelCount?: number;
+      /** Number of models that failed to import. */
+      errModelCount?: number;
+      /** Total number of entities that failed to import. */
+      totalErrCount?: number;
+    };
+    /** Aggregated, human-readable description of import failures, if any. */
+    errMsg?: string;
+    /** Per-type summaries of imported entities and failures. */
+    entityTypeSummary?: {
+      /** Components successfully imported. */
+      successfulComponents?: {
+        [key: string]: any;
+      }[];
+      /** Relationships successfully imported. */
+      successfulRelationships?: {
+        [key: string]: any;
+      }[];
+      /** Models successfully imported. */
+      successfulModels?: {
+        [key: string]: any;
+      }[];
+      /** Names of entities that failed to import, with their errors. */
+      unsuccessfulComponentNames?: any[];
+    };
+    /** Names of the models processed by the import. */
+    modelName?: string[];
+  };
+export type RegisterRegistryEntitiesApiArg = {
+  body: {
+    importBody:
+      | {
+          /** Name of the file being uploaded. */
+          fileName: string;
+          /** Supported model file formats are: .tar, .tar.gz, and .tgz. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details */
+          modelFile: string;
+        }
+      | {
+          /** A direct URL to a single model file, for example: https://raw.github.com/your-model-file.tar. Supported model file formats are: .tar, .tar.gz, and .tgz. \n\nFor bulk import of your model use the GitHub connection or CSV files. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details */
+          url: string;
+        }
+      | {
+          /** Upload a CSV file containing model definitions */
+          modelCsv: Blob;
+          /** Upload a CSV file containing component definitions */
+          componentCsv: Blob;
+          /** Upload a CSV file containing relationship definitions */
+          relationshipCsv: Blob;
+        }
+      | {
+          /** URI to the source code or package of the model. */
+          url: string;
+        };
+    /** Choose the method you prefer to upload your model file. Select 'File Import' or 'CSV Import' if you have the file on your local system or 'URL Import' if you have the file hosted online. */
+    uploadType: "file" | "urlImport" | "csv" | "url";
+    /** The register of the importrequest. */
+    register: boolean;
+  };
+};
+export type GenerateRegistryComponentsApiResponse =
+  /** status 200 Generation results, one item per requested package. */ {
+    /** Name of the package the components were generated for. */
+    name?: string;
+    /** The generated component definitions. */
+    components?: {
+      /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
+      id: string;
+      /** Specifies the version of the schema to which the component definition conforms. */
+      schemaVersion: string;
+      /** Version of the component definition. */
+      version: string;
+      /** Name of the component in human-readable format. */
+      displayName: string;
+      /** A written representation of the purpose and characteristics of the component. */
+      description: string;
+      /** Format specifies the format used in the `component.schema` field. JSON is the default. */
+      format: "JSON" | "CUE";
+      /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+      model: {
+        /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
+        id: string;
+        /** Specifies the version of the schema used for the definition. */
+        schemaVersion: string;
+        /** Version of the model definition. */
+        version: string;
+        /** The unique name for the model within the scope of a registrant. */
+        name: string;
+        /** Human-readable name for the model. */
+        displayName: string;
+        /** Description of the model. */
+        description: string;
+        /** Status of model, including:
+            - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
+            - maintenance: model is unavailable for a period of time.
+            - enabled: model is available for use for all users of this Meshery Server.
+            - ignored: model is unavailable for use for all users of this Meshery Server. */
+        status: "ignored" | "enabled" | "duplicate";
+        /** Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections */
+        registrant: {
+          /** Connection ID */
+          id: string;
+          /** Connection Name */
+          name: string;
+          /** Associated Credential ID */
+          credentialId?: string;
+          /** Connection Type (platform, telemetry, collaboration) */
+          type: string;
+          /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+          subType: string;
+          /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+          kind: string;
+          /** Additional connection metadata */
+          metadata?: object;
+          /** Connection Status */
+          status:
+            | "discovered"
+            | "registered"
+            | "connected"
+            | "ignored"
+            | "maintenance"
+            | "disconnected"
+            | "deleted"
+            | "not found";
+          /** User ID who owns this connection */
+          user_id?: string;
+          created_at?: string;
+          updated_at?: string;
+          /** SQL null Timestamp to handle null values of time. */
+          deleted_at?: string;
+          /** Associated environments for this connection */
+          environments?: {
+            /** ID */
+            id: string;
+            /** Specifies the version of the schema to which the environment conforms. */
+            schemaVersion: string;
+            /** Environment name */
+            name: string;
+            /** Environment description */
+            description: string;
+            /** Environment organization ID */
+            organization_id: string;
+            /** Environment owner */
+            owner?: string;
+            /** Timestamp when the resource was created. */
+            created_at?: string;
+            /** Additional metadata associated with the environment. */
+            metadata?: object;
+            /** Timestamp when the resource was updated. */
+            updated_at?: string;
+            /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+            deleted_at?: string | null;
+          }[];
+          /** Specifies the version of the schema used for the definition. */
+          schemaVersion: string;
+        };
+        /** ID of the registrant. */
+        registrantId: string;
+        /** ID of the category. */
+        categoryId: string;
+        /** Category of the model. */
+        category: {
+          /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+          id: string;
+          /** The category of the model that determines the main grouping. */
+          name:
+            | "Analytics"
+            | "App Definition and Development"
+            | "Cloud Native Network"
+            | "Cloud Native Storage"
+            | "Database"
+            | "Machine Learning"
+            | "Observability and Analysis"
+            | "Orchestration & Management"
+            | "Platform"
+            | "Provisioning"
+            | "Runtime"
+            | "Security & Compliance"
+            | "Serverless"
+            | "Tools"
+            | "Uncategorized";
+          /** Additional metadata associated with the category. */
+          metadata: object;
+        };
+        /** Sub category of the model determines the secondary grouping. */
+        subCategory:
+          | "API Gateway"
+          | "API Integration"
+          | "Application Definition & Image Build"
+          | "Automation & Configuration"
+          | "Certified Kubernetes - Distribution"
+          | "Chaos Engineering"
+          | "Cloud Native Storage"
+          | "Cloud Provider"
+          | "CNI"
+          | "Compute"
+          | "Container Registry"
+          | "Container Runtime"
+          | "Container Security"
+          | "Container"
+          | "Content Delivery Network"
+          | "Continuous Integration & Delivery"
+          | "Coordination & Service Discovery"
+          | "Database"
+          | "Flowchart"
+          | "Framework"
+          | "Installable Platform"
+          | "Key Management"
+          | "Key Management Service"
+          | "Kubernetes"
+          | "Logging"
+          | "Machine Learning"
+          | "Management Governance"
+          | "Metrics"
+          | "Monitoring"
+          | "Networking Content Delivery"
+          | "Operating System"
+          | "Query"
+          | "Remote Procedure Call"
+          | "Scheduling & Orchestration"
+          | "Secrets Management"
+          | "Security Identity & Compliance"
+          | "Service Mesh"
+          | "Service Proxy"
+          | "Source Version Control"
+          | "Storage"
+          | "Specifications"
+          | "Streaming & Messaging"
+          | "Tools"
+          | "Tracing"
+          | "Uncategorized"
+          | "Video Conferencing";
+        /** Metadata containing additional information associated with the model. */
+        metadata?: {
+          /** Capabilities associated with the model */
+          capabilities?: {
+            /** Specifies the version of the schema to which the capability definition conforms. */
+            schemaVersion: string;
+            /** Version of the capability definition. */
+            version: string;
+            /** Name of the capability in human-readible format. */
+            displayName: string;
+            /** A written representation of the purpose and characteristics of the capability. */
+            description: string;
+            /** Top-level categorization of the capability */
+            kind: "action" | "mutate" | "view" | "interaction";
+            /** Classification of capabilities. Used to group capabilities similar in nature. */
+            type: string;
+            /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
+            subType: string;
+            /** Key that backs the capability. */
+            key: string;
+            /** State of the entity in which the capability is applicable. */
+            entityState: ("declaration" | "instance")[];
+            /** Status of the capability */
+            status: "enabled" | "disabled";
+            /** Metadata contains additional information associated with the capability. Extension point. */
+            metadata?: {
+              [key: string]: any;
+            };
+          }[];
+          /** Indicates whether the model and its entities should be treated as deployable entities or as logical representations. */
+          isAnnotation?: boolean;
+          /** Primary color associated with the model. */
+          primaryColor?: string;
+          /** Secondary color associated with the model. */
+          secondaryColor?: string;
+          /** SVG representation of the model in white color. */
+          svgWhite: string;
+          /** SVG representation of the model in colored format. */
+          svgColor: string;
+          /** SVG representation of the complete model. */
+          svgComplete?: string;
+          /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+          shape?:
+            | "ellipse"
+            | "triangle"
+            | "round-triangle"
+            | "rectangle"
+            | "round-rectangle"
+            | "bottom-round-rectangle"
+            | "cut-rectangle"
+            | "barrel"
+            | "rhomboid"
+            | "diamond"
+            | "round-diamond"
+            | "pentagon"
+            | "round-pentagon"
+            | "hexagon"
+            | "round-hexagon"
+            | "concave-hexagon"
+            | "heptagon"
+            | "round-heptagon"
+            | "octagon"
+            | "round-octagon"
+            | "star"
+            | "tag"
+            | "round-tag"
+            | "vee"
+            | "polygon";
+          [key: string]: any;
+        };
+        /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+        model: {
+          /** Version of the model as defined by the registrant. */
+          version: string;
+        };
+        /** The relationships of the model. */
+        relationships: any;
+        /** The components of the model. */
+        components: any;
+        /** Number of components associated with the model. */
+        componentsCount: number;
+        /** Number of relationships associated with the model. */
+        relationshipsCount: number;
+        /** Timestamp when the resource was created. */
+        created_at?: string;
+        /** Timestamp when the resource was updated. */
+        updated_at?: string;
+      };
+      /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+      modelReference: {
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        id: string;
+        /** The unique name for the model within the scope of a registrant. */
+        name: string;
+        /** Version of the model definition. */
+        version: string;
+        /** Human-readable name for the model. */
+        displayName: string;
+        /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+        model: {
+          /** Version of the model as defined by the registrant. */
+          version: string;
+        };
+        registrant: {
+          /** Kind of the registrant. */
+          kind: string;
+        };
+      };
+      /** Foreign key to the model to which the component belongs. Populated by the ORM from the `model_id` column and suppressed on the JSON wire; consumers use the nested `model` object for wire-level access. */
+      modelId?: string;
+      /** Visualization styles for a component */
+      styles?: {
+        /** Primary color of the component used for UI representation. */
+        primaryColor: string;
+        /** Secondary color of the entity used for UI representation. */
+        secondaryColor?: string;
+        /** White SVG of the entity used for UI representation on dark background. */
+        svgWhite: string;
+        /** Colored SVG of the entity used for UI representation on light background. */
+        svgColor: string;
+        /** Complete SVG of the entity used for UI representation, often inclusive of background. */
+        svgComplete: string;
+        /** The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. */
+        color?: string;
+        /** The opacity of the label text, including its outline. */
+        textOpacity?: number;
+        /** A comma-separated list of font names to use on the label text. */
+        fontFamily?: string;
+        /** The size of the label text. */
+        fontSize?: string;
+        /** A CSS font style to be applied to the label text. */
+        fontStyle?: string;
+        /** A CSS font weight to be applied to the label text. */
+        fontWeight?: string;
+        /** A transformation to apply to the label text */
+        textTransform?: "none" | "uppercase" | "lowercase";
+        /** The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children. */
+        opacity?: number;
+        /** An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+        zIndex?: number;
+        /** The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id */
+        label?: string;
+        /** The animation to apply to the element. example ripple,bounce,etc */
+        animation?: object;
+        [key: string]: any;
+      } & {
+        /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+        shape:
+          | "ellipse"
+          | "triangle"
+          | "round-triangle"
+          | "rectangle"
+          | "round-rectangle"
+          | "bottom-round-rectangle"
+          | "cut-rectangle"
+          | "barrel"
+          | "rhomboid"
+          | "diamond"
+          | "round-diamond"
+          | "pentagon"
+          | "round-pentagon"
+          | "hexagon"
+          | "round-hexagon"
+          | "concave-hexagon"
+          | "heptagon"
+          | "round-heptagon"
+          | "octagon"
+          | "round-octagon"
+          | "star"
+          | "tag"
+          | "round-tag"
+          | "vee"
+          | "polygon";
+        /** The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+        position?: {
+          /** The x-coordinate of the node. */
+          x: number;
+          /** The y-coordinate of the node. */
+          y: number;
+        };
+        /** The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id */
+        bodyText?: string;
+        /** How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
+        bodyTextWrap?: "none" | "wrap" | "ellipsis";
+        /** The maximum width for wrapping text in the node. */
+        bodyTextMaxWidth?: string;
+        /** The opacity of the node's body text, including its outline. */
+        bodyTextOpacity?: number;
+        /** The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g. */
+        bodyTextBackgroundColor?: string;
+        /** The size of the node's body text. */
+        bodyTextFontSize?: number;
+        /** The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g. */
+        bodyTextColor?: string;
+        /** A CSS font weight to be applied to the node's body text. */
+        bodyTextFontWeight?: string;
+        /** A CSS horizontal alignment to be applied to the node's body text. */
+        bodyTextHorizontalAlign?: string;
+        /** A CSS text decoration to be applied to the node's body text. */
+        bodyTextDecoration?: string;
+        /** A CSS vertical alignment to be applied to the node's body text. */
+        bodyTextVerticalAlign?: string;
+        /** The width of the node's body or the width of an edge's line. */
+        width?: number;
+        /** The height of the node's body */
+        height?: number;
+        /** The URL that points to the image to show in the node. */
+        backgroundImage?: string;
+        /** The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g. */
+        backgroundColor?: string;
+        /** Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1. */
+        backgroundBlacken?: number;
+        /** The opacity level of the node's background colour */
+        backgroundOpacity?: number;
+        /** The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundPositionX?: string;
+        /** The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundPositionY?: string;
+        /** The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundOffsetX?: string;
+        /** The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px) */
+        backgroundOffsetY?: string;
+        /** How the background image is fit to the node. Can be 'none', 'contain', or 'cover'. */
+        backgroundFit?: "none" | "contain" | "cover";
+        /** How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'. */
+        backgroundClip?: "none" | "node" | "node-border";
+        /** How the background image's width is determined. Can be 'none', 'inner', or 'outer'. */
+        backgroundWidthRelativeTo?: "none" | "inner" | "outer";
+        /** How the background image's height is determined. Can be 'none', 'inner', or 'outer'. */
+        backgroundHeightRelativeTo?: "none" | "inner" | "outer";
+        /** The size of the node's border. */
+        borderWidth?: number;
+        /** The style of the node's border */
+        borderStyle?: "solid" | "dotted" | "dashed" | "double";
+        /** The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g. */
+        borderColor?: string;
+        /** The opacity of the node's border */
+        borderOpacity?: number;
+        /** The amount of padding around all sides of the node. */
+        padding?: number;
+        /** The horizontal alignment of a node's label */
+        textHalign?: "left" | "center" | "right";
+        /** The vertical alignment of a node's label */
+        textValign?: "top" | "center" | "bottom";
+        /** Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset. */
+        ghost?: "yes" | "no";
+        /** The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        activeBgColor?: string;
+        /** The opacity of the active background indicator. Selector needs to be *core*. */
+        activeBgOpacity?: string;
+        /** The opacity of the active background indicator. Selector needs to be *core*. */
+        activeBgSize?: string;
+        /** The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        selectionBoxColor?: string;
+        /** The size of the border on the selection box. Selector needs to be *core* */
+        selectionBoxBorderWidth?: number;
+        /** The opacity of the selection box. Selector needs to be *core* */
+        selectionBoxOpacity?: number;
+        /** The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. */
+        outsideTextureBgColor?: string;
+        /** The opacity of the area outside the viewport texture. Selector needs to be *core* */
+        outsideTextureBgOpacity?: number;
+        /** An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 ) */
+        shapePolygonPoints?: string;
+        /** The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+        menuBackgroundColor?: string;
+        /** The opacity of the background of the component menu. */
+        menuBackgroundOpacity?: number;
+        /** The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. */
+        menuForgroundColor?: string;
+      };
+      /** Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management. */
+      capabilities?: {
+        /** Specifies the version of the schema to which the capability definition conforms. */
+        schemaVersion: string;
+        /** Version of the capability definition. */
+        version: string;
+        /** Name of the capability in human-readible format. */
+        displayName: string;
+        /** A written representation of the purpose and characteristics of the capability. */
+        description: string;
+        /** Top-level categorization of the capability */
+        kind: "action" | "mutate" | "view" | "interaction";
+        /** Classification of capabilities. Used to group capabilities similar in nature. */
+        type: string;
+        /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
+        subType: string;
+        /** Key that backs the capability. */
+        key: string;
+        /** State of the entity in which the capability is applicable. */
+        entityState: ("declaration" | "instance")[];
+        /** Status of the capability */
+        status: "enabled" | "disabled";
+        /** Metadata contains additional information associated with the capability. Extension point. */
+        metadata?: {
+          [key: string]: any;
+        };
+      }[];
+      /** Status of component, including:
+        - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
+        - maintenance: model is unavailable for a period of time.
+        - enabled: model is available for use for all users of this Meshery Server.
+        - ignored: model is unavailable for use for all users of this Meshery Server. */
+      status?: "ignored" | "enabled" | "duplicate" | "resolved" | "open";
+      /** Metadata contains additional information associated with the component. */
+      metadata: {
+        /** Genealogy represents the various representational states of the component. */
+        genealogy: string;
+        /** Identifies whether the component is semantically meaningful or not; identifies whether the component should be treated as deployable entity or is for purposes of logical representation. */
+        isAnnotation: boolean;
+        /** Identifies whether the component is scoped to namespace or cluster wide. */
+        isNamespaced: boolean;
+        /** 'published' controls whether the component should be registered in Meshery Registry. When the same 'published' property in Models, is set to 'false', the Model property takes precedence with all Entities in the Model not being registered. */
+        published: boolean;
+        /** InstanceDetails contains information about the instance of the component. */
+        instanceDetails: object;
+        /** Defines the UI schema for rendering the component's configuration. For more details, visit: https://rjsf-team.github.io/react-jsonschema-form/docs/api-reference/uiSchema/ . */
+        configurationUISchema: string;
+        [key: string]: any;
+      };
+      /** The configuration of the component. The configuration is based on the schema defined within the component definition(component.schema). */
+      configuration: object;
+      /** Data related to the third-party capability that a ComponentDefinition wraps; this payload is treated as a hermetically sealed, opaque object. */
+      component: {
+        /** Version of the component produced by the registrant. Example: APIVersion of a Kubernetes Pod. */
+        version: string;
+        /** The unique identifier (name) assigned by the registrant to this component. Example: A Kubernetes Pod is of kind 'Pod'. */
+        kind: string;
+        /** JSON schema of the object as defined by the registrant. */
+        schema: string;
+      };
+      /** Timestamp when the component was created. */
+      createdAt: string;
+      /** Timestamp when the component was last updated. */
+      updatedAt: string;
+      /** Timestamp when the component was soft-deleted. Null while the component is active. */
+      deletedAt?: string;
+    }[];
+    /** Errors encountered while generating components for this package. */
+    errors?: string[];
+  }[];
+export type GenerateRegistryComponentsApiArg = {
+  body: {
+    /** Packages for which to generate components. */
+    data: {
+      /** Name of the package (Artifact Hub package name) to generate components for. */
+      name: string;
+      /** Whether to register the generated components into the registry. */
+      register?: boolean;
+    }[];
+  };
+};
+export type ExportRegistryModelApiResponse = unknown;
+export type ExportRegistryModelApiArg = {
+  /** ID of the model to export. */
+  id?: string;
+  /** Name of the model to export. */
+  name?: string;
+  /** Version of the model to export. */
+  version?: string;
+  /** Format of the definitions inside the exported artifact. */
+  outputFormat?: "json" | "yaml";
+  /** Type of artifact to produce. */
+  fileType?: "oci" | "tar";
+  /** Whether to include component definitions in the export. */
+  components?: boolean;
+  /** Whether to include relationship definitions in the export. */
+  relationships?: boolean;
+};
+export type ValidateRegistryEntitiesApiResponse =
+  /** status 200 Validation results keyed by the request item identifiers. */ {
+    result: {
+      [key: string]: {
+        /** Whether the value conforms to its schema. */
+        isValid: boolean;
+        /** Validation errors, empty when the value is valid. */
+        errors?: string[];
+      };
+    };
+  };
+export type ValidateRegistryEntitiesApiArg = {
+  body: {
+    /** Items to validate, keyed by a caller-chosen identifier. */
+    validationItems: {
+      [key: string]: {
+        /** Schema (JSON Schema or CUE) to validate the value against. */
+        schema: string;
+        /** Value to validate. */
+        value: string;
+        /** Format of `value`. */
+        valueType?: "JSON" | "YAML" | "JSONSCHEMA" | "CUE";
+      };
+    };
+  };
+};
+export type UpdateRegistryEntityStatusApiResponse = unknown;
+export type UpdateRegistryEntityStatusApiArg = {
+  /** Type of the registered entity whose status is being updated. */
+  entityType: string;
+  body: {
+    /** ID of the registered entity whose status is being updated. */
+    id?: string;
+    /** New status of the entity (e.g. `registered`, `ignored`). */
+    status: string;
+    /** Display name of the entity, used in the resulting status-change event. */
+    displayName?: string;
+  };
+};
 export type GetSystemDatabaseApiResponse = /** status 200 Database summary */ {
   /** Zero-based page index of the returned table slice. */
   page: number;
@@ -3385,6 +10893,196 @@ export type GetSystemVersionApiResponse = /** status 200 Server version metadata
   releaseChannel?: string;
 };
 export type GetSystemVersionApiArg = void;
+export type AddKubernetesConfigApiResponse = /** status 200 Discovered contexts bucketed by import outcome. */ {
+  /** Contexts newly registered as discovered connections. */
+  registeredContexts: {
+    /** Stable identifier of the Kubernetes context, assigned when the context is registered. Not a UUID; carried in connection metadata. */
+    id?: string;
+    /** Human-readable name of the Kubernetes context. */
+    name?: string;
+    /** Authentication material for the context (token or kubeconfig reference), sourced from the connection's credential secret. */
+    auth?: object;
+    /** Cluster definition for the context (certificate authority and server details), sourced from the connection's credential secret. */
+    cluster?: object;
+    /** API server URL of the Kubernetes cluster. */
+    server?: string;
+    /** ID of the user who owns the underlying connection. */
+    owner?: string;
+    /** ID of the user who registered the context. */
+    createdBy?: string;
+    /** ID of the Meshery instance the context is registered with. */
+    mesheryInstanceId?: string;
+    /** ID of the Kubernetes server associated with the context. */
+    kubernetesServerId?: string;
+    /** How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster). */
+    deploymentType?: string;
+    /** Kubernetes server version of the cluster. */
+    version?: string;
+    /** Timestamp when the underlying connection was created. */
+    createdAt?: string;
+    /** Timestamp when the underlying connection was last updated. */
+    updatedAt?: string;
+    /** ID of the connection this context was projected from. */
+    connectionId?: string;
+    /** Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition. */
+    reachable?: boolean;
+  }[];
+  /** Contexts whose connection already exists in (or transitioned to) the connected state. */
+  connectedContexts: {
+    /** Stable identifier of the Kubernetes context, assigned when the context is registered. Not a UUID; carried in connection metadata. */
+    id?: string;
+    /** Human-readable name of the Kubernetes context. */
+    name?: string;
+    /** Authentication material for the context (token or kubeconfig reference), sourced from the connection's credential secret. */
+    auth?: object;
+    /** Cluster definition for the context (certificate authority and server details), sourced from the connection's credential secret. */
+    cluster?: object;
+    /** API server URL of the Kubernetes cluster. */
+    server?: string;
+    /** ID of the user who owns the underlying connection. */
+    owner?: string;
+    /** ID of the user who registered the context. */
+    createdBy?: string;
+    /** ID of the Meshery instance the context is registered with. */
+    mesheryInstanceId?: string;
+    /** ID of the Kubernetes server associated with the context. */
+    kubernetesServerId?: string;
+    /** How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster). */
+    deploymentType?: string;
+    /** Kubernetes server version of the cluster. */
+    version?: string;
+    /** Timestamp when the underlying connection was created. */
+    createdAt?: string;
+    /** Timestamp when the underlying connection was last updated. */
+    updatedAt?: string;
+    /** ID of the connection this context was projected from. */
+    connectionId?: string;
+    /** Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition. */
+    reachable?: boolean;
+  }[];
+  /** Contexts whose connection is in the ignored state. */
+  ignoredContexts: {
+    /** Stable identifier of the Kubernetes context, assigned when the context is registered. Not a UUID; carried in connection metadata. */
+    id?: string;
+    /** Human-readable name of the Kubernetes context. */
+    name?: string;
+    /** Authentication material for the context (token or kubeconfig reference), sourced from the connection's credential secret. */
+    auth?: object;
+    /** Cluster definition for the context (certificate authority and server details), sourced from the connection's credential secret. */
+    cluster?: object;
+    /** API server URL of the Kubernetes cluster. */
+    server?: string;
+    /** ID of the user who owns the underlying connection. */
+    owner?: string;
+    /** ID of the user who registered the context. */
+    createdBy?: string;
+    /** ID of the Meshery instance the context is registered with. */
+    mesheryInstanceId?: string;
+    /** ID of the Kubernetes server associated with the context. */
+    kubernetesServerId?: string;
+    /** How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster). */
+    deploymentType?: string;
+    /** Kubernetes server version of the cluster. */
+    version?: string;
+    /** Timestamp when the underlying connection was created. */
+    createdAt?: string;
+    /** Timestamp when the underlying connection was last updated. */
+    updatedAt?: string;
+    /** ID of the connection this context was projected from. */
+    connectionId?: string;
+    /** Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition. */
+    reachable?: boolean;
+  }[];
+  /** Contexts that could not be saved as connections. The failure detail is recorded in the emitted event's metadata, not on the context object. */
+  erroredContexts: {
+    /** Stable identifier of the Kubernetes context, assigned when the context is registered. Not a UUID; carried in connection metadata. */
+    id?: string;
+    /** Human-readable name of the Kubernetes context. */
+    name?: string;
+    /** Authentication material for the context (token or kubeconfig reference), sourced from the connection's credential secret. */
+    auth?: object;
+    /** Cluster definition for the context (certificate authority and server details), sourced from the connection's credential secret. */
+    cluster?: object;
+    /** API server URL of the Kubernetes cluster. */
+    server?: string;
+    /** ID of the user who owns the underlying connection. */
+    owner?: string;
+    /** ID of the user who registered the context. */
+    createdBy?: string;
+    /** ID of the Meshery instance the context is registered with. */
+    mesheryInstanceId?: string;
+    /** ID of the Kubernetes server associated with the context. */
+    kubernetesServerId?: string;
+    /** How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster). */
+    deploymentType?: string;
+    /** Kubernetes server version of the cluster. */
+    version?: string;
+    /** Timestamp when the underlying connection was created. */
+    createdAt?: string;
+    /** Timestamp when the underlying connection was last updated. */
+    updatedAt?: string;
+    /** ID of the connection this context was projected from. */
+    connectionId?: string;
+    /** Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition. */
+    reachable?: boolean;
+  }[];
+};
+export type AddKubernetesConfigApiArg = {
+  body: {
+    /** Kubeconfig file contents. */
+    k8sfile: Blob;
+    /** JSON-encoded object mapping a discovered context ID to per-context import options, e.g. `{"<contextId>": {"meshsyncDeploymentMode": "operator", "name": "my-cluster"}}`. `meshsyncDeploymentMode` selects how MeshSync runs for the resulting connection; `name` overrides the connection name. */
+    contexts?: string;
+    /** JSON-encoded array of discovered context IDs to import. When absent, every context discovered in the kubeconfig is imported. */
+    selectedContexts?: string;
+  };
+};
+export type DiscoverKubernetesContextsApiResponse = /** status 200 Contexts discovered in the uploaded kubeconfig. */ {
+  /** Stable identifier of the Kubernetes context, assigned when the context is registered. Not a UUID; carried in connection metadata. */
+  id?: string;
+  /** Human-readable name of the Kubernetes context. */
+  name?: string;
+  /** Authentication material for the context (token or kubeconfig reference), sourced from the connection's credential secret. */
+  auth?: object;
+  /** Cluster definition for the context (certificate authority and server details), sourced from the connection's credential secret. */
+  cluster?: object;
+  /** API server URL of the Kubernetes cluster. */
+  server?: string;
+  /** ID of the user who owns the underlying connection. */
+  owner?: string;
+  /** ID of the user who registered the context. */
+  createdBy?: string;
+  /** ID of the Meshery instance the context is registered with. */
+  mesheryInstanceId?: string;
+  /** ID of the Kubernetes server associated with the context. */
+  kubernetesServerId?: string;
+  /** How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster). */
+  deploymentType?: string;
+  /** Kubernetes server version of the cluster. */
+  version?: string;
+  /** Timestamp when the underlying connection was created. */
+  createdAt?: string;
+  /** Timestamp when the underlying connection was last updated. */
+  updatedAt?: string;
+  /** ID of the connection this context was projected from. */
+  connectionId?: string;
+  /** Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition. */
+  reachable?: boolean;
+}[];
+export type DiscoverKubernetesContextsApiArg = {
+  body: {
+    /** Kubeconfig file contents. */
+    k8sfile: Blob;
+  };
+};
+export type PingKubernetesApiResponse = /** status 200 Cluster is reachable. */ {
+  /** Version string reported by the cluster's API server. The wire field is `server_version` - this endpoint's published wire casing predates the camelCase convention and is preserved within this API version. */
+  server_version: string;
+};
+export type PingKubernetesApiArg = {
+  /** ID of the Kubernetes connection whose cluster to ping. */
+  connectionId: string;
+};
 export type GetSystemSyncApiResponse = /** status 200 Session sync payload */ {
   /** Kubernetes contexts currently tracked by the Meshery server. */
   k8sConfig?: {
@@ -3396,7 +11094,7 @@ export type GetSystemSyncApiResponse = /** status 200 Session sync payload */ {
     clusterConfigured?: boolean;
     /** API server URL for the Kubernetes context. */
     server?: string;
-    /** Kubernetes server ID associated with this context. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     clusterId?: string;
     /** When the context was first registered with Meshery. */
     createdAt?: string;
@@ -3407,12 +11105,12 @@ export type GetSystemSyncApiResponse = /** status 200 Session sync payload */ {
 };
 export type GetSystemSyncApiArg = void;
 export type GetOperatorControllerStatusApiResponse = /** status 200 Operator controller status */ {
-  /** The kubernetes connection ID this status belongs to. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   connectionId: string;
   /** The controller this status describes. */
   controller: "OPERATOR" | "MESHSYNC" | "BROKER";
-  /** Current controller status (e.g. DEPLOYED, NOTDEPLOYED, RUNNING, CONNECTED, UNKNOWN). */
-  status: string;
+  /** Current controller status. */
+  status: "DEPLOYED" | "NOTDEPLOYED" | "DEPLOYING" | "UNKOWN" | "UNDEPLOYED" | "ENABLED" | "RUNNING" | "CONNECTED";
   /** Deployed controller version, when known. */
   version: string;
 };
@@ -3427,7 +11125,7 @@ export type GetMeshsyncControllerStatusApiResponse = /** status 200 MeshSync con
   version: string;
   /** Current controller status. May be composed, e.g. "Connected <endpoint>". */
   status: string;
-  /** The kubernetes connection ID this status belongs to. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   connectionId: string;
 };
 export type GetMeshsyncControllerStatusApiArg = {
@@ -3441,7 +11139,7 @@ export type GetBrokerControllerStatusApiResponse = /** status 200 Broker control
   version: string;
   /** Current controller status. May be composed, e.g. "Connected <endpoint>". */
   status: string;
-  /** The kubernetes connection ID this status belongs to. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   connectionId: string;
 };
 export type GetBrokerControllerStatusApiArg = {
@@ -3449,7 +11147,7 @@ export type GetBrokerControllerStatusApiArg = {
   connectionId: string;
 };
 export type GetControllerDiagnosticsApiResponse = /** status 200 Connection controller diagnostics */ {
-  /** The kubernetes connection ID these diagnostics belong to. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   connectionId: string;
   /** True when no warning/error diagnostics were detected (informational diagnostics do not affect health). */
   healthy: boolean;
@@ -3509,11 +11207,11 @@ export type GetUserCredentialsApiResponse = /** status 200 Credentials response 
 };
 export type GetUserCredentialsApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -3643,45 +11341,11 @@ export type GetUserKeysApiArg = {
   /** Organization ID */
   orgId: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
-};
-export type RegisterMeshmodelsApiResponse = /** status 201 Model registered */ {
-  message?: string;
-};
-export type RegisterMeshmodelsApiArg = {
-  body: {
-    importBody:
-      | {
-          /** Name of the file being uploaded. */
-          fileName: string;
-          /** Supported model file formats are: .tar, .tar.gz, and .tgz. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details */
-          modelFile: string;
-        }
-      | {
-          /** A direct URL to a single model file, for example: https://raw.github.com/your-model-file.tar. Supported model file formats are: .tar, .tar.gz, and .tgz. \n\nFor bulk import of your model use the GitHub connection or CSV files. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details */
-          url: string;
-        }
-      | {
-          /** Upload a CSV file containing model definitions */
-          modelCsv: Blob;
-          /** Upload a CSV file containing component definitions */
-          componentCsv: Blob;
-          /** Upload a CSV file containing relationship definitions */
-          relationshipCsv: Blob;
-        }
-      | {
-          /** URI to the source code or package of the model. */
-          url: string;
-        };
-    /** Choose the method you prefer to upload your model file. Select 'File Import' or 'CSV Import' if you have the file on your local system or 'URL Import' if you have the file hosted online. */
-    uploadType: "file" | "urlImport" | "csv" | "url";
-    /** The register of the importrequest. */
-    register: boolean;
-  };
+  pagesize?: number;
 };
 export type GetOrgsApiResponse = /** status 200 Organizations response */ {
   /** Zero-based page index returned in this response. */
@@ -3702,6 +11366,8 @@ export type GetOrgsApiResponse = /** status 200 Organizations response */ {
     country?: string;
     /** Region of the organization. */
     region?: string;
+    /** Custom domain assigned to the organization, when configured. */
+    domain?: string;
     /** Display name of the organization owner. */
     owner?: string;
     /** Free-form metadata associated with an organization, including preferences. */
@@ -3825,6 +11491,8 @@ export type CreateOrgApiResponse = /** status 201 Single-organization page respo
     country?: string;
     /** Region of the organization. */
     region?: string;
+    /** Custom domain assigned to the organization, when configured. */
+    domain?: string;
     /** Display name of the organization owner. */
     owner?: string;
     /** Free-form metadata associated with an organization, including preferences. */
@@ -4058,6 +11726,8 @@ export type GetOrgApiResponse = /** status 200 Single-organization page response
     country?: string;
     /** Region of the organization. */
     region?: string;
+    /** Custom domain assigned to the organization, when configured. */
+    domain?: string;
     /** Display name of the organization owner. */
     owner?: string;
     /** Free-form metadata associated with an organization, including preferences. */
@@ -4178,6 +11848,8 @@ export type UpdateOrgApiResponse = /** status 200 Single-organization page respo
     country?: string;
     /** Region of the organization. */
     region?: string;
+    /** Custom domain assigned to the organization, when configured. */
+    domain?: string;
     /** Display name of the organization owner. */
     owner?: string;
     /** Free-form metadata associated with an organization, including preferences. */
@@ -4744,9 +12416,9 @@ export type GetUsersForOrgApiArg = {
   /** Organization ID */
   orgId: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by page size */
-  pageSize?: string;
+  pageSize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -4755,199 +12427,6 @@ export type GetUsersForOrgApiArg = {
   filter?: string;
   /** Optional team filter when listing organization users */
   teamId?: string;
-};
-export type GetUsersApiResponse = /** status 200 Paginated list of public users */ {
-  /** Current page number of the result set. */
-  page?: number;
-  /** Number of items per page. */
-  pageSize?: number;
-  /** Total number of items available. */
-  totalCount?: number;
-  /** The data of the userspagefornonadmin. */
-  data?: {
-    /** Unique identifier for the user */
-    id: string;
-    /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
-    userId: string;
-    /** Authentication provider (e.g., Google, Github) */
-    provider: string;
-    /** User's email address */
-    email: string;
-    /** User's first name */
-    firstName: string;
-    /** User's last name */
-    lastName: string;
-    /** URL to user's avatar image */
-    avatarUrl?: string;
-    /** User account status */
-    status: "active" | "inactive" | "pending" | "anonymous";
-    /** User's biography or description */
-    bio?: string;
-    /** User's country information stored as JSONB */
-    country?: {
-      [key: string]: any;
-    };
-    /** User's region information stored as JSONB */
-    region?: {
-      [key: string]: any;
-    };
-    /** User preferences stored as JSONB */
-    preferences?: {
-      /** The mesh adapters of the preference. */
-      meshAdapters?: object[];
-      grafana?: {
-        /** Grafana URL for the user configuration. */
-        grafanaUrl?: string;
-        /** Grafana API key for the user configuration. */
-        grafanaApiKey?: string;
-        /** Selected Grafana board configurations for the user. */
-        selectedBoardsConfigs?: {
-          /** Placeholder for GrafanaBoard definition (define fields as needed) */
-          board?: object;
-          /** Panels selected for the Grafana board configuration. */
-          panels?: object[];
-          /** Template variables applied to the selected Grafana board configuration. */
-          templateVars?: string[];
-        }[];
-      };
-      prometheus?: {
-        /** The prometheus URL of the prometheus. */
-        prometheusUrl?: string;
-        /** The selected prometheus boards configs of the prometheus. */
-        selectedPrometheusBoardsConfigs?: {
-          /** Placeholder for GrafanaBoard definition (define fields as needed) */
-          board?: object;
-          /** Panels selected for the Grafana board configuration. */
-          panels?: object[];
-          /** Template variables applied to the selected Grafana board configuration. */
-          templateVars?: string[];
-        }[];
-      };
-      loadTestPrefs?: {
-        /** Concurrent requests */
-        c?: number;
-        /** Queries per second */
-        qps?: number;
-        /** Duration */
-        t?: string;
-        /** Load generator */
-        gen?: string;
-      };
-      /** The anonymous usage stats of the preference. */
-      anonymousUsageStats: boolean;
-      /** The anonymous perf results of the preference. */
-      anonymousPerfResults: boolean;
-      /** Timestamp of when the resource was last updated. */
-      updatedAt: string;
-      /** The dashboard preferences of the preference. */
-      dashboardPreferences: {
-        [key: string]: any;
-      };
-      /** ID of the associated selectedOrganization. */
-      selectedOrganizationId: string;
-      /** The selected workspace for organizations of the preference. */
-      selectedWorkspaceForOrganizations: {
-        [key: string]: string;
-      };
-      /** The users extension preferences of the preference. */
-      usersExtensionPreferences: {
-        [key: string]: any;
-      };
-      /** The remote provider preferences of the preference. */
-      remoteProviderPreferences: {
-        [key: string]: any;
-      };
-    };
-    /** Timestamp when user accepted terms and conditions */
-    acceptedTermsAt?: string;
-    /** Timestamp of user's first login */
-    firstLoginTime?: string;
-    /** Timestamp of user's most recent login */
-    lastLoginTime: string;
-    /** Timestamp when the user record was created */
-    createdAt: string;
-    /** Timestamp when the user record was last updated */
-    updatedAt: string;
-    /** Various online profiles associated with the user account */
-    socials?: {
-      /** The site of the social. */
-      site: string;
-      /** The link of the social. */
-      link: string;
-    }[];
-    /** Timestamp when the user record was soft-deleted (null if not deleted) */
-    deletedAt: string | null;
-    /** Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set. */
-    roleNames?: string[];
-    /** Teams the user belongs to with role information */
-    teams?: {
-      /** Team memberships for the user with their assigned roles. */
-      teamsWithRoles?: {
-        /** Unique identifier of the team. */
-        id: string;
-        /** Name of the team. */
-        name: string;
-        /** Human readable description of the team. */
-        description?: string;
-        /** Identifier of the team owner. */
-        owner?: string;
-        /** Free-form metadata associated with the team. */
-        metadata?: {
-          [key: string]: any;
-        };
-        /** Timestamp when the team was created. */
-        createdAt?: string;
-        /** Timestamp when the team was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the team was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of team memberships returned for the user. */
-      totalCount?: number;
-    };
-    /** Organizations the user belongs to with role information */
-    organizations?: {
-      /** Organization memberships for the user with their assigned roles. */
-      organizationsWithRoles?: {
-        /** Unique identifier of the organization. */
-        id: string;
-        /** Name of the organization. */
-        name: string;
-        /** Human readable description of the organization. */
-        description?: string;
-        /** Country associated with the organization. */
-        country?: string;
-        /** Region associated with the organization. */
-        region?: string;
-        /** Identifier of the organization owner. */
-        owner?: string;
-        /** Timestamp when the organization was created. */
-        createdAt?: string;
-        /** Timestamp when the organization was last updated. */
-        updatedAt?: string;
-        /** Timestamp when the organization was soft-deleted (null if not deleted). */
-        deletedAt?: string | null;
-        /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
-        roleNames: string[];
-      }[];
-      /** Total number of organization memberships returned for the user. */
-      totalCount?: number;
-    };
-  }[];
-};
-export type GetUsersApiArg = {
-  /** Get responses by page */
-  page?: string;
-  /** Get responses by page size */
-  pageSize?: string;
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-  /** Get filtered reponses */
-  filter?: string;
 };
 export type GetUserProfileByIdApiResponse = /** status 200 User profile for the requested ID */ {
   /** Unique identifier for the user */
@@ -5314,7 +12793,7 @@ export type GetUserEmailAddressesApiResponse = /** status 200 Email addresses as
   createdAt: string;
   updatedAt: string;
   /** SQL null Timestamp to handle null values of time. */
-  deletedAt?: string;
+  deletedAt?: string | null;
 }[];
 export type GetUserEmailAddressesApiArg = {
   /** ID of the user */
@@ -5560,7 +13039,7 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
     /** Timestamp when the connection was last updated. */
     updatedAt?: string;
     /** Timestamp when the connection was soft-deleted, if applicable. */
-    deletedAt?: string;
+    deletedAt?: string | null;
     /** Associated environments for this connection */
     environments?: {
       /** ID */
@@ -5867,7 +13346,7 @@ export type RegisterConnectionApiResponse = /** status 201 Connection registered
   /** Timestamp when the connection was last updated. */
   updatedAt?: string;
   /** Timestamp when the connection was soft-deleted, if applicable. */
-  deletedAt?: string;
+  deletedAt?: string | null;
   /** Associated environments for this connection */
   environments?: {
     /** ID */
@@ -6076,6 +13555,56 @@ export type RegisterConnectionApiArg = {
     /** Associated credential ID */
     credentialId?: string;
   };
+};
+export type ProcessConnectionRegistrationApiResponse =
+  /** status 200 Registration bootstrap for status `initialize`; empty body for every other status. */ {
+    /** Registration process tracker to echo on subsequent events. */
+    id: string;
+    /** Registry component definition (`{Kind}Connection`) describing the connection, including its JSON-encoded `schema`. */
+    connection: object;
+    /** Registry component definition (`{Kind}Credential`) describing the credential, including its JSON-encoded `schema`. Absent when the kind defines no credential component. */
+    credential?: object;
+  };
+export type ProcessConnectionRegistrationApiArg = {
+  body: {
+    /** Registration process tracker. Returned by the `initialize` bootstrap or minted client-side; echoed on every subsequent event for the same registration. */
+    id?: string;
+    /** Connection kind (e.g. `kubernetes`, `grafana`, `prometheus`). */
+    kind: string;
+    /** State-machine event to dispatch. `initialize` returns the registration bootstrap; every other event advances the tracked registration. `not found` is the machine's literal event name. */
+    status:
+      | "initialize"
+      | "discovery"
+      | "register"
+      | "connect"
+      | "disconnect"
+      | "ignore"
+      | "delete"
+      | "not found"
+      | "noop"
+      | "exit";
+    /** Connection name. */
+    name?: string;
+    /** Connection type. */
+    type?: string;
+    /** Connection sub-type. */
+    subType?: string;
+    /** Registry model the connection's definition belongs to. */
+    model?: string;
+    /** Connection metadata gathered so far in the flow. */
+    metadata?: object;
+    /** Credential secret material for the connection. */
+    credentialSecret?: object;
+    /** Existing credential to associate instead of a new secret. */
+    credentialId?: string;
+    /** When true the server registers the connection without verifying the supplied credential first. */
+    skipCredentialVerification?: boolean;
+  };
+};
+export type CancelConnectionRegisterApiResponse = unknown;
+export type CancelConnectionRegisterApiArg = {
+  /** Registration process tracker id to discard. */
+  registrationId: string;
 };
 export type GetConnectionByIdApiResponse = /** status 200 Connection details */ {
   /** Connection ID */
@@ -6315,7 +13844,7 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
   /** Timestamp when the connection was last updated. */
   updatedAt?: string;
   /** Timestamp when the connection was soft-deleted, if applicable. */
-  deletedAt?: string;
+  deletedAt?: string | null;
   /** Associated environments for this connection */
   environments?: {
     /** ID */
@@ -6584,7 +14113,7 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated */ {
   /** Timestamp when the connection was last updated. */
   updatedAt?: string;
   /** Timestamp when the connection was soft-deleted, if applicable. */
-  deletedAt?: string;
+  deletedAt?: string | null;
   /** Associated environments for this connection */
   environments?: {
     /** ID */
@@ -7040,7 +14569,7 @@ export type PerformConnectionActionApiResponse =
     /** Timestamp when the connection was last updated. */
     updatedAt?: string;
     /** Timestamp when the connection was soft-deleted, if applicable. */
-    deletedAt?: string;
+    deletedAt?: string | null;
     /** Associated environments for this connection */
     environments?: {
       /** ID */
@@ -7101,13 +14630,13 @@ export type GetKubernetesContextApiResponse = /** status 200 Kubernetes context 
     cluster?: object;
     /** API server URL of the Kubernetes cluster. */
     server?: string;
-    /** ID of the user who owns the underlying connection. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     owner?: string;
-    /** ID of the user who registered the context. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     createdBy?: string;
-    /** ID of the Meshery instance the context is registered with. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     mesheryInstanceId?: string;
-    /** ID of the Kubernetes server associated with the context. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     kubernetesServerId?: string;
     /** How Meshery is deployed relative to the cluster (e.g. in_cluster, out_of_cluster). */
     deploymentType?: string;
@@ -7117,8 +14646,10 @@ export type GetKubernetesContextApiResponse = /** status 200 Kubernetes context 
     createdAt?: string;
     /** Timestamp when the underlying connection was last updated. */
     updatedAt?: string;
-    /** ID of the connection this context was projected from. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     connectionId?: string;
+    /** Whether this context's API server answered the probe run while its kubeconfig was processed. Discovery and import surface unreachable contexts too, so they can still be registered; reachability only gates the connected transition. */
+    reachable?: boolean;
   }[];
 };
 export type GetKubernetesContextApiArg = {
@@ -7735,11 +15266,11 @@ export type GetEnvironmentsApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** User's organization ID */
   orgId: string;
 };
@@ -7849,11 +15380,11 @@ export type GetEnvironmentConnectionsApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** JSON-encoded filter string used to scope the connection listing. */
   filter?: string;
 };
@@ -7967,7 +15498,7 @@ export type GetPerformanceProfilesApiResponse = /** status 200 Performance profi
 };
 export type GetPerformanceProfilesApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by pagesize */
   pagesize?: string;
   /** Get responses that match search param value */
@@ -8231,7 +15762,7 @@ export type GetPerformanceProfileResultsApiArg = {
   /** Performance profile ID. */
   performanceProfileId: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by pagesize */
   pagesize?: string;
   /** Get responses that match search param value */
@@ -8282,7 +15813,7 @@ export type GetPerformanceResultsApiResponse = /** status 200 Performance result
 };
 export type GetPerformanceResultsApiArg = {
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Get responses by pagesize */
   pagesize?: string;
   /** Get responses that match search param value */
@@ -8293,6 +15824,76 @@ export type GetPerformanceResultsApiArg = {
   from?: string;
   /** End date for filtering results by test start time, in YYYY-MM-DD format. */
   to?: string;
+};
+export type GetUsersApiResponse = /** status 200 Paginated list of public users */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Public user records for the requested page. */
+  data: {
+    /** Unique identifier for the user */
+    id: string;
+    /** Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id. */
+    userId?: string;
+    /** Public username of the user */
+    username?: string;
+    /** URL to user's avatar image */
+    avatarUrl?: string;
+  }[];
+};
+export type GetUsersApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get filtered reponses */
+  filter?: string;
+};
+export type SearchUsersApiResponse = /** status 200 Paginated list of matching users in the searchable projection */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Matching user records for the requested page. */
+  data: {
+    /** Unique identifier for the user */
+    id: string;
+    /** Deprecated duplicate of id kept for consumers that predate the retirement of the legacy user_id column; always equals id. */
+    userId?: string;
+    /** Public username of the user */
+    username?: string;
+    /** User's first name */
+    firstName?: string;
+    /** User's last name */
+    lastName?: string;
+    /** User's email address */
+    email?: string;
+    /** URL to user's avatar image */
+    avatarUrl?: string;
+    /** Timestamp when the user record was soft-deleted (null if not deleted) */
+    deletedAt?: string | null;
+  }[];
+};
+export type SearchUsersApiArg = {
+  /** Get responses by page */
+  page?: number;
+  /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
+  pageSize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get filtered reponses */
+  filter?: string;
 };
 export type GetWorkspacesApiResponse = /** status 200 Workspaces */ {
   /** Zero-based page index returned in this response. */
@@ -8338,11 +15939,11 @@ export type GetWorkspacesApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;
 };
@@ -8470,11 +16071,11 @@ export type GetTeamsOfWorkspaceApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;
 };
@@ -8552,11 +16153,11 @@ export type GetEnvironmentsOfWorkspaceApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;
 };
@@ -9622,11 +17223,11 @@ export type GetDesignsOfWorkspaceApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;
 };
@@ -9706,11 +17307,11 @@ export type GetViewsOfWorkspaceApiArg = {
   /** Get ordered responses */
   order?: string;
   /** Get responses by page */
-  page?: string;
+  page?: number;
   /** Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
   pageSize?: number;
   /** Get responses by pagesize. Deprecated alias of pageSize. */
-  pagesize?: string;
+  pagesize?: number;
   /** JSON-encoded filter string used for assignment and soft-delete filters. */
   filter?: string;
 };
@@ -9751,91 +17352,187 @@ export type UnassignViewFromWorkspaceApiArg = {
 };
 export const {
   useGetControllersDefaultConfigQuery,
+  useLazyGetControllersDefaultConfigQuery,
   useUpdateControllersDefaultConfigMutation,
   useGetConnectionControllersConfigQuery,
+  useLazyGetConnectionControllersConfigQuery,
   useUpdateConnectionControllersConfigMutation,
   useEvaluateRelationshipsMutation,
+  useGetRegistryModelsQuery,
+  useLazyGetRegistryModelsQuery,
+  useGetRegistryModelsByNameQuery,
+  useLazyGetRegistryModelsByNameQuery,
+  useDeleteRegistryModelMutation,
+  useGetRegistryComponentsByModelQuery,
+  useLazyGetRegistryComponentsByModelQuery,
+  useGetRegistryComponentsByModelAndNameQuery,
+  useLazyGetRegistryComponentsByModelAndNameQuery,
+  useGetRegistryRelationshipsByModelQuery,
+  useLazyGetRegistryRelationshipsByModelQuery,
+  useGetRegistryRelationshipsByModelAndNameQuery,
+  useLazyGetRegistryRelationshipsByModelAndNameQuery,
+  useGetRegistryPoliciesByModelQuery,
+  useLazyGetRegistryPoliciesByModelQuery,
+  useGetRegistryPoliciesByModelAndNameQuery,
+  useLazyGetRegistryPoliciesByModelAndNameQuery,
+  useGetRegistryCategoriesQuery,
+  useLazyGetRegistryCategoriesQuery,
+  useGetRegistryCategoriesByNameQuery,
+  useLazyGetRegistryCategoriesByNameQuery,
+  useGetRegistryModelsByCategoryQuery,
+  useLazyGetRegistryModelsByCategoryQuery,
+  useGetRegistryModelsByCategoryAndModelQuery,
+  useLazyGetRegistryModelsByCategoryAndModelQuery,
+  useGetRegistryComponentsByCategoryAndModelQuery,
+  useLazyGetRegistryComponentsByCategoryAndModelQuery,
+  useGetRegistryComponentsByCategoryAndModelAndNameQuery,
+  useLazyGetRegistryComponentsByCategoryAndModelAndNameQuery,
+  useGetRegistryComponentsByCategoryQuery,
+  useLazyGetRegistryComponentsByCategoryQuery,
+  useGetRegistryComponentsByCategoryAndNameQuery,
+  useLazyGetRegistryComponentsByCategoryAndNameQuery,
+  useGetRegistryComponentsQuery,
+  useLazyGetRegistryComponentsQuery,
+  useRegisterRegistryComponentMutation,
+  useGetRegistryComponentsByNameQuery,
+  useLazyGetRegistryComponentsByNameQuery,
+  useGetRegistryRelationshipsQuery,
+  useLazyGetRegistryRelationshipsQuery,
+  useRegisterRegistryRelationshipMutation,
+  useGetRegistryRegistrantsQuery,
+  useLazyGetRegistryRegistrantsQuery,
+  useRegisterRegistryEntitiesMutation,
+  useGenerateRegistryComponentsMutation,
+  useExportRegistryModelQuery,
+  useLazyExportRegistryModelQuery,
+  useValidateRegistryEntitiesMutation,
+  useUpdateRegistryEntityStatusMutation,
   useGetSystemDatabaseQuery,
+  useLazyGetSystemDatabaseQuery,
   useResetSystemDatabaseMutation,
   useGetSystemVersionQuery,
+  useLazyGetSystemVersionQuery,
+  useAddKubernetesConfigMutation,
+  useDiscoverKubernetesContextsMutation,
+  usePingKubernetesQuery,
+  useLazyPingKubernetesQuery,
   useGetSystemSyncQuery,
+  useLazyGetSystemSyncQuery,
   useGetOperatorControllerStatusQuery,
+  useLazyGetOperatorControllerStatusQuery,
   useGetMeshsyncControllerStatusQuery,
+  useLazyGetMeshsyncControllerStatusQuery,
   useGetBrokerControllerStatusQuery,
+  useLazyGetBrokerControllerStatusQuery,
   useGetControllerDiagnosticsQuery,
+  useLazyGetControllerDiagnosticsQuery,
   useSubscribeControllersStatusQuery,
+  useLazySubscribeControllersStatusQuery,
   useGetUserCredentialsQuery,
+  useLazyGetUserCredentialsQuery,
   useSaveUserCredentialMutation,
   useUpdateUserCredentialMutation,
   useDeleteUserCredentialMutation,
   useGetCredentialByIdQuery,
+  useLazyGetCredentialByIdQuery,
   useGetUserKeysQuery,
-  useRegisterMeshmodelsMutation,
+  useLazyGetUserKeysQuery,
   useGetOrgsQuery,
+  useLazyGetOrgsQuery,
   useCreateOrgMutation,
   useGetOrgByDomainQuery,
+  useLazyGetOrgByDomainQuery,
   useGetOrgQuery,
+  useLazyGetOrgQuery,
   useDeleteOrgMutation,
   useUpdateOrgMutation,
   useGetOrgPreferencesQuery,
+  useLazyGetOrgPreferencesQuery,
   useAddTeamToOrgMutation,
   useRemoveTeamFromOrgMutation,
   useAddUserToOrgMutation,
   useDeleteUserFromOrgMutation,
   useGetUsersForOrgQuery,
-  useGetUsersQuery,
+  useLazyGetUsersForOrgQuery,
   useGetUserProfileByIdQuery,
+  useLazyGetUserProfileByIdQuery,
   useGetUserQuery,
+  useLazyGetUserQuery,
   useGetUserEmailAddressesQuery,
+  useLazyGetUserEmailAddressesQuery,
   useGetConnectionsQuery,
+  useLazyGetConnectionsQuery,
   useRegisterConnectionMutation,
+  useProcessConnectionRegistrationMutation,
+  useCancelConnectionRegisterMutation,
   useGetConnectionByIdQuery,
+  useLazyGetConnectionByIdQuery,
   useUpdateConnectionMutation,
   useDeleteConnectionMutation,
   usePerformConnectionActionMutation,
   useDeleteMesheryConnectionMutation,
   useGetKubernetesContextQuery,
+  useLazyGetKubernetesContextQuery,
   useAddConnectionToEnvironmentMutation,
   useRemoveConnectionFromEnvironmentMutation,
   useListConnectionDefinitionsQuery,
+  useLazyListConnectionDefinitionsQuery,
   useRegisterConnectionDefinitionMutation,
   useGetConnectionDefinitionQuery,
+  useLazyGetConnectionDefinitionQuery,
   useUpdateConnectionDefinitionMutation,
   useDeleteConnectionDefinitionMutation,
   useImportDesignMutation,
   useCreateEnvironmentMutation,
   useGetEnvironmentsQuery,
+  useLazyGetEnvironmentsQuery,
   useGetEnvironmentByIdQuery,
+  useLazyGetEnvironmentByIdQuery,
   useUpdateEnvironmentMutation,
   useDeleteEnvironmentMutation,
   useGetEnvironmentConnectionsQuery,
+  useLazyGetEnvironmentConnectionsQuery,
   useDeleteEventMutation,
   useCreateEventMutation,
   useBulkDeleteEventsMutation,
   useBulkUpdateEventStatusMutation,
   useUpdateEventStatusMutation,
   useGetPerformanceProfilesQuery,
+  useLazyGetPerformanceProfilesQuery,
   useUpsertPerformanceProfileMutation,
   useGetPerformanceProfileQuery,
+  useLazyGetPerformanceProfileQuery,
   useUpdatePerformanceProfileMutation,
   useDeletePerformanceProfileMutation,
   useGetPerformanceProfileResultsQuery,
+  useLazyGetPerformanceProfileResultsQuery,
   useGetPerformanceResultsQuery,
+  useLazyGetPerformanceResultsQuery,
+  useGetUsersQuery,
+  useLazyGetUsersQuery,
+  useSearchUsersQuery,
+  useLazySearchUsersQuery,
   useGetWorkspacesQuery,
+  useLazyGetWorkspacesQuery,
   useCreateWorkspaceMutation,
   useGetWorkspaceByIdQuery,
+  useLazyGetWorkspaceByIdQuery,
   useUpdateWorkspaceMutation,
   useDeleteWorkspaceMutation,
   useGetTeamsOfWorkspaceQuery,
+  useLazyGetTeamsOfWorkspaceQuery,
   useAssignTeamToWorkspaceMutation,
   useUnassignTeamFromWorkspaceMutation,
   useGetEnvironmentsOfWorkspaceQuery,
+  useLazyGetEnvironmentsOfWorkspaceQuery,
   useAssignEnvironmentToWorkspaceMutation,
   useUnassignEnvironmentFromWorkspaceMutation,
   useGetDesignsOfWorkspaceQuery,
+  useLazyGetDesignsOfWorkspaceQuery,
   useAssignDesignToWorkspaceMutation,
   useUnassignDesignFromWorkspaceMutation,
   useGetViewsOfWorkspaceQuery,
+  useLazyGetViewsOfWorkspaceQuery,
   useAssignViewToWorkspaceMutation,
   useUnassignViewFromWorkspaceMutation,
 } = injectedRtkApi;

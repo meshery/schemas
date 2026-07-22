@@ -1,5 +1,8 @@
 {
   "ui:options": { "label": false },
+  "name": {
+    "ui:placeholder": "Untitled Design"
+  },
   "uploadType": {
     "ui:widget": "radio"
   },

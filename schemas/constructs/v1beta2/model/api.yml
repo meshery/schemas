@@ -19,36 +19,11 @@ tags:
     description: Operations related to mesh models
 
 paths:
-  /api/meshmodels/register:
-    post:
-      x-internal: ["cloud", "meshery"]
-      tags:
-        - Models
-      summary: Register mesh models
-      operationId: registerMeshmodels
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              $ref: "#/components/schemas/ImportRequest"
-      responses:
-        "201":
-          description: Model registered
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-        "400":
-          description: Invalid request format
-        "401":
-          $ref: "#/components/responses/401"
-        "500":
-          description: Internal server error
-
+  # The Meshery Server import operation formerly documented here as
+  # `POST /api/meshmodels/register` (operationId `registerMeshmodels`) now
+  # lives in the registry construct as `POST /api/registry/register`
+  # (operationId `registerRegistryEntities`); it references this construct's
+  # ImportRequest schema.
   /api/integrations/meshmodels/models:
     get:
       x-internal: ["cloud"]

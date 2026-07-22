@@ -407,9 +407,9 @@ export interface components {
         /** @description Subscription ID */
         subscriptionId: string;
         /** @description Get responses by page */
-        page: string;
+        page: number;
         /** @description Get responses by pagesize */
-        pagesize: string;
+        pagesize: number;
         /** @description Get responses by pagesize (pass all to get all responses) */
         pagesizeWithAll: string;
         /** @description Get ordered responses */
@@ -425,9 +425,9 @@ export interface operations {
         parameters: {
             query?: {
                 /** @description Get responses by page */
-                page?: string;
+                page?: number;
                 /** @description Get responses by pagesize */
-                pagesize?: string;
+                pagesize?: number;
                 /** @description Get ordered responses */
                 order?: string;
                 /** @description Filter subscriptions by status */

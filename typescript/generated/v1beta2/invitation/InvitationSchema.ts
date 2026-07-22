@@ -1790,7 +1790,8 @@ const InvitationSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "minimum": 0
             }
           },
           {
@@ -1798,7 +1799,7 @@ const InvitationSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by pagesize",
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           },
           {

@@ -113,10 +113,10 @@ func newTable(out io.Writer, cols ...any) table.Table {
 	return t
 }
 
-// printAuditReport renders the top-level summary: one row per audit dimension.
-// The x-annotation breakdown shows how schema-defined endpoints are distributed
-// across consumers. Schema Completeness is schema-wide (same value for all
-// consumers of a given endpoint), so it appears in the Schema column only.
+// printAuditReport renders the top-level summary: one row per audit metric.
+// Columns are Schema (OpenAPI ops), Meshery (Gorilla routes), and Cloud
+// (Echo routes). Metric labels are fixed strings also parsed by
+// .github/workflows/schema-audit.yml when posting the PR comment.
 func printAuditReport(out io.Writer, result *validation.ConsumerAuditResult) {
 	s := result.Summary
 
@@ -128,23 +128,31 @@ func printAuditReport(out io.Writer, result *validation.ConsumerAuditResult) {
 	}
 
 	fmt.Fprintln(out)
-	fmt.Fprintln(out, "Audit Report")
+	fmt.Fprintln(out, "Consumer Audit Report")
 	fmt.Fprintln(out)
 
-	t := newTable(out, "Category", "Schema", "Meshery", "Cloud")
-	t.AddRow("Total Endpoints", s.SchemaEndpoints, s.MesheryEndpoints, s.CloudEndpoints)
-	t.AddRow("Schema Backed", "-", s.AnnotatedMeshery+s.AnnotatedBoth, s.AnnotatedCloud+s.AnnotatedBoth)
-	t.AddRow("x-Annotated (Meshery only)", s.AnnotatedMeshery, "-", "-")
-	t.AddRow("x-Annotated (Cloud only)", s.AnnotatedCloud, "-", "-")
-	t.AddRow("x-Annotated (Both)", s.AnnotatedBoth, "-", "-")
-	t.AddRow("Schema Completeness (TRUE)", s.SchemaCompletenessTrue, "-", "-")
-	t.AddRow("Schema Only", s.SchemaOnly, "-", "-")
-	t.AddRow("Unimplemented With Schema",
+	// Keep metric labels stable: the CI comment job matches these exact strings.
+	t := newTable(out, "Metric", "Schema", "Meshery", "Cloud")
+	t.AddRow("Total endpoints", s.SchemaEndpoints, s.MesheryEndpoints, s.CloudEndpoints)
+	t.AddRow("Spec applies to consumer", "-", s.AnnotatedMeshery+s.AnnotatedBoth, s.AnnotatedCloud+s.AnnotatedBoth)
+	t.AddRow("Spec targets Meshery only", s.AnnotatedMeshery, "-", "-")
+	t.AddRow("Spec targets Cloud only", s.AnnotatedCloud, "-", "-")
+	t.AddRow("Spec targets both consumers", s.AnnotatedBoth, "-", "-")
+	t.AddRow("Spec passes validation", s.SchemaCompletenessTrue, "-", "-")
+	t.AddRow("Spec only (no handlers)", s.SchemaOnly, "-", "-")
+	t.AddRow("Spec without consumer handler",
 		"-",
 		cell(s.SchemaOnlyMeshery, s.MesheryEndpoints > 0),
 		cell(s.SchemaOnlyCloud, s.CloudEndpoints > 0))
-	t.AddRow("Consumer Only", "-", s.ConsumerOnlyMeshery, s.ConsumerOnlyCloud)
+	t.AddRow("Handler only (no spec)", "-", s.ConsumerOnlyMeshery, s.ConsumerOnlyCloud)
 	t.Print()
+
+	// Only the two "missing handler" metrics need disambiguation; the rest
+	// are self-explanatory from the label.
+	fmt.Fprintln(out)
+	fmt.Fprintln(out, "Note:")
+	fmt.Fprintln(out, "Spec only (no handlers) --> no matching handler in any audited consumer.")
+	fmt.Fprintln(out, "Spec without consumer handler --> this consumer is missing it (may exist elsewhere).")
 }
 
 type consumerActionSummary struct {

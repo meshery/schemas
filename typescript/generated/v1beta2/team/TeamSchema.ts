@@ -170,7 +170,8 @@ const TeamSchema: Record<string, unknown> = {
         "in": "query",
         "description": "Get responses by page",
         "schema": {
-          "type": "string"
+          "type": "integer",
+          "minimum": 0
         }
       },
       "pageSize": {
@@ -188,7 +189,7 @@ const TeamSchema: Record<string, unknown> = {
         "description": "Get responses by pagesize. Deprecated alias of pageSize.",
         "deprecated": true,
         "schema": {
-          "type": "string"
+          "type": "integer"
         }
       }
     },
@@ -869,7 +870,8 @@ const TeamSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "minimum": 0
             }
           },
           {
@@ -887,7 +889,7 @@ const TeamSchema: Record<string, unknown> = {
             "description": "Get responses by pagesize. Deprecated alias of pageSize.",
             "deprecated": true,
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           }
         ],
@@ -1878,7 +1880,8 @@ const TeamSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "minimum": 0
             }
           },
           {
@@ -1896,18 +1899,18 @@ const TeamSchema: Record<string, unknown> = {
             "description": "Get responses by pagesize. Deprecated alias of pageSize.",
             "deprecated": true,
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Team users mapping",
+            "description": "Team members with their roles",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "Paginated list of user-team mappings",
+                  "description": "Paginated list of team members.",
                   "properties": {
                     "page": {
                       "type": "integer",
@@ -1924,93 +1927,18 @@ const TeamSchema: Record<string, unknown> = {
                       "description": "Total number of items available.",
                       "minimum": 0
                     },
-                    "usersTeamsMapping": {
+                    "data": {
                       "type": "array",
-                      "x-go-type-skip-optional-pointer": true,
                       "items": {
-                        "x-go-type": "UsersTeamsMapping",
                         "type": "object",
-                        "description": "Join row between users and teams. The schema name is `UsersTeamsMapping` (rather than `TeamsUsersMapping`) so that pop's tableize default produces the live DB table name `users_teams_mappings`, eliminating the need for an explicit `TableName()` helper on the generated Go struct.\n",
+                        "description": "A user who is a prospective or existing team member. Returned by the \"list users in team\" endpoint. `joinedAt` is the first canonicalised projection field — other user fields (`id`, `firstName`, `lastName`, `email`, `avatarUrl`) continue to flow through `additionalProperties` pending migration of the user schema to the canonical-casing contract. See meshery/schemas#832 for the per-field roadmap.\n",
+                        "additionalProperties": true,
                         "properties": {
-                          "id": {
-                            "x-go-name": "ID",
-                            "type": "string",
-                            "format": "uuid",
-                            "x-go-type": "uuid.UUID",
-                            "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
-                            },
+                          "joinedAt": {
+                            "description": "Timestamp when the user joined the team. Server-computed from the earliest matching row in `users_teams_mapping` for this (team, user) pair. Server-managed; clients cannot set this.\n",
                             "x-oapi-codegen-extra-tags": {
-                              "db": "id",
-                              "json": "id"
-                            },
-                            "x-go-type-name": "GeneralId",
-                            "x-go-type-skip-optional-pointer": true
-                          },
-                          "teamId": {
-                            "description": "Team ID",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "team_id",
-                              "json": "teamId"
-                            },
-                            "type": "string",
-                            "format": "uuid",
-                            "x-go-type": "uuid.UUID",
-                            "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
-                            }
-                          },
-                          "userId": {
-                            "description": "User ID",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "owner",
-                              "json": "userId"
-                            },
-                            "type": "string",
-                            "format": "uuid",
-                            "x-go-type": "uuid.UUID",
-                            "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
-                            }
-                          },
-                          "roleId": {
-                            "description": "Optional role assigned to this team membership. Nullable because a membership may exist without an explicit role (e.g., team-admin assignments are stamped on insert; non-owner adds may leave `role_id` null until a role is assigned). References `roles.id`.\n",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "role_id",
-                              "json": "roleId,omitempty"
-                            },
-                            "type": "string",
-                            "format": "uuid",
-                            "x-go-type": "uuid.UUID",
-                            "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
-                            }
-                          },
-                          "createdAt": {
-                            "description": "Timestamp when the mapping was created.",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "created_at",
-                              "json": "createdAt"
-                            },
-                            "type": "string",
-                            "format": "date-time",
-                            "x-go-type-skip-optional-pointer": true
-                          },
-                          "updatedAt": {
-                            "description": "Timestamp when the mapping was last updated.",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "updated_at",
-                              "json": "updatedAt"
-                            },
-                            "type": "string",
-                            "format": "date-time",
-                            "x-go-type-skip-optional-pointer": true
-                          },
-                          "deletedAt": {
-                            "description": "Timestamp when the mapping was soft-deleted, if applicable.",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "deleted_at",
-                              "json": "deletedAt"
+                              "db": "joined_at",
+                              "json": "joinedAt"
                             },
                             "x-go-type": "NullTime",
                             "type": "string",
@@ -2019,7 +1947,7 @@ const TeamSchema: Record<string, unknown> = {
                           }
                         }
                       },
-                      "description": "The user-team mappings on the current page."
+                      "description": "The data of the teammemberspage."
                     }
                   }
                 }
@@ -2456,7 +2384,8 @@ const TeamSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "minimum": 0
             }
           },
           {
@@ -2474,7 +2403,7 @@ const TeamSchema: Record<string, unknown> = {
             "description": "Get responses by pagesize. Deprecated alias of pageSize.",
             "deprecated": true,
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           }
         ],

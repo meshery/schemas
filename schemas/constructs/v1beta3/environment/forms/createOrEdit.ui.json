@@ -1,7 +1,7 @@
 {
   "ui:options": { "label": false },
   "organizationId": {
-    "ui:disabled": false
+    "ui:widget": "hidden"
   },
   "ui:order": ["organizationId", "name", "description"]
 }

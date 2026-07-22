@@ -35,16 +35,30 @@ const (
 	Operator ConnectionActionRequestMode = "operator"
 )
 
+// Defines values for ConnectionRegistrationEventStatus.
+const (
+	ConnectionRegistrationEventStatusConnect    ConnectionRegistrationEventStatus = "connect"
+	ConnectionRegistrationEventStatusDelete     ConnectionRegistrationEventStatus = "delete"
+	ConnectionRegistrationEventStatusDisconnect ConnectionRegistrationEventStatus = "disconnect"
+	ConnectionRegistrationEventStatusDiscovery  ConnectionRegistrationEventStatus = "discovery"
+	ConnectionRegistrationEventStatusExit       ConnectionRegistrationEventStatus = "exit"
+	ConnectionRegistrationEventStatusIgnore     ConnectionRegistrationEventStatus = "ignore"
+	ConnectionRegistrationEventStatusInitialize ConnectionRegistrationEventStatus = "initialize"
+	ConnectionRegistrationEventStatusNoop       ConnectionRegistrationEventStatus = "noop"
+	ConnectionRegistrationEventStatusNotFound   ConnectionRegistrationEventStatus = "not found"
+	ConnectionRegistrationEventStatusRegister   ConnectionRegistrationEventStatus = "register"
+)
+
 // Defines values for ConnectionStatusValue.
 const (
-	ConnectionStatusValueConnected    ConnectionStatusValue = "connected"
-	ConnectionStatusValueDeleted      ConnectionStatusValue = "deleted"
-	ConnectionStatusValueDisconnected ConnectionStatusValue = "disconnected"
-	ConnectionStatusValueDiscovered   ConnectionStatusValue = "discovered"
-	ConnectionStatusValueIgnored      ConnectionStatusValue = "ignored"
-	ConnectionStatusValueMaintenance  ConnectionStatusValue = "maintenance"
-	ConnectionStatusValueNotFound     ConnectionStatusValue = "not found"
-	ConnectionStatusValueRegistered   ConnectionStatusValue = "registered"
+	Connected    ConnectionStatusValue = "connected"
+	Deleted      ConnectionStatusValue = "deleted"
+	Disconnected ConnectionStatusValue = "disconnected"
+	Discovered   ConnectionStatusValue = "discovered"
+	Ignored      ConnectionStatusValue = "ignored"
+	Maintenance  ConnectionStatusValue = "maintenance"
+	NotFound     ConnectionStatusValue = "not found"
+	Registered   ConnectionStatusValue = "registered"
 )
 
 // Connection Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections
@@ -94,7 +108,7 @@ type Connection struct {
 	UpdatedAt core.Time  `db:"updated_at" json:"updatedAt" yaml:"updatedAt,omitempty"`
 
 	// DeletedAt SQL null Timestamp to handle null values of time.
-	DeletedAt core.NullTime `db:"deleted_at" json:"deletedAt" yaml:"deletedAt,omitempty"`
+	DeletedAt core.NullTime `db:"deleted_at" json:"deletedAt" yaml:"deletedAt"`
 
 	// Environments Associated environments for this connection
 	Environments []*environmentv1beta3.Environment `db:"-" gorm:"-" json:"environments,omitempty" yaml:"environments,omitempty"`
@@ -243,6 +257,60 @@ type ConnectionPayload struct {
 	Type string `json:"type" yaml:"type"`
 }
 
+// ConnectionReachability Whether the system behind a connection answered an ad hoc connectivity probe. A probe is a point-in-time check of the connected system's endpoint; its result is never persisted with the connection. For example, probing a Kubernetes connection checks the cluster's API server.
+type ConnectionReachability = bool
+
+// ConnectionRegistrationBootstrap Response to an `initialize` registration event: the registry component definitions describing the kind's connection and credential, plus the tracker id for the registration process. Component definitions carry their RJSF form schema as a JSON-encoded string under `schema`.
+type ConnectionRegistrationBootstrap struct {
+	// Connection Registry component definition (`{Kind}Connection`) describing the connection, including its JSON-encoded `schema`.
+	Connection core.Map `json:"connection" yaml:"connection"`
+
+	// Credential Registry component definition (`{Kind}Credential`) describing the credential, including its JSON-encoded `schema`. Absent when the kind defines no credential component.
+	Credential core.Map `json:"credential,omitempty" yaml:"credential,omitempty"`
+
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID core.Uuid `json:"id" yaml:"id"`
+}
+
+// ConnectionRegistrationEvent Lifecycle event for the connection registration state machine (POST /api/integrations/connections/register). Unlike `ConnectionPayload`, only `kind` and `status` are always present: an `initialize` event carries just the kind, while `register` / `connect` events carry the connection details assembled so far.
+type ConnectionRegistrationEvent struct {
+	// CredentialId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	CredentialID *core.Uuid `json:"credentialId,omitempty" yaml:"credentialId,omitempty"`
+
+	// CredentialSecret Credential secret material for the connection.
+	CredentialSecret core.Map `json:"credentialSecret,omitempty" yaml:"credentialSecret,omitempty"`
+
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID *core.Uuid `json:"id,omitempty" yaml:"id,omitempty"`
+
+	// Kind Connection kind (e.g. `kubernetes`, `grafana`, `prometheus`).
+	Kind string `json:"kind" yaml:"kind"`
+
+	// Metadata Connection metadata gathered so far in the flow.
+	Metadata core.Map `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+
+	// Model Registry model the connection's definition belongs to.
+	Model string `json:"model,omitempty" yaml:"model,omitempty"`
+
+	// Name Connection name.
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+
+	// SkipCredentialVerification When true the server registers the connection without verifying the supplied credential first.
+	SkipCredentialVerification bool `json:"skipCredentialVerification" yaml:"skipCredentialVerification"`
+
+	// Status State-machine event to dispatch. `initialize` returns the registration bootstrap; every other event advances the tracked registration. `not found` is the machine's literal event name.
+	Status ConnectionRegistrationEventStatus `json:"status" yaml:"status"`
+
+	// SubType Connection sub-type.
+	SubType string `json:"subType,omitempty" yaml:"subType,omitempty"`
+
+	// Type Connection type.
+	Type string `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// ConnectionRegistrationEventStatus State-machine event to dispatch. `initialize` returns the registration bootstrap; every other event advances the tracked registration. `not found` is the machine's literal event name.
+type ConnectionRegistrationEventStatus string
+
 // ConnectionStateTransition A single permissible state transition for a connection, describing the next reachable state and the meaning of that transition.
 type ConnectionStateTransition struct {
 	// ConnectionStatusValue Connection Status Value
@@ -313,6 +381,9 @@ type K8sContext struct {
 
 	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	Owner *core.Uuid `json:"owner,omitempty" yaml:"owner,omitempty"`
+
+	// Reachable Whether the system behind a connection answered an ad hoc connectivity probe. A probe is a point-in-time check of the connected system's endpoint; its result is never persisted with the connection. For example, probing a Kubernetes connection checks the cluster's API server.
+	Reachable bool `json:"reachable" yaml:"reachable,omitempty"`
 
 	// Server API server URL of the Kubernetes cluster.
 	Server string `json:"server,omitempty" yaml:"server,omitempty"`

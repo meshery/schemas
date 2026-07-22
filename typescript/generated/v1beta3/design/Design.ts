@@ -3930,7 +3930,7 @@ export interface components {
         /** @description Design (Pattern) ID */
         designId: string;
         /** @description Get responses by page */
-        page: string;
+        page: number;
         /** @description Number of items per page (canonical camelCase form). */
         pageSize: number;
         /** @description Get responses that match search param value */
@@ -3991,7 +3991,7 @@ export interface operations {
         parameters: {
             query?: {
                 /** @description Get responses by page */
-                page?: string;
+                page?: number;
                 /** @description Number of items per page (canonical camelCase form). */
                 pageSize?: number;
                 /** @description Get responses that match search param value */
@@ -4970,7 +4970,10 @@ export interface operations {
     };
     getPattern: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Whether to include usage metrics in the response. */
+                metrics?: boolean;
+            };
             header?: never;
             path: {
                 /** @description Design (Pattern) ID */
@@ -6037,7 +6040,7 @@ export interface operations {
         parameters: {
             query?: {
                 /** @description Get responses by page */
-                page?: string;
+                page?: number;
                 /** @description Number of items per page (canonical camelCase form). */
                 pageSize?: number;
                 /** @description Get responses that match search param value */
@@ -7315,7 +7318,7 @@ export interface operations {
         parameters: {
             query?: {
                 /** @description Get responses by page */
-                page?: string;
+                page?: number;
                 /** @description Number of items per page (canonical camelCase form). */
                 pageSize?: number;
             };
@@ -7698,7 +7701,7 @@ export interface operations {
         parameters: {
             query?: {
                 /** @description Get responses by page */
-                page?: string;
+                page?: number;
                 /** @description Number of items per page (canonical camelCase form). */
                 pageSize?: number;
                 /** @description Get responses that match search param value */

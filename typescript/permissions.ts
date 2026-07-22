@@ -24,7 +24,7 @@ export interface Key {
 /**
  * Permissions Index ID used for this generated file.
  */
-export const PERMISSIONS_INDEX_ID = "8d7905beb07904185485104a47bb9916237daee1dc5573a431103fa4391a8170" as const;
+export const PERMISSIONS_INDEX_ID = "2be20cbdd31389d564d60263bd32c01c018d3c2661ffea36e2bdea4bf7b3346c" as const;
 
 /**
  * Creates a PermissionKey from a UUID string.
@@ -2705,7 +2705,7 @@ export const Keys = {
    * See all views within a workspace
    */
   KanvasViewViews: {
-    id: "93cba7f8-82ec-4a64-b384-f81d6acc8db3" as PermissionKey,
+    id: "4b3117e6-176c-4d9b-8e09-4278d2f48280" as PermissionKey,
     category: "Kanvas",
     subcategory: "Operator",
     function: "View Views",
@@ -6120,7 +6120,7 @@ export const PermissionKeys = {
   /**
    * See all views within a workspace
    */
-  KanvasViewViews: "93cba7f8-82ec-4a64-b384-f81d6acc8db3" as PermissionKey,
+  KanvasViewViews: "4b3117e6-176c-4d9b-8e09-4278d2f48280" as PermissionKey,
 
   /**
    * Create a new view
