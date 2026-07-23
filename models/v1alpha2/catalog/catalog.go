@@ -29,10 +29,10 @@ type CatalogData struct {
 	Compatibility []CatalogDataCompatibility `json:"compatibility" yaml:"compatibility"`
 
 	// PatternCaveats Specific stipulations to consider and known behaviors to be aware of when using this design.
-	PatternCaveats string `json:"pattern_caveats" yaml:"pattern_caveats"`
+	PatternCaveats string `json:"patternCaveats" yaml:"patternCaveats"`
 
 	// PatternInfo Purpose of the design along with its intended and unintended uses.
-	PatternInfo string `json:"pattern_info" yaml:"pattern_info"`
+	PatternInfo string `json:"patternInfo" yaml:"patternInfo"`
 
 	// PublishedVersion Tracks the specific content version that has been made available in the Catalog.
 	PublishedVersion *string `json:"publishedVersion,omitempty" yaml:"publishedVersion,omitempty"`
