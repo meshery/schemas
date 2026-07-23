@@ -5,7 +5,7 @@ package permissions
 import "github.com/gofrs/uuid"
 
 // Index ID used to generate this file
-const IndexID = "1229d5c1d5d500a1c241af0e5c1662559c554c61ae30e293a216076866835837"
+const IndexID = "bfd819819315ab0192b6f930378760de4b79ecd8acdc4741e72b846d7e7207e2"
 
 
 // PermissionKey represents a permission key identifier.
@@ -33,8 +33,8 @@ var (
 	// AccountManagementEditAccount - Update details of your user account.
 	AccountManagementEditAccount = PermissionKey(uuid.Must(uuid.FromString("f5e6bb39-c89a-4172-86f9-14a4a59792c1")))
 
-	// AccountManagementResetPasword - Perform a password reset for your user account.
-	AccountManagementResetPasword = PermissionKey(uuid.Must(uuid.FromString("ec8a4b2e-8323-4a96-86ef-ec7be8f58ef1")))
+	// AccountManagementResetPassword - Perform a password reset for your user account.
+	AccountManagementResetPassword = PermissionKey(uuid.Must(uuid.FromString("ec8a4b2e-8323-4a96-86ef-ec7be8f58ef1")))
 
 	// AccountManagementDeleteAccount - Delete your user account.
 	AccountManagementDeleteAccount = PermissionKey(uuid.Must(uuid.FromString("bbcb024b-78eb-48b0-8e99-f74d3862fe0f")))
@@ -48,8 +48,8 @@ var (
 	// AccountManagementViewSubcription - List and see details of active and inactive subscriptions.
 	AccountManagementViewSubcription = PermissionKey(uuid.Must(uuid.FromString("9098e61d-deaa-43da-960c-1bc3d5a00495")))
 
-	// AccountManagementManageSubcriptions - Create new subscriptions and update existing subscriptions
-	AccountManagementManageSubcriptions = PermissionKey(uuid.Must(uuid.FromString("01462c43-dfa8-4a5e-805a-267c9b0ec7ec")))
+	// AccountManagementManageSubscriptions - Create new subscriptions and update existing subscriptions
+	AccountManagementManageSubscriptions = PermissionKey(uuid.Must(uuid.FromString("01462c43-dfa8-4a5e-805a-267c9b0ec7ec")))
 
 	// AccountManagementViewPlans - Explore subscription plans and compare their features.
 	AccountManagementViewPlans = PermissionKey(uuid.Must(uuid.FromString("1907bd7a-5055-4e9b-98f6-7e8b720af887")))
@@ -414,8 +414,8 @@ var (
 	// IdentityAccessManagementDomainRoutingAndRemoval - Assigned domains direct user traffic to organizations; clearing the field removes the assignment.
 	IdentityAccessManagementDomainRoutingAndRemoval = PermissionKey(uuid.Must(uuid.FromString("88fc2f27-f9b2-42c8-99b5-e36389398796")))
 
-	// IdentityAccessManagementManageRecognitions - Create, update , delete and manage recogntions awarded by your organization
-	IdentityAccessManagementManageRecognitions = PermissionKey(uuid.Must(uuid.FromString("0a887b7f-b6c2-4a33-b080-bec9c3894d0c")))
+	// IdentityAccessManagementManageRecogntions - Create, update , delete and manage recogntions awarded by your organization
+	IdentityAccessManagementManageRecogntions = PermissionKey(uuid.Must(uuid.FromString("0a887b7f-b6c2-4a33-b080-bec9c3894d0c")))
 
 	// IdentityAccessManagementManageInvitations - Create, update , delete and manage invitations to your organization
 	IdentityAccessManagementManageInvitations = PermissionKey(uuid.Must(uuid.FromString("0204fb47-b120-4074-83db-984d595d9f69")))
@@ -423,8 +423,8 @@ var (
 	// IdentityAccessManagementAllOrgSelector - Ability to use all selector to filter view
 	IdentityAccessManagementAllOrgSelector = PermissionKey(uuid.Must(uuid.FromString("17447fb0-be46-1497-1366-c34e24920f22")))
 
-	// IdentityAccessManagementRoles - No description available
-	IdentityAccessManagementRoles = PermissionKey(uuid.Must(uuid.FromString("9a84a5d0-0a16-11ee-be56-0242ac120002")))
+	// IdentityAccessManagementViewAllRoles - No description available
+	IdentityAccessManagementViewAllRoles = PermissionKey(uuid.Must(uuid.FromString("9a84a5d0-0a16-11ee-be56-0242ac120002")))
 
 	// IdentityAccessManagementAssignUserRoles - No description available
 	IdentityAccessManagementAssignUserRoles = PermissionKey(uuid.Must(uuid.FromString("9a84a76a-0a16-11ee-be56-0242ac120002")))
@@ -582,8 +582,8 @@ var (
 	// KanvasLoadDesignPatternDisplaceCurrentNodesOnCanvas - Like a Google Doc, Designs are a user's primary tool for collaborative authorship of their infrastructure and services. A Design describes all the resources and their properties that users wants for a single deployment based on Meshery’s declarative syntax. This permission grants the user the ability to drag and drop a design onto the canvas to displace the exisitng nodes on canvas.
 	KanvasLoadDesignPatternDisplaceCurrentNodesOnCanvas = PermissionKey(uuid.Must(uuid.FromString("ccd8e0eb-5e2a-45e3-9b3d-3941b60dfed8")))
 
-	// KanvasEditComponentConfugurationRjsfTooltips - In Meshery, a Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to configure a component currently present on canvas.
-	KanvasEditComponentConfugurationRjsfTooltips = PermissionKey(uuid.Must(uuid.FromString("8154fa61-aca9-4274-bcdd-6f551e9b17eb")))
+	// KanvasEditComponentConfigurationRjsfTooltips - In Meshery, a Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to configure a component currently present on canvas.
+	KanvasEditComponentConfigurationRjsfTooltips = PermissionKey(uuid.Must(uuid.FromString("8154fa61-aca9-4274-bcdd-6f551e9b17eb")))
 
 	// KanvasConfigureFieldrefs - No description available
 	KanvasConfigureFieldrefs = PermissionKey(uuid.Must(uuid.FromString("4770f8cc-8f58-4da9-89e2-a7e7c2ea4e2f")))
@@ -792,17 +792,14 @@ var (
 	// KanvasCloneViews - Clone Views
 	KanvasCloneViews = PermissionKey(uuid.Must(uuid.FromString("258c7e18-9ac4-41d7-a637-7f12a7f24df7")))
 
-	// KanvasWebBasedTerminal - Direct terminal access to one ore more pods/containers simultaneously. Integrated experience.
-	KanvasWebBasedTerminal = PermissionKey(uuid.Must(uuid.FromString("4726da45-2108-409b-b94f-45bd1e199a78")))
-
-	// KanvasViewInteractiveTerminal - View Interactive Terminal
-	KanvasViewInteractiveTerminal = PermissionKey(uuid.Must(uuid.FromString("4726da45-2108-409b-b94f-45bd1e199c78")))
+	// KanvasViewInteractiveTerminal - Direct terminal access to one ore more pods/containers simultaneously. Integrated experience.
+	KanvasViewInteractiveTerminal = PermissionKey(uuid.Must(uuid.FromString("4726da45-2108-409b-b94f-45bd1e199a78")))
 
 	// KanvasViewComponentDetails - View managed infrastructure resources details in Kanvas Operator
 	KanvasViewComponentDetails = PermissionKey(uuid.Must(uuid.FromString("5d1e226b-cc0c-407c-8fa7-37159d06698d")))
 
-	// KanvasViewObservabilityMetrics - View real-time resource metrics in Kanvas Operator
-	KanvasViewObservabilityMetrics = PermissionKey(uuid.Must(uuid.FromString("2988a366-a743-48e7-9946-daff9b2ab0a1")))
+	// KanvasViewMetricsInVisualizer - View real-time resource metrics in Kanvas Operator
+	KanvasViewMetricsInVisualizer = PermissionKey(uuid.Must(uuid.FromString("2988a366-a743-48e7-9946-daff9b2ab0a1")))
 
 	// KanvasPerformConformanceTest - Perform a conformance test in Kanvas Operator
 	KanvasPerformConformanceTest = PermissionKey(uuid.Must(uuid.FromString("901ca054-0656-4db5-8d58-d618e0b82b39")))
@@ -1110,8 +1107,8 @@ var (
 	// WorkspaceManagementAssignConnectionsToEnvironment - Add new connections to environments
 	WorkspaceManagementAssignConnectionsToEnvironment = PermissionKey(uuid.Must(uuid.FromString("52cbe0b8-9aa7-4605-8eed-aa37e595adbb")))
 
-	// WorkspaceManagementRemoveConnectionsFromEnvironments - Remove connections from environment, 
-	WorkspaceManagementRemoveConnectionsFromEnvironments = PermissionKey(uuid.Must(uuid.FromString("65648682-e47f-43d7-a5ad-dc042803f951")))
+	// WorkspaceManagementRemoveConnectionsFromEnvironment - Remove connections from environment, 
+	WorkspaceManagementRemoveConnectionsFromEnvironment = PermissionKey(uuid.Must(uuid.FromString("65648682-e47f-43d7-a5ad-dc042803f951")))
 
 	// WorkspaceManagementViewProjects - View all of your projects
 	WorkspaceManagementViewProjects = PermissionKey(uuid.Must(uuid.FromString("141a5f3d-b5e2-4f36-8f83-df7f73744ee1")))
@@ -1137,11 +1134,11 @@ var (
 	// CatalogManagementCloneCatalogItem - Clone any item from catalog
 	CatalogManagementCloneCatalogItem = PermissionKey(uuid.Must(uuid.FromString("091e083b-78ae-4f03-b028-e36354460c5b")))
 
-	// AcademyViewAcademyContent - Browse the public catalog of learning paths, challenges, and certifications.
-	AcademyViewAcademyContent = PermissionKey(uuid.Must(uuid.FromString("40eb4949-ca16-4b7b-a9ae-4fe18f26fe1d")))
+	// AcademyViewAcademy - Browse the public catalog of learning paths, challenges, and certifications.
+	AcademyViewAcademy = PermissionKey(uuid.Must(uuid.FromString("40eb4949-ca16-4b7b-a9ae-4fe18f26fe1d")))
 
-	// AcademyAccessTheAcademyConsole - View and assess the performance of learners and of your organization's academy content.
-	AcademyAccessTheAcademyConsole = PermissionKey(uuid.Must(uuid.FromString("045fad17-d2cc-46e8-bb10-f9ee026c799f")))
+	// AcademyViewAcademyMetrics - View and assess the performance of learners and of your organization's academy content.
+	AcademyViewAcademyMetrics = PermissionKey(uuid.Must(uuid.FromString("045fad17-d2cc-46e8-bb10-f9ee026c799f")))
 
 	// AcademyAComprehensiveGuideToUsingTheInstructorConsoleLearnHowToTrackLearnerProgressAnalyzeTestPerformanceAndManageYourAcademySContentAndMetrics - No description available
 	AcademyAComprehensiveGuideToUsingTheInstructorConsoleLearnHowToTrackLearnerProgressAnalyzeTestPerformanceAndManageYourAcademySContentAndMetrics = PermissionKey(uuid.Must(uuid.FromString("045fad17-d2cc-46e8-bb10-f9ee026c79cf")))
