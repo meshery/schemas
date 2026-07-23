@@ -1,4 +1,5 @@
-import { createApi, fetchBaseQuery, BaseQueryFn, FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import type { BaseQueryFn, FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
 
 // RootState interface for proper typing
 interface RootState {
@@ -22,9 +23,10 @@ const MESHERY_BASE_URL = process.env.RTK_MESHERY_ENDPOINT_PREFIX ?? "";
 /**
  * Structured MeshKit error metadata extracted from a non-2xx JSON response body.
  *
- * Field names are JS-side camelCase, mapped from the server's snake_case wire
- * fields. Pairs with the meshery server migration that promotes every non-2xx
- * response from `text/plain` to `application/json` with a MeshKit error envelope.
+ * Field names are JS-side camelCase, matching the server's camelCase wire
+ * fields one-to-one. Pairs with the meshery server migration that promotes
+ * every non-2xx response from `text/plain` to `application/json` with a MeshKit
+ * error envelope.
  */
 export interface MeshkitError {
   /** Human-readable short description (`error` on the wire). */
@@ -33,11 +35,11 @@ export interface MeshkitError {
   code?: string;
   /** Severity level, e.g. `ERROR`, `WARNING`, `FATAL`. */
   severity?: string;
-  /** Probable causes that produced the error (`probable_cause` on the wire). */
+  /** Probable causes that produced the error (`probableCause` on the wire). */
   probableCause?: string[];
-  /** Suggested remediations to recover (`suggested_remediation` on the wire). */
+  /** Suggested remediations to recover (`suggestedRemediation` on the wire). */
   suggestedRemediation?: string[];
-  /** Long-form description lines (`long_description` on the wire). */
+  /** Long-form description lines (`longDescription` on the wire). */
   longDescription?: string[];
 }
 
@@ -56,13 +58,28 @@ export type MeshkitFetchBaseQueryError = FetchBaseQueryError & {
   meshkit?: MeshkitError;
 };
 
-/** Wire-shape of a MeshKit error JSON body (snake_case, server-emitted). */
+/**
+ * Wire-shape of a MeshKit error JSON body.
+ *
+ * Meshery Server emits this envelope in camelCase (see
+ * `server/models/httputil/httputil.go` in meshery/meshery, and the camelCase
+ * wire contract in `docs/identifier-naming-contributor-guide.md`). The
+ * snake_case variants are retained only as an optional transitional fallback in
+ * case any deployed producer still emits the legacy spelling; camelCase takes
+ * precedence when reading (see {@link withMeshkitErrorTransform}).
+ */
 interface MeshkitErrorBody {
   error: string;
   code?: string;
   severity?: string;
+  probableCause?: string[];
+  suggestedRemediation?: string[];
+  longDescription?: string[];
+  /** @deprecated legacy snake_case fallback; camelCase is the contract. */
   probable_cause?: string[];
+  /** @deprecated legacy snake_case fallback; camelCase is the contract. */
   suggested_remediation?: string[];
+  /** @deprecated legacy snake_case fallback; camelCase is the contract. */
   long_description?: string[];
 }
 
@@ -75,8 +92,15 @@ interface MeshkitErrorBody {
  * type inference into endpoint hooks so consumers read `error?.meshkit.*`
  * with full IntelliSense. Non-MeshKit error bodies pass through untouched
  * (just typed under the wider error type with `meshkit` left undefined).
+ *
+ * The structured array fields are read in camelCase (the server's actual wire
+ * form), falling back to the legacy snake_case spelling only if a deployed
+ * producer still emits it. camelCase always wins when both are present.
+ *
+ * Exported for regression testing - the failure mode is invisible (optional
+ * fields silently resolve to `undefined` when the casing is wrong).
  */
-function withMeshkitErrorTransform<Args, Result, DefinitionExtraOptions, Meta>(
+export function withMeshkitErrorTransform<Args, Result, DefinitionExtraOptions, Meta>(
   inner: BaseQueryFn<Args, Result, FetchBaseQueryError, DefinitionExtraOptions, Meta>,
 ): BaseQueryFn<Args, Result, MeshkitFetchBaseQueryError, DefinitionExtraOptions, Meta> {
   return async (args, api, extraOptions) => {
@@ -92,9 +116,9 @@ function withMeshkitErrorTransform<Args, Result, DefinitionExtraOptions, Meta>(
               message: body.error,
               code: body.code,
               severity: body.severity,
-              probableCause: body.probable_cause,
-              suggestedRemediation: body.suggested_remediation,
-              longDescription: body.long_description,
+              probableCause: body.probableCause ?? body.probable_cause,
+              suggestedRemediation: body.suggestedRemediation ?? body.suggested_remediation,
+              longDescription: body.longDescription ?? body.long_description,
             },
           };
           return { error: errorWithMeshkit, meta: result.meta };
