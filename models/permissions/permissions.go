@@ -5,7 +5,7 @@ package permissions
 import "github.com/gofrs/uuid"
 
 // Index ID used to generate this file
-const IndexID = "2be20cbdd31389d564d60263bd32c01c018d3c2661ffea36e2bdea4bf7b3346c"
+const IndexID = "1229d5c1d5d500a1c241af0e5c1662559c554c61ae30e293a216076866835837"
 
 
 // PermissionKey represents a permission key identifier.
@@ -227,6 +227,9 @@ var (
 
 	// ExtensibilityInstallExtension - Install or enable or disabble extensions in Meshery
 	ExtensibilityInstallExtension = PermissionKey(uuid.Must(uuid.FromString("24f41e98-7ce1-40c4-a82d-4ae0294d237d")))
+
+	// ExtensibilityUninstallExtension - Uninstall extension from Meshery
+	ExtensibilityUninstallExtension = PermissionKey(uuid.Must(uuid.FromString("d25e0950-bcd5-4f31-9d19-26c91d17d89b")))
 
 	// ExtensibilityViewMesheryUserPreferences - View all user preferences in Meshery UI
 	ExtensibilityViewMesheryUserPreferences = PermissionKey(uuid.Must(uuid.FromString("cdec6212-bbbf-4cab-b10d-76d12bee7e56")))

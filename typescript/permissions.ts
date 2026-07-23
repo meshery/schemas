@@ -24,7 +24,7 @@ export interface Key {
 /**
  * Permissions Index ID used for this generated file.
  */
-export const PERMISSIONS_INDEX_ID = "2be20cbdd31389d564d60263bd32c01c018d3c2661ffea36e2bdea4bf7b3346c" as const;
+export const PERMISSIONS_INDEX_ID = "1229d5c1d5d500a1c241af0e5c1662559c554c61ae30e293a216076866835837" as const;
 
 /**
  * Creates a PermissionKey from a UUID string.
@@ -774,6 +774,17 @@ export const Keys = {
     subcategory: "Extensions",
     function: "Install extension",
     description: "Install or enable or disabble extensions in Meshery"
+  },
+
+  /**
+   * Uninstall extension from Meshery
+   */
+  ExtensibilityUninstallExtension: {
+    id: "d25e0950-bcd5-4f31-9d19-26c91d17d89b" as PermissionKey,
+    category: "Extensibility",
+    subcategory: "Extensions",
+    function: "Uninstall extension",
+    description: "Uninstall extension from Meshery"
   },
 
   /**
@@ -5241,6 +5252,11 @@ export const PermissionKeys = {
    * Install or enable or disabble extensions in Meshery
    */
   ExtensibilityInstallExtension: "24f41e98-7ce1-40c4-a82d-4ae0294d237d" as PermissionKey,
+
+  /**
+   * Uninstall extension from Meshery
+   */
+  ExtensibilityUninstallExtension: "d25e0950-bcd5-4f31-9d19-26c91d17d89b" as PermissionKey,
 
   /**
    * View all user preferences in Meshery UI
