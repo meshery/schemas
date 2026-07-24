@@ -91,6 +91,16 @@ import RelationshipDefinitionV1Beta2OpenApiSchema from "./generated/v1beta2/rela
 import RelationshipDefinitionV1Alpha3OpenApiSchema from "./generated/v1alpha3/relationship/RelationshipSchema";
 import type * as core from "./generated/v1alpha1/core/Core";
 
+// Runtime constants generated from OpenAPI string enums that opt in with
+// `x-ts-const` (see build/generate-enums-ts.js). openapi-typescript emits those
+// enums as type-only unions, which are erased at runtime; these are the real
+// values to compare against. Exported with `export *` so a newly annotated enum
+// flows through without editing this file.
+//
+// Includes CoreConnectionKinds - note that a connection's `kind` stays an
+// open-ended string; that enum only names the kinds with bespoke handling.
+export * from "./constants";
+
 // Export schemas
 export {
   core,

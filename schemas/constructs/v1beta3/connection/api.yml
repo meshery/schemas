@@ -627,6 +627,45 @@ components:
     Connection:
       $ref: "./connection.yaml"
 
+    # A connection's `kind` is an OPEN-ENDED string (see `kind` in
+    # ./connection.yaml): any kind registered in the registry is valid and the set
+    # grows over time. This enum does NOT close that set - it only names the
+    # core kinds that Meshery gives bespoke handling across the stack: dedicated
+    # import/registration flows, telemetry integrations, credential forms, and
+    # ping/health checks. Consumers compare `kind` against these constants instead
+    # of re-declaring the literal strings.
+    #
+    # Deliberately NOT referenced by the `kind` field of any schema - referencing
+    # it would close the set. It is emitted only because `skip-prune: true`
+    # (build/openapi.config.yml) keeps unreferenced component schemas.
+    #
+    # Go constants come from oapi-codegen (models/v1beta3/connection); the
+    # TypeScript runtime constants come from build/generate-enums-ts.js, which
+    # keys off `x-ts-const` below. The Go/schema name is unqualified because it is
+    # already scoped by the `connection` package; the TypeScript names carry
+    # "Connection" because they are exported from the `@meshery/schemas` root.
+    CoreKind:
+      type: string
+      description: A core connection kind that receives bespoke, kind-specific handling in Meshery. The `kind` field itself remains an open-ended string; this names only the kinds with special behavior.
+      x-go-name: CoreKind
+      x-ts-const: CoreConnectionKinds
+      x-ts-type: CoreConnectionKind
+      enum:
+        - meshery
+        - kubernetes
+        - prometheus
+        - grafana
+        - github
+      # Without explicit varnames oapi-codegen emits unprefixed constants
+      # (`Kubernetes`, `Grafana`, ...) into the package namespace, because it only
+      # prefixes on collision.
+      x-enum-varnames:
+        - CoreKindMeshery
+        - CoreKindKubernetes
+        - CoreKindPrometheus
+        - CoreKindGrafana
+        - CoreKindGithub
+
     ConnectionDefinition:
       description: A connection definition is an uninitialized connection, authored per-model (in a model's `connections/` folder) and registered into the registry alongside components and relationships. It conforms to the connection schema; the dynamic, kind-specific shape is carried in `metadata`. The `model` association scopes the definition to its owning model.
       # Self-referential x-go-type: oapi-codegen emits `type ConnectionDefinition =
