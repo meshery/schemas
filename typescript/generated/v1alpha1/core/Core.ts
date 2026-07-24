@@ -654,6 +654,15 @@ export interface components {
                 "text/plain": string;
             };
         };
+        /** @description Forbidden */
+        403: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
         /** @description Result not found */
         404: {
             headers: {

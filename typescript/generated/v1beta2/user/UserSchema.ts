@@ -897,6 +897,16 @@ const UserSchema: Record<string, unknown> = {
               }
             }
           },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "404": {
             "description": "Result not found",
             "content": {
@@ -1715,6 +1725,16 @@ const UserSchema: Record<string, unknown> = {
               }
             }
           },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "404": {
             "description": "Result not found",
             "content": {
@@ -2506,6 +2526,16 @@ const UserSchema: Record<string, unknown> = {
               }
             }
           },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal server error",
             "content": {
@@ -2563,6 +2593,16 @@ const UserSchema: Record<string, unknown> = {
           },
           "401": {
             "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
             "content": {
               "text/plain": {
                 "schema": {
@@ -2926,6 +2966,16 @@ const UserSchema: Record<string, unknown> = {
           },
           "401": {
             "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
             "content": {
               "text/plain": {
                 "schema": {
@@ -3567,6 +3617,16 @@ const UserSchema: Record<string, unknown> = {
               }
             }
           },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal server error",
             "content": {
@@ -3738,6 +3798,16 @@ const UserSchema: Record<string, unknown> = {
           },
           "401": {
             "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
             "content": {
               "text/plain": {
                 "schema": {
@@ -3940,6 +4010,16 @@ const UserSchema: Record<string, unknown> = {
               }
             }
           },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "404": {
             "description": "Result not found",
             "content": {
@@ -4042,6 +4122,16 @@ const UserSchema: Record<string, unknown> = {
               }
             }
           },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "404": {
             "description": "Result not found",
             "content": {
@@ -4090,6 +4180,16 @@ const UserSchema: Record<string, unknown> = {
       },
       "401": {
         "description": "Expired JWT token used or insufficient privilege",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
         "content": {
           "text/plain": {
             "schema": {
