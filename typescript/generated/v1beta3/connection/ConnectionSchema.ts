@@ -10681,6 +10681,27 @@ const ConnectionSchema: Record<string, unknown> = {
           }
         }
       },
+      "CoreKind": {
+        "type": "string",
+        "description": "A core connection kind that receives bespoke, kind-specific handling in Meshery. The `kind` field itself remains an open-ended string; this names only the kinds with special behavior.",
+        "x-go-name": "CoreKind",
+        "x-ts-const": "CoreConnectionKinds",
+        "x-ts-type": "CoreConnectionKind",
+        "enum": [
+          "meshery",
+          "kubernetes",
+          "prometheus",
+          "grafana",
+          "github"
+        ],
+        "x-enum-varnames": [
+          "CoreKindMeshery",
+          "CoreKindKubernetes",
+          "CoreKindPrometheus",
+          "CoreKindGrafana",
+          "CoreKindGithub"
+        ]
+      },
       "ConnectionDefinition": {
         "description": "A connection definition is an uninitialized connection, authored per-model (in a model's `connections/` folder) and registered into the registry alongside components and relationships. It conforms to the connection schema; the dynamic, kind-specific shape is carried in `metadata`. The `model` association scopes the definition to its owning model.",
         "x-go-type": "ConnectionDefinition"

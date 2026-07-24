@@ -575,6 +575,11 @@ export interface components {
              */
             schemaVersion: string;
         };
+        /**
+         * @description A core connection kind that receives bespoke, kind-specific handling in Meshery. The `kind` field itself remains an open-ended string; this names only the kinds with special behavior.
+         * @enum {string}
+         */
+        CoreKind: "meshery" | "kubernetes" | "prometheus" | "grafana" | "github";
         /** @description A connection definition is an uninitialized connection, authored per-model (in a model's `connections/` folder) and registered into the registry alongside components and relationships. It conforms to the connection schema; the dynamic, kind-specific shape is carried in `metadata`. The `model` association scopes the definition to its owning model. */
         ConnectionDefinition: unknown;
         /** @description Represents a page of connection definitions with meta information about the total count */
