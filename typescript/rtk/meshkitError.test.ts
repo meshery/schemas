@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import type { BaseQueryFn, FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
-import { withMeshkitErrorTransform } from "./api.ts";
+import { withMeshkitErrorTransform } from "./meshkitError.ts";
 
 /**
  * Builds a stub inner BaseQueryFn that resolves to a non-2xx error carrying the
