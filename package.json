@@ -54,6 +54,7 @@
     "build:golang": "node ./build/generate-golang.js",
     "build:rtk": "node ./build/generate-rtk.js",
     "build:all": "node ./build/index.js all",
+    "test": "node --test \"typescript/**/*.test.ts\"",
     "test:validate-schemas": "go test ./validation/...",
     "generate:types": "node ./build/generate-typescript.js",
     "generate:permissions:ts": "node ./build/generate-permissions-ts.js",
