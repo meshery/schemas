@@ -22,7 +22,7 @@
 6. **Automated workflows trigger** on publish:
    - `publish-schemas.yml` updates schema versions in `base_cloud.yml` and `base_meshery.yml`
    - Performs the npm publish through `publish-npm-package.yml`
-   - Notifies downstream repositories
+   - Notifies downstream repositories via `notify-dependents.yml`, which opens `go get`-based dependency-bump PRs against `meshery/meshery` (including the nested `server/policies/wasm` module) and `meshery/meshkit`. A `wait-for-module` gate polls `proxy.golang.org` and `sum.golang.org` until the freshly-tagged version is indexed before any `go get` runs, so the bump jobs no longer fail on their first attempt with a transient `sum.golang.org` 500 while the checksum database catches up. If a bump job ever does fail, re-run it with `gh run rerun --failed <run-id>` once indexing settles.
    - Publishes OpenAPI documentation
 
 ## What NOT to Do
