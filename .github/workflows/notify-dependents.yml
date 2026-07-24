@@ -62,6 +62,10 @@ jobs:
     runs-on: ubuntu-24.04
     needs: resolve-version
     if: ${{ needs.resolve-version.outputs.release_version != '' }}
+    # Hard safety net: the per-request curl timeouts below already bound each
+    # attempt, but cap the whole job too so a pathological stall can never hold
+    # a runner open toward the 6-hour Actions default.
+    timeout-minutes: 10
     env:
       RELEASE_VERSION: ${{ needs.resolve-version.outputs.release_version }}
       MODULE: github.com/meshery/schemas
@@ -84,11 +88,15 @@ jobs:
             # Capture the HTTP status rather than relying on curl's exit code, so
             # the poll log surfaces the exact 404/500 the version is transiently
             # returning while indexing. Without -f, curl exits 0 on an HTTP error
-            # and still prints the status; on a connection-level failure it
-            # prints 000. Either way the code is non-200 and we keep polling (no
-            # `set -e`, so the non-zero exit does not abort the step).
-            info_code=$(curl -s -o /dev/null -w '%{http_code}' "$info_url")
-            sumdb_code=$(curl -s -o /dev/null -w '%{http_code}' "$sumdb_url")
+            # and still prints the status; on a connection-level failure or a
+            # timeout it prints 000. Either way the code is non-200 and we keep
+            # polling (no `set -e`, so the non-zero exit does not abort the step).
+            # --connect-timeout / --max-time bound each request so a stalled TLS
+            # handshake or half-open socket can't hang an attempt indefinitely
+            # past the retry window (the sumdb lookup fetches+hashes the module,
+            # so allow it a little more headroom than a plain .info fetch).
+            info_code=$(curl -s --connect-timeout 10 --max-time 20 -o /dev/null -w '%{http_code}' "$info_url")
+            sumdb_code=$(curl -s --connect-timeout 10 --max-time 20 -o /dev/null -w '%{http_code}' "$sumdb_url")
             if [ "$info_code" = "200" ] && [ "$sumdb_code" = "200" ]; then
               echo "::notice::${MODULE}@${version} is resolvable on proxy.golang.org and sum.golang.org (attempt ${attempt}/${max_attempts})."
               exit 0
