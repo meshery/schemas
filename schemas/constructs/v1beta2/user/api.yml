@@ -52,10 +52,10 @@ paths:
           $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
+
   # /api/users (getUsers) is owned by the v1beta3 user construct, where its
   # response documents the reduced PublicUser projection actually served by
   # the hardened public users directory.
-
 
   /api/identity/users/profile/{id}:
     get:
@@ -374,7 +374,7 @@ paths:
           $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
-        "403":  
+        "403":
           $ref: "#/components/responses/403"
         "404":
           $ref: "#/components/responses/404"
