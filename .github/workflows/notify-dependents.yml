@@ -47,9 +47,63 @@ jobs:
           echo "release_version=$release_version" >> "$GITHUB_OUTPUT"
           echo "Resolved release version: $release_version"
 
-  bump-meshery:
+  wait-for-module:
+    # A release tag is published moments before this fan-out runs, but the Go
+    # module proxy (proxy.golang.org) and checksum database (sum.golang.org)
+    # index new versions asynchronously. If a downstream `go get
+    # github.com/meshery/schemas@vX.Y.Z` races ahead of that indexing, checksum
+    # verification fails with a transient 500 from sum.golang.org and the bump
+    # jobs go red until a manual re-run. Gate the bump jobs on a single wait so
+    # every `go get` below (meshery root module, the nested
+    # server/policies/wasm module, and meshkit) sees a fully-indexed version.
+    #
+    # This waits rather than weakening verification (GONOSUMCHECK / GOFLAGS
+    # -insecure / GONOSUMDB) - that would trade a flake for a supply-chain hole.
     runs-on: ubuntu-24.04
     needs: resolve-version
+    if: ${{ needs.resolve-version.outputs.release_version != '' }}
+    env:
+      RELEASE_VERSION: ${{ needs.resolve-version.outputs.release_version }}
+      MODULE: github.com/meshery/schemas
+    steps:
+      - name: Wait for schemas module to be resolvable on proxy and checksum DB
+        run: |
+          set -uo pipefail
+
+          version="v${RELEASE_VERSION}"
+          info_url="https://proxy.golang.org/${MODULE}/@v/${version}.info"
+          # A successful sum.golang.org lookup is authoritative: the checksum DB
+          # fetches and hashes the full module (zip + go.mod) before answering,
+          # so a 200 here means the exact bytes `go get` will verify are logged.
+          sumdb_url="https://sum.golang.org/lookup/${MODULE}@${version}"
+
+          max_attempts=30   # 30 attempts x 10s = up to ~5 min of indexing lag
+          sleep_seconds=10
+          attempt=1
+          while [ "$attempt" -le "$max_attempts" ]; do
+            # Capture the HTTP status rather than relying on curl's exit code, so
+            # the poll log surfaces the exact 404/500 the version is transiently
+            # returning while indexing. Without -f, curl exits 0 on an HTTP error
+            # and still prints the status; on a connection-level failure it
+            # prints 000. Either way the code is non-200 and we keep polling (no
+            # `set -e`, so the non-zero exit does not abort the step).
+            info_code=$(curl -s -o /dev/null -w '%{http_code}' "$info_url")
+            sumdb_code=$(curl -s -o /dev/null -w '%{http_code}' "$sumdb_url")
+            if [ "$info_code" = "200" ] && [ "$sumdb_code" = "200" ]; then
+              echo "::notice::${MODULE}@${version} is resolvable on proxy.golang.org and sum.golang.org (attempt ${attempt}/${max_attempts})."
+              exit 0
+            fi
+            echo "Attempt ${attempt}/${max_attempts}: proxy .info=${info_code}, sumdb lookup=${sumdb_code}; waiting ${sleep_seconds}s for indexing to catch up..."
+            sleep "$sleep_seconds"
+            attempt=$((attempt + 1))
+          done
+
+          echo "::error::${MODULE}@${version} did not become resolvable on proxy.golang.org and sum.golang.org within ~$((max_attempts * sleep_seconds))s." >&2
+          exit 1
+
+  bump-meshery:
+    runs-on: ubuntu-24.04
+    needs: [resolve-version, wait-for-module]
     if: ${{ needs.resolve-version.outputs.release_version != '' }}
     env:
       RELEASE_VERSION: ${{ needs.resolve-version.outputs.release_version }}
@@ -105,7 +159,7 @@ jobs:
 
   bump-meshkit:
     runs-on: ubuntu-24.04
-    needs: resolve-version
+    needs: [resolve-version, wait-for-module]
     if: ${{ needs.resolve-version.outputs.release_version != '' }}
     env:
       RELEASE_VERSION: ${{ needs.resolve-version.outputs.release_version }}
