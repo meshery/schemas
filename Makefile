@@ -47,7 +47,7 @@ generate-site-index: site-data-generate
 #-----------------------------------------------------------------------------
 # OpenAPI spec
 #-----------------------------------------------------------------------------
-.PHONY: setup generate-ts publish-ts bundle-openapi generate-golang generate-rtk test-rtk test-ts golangci validate-schemas validate-schemas-strict audit-schemas audit-schemas-full audit-schemas-style-full audit-schemas-debt-full
+.PHONY: setup generate-ts generate-enums-ts test-enums-ts publish-ts bundle-openapi generate-golang generate-rtk test-rtk test-ts golangci validate-schemas validate-schemas-strict audit-schemas audit-schemas-full audit-schemas-style-full audit-schemas-debt-full
 
 ## (Re)Initialize Golang (go.mod) and Node (package.json) manifests
 setup:
@@ -57,6 +57,15 @@ setup:
 ## Generate typescript library, json templates, yaml templates
 generate-ts:
 	npm run generate:types
+
+## Generate TypeScript runtime constants for `x-ts-const` OpenAPI enums (requires bundle-openapi)
+generate-enums-ts:
+	npm run generate:enums:ts
+	$(MAKE) --no-print-directory test-enums-ts
+
+## Run enum constant generation regression tests
+test-enums-ts:
+	node --test tests/generate-enums-ts.test.js
 
 ## Bundle Typescript library, json templates, yaml templates
 build-ts: generate-ts
@@ -251,7 +260,7 @@ schemas-versions-latest:
 		| sort
 
 ## Generate and bundle schema package (bundles OpenAPI, generates Go, RTK, TypeScript, and permissions)
-build: validate-schemas bundle-openapi generate-golang  generate-rtk generate-ts generate-permissions build-ts test-golang
+build: validate-schemas bundle-openapi generate-golang  generate-rtk generate-ts generate-enums-ts generate-permissions build-ts test-golang
 
 #-----------------------------------------------------------------------------
 # Dependencies

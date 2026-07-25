@@ -61,6 +61,15 @@ const (
 	Registered   ConnectionStatusValue = "registered"
 )
 
+// Defines values for CoreKind.
+const (
+	CoreKindGithub     CoreKind = "github"
+	CoreKindGrafana    CoreKind = "grafana"
+	CoreKindKubernetes CoreKind = "kubernetes"
+	CoreKindMeshery    CoreKind = "meshery"
+	CoreKindPrometheus CoreKind = "prometheus"
+)
+
 // Connection Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections
 type Connection struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -346,6 +355,9 @@ type ConnectionsStatusPage struct {
 	// TotalCount Total number of status entries
 	TotalCount int `json:"totalCount" yaml:"totalCount"`
 }
+
+// CoreKind A core connection kind that receives bespoke, kind-specific handling in Meshery. The `kind` field itself remains an open-ended string; this names only the kinds with special behavior.
+type CoreKind string
 
 // K8sContext Kubernetes-specific authentication context projected from a kubernetes connection and its credential. Connection metadata supplies the context identity (id, name, server, version, deployment type, instance and server IDs); the credential secret supplies the auth and cluster material. This is a response projection, not a stored table row.
 type K8sContext struct {

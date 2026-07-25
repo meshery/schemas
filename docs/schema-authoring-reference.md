@@ -242,6 +242,65 @@ Use `x-generate-db-helpers: true` on a schema component to auto-generate `Scan`/
 - `x-internal: ["meshery"]` - Meshery-only (`_openapi_build/meshery_openapi.yml`)
 - `x-internal: ["cloud", "meshery"]` - both bundled outputs
 
+## x-ts-const annotation (runtime constants for string enums)
+
+oapi-codegen already emits real Go constants for every string `enum`. `openapi-typescript`
+does not: it emits a **type-only** union (`"meshery" | "kubernetes" | ...`), which is erased at
+runtime. A TypeScript consumer that needs to *compare a value against* an enum member is
+therefore forced to hand-write the literal — exactly the drift this repo exists to prevent.
+
+Add `x-ts-const: <ExportedName>` to a string enum to also emit a runtime object:
+
+```yaml
+    CoreKind:
+      type: string
+      description: A core connection kind that receives bespoke, kind-specific handling.
+      x-go-name: CoreKind
+      x-ts-const: CoreConnectionKinds
+      x-ts-type: CoreConnectionKind
+      enum: [meshery, kubernetes, prometheus, grafana, github]
+      # oapi-codegen only prefixes enum constants on collision; without explicit
+      # varnames this leaks bare `Kubernetes`, `Grafana`, ... into the Go package.
+      x-enum-varnames:
+        - CoreKindMeshery
+        - CoreKindKubernetes
+        # ...
+```
+
+`make generate-enums-ts` (part of `make build`) then writes
+`typescript/constants/<version>/<construct>.ts`:
+
+```ts
+export const CoreConnectionKinds = {
+  meshery: "meshery",
+  kubernetes: "kubernetes",
+  // ...
+} as const;
+
+export type CoreConnectionKind =
+  (typeof CoreConnectionKinds)[keyof typeof CoreConnectionKinds];
+```
+
+Notes:
+
+- Object keys are camelCased from the value (`"not found"` → `notFound`); values are verbatim.
+- `x-ts-type` is optional; without it the TypeScript type takes the schema name. Use it when
+  the schema name is too generic once un-scoped: Go names are qualified by their construct
+  package (`connection.CoreKind`) but the TypeScript names are exported from the
+  `@meshery/schemas` root, where `CoreKind` alone would not say what it is a kind *of*.
+- Output lands in `typescript/constants/`, **not** `typescript/generated/`.
+  `build/generate-schema-dts.js` copies everything under `typescript/generated/` verbatim into
+  `dist/` as `.d.ts`, which is only valid for type-only files. These files declare runtime
+  values, so they are bundled by tsup's main (`dts: true`) entry via `typescript/index.ts`,
+  which re-exports them with `export * from "./constants"` — a newly annotated enum flows
+  through without editing `index.ts`.
+- An enum a schema field `$ref`s **closes** that field's value set. To name well-known values
+  of a field that must stay open-ended (e.g. connection `kind`), define the enum but do not
+  reference it; `skip-prune: true` in `build/openapi.config.yml` keeps unreferenced component
+  schemas in the generated output.
+- Regression tests: `tests/generate-enums-ts.test.js` (run by `make generate-enums-ts`) —
+  includes a drift check asserting the committed TS and Go constants match the `api.yml` enum.
+
 ## SQL Driver (`Scan`/`Value`) Implementation Rules
 
 When manually implementing `sql.Scanner` and `driver.Valuer` for map-like types:

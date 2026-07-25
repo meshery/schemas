@@ -57,6 +57,7 @@
     "test": "node --test \"typescript/**/*.test.ts\"",
     "test:validate-schemas": "go test ./validation/...",
     "generate:types": "node ./build/generate-typescript.js",
+    "generate:enums:ts": "node ./build/generate-enums-ts.js",
     "generate:permissions:ts": "node ./build/generate-permissions-ts.js",
     "generate:permissions:go": "node ./build/generate-permission-golang.js",
     "diff:permissions": "node ./build/diff-permissions.js",
