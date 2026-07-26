@@ -714,10 +714,6 @@ components:
         catalogData:
           $ref: "../../v1beta2/catalog/api.yml#/components/schemas/CatalogData"
           description: Catalog metadata attached to the design when published.
-          x-go-type: catalogv1alpha2.CatalogData
-          x-go-type-import:
-            path: github.com/meshery/schemas/models/v1alpha2/catalog
-            name: catalogv1alpha2
         userId:
           $ref: "../../v1beta2/core/api.yml#/components/schemas/Id"
           description: Owning user ID.
@@ -936,10 +932,6 @@ components:
         catalogData:
           $ref: "../../v1beta2/catalog/api.yml#/components/schemas/CatalogData"
           description: Catalog metadata to attach to the design when publishing.
-          x-go-type: catalogv1alpha2.CatalogData
-          x-go-type-import:
-            path: github.com/meshery/schemas/models/v1alpha2/catalog
-            name: catalogv1alpha2
         location:
           $ref: "../../v1beta2/core/api.yml#/components/schemas/MapObject"
           description: Optional structured location metadata (branch, host, path, ...).

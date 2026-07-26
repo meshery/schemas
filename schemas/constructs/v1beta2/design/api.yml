@@ -824,10 +824,6 @@ components:
       properties:
         catalogData:
           $ref: "../catalog/api.yml#/components/schemas/CatalogData"
-          x-go-type: catalogv1alpha2.CatalogData
-          x-go-type-import:
-            path: github.com/meshery/schemas/models/v1alpha2/catalog
-            name: catalogv1alpha2
 
         created_at:
           $ref: "../core/api.yml#/components/schemas/Time"

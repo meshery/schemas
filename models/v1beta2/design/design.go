@@ -8,7 +8,7 @@ import (
 	"fmt"
 
 	core "github.com/meshery/schemas/models/core"
-	catalogv1alpha2 "github.com/meshery/schemas/models/v1alpha2/catalog"
+	catalogv1beta2 "github.com/meshery/schemas/models/v1beta2/catalog"
 	component "github.com/meshery/schemas/models/v1beta2/component"
 	corev1beta2 "github.com/meshery/schemas/models/v1beta2/core"
 	relationship "github.com/meshery/schemas/models/v1beta2/relationship"
@@ -121,7 +121,7 @@ type MesheryFilter map[string]interface{}
 
 // MesheryPattern defines model for MesheryPattern.
 type MesheryPattern struct {
-	CatalogData *catalogv1alpha2.CatalogData `json:"catalogData,omitempty" yaml:"catalogData,omitempty"`
+	CatalogData *catalogv1beta2.CatalogData `json:"catalogData,omitempty" yaml:"catalogData,omitempty"`
 	CreatedAt   core.Time         `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	ID          core.Id           `json:"id,omitempty" yaml:"id,omitempty"`
 	Location    core.MapObject    `json:"location,omitempty" yaml:"location,omitempty"`

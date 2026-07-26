@@ -5,7 +5,7 @@ package filter
 
 import (
 	core "github.com/meshery/schemas/models/core"
-	catalogv1alpha2 "github.com/meshery/schemas/models/v1alpha2/catalog"
+	catalogv1beta2 "github.com/meshery/schemas/models/v1beta2/catalog"
 	"github.com/gofrs/uuid"
 )
 
@@ -52,7 +52,7 @@ type MesheryFilter struct {
 	// - `public`: Anyone in the organization (or anonymous, depending on resource) can discover and access.
 	// - `published`: Promoted to the catalog for broad discovery beyond the owning organization.
 	Visibility  core.Visibility   `json:"visibility,omitempty" yaml:"visibility,omitempty"`
-	CatalogData *catalogv1alpha2.CatalogData `db:"catalog_data" json:"catalogData,omitempty" yaml:"catalogData,omitempty"`
+	CatalogData *catalogv1beta2.CatalogData `db:"catalog_data" json:"catalogData,omitempty" yaml:"catalogData,omitempty"`
 	CreatedAt   core.Time         `db:"created_at" json:"createdAt" yaml:"createdAt"`
 	UpdatedAt   core.Time         `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
 }
@@ -113,7 +113,7 @@ type MesheryFilterPage struct {
 // `updatedAt` and the owning `userId` (which the server derives
 // from the authenticated session) are intentionally excluded.
 type MesheryFilterPayload struct {
-	CatalogData *catalogv1alpha2.CatalogData `json:"catalogData,omitempty" yaml:"catalogData,omitempty"`
+	CatalogData *catalogv1beta2.CatalogData `json:"catalogData,omitempty" yaml:"catalogData,omitempty"`
 
 	// FilterFile Raw filter source as base64-encoded bytes (`format: byte`).
 	// Optional on update — the server preserves the existing body

@@ -8,7 +8,7 @@ import (
 	"fmt"
 
 	core "github.com/meshery/schemas/models/core"
-	catalogv1alpha2 "github.com/meshery/schemas/models/v1alpha2/catalog"
+	catalogv1beta2 "github.com/meshery/schemas/models/v1beta2/catalog"
 	component "github.com/meshery/schemas/models/v1beta2/component"
 	corev1beta2 "github.com/meshery/schemas/models/v1beta2/core"
 	relationship "github.com/meshery/schemas/models/v1beta2/relationship"
@@ -237,7 +237,7 @@ type DeletePatternModel struct {
 
 // MesheryPattern Server-returned design (pattern) resource as persisted by meshery-cloud.
 type MesheryPattern struct {
-	CatalogData *catalogv1alpha2.CatalogData `json:"catalogData,omitempty" yaml:"catalogData,omitempty"`
+	CatalogData *catalogv1beta2.CatalogData `json:"catalogData,omitempty" yaml:"catalogData,omitempty"`
 
 	// CloneCount Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
 	CloneCount *int              `db:"clone_count" json:"cloneCount,omitempty" yaml:"cloneCount,omitempty"`
@@ -352,7 +352,7 @@ type MesheryPatternPage struct {
 
 // MesheryPatternPayload Client-settable subset of the design (pattern) entity used as the body of the inner `patternData` envelope on POST /api/content/patterns. Server-generated fields (createdAt, updatedAt, viewCount, downloadCount, cloneCount, deploymentCount, shareCount, the joined `user` object, and the imported-source `sourceContent` blob) are deliberately excluded — the server ignores them on writes and re-projects them on the response.
 type MesheryPatternPayload struct {
-	CatalogData *catalogv1alpha2.CatalogData `json:"catalogData,omitempty" yaml:"catalogData,omitempty"`
+	CatalogData *catalogv1beta2.CatalogData `json:"catalogData,omitempty" yaml:"catalogData,omitempty"`
 
 	// DesignType Discriminator identifying the source format of the design body, stored in the `source_type` column. Optional on create (the server defaults missing values to `Design`).
 	DesignType *MesheryPatternPayloadDesignType `json:"designType" yaml:"designType"`
