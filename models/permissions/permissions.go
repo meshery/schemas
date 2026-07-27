@@ -792,7 +792,7 @@ var (
 	// KanvasCloneViews - Clone Views
 	KanvasCloneViews = PermissionKey(uuid.Must(uuid.FromString("258c7e18-9ac4-41d7-a637-7f12a7f24df7")))
 
-	// KanvasViewInteractiveTerminal - Direct terminal access to one ore more pods/containers simultaneously. Integrated experience.
+	// KanvasViewInteractiveTerminal - Direct terminal access to one or more pods/containers simultaneously. Integrated experience.
 	KanvasViewInteractiveTerminal = PermissionKey(uuid.Must(uuid.FromString("4726da45-2108-409b-b94f-45bd1e199a78")))
 
 	// KanvasViewComponentDetails - View managed infrastructure resources details in Kanvas Operator

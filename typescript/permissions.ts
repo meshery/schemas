@@ -2845,14 +2845,14 @@ export const Keys = {
   },
 
   /**
-   * Direct terminal access to one ore more pods/containers simultaneously. Integrated experience.
+   * Direct terminal access to one or more pods/containers simultaneously. Integrated experience.
    */
   KanvasViewInteractiveTerminal: {
     id: "4726da45-2108-409b-b94f-45bd1e199a78" as PermissionKey,
     category: "Kanvas",
     subcategory: "Operator",
     function: "View Interactive Terminal",
-    description: "Direct terminal access to one ore more pods/containers simultaneously. Integrated experience."
+    description: "Direct terminal access to one or more pods/containers simultaneously. Integrated experience."
   },
 
   /**
@@ -6183,7 +6183,7 @@ export const PermissionKeys = {
   KanvasCloneViews: "258c7e18-9ac4-41d7-a637-7f12a7f24df7" as PermissionKey,
 
   /**
-   * Direct terminal access to one ore more pods/containers simultaneously. Integrated experience.
+   * Direct terminal access to one or more pods/containers simultaneously. Integrated experience.
    */
   KanvasViewInteractiveTerminal: "4726da45-2108-409b-b94f-45bd1e199a78" as PermissionKey,
 
