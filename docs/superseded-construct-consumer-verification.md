@@ -19,23 +19,52 @@ clients (`@meshery/schemas/cloudApi`, `/mesheryApi`) are produced from those bun
 for any colliding operation **exactly one version wins and the other is absent from the
 published client entirely**.
 
-Consequences:
+Consequences, **scoped to the generated RTK clients only**:
 
 - A UI importing `@meshery/schemas/cloudApi` cannot tell you its construct version from
   the import path or the hook name - `useGetViewByIdQuery` exists once, for the winner.
-- Conversely, a consumer **cannot** be on the superseded version of a merged construct,
-  because those shapes are not in the package.
+- Conversely, a consumer **cannot** reach the superseded version of a merged construct
+  *through those clients*, because the losing shape is not in them.
 
-So on the TS surface the question is not "what does the consumer import" but
+So for the bundled-client surface the question is not "what does the consumer import" but
 **"which version won the merge"** - a property of this repo, not of the consumer.
+
+### The merge argument does not cover all of npm
+
+`package.json` also exports `./constructs/*`, and the published package ships **every**
+version, superseded ones included - `dist/constructs/v1beta1/badge/Badge.d.ts` and its
+eight siblings are all present. So `@meshery/schemas/constructs/v1beta1/badge/Badge` is a
+perfectly valid import.
+
+A consumer therefore reaches this package through **two independent npm sub-surfaces**, and
+clearing one says nothing about the other:
+
+| npm sub-surface | Can it reach a superseded construct? | How to clear it |
+| --- | --- | --- |
+| `cloudApi` / `mesheryApi` | No - the loser is absent from the client | Discriminator (which version won) |
+| `constructs/*` deep import | **Yes** - all versions are published | Grep for version-qualified deep imports |
+
+Never conclude "npm-only consumer, so the merge argument covers it" - that skips the
+deep-import check, which is the only one of the two that can actually find a superseded use.
 
 ## Per-surface method
 
-| Surface | Where version lives | Predicate |
+Every predicate below is written to be run from a consumer repo root and is
+self-contained - the exclusions are part of the command, not a reminder you have to
+remember to apply. `docs/` is excluded because prose citing a schema path is not
+consumption, and the nested-worktree exclusion keeps sibling checkouts from
+double-counting.
+
+| Surface | Where version lives | Predicate (run from consumer repo root) |
 | --- | --- | --- |
-| Go | Import path is version-qualified | `grep -rE '"github\.com/meshery/schemas/models/<ver>/<construct>"' --include='*.go'` |
-| TS deep import | Path is version-qualified | `grep -rhoE '@meshery/schemas/(typescript/)?constructs/v1[a-z0-9]+/[a-zA-Z0-9_]+'` |
+| Go | Import path is version-qualified | `grep -rE '"github\.com/meshery/schemas/models/<ver>/<construct>"' --include='*.go' --exclude-dir=vendor --exclude-dir=docs --exclude-dir=.git .` |
+| TS deep import | Path is version-qualified | `grep -rhoE '@meshery/schemas/(typescript/)?constructs/v1[a-z0-9]+/[a-zA-Z0-9_]+' --include='*.ts' --include='*.tsx' --include='*.js' --include='*.jsx' --exclude-dir=node_modules --exclude-dir=docs --exclude-dir=.git .` |
 | TS bundle (`cloudApi`/`mesheryApi`) | **Not in the import.** Baked into the generated client | Use a *discriminator* - below |
+
+`--exclude-dir` matches by directory name at any depth, so `--exclude-dir=node_modules`
+also covers nested `ui/node_modules`. Add `--exclude-dir=worktrees` (or the agent-worktree
+directory your checkout uses, e.g. `.claude`) when the repo keeps sibling checkouts inside
+itself, or the same file is counted once per worktree.
 
 ### Choosing a discriminator
 
@@ -62,17 +91,16 @@ string *is* present. Two cheap controls:
 
 1. Run the exact predicate against a scratch file containing the import you claim is absent.
 2. List what the superseded namespace *does* match in that repo, e.g.
-   `grep -rhoE '"github\.com/meshery/schemas/models/v1beta1/[a-z_]+"' --include='*.go' .`
+   `grep -rhoE '"github\.com/meshery/schemas/models/v1beta1/[a-z_]+"' --include='*.go' --exclude-dir=vendor --exclude-dir=docs --exclude-dir=.git .`
    If that returns other constructs, v1beta1 imports are findable and the zero is real.
-
-Exclude `node_modules`, `.git`, and nested `.claude/worktrees` copies, and remember that
-prose hits in `docs/` are not consumption.
 
 ## Result as of 2026-07-28 (schemas v1.3.41)
 
 All nine constructs annotated in #1094, across all three consumers - **no consumer is on a
-superseded version**. Go evidence is the version-qualified import; TS evidence is that the
-successor won the bundle merge, so the superseded shape is not in the published client.
+superseded version**. Go evidence is the version-qualified import. The npm surface needed
+both checks: no consumer deep-imports a version-qualified superseded construct, *and* the
+successor won the bundle merge for all nine, so the superseded shape is not in the
+generated clients.
 
 | Construct | Superseded | meshery-cloud | meshery | meshery-extensions |
 | --- | --- | --- | --- | --- |
@@ -86,8 +114,10 @@ successor won the bundle merge, so the superseded shape is not in the published 
 | plan | v1beta2 | Go v1beta3 (16) | not used | no Go dep |
 | subscription | v1beta2 | Go v1beta3 (12) | not used | no Go dep |
 
-`meshery-extensions` consumes `@meshery/schemas` from npm only (no `go.mod` dependency, no
-schemas import in any of its Go files), so the bundle-merge argument covers it entirely.
+`meshery-extensions` consumes `@meshery/schemas` from npm only - no `go.mod` dependency and
+no schemas import in any of its 32 Go files. Being npm-only is **not** on its own a clean
+bill: the `constructs/*` deep-import path could still reach a superseded schema. It was
+cleared by running that check too, which returned zero version-qualified deep imports.
 
 **v1beta2 is on both lists** - successor for badge/credential/key/keychain/view and
 superseded for event/invitation/plan/subscription. Never collapse this into a single
