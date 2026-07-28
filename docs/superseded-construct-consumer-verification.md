@@ -73,7 +73,7 @@ three consumers where there is one. In an audit whose entire output is "is anyon
 this?", that is not a cosmetic miscount - it invents consumers. Demonstrated on a tree
 holding one real import plus two worktree copies:
 
-```
+```text
 # without the worktree exclusions - 3 hits, 2 of them phantom
 src/consume.go
 worktrees/featureA/src/consume.go
