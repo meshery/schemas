@@ -1,5 +1,5 @@
 # Claude Code worktrees (local state, not project files)
-!.claude/skills/
+!.claude/skills
 .claude/worktrees/
 .claude/settings.local.json
 
