@@ -57,14 +57,37 @@ double-counting.
 
 | Surface | Where version lives | Predicate (run from consumer repo root) |
 | --- | --- | --- |
-| Go | Import path is version-qualified | `grep -rE '"github\.com/meshery/schemas/models/<ver>/<construct>"' --include='*.go' --exclude-dir=vendor --exclude-dir=docs --exclude-dir=.git .` |
-| TS deep import | Path is version-qualified | `grep -rhoE '@meshery/schemas/(typescript/)?constructs/v1[a-z0-9]+/[a-zA-Z0-9_]+' --include='*.ts' --include='*.tsx' --include='*.js' --include='*.jsx' --exclude-dir=node_modules --exclude-dir=docs --exclude-dir=.git .` |
+| Go | Import path is version-qualified | `grep -rE '"github\.com/meshery/schemas/models/<ver>/<construct>"' --include='*.go' --exclude-dir=vendor --exclude-dir=docs --exclude-dir=.git --exclude-dir=.claude --exclude-dir=worktrees .` |
+| TS deep import | Path is version-qualified | `grep -rhoE '@meshery/schemas/(typescript/)?constructs/v1[a-z0-9]+/[a-zA-Z0-9_]+' --include='*.ts' --include='*.tsx' --include='*.js' --include='*.jsx' --exclude-dir=node_modules --exclude-dir=docs --exclude-dir=.git --exclude-dir=.claude --exclude-dir=worktrees .` |
 | TS bundle (`cloudApi`/`mesheryApi`) | **Not in the import.** Baked into the generated client | Use a *discriminator* - below |
 
 `--exclude-dir` matches by directory name at any depth, so `--exclude-dir=node_modules`
-also covers nested `ui/node_modules`. Add `--exclude-dir=worktrees` (or the agent-worktree
-directory your checkout uses, e.g. `.claude`) when the repo keeps sibling checkouts inside
-itself, or the same file is counted once per worktree.
+also covers nested `ui/node_modules`, and the worktree exclusions cover both
+`worktrees/<branch>/` and `.claude/worktrees/<branch>/`.
+
+**The worktree exclusions are load-bearing, not decorative.** meshery-cloud and meshery
+both keep sibling checkouts inside the repo, and each one carries a full copy of the
+consumer source - 540+ Go files and 860+ TypeScript files apiece. Without the exclusion
+the same import is counted once per worktree, so a repo with two nested checkouts reports
+three consumers where there is one. In an audit whose entire output is "is anyone using
+this?", that is not a cosmetic miscount - it invents consumers. Demonstrated on a tree
+holding one real import plus two worktree copies:
+
+```
+# without the worktree exclusions - 3 hits, 2 of them phantom
+src/consume.go
+worktrees/featureA/src/consume.go
+.claude/worktrees/featureB/src/consume.go
+
+# with them - 1 hit, the real one
+src/consume.go
+```
+
+If your checkout nests worktrees somewhere else, add that directory too. Note also that
+`-r` differs between implementations - GNU and BSD `grep` descend into dot-directories,
+while `ugrep` and `ripgrep` skip them by default - so relying on hidden-directory
+behaviour instead of an explicit exclusion makes the result depend on which binary the
+reader happens to have.
 
 ### Choosing a discriminator
 
@@ -91,7 +114,7 @@ string *is* present. Two cheap controls:
 
 1. Run the exact predicate against a scratch file containing the import you claim is absent.
 2. List what the superseded namespace *does* match in that repo, e.g.
-   `grep -rhoE '"github\.com/meshery/schemas/models/v1beta1/[a-z_]+"' --include='*.go' --exclude-dir=vendor --exclude-dir=docs --exclude-dir=.git .`
+   `grep -rhoE '"github\.com/meshery/schemas/models/v1beta1/[a-z_]+"' --include='*.go' --exclude-dir=vendor --exclude-dir=docs --exclude-dir=.git --exclude-dir=.claude --exclude-dir=worktrees .`
    If that returns other constructs, v1beta1 imports are findable and the zero is real.
 
 ## Result as of 2026-07-28 (schemas v1.3.41)
