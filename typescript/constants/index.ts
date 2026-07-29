@@ -5,5 +5,12 @@
  * To change these values, edit the enum's `x-ts-const` schema in
  * schemas/constructs/ and re-run `make generate-enums-ts`.
  */
+import {
+  CoreConnectionKinds,
+  type CoreConnectionKind,
+} from "./v1beta3/connection";
 
-export * from "./v1beta3/connection";
+export {
+  CoreConnectionKinds,
+  type CoreConnectionKind,
+};
