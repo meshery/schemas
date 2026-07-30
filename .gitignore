@@ -3,6 +3,9 @@
 .claude/worktrees/
 .claude/settings.local.json
 
+# Superpowers plugin runtime state
+/.superpowers/
+
 
 # api-audit local binary (built via `go build ./cmd/api-audit`)
 /api-audit
