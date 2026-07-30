@@ -48,7 +48,8 @@ const DesignSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 0
             }
           },
           {
@@ -5050,7 +5051,8 @@ const DesignSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 0
             }
           },
           {
@@ -8396,7 +8398,8 @@ const DesignSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 0
             }
           },
           {
@@ -8908,7 +8911,8 @@ const DesignSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 0
             }
           },
           {
@@ -9963,7 +9967,8 @@ const DesignSchema: Record<string, unknown> = {
         "in": "query",
         "description": "Get responses by page",
         "schema": {
-          "type": "integer"
+          "type": "integer",
+          "minimum": 0
         }
       },
       "pageSize": {

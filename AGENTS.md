@@ -55,6 +55,20 @@ Generated artifacts (`models/`, `typescript/generated/`) are committed by automa
 
 Always run `make build`, `go test ./...`, and `npm run build` before committing schema changes. See [Common Mistakes](docs/schema-review-checklist.md#common-mistakes-to-avoid) and the [Checklist for Schema Changes](docs/schema-review-checklist.md#checklist-for-schema-changes) for the full pre-PR list.
 
+## AXI Agent Tooling
+
+- Use the `gh-axi` CLI tool to interact with GitHub. Prefer `gh-axi` over `gh`.
+- Use `chrome-devtools-axi` for browser automation (navigate, snapshot, click, fill forms, run JS, inspect console/network) in place of raw Playwright/chrome-devtools MCP for ad hoc tasks.
+- Run `quota-axi` to check local agent-provider quota windows before long-running work.
+- Use the `lavish` skill (`lavish-axi` CLI) to turn a plan, comparison, or report into a reviewable HTML artifact.
+
+### Where skills live
+
+`.agents/skills/` is the single source of truth for this repo's agent skills. `.claude/skills` is a
+relative symlink to it - add, edit, and remove skills under `.agents/skills/` only, and never replace
+that symlink with a real directory. Codex and OpenCode read `.agents/skills` natively, so no
+`.codex/skills` or `.opencode/skills` link is needed.
+
 ## The Dual-Schema Pattern (REQUIRED)
 
 This is the most critical design rule in this repo. Every agent or contributor MUST follow it.
@@ -170,3 +184,10 @@ If you're unsure about any schema modification:
 4. Check generated `.d.ts` files for actual type/property names
 5. Review this document and the linked `docs/` references for guidelines
 6. Test your changes with `make build` before committing
+
+## Maintaining this file
+
+Keep this file for knowledge useful to almost every future agent session in this project.
+Do not repeat what the codebase already shows; point to the authoritative file or command instead.
+Prefer rewriting or pruning existing entries over appending new ones.
+When updating this file, preserve this bar for all agents and keep entries concise.

@@ -7,9 +7,40 @@ on:
 permissions:
   contents: write
   id-token: write
+  actions: read
 
 jobs:
+  wait-for-artifacts:
+    # Block the release fan-out until any in-flight artifact generation on master
+    # has settled, so we publish generated artifacts rather than stale sources.
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Wait for in-flight artifact generation
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const workflow = 'generate-artifacts-from-schemas.yml';
+            const active = ['queued', 'in_progress', 'waiting', 'requested', 'pending'];
+            const sleep = ms => new Promise(r => setTimeout(r, ms));
+            for (let i = 0; i < 60; i++) {              // ~30 min ceiling
+              const { data } = await github.rest.actions.listWorkflowRuns({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                workflow_id: workflow,
+                branch: 'master',
+              });
+              const running = data.workflow_runs.filter(r => active.includes(r.status));
+              if (running.length === 0) {
+                core.info('Artifacts settled. Proceeding.');
+                return;
+              }
+              core.info(`Waiting on: ${running.map(r => r.html_url).join(', ')}`);
+              await sleep(30000);
+            }
+            core.setFailed('Timed out waiting for artifact generation to finish.');
+
   update-schema-version:
+    needs: wait-for-artifacts
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository

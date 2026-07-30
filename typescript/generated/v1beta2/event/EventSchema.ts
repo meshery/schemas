@@ -8,6 +8,7 @@ const EventSchema: Record<string, unknown> = {
   "info": {
     "title": "Events",
     "x-deprecated": true,
+    "x-superseded-by": "v1beta3",
     "description": "OpenAPI schema for Meshery events and system notifications.",
     "version": "v1beta2",
     "contact": {
@@ -493,7 +494,8 @@ const EventSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 0
             }
           },
           {
@@ -733,7 +735,8 @@ const EventSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 0
             }
           },
           {
@@ -913,7 +916,8 @@ const EventSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 0
             }
           },
           {
@@ -1013,7 +1017,8 @@ const EventSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 0
             }
           },
           {
@@ -1133,7 +1138,8 @@ const EventSchema: Record<string, unknown> = {
         "in": "query",
         "description": "Get responses by page",
         "schema": {
-          "type": "integer"
+          "type": "integer",
+          "minimum": 0
         }
       },
       "pagesize": {

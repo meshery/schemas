@@ -355,6 +355,15 @@ export interface components {
                 "text/plain": string;
             };
         };
+        /** @description Forbidden */
+        403: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
         /** @description Result not found */
         404: {
             headers: {
@@ -622,6 +631,15 @@ export interface operations {
                     "text/plain": string;
                 };
             };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
             /** @description Result not found */
             404: {
                 headers: {
@@ -708,6 +726,15 @@ export interface operations {
             };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -818,6 +845,15 @@ export interface operations {
                     "text/plain": string;
                 };
             };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
             /** @description Result not found */
             404: {
                 headers: {
@@ -870,6 +906,15 @@ export interface operations {
             };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -960,6 +1005,15 @@ export interface operations {
             };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1063,6 +1117,15 @@ export interface operations {
                     "text/plain": string;
                 };
             };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
             /** @description Result not found */
             404: {
                 headers: {
@@ -1117,6 +1180,15 @@ export interface operations {
             };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1209,6 +1281,15 @@ export interface operations {
             };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };

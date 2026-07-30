@@ -9,6 +9,8 @@
     "esModuleInterop": true,
     "resolveJsonModule": true
   },
-  "include": ["./typescript"]
+  "include": ["./typescript"],
+  "//exclude": "Test files run under Node's native TypeScript test runner (node --test), which requires explicit .ts import extensions for ESM resolution — a form tsc's node moduleResolution rejects (TS5097). They are executed at runtime, never part of the tsup-built dist, so exclude them from the project typecheck.",
+  "exclude": ["typescript/**/*.test.ts"]
 }
 

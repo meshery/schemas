@@ -60,12 +60,12 @@ const CatalogSchema: Record<string, unknown> = {
             "minItems": 1,
             "description": "One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential."
           },
-          "pattern_caveats": {
+          "patternCaveats": {
             "type": "string",
             "title": "Caveats and Considerations",
             "description": "Specific stipulations to consider and known behaviors to be aware of when using this design."
           },
-          "pattern_info": {
+          "patternInfo": {
             "type": "string",
             "title": "Description",
             "minLength": 1,
@@ -99,8 +99,8 @@ const CatalogSchema: Record<string, unknown> = {
         },
         "required": [
           "compatibility",
-          "pattern_caveats",
-          "pattern_info",
+          "patternCaveats",
+          "patternInfo",
           "type"
         ]
       }

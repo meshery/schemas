@@ -16,13 +16,36 @@ import (
 var connectionCreation sync.Mutex //Each entity will perform a check and if the connection already doesn't exist, it will create a connection. This lock will make sure that there are no race conditions.
 
 func (h *Connection) GenerateID() (uuid.UUID, error) {
-	byt, err := json.Marshal(h)
+	// Normalize a copy before hashing so that a semantically-empty identity
+	// field (nil OR the zero UUID) collapses to a single canonical form. A
+	// model's registrant blob may omit credential_id/user_id (marshals to
+	// null) or carry a present-but-zero UUID (marshals to the all-zero
+	// string); both mean "no credential/user" yet previously produced
+	// different md5s, and therefore duplicate content-addressed connection
+	// rows for the same registrant. Normalization must not mutate the
+	// caller's Connection or the persisted row, so we operate on a copy and
+	// only the identity computation observes the canonical form.
+	normalized := *h
+	normalized.CredentialID = canonicalizeUUIDPtr(normalized.CredentialID)
+	normalized.UserID = canonicalizeUUIDPtr(normalized.UserID)
+
+	byt, err := json.Marshal(&normalized)
 	if err != nil {
 		return uuid.UUID{}, err
 	}
 
 	hash := md5.Sum(byt)
 	return uuid.UUID(hash), nil
+}
+
+// canonicalizeUUIDPtr reduces a semantically-empty UUID pointer to nil so that
+// an absent field and a present-but-zero UUID hash identically. A non-zero
+// UUID is returned unchanged so it still participates in identity.
+func canonicalizeUUIDPtr(id *core.Uuid) *core.Uuid {
+	if id == nil || *id == uuid.Nil {
+		return nil
+	}
+	return id
 }
 
 func (h *Connection) Create(db *database.Handler) (uuid.UUID, error) {

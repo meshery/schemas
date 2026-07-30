@@ -433,6 +433,7 @@ components:
         path: github.com/meshery/schemas/models/core
       type: string
       format: date-time
+      nullable: true
       x-go-type-skip-optional-pointer: true
 
     Styles:
@@ -945,6 +946,7 @@ components:
       description: Get responses by page
       schema:
         type: integer
+        minimum: 0
     userId:
       name: userId
       in: query
@@ -1121,6 +1123,12 @@ components:
             type: string
     "401":
       description: Expired JWT token used or insufficient privilege
+      content:
+        text/plain:
+          schema:
+            type: string
+    "403":
+      description: Forbidden
       content:
         text/plain:
           schema:

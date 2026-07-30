@@ -8,6 +8,7 @@ const SubscriptionSchema: Record<string, unknown> = {
   "info": {
     "title": "Subscription",
     "x-deprecated": true,
+    "x-superseded-by": "v1beta3",
     "description": "API for managing subscriptions using various payment processors in a SaaS application.",
     "version": "v1beta2",
     "contact": {
@@ -63,7 +64,8 @@ const SubscriptionSchema: Record<string, unknown> = {
             "in": "query",
             "description": "Get responses by page",
             "schema": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 0
             }
           },
           {
@@ -1509,7 +1511,8 @@ const SubscriptionSchema: Record<string, unknown> = {
         "in": "query",
         "description": "Get responses by page",
         "schema": {
-          "type": "integer"
+          "type": "integer",
+          "minimum": 0
         }
       },
       "pagesize": {

@@ -46,39 +46,16 @@ paths:
           $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
         "404":
           $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
 
-  /api/users:
-    get:
-      x-internal: ["cloud", "meshery"]
-      tags:
-        - users
-      operationId: getUsers
-      summary: Get public users
-      description: Returns publicly viewable user records.
-      security: []
-      parameters:
-        - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pageSize"
-        - $ref: "#/components/parameters/search"
-        - $ref: "#/components/parameters/order"
-        - $ref: "#/components/parameters/filter"
-      responses:
-        "200":
-          description: Paginated list of public users
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UsersPageForNonAdmin"
-        "400":
-          $ref: "#/components/responses/400"
-        "401":
-          $ref: "#/components/responses/401"
-        "500":
-          $ref: "#/components/responses/500"
+  # /api/users (getUsers) is owned by the v1beta3 user construct, where its
+  # response documents the reduced PublicUser projection actually served by
+  # the hardened public users directory.
 
   /api/identity/users/profile/{id}:
     get:
@@ -100,6 +77,8 @@ paths:
           $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
         "404":
           $ref: "#/components/responses/404"
         "500":
@@ -121,6 +100,8 @@ paths:
                 $ref: "#/components/schemas/User"
         "401":
           $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
         "500":
           $ref: "#/components/responses/500"
 
@@ -144,6 +125,8 @@ paths:
                 $ref: "#/components/schemas/ProfileOverview"
         "401":
           $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
         "500":
           $ref: "#/components/responses/500"
 
@@ -220,6 +203,8 @@ paths:
           description: Mention notifications dispatched
         "401":
           $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
         "500":
           $ref: "#/components/responses/500"
 
@@ -250,6 +235,8 @@ paths:
                 $ref: "#/components/schemas/AnonymousFlowResponse"
         "401":
           $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
         "500":
           $ref: "#/components/responses/500"
 
@@ -288,6 +275,8 @@ paths:
           $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
         "404":
           $ref: "#/components/responses/404"
         "500":
@@ -318,6 +307,8 @@ paths:
                   $ref: "#/components/schemas/UserEmailAddress"
         "401":
           $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
         "404":
           $ref: "#/components/responses/404"
         "500":
@@ -383,6 +374,8 @@ paths:
           $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
         "404":
           $ref: "#/components/responses/404"
         "409":
@@ -395,6 +388,8 @@ components:
       $ref: "../core/api.yml#/components/responses/400"
     401:
       $ref: "../core/api.yml#/components/responses/401"
+    403:
+      $ref: "../core/api.yml#/components/responses/403"
     404:
       $ref: "../core/api.yml#/components/responses/404"
     409:
@@ -994,7 +989,14 @@ components:
 
     UsersPageForNonAdmin:
       type: object
-      description: Paginated list of public user records
+      deprecated: true
+      description: >-
+        Deprecated: the public users directory (/api/users, getUsers) is
+        documented by the v1beta3 user construct's PublicUsersPage, which
+        reflects the reduced projection actually served since the directory
+        was hardened. This full-User page shape was never what the endpoint
+        returned post-hardening and is retained only for compatibility with
+        existing type imports.
       properties:
         page:
           type: integer

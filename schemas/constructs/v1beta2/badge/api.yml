@@ -85,6 +85,8 @@ paths:
           $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
+        "409":
+          $ref: "#/components/responses/BadgeLabelConflict"
         "500":
           $ref: "#/components/responses/500"
 
@@ -149,6 +151,15 @@ components:
       $ref: "../../v1alpha1/core/api.yml#/components/responses/404"
     500:
       $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
+    BadgeLabelConflict:
+      description: >-
+        Badge label conflict. The badge label is already owned by a different
+        organization, so the upsert was refused rather than overwriting another
+        organization's badge.
+      content:
+        text/plain:
+          schema:
+            type: string
 
   parameters:
     badgeId:

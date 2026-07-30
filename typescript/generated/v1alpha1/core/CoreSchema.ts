@@ -1900,6 +1900,16 @@ const CoreSchema: Record<string, unknown> = {
           }
         }
       },
+      "403": {
+        "description": "Forbidden",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
       "404": {
         "description": "Result not found",
         "content": {

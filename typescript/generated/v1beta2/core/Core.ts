@@ -145,7 +145,7 @@ export interface components {
          * Format: date-time
          * @description SQL null Timestamp to handle null values of time.
          */
-        NullTime: string;
+        NullTime: string | null;
         /** @description Common styles for all entities */
         Styles: {
             /** @description Primary color of the component used for UI representation. */
@@ -681,6 +681,15 @@ export interface components {
         };
         /** @description Expired JWT token used or insufficient privilege */
         401: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
+        /** @description Forbidden */
+        403: {
             headers: {
                 [name: string]: unknown;
             };

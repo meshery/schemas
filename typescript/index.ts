@@ -23,6 +23,7 @@ import { components as KeychainComponents } from "./generated/v1beta1/keychain/K
 import { components as OrganizationComponents } from "./generated/v1beta1/organization/Organization";
 import { components as RoleComponents } from "./generated/v1beta1/role/Role";
 import { components as ScheduleComponents } from "./generated/v1beta1/schedule/Schedule";
+import { components as SystemComponents } from "./generated/v1beta1/system/System";
 import { components as TeamComponents } from "./generated/v1beta1/team/Team";
 import { components as WorkspaceComponents } from "./generated/v1beta1/workspace/Workspace";
 import { components as InvitationComponents } from "./generated/v1beta1/invitation/Invitation";
@@ -41,6 +42,9 @@ import { components as V1Beta2PlanComponents } from "./generated/v1beta2/plan/Pl
 import { components as V1Beta2RelationshipComponents } from "./generated/v1beta2/relationship/Relationship";
 import { components as V1Beta2SubscriptionComponents } from "./generated/v1beta2/subscription/Subscription";
 import { components as V1Beta2TokenComponents } from "./generated/v1beta2/token/Token";
+
+// v1beta3
+import { components as V1Beta3UserComponents } from "./generated/v1beta3/user/User";
 
 /**
  * SCHEMA OPTIMIZATION NOTICE
@@ -87,6 +91,16 @@ import RelationshipDefinitionV1Beta2OpenApiSchema from "./generated/v1beta2/rela
 import RelationshipDefinitionV1Alpha3OpenApiSchema from "./generated/v1alpha3/relationship/RelationshipSchema";
 import type * as core from "./generated/v1alpha1/core/Core";
 
+// Runtime constants generated from OpenAPI string enums that opt in with
+// `x-ts-const` (see build/generate-enums-ts.js). openapi-typescript emits those
+// enums as type-only unions, which are erased at runtime; these are the real
+// values to compare against. Exported with `export *` so a newly annotated enum
+// flows through without editing this file.
+//
+// Includes CoreConnectionKinds - note that a connection's `kind` stays an
+// open-ended string; that enum only names the kinds with bespoke handling.
+export * from "./constants";
+
 // Export schemas
 export {
   core,
@@ -127,6 +141,10 @@ export namespace v1beta1 {
   export type Category = CategoryComponents["schemas"]["CategoryDefinition"];
   export type Component = ComponentComponents["schemas"]["ComponentDefinition"];
   export type Connection = ConnectionComponents["schemas"]["Connection"];
+  export type ConnectionStatusValue =
+    ConnectionComponents["schemas"]["ConnectionStatusValue"];
+  export type ControllerStatusValue =
+    SystemComponents["schemas"]["ControllerStatusValue"];
   export type Credential = CredentialComponents["schemas"]["Credential"];
   export type Design = PatternComponents["schemas"]["PatternFile"];
   export type Environment = EnvironmentComponents["schemas"]["Environment"];
@@ -209,4 +227,15 @@ export namespace v1beta2 {
   export type Subscription =
     V1Beta2SubscriptionComponents["schemas"]["Subscription"];
   export type Token = V1Beta2TokenComponents["schemas"]["UserToken"];
+}
+
+export namespace v1beta3 {
+  export type User = V1Beta3UserComponents["schemas"]["User"];
+  export type PublicUser = V1Beta3UserComponents["schemas"]["PublicUser"];
+  export type PublicUsersPage =
+    V1Beta3UserComponents["schemas"]["PublicUsersPage"];
+  export type SearchableUser =
+    V1Beta3UserComponents["schemas"]["SearchableUser"];
+  export type SearchableUsersPage =
+    V1Beta3UserComponents["schemas"]["SearchableUsersPage"];
 }
