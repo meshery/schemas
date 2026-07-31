@@ -24,7 +24,7 @@ export interface Key {
 /**
  * Permissions Index ID used for this generated file.
  */
-export const PERMISSIONS_INDEX_ID = "8d7905beb07904185485104a47bb9916237daee1dc5573a431103fa4391a8170" as const;
+export const PERMISSIONS_INDEX_ID = "bfd819819315ab0192b6f930378760de4b79ecd8acdc4741e72b846d7e7207e2" as const;
 
 /**
  * Creates a PermissionKey from a UUID string.
@@ -64,11 +64,11 @@ export const Keys = {
   /**
    * Perform a password reset for your user account.
    */
-  AccountManagementResetPasword: {
+  AccountManagementResetPassword: {
     id: "ec8a4b2e-8323-4a96-86ef-ec7be8f58ef1" as PermissionKey,
     category: "Account Management",
     subcategory: "Profile",
-    function: "Reset Pasword",
+    function: "Reset Password",
     description: "Perform a password reset for your user account."
   },
 
@@ -119,11 +119,11 @@ export const Keys = {
   /**
    * Create new subscriptions and update existing subscriptions
    */
-  AccountManagementManageSubcriptions: {
+  AccountManagementManageSubscriptions: {
     id: "01462c43-dfa8-4a5e-805a-267c9b0ec7ec" as PermissionKey,
     category: "Account Management",
     subcategory: "Subscription",
-    function: "Manage Subcriptions",
+    function: "Manage Subscriptions",
     description: "Create new subscriptions and update existing subscriptions"
   },
 
@@ -774,6 +774,17 @@ export const Keys = {
     subcategory: "Extensions",
     function: "Install extension",
     description: "Install or enable or disabble extensions in Meshery"
+  },
+
+  /**
+   * Uninstall extension from Meshery
+   */
+  ExtensibilityUninstallExtension: {
+    id: "d25e0950-bcd5-4f31-9d19-26c91d17d89b" as PermissionKey,
+    category: "Extensibility",
+    subcategory: "Extensions",
+    function: "Uninstall extension",
+    description: "Uninstall extension from Meshery"
   },
 
   /**
@@ -1450,11 +1461,11 @@ export const Keys = {
   /**
    * Create, update , delete and manage recogntions awarded by your organization
    */
-  IdentityAccessManagementManageRecognitions: {
+  IdentityAccessManagementManageRecogntions: {
     id: "0a887b7f-b6c2-4a33-b080-bec9c3894d0c" as PermissionKey,
     category: "Identity & Access Management",
     subcategory: "Organization",
-    function: "Manage Recognitions",
+    function: "Manage Recogntions",
     description: "Create, update , delete and manage recogntions awarded by your organization"
   },
 
@@ -1483,11 +1494,11 @@ export const Keys = {
   /**
    * No description available
    */
-  IdentityAccessManagementRoles: {
+  IdentityAccessManagementViewAllRoles: {
     id: "9a84a5d0-0a16-11ee-be56-0242ac120002" as PermissionKey,
     category: "Identity & Access Management",
     subcategory: "Roles",
-    function: "Roles",
+    function: "View All Roles",
     description: ""
   },
 
@@ -2066,11 +2077,11 @@ export const Keys = {
   /**
    * In Meshery, a Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to configure a component currently present on canvas.
    */
-  KanvasEditComponentConfugurationRjsfTooltips: {
+  KanvasEditComponentConfigurationRjsfTooltips: {
     id: "8154fa61-aca9-4274-bcdd-6f551e9b17eb" as PermissionKey,
     category: "Kanvas",
     subcategory: "Design Patterns",
-    function: "Edit Component confuguration (RJSF Tooltips)",
+    function: "Edit Component configuration (RJSF Tooltips)",
     description: "In Meshery, a Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to configure a component currently present on canvas."
   },
 
@@ -2705,7 +2716,7 @@ export const Keys = {
    * See all views within a workspace
    */
   KanvasViewViews: {
-    id: "93cba7f8-82ec-4a64-b384-f81d6acc8db3" as PermissionKey,
+    id: "4b3117e6-176c-4d9b-8e09-4278d2f48280" as PermissionKey,
     category: "Kanvas",
     subcategory: "Operator",
     function: "View Views",
@@ -2834,25 +2845,14 @@ export const Keys = {
   },
 
   /**
-   * Direct terminal access to one ore more pods/containers simultaneously. Integrated experience.
+   * Direct terminal access to one or more pods/containers simultaneously. Integrated experience.
    */
-  KanvasWebBasedTerminal: {
+  KanvasViewInteractiveTerminal: {
     id: "4726da45-2108-409b-b94f-45bd1e199a78" as PermissionKey,
     category: "Kanvas",
     subcategory: "Operator",
-    function: "Web-based Terminal",
-    description: "Direct terminal access to one ore more pods/containers simultaneously. Integrated experience."
-  },
-
-  /**
-   * View Interactive Terminal
-   */
-  KanvasViewInteractiveTerminal: {
-    id: "4726da45-2108-409b-b94f-45bd1e199c78" as PermissionKey,
-    category: "Kanvas",
-    subcategory: "Operator",
     function: "View Interactive Terminal",
-    description: "View Interactive Terminal"
+    description: "Direct terminal access to one or more pods/containers simultaneously. Integrated experience."
   },
 
   /**
@@ -2869,11 +2869,11 @@ export const Keys = {
   /**
    * View real-time resource metrics in Kanvas Operator
    */
-  KanvasViewObservabilityMetrics: {
+  KanvasViewMetricsInVisualizer: {
     id: "2988a366-a743-48e7-9946-daff9b2ab0a1" as PermissionKey,
     category: "Kanvas",
     subcategory: "Operator",
-    function: "View Observability Metrics",
+    function: "View metrics in visualizer",
     description: "View real-time resource metrics in Kanvas Operator"
   },
 
@@ -4002,11 +4002,11 @@ export const Keys = {
   /**
    * Remove connections from environment, 
    */
-  WorkspaceManagementRemoveConnectionsFromEnvironments: {
+  WorkspaceManagementRemoveConnectionsFromEnvironment: {
     id: "65648682-e47f-43d7-a5ad-dc042803f951" as PermissionKey,
     category: "Workspace Management",
     subcategory: "Environments",
-    function: "Remove connections from environments",
+    function: "Remove connections from environment",
     description: "Remove connections from environment, "
   },
 
@@ -4101,22 +4101,22 @@ export const Keys = {
   /**
    * Browse the public catalog of learning paths, challenges, and certifications.
    */
-  AcademyViewAcademyContent: {
+  AcademyViewAcademy: {
     id: "40eb4949-ca16-4b7b-a9ae-4fe18f26fe1d" as PermissionKey,
     category: "Academy",
     subcategory: "Curricula",
-    function: "View Academy content",
+    function: "View Academy",
     description: "Browse the public catalog of learning paths, challenges, and certifications."
   },
 
   /**
    * View and assess the performance of learners and of your organization's academy content.
    */
-  AcademyAccessTheAcademyConsole: {
+  AcademyViewAcademyMetrics: {
     id: "045fad17-d2cc-46e8-bb10-f9ee026c799f" as PermissionKey,
     category: "Academy",
     subcategory: "Administration",
-    function: "Access the Academy console",
+    function: "View Academy Metrics",
     description: "View and assess the performance of learners and of your organization's academy content."
   },
 
@@ -4920,7 +4920,7 @@ export const PermissionKeys = {
   /**
    * Perform a password reset for your user account.
    */
-  AccountManagementResetPasword: "ec8a4b2e-8323-4a96-86ef-ec7be8f58ef1" as PermissionKey,
+  AccountManagementResetPassword: "ec8a4b2e-8323-4a96-86ef-ec7be8f58ef1" as PermissionKey,
 
   /**
    * Delete your user account.
@@ -4945,7 +4945,7 @@ export const PermissionKeys = {
   /**
    * Create new subscriptions and update existing subscriptions
    */
-  AccountManagementManageSubcriptions: "01462c43-dfa8-4a5e-805a-267c9b0ec7ec" as PermissionKey,
+  AccountManagementManageSubscriptions: "01462c43-dfa8-4a5e-805a-267c9b0ec7ec" as PermissionKey,
 
   /**
    * Explore subscription plans and compare their features.
@@ -5241,6 +5241,11 @@ export const PermissionKeys = {
    * Install or enable or disabble extensions in Meshery
    */
   ExtensibilityInstallExtension: "24f41e98-7ce1-40c4-a82d-4ae0294d237d" as PermissionKey,
+
+  /**
+   * Uninstall extension from Meshery
+   */
+  ExtensibilityUninstallExtension: "d25e0950-bcd5-4f31-9d19-26c91d17d89b" as PermissionKey,
 
   /**
    * View all user preferences in Meshery UI
@@ -5550,7 +5555,7 @@ export const PermissionKeys = {
   /**
    * Create, update , delete and manage recogntions awarded by your organization
    */
-  IdentityAccessManagementManageRecognitions: "0a887b7f-b6c2-4a33-b080-bec9c3894d0c" as PermissionKey,
+  IdentityAccessManagementManageRecogntions: "0a887b7f-b6c2-4a33-b080-bec9c3894d0c" as PermissionKey,
 
   /**
    * Create, update , delete and manage invitations to your organization
@@ -5565,7 +5570,7 @@ export const PermissionKeys = {
   /**
    * No description available
    */
-  IdentityAccessManagementRoles: "9a84a5d0-0a16-11ee-be56-0242ac120002" as PermissionKey,
+  IdentityAccessManagementViewAllRoles: "9a84a5d0-0a16-11ee-be56-0242ac120002" as PermissionKey,
 
   /**
    * No description available
@@ -5830,7 +5835,7 @@ export const PermissionKeys = {
   /**
    * In Meshery, a Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to configure a component currently present on canvas.
    */
-  KanvasEditComponentConfugurationRjsfTooltips: "8154fa61-aca9-4274-bcdd-6f551e9b17eb" as PermissionKey,
+  KanvasEditComponentConfigurationRjsfTooltips: "8154fa61-aca9-4274-bcdd-6f551e9b17eb" as PermissionKey,
 
   /**
    * No description available
@@ -6120,7 +6125,7 @@ export const PermissionKeys = {
   /**
    * See all views within a workspace
    */
-  KanvasViewViews: "93cba7f8-82ec-4a64-b384-f81d6acc8db3" as PermissionKey,
+  KanvasViewViews: "4b3117e6-176c-4d9b-8e09-4278d2f48280" as PermissionKey,
 
   /**
    * Create a new view
@@ -6178,14 +6183,9 @@ export const PermissionKeys = {
   KanvasCloneViews: "258c7e18-9ac4-41d7-a637-7f12a7f24df7" as PermissionKey,
 
   /**
-   * Direct terminal access to one ore more pods/containers simultaneously. Integrated experience.
+   * Direct terminal access to one or more pods/containers simultaneously. Integrated experience.
    */
-  KanvasWebBasedTerminal: "4726da45-2108-409b-b94f-45bd1e199a78" as PermissionKey,
-
-  /**
-   * View Interactive Terminal
-   */
-  KanvasViewInteractiveTerminal: "4726da45-2108-409b-b94f-45bd1e199c78" as PermissionKey,
+  KanvasViewInteractiveTerminal: "4726da45-2108-409b-b94f-45bd1e199a78" as PermissionKey,
 
   /**
    * View managed infrastructure resources details in Kanvas Operator
@@ -6195,7 +6195,7 @@ export const PermissionKeys = {
   /**
    * View real-time resource metrics in Kanvas Operator
    */
-  KanvasViewObservabilityMetrics: "2988a366-a743-48e7-9946-daff9b2ab0a1" as PermissionKey,
+  KanvasViewMetricsInVisualizer: "2988a366-a743-48e7-9946-daff9b2ab0a1" as PermissionKey,
 
   /**
    * Perform a conformance test in Kanvas Operator
@@ -6710,7 +6710,7 @@ export const PermissionKeys = {
   /**
    * Remove connections from environment, 
    */
-  WorkspaceManagementRemoveConnectionsFromEnvironments: "65648682-e47f-43d7-a5ad-dc042803f951" as PermissionKey,
+  WorkspaceManagementRemoveConnectionsFromEnvironment: "65648682-e47f-43d7-a5ad-dc042803f951" as PermissionKey,
 
   /**
    * View all of your projects
@@ -6755,12 +6755,12 @@ export const PermissionKeys = {
   /**
    * Browse the public catalog of learning paths, challenges, and certifications.
    */
-  AcademyViewAcademyContent: "40eb4949-ca16-4b7b-a9ae-4fe18f26fe1d" as PermissionKey,
+  AcademyViewAcademy: "40eb4949-ca16-4b7b-a9ae-4fe18f26fe1d" as PermissionKey,
 
   /**
    * View and assess the performance of learners and of your organization's academy content.
    */
-  AcademyAccessTheAcademyConsole: "045fad17-d2cc-46e8-bb10-f9ee026c799f" as PermissionKey,
+  AcademyViewAcademyMetrics: "045fad17-d2cc-46e8-bb10-f9ee026c799f" as PermissionKey,
 
   /**
    * No description available

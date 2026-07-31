@@ -264,6 +264,15 @@ export interface components {
                 "text/plain": string;
             };
         };
+        /** @description Badge label conflict. The badge label is already owned by a different organization, so the upsert was refused rather than overwriting another organization's badge. */
+        BadgeLabelConflict: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
     };
     parameters: {
         /** @description Badge ID */
@@ -534,6 +543,15 @@ export interface operations {
             };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Badge label conflict. The badge label is already owned by a different organization, so the upsert was refused rather than overwriting another organization's badge. */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };

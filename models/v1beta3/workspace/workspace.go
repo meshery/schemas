@@ -64,7 +64,7 @@ type MesheryDesignPage struct {
 type MesheryView = viewv1beta1.MesheryViewWithLocation
 
 // Page defines model for page.
-type Page = string
+type Page = int
 
 // Workspace A workspace is a logical grouping of resources within an organization. Workspaces provide a way to organize environments, designs, teams, and views. Learn more at https://docs.meshery.io/concepts/logical/workspaces
 type Workspace struct {
@@ -266,13 +266,13 @@ type Order = string
 type OrgIdQuery = uuid.UUID
 
 // CorePage defines model for page.
-type CorePage = string
+type CorePage = int
 
 // PageSize defines model for pageSize.
 type PageSize = int
 
 // Pagesize defines model for pagesize.
-type Pagesize = string
+type Pagesize = int
 
 // Search defines model for search.
 type Search = string

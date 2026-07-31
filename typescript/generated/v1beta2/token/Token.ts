@@ -198,9 +198,9 @@ export interface components {
         /** @description Token ID */
         id: string;
         /** @description Get responses by page */
-        page: string;
+        page: number;
         /** @description Get responses by pagesize */
-        pagesize: string;
+        pagesize: number;
         /** @description Get responses that match search param value */
         search: string;
         /** @description Get ordered responses */
@@ -230,9 +230,9 @@ export interface operations {
                 /** @description Whether to retrieve OAuth-backed sessions instead of API tokens. */
                 isOAuth?: boolean;
                 /** @description Get responses by page */
-                page?: string;
+                page?: number;
                 /** @description Get responses by pagesize */
-                pagesize?: string;
+                pagesize?: number;
                 /** @description Get responses that match search param value */
                 search?: string;
                 /** @description Get ordered responses */

@@ -129,13 +129,13 @@ type Order = string
 type OrgId = core.OrganizationId
 
 // Page defines model for page.
-type Page = string
+type Page = int
 
 // PageSize defines model for pageSize.
 type PageSize = int
 
 // Pagesize defines model for pagesize.
-type Pagesize = string
+type Pagesize = int
 
 // Search defines model for search.
 type Search = string

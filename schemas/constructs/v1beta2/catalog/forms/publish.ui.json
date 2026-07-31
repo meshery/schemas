@@ -1,4 +1,7 @@
 {
   "ui:options": { "label": false },
+  "compatibility": {
+    "ui:widget": "select"
+  },
   "ui:order": ["type", "compatibility", "patternInfo", "patternCaveats"]
 }

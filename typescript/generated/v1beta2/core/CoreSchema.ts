@@ -498,6 +498,7 @@ const CoreSchema: Record<string, unknown> = {
         },
         "type": "string",
         "format": "date-time",
+        "nullable": true,
         "x-go-type-skip-optional-pointer": true
       },
       "Styles": {
@@ -1814,7 +1815,8 @@ const CoreSchema: Record<string, unknown> = {
         "in": "query",
         "description": "Get responses by page",
         "schema": {
-          "type": "string"
+          "type": "integer",
+          "minimum": 0
         }
       },
       "userId": {
@@ -1846,7 +1848,7 @@ const CoreSchema: Record<string, unknown> = {
         "in": "query",
         "description": "Get responses by pagesize",
         "schema": {
-          "type": "string"
+          "type": "integer"
         }
       },
       "pagesizeWithAll": {
@@ -2056,6 +2058,16 @@ const CoreSchema: Record<string, unknown> = {
       },
       "401": {
         "description": "Expired JWT token used or insufficient privilege",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
         "content": {
           "text/plain": {
             "schema": {

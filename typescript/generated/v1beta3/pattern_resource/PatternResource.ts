@@ -239,7 +239,7 @@ export interface components {
         /** @description Pattern resource ID */
         patternResourceId: string;
         /** @description Get responses by page */
-        page: string;
+        page: number;
         /** @description Number of items per page (canonical camelCase form). */
         pageSize: number;
         /**
@@ -264,7 +264,7 @@ export interface operations {
         parameters: {
             query?: {
                 /** @description Get responses by page */
-                page?: string;
+                page?: number;
                 /** @description Number of items per page (canonical camelCase form). */
                 pageSize?: number;
                 /**

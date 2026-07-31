@@ -21,12 +21,12 @@ export interface components {
              * Caveats and Considerations
              * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
              */
-            pattern_caveats: string;
+            patternCaveats: string;
             /**
              * Description
              * @description Purpose of the design along with its intended and unintended uses.
              */
-            pattern_info: string;
+            patternInfo: string;
             /**
              * Type
              * @description Categorization of the type of design or operational flow depicted in this design.

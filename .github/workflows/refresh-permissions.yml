@@ -40,13 +40,13 @@ jobs:
       CSV_URL: ${{ inputs.csv_url || 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQwzrUSKfuSRcpkp7sJTw1cSB63s4HCjYLJeGPWECsvqn222hjaaONQlN4X8auKvlaB0es3BqV5rQyz/pub?gid=829069645&single=true&output=csv' }}
     steps:
       - name: Check out schemas
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: master
           token: ${{ secrets.MESHERY_CI }}
 
       - name: Set up Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: "24"
 
@@ -71,8 +71,8 @@ jobs:
           commit_message: "chore: refresh permissions from canonical Google Sheet"
           commit_options: "--signoff"
           branch: master
-          commit_user_name: meshery
-          commit_user_email: ci@meshery.io
+          commit_user_name: alexquincy
+          commit_user_email: 227241865+alexquincy@users.noreply.github.com
           file_pattern: |
             build/permissions.csv
             models/permissions/permissions.go

@@ -396,16 +396,16 @@ export interface components {
         /** @description Workspace ID */
         workspaceId: string;
         /** @description Get responses by page */
-        page: string;
+        page: number;
         /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
         pageSize: number;
         /** @description Get responses by pagesize */
-        pagesize: string;
+        pagesize: number;
         /**
          * @deprecated
          * @description Get responses by pagesize. Deprecated alias of pageSize.
          */
-        pagesizeLegacy: string;
+        pagesizeLegacy: number;
         /** @description Get responses that match search param value */
         search: string;
         /** @description Get ordered responses */
@@ -745,14 +745,14 @@ export interface operations {
         parameters: {
             query?: {
                 /** @description Get responses by page */
-                page?: string;
+                page?: number;
                 /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
                 pageSize?: number;
                 /**
                  * @deprecated
                  * @description Get responses by pagesize. Deprecated alias of pageSize.
                  */
-                pagesize?: string;
+                pagesize?: number;
                 /** @description Get responses that match search param value */
                 search?: string;
                 /** @description Get ordered responses */
@@ -903,9 +903,9 @@ export interface operations {
         parameters: {
             query?: {
                 /** @description Get responses by page */
-                page?: string;
+                page?: number;
                 /** @description Get responses by pagesize */
-                pagesize?: string;
+                pagesize?: number;
                 /** @description Get responses that match search param value */
                 search?: string;
                 /** @description Get ordered responses */
@@ -994,9 +994,9 @@ export interface operations {
         parameters: {
             query?: {
                 /** @description Get responses by page */
-                page?: string;
+                page?: number;
                 /** @description Get responses by pagesize */
-                pagesize?: string;
+                pagesize?: number;
                 /** @description Get responses that match search param value */
                 search?: string;
                 /** @description Get ordered responses */
@@ -1057,14 +1057,14 @@ export interface operations {
         parameters: {
             query?: {
                 /** @description Get responses by page */
-                page?: string;
+                page?: number;
                 /** @description Number of responses to return per page. Canonical camelCase pagination parameter; prefer this over the deprecated all-lowercase `pagesize`. */
                 pageSize?: number;
                 /**
                  * @deprecated
                  * @description Get responses by pagesize. Deprecated alias of pageSize.
                  */
-                pagesize?: string;
+                pagesize?: number;
             };
             header?: never;
             path?: never;

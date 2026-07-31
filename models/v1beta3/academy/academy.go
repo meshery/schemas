@@ -414,6 +414,58 @@ type ErrorResponse struct {
 	Error *string `json:"error,omitempty" yaml:"error,omitempty"`
 }
 
+// InstructorConsoleSummary Aggregate metrics for the instructor console, mirroring the deployed handler's InstructorConsoleSummary struct.
+type InstructorConsoleSummary struct {
+	// Curricula Per-content-type registration counts.
+	Curricula *[]struct {
+		// TotalCount Registrations for this content type.
+		TotalCount *int `json:"totalCount,omitempty" yaml:"totalCount,omitempty"`
+
+		// Type Academy content type.
+		Type *string `json:"type,omitempty" yaml:"type,omitempty"`
+	} `json:"curricula,omitempty" yaml:"curricula,omitempty"`
+	CurriculaList *AcademyCurriculaWithMetricsListResponse `json:"curriculaList,omitempty" yaml:"curriculaList,omitempty"`
+
+	// OrgConfig Academy module configuration for the organization.
+	OrgConfig *struct {
+		// Module Academy module assigned to the organization.
+		Module *string `json:"module,omitempty" yaml:"module,omitempty"`
+
+		// Version Version of the assigned academy module.
+		Version *string `json:"version,omitempty" yaml:"version,omitempty"`
+	} `json:"orgConfig,omitempty" yaml:"orgConfig,omitempty"`
+
+	// RegistrationsSummary Per-status registration counts.
+	RegistrationsSummary *[]struct {
+		// Status Registration status.
+		Status *string `json:"status,omitempty" yaml:"status,omitempty"`
+
+		// TotalCount Registrations in this status.
+		TotalCount *int `json:"totalCount,omitempty" yaml:"totalCount,omitempty"`
+	} `json:"registrationsSummary,omitempty" yaml:"registrationsSummary,omitempty"`
+
+	// Tests Per-test outcome counts.
+	Tests *[]struct {
+		Attempts *int  `json:"attempts,omitempty" yaml:"attempts,omitempty"`
+		Failed   *int  `json:"failed,omitempty" yaml:"failed,omitempty"`
+		Passed   *int  `json:"passed,omitempty" yaml:"passed,omitempty"`
+		Test     *Quiz `json:"test,omitempty" yaml:"test,omitempty"`
+	} `json:"tests,omitempty" yaml:"tests,omitempty"`
+
+	// TestsSummary Aggregate test outcomes across the organization.
+	TestsSummary *struct {
+		TotalAttempts *int `json:"totalAttempts,omitempty" yaml:"totalAttempts,omitempty"`
+		TotalFailed   *int `json:"totalFailed,omitempty" yaml:"totalFailed,omitempty"`
+		TotalPassed   *int `json:"totalPassed,omitempty" yaml:"totalPassed,omitempty"`
+	} `json:"testsSummary,omitempty" yaml:"testsSummary,omitempty"`
+
+	// TotalActiveLearners Learners with at least one active registration.
+	TotalActiveLearners *int `json:"totalActiveLearners,omitempty" yaml:"totalActiveLearners,omitempty"`
+
+	// TotalLearners Total distinct learners registered for the organization.
+	TotalLearners *int `json:"totalLearners,omitempty" yaml:"totalLearners,omitempty"`
+}
+
 // LearningPathMetadata defines model for LearningPathMetadata.
 type LearningPathMetadata = CurriculaMetadata
 

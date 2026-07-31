@@ -155,6 +155,11 @@ const OrganizationSchema: Record<string, unknown> = {
                             "type": "string",
                             "x-go-type-skip-optional-pointer": true
                           },
+                          "domain": {
+                            "description": "Custom domain assigned to the organization, when configured.",
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
                           "owner": {
                             "description": "Display name of the organization owner.",
                             "type": "string",
@@ -842,6 +847,11 @@ const OrganizationSchema: Record<string, unknown> = {
                             "type": "string",
                             "x-go-type-skip-optional-pointer": true
                           },
+                          "domain": {
+                            "description": "Custom domain assigned to the organization, when configured.",
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
                           "owner": {
                             "description": "Display name of the organization owner.",
                             "type": "string",
@@ -1151,6 +1161,16 @@ const OrganizationSchema: Record<string, unknown> = {
           },
           "401": {
             "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1468,6 +1488,11 @@ const OrganizationSchema: Record<string, unknown> = {
                             "type": "string",
                             "x-go-type-skip-optional-pointer": true
                           },
+                          "domain": {
+                            "description": "Custom domain assigned to the organization, when configured.",
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
                           "owner": {
                             "description": "Display name of the organization owner.",
                             "type": "string",
@@ -1775,6 +1800,16 @@ const OrganizationSchema: Record<string, unknown> = {
               }
             }
           },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "404": {
             "description": "Result not found",
             "content": {
@@ -1851,6 +1886,16 @@ const OrganizationSchema: Record<string, unknown> = {
           },
           "401": {
             "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
             "content": {
               "text/plain": {
                 "schema": {
@@ -2268,6 +2313,11 @@ const OrganizationSchema: Record<string, unknown> = {
                             "type": "string",
                             "x-go-type-skip-optional-pointer": true
                           },
+                          "domain": {
+                            "description": "Custom domain assigned to the organization, when configured.",
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
                           "owner": {
                             "description": "Display name of the organization owner.",
                             "type": "string",
@@ -2577,6 +2627,16 @@ const OrganizationSchema: Record<string, unknown> = {
           },
           "401": {
             "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
             "content": {
               "text/plain": {
                 "schema": {
@@ -2909,6 +2969,16 @@ const OrganizationSchema: Record<string, unknown> = {
           },
           "401": {
             "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
             "content": {
               "text/plain": {
                 "schema": {
@@ -3257,6 +3327,16 @@ const OrganizationSchema: Record<string, unknown> = {
           "401": {
             "description": "Unauthorized"
           },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "404": {
             "description": "Not found"
           },
@@ -3453,6 +3533,16 @@ const OrganizationSchema: Record<string, unknown> = {
           "401": {
             "description": "Unauthorized"
           },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "404": {
             "description": "Not found"
           },
@@ -3545,6 +3635,16 @@ const OrganizationSchema: Record<string, unknown> = {
           "401": {
             "description": "Unauthorized"
           },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "404": {
             "description": "Result not found",
             "content": {
@@ -3624,6 +3724,16 @@ const OrganizationSchema: Record<string, unknown> = {
           "401": {
             "description": "Unauthorized"
           },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "404": {
             "description": "Result not found",
             "content": {
@@ -3662,6 +3772,16 @@ const OrganizationSchema: Record<string, unknown> = {
       },
       "401": {
         "description": "Expired JWT token used or insufficient privilege",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
         "content": {
           "text/plain": {
             "schema": {
@@ -5185,6 +5305,11 @@ const OrganizationSchema: Record<string, unknown> = {
             "type": "string",
             "x-go-type-skip-optional-pointer": true
           },
+          "domain": {
+            "description": "Custom domain assigned to the organization, when configured.",
+            "type": "string",
+            "x-go-type-skip-optional-pointer": true
+          },
           "owner": {
             "description": "Display name of the organization owner.",
             "type": "string",
@@ -5536,6 +5661,11 @@ const OrganizationSchema: Record<string, unknown> = {
                 },
                 "region": {
                   "description": "Region of the organization.",
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "domain": {
+                  "description": "Custom domain assigned to the organization, when configured.",
                   "type": "string",
                   "x-go-type-skip-optional-pointer": true
                 },
@@ -5894,6 +6024,11 @@ const OrganizationSchema: Record<string, unknown> = {
                 },
                 "region": {
                   "description": "Region of the organization.",
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "domain": {
+                  "description": "Custom domain assigned to the organization, when configured.",
                   "type": "string",
                   "x-go-type-skip-optional-pointer": true
                 },

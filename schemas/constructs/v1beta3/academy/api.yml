@@ -612,7 +612,9 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                # Mirrors the deployed handler's InstructorConsoleSummary
+                # (meshery-cloud handlers/academy/instructor-console.go).
+                $ref: '#/components/schemas/InstructorConsoleSummary'
         '400':
           description: Invalid request parameters
         '401':
@@ -967,6 +969,81 @@ components:
       required:
       - total
       - data
+    InstructorConsoleSummary:
+      type: object
+      description: >
+        Aggregate metrics for the instructor console, mirroring the deployed
+        handler's InstructorConsoleSummary struct.
+      properties:
+        orgConfig:
+          type: object
+          description: Academy module configuration for the organization.
+          properties:
+            module:
+              type: string
+              description: Academy module assigned to the organization.
+            version:
+              type: string
+              description: Version of the assigned academy module.
+        totalLearners:
+          type: integer
+          description: Total distinct learners registered for the organization.
+        totalActiveLearners:
+          type: integer
+          description: Learners with at least one active registration.
+        curricula:
+          type: array
+          description: Per-content-type registration counts.
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                description: Academy content type.
+              totalCount:
+                type: integer
+                description: Registrations for this content type.
+        registrationsSummary:
+          type: array
+          description: Per-status registration counts.
+          items:
+            type: object
+            properties:
+              status:
+                type: string
+                description: Registration status.
+              totalCount:
+                type: integer
+                description: Registrations in this status.
+        testsSummary:
+          type: object
+          description: Aggregate test outcomes across the organization.
+          properties:
+            totalPassed:
+              type: integer
+            totalFailed:
+              type: integer
+            totalAttempts:
+              type: integer
+        tests:
+          type: array
+          description: Per-test outcome counts.
+          items:
+            type: object
+            properties:
+              test:
+                $ref: '#/components/schemas/Quiz'
+                description: The test the counts refer to.
+              passed:
+                type: integer
+              failed:
+                type: integer
+              attempts:
+                type: integer
+        curriculaList:
+          $ref: '#/components/schemas/AcademyCurriculaWithMetricsListResponse'
+          description: Curricula with metrics for the organization.
+
     AcademyCurriculaWithMetricsListResponse:
       type: object
       properties:

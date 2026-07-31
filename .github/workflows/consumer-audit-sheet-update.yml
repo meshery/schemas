@@ -20,7 +20,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout schemas
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Validate required secrets
         env:
@@ -44,21 +44,21 @@ jobs:
           go-version-file: go.mod
 
       - name: Checkout meshery/meshery
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: meshery/meshery
           path: _consumer/meshery
           token: ${{ secrets.MESHERY_CI }}
 
       - name: Checkout layer5io/meshery-cloud
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: layer5io/meshery-cloud
           path: _consumer/meshery-cloud
           token: ${{ secrets.MESHERY_CI }}
 
       - name: Checkout layer5labs/meshery-extensions
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: layer5labs/meshery-extensions
           path: _consumer/meshery-extensions

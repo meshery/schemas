@@ -148,6 +148,108 @@ paths:
         "500":
           description: Email configuration validation failed or the send attempt errored.
 
+  /api/system/kubernetes:
+    post:
+      x-internal: ["meshery"]
+      tags:
+        - System
+      summary: Import a kubeconfig
+      description: >-
+        Uploads a kubeconfig and registers each discovered context as a
+        Kubernetes connection. Unreachable contexts are still registered as
+        discovered connections; reachability only gates the transition to
+        connected. The optional `contexts` and `selectedContexts` form fields
+        scope and configure the import.
+      operationId: addKubernetesConfig
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/AddKubernetesConfigPayload"
+      responses:
+        "200":
+          description: Discovered contexts bucketed by import outcome.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AddKubernetesConfigResponse"
+        "400":
+          description: >-
+            Missing or unparsable kubeconfig, or malformed `contexts` /
+            `selectedContexts` JSON.
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          description: Failed to retrieve the user token from the request context.
+
+  /api/system/kubernetes/contexts:
+    post:
+      x-internal: ["meshery"]
+      tags:
+        - System
+      summary: Discover kubeconfig contexts
+      description: >-
+        Parses an uploaded kubeconfig and returns its contexts - including
+        unreachable ones, flagged via `reachable` - without persisting any
+        connection. Lets a client present the discovered contexts for
+        selection before importing them.
+      operationId: discoverKubernetesContexts
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/DiscoverKubernetesContextsPayload"
+      responses:
+        "200":
+          description: Contexts discovered in the uploaded kubeconfig.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "../../v1beta3/connection/api.yml#/components/schemas/K8sContext"
+        "400":
+          description: Missing or unparsable kubeconfig.
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          description: Failed to retrieve the provider token for the request.
+
+  /api/system/kubernetes/ping:
+    get:
+      x-internal: ["meshery"]
+      tags:
+        - System
+      summary: Ping a Kubernetes connection
+      description: >-
+        Verifies connectivity to the Kubernetes cluster behind a connection by
+        fetching the API server version.
+      operationId: pingKubernetes
+      parameters:
+        - name: connectionId
+          in: query
+          required: true
+          description: ID of the Kubernetes connection whose cluster to ping.
+          schema:
+            $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+      responses:
+        "200":
+          description: Cluster is reachable.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KubernetesPingResponse"
+        "400":
+          description: Missing `connectionId` query parameter, or the stored kubeconfig is invalid.
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          description: No Kubernetes context found for the given connection ID.
+        "500":
+          description: Failed to reach the cluster or fetch its server version.
+
   /api/system/sync:
     get:
       x-internal: ["meshery"]
@@ -408,6 +510,26 @@ components:
           minLength: 1
           maxLength: 1024
 
+    ControllerStatusValue:
+      type: string
+      description: >-
+        Current status of a single Meshery controller (operator, MeshSync, or
+        broker). Mirrors the MesheryControllerStatus GraphQL enum
+        (server/internal/graphql/schema/schema.graphql) during the ongoing
+        migration of controller-status consumers from GraphQL to this REST
+        API; the literal values (including the published "UNKOWN" spelling)
+        are load-bearing and must not be changed independently of that enum.
+      x-enum-casing-exempt: true
+      enum:
+        - DEPLOYED
+        - NOTDEPLOYED
+        - DEPLOYING
+        - UNKOWN
+        - UNDEPLOYED
+        - ENABLED
+        - RUNNING
+        - CONNECTED
+
     ControllerStatus:
       type: object
       description: >-
@@ -433,10 +555,9 @@ components:
             - BROKER
         status:
           type: string
-          description: >-
-            Current controller status (e.g. DEPLOYED, NOTDEPLOYED, RUNNING,
-            CONNECTED, UNKNOWN).
-          maxLength: 255
+          $ref: "#/components/schemas/ControllerStatusValue"
+          x-go-type: ControllerStatusValue
+          description: Current controller status.
         version:
           type: string
           description: Deployed controller version, when known.
@@ -685,3 +806,99 @@ components:
           description: Kubernetes contexts currently tracked by the Meshery server.
           items:
             $ref: "#/components/schemas/SystemSessionSyncK8sContext"
+
+    AddKubernetesConfigPayload:
+      type: object
+      description: >-
+        Multipart form payload for importing a kubeconfig. `contexts` and
+        `selectedContexts` are JSON-encoded strings because they travel as
+        multipart form fields alongside the file.
+      additionalProperties: false
+      required:
+        - k8sfile
+      properties:
+        k8sfile:
+          type: string
+          format: binary
+          description: Kubeconfig file contents.
+        contexts:
+          type: string
+          description: >-
+            JSON-encoded object mapping a discovered context ID to per-context
+            import options, e.g. `{"<contextId>": {"meshsyncDeploymentMode":
+            "operator", "name": "my-cluster"}}`. `meshsyncDeploymentMode`
+            selects how MeshSync runs for the resulting connection; `name`
+            overrides the connection name.
+          maxLength: 1048576
+        selectedContexts:
+          type: string
+          description: >-
+            JSON-encoded array of discovered context IDs to import. When
+            absent, every context discovered in the kubeconfig is imported.
+          maxLength: 1048576
+
+    DiscoverKubernetesContextsPayload:
+      type: object
+      description: Multipart form payload for kubeconfig context discovery.
+      additionalProperties: false
+      required:
+        - k8sfile
+      properties:
+        k8sfile:
+          type: string
+          format: binary
+          description: Kubeconfig file contents.
+
+    AddKubernetesConfigResponse:
+      type: object
+      description: >-
+        Discovered kubeconfig contexts bucketed by import outcome. Every
+        bucket is always present (empty when no context landed in it).
+      additionalProperties: false
+      required:
+        - registeredContexts
+        - connectedContexts
+        - ignoredContexts
+        - erroredContexts
+      properties:
+        registeredContexts:
+          type: array
+          description: Contexts newly registered as discovered connections.
+          items:
+            $ref: "../../v1beta3/connection/api.yml#/components/schemas/K8sContext"
+        connectedContexts:
+          type: array
+          description: >-
+            Contexts whose connection already exists in (or transitioned to)
+            the connected state.
+          items:
+            $ref: "../../v1beta3/connection/api.yml#/components/schemas/K8sContext"
+        ignoredContexts:
+          type: array
+          description: Contexts whose connection is in the ignored state.
+          items:
+            $ref: "../../v1beta3/connection/api.yml#/components/schemas/K8sContext"
+        erroredContexts:
+          type: array
+          description: >-
+            Contexts that could not be saved as connections. The failure
+            detail is recorded in the emitted event's metadata, not on the
+            context object.
+          items:
+            $ref: "../../v1beta3/connection/api.yml#/components/schemas/K8sContext"
+
+    KubernetesPingResponse:
+      type: object
+      description: Result of pinging a Kubernetes connection's API server.
+      additionalProperties: false
+      required:
+        - server_version
+      properties:
+        server_version:
+          type: string
+          description: >-
+            Version string reported by the cluster's API server. The wire
+            field is `server_version` - this endpoint's published wire casing
+            predates the camelCase convention and is preserved within this
+            API version.
+          maxLength: 128

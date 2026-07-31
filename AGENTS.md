@@ -55,6 +55,20 @@ Generated artifacts (`models/`, `typescript/generated/`) are committed by automa
 
 Always run `make build`, `go test ./...`, and `npm run build` before committing schema changes. See [Common Mistakes](docs/schema-review-checklist.md#common-mistakes-to-avoid) and the [Checklist for Schema Changes](docs/schema-review-checklist.md#checklist-for-schema-changes) for the full pre-PR list.
 
+## AXI Agent Tooling
+
+- Use the `gh-axi` CLI tool to interact with GitHub. Prefer `gh-axi` over `gh`.
+- Use `chrome-devtools-axi` for browser automation (navigate, snapshot, click, fill forms, run JS, inspect console/network) in place of raw Playwright/chrome-devtools MCP for ad hoc tasks.
+- Run `quota-axi` to check local agent-provider quota windows before long-running work.
+- Use the `lavish` skill (`lavish-axi` CLI) to turn a plan, comparison, or report into a reviewable HTML artifact.
+
+### Where skills live
+
+`.agents/skills/` is the single source of truth for this repo's agent skills. `.claude/skills` is a
+relative symlink to it - add, edit, and remove skills under `.agents/skills/` only, and never replace
+that symlink with a real directory. Codex and OpenCode read `.agents/skills` natively, so no
+`.codex/skills` or `.opencode/skills` link is needed.
+
 ## The Dual-Schema Pattern (REQUIRED)
 
 This is the most critical design rule in this repo. Every agent or contributor MUST follow it.
@@ -156,6 +170,7 @@ Long-form reference material lives in `docs/` to keep this file concise. Consult
 - **[`docs/schema-authoring-reference.md`](docs/schema-authoring-reference.md)** - dual-schema worked examples, per-property validation rules (37-42), `x-id-format: external`, RJSF form schemas + enforcement tests, Go helper files, `x-internal`, SQL driver (`Scan`/`Value`) rules.
 - **[`docs/schema-review-checklist.md`](docs/schema-review-checklist.md)** - intentional design decisions (do not flag), the 26 common mistakes, and the full pre-PR schema-change checklist.
 - **[`docs/schema-tooling.md`](docs/schema-tooling.md)** - identifier-naming migration status, advisory baseline, consumer audit tooling and CI behavior.
+- **[`docs/superseded-construct-consumer-verification.md`](docs/superseded-construct-consumer-verification.md)** - how to prove no downstream consumer is still on an `x-superseded-by` construct version; why import-path grepping is invalid on the TypeScript/RTK surface.
 - **[`docs/release-procedure.md`](docs/release-procedure.md)** - full release flow, What NOT to Do, and versioning policy.
 - **[`docs/release-procedure-skill.md`](docs/release-procedure-skill.md)** - using the `meshery-schemas-release` skill, verification commands, troubleshooting.
 - **[`docs/relationship-evaluation-engine-contract.md`](docs/relationship-evaluation-engine-contract.md)** - the authoritative relationship-evaluation wire contract for downstream evaluators.
@@ -170,3 +185,10 @@ If you're unsure about any schema modification:
 4. Check generated `.d.ts` files for actual type/property names
 5. Review this document and the linked `docs/` references for guidelines
 6. Test your changes with `make build` before committing
+
+## Maintaining this file
+
+Keep this file for knowledge useful to almost every future agent session in this project.
+Do not repeat what the codebase already shows; point to the authoritative file or command instead.
+Prefer rewriting or pruning existing entries over appending new ones.
+When updating this file, preserve this bar for all agents and keep entries concise.

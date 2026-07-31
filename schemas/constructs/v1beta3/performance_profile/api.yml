@@ -266,7 +266,7 @@ components:
     order:
       $ref: "../../v1alpha1/core/api.yml#/components/parameters/order"
     page:
-      $ref: "../../v1alpha1/core/api.yml#/components/parameters/page"
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/page"
     pagesize:
       $ref: "../../v1alpha1/core/api.yml#/components/parameters/pagesize"
     from:

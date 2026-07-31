@@ -164,7 +164,7 @@ export interface components {
              * Format: date-time
              * @description SQL null Timestamp to handle null values of time.
              */
-            deleted_at?: string;
+            deleted_at?: string | null;
             /** @description Associated environments for this connection */
             environments?: {
                 /**
@@ -273,7 +273,7 @@ export interface components {
                  * Format: date-time
                  * @description SQL null Timestamp to handle null values of time.
                  */
-                deleted_at?: string;
+                deleted_at?: string | null;
                 /** @description Associated environments for this connection */
                 environments?: {
                     /**
@@ -630,7 +630,7 @@ export interface operations {
                              * Format: date-time
                              * @description SQL null Timestamp to handle null values of time.
                              */
-                            deleted_at?: string;
+                            deleted_at?: string | null;
                             /** @description Associated environments for this connection */
                             environments?: {
                                 /**
@@ -813,7 +813,7 @@ export interface operations {
                          * Format: date-time
                          * @description SQL null Timestamp to handle null values of time.
                          */
-                        deleted_at?: string;
+                        deleted_at?: string | null;
                         /** @description Associated environments for this connection */
                         environments?: {
                             /**
@@ -968,7 +968,7 @@ export interface operations {
                          * Format: date-time
                          * @description SQL null Timestamp to handle null values of time.
                          */
-                        deleted_at?: string;
+                        deleted_at?: string | null;
                         /** @description Associated environments for this connection */
                         environments?: {
                             /**
@@ -1152,7 +1152,7 @@ export interface operations {
                          * Format: date-time
                          * @description SQL null Timestamp to handle null values of time.
                          */
-                        deleted_at?: string;
+                        deleted_at?: string | null;
                         /** @description Associated environments for this connection */
                         environments?: {
                             /**

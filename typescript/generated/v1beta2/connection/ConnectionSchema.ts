@@ -334,6 +334,7 @@ const ConnectionSchema: Record<string, unknown> = {
                             },
                             "type": "string",
                             "format": "date-time",
+                            "nullable": true,
                             "x-go-type-skip-optional-pointer": true
                           },
                           "environments": {
@@ -893,6 +894,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       },
                       "type": "string",
                       "format": "date-time",
+                      "nullable": true,
                       "x-go-type-skip-optional-pointer": true
                     },
                     "environments": {
@@ -1339,6 +1341,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       },
                       "type": "string",
                       "format": "date-time",
+                      "nullable": true,
                       "x-go-type-skip-optional-pointer": true
                     },
                     "environments": {
@@ -1886,6 +1889,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       },
                       "type": "string",
                       "format": "date-time",
+                      "nullable": true,
                       "x-go-type-skip-optional-pointer": true
                     },
                     "environments": {
@@ -2772,6 +2776,7 @@ const ConnectionSchema: Record<string, unknown> = {
             },
             "type": "string",
             "format": "date-time",
+            "nullable": true,
             "x-go-type-skip-optional-pointer": true
           },
           "environments": {
@@ -3168,6 +3173,7 @@ const ConnectionSchema: Record<string, unknown> = {
                   },
                   "type": "string",
                   "format": "date-time",
+                  "nullable": true,
                   "x-go-type-skip-optional-pointer": true
                 },
                 "environments": {
