@@ -1,6 +1,7 @@
 package academy
 
 import (
+	"bytes"
 	"encoding/json"
 	"testing"
 )
@@ -190,5 +191,106 @@ func TestHistoricalSubmissionDecodes(t *testing.T) {
 	}
 	if submission.Answers[0].QuestionId != "q1" {
 		t.Fatalf("questionId = %q, want q1", submission.Answers[0].QuestionId)
+	}
+}
+
+// registrationId and userId are a redundant echo of the authoritative values on
+// the enclosing TestSubmission, so a submission that never carried them must
+// still decode. Absence is spelled `null` or an omitted property; the empty
+// string is not a valid identifier and must stay a decode error, so a
+// submission that does not know whose it is remains distinguishable from one
+// that does.
+func TestQuizSubmissionIdentityIsOptionalButNeverEmpty(t *testing.T) {
+	const (
+		registrationID = "550e8400-e29b-41d4-a716-446655440000"
+		sessionID      = "550e8400-e29b-41d4-a716-446655440001"
+		userID         = "550e8400-e29b-41d4-a716-446655440002"
+	)
+	body := func(identity string) []byte {
+		return []byte(`{
+		  "quizAbsPath": "/a/b/index.json",
+		  "testSessionId": "` + sessionID + `",
+		  ` + identity + `
+		  "answers": [{"questionId":"q1","selectedOptionId":{"a":true},"answerText":""}]
+		}`)
+	}
+
+	t.Run("populated", func(t *testing.T) {
+		var submission QuizSubmission
+		identity := `"registrationId":"` + registrationID + `","userId":"` + userID + `",`
+		if err := json.Unmarshal(body(identity), &submission); err != nil {
+			t.Fatalf("populated submission failed to decode: %v", err)
+		}
+		if submission.RegistrationId == nil || submission.RegistrationId.String() != registrationID {
+			t.Fatalf("registrationId = %v, want %s", submission.RegistrationId, registrationID)
+		}
+		if submission.UserId == nil || submission.UserId.String() != userID {
+			t.Fatalf("userId = %v, want %s", submission.UserId, userID)
+		}
+	})
+
+	// The 556 production rows this change unblocks: identity absent, everything
+	// else intact. These used to fail the decode and surface as HTTP 500.
+	for _, tc := range []struct {
+		name     string
+		identity string
+	}{
+		{"omitted", ``},
+		{"explicit null", `"registrationId":null,"userId":null,`},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			var submission QuizSubmission
+			if err := json.Unmarshal(body(tc.identity), &submission); err != nil {
+				t.Fatalf("submission without identity failed to decode: %v", err)
+			}
+			if submission.RegistrationId != nil {
+				t.Fatalf("registrationId = %v, want nil", submission.RegistrationId)
+			}
+			if submission.UserId != nil {
+				t.Fatalf("userId = %v, want nil", submission.UserId)
+			}
+			if len(submission.Answers) != 1 {
+				t.Fatalf("answers = %d, want 1", len(submission.Answers))
+			}
+		})
+	}
+
+	// The explicitly rejected variant: "" must not become a valid identifier.
+	for _, tc := range []struct {
+		name     string
+		identity string
+	}{
+		{"empty registrationId", `"registrationId":"","userId":"` + userID + `",`},
+		{"empty userId", `"registrationId":"` + registrationID + `","userId":"",`},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			var submission QuizSubmission
+			if err := json.Unmarshal(body(tc.identity), &submission); err == nil {
+				t.Fatal("empty-string identifier decoded, want an error")
+			}
+		})
+	}
+}
+
+// A nil identity must round-trip as absent rather than as a zero UUID, so
+// re-persisting a decoded legacy submission cannot invent an owner.
+func TestQuizSubmissionNilIdentityMarshalsAsAbsent(t *testing.T) {
+	encoded, err := json.Marshal(QuizSubmission{
+		QuizAbsPath: "/a/b/index.json",
+		Answers:     []SubmittedAnswer{},
+	})
+	if err != nil {
+		t.Fatalf("marshal failed: %v", err)
+	}
+	if bytes.Contains(encoded, []byte("registrationId")) || bytes.Contains(encoded, []byte("userId")) {
+		t.Fatalf("nil identity was serialized, want it omitted: %s", encoded)
+	}
+
+	var round QuizSubmission
+	if err := json.Unmarshal(encoded, &round); err != nil {
+		t.Fatalf("round-trip failed to decode: %v", err)
+	}
+	if round.RegistrationId != nil || round.UserId != nil {
+		t.Fatalf("round-trip invented an identity: %+v", round)
 	}
 }

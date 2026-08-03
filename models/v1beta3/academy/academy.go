@@ -636,7 +636,7 @@ type QuizEvaluationResult struct {
 	TotalMarks int `json:"totalMarks" yaml:"totalMarks"`
 }
 
-// QuizSubmission defines model for QuizSubmission.
+// QuizSubmission A learner's answers to a quiz. Submitted as the `submitQuiz` request body and persisted verbatim as `TestSubmission.submissionData`. `registrationId` and `userId` are a convenience echo of the authoritative values on the enclosing `TestSubmission` (`registrationId` / `userId`, backed by the `registration_id` and `owner` `uuid NOT NULL` columns); read them from the enclosing submission, not from here.
 type QuizSubmission struct {
 	// Answers The answers of the quizsubmission.
 	Answers []SubmittedAnswer `json:"answers" yaml:"answers"`
@@ -644,14 +644,14 @@ type QuizSubmission struct {
 	// QuizAbsPath The quiz abs path of the quizsubmission.
 	QuizAbsPath string `json:"quizAbsPath" yaml:"quizAbsPath"`
 
-	// RegistrationId ID of the associated registration.
-	RegistrationId uuid.UUID `json:"registrationId" yaml:"registrationId"`
+	// RegistrationId ID of the associated registration. Optional, because a submission may not carry this echo; when it is absent the authoritative value is `TestSubmission.registrationId`. Absence MUST be expressed as `null` or an omitted property - the empty string is not a valid identifier.
+	RegistrationId *uuid.UUID `json:"registrationId,omitempty" yaml:"registrationId,omitempty"`
 
 	// TestSessionId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	TestSessionId core.Uuid `json:"testSessionId" yaml:"testSessionId"`
 
-	// UserId ID of the user who owns or created this resource.
-	UserId uuid.UUID `json:"userId" yaml:"userId"`
+	// UserId ID of the user who owns or created this resource. Optional, because a submission may not carry this echo; when it is absent the authoritative value is `TestSubmission.userId`. Absence MUST be expressed as `null` or an omitted property - the empty string is not a valid identifier.
+	UserId *uuid.UUID `json:"userId,omitempty" yaml:"userId,omitempty"`
 }
 
 // RegisterToAcademyContentRequest defines model for RegisterToAcademyContentRequest.
@@ -747,7 +747,9 @@ type TestSubmission struct {
 	RegistrationId core.Uuid     `db:"registration_id" json:"registrationId" yaml:"registrationId"`
 	Result         *QuizEvaluationResult `db:"result" json:"result,omitempty" yaml:"result,omitempty"`
 	Status         TestSubmissionStatus  `json:"status" yaml:"status"`
-	SubmissionData *QuizSubmission       `db:"submission_data" json:"submissionData,omitempty" yaml:"submissionData,omitempty"`
+
+	// SubmissionData A learner's answers to a quiz. Submitted as the `submitQuiz` request body and persisted verbatim as `TestSubmission.submissionData`. `registrationId` and `userId` are a convenience echo of the authoritative values on the enclosing `TestSubmission` (`registrationId` / `userId`, backed by the `registration_id` and `owner` `uuid NOT NULL` columns); read them from the enclosing submission, not from here.
+	SubmissionData *QuizSubmission `db:"submission_data" json:"submissionData,omitempty" yaml:"submissionData,omitempty"`
 
 	// SubmittedAt The submitted at of the testsubmission.
 	SubmittedAt *time.Time `db:"submitted_at" json:"submittedAt,omitempty" yaml:"submittedAt,omitempty"`

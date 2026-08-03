@@ -7468,11 +7468,10 @@ const AcademySchema: Record<string, unknown> = {
             "application/json": {
               "schema": {
                 "type": "object",
+                "description": "A learner's answers to a quiz. Submitted as the `submitQuiz` request body and persisted verbatim as `TestSubmission.submissionData`. `registrationId` and `userId` are a convenience echo of the authoritative values on the enclosing `TestSubmission` (`registrationId` / `userId`, backed by the `registration_id` and `owner` `uuid NOT NULL` columns); read them from the enclosing submission, not from here.",
                 "required": [
                   "quizAbsPath",
-                  "registrationId",
                   "testSessionId",
-                  "userId",
                   "answers"
                 ],
                 "properties": {
@@ -7492,15 +7491,23 @@ const AcademySchema: Record<string, unknown> = {
                   },
                   "registrationId": {
                     "type": "string",
-                    "description": "ID of the associated registration.",
+                    "description": "ID of the associated registration. Optional, because a submission may not carry this echo; when it is absent the authoritative value is `TestSubmission.registrationId`. Absence MUST be expressed as `null` or an omitted property - the empty string is not a valid identifier.",
                     "maxLength": 500,
-                    "format": "uuid"
+                    "format": "uuid",
+                    "nullable": true,
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "registrationId,omitempty"
+                    }
                   },
                   "userId": {
                     "type": "string",
-                    "description": "ID of the user who owns or created this resource.",
+                    "description": "ID of the user who owns or created this resource. Optional, because a submission may not carry this echo; when it is absent the authoritative value is `TestSubmission.userId`. Absence MUST be expressed as `null` or an omitted property - the empty string is not a valid identifier.",
                     "maxLength": 500,
-                    "format": "uuid"
+                    "format": "uuid",
+                    "nullable": true,
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "userId,omitempty"
+                    }
                   },
                   "answers": {
                     "type": "array",
@@ -17221,11 +17228,10 @@ const AcademySchema: Record<string, unknown> = {
       },
       "QuizSubmission": {
         "type": "object",
+        "description": "A learner's answers to a quiz. Submitted as the `submitQuiz` request body and persisted verbatim as `TestSubmission.submissionData`. `registrationId` and `userId` are a convenience echo of the authoritative values on the enclosing `TestSubmission` (`registrationId` / `userId`, backed by the `registration_id` and `owner` `uuid NOT NULL` columns); read them from the enclosing submission, not from here.",
         "required": [
           "quizAbsPath",
-          "registrationId",
           "testSessionId",
-          "userId",
           "answers"
         ],
         "properties": {
@@ -17245,15 +17251,23 @@ const AcademySchema: Record<string, unknown> = {
           },
           "registrationId": {
             "type": "string",
-            "description": "ID of the associated registration.",
+            "description": "ID of the associated registration. Optional, because a submission may not carry this echo; when it is absent the authoritative value is `TestSubmission.registrationId`. Absence MUST be expressed as `null` or an omitted property - the empty string is not a valid identifier.",
             "maxLength": 500,
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "registrationId,omitempty"
+            }
           },
           "userId": {
             "type": "string",
-            "description": "ID of the user who owns or created this resource.",
+            "description": "ID of the user who owns or created this resource. Optional, because a submission may not carry this echo; when it is absent the authoritative value is `TestSubmission.userId`. Absence MUST be expressed as `null` or an omitted property - the empty string is not a valid identifier.",
             "maxLength": 500,
-            "format": "uuid"
+            "format": "uuid",
+            "nullable": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "userId,omitempty"
+            }
           },
           "answers": {
             "type": "array",
@@ -17430,11 +17444,10 @@ const AcademySchema: Record<string, unknown> = {
           },
           "submissionData": {
             "type": "object",
+            "description": "A learner's answers to a quiz. Submitted as the `submitQuiz` request body and persisted verbatim as `TestSubmission.submissionData`. `registrationId` and `userId` are a convenience echo of the authoritative values on the enclosing `TestSubmission` (`registrationId` / `userId`, backed by the `registration_id` and `owner` `uuid NOT NULL` columns); read them from the enclosing submission, not from here.",
             "required": [
               "quizAbsPath",
-              "registrationId",
               "testSessionId",
-              "userId",
               "answers"
             ],
             "properties": {
@@ -17454,15 +17467,23 @@ const AcademySchema: Record<string, unknown> = {
               },
               "registrationId": {
                 "type": "string",
-                "description": "ID of the associated registration.",
+                "description": "ID of the associated registration. Optional, because a submission may not carry this echo; when it is absent the authoritative value is `TestSubmission.registrationId`. Absence MUST be expressed as `null` or an omitted property - the empty string is not a valid identifier.",
                 "maxLength": 500,
-                "format": "uuid"
+                "format": "uuid",
+                "nullable": true,
+                "x-oapi-codegen-extra-tags": {
+                  "json": "registrationId,omitempty"
+                }
               },
               "userId": {
                 "type": "string",
-                "description": "ID of the user who owns or created this resource.",
+                "description": "ID of the user who owns or created this resource. Optional, because a submission may not carry this echo; when it is absent the authoritative value is `TestSubmission.userId`. Absence MUST be expressed as `null` or an omitted property - the empty string is not a valid identifier.",
                 "maxLength": 500,
-                "format": "uuid"
+                "format": "uuid",
+                "nullable": true,
+                "x-oapi-codegen-extra-tags": {
+                  "json": "userId,omitempty"
+                }
               },
               "answers": {
                 "type": "array",

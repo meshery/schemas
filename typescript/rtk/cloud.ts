@@ -6728,10 +6728,10 @@ export type SubmitQuizApiArg = {
     testSessionId: string;
     /** The quiz abs path of the quizsubmission. */
     quizAbsPath: string;
-    /** ID of the associated registration. */
-    registrationId: string;
-    /** ID of the user who owns or created this resource. */
-    userId: string;
+    /** ID of the associated registration. Optional, because a submission may not carry this echo; when it is absent the authoritative value is `TestSubmission.registrationId`. Absence MUST be expressed as `null` or an omitted property - the empty string is not a valid identifier. */
+    registrationId?: string | null;
+    /** ID of the user who owns or created this resource. Optional, because a submission may not carry this echo; when it is absent the authoritative value is `TestSubmission.userId`. Absence MUST be expressed as `null` or an omitted property - the empty string is not a valid identifier. */
+    userId?: string | null;
     /** The answers of the quizsubmission. */
     answers: {
       /** ID of the associated question. Mirrors `Question.id`, a content-authored string rather than a database row identifier, so it is not a UUID. */
