@@ -3896,6 +3896,7 @@ export interface components {
              */
             registrationId: string;
         };
+        /** @description A learner's answers to a quiz. Submitted as the `submitQuiz` request body and persisted verbatim as `TestSubmission.submissionData`. `registrationId` and `userId` are a convenience echo of the authoritative values on the enclosing `TestSubmission` (`registrationId` / `userId`, backed by the `registration_id` and `owner` `uuid NOT NULL` columns); read them from the enclosing submission, not from here. */
         QuizSubmission: {
             /**
              * Format: uuid
@@ -3906,14 +3907,14 @@ export interface components {
             quizAbsPath: string;
             /**
              * Format: uuid
-             * @description ID of the associated registration.
+             * @description ID of the associated registration. Optional, because a submission may not carry this echo; when it is absent the authoritative value is `TestSubmission.registrationId`. Absence MUST be expressed as `null` or an omitted property - the empty string is not a valid identifier.
              */
-            registrationId: string;
+            registrationId?: string | null;
             /**
              * Format: uuid
-             * @description ID of the user who owns or created this resource.
+             * @description ID of the user who owns or created this resource. Optional, because a submission may not carry this echo; when it is absent the authoritative value is `TestSubmission.userId`. Absence MUST be expressed as `null` or an omitted property - the empty string is not a valid identifier.
              */
-            userId: string;
+            userId?: string | null;
             /** @description The answers of the quizsubmission. */
             answers: {
                 /**
@@ -3982,6 +3983,7 @@ export interface components {
              * @description The submitted at of the testsubmission.
              */
             submittedAt?: string;
+            /** @description A learner's answers to a quiz. Submitted as the `submitQuiz` request body and persisted verbatim as `TestSubmission.submissionData`. `registrationId` and `userId` are a convenience echo of the authoritative values on the enclosing `TestSubmission` (`registrationId` / `userId`, backed by the `registration_id` and `owner` `uuid NOT NULL` columns); read them from the enclosing submission, not from here. */
             submissionData?: {
                 /**
                  * Format: uuid
@@ -3992,14 +3994,14 @@ export interface components {
                 quizAbsPath: string;
                 /**
                  * Format: uuid
-                 * @description ID of the associated registration.
+                 * @description ID of the associated registration. Optional, because a submission may not carry this echo; when it is absent the authoritative value is `TestSubmission.registrationId`. Absence MUST be expressed as `null` or an omitted property - the empty string is not a valid identifier.
                  */
-                registrationId: string;
+                registrationId?: string | null;
                 /**
                  * Format: uuid
-                 * @description ID of the user who owns or created this resource.
+                 * @description ID of the user who owns or created this resource. Optional, because a submission may not carry this echo; when it is absent the authoritative value is `TestSubmission.userId`. Absence MUST be expressed as `null` or an omitted property - the empty string is not a valid identifier.
                  */
-                userId: string;
+                userId?: string | null;
                 /** @description The answers of the quizsubmission. */
                 answers: {
                     /**
@@ -8250,14 +8252,14 @@ export interface operations {
                     quizAbsPath: string;
                     /**
                      * Format: uuid
-                     * @description ID of the associated registration.
+                     * @description ID of the associated registration. Optional, because a submission may not carry this echo; when it is absent the authoritative value is `TestSubmission.registrationId`. Absence MUST be expressed as `null` or an omitted property - the empty string is not a valid identifier.
                      */
-                    registrationId: string;
+                    registrationId?: string | null;
                     /**
                      * Format: uuid
-                     * @description ID of the user who owns or created this resource.
+                     * @description ID of the user who owns or created this resource. Optional, because a submission may not carry this echo; when it is absent the authoritative value is `TestSubmission.userId`. Absence MUST be expressed as `null` or an omitted property - the empty string is not a valid identifier.
                      */
-                    userId: string;
+                    userId?: string | null;
                     /** @description The answers of the quizsubmission. */
                     answers: {
                         /**
