@@ -4,6 +4,7 @@ package academy
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"strconv"
 	"strings"
 )
@@ -44,12 +45,12 @@ func (t *QuizTimeLimit) UnmarshalJSON(data []byte) error {
 		return nil
 	}
 
-	var number int
+	// json.Number covers both integer- and float-shaped numbers, so a payload
+	// carrying 25.0 decodes the same as 25 rather than falling through to the
+	// string branch and erroring.
+	var number json.Number
 	if err := json.Unmarshal(data, &number); err == nil {
-		if number < 0 {
-			number = 0
-		}
-		*t = QuizTimeLimit(number)
+		*t = quizTimeLimitFromString(number.String())
 		return nil
 	}
 
@@ -58,15 +59,24 @@ func (t *QuizTimeLimit) UnmarshalJSON(data []byte) error {
 		return fmt.Errorf("decode quiz time limit from %s: %w", string(data), err)
 	}
 
-	// "infinite", "" and any other non-numeric value all mean "no time limit".
-	parsed, err := strconv.Atoi(strings.TrimSpace(text))
-	if err != nil || parsed < 0 {
-		*t = 0
-		return nil
-	}
-
-	*t = QuizTimeLimit(parsed)
+	// "infinite", "" and any other unparseable value all mean "no time limit".
+	*t = quizTimeLimitFromString(text)
 	return nil
+}
+
+// quizTimeLimitFromString parses a time limit written as text, truncating any
+// fractional part. Anything that does not yield a positive number - a sentinel
+// like "infinite", an empty string, junk, or a negative value - means "no time
+// limit" and becomes 0.
+func quizTimeLimitFromString(raw string) QuizTimeLimit {
+	parsed, err := strconv.ParseFloat(strings.TrimSpace(raw), 64)
+	if err != nil || math.IsNaN(parsed) || parsed <= 0 {
+		return 0
+	}
+	if parsed > math.MaxInt32 {
+		return math.MaxInt32
+	}
+	return QuizTimeLimit(int(parsed))
 }
 
 // MarshalJSON always emits a number, normalizing the legacy string form so

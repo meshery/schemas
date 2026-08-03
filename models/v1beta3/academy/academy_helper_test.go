@@ -25,6 +25,14 @@ func TestQuizTimeLimitUnmarshalJSON(t *testing.T) {
 		{"negative number", `-5`, 0},
 		{"negative string", `"-5"`, 0},
 		{"null", `null`, 0},
+		// jsonb round-trips and JS clients can render a whole number with a
+		// fractional part; truncate rather than failing the decode.
+		{"float-shaped number", `25.0`, 25},
+		{"fractional number", `25.7`, 25},
+		{"float-shaped string", `"25.0"`, 25},
+		{"fractional string", `"25.7"`, 25},
+		{"exponent number", `2.5e1`, 25},
+		{"fraction below one", `0.4`, 0},
 	}
 
 	for _, tc := range cases {
