@@ -586,8 +586,8 @@ type Quiz struct {
 	// Slug The slug of the quiz.
 	Slug string `json:"slug" yaml:"slug"`
 
-	// TimeLimit Time limit for the quiz in minutes. A value of 0 indicates no time limit.
-	TimeLimit int `json:"timeLimit" yaml:"timeLimit"`
+	// TimeLimit Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as "25" or the non-numeric sentinel "infinite". A string that does not parse to a positive number means "no time limit" and normalizes to 0.
+	TimeLimit QuizTimeLimit `json:"timeLimit" yaml:"timeLimit"`
 
 	// Title The title of the quiz.
 	Title string `json:"title" yaml:"title"`

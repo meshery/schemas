@@ -6139,8 +6139,8 @@ export type UpdateCurrentItemInProgressTrackerApiResponse = /** status 200 Progr
           filePath: string;
           /** The pass percentage of the quiz. */
           passPercentage: number;
-          /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-          timeLimit: number;
+          /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as "25" or the non-numeric sentinel "infinite". A string that does not parse to a positive number means "no time limit" and normalizes to 0. */
+          timeLimit: number | string;
           /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
           maxAttempts: number;
           /** The questions of the quiz. */
@@ -6292,8 +6292,8 @@ export type GetTestByAbsPathApiResponse = /** status 200 A single test */ {
   filePath: string;
   /** The pass percentage of the quiz. */
   passPercentage: number;
-  /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-  timeLimit: number;
+  /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as "25" or the non-numeric sentinel "infinite". A string that does not parse to a positive number means "no time limit" and normalizes to 0. */
+  timeLimit: number | string;
   /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
   maxAttempts: number;
   /** The questions of the quiz. */
@@ -6396,8 +6396,8 @@ export type StartTestByIdApiResponse = /** status 200 A single test */ {
   filePath: string;
   /** The pass percentage of the quiz. */
   passPercentage: number;
-  /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-  timeLimit: number;
+  /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as "25" or the non-numeric sentinel "infinite". A string that does not parse to a positive number means "no time limit" and normalizes to 0. */
+  timeLimit: number | string;
   /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
   maxAttempts: number;
   /** The questions of the quiz. */
@@ -6520,8 +6520,8 @@ export type GetAllTestSessionsForRegistrationApiResponse =
       filePath: string;
       /** The pass percentage of the quiz. */
       passPercentage: number;
-      /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-      timeLimit: number;
+      /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as "25" or the non-numeric sentinel "infinite". A string that does not parse to a positive number means "no time limit" and normalizes to 0. */
+      timeLimit: number | string;
       /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
       maxAttempts: number;
       /** The questions of the quiz. */
@@ -6650,8 +6650,8 @@ export type SubmitQuizApiResponse = /** status 200 Progress tracker updated */ {
     filePath: string;
     /** The pass percentage of the quiz. */
     passPercentage: number;
-    /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-    timeLimit: number;
+    /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as "25" or the non-numeric sentinel "infinite". A string that does not parse to a positive number means "no time limit" and normalizes to 0. */
+    timeLimit: number | string;
     /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
     maxAttempts: number;
     /** The questions of the quiz. */
@@ -6814,8 +6814,8 @@ export type GetAcademyAdminSummaryApiResponse =
         filePath: string;
         /** The pass percentage of the quiz. */
         passPercentage: number;
-        /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-        timeLimit: number;
+        /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as "25" or the non-numeric sentinel "infinite". A string that does not parse to a positive number means "no time limit" and normalizes to 0. */
+        timeLimit: number | string;
         /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
         maxAttempts: number;
         /** The questions of the quiz. */

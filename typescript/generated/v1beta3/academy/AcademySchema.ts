@@ -5670,9 +5670,18 @@ const AcademySchema: Record<string, unknown> = {
                                     "minimum": 0
                                   },
                                   "timeLimit": {
-                                    "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
-                                    "type": "integer",
-                                    "minimum": 0
+                                    "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as \"25\" or the non-numeric sentinel \"infinite\". A string that does not parse to a positive number means \"no time limit\" and normalizes to 0.",
+                                    "oneOf": [
+                                      {
+                                        "type": "integer",
+                                        "minimum": 0
+                                      },
+                                      {
+                                        "type": "string"
+                                      }
+                                    ],
+                                    "x-go-type": "QuizTimeLimit",
+                                    "x-go-type-skip-optional-pointer": true
                                   },
                                   "maxAttempts": {
                                     "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
@@ -6246,9 +6255,18 @@ const AcademySchema: Record<string, unknown> = {
                       "minimum": 0
                     },
                     "timeLimit": {
-                      "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
-                      "type": "integer",
-                      "minimum": 0
+                      "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as \"25\" or the non-numeric sentinel \"infinite\". A string that does not parse to a positive number means \"no time limit\" and normalizes to 0.",
+                      "oneOf": [
+                        {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ],
+                      "x-go-type": "QuizTimeLimit",
+                      "x-go-type-skip-optional-pointer": true
                     },
                     "maxAttempts": {
                       "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
@@ -6666,9 +6684,18 @@ const AcademySchema: Record<string, unknown> = {
                       "minimum": 0
                     },
                     "timeLimit": {
-                      "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
-                      "type": "integer",
-                      "minimum": 0
+                      "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as \"25\" or the non-numeric sentinel \"infinite\". A string that does not parse to a positive number means \"no time limit\" and normalizes to 0.",
+                      "oneOf": [
+                        {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ],
+                      "x-go-type": "QuizTimeLimit",
+                      "x-go-type-skip-optional-pointer": true
                     },
                     "maxAttempts": {
                       "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
@@ -7149,9 +7176,18 @@ const AcademySchema: Record<string, unknown> = {
                               "minimum": 0
                             },
                             "timeLimit": {
-                              "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
-                              "type": "integer",
-                              "minimum": 0
+                              "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as \"25\" or the non-numeric sentinel \"infinite\". A string that does not parse to a positive number means \"no time limit\" and normalizes to 0.",
+                              "oneOf": [
+                                {
+                                  "type": "integer",
+                                  "minimum": 0
+                                },
+                                {
+                                  "type": "string"
+                                }
+                              ],
+                              "x-go-type": "QuizTimeLimit",
+                              "x-go-type-skip-optional-pointer": true
                             },
                             "maxAttempts": {
                               "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
@@ -7682,9 +7718,18 @@ const AcademySchema: Record<string, unknown> = {
                           "minimum": 0
                         },
                         "timeLimit": {
-                          "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
-                          "type": "integer",
-                          "minimum": 0
+                          "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as \"25\" or the non-numeric sentinel \"infinite\". A string that does not parse to a positive number means \"no time limit\" and normalizes to 0.",
+                          "oneOf": [
+                            {
+                              "type": "integer",
+                              "minimum": 0
+                            },
+                            {
+                              "type": "string"
+                            }
+                          ],
+                          "x-go-type": "QuizTimeLimit",
+                          "x-go-type-skip-optional-pointer": true
                         },
                         "maxAttempts": {
                           "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
@@ -8203,9 +8248,18 @@ const AcademySchema: Record<string, unknown> = {
                                 "minimum": 0
                               },
                               "timeLimit": {
-                                "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
-                                "type": "integer",
-                                "minimum": 0
+                                "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as \"25\" or the non-numeric sentinel \"infinite\". A string that does not parse to a positive number means \"no time limit\" and normalizes to 0.",
+                                "oneOf": [
+                                  {
+                                    "type": "integer",
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "type": "string"
+                                  }
+                                ],
+                                "x-go-type": "QuizTimeLimit",
+                                "x-go-type-skip-optional-pointer": true
                               },
                               "maxAttempts": {
                                 "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
@@ -12480,9 +12534,18 @@ const AcademySchema: Record<string, unknown> = {
                       "minimum": 0
                     },
                     "timeLimit": {
-                      "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
-                      "type": "integer",
-                      "minimum": 0
+                      "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as \"25\" or the non-numeric sentinel \"infinite\". A string that does not parse to a positive number means \"no time limit\" and normalizes to 0.",
+                      "oneOf": [
+                        {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ],
+                      "x-go-type": "QuizTimeLimit",
+                      "x-go-type-skip-optional-pointer": true
                     },
                     "maxAttempts": {
                       "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
@@ -14933,9 +14996,18 @@ const AcademySchema: Record<string, unknown> = {
                     "minimum": 0
                   },
                   "timeLimit": {
-                    "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
-                    "type": "integer",
-                    "minimum": 0
+                    "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as \"25\" or the non-numeric sentinel \"infinite\". A string that does not parse to a positive number means \"no time limit\" and normalizes to 0.",
+                    "oneOf": [
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      {
+                        "type": "string"
+                      }
+                    ],
+                    "x-go-type": "QuizTimeLimit",
+                    "x-go-type-skip-optional-pointer": true
                   },
                   "maxAttempts": {
                     "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
@@ -15351,9 +15423,18 @@ const AcademySchema: Record<string, unknown> = {
                   "minimum": 0
                 },
                 "timeLimit": {
-                  "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
-                  "type": "integer",
-                  "minimum": 0
+                  "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as \"25\" or the non-numeric sentinel \"infinite\". A string that does not parse to a positive number means \"no time limit\" and normalizes to 0.",
+                  "oneOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ],
+                  "x-go-type": "QuizTimeLimit",
+                  "x-go-type-skip-optional-pointer": true
                 },
                 "maxAttempts": {
                   "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
@@ -16167,9 +16248,18 @@ const AcademySchema: Record<string, unknown> = {
                       "minimum": 0
                     },
                     "timeLimit": {
-                      "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
-                      "type": "integer",
-                      "minimum": 0
+                      "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as \"25\" or the non-numeric sentinel \"infinite\". A string that does not parse to a positive number means \"no time limit\" and normalizes to 0.",
+                      "oneOf": [
+                        {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ],
+                      "x-go-type": "QuizTimeLimit",
+                      "x-go-type-skip-optional-pointer": true
                     },
                     "maxAttempts": {
                       "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
@@ -16712,9 +16802,18 @@ const AcademySchema: Record<string, unknown> = {
             "minimum": 0
           },
           "timeLimit": {
-            "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
-            "type": "integer",
-            "minimum": 0
+            "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as \"25\" or the non-numeric sentinel \"infinite\". A string that does not parse to a positive number means \"no time limit\" and normalizes to 0.",
+            "oneOf": [
+              {
+                "type": "integer",
+                "minimum": 0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "x-go-type": "QuizTimeLimit",
+            "x-go-type-skip-optional-pointer": true
           },
           "maxAttempts": {
             "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
@@ -17599,9 +17698,18 @@ const AcademySchema: Record<string, unknown> = {
                     "minimum": 0
                   },
                   "timeLimit": {
-                    "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
-                    "type": "integer",
-                    "minimum": 0
+                    "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as \"25\" or the non-numeric sentinel \"infinite\". A string that does not parse to a positive number means \"no time limit\" and normalizes to 0.",
+                    "oneOf": [
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      {
+                        "type": "string"
+                      }
+                    ],
+                    "x-go-type": "QuizTimeLimit",
+                    "x-go-type-skip-optional-pointer": true
                   },
                   "maxAttempts": {
                     "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
@@ -17967,9 +18075,18 @@ const AcademySchema: Record<string, unknown> = {
                 "minimum": 0
               },
               "timeLimit": {
-                "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
-                "type": "integer",
-                "minimum": 0
+                "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as \"25\" or the non-numeric sentinel \"infinite\". A string that does not parse to a positive number means \"no time limit\" and normalizes to 0.",
+                "oneOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "x-go-type": "QuizTimeLimit",
+                "x-go-type-skip-optional-pointer": true
               },
               "maxAttempts": {
                 "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
@@ -18370,9 +18487,18 @@ const AcademySchema: Record<string, unknown> = {
                 "minimum": 0
               },
               "timeLimit": {
-                "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
-                "type": "integer",
-                "minimum": 0
+                "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as \"25\" or the non-numeric sentinel \"infinite\". A string that does not parse to a positive number means \"no time limit\" and normalizes to 0.",
+                "oneOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "x-go-type": "QuizTimeLimit",
+                "x-go-type-skip-optional-pointer": true
               },
               "maxAttempts": {
                 "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
@@ -19158,9 +19284,18 @@ const AcademySchema: Record<string, unknown> = {
                           "minimum": 0
                         },
                         "timeLimit": {
-                          "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
-                          "type": "integer",
-                          "minimum": 0
+                          "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as \"25\" or the non-numeric sentinel \"infinite\". A string that does not parse to a positive number means \"no time limit\" and normalizes to 0.",
+                          "oneOf": [
+                            {
+                              "type": "integer",
+                              "minimum": 0
+                            },
+                            {
+                              "type": "string"
+                            }
+                          ],
+                          "x-go-type": "QuizTimeLimit",
+                          "x-go-type-skip-optional-pointer": true
                         },
                         "maxAttempts": {
                           "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
