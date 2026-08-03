@@ -5406,9 +5406,9 @@ const AcademySchema: Record<string, unknown> = {
                     "properties": {
                       "id": {
                         "type": "string",
-                        "description": "CurriculaCurrentItemData ID.",
-                        "maxLength": 500,
-                        "format": "uuid"
+                        "description": "CurriculaCurrentItemData ID. Identifies the Hugo content page the learner currently has open, not a database row, so it is an opaque content-scoped string. Not a UUID - production values include slugs, full permalink URLs and the empty string.",
+                        "example": "kubernetes-quickstart",
+                        "maxLength": 500
                       },
                       "lastOpened": {
                         "type": "string",
@@ -5471,9 +5471,9 @@ const AcademySchema: Record<string, unknown> = {
                             "properties": {
                               "id": {
                                 "type": "string",
-                                "description": "CurriculaCurrentItemData ID.",
-                                "maxLength": 500,
-                                "format": "uuid"
+                                "description": "CurriculaCurrentItemData ID. Identifies the Hugo content page the learner currently has open, not a database row, so it is an opaque content-scoped string. Not a UUID - production values include slugs, full permalink URLs and the empty string.",
+                                "example": "kubernetes-quickstart",
+                                "maxLength": 500
                               },
                               "lastOpened": {
                                 "type": "string",
@@ -5581,14 +5581,14 @@ const AcademySchema: Record<string, unknown> = {
                                     "x-oapi-codegen-extra-tags": {
                                       "json": "id"
                                     },
-                                    "description": "Quiz ID.",
-                                    "maxLength": 500,
-                                    "format": "uuid"
+                                    "description": "Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs.",
+                                    "example": "corporate-sustainability",
+                                    "maxLength": 500
                                   },
                                   "orgId": {
                                     "type": "string",
                                     "description": "Organization ID that owns this quiz",
-                                    "example": "meshery",
+                                    "example": "d011fd20-a3f5-4480-883b-dfb34321d168",
                                     "x-oapi-codegen-extra-tags": {
                                       "db": "org_id",
                                       "json": "orgId"
@@ -5692,9 +5692,9 @@ const AcademySchema: Record<string, unknown> = {
                                       "properties": {
                                         "id": {
                                           "type": "string",
-                                          "description": "Question ID.",
-                                          "maxLength": 500,
-                                          "format": "uuid"
+                                          "description": "Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+                                          "example": "q1",
+                                          "maxLength": 500
                                         },
                                         "text": {
                                           "type": "string",
@@ -5739,9 +5739,9 @@ const AcademySchema: Record<string, unknown> = {
                                             "properties": {
                                               "id": {
                                                 "type": "string",
-                                                "description": "QuestionOption ID.",
-                                                "maxLength": 500,
-                                                "format": "uuid"
+                                                "description": "QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+                                                "example": "a",
+                                                "maxLength": 500
                                               },
                                               "text": {
                                                 "type": "string",
@@ -5799,9 +5799,9 @@ const AcademySchema: Record<string, unknown> = {
                                       "properties": {
                                         "id": {
                                           "type": "string",
-                                          "description": "Parent ID.",
-                                          "maxLength": 500,
-                                          "format": "uuid"
+                                          "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                                          "example": "introduction-to-devops-and-sre",
+                                          "maxLength": 500
                                         },
                                         "title": {
                                           "type": "string",
@@ -5834,9 +5834,9 @@ const AcademySchema: Record<string, unknown> = {
                                     "properties": {
                                       "id": {
                                         "type": "string",
-                                        "description": "Parent ID.",
-                                        "maxLength": 500,
-                                        "format": "uuid"
+                                        "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                                        "example": "introduction-to-devops-and-sre",
+                                        "maxLength": 500
                                       },
                                       "title": {
                                         "type": "string",
@@ -5867,9 +5867,9 @@ const AcademySchema: Record<string, unknown> = {
                                     "properties": {
                                       "id": {
                                         "type": "string",
-                                        "description": "Parent ID.",
-                                        "maxLength": 500,
-                                        "format": "uuid"
+                                        "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                                        "example": "introduction-to-devops-and-sre",
+                                        "maxLength": 500
                                       },
                                       "title": {
                                         "type": "string",
@@ -5937,9 +5937,9 @@ const AcademySchema: Record<string, unknown> = {
                                 "properties": {
                                   "id": {
                                     "type": "string",
-                                    "description": "Parent ID.",
-                                    "maxLength": 500,
-                                    "format": "uuid"
+                                    "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                                    "example": "introduction-to-devops-and-sre",
+                                    "maxLength": 500
                                   },
                                   "title": {
                                     "type": "string",
@@ -5993,9 +5993,9 @@ const AcademySchema: Record<string, unknown> = {
                       "properties": {
                         "id": {
                           "type": "string",
-                          "description": "CurriculaCurrentItemData ID.",
-                          "maxLength": 500,
-                          "format": "uuid"
+                          "description": "CurriculaCurrentItemData ID. Identifies the Hugo content page the learner currently has open, not a database row, so it is an opaque content-scoped string. Not a UUID - production values include slugs, full permalink URLs and the empty string.",
+                          "example": "kubernetes-quickstart",
+                          "maxLength": 500
                         },
                         "lastOpened": {
                           "type": "string",
@@ -6149,14 +6149,14 @@ const AcademySchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "json": "id"
                       },
-                      "description": "Quiz ID.",
-                      "maxLength": 500,
-                      "format": "uuid"
+                      "description": "Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs.",
+                      "example": "corporate-sustainability",
+                      "maxLength": 500
                     },
                     "orgId": {
                       "type": "string",
                       "description": "Organization ID that owns this quiz",
-                      "example": "meshery",
+                      "example": "d011fd20-a3f5-4480-883b-dfb34321d168",
                       "x-oapi-codegen-extra-tags": {
                         "db": "org_id",
                         "json": "orgId"
@@ -6260,9 +6260,9 @@ const AcademySchema: Record<string, unknown> = {
                         "properties": {
                           "id": {
                             "type": "string",
-                            "description": "Question ID.",
-                            "maxLength": 500,
-                            "format": "uuid"
+                            "description": "Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+                            "example": "q1",
+                            "maxLength": 500
                           },
                           "text": {
                             "type": "string",
@@ -6307,9 +6307,9 @@ const AcademySchema: Record<string, unknown> = {
                               "properties": {
                                 "id": {
                                   "type": "string",
-                                  "description": "QuestionOption ID.",
-                                  "maxLength": 500,
-                                  "format": "uuid"
+                                  "description": "QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+                                  "example": "a",
+                                  "maxLength": 500
                                 },
                                 "text": {
                                   "type": "string",
@@ -6367,9 +6367,9 @@ const AcademySchema: Record<string, unknown> = {
                         "properties": {
                           "id": {
                             "type": "string",
-                            "description": "Parent ID.",
-                            "maxLength": 500,
-                            "format": "uuid"
+                            "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                            "example": "introduction-to-devops-and-sre",
+                            "maxLength": 500
                           },
                           "title": {
                             "type": "string",
@@ -6402,9 +6402,9 @@ const AcademySchema: Record<string, unknown> = {
                       "properties": {
                         "id": {
                           "type": "string",
-                          "description": "Parent ID.",
-                          "maxLength": 500,
-                          "format": "uuid"
+                          "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                          "example": "introduction-to-devops-and-sre",
+                          "maxLength": 500
                         },
                         "title": {
                           "type": "string",
@@ -6435,9 +6435,9 @@ const AcademySchema: Record<string, unknown> = {
                       "properties": {
                         "id": {
                           "type": "string",
-                          "description": "Parent ID.",
-                          "maxLength": 500,
-                          "format": "uuid"
+                          "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                          "example": "introduction-to-devops-and-sre",
+                          "maxLength": 500
                         },
                         "title": {
                           "type": "string",
@@ -6563,14 +6563,14 @@ const AcademySchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "json": "id"
                       },
-                      "description": "Quiz ID.",
-                      "maxLength": 500,
-                      "format": "uuid"
+                      "description": "Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs.",
+                      "example": "corporate-sustainability",
+                      "maxLength": 500
                     },
                     "orgId": {
                       "type": "string",
                       "description": "Organization ID that owns this quiz",
-                      "example": "meshery",
+                      "example": "d011fd20-a3f5-4480-883b-dfb34321d168",
                       "x-oapi-codegen-extra-tags": {
                         "db": "org_id",
                         "json": "orgId"
@@ -6674,9 +6674,9 @@ const AcademySchema: Record<string, unknown> = {
                         "properties": {
                           "id": {
                             "type": "string",
-                            "description": "Question ID.",
-                            "maxLength": 500,
-                            "format": "uuid"
+                            "description": "Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+                            "example": "q1",
+                            "maxLength": 500
                           },
                           "text": {
                             "type": "string",
@@ -6721,9 +6721,9 @@ const AcademySchema: Record<string, unknown> = {
                               "properties": {
                                 "id": {
                                   "type": "string",
-                                  "description": "QuestionOption ID.",
-                                  "maxLength": 500,
-                                  "format": "uuid"
+                                  "description": "QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+                                  "example": "a",
+                                  "maxLength": 500
                                 },
                                 "text": {
                                   "type": "string",
@@ -6781,9 +6781,9 @@ const AcademySchema: Record<string, unknown> = {
                         "properties": {
                           "id": {
                             "type": "string",
-                            "description": "Parent ID.",
-                            "maxLength": 500,
-                            "format": "uuid"
+                            "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                            "example": "introduction-to-devops-and-sre",
+                            "maxLength": 500
                           },
                           "title": {
                             "type": "string",
@@ -6816,9 +6816,9 @@ const AcademySchema: Record<string, unknown> = {
                       "properties": {
                         "id": {
                           "type": "string",
-                          "description": "Parent ID.",
-                          "maxLength": 500,
-                          "format": "uuid"
+                          "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                          "example": "introduction-to-devops-and-sre",
+                          "maxLength": 500
                         },
                         "title": {
                           "type": "string",
@@ -6849,9 +6849,9 @@ const AcademySchema: Record<string, unknown> = {
                       "properties": {
                         "id": {
                           "type": "string",
-                          "description": "Parent ID.",
-                          "maxLength": 500,
-                          "format": "uuid"
+                          "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                          "example": "introduction-to-devops-and-sre",
+                          "maxLength": 500
                         },
                         "title": {
                           "type": "string",
@@ -7040,14 +7040,14 @@ const AcademySchema: Record<string, unknown> = {
                               "x-oapi-codegen-extra-tags": {
                                 "json": "id"
                               },
-                              "description": "Quiz ID.",
-                              "maxLength": 500,
-                              "format": "uuid"
+                              "description": "Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs.",
+                              "example": "corporate-sustainability",
+                              "maxLength": 500
                             },
                             "orgId": {
                               "type": "string",
                               "description": "Organization ID that owns this quiz",
-                              "example": "meshery",
+                              "example": "d011fd20-a3f5-4480-883b-dfb34321d168",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "org_id",
                                 "json": "orgId"
@@ -7151,9 +7151,9 @@ const AcademySchema: Record<string, unknown> = {
                                 "properties": {
                                   "id": {
                                     "type": "string",
-                                    "description": "Question ID.",
-                                    "maxLength": 500,
-                                    "format": "uuid"
+                                    "description": "Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+                                    "example": "q1",
+                                    "maxLength": 500
                                   },
                                   "text": {
                                     "type": "string",
@@ -7198,9 +7198,9 @@ const AcademySchema: Record<string, unknown> = {
                                       "properties": {
                                         "id": {
                                           "type": "string",
-                                          "description": "QuestionOption ID.",
-                                          "maxLength": 500,
-                                          "format": "uuid"
+                                          "description": "QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+                                          "example": "a",
+                                          "maxLength": 500
                                         },
                                         "text": {
                                           "type": "string",
@@ -7258,9 +7258,9 @@ const AcademySchema: Record<string, unknown> = {
                                 "properties": {
                                   "id": {
                                     "type": "string",
-                                    "description": "Parent ID.",
-                                    "maxLength": 500,
-                                    "format": "uuid"
+                                    "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                                    "example": "introduction-to-devops-and-sre",
+                                    "maxLength": 500
                                   },
                                   "title": {
                                     "type": "string",
@@ -7293,9 +7293,9 @@ const AcademySchema: Record<string, unknown> = {
                               "properties": {
                                 "id": {
                                   "type": "string",
-                                  "description": "Parent ID.",
-                                  "maxLength": 500,
-                                  "format": "uuid"
+                                  "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                                  "example": "introduction-to-devops-and-sre",
+                                  "maxLength": 500
                                 },
                                 "title": {
                                   "type": "string",
@@ -7326,9 +7326,9 @@ const AcademySchema: Record<string, unknown> = {
                               "properties": {
                                 "id": {
                                   "type": "string",
-                                  "description": "Parent ID.",
-                                  "maxLength": 500,
-                                  "format": "uuid"
+                                  "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                                  "example": "introduction-to-devops-and-sre",
+                                  "maxLength": 500
                                 },
                                 "title": {
                                   "type": "string",
@@ -7451,9 +7451,9 @@ const AcademySchema: Record<string, unknown> = {
                       "properties": {
                         "questionId": {
                           "type": "string",
-                          "description": "ID of the associated question.",
-                          "maxLength": 500,
-                          "format": "uuid"
+                          "description": "ID of the associated question. Mirrors `Question.id`, a content-authored string rather than a database row identifier, so it is not a UUID.",
+                          "example": "q1",
+                          "maxLength": 500
                         },
                         "selectedOptionId": {
                           "type": "object",
@@ -7566,14 +7566,14 @@ const AcademySchema: Record<string, unknown> = {
                           "x-oapi-codegen-extra-tags": {
                             "json": "id"
                           },
-                          "description": "Quiz ID.",
-                          "maxLength": 500,
-                          "format": "uuid"
+                          "description": "Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs.",
+                          "example": "corporate-sustainability",
+                          "maxLength": 500
                         },
                         "orgId": {
                           "type": "string",
                           "description": "Organization ID that owns this quiz",
-                          "example": "meshery",
+                          "example": "d011fd20-a3f5-4480-883b-dfb34321d168",
                           "x-oapi-codegen-extra-tags": {
                             "db": "org_id",
                             "json": "orgId"
@@ -7677,9 +7677,9 @@ const AcademySchema: Record<string, unknown> = {
                             "properties": {
                               "id": {
                                 "type": "string",
-                                "description": "Question ID.",
-                                "maxLength": 500,
-                                "format": "uuid"
+                                "description": "Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+                                "example": "q1",
+                                "maxLength": 500
                               },
                               "text": {
                                 "type": "string",
@@ -7724,9 +7724,9 @@ const AcademySchema: Record<string, unknown> = {
                                   "properties": {
                                     "id": {
                                       "type": "string",
-                                      "description": "QuestionOption ID.",
-                                      "maxLength": 500,
-                                      "format": "uuid"
+                                      "description": "QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+                                      "example": "a",
+                                      "maxLength": 500
                                     },
                                     "text": {
                                       "type": "string",
@@ -7784,9 +7784,9 @@ const AcademySchema: Record<string, unknown> = {
                             "properties": {
                               "id": {
                                 "type": "string",
-                                "description": "Parent ID.",
-                                "maxLength": 500,
-                                "format": "uuid"
+                                "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                                "example": "introduction-to-devops-and-sre",
+                                "maxLength": 500
                               },
                               "title": {
                                 "type": "string",
@@ -7819,9 +7819,9 @@ const AcademySchema: Record<string, unknown> = {
                           "properties": {
                             "id": {
                               "type": "string",
-                              "description": "Parent ID.",
-                              "maxLength": 500,
-                              "format": "uuid"
+                              "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                              "example": "introduction-to-devops-and-sre",
+                              "maxLength": 500
                             },
                             "title": {
                               "type": "string",
@@ -7852,9 +7852,9 @@ const AcademySchema: Record<string, unknown> = {
                           "properties": {
                             "id": {
                               "type": "string",
-                              "description": "Parent ID.",
-                              "maxLength": 500,
-                              "format": "uuid"
+                              "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                              "example": "introduction-to-devops-and-sre",
+                              "maxLength": 500
                             },
                             "title": {
                               "type": "string",
@@ -8081,14 +8081,14 @@ const AcademySchema: Record<string, unknown> = {
                                 "x-oapi-codegen-extra-tags": {
                                   "json": "id"
                                 },
-                                "description": "Quiz ID.",
-                                "maxLength": 500,
-                                "format": "uuid"
+                                "description": "Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs.",
+                                "example": "corporate-sustainability",
+                                "maxLength": 500
                               },
                               "orgId": {
                                 "type": "string",
                                 "description": "Organization ID that owns this quiz",
-                                "example": "meshery",
+                                "example": "d011fd20-a3f5-4480-883b-dfb34321d168",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "org_id",
                                   "json": "orgId"
@@ -8192,9 +8192,9 @@ const AcademySchema: Record<string, unknown> = {
                                   "properties": {
                                     "id": {
                                       "type": "string",
-                                      "description": "Question ID.",
-                                      "maxLength": 500,
-                                      "format": "uuid"
+                                      "description": "Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+                                      "example": "q1",
+                                      "maxLength": 500
                                     },
                                     "text": {
                                       "type": "string",
@@ -8239,9 +8239,9 @@ const AcademySchema: Record<string, unknown> = {
                                         "properties": {
                                           "id": {
                                             "type": "string",
-                                            "description": "QuestionOption ID.",
-                                            "maxLength": 500,
-                                            "format": "uuid"
+                                            "description": "QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+                                            "example": "a",
+                                            "maxLength": 500
                                           },
                                           "text": {
                                             "type": "string",
@@ -8299,9 +8299,9 @@ const AcademySchema: Record<string, unknown> = {
                                   "properties": {
                                     "id": {
                                       "type": "string",
-                                      "description": "Parent ID.",
-                                      "maxLength": 500,
-                                      "format": "uuid"
+                                      "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                                      "example": "introduction-to-devops-and-sre",
+                                      "maxLength": 500
                                     },
                                     "title": {
                                       "type": "string",
@@ -8334,9 +8334,9 @@ const AcademySchema: Record<string, unknown> = {
                                 "properties": {
                                   "id": {
                                     "type": "string",
-                                    "description": "Parent ID.",
-                                    "maxLength": 500,
-                                    "format": "uuid"
+                                    "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                                    "example": "introduction-to-devops-and-sre",
+                                    "maxLength": 500
                                   },
                                   "title": {
                                     "type": "string",
@@ -8367,9 +8367,9 @@ const AcademySchema: Record<string, unknown> = {
                                 "properties": {
                                   "id": {
                                     "type": "string",
-                                    "description": "Parent ID.",
-                                    "maxLength": 500,
-                                    "format": "uuid"
+                                    "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                                    "example": "introduction-to-devops-and-sre",
+                                    "maxLength": 500
                                   },
                                   "title": {
                                     "type": "string",
@@ -12352,14 +12352,14 @@ const AcademySchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "json": "id"
                       },
-                      "description": "Quiz ID.",
-                      "maxLength": 500,
-                      "format": "uuid"
+                      "description": "Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs.",
+                      "example": "corporate-sustainability",
+                      "maxLength": 500
                     },
                     "orgId": {
                       "type": "string",
                       "description": "Organization ID that owns this quiz",
-                      "example": "meshery",
+                      "example": "d011fd20-a3f5-4480-883b-dfb34321d168",
                       "x-oapi-codegen-extra-tags": {
                         "db": "org_id",
                         "json": "orgId"
@@ -12463,9 +12463,9 @@ const AcademySchema: Record<string, unknown> = {
                         "properties": {
                           "id": {
                             "type": "string",
-                            "description": "Question ID.",
-                            "maxLength": 500,
-                            "format": "uuid"
+                            "description": "Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+                            "example": "q1",
+                            "maxLength": 500
                           },
                           "text": {
                             "type": "string",
@@ -12510,9 +12510,9 @@ const AcademySchema: Record<string, unknown> = {
                               "properties": {
                                 "id": {
                                   "type": "string",
-                                  "description": "QuestionOption ID.",
-                                  "maxLength": 500,
-                                  "format": "uuid"
+                                  "description": "QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+                                  "example": "a",
+                                  "maxLength": 500
                                 },
                                 "text": {
                                   "type": "string",
@@ -12570,9 +12570,9 @@ const AcademySchema: Record<string, unknown> = {
                         "properties": {
                           "id": {
                             "type": "string",
-                            "description": "Parent ID.",
-                            "maxLength": 500,
-                            "format": "uuid"
+                            "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                            "example": "introduction-to-devops-and-sre",
+                            "maxLength": 500
                           },
                           "title": {
                             "type": "string",
@@ -12605,9 +12605,9 @@ const AcademySchema: Record<string, unknown> = {
                       "properties": {
                         "id": {
                           "type": "string",
-                          "description": "Parent ID.",
-                          "maxLength": 500,
-                          "format": "uuid"
+                          "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                          "example": "introduction-to-devops-and-sre",
+                          "maxLength": 500
                         },
                         "title": {
                           "type": "string",
@@ -12638,9 +12638,9 @@ const AcademySchema: Record<string, unknown> = {
                       "properties": {
                         "id": {
                           "type": "string",
-                          "description": "Parent ID.",
-                          "maxLength": 500,
-                          "format": "uuid"
+                          "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                          "example": "introduction-to-devops-and-sre",
+                          "maxLength": 500
                         },
                         "title": {
                           "type": "string",
@@ -14799,14 +14799,14 @@ const AcademySchema: Record<string, unknown> = {
                     "x-oapi-codegen-extra-tags": {
                       "json": "id"
                     },
-                    "description": "Quiz ID.",
-                    "maxLength": 500,
-                    "format": "uuid"
+                    "description": "Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs.",
+                    "example": "corporate-sustainability",
+                    "maxLength": 500
                   },
                   "orgId": {
                     "type": "string",
                     "description": "Organization ID that owns this quiz",
-                    "example": "meshery",
+                    "example": "d011fd20-a3f5-4480-883b-dfb34321d168",
                     "x-oapi-codegen-extra-tags": {
                       "db": "org_id",
                       "json": "orgId"
@@ -14910,9 +14910,9 @@ const AcademySchema: Record<string, unknown> = {
                       "properties": {
                         "id": {
                           "type": "string",
-                          "description": "Question ID.",
-                          "maxLength": 500,
-                          "format": "uuid"
+                          "description": "Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+                          "example": "q1",
+                          "maxLength": 500
                         },
                         "text": {
                           "type": "string",
@@ -14957,9 +14957,9 @@ const AcademySchema: Record<string, unknown> = {
                             "properties": {
                               "id": {
                                 "type": "string",
-                                "description": "QuestionOption ID.",
-                                "maxLength": 500,
-                                "format": "uuid"
+                                "description": "QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+                                "example": "a",
+                                "maxLength": 500
                               },
                               "text": {
                                 "type": "string",
@@ -15017,9 +15017,9 @@ const AcademySchema: Record<string, unknown> = {
                       "properties": {
                         "id": {
                           "type": "string",
-                          "description": "Parent ID.",
-                          "maxLength": 500,
-                          "format": "uuid"
+                          "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                          "example": "introduction-to-devops-and-sre",
+                          "maxLength": 500
                         },
                         "title": {
                           "type": "string",
@@ -15052,9 +15052,9 @@ const AcademySchema: Record<string, unknown> = {
                     "properties": {
                       "id": {
                         "type": "string",
-                        "description": "Parent ID.",
-                        "maxLength": 500,
-                        "format": "uuid"
+                        "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                        "example": "introduction-to-devops-and-sre",
+                        "maxLength": 500
                       },
                       "title": {
                         "type": "string",
@@ -15085,9 +15085,9 @@ const AcademySchema: Record<string, unknown> = {
                     "properties": {
                       "id": {
                         "type": "string",
-                        "description": "Parent ID.",
-                        "maxLength": 500,
-                        "format": "uuid"
+                        "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                        "example": "introduction-to-devops-and-sre",
+                        "maxLength": 500
                       },
                       "title": {
                         "type": "string",
@@ -15211,14 +15211,14 @@ const AcademySchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "json": "id"
                   },
-                  "description": "Quiz ID.",
-                  "maxLength": 500,
-                  "format": "uuid"
+                  "description": "Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs.",
+                  "example": "corporate-sustainability",
+                  "maxLength": 500
                 },
                 "orgId": {
                   "type": "string",
                   "description": "Organization ID that owns this quiz",
-                  "example": "meshery",
+                  "example": "d011fd20-a3f5-4480-883b-dfb34321d168",
                   "x-oapi-codegen-extra-tags": {
                     "db": "org_id",
                     "json": "orgId"
@@ -15322,9 +15322,9 @@ const AcademySchema: Record<string, unknown> = {
                     "properties": {
                       "id": {
                         "type": "string",
-                        "description": "Question ID.",
-                        "maxLength": 500,
-                        "format": "uuid"
+                        "description": "Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+                        "example": "q1",
+                        "maxLength": 500
                       },
                       "text": {
                         "type": "string",
@@ -15369,9 +15369,9 @@ const AcademySchema: Record<string, unknown> = {
                           "properties": {
                             "id": {
                               "type": "string",
-                              "description": "QuestionOption ID.",
-                              "maxLength": 500,
-                              "format": "uuid"
+                              "description": "QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+                              "example": "a",
+                              "maxLength": 500
                             },
                             "text": {
                               "type": "string",
@@ -15429,9 +15429,9 @@ const AcademySchema: Record<string, unknown> = {
                     "properties": {
                       "id": {
                         "type": "string",
-                        "description": "Parent ID.",
-                        "maxLength": 500,
-                        "format": "uuid"
+                        "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                        "example": "introduction-to-devops-and-sre",
+                        "maxLength": 500
                       },
                       "title": {
                         "type": "string",
@@ -15464,9 +15464,9 @@ const AcademySchema: Record<string, unknown> = {
                   "properties": {
                     "id": {
                       "type": "string",
-                      "description": "Parent ID.",
-                      "maxLength": 500,
-                      "format": "uuid"
+                      "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                      "example": "introduction-to-devops-and-sre",
+                      "maxLength": 500
                     },
                     "title": {
                       "type": "string",
@@ -15497,9 +15497,9 @@ const AcademySchema: Record<string, unknown> = {
                   "properties": {
                     "id": {
                       "type": "string",
-                      "description": "Parent ID.",
-                      "maxLength": 500,
-                      "format": "uuid"
+                      "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                      "example": "introduction-to-devops-and-sre",
+                      "maxLength": 500
                     },
                     "title": {
                       "type": "string",
@@ -15866,9 +15866,9 @@ const AcademySchema: Record<string, unknown> = {
         "properties": {
           "id": {
             "type": "string",
-            "description": "CurriculaCurrentItemData ID.",
-            "maxLength": 500,
-            "format": "uuid"
+            "description": "CurriculaCurrentItemData ID. Identifies the Hugo content page the learner currently has open, not a database row, so it is an opaque content-scoped string. Not a UUID - production values include slugs, full permalink URLs and the empty string.",
+            "example": "kubernetes-quickstart",
+            "maxLength": 500
           },
           "lastOpened": {
             "type": "string",
@@ -15909,9 +15909,9 @@ const AcademySchema: Record<string, unknown> = {
               "properties": {
                 "id": {
                   "type": "string",
-                  "description": "CurriculaCurrentItemData ID.",
-                  "maxLength": 500,
-                  "format": "uuid"
+                  "description": "CurriculaCurrentItemData ID. Identifies the Hugo content page the learner currently has open, not a database row, so it is an opaque content-scoped string. Not a UUID - production values include slugs, full permalink URLs and the empty string.",
+                  "example": "kubernetes-quickstart",
+                  "maxLength": 500
                 },
                 "lastOpened": {
                   "type": "string",
@@ -16019,14 +16019,14 @@ const AcademySchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "json": "id"
                       },
-                      "description": "Quiz ID.",
-                      "maxLength": 500,
-                      "format": "uuid"
+                      "description": "Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs.",
+                      "example": "corporate-sustainability",
+                      "maxLength": 500
                     },
                     "orgId": {
                       "type": "string",
                       "description": "Organization ID that owns this quiz",
-                      "example": "meshery",
+                      "example": "d011fd20-a3f5-4480-883b-dfb34321d168",
                       "x-oapi-codegen-extra-tags": {
                         "db": "org_id",
                         "json": "orgId"
@@ -16130,9 +16130,9 @@ const AcademySchema: Record<string, unknown> = {
                         "properties": {
                           "id": {
                             "type": "string",
-                            "description": "Question ID.",
-                            "maxLength": 500,
-                            "format": "uuid"
+                            "description": "Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+                            "example": "q1",
+                            "maxLength": 500
                           },
                           "text": {
                             "type": "string",
@@ -16177,9 +16177,9 @@ const AcademySchema: Record<string, unknown> = {
                               "properties": {
                                 "id": {
                                   "type": "string",
-                                  "description": "QuestionOption ID.",
-                                  "maxLength": 500,
-                                  "format": "uuid"
+                                  "description": "QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+                                  "example": "a",
+                                  "maxLength": 500
                                 },
                                 "text": {
                                   "type": "string",
@@ -16237,9 +16237,9 @@ const AcademySchema: Record<string, unknown> = {
                         "properties": {
                           "id": {
                             "type": "string",
-                            "description": "Parent ID.",
-                            "maxLength": 500,
-                            "format": "uuid"
+                            "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                            "example": "introduction-to-devops-and-sre",
+                            "maxLength": 500
                           },
                           "title": {
                             "type": "string",
@@ -16272,9 +16272,9 @@ const AcademySchema: Record<string, unknown> = {
                       "properties": {
                         "id": {
                           "type": "string",
-                          "description": "Parent ID.",
-                          "maxLength": 500,
-                          "format": "uuid"
+                          "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                          "example": "introduction-to-devops-and-sre",
+                          "maxLength": 500
                         },
                         "title": {
                           "type": "string",
@@ -16305,9 +16305,9 @@ const AcademySchema: Record<string, unknown> = {
                       "properties": {
                         "id": {
                           "type": "string",
-                          "description": "Parent ID.",
-                          "maxLength": 500,
-                          "format": "uuid"
+                          "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                          "example": "introduction-to-devops-and-sre",
+                          "maxLength": 500
                         },
                         "title": {
                           "type": "string",
@@ -16375,9 +16375,9 @@ const AcademySchema: Record<string, unknown> = {
                   "properties": {
                     "id": {
                       "type": "string",
-                      "description": "Parent ID.",
-                      "maxLength": 500,
-                      "format": "uuid"
+                      "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                      "example": "introduction-to-devops-and-sre",
+                      "maxLength": 500
                     },
                     "title": {
                       "type": "string",
@@ -16431,9 +16431,9 @@ const AcademySchema: Record<string, unknown> = {
             "properties": {
               "id": {
                 "type": "string",
-                "description": "Parent ID.",
-                "maxLength": 500,
-                "format": "uuid"
+                "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                "example": "introduction-to-devops-and-sre",
+                "maxLength": 500
               },
               "title": {
                 "type": "string",
@@ -16477,9 +16477,9 @@ const AcademySchema: Record<string, unknown> = {
             "properties": {
               "id": {
                 "type": "string",
-                "description": "CurriculaCurrentItemData ID.",
-                "maxLength": 500,
-                "format": "uuid"
+                "description": "CurriculaCurrentItemData ID. Identifies the Hugo content page the learner currently has open, not a database row, so it is an opaque content-scoped string. Not a UUID - production values include slugs, full permalink URLs and the empty string.",
+                "example": "kubernetes-quickstart",
+                "maxLength": 500
               },
               "lastOpened": {
                 "type": "string",
@@ -16555,14 +16555,14 @@ const AcademySchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "json": "id"
             },
-            "description": "Quiz ID.",
-            "maxLength": 500,
-            "format": "uuid"
+            "description": "Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs.",
+            "example": "corporate-sustainability",
+            "maxLength": 500
           },
           "orgId": {
             "type": "string",
             "description": "Organization ID that owns this quiz",
-            "example": "meshery",
+            "example": "d011fd20-a3f5-4480-883b-dfb34321d168",
             "x-oapi-codegen-extra-tags": {
               "db": "org_id",
               "json": "orgId"
@@ -16666,9 +16666,9 @@ const AcademySchema: Record<string, unknown> = {
               "properties": {
                 "id": {
                   "type": "string",
-                  "description": "Question ID.",
-                  "maxLength": 500,
-                  "format": "uuid"
+                  "description": "Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+                  "example": "q1",
+                  "maxLength": 500
                 },
                 "text": {
                   "type": "string",
@@ -16713,9 +16713,9 @@ const AcademySchema: Record<string, unknown> = {
                     "properties": {
                       "id": {
                         "type": "string",
-                        "description": "QuestionOption ID.",
-                        "maxLength": 500,
-                        "format": "uuid"
+                        "description": "QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+                        "example": "a",
+                        "maxLength": 500
                       },
                       "text": {
                         "type": "string",
@@ -16773,9 +16773,9 @@ const AcademySchema: Record<string, unknown> = {
               "properties": {
                 "id": {
                   "type": "string",
-                  "description": "Parent ID.",
-                  "maxLength": 500,
-                  "format": "uuid"
+                  "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                  "example": "introduction-to-devops-and-sre",
+                  "maxLength": 500
                 },
                 "title": {
                   "type": "string",
@@ -16808,9 +16808,9 @@ const AcademySchema: Record<string, unknown> = {
             "properties": {
               "id": {
                 "type": "string",
-                "description": "Parent ID.",
-                "maxLength": 500,
-                "format": "uuid"
+                "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                "example": "introduction-to-devops-and-sre",
+                "maxLength": 500
               },
               "title": {
                 "type": "string",
@@ -16841,9 +16841,9 @@ const AcademySchema: Record<string, unknown> = {
             "properties": {
               "id": {
                 "type": "string",
-                "description": "Parent ID.",
-                "maxLength": 500,
-                "format": "uuid"
+                "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                "example": "introduction-to-devops-and-sre",
+                "maxLength": 500
               },
               "title": {
                 "type": "string",
@@ -16875,9 +16875,9 @@ const AcademySchema: Record<string, unknown> = {
         "properties": {
           "id": {
             "type": "string",
-            "description": "Parent ID.",
-            "maxLength": 500,
-            "format": "uuid"
+            "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+            "example": "introduction-to-devops-and-sre",
+            "maxLength": 500
           },
           "title": {
             "type": "string",
@@ -16924,9 +16924,9 @@ const AcademySchema: Record<string, unknown> = {
         "properties": {
           "id": {
             "type": "string",
-            "description": "Question ID.",
-            "maxLength": 500,
-            "format": "uuid"
+            "description": "Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+            "example": "q1",
+            "maxLength": 500
           },
           "text": {
             "type": "string",
@@ -16971,9 +16971,9 @@ const AcademySchema: Record<string, unknown> = {
               "properties": {
                 "id": {
                   "type": "string",
-                  "description": "QuestionOption ID.",
-                  "maxLength": 500,
-                  "format": "uuid"
+                  "description": "QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+                  "example": "a",
+                  "maxLength": 500
                 },
                 "text": {
                   "type": "string",
@@ -17005,9 +17005,9 @@ const AcademySchema: Record<string, unknown> = {
         "properties": {
           "id": {
             "type": "string",
-            "description": "QuestionOption ID.",
-            "maxLength": 500,
-            "format": "uuid"
+            "description": "QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+            "example": "a",
+            "maxLength": 500
           },
           "text": {
             "type": "string",
@@ -17089,9 +17089,9 @@ const AcademySchema: Record<string, unknown> = {
               "properties": {
                 "questionId": {
                   "type": "string",
-                  "description": "ID of the associated question.",
-                  "maxLength": 500,
-                  "format": "uuid"
+                  "description": "ID of the associated question. Mirrors `Question.id`, a content-authored string rather than a database row identifier, so it is not a UUID.",
+                  "example": "q1",
+                  "maxLength": 500
                 },
                 "selectedOptionId": {
                   "type": "object",
@@ -17121,9 +17121,9 @@ const AcademySchema: Record<string, unknown> = {
         "properties": {
           "questionId": {
             "type": "string",
-            "description": "ID of the associated question.",
-            "maxLength": 500,
-            "format": "uuid"
+            "description": "ID of the associated question. Mirrors `Question.id`, a content-authored string rather than a database row identifier, so it is not a UUID.",
+            "example": "q1",
+            "maxLength": 500
           },
           "selectedOptionId": {
             "type": "object",
@@ -17296,9 +17296,9 @@ const AcademySchema: Record<string, unknown> = {
                   "properties": {
                     "questionId": {
                       "type": "string",
-                      "description": "ID of the associated question.",
-                      "maxLength": 500,
-                      "format": "uuid"
+                      "description": "ID of the associated question. Mirrors `Question.id`, a content-authored string rather than a database row identifier, so it is not a UUID.",
+                      "example": "q1",
+                      "maxLength": 500
                     },
                     "selectedOptionId": {
                       "type": "object",
@@ -17429,14 +17429,14 @@ const AcademySchema: Record<string, unknown> = {
                     "x-oapi-codegen-extra-tags": {
                       "json": "id"
                     },
-                    "description": "Quiz ID.",
-                    "maxLength": 500,
-                    "format": "uuid"
+                    "description": "Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs.",
+                    "example": "corporate-sustainability",
+                    "maxLength": 500
                   },
                   "orgId": {
                     "type": "string",
                     "description": "Organization ID that owns this quiz",
-                    "example": "meshery",
+                    "example": "d011fd20-a3f5-4480-883b-dfb34321d168",
                     "x-oapi-codegen-extra-tags": {
                       "db": "org_id",
                       "json": "orgId"
@@ -17540,9 +17540,9 @@ const AcademySchema: Record<string, unknown> = {
                       "properties": {
                         "id": {
                           "type": "string",
-                          "description": "Question ID.",
-                          "maxLength": 500,
-                          "format": "uuid"
+                          "description": "Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+                          "example": "q1",
+                          "maxLength": 500
                         },
                         "text": {
                           "type": "string",
@@ -17587,9 +17587,9 @@ const AcademySchema: Record<string, unknown> = {
                             "properties": {
                               "id": {
                                 "type": "string",
-                                "description": "QuestionOption ID.",
-                                "maxLength": 500,
-                                "format": "uuid"
+                                "description": "QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+                                "example": "a",
+                                "maxLength": 500
                               },
                               "text": {
                                 "type": "string",
@@ -17647,9 +17647,9 @@ const AcademySchema: Record<string, unknown> = {
                       "properties": {
                         "id": {
                           "type": "string",
-                          "description": "Parent ID.",
-                          "maxLength": 500,
-                          "format": "uuid"
+                          "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                          "example": "introduction-to-devops-and-sre",
+                          "maxLength": 500
                         },
                         "title": {
                           "type": "string",
@@ -17682,9 +17682,9 @@ const AcademySchema: Record<string, unknown> = {
                     "properties": {
                       "id": {
                         "type": "string",
-                        "description": "Parent ID.",
-                        "maxLength": 500,
-                        "format": "uuid"
+                        "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                        "example": "introduction-to-devops-and-sre",
+                        "maxLength": 500
                       },
                       "title": {
                         "type": "string",
@@ -17715,9 +17715,9 @@ const AcademySchema: Record<string, unknown> = {
                     "properties": {
                       "id": {
                         "type": "string",
-                        "description": "Parent ID.",
-                        "maxLength": 500,
-                        "format": "uuid"
+                        "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                        "example": "introduction-to-devops-and-sre",
+                        "maxLength": 500
                       },
                       "title": {
                         "type": "string",
@@ -17791,14 +17791,14 @@ const AcademySchema: Record<string, unknown> = {
                 "x-oapi-codegen-extra-tags": {
                   "json": "id"
                 },
-                "description": "Quiz ID.",
-                "maxLength": 500,
-                "format": "uuid"
+                "description": "Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs.",
+                "example": "corporate-sustainability",
+                "maxLength": 500
               },
               "orgId": {
                 "type": "string",
                 "description": "Organization ID that owns this quiz",
-                "example": "meshery",
+                "example": "d011fd20-a3f5-4480-883b-dfb34321d168",
                 "x-oapi-codegen-extra-tags": {
                   "db": "org_id",
                   "json": "orgId"
@@ -17902,9 +17902,9 @@ const AcademySchema: Record<string, unknown> = {
                   "properties": {
                     "id": {
                       "type": "string",
-                      "description": "Question ID.",
-                      "maxLength": 500,
-                      "format": "uuid"
+                      "description": "Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+                      "example": "q1",
+                      "maxLength": 500
                     },
                     "text": {
                       "type": "string",
@@ -17949,9 +17949,9 @@ const AcademySchema: Record<string, unknown> = {
                         "properties": {
                           "id": {
                             "type": "string",
-                            "description": "QuestionOption ID.",
-                            "maxLength": 500,
-                            "format": "uuid"
+                            "description": "QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+                            "example": "a",
+                            "maxLength": 500
                           },
                           "text": {
                             "type": "string",
@@ -18009,9 +18009,9 @@ const AcademySchema: Record<string, unknown> = {
                   "properties": {
                     "id": {
                       "type": "string",
-                      "description": "Parent ID.",
-                      "maxLength": 500,
-                      "format": "uuid"
+                      "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                      "example": "introduction-to-devops-and-sre",
+                      "maxLength": 500
                     },
                     "title": {
                       "type": "string",
@@ -18044,9 +18044,9 @@ const AcademySchema: Record<string, unknown> = {
                 "properties": {
                   "id": {
                     "type": "string",
-                    "description": "Parent ID.",
-                    "maxLength": 500,
-                    "format": "uuid"
+                    "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                    "example": "introduction-to-devops-and-sre",
+                    "maxLength": 500
                   },
                   "title": {
                     "type": "string",
@@ -18077,9 +18077,9 @@ const AcademySchema: Record<string, unknown> = {
                 "properties": {
                   "id": {
                     "type": "string",
-                    "description": "Parent ID.",
-                    "maxLength": 500,
-                    "format": "uuid"
+                    "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                    "example": "introduction-to-devops-and-sre",
+                    "maxLength": 500
                   },
                   "title": {
                     "type": "string",
@@ -18188,14 +18188,14 @@ const AcademySchema: Record<string, unknown> = {
                 "x-oapi-codegen-extra-tags": {
                   "json": "id"
                 },
-                "description": "Quiz ID.",
-                "maxLength": 500,
-                "format": "uuid"
+                "description": "Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs.",
+                "example": "corporate-sustainability",
+                "maxLength": 500
               },
               "orgId": {
                 "type": "string",
                 "description": "Organization ID that owns this quiz",
-                "example": "meshery",
+                "example": "d011fd20-a3f5-4480-883b-dfb34321d168",
                 "x-oapi-codegen-extra-tags": {
                   "db": "org_id",
                   "json": "orgId"
@@ -18299,9 +18299,9 @@ const AcademySchema: Record<string, unknown> = {
                   "properties": {
                     "id": {
                       "type": "string",
-                      "description": "Question ID.",
-                      "maxLength": 500,
-                      "format": "uuid"
+                      "description": "Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+                      "example": "q1",
+                      "maxLength": 500
                     },
                     "text": {
                       "type": "string",
@@ -18346,9 +18346,9 @@ const AcademySchema: Record<string, unknown> = {
                         "properties": {
                           "id": {
                             "type": "string",
-                            "description": "QuestionOption ID.",
-                            "maxLength": 500,
-                            "format": "uuid"
+                            "description": "QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+                            "example": "a",
+                            "maxLength": 500
                           },
                           "text": {
                             "type": "string",
@@ -18406,9 +18406,9 @@ const AcademySchema: Record<string, unknown> = {
                   "properties": {
                     "id": {
                       "type": "string",
-                      "description": "Parent ID.",
-                      "maxLength": 500,
-                      "format": "uuid"
+                      "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                      "example": "introduction-to-devops-and-sre",
+                      "maxLength": 500
                     },
                     "title": {
                       "type": "string",
@@ -18441,9 +18441,9 @@ const AcademySchema: Record<string, unknown> = {
                 "properties": {
                   "id": {
                     "type": "string",
-                    "description": "Parent ID.",
-                    "maxLength": 500,
-                    "format": "uuid"
+                    "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                    "example": "introduction-to-devops-and-sre",
+                    "maxLength": 500
                   },
                   "title": {
                     "type": "string",
@@ -18474,9 +18474,9 @@ const AcademySchema: Record<string, unknown> = {
                 "properties": {
                   "id": {
                     "type": "string",
-                    "description": "Parent ID.",
-                    "maxLength": 500,
-                    "format": "uuid"
+                    "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                    "example": "introduction-to-devops-and-sre",
+                    "maxLength": 500
                   },
                   "title": {
                     "type": "string",
@@ -18859,9 +18859,9 @@ const AcademySchema: Record<string, unknown> = {
                   "properties": {
                     "id": {
                       "type": "string",
-                      "description": "CurriculaCurrentItemData ID.",
-                      "maxLength": 500,
-                      "format": "uuid"
+                      "description": "CurriculaCurrentItemData ID. Identifies the Hugo content page the learner currently has open, not a database row, so it is an opaque content-scoped string. Not a UUID - production values include slugs, full permalink URLs and the empty string.",
+                      "example": "kubernetes-quickstart",
+                      "maxLength": 500
                     },
                     "lastOpened": {
                       "type": "string",
@@ -18969,14 +18969,14 @@ const AcademySchema: Record<string, unknown> = {
                           "x-oapi-codegen-extra-tags": {
                             "json": "id"
                           },
-                          "description": "Quiz ID.",
-                          "maxLength": 500,
-                          "format": "uuid"
+                          "description": "Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs.",
+                          "example": "corporate-sustainability",
+                          "maxLength": 500
                         },
                         "orgId": {
                           "type": "string",
                           "description": "Organization ID that owns this quiz",
-                          "example": "meshery",
+                          "example": "d011fd20-a3f5-4480-883b-dfb34321d168",
                           "x-oapi-codegen-extra-tags": {
                             "db": "org_id",
                             "json": "orgId"
@@ -19080,9 +19080,9 @@ const AcademySchema: Record<string, unknown> = {
                             "properties": {
                               "id": {
                                 "type": "string",
-                                "description": "Question ID.",
-                                "maxLength": 500,
-                                "format": "uuid"
+                                "description": "Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+                                "example": "q1",
+                                "maxLength": 500
                               },
                               "text": {
                                 "type": "string",
@@ -19127,9 +19127,9 @@ const AcademySchema: Record<string, unknown> = {
                                   "properties": {
                                     "id": {
                                       "type": "string",
-                                      "description": "QuestionOption ID.",
-                                      "maxLength": 500,
-                                      "format": "uuid"
+                                      "description": "QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.",
+                                      "example": "a",
+                                      "maxLength": 500
                                     },
                                     "text": {
                                       "type": "string",
@@ -19187,9 +19187,9 @@ const AcademySchema: Record<string, unknown> = {
                             "properties": {
                               "id": {
                                 "type": "string",
-                                "description": "Parent ID.",
-                                "maxLength": 500,
-                                "format": "uuid"
+                                "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                                "example": "introduction-to-devops-and-sre",
+                                "maxLength": 500
                               },
                               "title": {
                                 "type": "string",
@@ -19222,9 +19222,9 @@ const AcademySchema: Record<string, unknown> = {
                           "properties": {
                             "id": {
                               "type": "string",
-                              "description": "Parent ID.",
-                              "maxLength": 500,
-                              "format": "uuid"
+                              "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                              "example": "introduction-to-devops-and-sre",
+                              "maxLength": 500
                             },
                             "title": {
                               "type": "string",
@@ -19255,9 +19255,9 @@ const AcademySchema: Record<string, unknown> = {
                           "properties": {
                             "id": {
                               "type": "string",
-                              "description": "Parent ID.",
-                              "maxLength": 500,
-                              "format": "uuid"
+                              "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                              "example": "introduction-to-devops-and-sre",
+                              "maxLength": 500
                             },
                             "title": {
                               "type": "string",
@@ -19325,9 +19325,9 @@ const AcademySchema: Record<string, unknown> = {
                       "properties": {
                         "id": {
                           "type": "string",
-                          "description": "Parent ID.",
-                          "maxLength": 500,
-                          "format": "uuid"
+                          "description": "Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.",
+                          "example": "introduction-to-devops-and-sre",
+                          "maxLength": 500
                         },
                         "title": {
                           "type": "string",
@@ -19381,9 +19381,9 @@ const AcademySchema: Record<string, unknown> = {
             "properties": {
               "id": {
                 "type": "string",
-                "description": "CurriculaCurrentItemData ID.",
-                "maxLength": 500,
-                "format": "uuid"
+                "description": "CurriculaCurrentItemData ID. Identifies the Hugo content page the learner currently has open, not a database row, so it is an opaque content-scoped string. Not a UUID - production values include slugs, full permalink URLs and the empty string.",
+                "example": "kubernetes-quickstart",
+                "maxLength": 500
               },
               "lastOpened": {
                 "type": "string",
