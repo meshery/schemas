@@ -1378,6 +1378,7 @@ components:
             UUID - production values include slugs, full permalink URLs and the empty string.
           example: kubernetes-quickstart
           maxLength: 500
+          x-id-format: external
         lastOpened:
           type: string
           format: date-time
@@ -1496,6 +1497,7 @@ components:
             content-scoped string. Not a UUID - stored records carry authored slugs.
           example: corporate-sustainability
           maxLength: 500
+          x-id-format: external
         orgId:
           type: string
           description: Organization ID that owns this quiz
@@ -1618,6 +1620,7 @@ components:
             content-scoped string. Not a UUID. See `Quiz.id`.
           example: introduction-to-devops-and-sre
           maxLength: 500
+          x-id-format: external
         title:
           type: string
           description: The title of the parent.
@@ -1658,6 +1661,7 @@ components:
             is an opaque content-scoped string. Not a UUID.
           example: q1
           maxLength: 500
+          x-id-format: external
         text:
           type: string
           description: The text of the question.
@@ -1695,6 +1699,7 @@ components:
             so it is an opaque content-scoped string. Not a UUID.
           example: a
           maxLength: 500
+          x-id-format: external
         text:
           type: string
           description: The text of the questionoption.
@@ -1761,6 +1766,7 @@ components:
             rather than a database row identifier, so it is not a UUID.
           example: q1
           maxLength: 500
+          x-id-format: external
         selectedOptionId:
           type: object
           additionalProperties:
