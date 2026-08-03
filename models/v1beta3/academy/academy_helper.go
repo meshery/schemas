@@ -3,6 +3,7 @@ package academy
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math"
 	"strconv"
@@ -70,7 +71,15 @@ func (t *QuizTimeLimit) UnmarshalJSON(data []byte) error {
 // limit" and becomes 0.
 func quizTimeLimitFromString(raw string) QuizTimeLimit {
 	parsed, err := strconv.ParseFloat(strings.TrimSpace(raw), 64)
-	if err != nil || math.IsNaN(parsed) || parsed <= 0 {
+	// ErrRange is not a parse failure: the value is numeric but outside float64
+	// range, and ParseFloat still returns a usable magnitude - +Inf on overflow,
+	// zero on underflow. Falling through lets both settle on the same rules as
+	// any other number, so "1e309" clamps like any other oversized value rather
+	// than silently meaning "no time limit".
+	if err != nil && !errors.Is(err, strconv.ErrRange) {
+		return 0
+	}
+	if math.IsNaN(parsed) || parsed <= 0 {
 		return 0
 	}
 	if parsed > math.MaxInt32 {

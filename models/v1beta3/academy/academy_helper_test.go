@@ -33,6 +33,12 @@ func TestQuizTimeLimitUnmarshalJSON(t *testing.T) {
 		{"fractional string", `"25.7"`, 25},
 		{"exponent number", `2.5e1`, 25},
 		{"fraction below one", `0.4`, 0},
+		// Out-of-range magnitudes are numeric, not junk: overflow clamps rather
+		// than collapsing to "no time limit", and underflow rounds to nothing.
+		{"overflow number", `1e309`, 2147483647},
+		{"overflow string", `"1e309"`, 2147483647},
+		{"oversized finite", `1e12`, 2147483647},
+		{"underflow string", `"1e-400"`, 0},
 	}
 
 	for _, tc := range cases {
