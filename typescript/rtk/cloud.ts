@@ -6082,7 +6082,7 @@ export type UpdateCurrentItemInProgressTrackerApiResponse = /** status 200 Progr
     /** The current item of the curriculaprogresstracker. */
     currentItem: {
       [key: string]: {
-        /** CurriculaCurrentItemData ID. */
+        /** CurriculaCurrentItemData ID. Identifies the Hugo content page the learner currently has open, not a database row, so it is an opaque content-scoped string. Not a UUID - production values include slugs, full permalink URLs and the empty string. */
         id: string;
         /** The last opened of the curriculacurrentitemdata. */
         lastOpened: string;
@@ -6107,7 +6107,7 @@ export type UpdateCurrentItemInProgressTrackerApiResponse = /** status 200 Progr
           [key: string]: boolean;
         };
         quiz: {
-          /** Quiz ID. */
+          /** Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs. */
           id: string;
           /** Organization ID that owns this quiz */
           orgId: string;
@@ -6139,13 +6139,13 @@ export type UpdateCurrentItemInProgressTrackerApiResponse = /** status 200 Progr
           filePath: string;
           /** The pass percentage of the quiz. */
           passPercentage: number;
-          /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-          timeLimit: number;
+          /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as "25" or the non-numeric sentinel "infinite". A string that does not parse to a positive number means "no time limit" and normalizes to 0. */
+          timeLimit: number | string;
           /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
           maxAttempts: number;
           /** The questions of the quiz. */
           questions: {
-            /** Question ID. */
+            /** Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID. */
             id: string;
             /** The text of the question. */
             text: string;
@@ -6156,7 +6156,7 @@ export type UpdateCurrentItemInProgressTrackerApiResponse = /** status 200 Progr
             multipleAnswers?: boolean;
             /** The options of the question. */
             options: {
-              /** QuestionOption ID. */
+              /** QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID. */
               id: string;
               /** The text of the questionoption. */
               text: string;
@@ -6176,7 +6176,7 @@ export type UpdateCurrentItemInProgressTrackerApiResponse = /** status 200 Progr
           totalMarks: number;
           /** The prerequisites of the quiz. */
           prerequisites: {
-            /** Parent ID. */
+            /** Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`. */
             id: string;
             /** The title of the parent. */
             title: string;
@@ -6186,7 +6186,7 @@ export type UpdateCurrentItemInProgressTrackerApiResponse = /** status 200 Progr
             type: string;
           }[];
           parent?: {
-            /** Parent ID. */
+            /** Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`. */
             id: string;
             /** The title of the parent. */
             title: string;
@@ -6196,7 +6196,7 @@ export type UpdateCurrentItemInProgressTrackerApiResponse = /** status 200 Progr
             type: string;
           };
           nextPage: {
-            /** Parent ID. */
+            /** Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`. */
             id: string;
             /** The title of the parent. */
             title: string;
@@ -6220,7 +6220,7 @@ export type UpdateCurrentItemInProgressTrackerApiResponse = /** status 200 Progr
         /** Timestamp when the item was completed */
         completedAt: string;
         itemData: {
-          /** Parent ID. */
+          /** Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`. */
           id: string;
           /** The title of the parent. */
           title: string;
@@ -6238,7 +6238,7 @@ export type UpdateCurrentItemInProgressTrackerApiResponse = /** status 200 Progr
   registrationId?: string;
   contentType?: "learning-path" | "challenge" | "certification";
   itemData?: {
-    /** CurriculaCurrentItemData ID. */
+    /** CurriculaCurrentItemData ID. Identifies the Hugo content page the learner currently has open, not a database row, so it is an opaque content-scoped string. Not a UUID - production values include slugs, full permalink URLs and the empty string. */
     id: string;
     /** The last opened of the curriculacurrentitemdata. */
     lastOpened: string;
@@ -6251,7 +6251,7 @@ export type UpdateCurrentItemInProgressTrackerApiArg = {
   body: {
     contentType: "learning-path" | "challenge" | "certification";
     itemData: {
-      /** CurriculaCurrentItemData ID. */
+      /** CurriculaCurrentItemData ID. Identifies the Hugo content page the learner currently has open, not a database row, so it is an opaque content-scoped string. Not a UUID - production values include slugs, full permalink URLs and the empty string. */
       id: string;
       /** The last opened of the curriculacurrentitemdata. */
       lastOpened: string;
@@ -6260,7 +6260,7 @@ export type UpdateCurrentItemInProgressTrackerApiArg = {
   };
 };
 export type GetTestByAbsPathApiResponse = /** status 200 A single test */ {
-  /** Quiz ID. */
+  /** Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs. */
   id: string;
   /** Organization ID that owns this quiz */
   orgId: string;
@@ -6292,13 +6292,13 @@ export type GetTestByAbsPathApiResponse = /** status 200 A single test */ {
   filePath: string;
   /** The pass percentage of the quiz. */
   passPercentage: number;
-  /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-  timeLimit: number;
+  /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as "25" or the non-numeric sentinel "infinite". A string that does not parse to a positive number means "no time limit" and normalizes to 0. */
+  timeLimit: number | string;
   /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
   maxAttempts: number;
   /** The questions of the quiz. */
   questions: {
-    /** Question ID. */
+    /** Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID. */
     id: string;
     /** The text of the question. */
     text: string;
@@ -6309,7 +6309,7 @@ export type GetTestByAbsPathApiResponse = /** status 200 A single test */ {
     multipleAnswers?: boolean;
     /** The options of the question. */
     options: {
-      /** QuestionOption ID. */
+      /** QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID. */
       id: string;
       /** The text of the questionoption. */
       text: string;
@@ -6329,7 +6329,7 @@ export type GetTestByAbsPathApiResponse = /** status 200 A single test */ {
   totalMarks: number;
   /** The prerequisites of the quiz. */
   prerequisites: {
-    /** Parent ID. */
+    /** Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`. */
     id: string;
     /** The title of the parent. */
     title: string;
@@ -6339,7 +6339,7 @@ export type GetTestByAbsPathApiResponse = /** status 200 A single test */ {
     type: string;
   }[];
   parent?: {
-    /** Parent ID. */
+    /** Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`. */
     id: string;
     /** The title of the parent. */
     title: string;
@@ -6349,7 +6349,7 @@ export type GetTestByAbsPathApiResponse = /** status 200 A single test */ {
     type: string;
   };
   nextPage: {
-    /** Parent ID. */
+    /** Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`. */
     id: string;
     /** The title of the parent. */
     title: string;
@@ -6364,7 +6364,7 @@ export type GetTestByAbsPathApiArg = {
   absPath: string;
 };
 export type StartTestByIdApiResponse = /** status 200 A single test */ {
-  /** Quiz ID. */
+  /** Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs. */
   id: string;
   /** Organization ID that owns this quiz */
   orgId: string;
@@ -6396,13 +6396,13 @@ export type StartTestByIdApiResponse = /** status 200 A single test */ {
   filePath: string;
   /** The pass percentage of the quiz. */
   passPercentage: number;
-  /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-  timeLimit: number;
+  /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as "25" or the non-numeric sentinel "infinite". A string that does not parse to a positive number means "no time limit" and normalizes to 0. */
+  timeLimit: number | string;
   /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
   maxAttempts: number;
   /** The questions of the quiz. */
   questions: {
-    /** Question ID. */
+    /** Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID. */
     id: string;
     /** The text of the question. */
     text: string;
@@ -6413,7 +6413,7 @@ export type StartTestByIdApiResponse = /** status 200 A single test */ {
     multipleAnswers?: boolean;
     /** The options of the question. */
     options: {
-      /** QuestionOption ID. */
+      /** QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID. */
       id: string;
       /** The text of the questionoption. */
       text: string;
@@ -6433,7 +6433,7 @@ export type StartTestByIdApiResponse = /** status 200 A single test */ {
   totalMarks: number;
   /** The prerequisites of the quiz. */
   prerequisites: {
-    /** Parent ID. */
+    /** Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`. */
     id: string;
     /** The title of the parent. */
     title: string;
@@ -6443,7 +6443,7 @@ export type StartTestByIdApiResponse = /** status 200 A single test */ {
     type: string;
   }[];
   parent?: {
-    /** Parent ID. */
+    /** Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`. */
     id: string;
     /** The title of the parent. */
     title: string;
@@ -6453,7 +6453,7 @@ export type StartTestByIdApiResponse = /** status 200 A single test */ {
     type: string;
   };
   nextPage: {
-    /** Parent ID. */
+    /** Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`. */
     id: string;
     /** The title of the parent. */
     title: string;
@@ -6488,7 +6488,7 @@ export type GetAllTestSessionsForRegistrationApiResponse =
       [key: string]: boolean;
     };
     quiz: {
-      /** Quiz ID. */
+      /** Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs. */
       id: string;
       /** Organization ID that owns this quiz */
       orgId: string;
@@ -6520,13 +6520,13 @@ export type GetAllTestSessionsForRegistrationApiResponse =
       filePath: string;
       /** The pass percentage of the quiz. */
       passPercentage: number;
-      /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-      timeLimit: number;
+      /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as "25" or the non-numeric sentinel "infinite". A string that does not parse to a positive number means "no time limit" and normalizes to 0. */
+      timeLimit: number | string;
       /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
       maxAttempts: number;
       /** The questions of the quiz. */
       questions: {
-        /** Question ID. */
+        /** Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID. */
         id: string;
         /** The text of the question. */
         text: string;
@@ -6537,7 +6537,7 @@ export type GetAllTestSessionsForRegistrationApiResponse =
         multipleAnswers?: boolean;
         /** The options of the question. */
         options: {
-          /** QuestionOption ID. */
+          /** QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID. */
           id: string;
           /** The text of the questionoption. */
           text: string;
@@ -6557,7 +6557,7 @@ export type GetAllTestSessionsForRegistrationApiResponse =
       totalMarks: number;
       /** The prerequisites of the quiz. */
       prerequisites: {
-        /** Parent ID. */
+        /** Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`. */
         id: string;
         /** The title of the parent. */
         title: string;
@@ -6567,7 +6567,7 @@ export type GetAllTestSessionsForRegistrationApiResponse =
         type: string;
       }[];
       parent?: {
-        /** Parent ID. */
+        /** Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`. */
         id: string;
         /** The title of the parent. */
         title: string;
@@ -6577,7 +6577,7 @@ export type GetAllTestSessionsForRegistrationApiResponse =
         type: string;
       };
       nextPage: {
-        /** Parent ID. */
+        /** Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`. */
         id: string;
         /** The title of the parent. */
         title: string;
@@ -6618,7 +6618,7 @@ export type SubmitQuizApiResponse = /** status 200 Progress tracker updated */ {
     [key: string]: boolean;
   };
   quiz: {
-    /** Quiz ID. */
+    /** Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs. */
     id: string;
     /** Organization ID that owns this quiz */
     orgId: string;
@@ -6650,13 +6650,13 @@ export type SubmitQuizApiResponse = /** status 200 Progress tracker updated */ {
     filePath: string;
     /** The pass percentage of the quiz. */
     passPercentage: number;
-    /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-    timeLimit: number;
+    /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as "25" or the non-numeric sentinel "infinite". A string that does not parse to a positive number means "no time limit" and normalizes to 0. */
+    timeLimit: number | string;
     /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
     maxAttempts: number;
     /** The questions of the quiz. */
     questions: {
-      /** Question ID. */
+      /** Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID. */
       id: string;
       /** The text of the question. */
       text: string;
@@ -6667,7 +6667,7 @@ export type SubmitQuizApiResponse = /** status 200 Progress tracker updated */ {
       multipleAnswers?: boolean;
       /** The options of the question. */
       options: {
-        /** QuestionOption ID. */
+        /** QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID. */
         id: string;
         /** The text of the questionoption. */
         text: string;
@@ -6687,7 +6687,7 @@ export type SubmitQuizApiResponse = /** status 200 Progress tracker updated */ {
     totalMarks: number;
     /** The prerequisites of the quiz. */
     prerequisites: {
-      /** Parent ID. */
+      /** Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`. */
       id: string;
       /** The title of the parent. */
       title: string;
@@ -6697,7 +6697,7 @@ export type SubmitQuizApiResponse = /** status 200 Progress tracker updated */ {
       type: string;
     }[];
     parent?: {
-      /** Parent ID. */
+      /** Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`. */
       id: string;
       /** The title of the parent. */
       title: string;
@@ -6707,7 +6707,7 @@ export type SubmitQuizApiResponse = /** status 200 Progress tracker updated */ {
       type: string;
     };
     nextPage: {
-      /** Parent ID. */
+      /** Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`. */
       id: string;
       /** The title of the parent. */
       title: string;
@@ -6734,7 +6734,7 @@ export type SubmitQuizApiArg = {
     userId: string;
     /** The answers of the quizsubmission. */
     answers: {
-      /** ID of the associated question. */
+      /** ID of the associated question. Mirrors `Question.id`, a content-authored string rather than a database row identifier, so it is not a UUID. */
       questionId: string;
       /** Map of selected option IDs to a boolean value indicating if it was selected. */
       selectedOptionId: {
@@ -6782,7 +6782,7 @@ export type GetAcademyAdminSummaryApiResponse =
     tests?: {
       /** The test the counts refer to. */
       test?: {
-        /** Quiz ID. */
+        /** Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs. */
         id: string;
         /** Organization ID that owns this quiz */
         orgId: string;
@@ -6814,13 +6814,13 @@ export type GetAcademyAdminSummaryApiResponse =
         filePath: string;
         /** The pass percentage of the quiz. */
         passPercentage: number;
-        /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-        timeLimit: number;
+        /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as "25" or the non-numeric sentinel "infinite". A string that does not parse to a positive number means "no time limit" and normalizes to 0. */
+        timeLimit: number | string;
         /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
         maxAttempts: number;
         /** The questions of the quiz. */
         questions: {
-          /** Question ID. */
+          /** Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID. */
           id: string;
           /** The text of the question. */
           text: string;
@@ -6831,7 +6831,7 @@ export type GetAcademyAdminSummaryApiResponse =
           multipleAnswers?: boolean;
           /** The options of the question. */
           options: {
-            /** QuestionOption ID. */
+            /** QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID. */
             id: string;
             /** The text of the questionoption. */
             text: string;
@@ -6851,7 +6851,7 @@ export type GetAcademyAdminSummaryApiResponse =
         totalMarks: number;
         /** The prerequisites of the quiz. */
         prerequisites: {
-          /** Parent ID. */
+          /** Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`. */
           id: string;
           /** The title of the parent. */
           title: string;
@@ -6861,7 +6861,7 @@ export type GetAcademyAdminSummaryApiResponse =
           type: string;
         }[];
         parent?: {
-          /** Parent ID. */
+          /** Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`. */
           id: string;
           /** The title of the parent. */
           title: string;
@@ -6871,7 +6871,7 @@ export type GetAcademyAdminSummaryApiResponse =
           type: string;
         };
         nextPage: {
-          /** Parent ID. */
+          /** Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`. */
           id: string;
           /** The title of the parent. */
           title: string;
