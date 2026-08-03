@@ -4,7 +4,7 @@ description: Iterate on a PR until CI passes. Optionally merge or merge and publ
 metadata:
   author: leecalcote
   version: "2.0.0"
-  argument-hint: full | full-release
+  argument-hint: merge | merge-release
 ---
 
 # Iterate on PR Until CI Passes
@@ -22,14 +22,14 @@ Continuously iterate on the current branch until all CI checks pass and review f
 Invoke as:
 
 - `/iterate-pr`
-- `/iterate-pr full`
-- `/iterate-pr full-release`
+- `/iterate-pr merge`
+- `/iterate-pr merge-release`
 
 | Mode | Behavior |
 |---|---|
 | Default (`/iterate-pr`) | Iterates on CI + high/medium feedback, asks user about low-priority items, then exits without merging. |
-| `full` | Fully autonomous: handles every non-resolved feedback item, replies to every item, re-requests review (Gemini or Copilot) after each push, iterates until no new feedback and CI is green, then merges the PR. |
-| `full-release` | Does everything in `full`, then cuts/publishes a release for the repository. |
+| `merge` | Fully autonomous: handles every non-resolved feedback item, replies to every item, re-requests review (Gemini or Copilot) after each push, iterates until no new feedback and CI is green, then merges the PR. |
+| `merge-release` | Does everything in `merge`, then cuts/publishes a release for the repository. |
 
 ## Bundled Scripts
 
@@ -104,7 +104,7 @@ Run `${HOME}/.agents/skills/iterate-pr/scripts/fetch_pr_feedback.py` to get cate
 
 ### 3. Handle Feedback by Priority and Mode
 
-Determine mode from invocation (`/iterate-pr`, `/iterate-pr full`, `/iterate-pr full-release`).
+Determine mode from invocation (`/iterate-pr`, `/iterate-pr merge`, `/iterate-pr merge-release`).
 
 #### Default mode (`/iterate-pr`)
 
@@ -128,7 +128,7 @@ Which would you like to address? (e.g., "1,3" or "all" or "none")
 - `resolved` threads
 - `bot` comments (informational only — Codecov, Dependabot, etc.)
 
-#### Full modes (`/iterate-pr full`, `/iterate-pr full-release`)
+#### Merge modes (`/iterate-pr merge`, `/iterate-pr merge-release`)
 
 Operate autonomously. Process every non-resolved feedback item returned by `fetch_pr_feedback.py` (`high`, `medium`, `low`, and `bot`).
 
@@ -154,12 +154,12 @@ After processing feedback, reply to PR comments/threads to acknowledge the actio
 
 **Scope by mode:**
 - Default mode: reply to `high`/`medium`; reply to `low` only when fixed or declined by the user
-- Full modes: reply to every non-resolved feedback item, including informational bot feedback
+- Merge modes: reply to every non-resolved feedback item, including informational bot feedback
 
 **How to reply:**
 - If `thread_id` exists (inline review thread), use `${HOME}/.agents/skills/iterate-pr/scripts/reply_to_thread.py`
 - If no `thread_id` exists, post a PR comment with `gh pr comment <PR_NUMBER> --body "..."`
-- In full modes, a feedback round is incomplete until every item has a corresponding reply
+- In merge modes, a feedback round is incomplete until every item has a corresponding reply
 
 Batch inline replies for a round into a single call:
 
@@ -220,34 +220,34 @@ Poll CI status and review feedback in a loop instead of blocking:
    a. Run `uv run ${HOME}/.agents/skills/iterate-pr/scripts/fetch_pr_feedback.py` for new review feedback
    b. Address feedback based on mode:
       - Default mode: new `high`/`medium`
-      - Full modes: every new non-resolved item (`high`/`medium`/`low`/`bot`) and reply to each item
+      - Merge modes: every new non-resolved item (`high`/`medium`/`low`/`bot`) and reply to each item
    c. If changes were needed, commit and push (this restarts CI)
-   d. In full modes, after each push, explicitly re-request review:
+   d. In merge modes, after each push, explicitly re-request review:
       - Prefer Gemini review command (`/gemini review`) when available
       - Otherwise request Copilot review by commenting `@copilot review` on the PR
    e. Sleep 30 seconds (don't increase on subsequent iterations), then repeat from sub-step 1
 5. After all checks pass, do a final feedback check: `sleep 10`, then run `uv run ${HOME}/.agents/skills/iterate-pr/scripts/fetch_pr_feedback.py`.
    - Default mode: address any new `high`/`medium` feedback; if changes are needed, return to step 6
-   - Full modes: address any new non-resolved item; if changes are needed, return to step 6 and re-request review
+   - Merge modes: address any new non-resolved item; if changes are needed, return to step 6 and re-request review
 
 ### 8. Repeat
 
 If step 7 required code changes (from new feedback after CI passed), return to step 2 for a fresh cycle. CI failures during monitoring are already handled within step 7's polling loop.
 
-In full modes, continue looping until both conditions are true:
+In merge modes, continue looping until both conditions are true:
 - CI checks are green
 - No new non-resolved feedback is returned after the latest review request
 
 ### 9. Finish by Mode
 
 - Default mode: stop after success conditions are met (do not merge automatically)
-- `full`: merge once CI is green and no new feedback remains:
+- `merge`: merge once CI is green and no new feedback remains:
 
 ```bash
 gh pr merge <PR_NUMBER> --auto --delete-branch
 ```
 
-- `full-release`: complete `full` mode merge, then cut a release:
+- `merge-release`: complete `merge` mode merge, then cut a release:
   1. Find the draft release tag:
      ```bash
      gh release list --repo layer5io/meshery-cloud --json tagName,isDraft --jq '.[] | select(.isDraft) | .tagName'
@@ -265,9 +265,9 @@ gh pr merge <PR_NUMBER> --auto --delete-branch
 
 **Success (default):** All checks pass, post-CI feedback re-check is clean (no new unaddressed high/medium feedback including review bot findings), user has decided on low-priority items.
 
-**Success (`full`):** All checks pass, no new non-resolved feedback remains after the latest review request, every feedback item has a reply, and the PR is merged.
+**Success (`merge`):** All checks pass, no new non-resolved feedback remains after the latest review request, every feedback item has a reply, and the PR is merged.
 
-**Success (`full-release`):** `full` success criteria are met and the draft GitHub release has been published.
+**Success (`merge-release`):** `merge` success criteria are met and the draft GitHub release has been published.
 
 **Ask for help:** Same failure after 2 attempts, feedback needs clarification, infrastructure issues.
 
