@@ -52,6 +52,13 @@
     "extension": true
   },
   {
+    "construct": "console",
+    "version": "v1beta1",
+    "href": "/schemas/constructs/v1beta1/console/api.yml",
+    "core": true,
+    "extension": false
+  },
+  {
     "construct": "controllers_config",
     "version": "v1alpha1",
     "href": "/schemas/constructs/v1alpha1/controllers_config/controllers_config.yaml",
