@@ -718,7 +718,11 @@ components:
     401:
       $ref: ../core/api.yml#/components/responses/401
     403:
-      $ref: ../../v1beta2/core/api.yml#/components/responses/403
+      description: The caller is not authorized to act on this resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
     404:
       $ref: ../core/api.yml#/components/responses/404
     500:
