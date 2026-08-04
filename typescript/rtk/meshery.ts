@@ -944,23 +944,23 @@ const injectedRtkApi = api
         providesTags: ["Environment_environments"],
       }),
       deleteEvent: build.mutation<DeleteEventApiResponse, DeleteEventApiArg>({
-        query: (queryArg) => ({ url: `/events/${queryArg.eventId}`, method: "DELETE" }),
-        invalidatesTags: ["Events_events"],
-      }),
-      createEvent: build.mutation<CreateEventApiResponse, CreateEventApiArg>({
-        query: (queryArg) => ({ url: `/events`, method: "POST", body: queryArg.body }),
+        query: (queryArg) => ({ url: `/api/events/${queryArg.eventId}`, method: "DELETE" }),
         invalidatesTags: ["Events_events"],
       }),
       bulkDeleteEvents: build.mutation<BulkDeleteEventsApiResponse, BulkDeleteEventsApiArg>({
-        query: (queryArg) => ({ url: `/events/delete`, method: "POST", body: queryArg.body }),
+        query: (queryArg) => ({ url: `/api/events/delete`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Events_events"],
       }),
       bulkUpdateEventStatus: build.mutation<BulkUpdateEventStatusApiResponse, BulkUpdateEventStatusApiArg>({
-        query: (queryArg) => ({ url: `/events/status`, method: "PUT", body: queryArg.body }),
+        query: (queryArg) => ({ url: `/api/events/status`, method: "PUT", body: queryArg.body }),
         invalidatesTags: ["Events_events"],
       }),
       updateEventStatus: build.mutation<UpdateEventStatusApiResponse, UpdateEventStatusApiArg>({
-        query: (queryArg) => ({ url: `/events/${queryArg.eventId}/status`, method: "PUT", body: queryArg.body }),
+        query: (queryArg) => ({ url: `/api/events/${queryArg.eventId}/status`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["Events_events"],
+      }),
+      createEvent: build.mutation<CreateEventApiResponse, CreateEventApiArg>({
+        query: (queryArg) => ({ url: `/api/events`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Events_events"],
       }),
       getPerformanceProfiles: build.query<GetPerformanceProfilesApiResponse, GetPerformanceProfilesApiArg>({
@@ -15498,20 +15498,6 @@ export type DeleteEventApiArg = {
   /** ID of the event. */
   eventId: string;
 };
-export type CreateEventApiResponse = unknown;
-export type CreateEventApiArg = {
-  body: {
-    /** UUID of the user associated with the event. */
-    owner?: string;
-    /** The category of the event. */
-    category?: string;
-    /** The action of the event. */
-    action?: string;
-    /** Description of the event. */
-    description?: string;
-    [key: string]: any;
-  };
-};
 export type BulkDeleteEventsApiResponse = /** status 200 Events deleted */ {
   /** UUIDs of events that were deleted. */
   deleted?: string[];
@@ -15548,6 +15534,20 @@ export type UpdateEventStatusApiArg = {
   body: {
     /** Current status of the event. */
     status: string;
+  };
+};
+export type CreateEventApiResponse = unknown;
+export type CreateEventApiArg = {
+  body: {
+    /** UUID of the user associated with the event. */
+    owner?: string;
+    /** The category of the event. */
+    category?: string;
+    /** The action of the event. */
+    action?: string;
+    /** Description of the event. */
+    description?: string;
+    [key: string]: any;
   };
 };
 export type GetPerformanceProfilesApiResponse = /** status 200 Performance profiles */ {
@@ -17604,10 +17604,10 @@ export const {
   useGetEnvironmentConnectionsQuery,
   useLazyGetEnvironmentConnectionsQuery,
   useDeleteEventMutation,
-  useCreateEventMutation,
   useBulkDeleteEventsMutation,
   useBulkUpdateEventStatusMutation,
   useUpdateEventStatusMutation,
+  useCreateEventMutation,
   useGetPerformanceProfilesQuery,
   useLazyGetPerformanceProfilesQuery,
   useUpsertPerformanceProfileMutation,
