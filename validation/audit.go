@@ -27,12 +27,15 @@ type constructSpec struct {
 	LoadErr      error
 }
 
-// walkValidatedConstructSpecs is the single, canonical walker for the
-// schemas/constructs tree. It visits every non-deprecated construct spec in
-// deterministic sorted order and invokes fn for each one. Both the schema
-// validator (Audit) and the consumer-audit endpoint indexer use this function
-// so the walk logic, filtering, and load behaviour stay in sync.
-func walkValidatedConstructSpecs(rootDir string, fn func(constructSpec) error) error {
+// walkAllConstructSpecs is the raw traversal of the schemas/constructs tree.
+// It visits every version of every construct that has an api.yml, in
+// deterministic sorted order, and applies no filtering whatsoever — no version
+// gating, no deprecation skip, no collapsing to the latest version.
+//
+// walkValidatedConstructSpecs layers the validated view on top of this. The
+// superseded-construct report uses this walker directly because deprecated
+// versions are precisely its subject: they are what x-superseded-by annotates.
+func walkAllConstructSpecs(rootDir string, fn func(constructSpec) error) error {
 	constructsDir := filepath.Join(rootDir, "schemas", "constructs")
 
 	info, err := os.Stat(constructsDir)
@@ -48,15 +51,11 @@ func walkValidatedConstructSpecs(rootDir string, fn func(constructSpec) error) e
 		return versionEntries[i].Name() < versionEntries[j].Name()
 	})
 
-	latestByConstruct := make(map[string]constructSpec)
 	for _, vEntry := range versionEntries {
 		if !vEntry.IsDir() {
 			continue
 		}
 		version := vEntry.Name()
-		if !shouldValidateVersion(version) {
-			continue
-		}
 
 		versionDir := filepath.Join(constructsDir, version)
 		constructEntries, err := os.ReadDir(versionDir)
@@ -91,17 +90,45 @@ func walkValidatedConstructSpecs(rootDir string, fn func(constructSpec) error) e
 			if loadErr != nil {
 				spec.LoadErr = loadErr
 			} else {
-				if isDeprecatedDoc(doc) {
-					continue
-				}
 				spec.Doc = doc
 			}
 
-			prev, ok := latestByConstruct[spec.Construct]
-			if !ok || compareAPIVersions(spec.Version, prev.Version) > 0 {
-				latestByConstruct[spec.Construct] = spec
+			if err := fn(spec); err != nil {
+				return err
 			}
 		}
+	}
+
+	return nil
+}
+
+// walkValidatedConstructSpecs is the single, canonical walker for the
+// schemas/constructs tree. It visits every non-deprecated construct spec in
+// deterministic sorted order and invokes fn for each one. Both the schema
+// validator (Audit) and the consumer-audit endpoint indexer use this function
+// so the walk logic, filtering, and load behaviour stay in sync.
+func walkValidatedConstructSpecs(rootDir string, fn func(constructSpec) error) error {
+	latestByConstruct := make(map[string]constructSpec)
+
+	err := walkAllConstructSpecs(rootDir, func(spec constructSpec) error {
+		if !shouldValidateVersion(spec.Version) {
+			return nil
+		}
+		// A spec that failed to load still participates: the validator
+		// reports the load error as a violation. Only successfully loaded
+		// and explicitly deprecated specs are skipped.
+		if spec.LoadErr == nil && isDeprecatedDoc(spec.Doc) {
+			return nil
+		}
+
+		prev, ok := latestByConstruct[spec.Construct]
+		if !ok || compareAPIVersions(spec.Version, prev.Version) > 0 {
+			latestByConstruct[spec.Construct] = spec
+		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
 
 	specs := make([]constructSpec, 0, len(latestByConstruct))

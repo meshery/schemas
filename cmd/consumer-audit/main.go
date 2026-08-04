@@ -36,6 +36,10 @@ func main() {
 	verbose := flag.Bool("verbose", false, "Print per-endpoint Schema-only and Consumer-only lists")
 	sheetID := flag.String("sheet-id", "", "Google Sheet ID to reconcile against and update")
 	credentials := flag.String("credentials", "", "Path to Google service-account JSON credentials (required with --sheet-id)")
+	supersededReport := flag.Bool("superseded-report", false,
+		"Report which version of each superseded construct every consumer resolves")
+	supersededEnforce := flag.Bool("superseded-enforce", false,
+		"Exit non-zero if any consumer resolves a superseded construct (implies --superseded-report)")
 	flag.Parse()
 
 	rootDir, err := findRepoRoot()
@@ -86,6 +90,34 @@ func main() {
 	if len(result.Tracked) > 0 || len(result.NewDeletions) > 0 {
 		fmt.Fprintln(out)
 		printDiff(out, result.Tracked, result.NewDeletions)
+	}
+
+	// Superseded-construct report. Opt-in: downstream repos legitimately pin
+	// superseded versions, and the Phase 4.A non-deletion policy in
+	// docs/schema-tooling.md keeps them served indefinitely, so this is an
+	// awareness tool by default rather than a gate. Printed after every
+	// existing section so the fixed metric labels parsed by
+	// .github/workflows/schema-audit.yml keep their positions.
+	if *supersededReport || *supersededEnforce {
+		sup, err := validation.RunSupersededAudit(validation.SupersededOptions{
+			RootDir:        rootDir,
+			MesheryRepo:    *mesheryRepo,
+			CloudRepo:      *cloudRepo,
+			ExtensionsRepo: *extensionsRepo,
+			MesheryRepoUI:  *mesheryRepoUI,
+			CloudRepoUI:    *cloudRepoUI,
+		})
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "consumer-audit: superseded report: %v\n", err)
+			os.Exit(1)
+		}
+		printSupersededReport(out, sup)
+
+		if *supersededEnforce && sup.HasSupersededUsage() {
+			fmt.Fprintln(out)
+			fmt.Fprintln(out, "superseded-enforce: at least one consumer resolves a superseded construct version.")
+			os.Exit(2)
+		}
 	}
 }
 
@@ -409,6 +441,121 @@ func printTSFindings(out io.Writer, findings []validation.TSFinding) {
 			}
 		}
 		fmt.Fprintln(out)
+	}
+}
+
+// printSupersededReport renders the opt-in superseded-construct report: one
+// row per (construct family, surface) per consumer, answering which version
+// that consumer resolves. Sections that would be empty are omitted so a clean
+// run stays short.
+func printSupersededReport(out io.Writer, r *validation.SupersededReport) {
+	if r == nil {
+		return
+	}
+
+	fmt.Fprintln(out)
+	fmt.Fprintln(out, "Superseded Construct Report")
+	fmt.Fprintln(out)
+	fmt.Fprintf(out,
+		"%d of %d construct versions carry x-superseded-by; %d carry x-deprecated.\n",
+		len(r.Superseded), len(r.Index.All), r.Index.DeprecatedCount())
+	fmt.Fprintln(out, "Superseded versions stay served indefinitely (Phase 4.A non-deletion policy),")
+	fmt.Fprintln(out, "so a pinned superseded version is a migration signal, not an error.")
+
+	printBundledReachability(out, r)
+
+	for _, repo := range r.Repos {
+		fmt.Fprintln(out)
+		fmt.Fprintf(out, "  %s (%s) - %d files scanned\n", repo.Repo, repo.Path, repo.FilesScanned)
+
+		if len(repo.Resolutions) == 0 {
+			fmt.Fprintln(out, "    no schema construct imports found")
+			continue
+		}
+
+		t := newTable(out, "Construct", "Surface", "Resolves", "Files", "Status")
+		for _, res := range repo.Resolutions {
+			// A "not used" row has no surface, version or file count: the
+			// consumer referenced no version of the family anywhere.
+			if res.NotUsed {
+				t.AddRow(res.Family, "-", "-", "-", "not used")
+				continue
+			}
+			status := "current"
+			if res.Superseded {
+				status = "SUPERSEDED -> " + res.Terminal
+			}
+			t.AddRow(res.Family, string(res.Surface), res.Version, res.Files, status)
+		}
+		t.Print()
+
+		// The bundled clients carry no version in the import, so this count
+		// is deliberately not attributed to any construct version.
+		if repo.BundledClientImports > 0 {
+			fmt.Fprintf(out,
+				"    %d bundled-client %s (cloudApi/mesheryApi); version not resolvable from consumer code.\n",
+				repo.BundledClientImports, pluralize("import", repo.BundledClientImports))
+		}
+		notUsed := 0
+		for _, res := range repo.Resolutions {
+			if res.NotUsed {
+				notUsed++
+			}
+		}
+		if n := repo.SupersededCount(); n > 0 {
+			fmt.Fprintf(out, "    %d superseded %s; %d not used.\n",
+				n, pluralize("resolution", n), notUsed)
+		} else {
+			fmt.Fprintf(out, "    clear of superseded construct versions; %d not used.\n", notUsed)
+		}
+	}
+
+	printSupersededAnomalies(out, r)
+}
+
+// printBundledReachability reports surface 3, which is a property of this repo
+// rather than of any consumer: build/lib/config.js drops x-deprecated
+// constructs before the merge, so a superseded construct normally cannot reach
+// a bundled RTK client at all.
+func printBundledReachability(out io.Writer, r *validation.SupersededReport) {
+	fmt.Fprintln(out)
+	fmt.Fprintf(out, "Bundled clients (%s): ", validation.SurfaceBundled)
+	if len(r.BundledReachable) == 0 {
+		fmt.Fprintln(out, "no superseded construct reaches the merged spec,")
+		fmt.Fprintln(out, "so no bundled client can expose one. Computed from the build's own merge")
+		fmt.Fprintln(out, "exclusions, not inferred from consumer code.")
+		return
+	}
+	fmt.Fprintf(out, "%d superseded %s still in the merged spec.\n",
+		len(r.BundledReachable), pluralize("construct", len(r.BundledReachable)))
+	fmt.Fprintln(out, "These can appear in a bundled client, and collide with their successor at")
+	fmt.Fprintln(out, "merge time -- bundle-openapi.js throws on a duplicate route+method:")
+	for _, c := range r.BundledReachable {
+		fmt.Fprintf(out, "    %s -> %s  (%s)\n", c.Key, c.Terminal, c.SourceFile)
+	}
+}
+
+// printSupersededAnomalies reports annotation defects. Both lists are normally
+// empty; they exist so a regression in the annotation data is visible rather
+// than silently narrowing what the report can detect.
+func printSupersededAnomalies(out io.Writer, r *validation.SupersededReport) {
+	if len(r.DanglingSuccessors) > 0 {
+		fmt.Fprintln(out)
+		fmt.Fprintf(out, "  x-superseded-by pointing at a construct that does not exist (%d):\n",
+			len(r.DanglingSuccessors))
+		for _, c := range r.DanglingSuccessors {
+			fmt.Fprintf(out, "    %s -> %q  (%s)\n", c.Key, c.SupersededBy, c.SourceFile)
+		}
+	}
+
+	if len(r.DeprecatedWithoutSuccessor) > 0 {
+		fmt.Fprintln(out)
+		fmt.Fprintf(out, "  x-deprecated without x-superseded-by (%d):\n",
+			len(r.DeprecatedWithoutSuccessor))
+		fmt.Fprintln(out, "  Consumers on these cannot be pointed at a migration target.")
+		for _, c := range r.DeprecatedWithoutSuccessor {
+			fmt.Fprintf(out, "    %s  (%s)\n", c.Key, c.SourceFile)
+		}
 	}
 }
 
