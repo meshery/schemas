@@ -1,6 +1,9 @@
 package validation
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 // TestDetectPrefixMismatches_MissingAPIPrefix reproduces the v1beta3 event
 // defect: the schema declared `POST /events` while meshery-cloud registers the
@@ -29,6 +32,12 @@ func TestDetectPrefixMismatches_MissingAPIPrefix(t *testing.T) {
 	}
 
 	m := got[0]
+	if !m.SchemaOmitsPrefix() {
+		t.Error("SchemaOmitsPrefix() = false, want true")
+	}
+	if msg := m.String(); !strings.Contains(msg, "missing the \"/api\" prefix its router applies") {
+		t.Errorf("diagnostic must describe a missing prefix, got: %s", msg)
+	}
 	if m.Method != "POST" {
 		t.Errorf("Method = %q, want %q", m.Method, "POST")
 	}
@@ -73,6 +82,15 @@ func TestDetectPrefixMismatches_SchemaCarriesPrefixRouterDoesNot(t *testing.T) {
 	}
 	if got[0].ConsumerPath != "/user/schedules" {
 		t.Errorf("ConsumerPath = %q, want %q", got[0].ConsumerPath, "/user/schedules")
+	}
+
+	// The remedy is the opposite of the common case, and saying "missing"
+	// here would send a contributor in exactly the wrong direction.
+	if got[0].SchemaOmitsPrefix() {
+		t.Error("SchemaOmitsPrefix() = true, want false — the schema has an extra prefix here")
+	}
+	if msg := got[0].String(); !strings.Contains(msg, "carries a \"/api\" prefix its router does not apply") {
+		t.Errorf("diagnostic must describe an extra prefix, got: %s", msg)
 	}
 }
 

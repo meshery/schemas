@@ -49,14 +49,30 @@ type PrefixMismatch struct {
 	RouterLine  int    // line number of the registration
 }
 
+// SchemaOmitsPrefix reports which direction the mismatch runs in: true when the
+// schema left the prefix off a route the router serves under it, false when the
+// schema added a prefix the router does not apply.
+//
+// The direction is read from the consumer path, which is ground truth — it is
+// what the server actually serves.
+func (p PrefixMismatch) SchemaOmitsPrefix() bool {
+	return hasAPIPrefix(p.ConsumerPath)
+}
+
 // String renders a single actionable line for the audit report.
+//
+// The remedy differs by direction, so the wording must too: telling someone to
+// add a prefix to a path that already has one too many sends them the wrong way.
 func (p PrefixMismatch) String() string {
+	remedy := fmt.Sprintf("The declared path is missing the %q prefix its router applies.", apiPrefix)
+	if !p.SchemaOmitsPrefix() {
+		remedy = fmt.Sprintf("The declared path carries a %q prefix its router does not apply.", apiPrefix)
+	}
 	return fmt.Sprintf(
-		"%s %s (operationId %q, %s) has no handler, but %s serves %s %s at %s:%d. "+
-			"The declared path is missing the %q prefix its router applies.",
+		"%s %s (operationId %q, %s) has no handler, but %s serves %s %s at %s:%d. %s",
 		p.Method, p.SchemaPath, p.OperationID, p.SourceFile,
 		p.Repo, p.Method, p.ConsumerPath, p.RouterFile, p.RouterLine,
-		apiPrefix,
+		remedy,
 	)
 }
 
