@@ -138,7 +138,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  /api/registry/registrants/{connectionID}/models:
+  /api/registry/registrants/{connectionId}/models:
     delete:
       x-internal: ["meshery"]
       tags:
@@ -149,7 +149,7 @@ paths:
         Deletes all model definitions, components, relationships, and policies
         belonging to a specific registrant connection ID.
       parameters:
-        - name: connectionID
+        - name: connectionId
           in: path
           required: true
           description: Connection ID of the registrant
@@ -163,6 +163,10 @@ paths:
             application/json:
               schema:
                 type: object
+                required:
+                  - message
+                  - count
+                  - connectionName
                 properties:
                   message:
                     type: string
