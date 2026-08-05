@@ -69,4 +69,37 @@ Endpoints are grouped into logical categories under `/api`:
 
 New endpoints must be placed in the appropriate category. Path segments must be kebab-case plural nouns matching the resource name.
 
+### Declared paths are absolute - there is no implicit `/api` prefix
+
+The path key in `api.yml` is the **complete path the server serves**, `/api` included. Nothing in
+the bundler, the Go generator, or the RTK generator prepends a prefix at build time: whatever the
+key says is verbatim what the generated client requests.
+
+Getting this wrong does not fail the build and does not fail schema validation. It produces a
+generated client that compiles, type-checks, and 404/405s at runtime against every environment.
+That is exactly how `meshery/schemas#1123` happened - the v1beta3 event write operations were
+declared as `/events*` while meshery-cloud serves them under `/api/events*`, so once meshery-cloud
+switched from its hand-authored endpoint to the generated `useCreateEventMutation`, every
+`create_session` audit event silently 405'd for three weeks.
+
+Before adding or editing a path, confirm the served route in the consumer. In meshery-cloud, Echo
+groups supply the prefix, so the registration line alone is not the served path:
+
+```go
+authedAPI := s.e.Group("/api")        // every route below is served under /api
+authedAPI.POST("/events", ...)        // served path: /api/events
+s.e.POST("/user/schedules", ...)      // served path: /user/schedules - no group, no prefix
+```
+
+`make consumer-audit` cross-checks declared paths against the routes it parses out of the consumer
+repos. A path declared with the wrong prefix shows up on **both** sides of that report - as
+`Spec only (no handlers)` for the path you declared, and as `Handler only (no spec)` for the path
+the server actually serves. Two entries that differ only by a leading `/api` are that defect, not
+two unrelated gaps.
+
+`/api` is the convention for the authenticated API surface, but it is not universal. The
+`schedule` construct's `/user/schedules` paths are declared without it because the server
+genuinely registers them on the bare router outside the `/api` group. Match the server; do not
+add `/api` reflexively.
+
 Most `/api/system/` operations are Meshery-only (`x-internal: ["meshery"]`); they act on the running Meshery server instance itself rather than on a user-facing logical construct. Existing shared exceptions must be annotated truthfully, such as public version metadata exposed by both Meshery and Meshery Cloud. Some pre-existing `/api/system/*` paths use singular nouns (e.g. `/api/system/database`) and embed verbs (e.g. `/api/system/database/reset`); these predate the canonical kebab-case-plural convention and are documented as-implemented. New `/api/system/*` paths should still follow the canonical conventions.

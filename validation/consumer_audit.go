@@ -60,6 +60,13 @@ type ConsumerAuditResult struct {
 	// the TS consumer auditor. Sorted by (file, line, key) for
 	// deterministic output. Empty when no TS consumer trees are provided.
 	TSFindings []TSFinding
+
+	// PrefixMismatches are schema endpoints whose declared path has no
+	// handler while the consumer serves the same operation at a path
+	// differing only by the `/api` router-group prefix. See
+	// validation/prefix_mismatch.go for why this is called out separately
+	// from the raw spec-only / handler-only counts.
+	PrefixMismatches []PrefixMismatch
 }
 
 // ConsumerAuditRow is one row of the audit output.
@@ -333,6 +340,10 @@ func runConsumerAudit(opts ConsumerAuditOptions, mesheryTree, cloudTree sourceTr
 		Rows:    rows,
 		Summary: summary,
 	}
+
+	// Rejoin the two halves of a prefix defect that the outer join above
+	// necessarily splits across SchemaOnly and ConsumerOnly.
+	result.PrefixMismatches = detectPrefixMismatches(match)
 
 	// TypeScript consumer pass. Each tree is optional; callers that only
 	// care about the Go routers will not provide any. Findings are
