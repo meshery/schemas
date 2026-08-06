@@ -3,6 +3,7 @@ package validation
 import (
 	"fmt"
 	"os"
+	"path"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -31,6 +32,44 @@ func (t *memTree) Walk(dir string, fn func(path string) error) error {
 		if strings.HasPrefix(p, strings.TrimRight(dir, "/")+"/") {
 			paths = append(paths, p)
 		}
+	}
+	sort.Strings(paths)
+	for _, p := range paths {
+		if err := fn(p); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// WalkFiltered mirrors localTree.WalkFiltered for fixtures: skipDirs are
+// pruned by path segment and results are limited to the given extensions.
+// Fixture paths are repo-relative, so "." means the whole tree.
+func (t *memTree) WalkFiltered(dir string, exts []string, fn func(path string) error) error {
+	prefix := strings.TrimRight(filepath.ToSlash(dir), "/")
+	if prefix == "." {
+		prefix = ""
+	}
+
+	var paths []string
+	for p := range t.files {
+		if prefix != "" && !strings.HasPrefix(p, prefix+"/") {
+			continue
+		}
+		if !hasExt(p, exts) {
+			continue
+		}
+		skipped := false
+		for _, seg := range strings.Split(path.Dir(p), "/") {
+			if skipDirs[seg] {
+				skipped = true
+				break
+			}
+		}
+		if skipped {
+			continue
+		}
+		paths = append(paths, p)
 	}
 	sort.Strings(paths)
 	for _, p := range paths {
