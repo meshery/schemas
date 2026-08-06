@@ -158,7 +158,7 @@ paths:
             format: uuid
       responses:
         "200":
-          description: Models successfully deleted.
+          description: Models deleted for registrant.
           content:
             application/json:
               schema:
@@ -170,10 +170,13 @@ paths:
                 properties:
                   message:
                     type: string
+                    example: Deleted 9 models for registrant "meshery"
                   count:
                     type: integer
+                    example: 9
                   connectionName:
                     type: string
+                    example: meshery
         "400":
           $ref: "#/components/responses/400"
         "401":
