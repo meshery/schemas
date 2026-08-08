@@ -1,6 +1,8 @@
 type: object
 additionalProperties: false
 description: Plan entity schema.
+example:
+  $ref: "./templates/plan_template.json"
 required:
 - id
 - name

@@ -1,6 +1,8 @@
 type: object
 additionalProperties: false
 description: Represents a collection of keys.
+example:
+  $ref: "./templates/keychain_template.json"
 required:
   - id
   - name

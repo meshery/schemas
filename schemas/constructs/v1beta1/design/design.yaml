@@ -3,6 +3,8 @@ title: Design Schema
 description: Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.
 type: object
 additionalProperties: false
+example:
+  $ref: "./templates/design_template.json"
 properties:
   id:
     $ref: ../core/api.yml#/components/schemas/uuid
