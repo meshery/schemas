@@ -4918,6 +4918,7 @@ const MeshsyncSchema: Record<string, unknown> = {
             "required": true,
             "schema": {
               "type": "array",
+              "minItems": 1,
               "items": {
                 "type": "string",
                 "maxLength": 255

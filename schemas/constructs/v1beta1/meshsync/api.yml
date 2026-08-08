@@ -178,6 +178,7 @@ paths:
           required: true
           schema:
             type: array
+            minItems: 1
             items:
               type: string
               maxLength: 255
