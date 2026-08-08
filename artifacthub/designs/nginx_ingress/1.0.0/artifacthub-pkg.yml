@@ -1,0 +1,23 @@
+version: 1.0.0
+name: nginx_ingress
+displayName: NGINX Ingress
+createdAt: "2026-07-09T00:00:00Z"
+description: A Kubernetes Deployment running the nginx container image, exposed through a Service that sits behind an NGINX Ingress and its NGINX ingress controller.
+license: Apache-2
+homeURL: https://docs.meshery.io/concepts/logical/designs
+appVersion: 1.0.0
+keywords:
+  - kubernetes
+  - meshery
+  - cloud-native
+  - orchestration
+  - nginx
+  - ingress
+  - ingress-controller
+links:
+  - name: website
+    url: https://meshery.io/
+  - name: support
+    url: https://discuss.meshery.io/
+provider:
+  name: meshery-maintainers
