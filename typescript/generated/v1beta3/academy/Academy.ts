@@ -1737,14 +1737,14 @@ export interface components {
                 /** @description The test the counts refer to. */
                 test?: {
                     /**
-                     * Format: uuid
-                     * @description Quiz ID.
+                     * @description Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs.
+                     * @example corporate-sustainability
                      */
                     id: string;
                     /**
                      * Format: uuid
                      * @description Organization ID that owns this quiz
-                     * @example meshery
+                     * @example d011fd20-a3f5-4480-883b-dfb34321d168
                      */
                     orgId: string;
                     /**
@@ -1787,15 +1787,15 @@ export interface components {
                      * @description The pass percentage of the quiz.
                      */
                     passPercentage: number;
-                    /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-                    timeLimit: number;
+                    /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as "25" or the non-numeric sentinel "infinite". A string that does not parse to a positive number means "no time limit" and normalizes to 0. */
+                    timeLimit: number | string;
                     /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
                     maxAttempts: number;
                     /** @description The questions of the quiz. */
                     questions: {
                         /**
-                         * Format: uuid
-                         * @description Question ID.
+                         * @description Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+                         * @example q1
                          */
                         id: string;
                         /** @description The text of the question. */
@@ -1809,8 +1809,8 @@ export interface components {
                         /** @description The options of the question. */
                         options: {
                             /**
-                             * Format: uuid
-                             * @description QuestionOption ID.
+                             * @description QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+                             * @example a
                              */
                             id: string;
                             /** @description The text of the questionoption. */
@@ -1832,8 +1832,8 @@ export interface components {
                     /** @description The prerequisites of the quiz. */
                     prerequisites: {
                         /**
-                         * Format: uuid
-                         * @description Parent ID.
+                         * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                         * @example introduction-to-devops-and-sre
                          */
                         id: string;
                         /** @description The title of the parent. */
@@ -1845,8 +1845,8 @@ export interface components {
                     }[];
                     parent?: {
                         /**
-                         * Format: uuid
-                         * @description Parent ID.
+                         * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                         * @example introduction-to-devops-and-sre
                          */
                         id: string;
                         /** @description The title of the parent. */
@@ -1858,8 +1858,8 @@ export interface components {
                     };
                     nextPage: {
                         /**
-                         * Format: uuid
-                         * @description Parent ID.
+                         * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                         * @example introduction-to-devops-and-sre
                          */
                         id: string;
                         /** @description The title of the parent. */
@@ -2949,14 +2949,14 @@ export interface components {
                 };
                 quiz: {
                     /**
-                     * Format: uuid
-                     * @description Quiz ID.
+                     * @description Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs.
+                     * @example corporate-sustainability
                      */
                     id: string;
                     /**
                      * Format: uuid
                      * @description Organization ID that owns this quiz
-                     * @example meshery
+                     * @example d011fd20-a3f5-4480-883b-dfb34321d168
                      */
                     orgId: string;
                     /**
@@ -2999,15 +2999,15 @@ export interface components {
                      * @description The pass percentage of the quiz.
                      */
                     passPercentage: number;
-                    /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-                    timeLimit: number;
+                    /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as "25" or the non-numeric sentinel "infinite". A string that does not parse to a positive number means "no time limit" and normalizes to 0. */
+                    timeLimit: number | string;
                     /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
                     maxAttempts: number;
                     /** @description The questions of the quiz. */
                     questions: {
                         /**
-                         * Format: uuid
-                         * @description Question ID.
+                         * @description Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+                         * @example q1
                          */
                         id: string;
                         /** @description The text of the question. */
@@ -3021,8 +3021,8 @@ export interface components {
                         /** @description The options of the question. */
                         options: {
                             /**
-                             * Format: uuid
-                             * @description QuestionOption ID.
+                             * @description QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+                             * @example a
                              */
                             id: string;
                             /** @description The text of the questionoption. */
@@ -3044,8 +3044,8 @@ export interface components {
                     /** @description The prerequisites of the quiz. */
                     prerequisites: {
                         /**
-                         * Format: uuid
-                         * @description Parent ID.
+                         * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                         * @example introduction-to-devops-and-sre
                          */
                         id: string;
                         /** @description The title of the parent. */
@@ -3057,8 +3057,8 @@ export interface components {
                     }[];
                     parent?: {
                         /**
-                         * Format: uuid
-                         * @description Parent ID.
+                         * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                         * @example introduction-to-devops-and-sre
                          */
                         id: string;
                         /** @description The title of the parent. */
@@ -3070,8 +3070,8 @@ export interface components {
                     };
                     nextPage: {
                         /**
-                         * Format: uuid
-                         * @description Parent ID.
+                         * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                         * @example introduction-to-devops-and-sre
                          */
                         id: string;
                         /** @description The title of the parent. */
@@ -3115,14 +3115,14 @@ export interface components {
             };
             quiz: {
                 /**
-                 * Format: uuid
-                 * @description Quiz ID.
+                 * @description Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs.
+                 * @example corporate-sustainability
                  */
                 id: string;
                 /**
                  * Format: uuid
                  * @description Organization ID that owns this quiz
-                 * @example meshery
+                 * @example d011fd20-a3f5-4480-883b-dfb34321d168
                  */
                 orgId: string;
                 /**
@@ -3165,15 +3165,15 @@ export interface components {
                  * @description The pass percentage of the quiz.
                  */
                 passPercentage: number;
-                /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-                timeLimit: number;
+                /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as "25" or the non-numeric sentinel "infinite". A string that does not parse to a positive number means "no time limit" and normalizes to 0. */
+                timeLimit: number | string;
                 /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
                 maxAttempts: number;
                 /** @description The questions of the quiz. */
                 questions: {
                     /**
-                     * Format: uuid
-                     * @description Question ID.
+                     * @description Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+                     * @example q1
                      */
                     id: string;
                     /** @description The text of the question. */
@@ -3187,8 +3187,8 @@ export interface components {
                     /** @description The options of the question. */
                     options: {
                         /**
-                         * Format: uuid
-                         * @description QuestionOption ID.
+                         * @description QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+                         * @example a
                          */
                         id: string;
                         /** @description The text of the questionoption. */
@@ -3210,8 +3210,8 @@ export interface components {
                 /** @description The prerequisites of the quiz. */
                 prerequisites: {
                     /**
-                     * Format: uuid
-                     * @description Parent ID.
+                     * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                     * @example introduction-to-devops-and-sre
                      */
                     id: string;
                     /** @description The title of the parent. */
@@ -3223,8 +3223,8 @@ export interface components {
                 }[];
                 parent?: {
                     /**
-                     * Format: uuid
-                     * @description Parent ID.
+                     * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                     * @example introduction-to-devops-and-sre
                      */
                     id: string;
                     /** @description The title of the parent. */
@@ -3236,8 +3236,8 @@ export interface components {
                 };
                 nextPage: {
                     /**
-                     * Format: uuid
-                     * @description Parent ID.
+                     * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                     * @example introduction-to-devops-and-sre
                      */
                     id: string;
                     /** @description The title of the parent. */
@@ -3425,8 +3425,8 @@ export interface components {
         };
         CurriculaCurrentItemData: {
             /**
-             * Format: uuid
-             * @description CurriculaCurrentItemData ID.
+             * @description CurriculaCurrentItemData ID. Identifies the Hugo content page the learner currently has open, not a database row, so it is an opaque content-scoped string. Not a UUID - production values include slugs, full permalink URLs and the empty string.
+             * @example kubernetes-quickstart
              */
             id: string;
             /**
@@ -3442,8 +3442,8 @@ export interface components {
             currentItem: {
                 [key: string]: {
                     /**
-                     * Format: uuid
-                     * @description CurriculaCurrentItemData ID.
+                     * @description CurriculaCurrentItemData ID. Identifies the Hugo content page the learner currently has open, not a database row, so it is an opaque content-scoped string. Not a UUID - production values include slugs, full permalink URLs and the empty string.
+                     * @example kubernetes-quickstart
                      */
                     id: string;
                     /**
@@ -3480,14 +3480,14 @@ export interface components {
                     };
                     quiz: {
                         /**
-                         * Format: uuid
-                         * @description Quiz ID.
+                         * @description Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs.
+                         * @example corporate-sustainability
                          */
                         id: string;
                         /**
                          * Format: uuid
                          * @description Organization ID that owns this quiz
-                         * @example meshery
+                         * @example d011fd20-a3f5-4480-883b-dfb34321d168
                          */
                         orgId: string;
                         /**
@@ -3530,15 +3530,15 @@ export interface components {
                          * @description The pass percentage of the quiz.
                          */
                         passPercentage: number;
-                        /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-                        timeLimit: number;
+                        /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as "25" or the non-numeric sentinel "infinite". A string that does not parse to a positive number means "no time limit" and normalizes to 0. */
+                        timeLimit: number | string;
                         /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
                         maxAttempts: number;
                         /** @description The questions of the quiz. */
                         questions: {
                             /**
-                             * Format: uuid
-                             * @description Question ID.
+                             * @description Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+                             * @example q1
                              */
                             id: string;
                             /** @description The text of the question. */
@@ -3552,8 +3552,8 @@ export interface components {
                             /** @description The options of the question. */
                             options: {
                                 /**
-                                 * Format: uuid
-                                 * @description QuestionOption ID.
+                                 * @description QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+                                 * @example a
                                  */
                                 id: string;
                                 /** @description The text of the questionoption. */
@@ -3575,8 +3575,8 @@ export interface components {
                         /** @description The prerequisites of the quiz. */
                         prerequisites: {
                             /**
-                             * Format: uuid
-                             * @description Parent ID.
+                             * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                             * @example introduction-to-devops-and-sre
                              */
                             id: string;
                             /** @description The title of the parent. */
@@ -3588,8 +3588,8 @@ export interface components {
                         }[];
                         parent?: {
                             /**
-                             * Format: uuid
-                             * @description Parent ID.
+                             * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                             * @example introduction-to-devops-and-sre
                              */
                             id: string;
                             /** @description The title of the parent. */
@@ -3601,8 +3601,8 @@ export interface components {
                         };
                         nextPage: {
                             /**
-                             * Format: uuid
-                             * @description Parent ID.
+                             * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                             * @example introduction-to-devops-and-sre
                              */
                             id: string;
                             /** @description The title of the parent. */
@@ -3634,8 +3634,8 @@ export interface components {
                     completedAt: string;
                     itemData: {
                         /**
-                         * Format: uuid
-                         * @description Parent ID.
+                         * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                         * @example introduction-to-devops-and-sre
                          */
                         id: string;
                         /** @description The title of the parent. */
@@ -3661,8 +3661,8 @@ export interface components {
             completedAt: string;
             itemData: {
                 /**
-                 * Format: uuid
-                 * @description Parent ID.
+                 * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                 * @example introduction-to-devops-and-sre
                  */
                 id: string;
                 /** @description The title of the parent. */
@@ -3678,8 +3678,8 @@ export interface components {
             contentType: "learning-path" | "challenge" | "certification";
             itemData: {
                 /**
-                 * Format: uuid
-                 * @description CurriculaCurrentItemData ID.
+                 * @description CurriculaCurrentItemData ID. Identifies the Hugo content page the learner currently has open, not a database row, so it is an opaque content-scoped string. Not a UUID - production values include slugs, full permalink URLs and the empty string.
+                 * @example kubernetes-quickstart
                  */
                 id: string;
                 /**
@@ -3699,14 +3699,14 @@ export interface components {
         };
         Quiz: {
             /**
-             * Format: uuid
-             * @description Quiz ID.
+             * @description Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs.
+             * @example corporate-sustainability
              */
             id: string;
             /**
              * Format: uuid
              * @description Organization ID that owns this quiz
-             * @example meshery
+             * @example d011fd20-a3f5-4480-883b-dfb34321d168
              */
             orgId: string;
             /**
@@ -3749,15 +3749,15 @@ export interface components {
              * @description The pass percentage of the quiz.
              */
             passPercentage: number;
-            /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-            timeLimit: number;
+            /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as "25" or the non-numeric sentinel "infinite". A string that does not parse to a positive number means "no time limit" and normalizes to 0. */
+            timeLimit: number | string;
             /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
             maxAttempts: number;
             /** @description The questions of the quiz. */
             questions: {
                 /**
-                 * Format: uuid
-                 * @description Question ID.
+                 * @description Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+                 * @example q1
                  */
                 id: string;
                 /** @description The text of the question. */
@@ -3771,8 +3771,8 @@ export interface components {
                 /** @description The options of the question. */
                 options: {
                     /**
-                     * Format: uuid
-                     * @description QuestionOption ID.
+                     * @description QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+                     * @example a
                      */
                     id: string;
                     /** @description The text of the questionoption. */
@@ -3794,8 +3794,8 @@ export interface components {
             /** @description The prerequisites of the quiz. */
             prerequisites: {
                 /**
-                 * Format: uuid
-                 * @description Parent ID.
+                 * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                 * @example introduction-to-devops-and-sre
                  */
                 id: string;
                 /** @description The title of the parent. */
@@ -3807,8 +3807,8 @@ export interface components {
             }[];
             parent?: {
                 /**
-                 * Format: uuid
-                 * @description Parent ID.
+                 * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                 * @example introduction-to-devops-and-sre
                  */
                 id: string;
                 /** @description The title of the parent. */
@@ -3820,8 +3820,8 @@ export interface components {
             };
             nextPage: {
                 /**
-                 * Format: uuid
-                 * @description Parent ID.
+                 * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                 * @example introduction-to-devops-and-sre
                  */
                 id: string;
                 /** @description The title of the parent. */
@@ -3834,8 +3834,8 @@ export interface components {
         };
         Parent: {
             /**
-             * Format: uuid
-             * @description Parent ID.
+             * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+             * @example introduction-to-devops-and-sre
              */
             id: string;
             /** @description The title of the parent. */
@@ -3849,8 +3849,8 @@ export interface components {
         QuestionType: "multiple-answers" | "single-answer" | "short-answer" | "essay";
         Question: {
             /**
-             * Format: uuid
-             * @description Question ID.
+             * @description Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+             * @example q1
              */
             id: string;
             /** @description The text of the question. */
@@ -3864,8 +3864,8 @@ export interface components {
             /** @description The options of the question. */
             options: {
                 /**
-                 * Format: uuid
-                 * @description QuestionOption ID.
+                 * @description QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+                 * @example a
                  */
                 id: string;
                 /** @description The text of the questionoption. */
@@ -3878,8 +3878,8 @@ export interface components {
         };
         QuestionOption: {
             /**
-             * Format: uuid
-             * @description QuestionOption ID.
+             * @description QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+             * @example a
              */
             id: string;
             /** @description The text of the questionoption. */
@@ -3896,6 +3896,7 @@ export interface components {
              */
             registrationId: string;
         };
+        /** @description A learner's answers to a quiz. Submitted as the `submitQuiz` request body and persisted verbatim as `TestSubmission.submissionData`. `registrationId` and `userId` are a convenience echo of the authoritative values on the enclosing `TestSubmission` (`registrationId` / `userId`, backed by the `registration_id` and `owner` `uuid NOT NULL` columns); read them from the enclosing submission, not from here. */
         QuizSubmission: {
             /**
              * Format: uuid
@@ -3906,19 +3907,19 @@ export interface components {
             quizAbsPath: string;
             /**
              * Format: uuid
-             * @description ID of the associated registration.
+             * @description ID of the associated registration. Optional, because a submission may not carry this echo; when it is absent the authoritative value is `TestSubmission.registrationId`. Absence MUST be expressed as `null` or an omitted property - the empty string is not a valid identifier.
              */
-            registrationId: string;
+            registrationId?: string | null;
             /**
              * Format: uuid
-             * @description ID of the user who owns or created this resource.
+             * @description ID of the user who owns or created this resource. Optional, because a submission may not carry this echo; when it is absent the authoritative value is `TestSubmission.userId`. Absence MUST be expressed as `null` or an omitted property - the empty string is not a valid identifier.
              */
-            userId: string;
+            userId?: string | null;
             /** @description The answers of the quizsubmission. */
             answers: {
                 /**
-                 * Format: uuid
-                 * @description ID of the associated question.
+                 * @description ID of the associated question. Mirrors `Question.id`, a content-authored string rather than a database row identifier, so it is not a UUID.
+                 * @example q1
                  */
                 questionId: string;
                 /** @description Map of selected option IDs to a boolean value indicating if it was selected. */
@@ -3931,8 +3932,8 @@ export interface components {
         };
         SubmittedAnswer: {
             /**
-             * Format: uuid
-             * @description ID of the associated question.
+             * @description ID of the associated question. Mirrors `Question.id`, a content-authored string rather than a database row identifier, so it is not a UUID.
+             * @example q1
              */
             questionId: string;
             /** @description Map of selected option IDs to a boolean value indicating if it was selected. */
@@ -3982,6 +3983,7 @@ export interface components {
              * @description The submitted at of the testsubmission.
              */
             submittedAt?: string;
+            /** @description A learner's answers to a quiz. Submitted as the `submitQuiz` request body and persisted verbatim as `TestSubmission.submissionData`. `registrationId` and `userId` are a convenience echo of the authoritative values on the enclosing `TestSubmission` (`registrationId` / `userId`, backed by the `registration_id` and `owner` `uuid NOT NULL` columns); read them from the enclosing submission, not from here. */
             submissionData?: {
                 /**
                  * Format: uuid
@@ -3992,19 +3994,19 @@ export interface components {
                 quizAbsPath: string;
                 /**
                  * Format: uuid
-                 * @description ID of the associated registration.
+                 * @description ID of the associated registration. Optional, because a submission may not carry this echo; when it is absent the authoritative value is `TestSubmission.registrationId`. Absence MUST be expressed as `null` or an omitted property - the empty string is not a valid identifier.
                  */
-                registrationId: string;
+                registrationId?: string | null;
                 /**
                  * Format: uuid
-                 * @description ID of the user who owns or created this resource.
+                 * @description ID of the user who owns or created this resource. Optional, because a submission may not carry this echo; when it is absent the authoritative value is `TestSubmission.userId`. Absence MUST be expressed as `null` or an omitted property - the empty string is not a valid identifier.
                  */
-                userId: string;
+                userId?: string | null;
                 /** @description The answers of the quizsubmission. */
                 answers: {
                     /**
-                     * Format: uuid
-                     * @description ID of the associated question.
+                     * @description ID of the associated question. Mirrors `Question.id`, a content-authored string rather than a database row identifier, so it is not a UUID.
+                     * @example q1
                      */
                     questionId: string;
                     /** @description Map of selected option IDs to a boolean value indicating if it was selected. */
@@ -4045,14 +4047,14 @@ export interface components {
                 };
                 quiz: {
                     /**
-                     * Format: uuid
-                     * @description Quiz ID.
+                     * @description Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs.
+                     * @example corporate-sustainability
                      */
                     id: string;
                     /**
                      * Format: uuid
                      * @description Organization ID that owns this quiz
-                     * @example meshery
+                     * @example d011fd20-a3f5-4480-883b-dfb34321d168
                      */
                     orgId: string;
                     /**
@@ -4095,15 +4097,15 @@ export interface components {
                      * @description The pass percentage of the quiz.
                      */
                     passPercentage: number;
-                    /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-                    timeLimit: number;
+                    /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as "25" or the non-numeric sentinel "infinite". A string that does not parse to a positive number means "no time limit" and normalizes to 0. */
+                    timeLimit: number | string;
                     /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
                     maxAttempts: number;
                     /** @description The questions of the quiz. */
                     questions: {
                         /**
-                         * Format: uuid
-                         * @description Question ID.
+                         * @description Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+                         * @example q1
                          */
                         id: string;
                         /** @description The text of the question. */
@@ -4117,8 +4119,8 @@ export interface components {
                         /** @description The options of the question. */
                         options: {
                             /**
-                             * Format: uuid
-                             * @description QuestionOption ID.
+                             * @description QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+                             * @example a
                              */
                             id: string;
                             /** @description The text of the questionoption. */
@@ -4140,8 +4142,8 @@ export interface components {
                     /** @description The prerequisites of the quiz. */
                     prerequisites: {
                         /**
-                         * Format: uuid
-                         * @description Parent ID.
+                         * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                         * @example introduction-to-devops-and-sre
                          */
                         id: string;
                         /** @description The title of the parent. */
@@ -4153,8 +4155,8 @@ export interface components {
                     }[];
                     parent?: {
                         /**
-                         * Format: uuid
-                         * @description Parent ID.
+                         * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                         * @example introduction-to-devops-and-sre
                          */
                         id: string;
                         /** @description The title of the parent. */
@@ -4166,8 +4168,8 @@ export interface components {
                     };
                     nextPage: {
                         /**
-                         * Format: uuid
-                         * @description Parent ID.
+                         * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                         * @example introduction-to-devops-and-sre
                          */
                         id: string;
                         /** @description The title of the parent. */
@@ -4188,14 +4190,14 @@ export interface components {
             };
             test: {
                 /**
-                 * Format: uuid
-                 * @description Quiz ID.
+                 * @description Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs.
+                 * @example corporate-sustainability
                  */
                 id: string;
                 /**
                  * Format: uuid
                  * @description Organization ID that owns this quiz
-                 * @example meshery
+                 * @example d011fd20-a3f5-4480-883b-dfb34321d168
                  */
                 orgId: string;
                 /**
@@ -4238,15 +4240,15 @@ export interface components {
                  * @description The pass percentage of the quiz.
                  */
                 passPercentage: number;
-                /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-                timeLimit: number;
+                /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as "25" or the non-numeric sentinel "infinite". A string that does not parse to a positive number means "no time limit" and normalizes to 0. */
+                timeLimit: number | string;
                 /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
                 maxAttempts: number;
                 /** @description The questions of the quiz. */
                 questions: {
                     /**
-                     * Format: uuid
-                     * @description Question ID.
+                     * @description Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+                     * @example q1
                      */
                     id: string;
                     /** @description The text of the question. */
@@ -4260,8 +4262,8 @@ export interface components {
                     /** @description The options of the question. */
                     options: {
                         /**
-                         * Format: uuid
-                         * @description QuestionOption ID.
+                         * @description QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+                         * @example a
                          */
                         id: string;
                         /** @description The text of the questionoption. */
@@ -4283,8 +4285,8 @@ export interface components {
                 /** @description The prerequisites of the quiz. */
                 prerequisites: {
                     /**
-                     * Format: uuid
-                     * @description Parent ID.
+                     * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                     * @example introduction-to-devops-and-sre
                      */
                     id: string;
                     /** @description The title of the parent. */
@@ -4296,8 +4298,8 @@ export interface components {
                 }[];
                 parent?: {
                     /**
-                     * Format: uuid
-                     * @description Parent ID.
+                     * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                     * @example introduction-to-devops-and-sre
                      */
                     id: string;
                     /** @description The title of the parent. */
@@ -4309,8 +4311,8 @@ export interface components {
                 };
                 nextPage: {
                     /**
-                     * Format: uuid
-                     * @description Parent ID.
+                     * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                     * @example introduction-to-devops-and-sre
                      */
                     id: string;
                     /** @description The title of the parent. */
@@ -4345,14 +4347,14 @@ export interface components {
             };
             quiz: {
                 /**
-                 * Format: uuid
-                 * @description Quiz ID.
+                 * @description Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs.
+                 * @example corporate-sustainability
                  */
                 id: string;
                 /**
                  * Format: uuid
                  * @description Organization ID that owns this quiz
-                 * @example meshery
+                 * @example d011fd20-a3f5-4480-883b-dfb34321d168
                  */
                 orgId: string;
                 /**
@@ -4395,15 +4397,15 @@ export interface components {
                  * @description The pass percentage of the quiz.
                  */
                 passPercentage: number;
-                /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-                timeLimit: number;
+                /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as "25" or the non-numeric sentinel "infinite". A string that does not parse to a positive number means "no time limit" and normalizes to 0. */
+                timeLimit: number | string;
                 /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
                 maxAttempts: number;
                 /** @description The questions of the quiz. */
                 questions: {
                     /**
-                     * Format: uuid
-                     * @description Question ID.
+                     * @description Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+                     * @example q1
                      */
                     id: string;
                     /** @description The text of the question. */
@@ -4417,8 +4419,8 @@ export interface components {
                     /** @description The options of the question. */
                     options: {
                         /**
-                         * Format: uuid
-                         * @description QuestionOption ID.
+                         * @description QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+                         * @example a
                          */
                         id: string;
                         /** @description The text of the questionoption. */
@@ -4440,8 +4442,8 @@ export interface components {
                 /** @description The prerequisites of the quiz. */
                 prerequisites: {
                     /**
-                     * Format: uuid
-                     * @description Parent ID.
+                     * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                     * @example introduction-to-devops-and-sre
                      */
                     id: string;
                     /** @description The title of the parent. */
@@ -4453,8 +4455,8 @@ export interface components {
                 }[];
                 parent?: {
                     /**
-                     * Format: uuid
-                     * @description Parent ID.
+                     * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                     * @example introduction-to-devops-and-sre
                      */
                     id: string;
                     /** @description The title of the parent. */
@@ -4466,8 +4468,8 @@ export interface components {
                 };
                 nextPage: {
                     /**
-                     * Format: uuid
-                     * @description Parent ID.
+                     * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                     * @example introduction-to-devops-and-sre
                      */
                     id: string;
                     /** @description The title of the parent. */
@@ -4616,8 +4618,8 @@ export interface components {
                 currentItem: {
                     [key: string]: {
                         /**
-                         * Format: uuid
-                         * @description CurriculaCurrentItemData ID.
+                         * @description CurriculaCurrentItemData ID. Identifies the Hugo content page the learner currently has open, not a database row, so it is an opaque content-scoped string. Not a UUID - production values include slugs, full permalink URLs and the empty string.
+                         * @example kubernetes-quickstart
                          */
                         id: string;
                         /**
@@ -4654,14 +4656,14 @@ export interface components {
                         };
                         quiz: {
                             /**
-                             * Format: uuid
-                             * @description Quiz ID.
+                             * @description Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs.
+                             * @example corporate-sustainability
                              */
                             id: string;
                             /**
                              * Format: uuid
                              * @description Organization ID that owns this quiz
-                             * @example meshery
+                             * @example d011fd20-a3f5-4480-883b-dfb34321d168
                              */
                             orgId: string;
                             /**
@@ -4704,15 +4706,15 @@ export interface components {
                              * @description The pass percentage of the quiz.
                              */
                             passPercentage: number;
-                            /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-                            timeLimit: number;
+                            /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as "25" or the non-numeric sentinel "infinite". A string that does not parse to a positive number means "no time limit" and normalizes to 0. */
+                            timeLimit: number | string;
                             /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
                             maxAttempts: number;
                             /** @description The questions of the quiz. */
                             questions: {
                                 /**
-                                 * Format: uuid
-                                 * @description Question ID.
+                                 * @description Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+                                 * @example q1
                                  */
                                 id: string;
                                 /** @description The text of the question. */
@@ -4726,8 +4728,8 @@ export interface components {
                                 /** @description The options of the question. */
                                 options: {
                                     /**
-                                     * Format: uuid
-                                     * @description QuestionOption ID.
+                                     * @description QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+                                     * @example a
                                      */
                                     id: string;
                                     /** @description The text of the questionoption. */
@@ -4749,8 +4751,8 @@ export interface components {
                             /** @description The prerequisites of the quiz. */
                             prerequisites: {
                                 /**
-                                 * Format: uuid
-                                 * @description Parent ID.
+                                 * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                                 * @example introduction-to-devops-and-sre
                                  */
                                 id: string;
                                 /** @description The title of the parent. */
@@ -4762,8 +4764,8 @@ export interface components {
                             }[];
                             parent?: {
                                 /**
-                                 * Format: uuid
-                                 * @description Parent ID.
+                                 * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                                 * @example introduction-to-devops-and-sre
                                  */
                                 id: string;
                                 /** @description The title of the parent. */
@@ -4775,8 +4777,8 @@ export interface components {
                             };
                             nextPage: {
                                 /**
-                                 * Format: uuid
-                                 * @description Parent ID.
+                                 * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                                 * @example introduction-to-devops-and-sre
                                  */
                                 id: string;
                                 /** @description The title of the parent. */
@@ -4808,8 +4810,8 @@ export interface components {
                         completedAt: string;
                         itemData: {
                             /**
-                             * Format: uuid
-                             * @description Parent ID.
+                             * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                             * @example introduction-to-devops-and-sre
                              */
                             id: string;
                             /** @description The title of the parent. */
@@ -4836,8 +4838,8 @@ export interface components {
             contentType?: "learning-path" | "challenge" | "certification";
             itemData?: {
                 /**
-                 * Format: uuid
-                 * @description CurriculaCurrentItemData ID.
+                 * @description CurriculaCurrentItemData ID. Identifies the Hugo content page the learner currently has open, not a database row, so it is an opaque content-scoped string. Not a UUID - production values include slugs, full permalink URLs and the empty string.
+                 * @example kubernetes-quickstart
                  */
                 id: string;
                 /**
@@ -7312,8 +7314,8 @@ export interface operations {
                     contentType: "learning-path" | "challenge" | "certification";
                     itemData: {
                         /**
-                         * Format: uuid
-                         * @description CurriculaCurrentItemData ID.
+                         * @description CurriculaCurrentItemData ID. Identifies the Hugo content page the learner currently has open, not a database row, so it is an opaque content-scoped string. Not a UUID - production values include slugs, full permalink URLs and the empty string.
+                         * @example kubernetes-quickstart
                          */
                         id: string;
                         /**
@@ -7342,8 +7344,8 @@ export interface operations {
                             currentItem: {
                                 [key: string]: {
                                     /**
-                                     * Format: uuid
-                                     * @description CurriculaCurrentItemData ID.
+                                     * @description CurriculaCurrentItemData ID. Identifies the Hugo content page the learner currently has open, not a database row, so it is an opaque content-scoped string. Not a UUID - production values include slugs, full permalink URLs and the empty string.
+                                     * @example kubernetes-quickstart
                                      */
                                     id: string;
                                     /**
@@ -7380,14 +7382,14 @@ export interface operations {
                                     };
                                     quiz: {
                                         /**
-                                         * Format: uuid
-                                         * @description Quiz ID.
+                                         * @description Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs.
+                                         * @example corporate-sustainability
                                          */
                                         id: string;
                                         /**
                                          * Format: uuid
                                          * @description Organization ID that owns this quiz
-                                         * @example meshery
+                                         * @example d011fd20-a3f5-4480-883b-dfb34321d168
                                          */
                                         orgId: string;
                                         /**
@@ -7430,15 +7432,15 @@ export interface operations {
                                          * @description The pass percentage of the quiz.
                                          */
                                         passPercentage: number;
-                                        /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-                                        timeLimit: number;
+                                        /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as "25" or the non-numeric sentinel "infinite". A string that does not parse to a positive number means "no time limit" and normalizes to 0. */
+                                        timeLimit: number | string;
                                         /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
                                         maxAttempts: number;
                                         /** @description The questions of the quiz. */
                                         questions: {
                                             /**
-                                             * Format: uuid
-                                             * @description Question ID.
+                                             * @description Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+                                             * @example q1
                                              */
                                             id: string;
                                             /** @description The text of the question. */
@@ -7452,8 +7454,8 @@ export interface operations {
                                             /** @description The options of the question. */
                                             options: {
                                                 /**
-                                                 * Format: uuid
-                                                 * @description QuestionOption ID.
+                                                 * @description QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+                                                 * @example a
                                                  */
                                                 id: string;
                                                 /** @description The text of the questionoption. */
@@ -7475,8 +7477,8 @@ export interface operations {
                                         /** @description The prerequisites of the quiz. */
                                         prerequisites: {
                                             /**
-                                             * Format: uuid
-                                             * @description Parent ID.
+                                             * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                                             * @example introduction-to-devops-and-sre
                                              */
                                             id: string;
                                             /** @description The title of the parent. */
@@ -7488,8 +7490,8 @@ export interface operations {
                                         }[];
                                         parent?: {
                                             /**
-                                             * Format: uuid
-                                             * @description Parent ID.
+                                             * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                                             * @example introduction-to-devops-and-sre
                                              */
                                             id: string;
                                             /** @description The title of the parent. */
@@ -7501,8 +7503,8 @@ export interface operations {
                                         };
                                         nextPage: {
                                             /**
-                                             * Format: uuid
-                                             * @description Parent ID.
+                                             * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                                             * @example introduction-to-devops-and-sre
                                              */
                                             id: string;
                                             /** @description The title of the parent. */
@@ -7534,8 +7536,8 @@ export interface operations {
                                     completedAt: string;
                                     itemData: {
                                         /**
-                                         * Format: uuid
-                                         * @description Parent ID.
+                                         * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                                         * @example introduction-to-devops-and-sre
                                          */
                                         id: string;
                                         /** @description The title of the parent. */
@@ -7562,8 +7564,8 @@ export interface operations {
                         contentType?: "learning-path" | "challenge" | "certification";
                         itemData?: {
                             /**
-                             * Format: uuid
-                             * @description CurriculaCurrentItemData ID.
+                             * @description CurriculaCurrentItemData ID. Identifies the Hugo content page the learner currently has open, not a database row, so it is an opaque content-scoped string. Not a UUID - production values include slugs, full permalink URLs and the empty string.
+                             * @example kubernetes-quickstart
                              */
                             id: string;
                             /**
@@ -7645,14 +7647,14 @@ export interface operations {
                 content: {
                     "application/json": {
                         /**
-                         * Format: uuid
-                         * @description Quiz ID.
+                         * @description Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs.
+                         * @example corporate-sustainability
                          */
                         id: string;
                         /**
                          * Format: uuid
                          * @description Organization ID that owns this quiz
-                         * @example meshery
+                         * @example d011fd20-a3f5-4480-883b-dfb34321d168
                          */
                         orgId: string;
                         /**
@@ -7695,15 +7697,15 @@ export interface operations {
                          * @description The pass percentage of the quiz.
                          */
                         passPercentage: number;
-                        /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-                        timeLimit: number;
+                        /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as "25" or the non-numeric sentinel "infinite". A string that does not parse to a positive number means "no time limit" and normalizes to 0. */
+                        timeLimit: number | string;
                         /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
                         maxAttempts: number;
                         /** @description The questions of the quiz. */
                         questions: {
                             /**
-                             * Format: uuid
-                             * @description Question ID.
+                             * @description Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+                             * @example q1
                              */
                             id: string;
                             /** @description The text of the question. */
@@ -7717,8 +7719,8 @@ export interface operations {
                             /** @description The options of the question. */
                             options: {
                                 /**
-                                 * Format: uuid
-                                 * @description QuestionOption ID.
+                                 * @description QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+                                 * @example a
                                  */
                                 id: string;
                                 /** @description The text of the questionoption. */
@@ -7740,8 +7742,8 @@ export interface operations {
                         /** @description The prerequisites of the quiz. */
                         prerequisites: {
                             /**
-                             * Format: uuid
-                             * @description Parent ID.
+                             * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                             * @example introduction-to-devops-and-sre
                              */
                             id: string;
                             /** @description The title of the parent. */
@@ -7753,8 +7755,8 @@ export interface operations {
                         }[];
                         parent?: {
                             /**
-                             * Format: uuid
-                             * @description Parent ID.
+                             * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                             * @example introduction-to-devops-and-sre
                              */
                             id: string;
                             /** @description The title of the parent. */
@@ -7766,8 +7768,8 @@ export interface operations {
                         };
                         nextPage: {
                             /**
-                             * Format: uuid
-                             * @description Parent ID.
+                             * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                             * @example introduction-to-devops-and-sre
                              */
                             id: string;
                             /** @description The title of the parent. */
@@ -7841,14 +7843,14 @@ export interface operations {
                 content: {
                     "application/json": {
                         /**
-                         * Format: uuid
-                         * @description Quiz ID.
+                         * @description Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs.
+                         * @example corporate-sustainability
                          */
                         id: string;
                         /**
                          * Format: uuid
                          * @description Organization ID that owns this quiz
-                         * @example meshery
+                         * @example d011fd20-a3f5-4480-883b-dfb34321d168
                          */
                         orgId: string;
                         /**
@@ -7891,15 +7893,15 @@ export interface operations {
                          * @description The pass percentage of the quiz.
                          */
                         passPercentage: number;
-                        /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-                        timeLimit: number;
+                        /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as "25" or the non-numeric sentinel "infinite". A string that does not parse to a positive number means "no time limit" and normalizes to 0. */
+                        timeLimit: number | string;
                         /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
                         maxAttempts: number;
                         /** @description The questions of the quiz. */
                         questions: {
                             /**
-                             * Format: uuid
-                             * @description Question ID.
+                             * @description Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+                             * @example q1
                              */
                             id: string;
                             /** @description The text of the question. */
@@ -7913,8 +7915,8 @@ export interface operations {
                             /** @description The options of the question. */
                             options: {
                                 /**
-                                 * Format: uuid
-                                 * @description QuestionOption ID.
+                                 * @description QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+                                 * @example a
                                  */
                                 id: string;
                                 /** @description The text of the questionoption. */
@@ -7936,8 +7938,8 @@ export interface operations {
                         /** @description The prerequisites of the quiz. */
                         prerequisites: {
                             /**
-                             * Format: uuid
-                             * @description Parent ID.
+                             * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                             * @example introduction-to-devops-and-sre
                              */
                             id: string;
                             /** @description The title of the parent. */
@@ -7949,8 +7951,8 @@ export interface operations {
                         }[];
                         parent?: {
                             /**
-                             * Format: uuid
-                             * @description Parent ID.
+                             * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                             * @example introduction-to-devops-and-sre
                              */
                             id: string;
                             /** @description The title of the parent. */
@@ -7962,8 +7964,8 @@ export interface operations {
                         };
                         nextPage: {
                             /**
-                             * Format: uuid
-                             * @description Parent ID.
+                             * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                             * @example introduction-to-devops-and-sre
                              */
                             id: string;
                             /** @description The title of the parent. */
@@ -8056,14 +8058,14 @@ export interface operations {
                         };
                         quiz: {
                             /**
-                             * Format: uuid
-                             * @description Quiz ID.
+                             * @description Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs.
+                             * @example corporate-sustainability
                              */
                             id: string;
                             /**
                              * Format: uuid
                              * @description Organization ID that owns this quiz
-                             * @example meshery
+                             * @example d011fd20-a3f5-4480-883b-dfb34321d168
                              */
                             orgId: string;
                             /**
@@ -8106,15 +8108,15 @@ export interface operations {
                              * @description The pass percentage of the quiz.
                              */
                             passPercentage: number;
-                            /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-                            timeLimit: number;
+                            /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as "25" or the non-numeric sentinel "infinite". A string that does not parse to a positive number means "no time limit" and normalizes to 0. */
+                            timeLimit: number | string;
                             /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
                             maxAttempts: number;
                             /** @description The questions of the quiz. */
                             questions: {
                                 /**
-                                 * Format: uuid
-                                 * @description Question ID.
+                                 * @description Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+                                 * @example q1
                                  */
                                 id: string;
                                 /** @description The text of the question. */
@@ -8128,8 +8130,8 @@ export interface operations {
                                 /** @description The options of the question. */
                                 options: {
                                     /**
-                                     * Format: uuid
-                                     * @description QuestionOption ID.
+                                     * @description QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+                                     * @example a
                                      */
                                     id: string;
                                     /** @description The text of the questionoption. */
@@ -8151,8 +8153,8 @@ export interface operations {
                             /** @description The prerequisites of the quiz. */
                             prerequisites: {
                                 /**
-                                 * Format: uuid
-                                 * @description Parent ID.
+                                 * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                                 * @example introduction-to-devops-and-sre
                                  */
                                 id: string;
                                 /** @description The title of the parent. */
@@ -8164,8 +8166,8 @@ export interface operations {
                             }[];
                             parent?: {
                                 /**
-                                 * Format: uuid
-                                 * @description Parent ID.
+                                 * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                                 * @example introduction-to-devops-and-sre
                                  */
                                 id: string;
                                 /** @description The title of the parent. */
@@ -8177,8 +8179,8 @@ export interface operations {
                             };
                             nextPage: {
                                 /**
-                                 * Format: uuid
-                                 * @description Parent ID.
+                                 * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                                 * @example introduction-to-devops-and-sre
                                  */
                                 id: string;
                                 /** @description The title of the parent. */
@@ -8250,19 +8252,19 @@ export interface operations {
                     quizAbsPath: string;
                     /**
                      * Format: uuid
-                     * @description ID of the associated registration.
+                     * @description ID of the associated registration. Optional, because a submission may not carry this echo; when it is absent the authoritative value is `TestSubmission.registrationId`. Absence MUST be expressed as `null` or an omitted property - the empty string is not a valid identifier.
                      */
-                    registrationId: string;
+                    registrationId?: string | null;
                     /**
                      * Format: uuid
-                     * @description ID of the user who owns or created this resource.
+                     * @description ID of the user who owns or created this resource. Optional, because a submission may not carry this echo; when it is absent the authoritative value is `TestSubmission.userId`. Absence MUST be expressed as `null` or an omitted property - the empty string is not a valid identifier.
                      */
-                    userId: string;
+                    userId?: string | null;
                     /** @description The answers of the quizsubmission. */
                     answers: {
                         /**
-                         * Format: uuid
-                         * @description ID of the associated question.
+                         * @description ID of the associated question. Mirrors `Question.id`, a content-authored string rather than a database row identifier, so it is not a UUID.
+                         * @example q1
                          */
                         questionId: string;
                         /** @description Map of selected option IDs to a boolean value indicating if it was selected. */
@@ -8305,14 +8307,14 @@ export interface operations {
                         };
                         quiz: {
                             /**
-                             * Format: uuid
-                             * @description Quiz ID.
+                             * @description Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs.
+                             * @example corporate-sustainability
                              */
                             id: string;
                             /**
                              * Format: uuid
                              * @description Organization ID that owns this quiz
-                             * @example meshery
+                             * @example d011fd20-a3f5-4480-883b-dfb34321d168
                              */
                             orgId: string;
                             /**
@@ -8355,15 +8357,15 @@ export interface operations {
                              * @description The pass percentage of the quiz.
                              */
                             passPercentage: number;
-                            /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-                            timeLimit: number;
+                            /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as "25" or the non-numeric sentinel "infinite". A string that does not parse to a positive number means "no time limit" and normalizes to 0. */
+                            timeLimit: number | string;
                             /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
                             maxAttempts: number;
                             /** @description The questions of the quiz. */
                             questions: {
                                 /**
-                                 * Format: uuid
-                                 * @description Question ID.
+                                 * @description Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+                                 * @example q1
                                  */
                                 id: string;
                                 /** @description The text of the question. */
@@ -8377,8 +8379,8 @@ export interface operations {
                                 /** @description The options of the question. */
                                 options: {
                                     /**
-                                     * Format: uuid
-                                     * @description QuestionOption ID.
+                                     * @description QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+                                     * @example a
                                      */
                                     id: string;
                                     /** @description The text of the questionoption. */
@@ -8400,8 +8402,8 @@ export interface operations {
                             /** @description The prerequisites of the quiz. */
                             prerequisites: {
                                 /**
-                                 * Format: uuid
-                                 * @description Parent ID.
+                                 * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                                 * @example introduction-to-devops-and-sre
                                  */
                                 id: string;
                                 /** @description The title of the parent. */
@@ -8413,8 +8415,8 @@ export interface operations {
                             }[];
                             parent?: {
                                 /**
-                                 * Format: uuid
-                                 * @description Parent ID.
+                                 * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                                 * @example introduction-to-devops-and-sre
                                  */
                                 id: string;
                                 /** @description The title of the parent. */
@@ -8426,8 +8428,8 @@ export interface operations {
                             };
                             nextPage: {
                                 /**
-                                 * Format: uuid
-                                 * @description Parent ID.
+                                 * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                                 * @example introduction-to-devops-and-sre
                                  */
                                 id: string;
                                 /** @description The title of the parent. */
@@ -8539,14 +8541,14 @@ export interface operations {
                             /** @description The test the counts refer to. */
                             test?: {
                                 /**
-                                 * Format: uuid
-                                 * @description Quiz ID.
+                                 * @description Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs.
+                                 * @example corporate-sustainability
                                  */
                                 id: string;
                                 /**
                                  * Format: uuid
                                  * @description Organization ID that owns this quiz
-                                 * @example meshery
+                                 * @example d011fd20-a3f5-4480-883b-dfb34321d168
                                  */
                                 orgId: string;
                                 /**
@@ -8589,15 +8591,15 @@ export interface operations {
                                  * @description The pass percentage of the quiz.
                                  */
                                 passPercentage: number;
-                                /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-                                timeLimit: number;
+                                /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as "25" or the non-numeric sentinel "infinite". A string that does not parse to a positive number means "no time limit" and normalizes to 0. */
+                                timeLimit: number | string;
                                 /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
                                 maxAttempts: number;
                                 /** @description The questions of the quiz. */
                                 questions: {
                                     /**
-                                     * Format: uuid
-                                     * @description Question ID.
+                                     * @description Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+                                     * @example q1
                                      */
                                     id: string;
                                     /** @description The text of the question. */
@@ -8611,8 +8613,8 @@ export interface operations {
                                     /** @description The options of the question. */
                                     options: {
                                         /**
-                                         * Format: uuid
-                                         * @description QuestionOption ID.
+                                         * @description QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+                                         * @example a
                                          */
                                         id: string;
                                         /** @description The text of the questionoption. */
@@ -8634,8 +8636,8 @@ export interface operations {
                                 /** @description The prerequisites of the quiz. */
                                 prerequisites: {
                                     /**
-                                     * Format: uuid
-                                     * @description Parent ID.
+                                     * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                                     * @example introduction-to-devops-and-sre
                                      */
                                     id: string;
                                     /** @description The title of the parent. */
@@ -8647,8 +8649,8 @@ export interface operations {
                                 }[];
                                 parent?: {
                                     /**
-                                     * Format: uuid
-                                     * @description Parent ID.
+                                     * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                                     * @example introduction-to-devops-and-sre
                                      */
                                     id: string;
                                     /** @description The title of the parent. */
@@ -8660,8 +8662,8 @@ export interface operations {
                                 };
                                 nextPage: {
                                     /**
-                                     * Format: uuid
-                                     * @description Parent ID.
+                                     * @description Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+                                     * @example introduction-to-devops-and-sre
                                      */
                                     id: string;
                                     /** @description The title of the parent. */

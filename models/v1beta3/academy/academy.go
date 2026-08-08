@@ -328,8 +328,8 @@ type CreateAcademyCurriculaRequest struct {
 type CurriculaCurrentItemData struct {
 	ContentType ContentType `json:"contentType" yaml:"contentType"`
 
-	// Id CurriculaCurrentItemData ID.
-	ID uuid.UUID `json:"id" yaml:"id"`
+	// Id CurriculaCurrentItemData ID. Identifies the Hugo content page the learner currently has open, not a database row, so it is an opaque content-scoped string. Not a UUID - production values include slugs, full permalink URLs and the empty string.
+	ID string `json:"id" yaml:"id"`
 
 	// LastOpened The last opened of the curriculacurrentitemdata.
 	LastOpened time.Time `json:"lastOpened" yaml:"lastOpened"`
@@ -474,8 +474,8 @@ type Level string
 
 // Parent defines model for Parent.
 type Parent struct {
-	// Id Parent ID.
-	ID uuid.UUID `json:"id" yaml:"id"`
+	// Id Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID. See `Quiz.id`.
+	ID string `json:"id" yaml:"id"`
 
 	// RelPermalink The rel permalink of the parent.
 	RelPermalink string `json:"relPermalink" yaml:"relPermalink"`
@@ -499,8 +499,8 @@ type Question struct {
 	// CorrectAnswer The correct answer of the question.
 	CorrectAnswer string `json:"correctAnswer" yaml:"correctAnswer"`
 
-	// Id Question ID.
-	ID uuid.UUID `json:"id" yaml:"id"`
+	// Id Question ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+	ID string `json:"id" yaml:"id"`
 
 	// Marks The marks of the question.
 	Marks int `json:"marks" yaml:"marks"`
@@ -518,8 +518,8 @@ type Question struct {
 
 // QuestionOption defines model for QuestionOption.
 type QuestionOption struct {
-	// Id QuestionOption ID.
-	ID uuid.UUID `json:"id" yaml:"id"`
+	// Id QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row, so it is an opaque content-scoped string. Not a UUID.
+	ID string `json:"id" yaml:"id"`
 
 	// IsCorrect The is correct of the questionoption.
 	IsCorrect bool `json:"isCorrect" yaml:"isCorrect"`
@@ -548,8 +548,8 @@ type Quiz struct {
 	// Final Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
 	Final bool `json:"final" yaml:"final"`
 
-	// ID Quiz ID.
-	ID uuid.UUID `json:"id" yaml:"id"`
+	// ID Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque content-scoped string. Not a UUID - stored records carry authored slugs.
+	ID string `json:"id" yaml:"id"`
 
 	// Lastmod The lastmod of the quiz.
 	Lastmod openapi_types.Date `json:"lastmod" yaml:"lastmod"`
@@ -586,8 +586,8 @@ type Quiz struct {
 	// Slug The slug of the quiz.
 	Slug string `json:"slug" yaml:"slug"`
 
-	// TimeLimit Time limit for the quiz in minutes. A value of 0 indicates no time limit.
-	TimeLimit int `json:"timeLimit" yaml:"timeLimit"`
+	// TimeLimit Time limit for the quiz in minutes. A value of 0 indicates no time limit. Accepts a number or a string because both forms are real production data - the Hugo theme emits a JSON number, while payloads persisted by earlier revisions hold a string such as "25" or the non-numeric sentinel "infinite". A string that does not parse to a positive number means "no time limit" and normalizes to 0.
+	TimeLimit QuizTimeLimit `json:"timeLimit" yaml:"timeLimit"`
 
 	// Title The title of the quiz.
 	Title string `json:"title" yaml:"title"`
@@ -636,7 +636,7 @@ type QuizEvaluationResult struct {
 	TotalMarks int `json:"totalMarks" yaml:"totalMarks"`
 }
 
-// QuizSubmission defines model for QuizSubmission.
+// QuizSubmission A learner's answers to a quiz. Submitted as the `submitQuiz` request body and persisted verbatim as `TestSubmission.submissionData`. `registrationId` and `userId` are a convenience echo of the authoritative values on the enclosing `TestSubmission` (`registrationId` / `userId`, backed by the `registration_id` and `owner` `uuid NOT NULL` columns); read them from the enclosing submission, not from here.
 type QuizSubmission struct {
 	// Answers The answers of the quizsubmission.
 	Answers []SubmittedAnswer `json:"answers" yaml:"answers"`
@@ -644,14 +644,14 @@ type QuizSubmission struct {
 	// QuizAbsPath The quiz abs path of the quizsubmission.
 	QuizAbsPath string `json:"quizAbsPath" yaml:"quizAbsPath"`
 
-	// RegistrationId ID of the associated registration.
-	RegistrationId uuid.UUID `json:"registrationId" yaml:"registrationId"`
+	// RegistrationId ID of the associated registration. Optional, because a submission may not carry this echo; when it is absent the authoritative value is `TestSubmission.registrationId`. Absence MUST be expressed as `null` or an omitted property - the empty string is not a valid identifier.
+	RegistrationId *uuid.UUID `json:"registrationId,omitempty" yaml:"registrationId,omitempty"`
 
 	// TestSessionId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	TestSessionId core.Uuid `json:"testSessionId" yaml:"testSessionId"`
 
-	// UserId ID of the user who owns or created this resource.
-	UserId uuid.UUID `json:"userId" yaml:"userId"`
+	// UserId ID of the user who owns or created this resource. Optional, because a submission may not carry this echo; when it is absent the authoritative value is `TestSubmission.userId`. Absence MUST be expressed as `null` or an omitted property - the empty string is not a valid identifier.
+	UserId *uuid.UUID `json:"userId,omitempty" yaml:"userId,omitempty"`
 }
 
 // RegisterToAcademyContentRequest defines model for RegisterToAcademyContentRequest.
@@ -722,8 +722,8 @@ type SubmittedAnswer struct {
 	// AnswerText The answer text of the submittedanswer.
 	AnswerText string `json:"answerText" yaml:"answerText"`
 
-	// QuestionId ID of the associated question.
-	QuestionId uuid.UUID `json:"questionId" yaml:"questionId"`
+	// QuestionId ID of the associated question. Mirrors `Question.id`, a content-authored string rather than a database row identifier, so it is not a UUID.
+	QuestionId string `json:"questionId" yaml:"questionId"`
 
 	// SelectedOptionId Map of selected option IDs to a boolean value indicating if it was selected.
 	SelectedOptionId map[string]bool `json:"selectedOptionId" yaml:"selectedOptionId"`
@@ -747,7 +747,9 @@ type TestSubmission struct {
 	RegistrationId core.Uuid     `db:"registration_id" json:"registrationId" yaml:"registrationId"`
 	Result         *QuizEvaluationResult `db:"result" json:"result,omitempty" yaml:"result,omitempty"`
 	Status         TestSubmissionStatus  `json:"status" yaml:"status"`
-	SubmissionData *QuizSubmission       `db:"submission_data" json:"submissionData,omitempty" yaml:"submissionData,omitempty"`
+
+	// SubmissionData A learner's answers to a quiz. Submitted as the `submitQuiz` request body and persisted verbatim as `TestSubmission.submissionData`. `registrationId` and `userId` are a convenience echo of the authoritative values on the enclosing `TestSubmission` (`registrationId` / `userId`, backed by the `registration_id` and `owner` `uuid NOT NULL` columns); read them from the enclosing submission, not from here.
+	SubmissionData *QuizSubmission `db:"submission_data" json:"submissionData,omitempty" yaml:"submissionData,omitempty"`
 
 	// SubmittedAt The submitted at of the testsubmission.
 	SubmittedAt *time.Time `db:"submitted_at" json:"submittedAt,omitempty" yaml:"submittedAt,omitempty"`
