@@ -35,6 +35,7 @@ const MESHERY_BASE_URL = process.env.RTK_MESHERY_ENDPOINT_PREFIX ?? "";
 const REPEATED_ARRAY_PARAMS = new Set([
   "clusterId",
   "kind",
+  "model",
   "namespace",
   "patternId",
   "label",

@@ -185,6 +185,7 @@ paths:
           schema:
             type: array
             minItems: 1
+            maxItems: 50
             items:
               type: string
               maxLength: 255
@@ -276,7 +277,7 @@ paths:
 components:
   responses:
     401:
-      $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
+      $ref: "../core/api.yml#/components/responses/401"
     500:
       $ref: "../core/api.yml#/components/responses/500"
 
@@ -315,6 +316,11 @@ components:
       description: A paginated list of MeshSync-discovered Kubernetes resources.
       type: object
       additionalProperties: false
+      required:
+        - page
+        - pageSize
+        - totalCount
+        - resources
       properties:
         page:
           type: integer
@@ -346,6 +352,10 @@ components:
       description: Per-kind resource count for a given model.
       type: object
       additionalProperties: false
+      required:
+        - kind
+        - model
+        - count
       properties:
         kind:
           type: string
@@ -365,6 +375,12 @@ components:
       description: A discovered Kubernetes key-value pair (e.g. a label).
       type: object
       additionalProperties: false
+      required:
+        - id
+        - uniqueId
+        - kind
+        - key
+        - value
       properties:
         id:
           type: string
@@ -391,6 +407,10 @@ components:
       description: Summary of discovered MeshSync resources for the requested clusters.
       type: object
       additionalProperties: false
+      required:
+        - kinds
+        - namespaces
+        - labels
       properties:
         kinds:
           type: array
@@ -413,6 +433,8 @@ components:
       description: Response returned after deleting a MeshSync resource.
       type: object
       additionalProperties: false
+      required:
+        - deleted
       properties:
         deleted:
           type: boolean
