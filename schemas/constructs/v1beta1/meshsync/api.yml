@@ -45,6 +45,7 @@ paths:
           required: false
           schema:
             type: array
+            maxItems: 50
             items:
               type: string
               maxLength: 255
@@ -56,6 +57,7 @@ paths:
           required: false
           schema:
             type: array
+            maxItems: 50
             items:
               type: string
               maxLength: 255
@@ -67,6 +69,7 @@ paths:
           required: false
           schema:
             type: array
+            maxItems: 50
             items:
               type: string
               maxLength: 255
@@ -77,6 +80,7 @@ paths:
           required: false
           schema:
             type: array
+            maxItems: 50
             items:
               type: string
               maxLength: 255
@@ -88,6 +92,7 @@ paths:
           required: false
           schema:
             type: array
+            maxItems: 50
             items:
               type: string
               maxLength: 255
@@ -144,6 +149,7 @@ paths:
           required: false
           schema:
             type: array
+            maxItems: 50
             items:
               type: string
               maxLength: 255
@@ -190,6 +196,7 @@ paths:
           required: false
           schema:
             type: array
+            maxItems: 50
             items:
               type: string
               maxLength: 255
