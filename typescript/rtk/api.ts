@@ -30,9 +30,29 @@ export const MESHERY_PROD_URL = "https://playground.meshery.io/";
 const CLOUD_BASE_URL = process.env.RTK_CLOUD_ENDPOINT_PREFIX ?? "";
 const MESHERY_BASE_URL = process.env.RTK_MESHERY_ENDPOINT_PREFIX ?? "";
 
+const paramsSerializer = (params: Record<string, unknown>) => {
+  const searchParams = new URLSearchParams();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value === undefined || value === null) {
+      return;
+    }
+
+    if (Array.isArray(value)) {
+      value.forEach((item) => searchParams.append(key, String(item)));
+      return;
+    }
+
+    searchParams.append(key, String(value));
+  });
+
+  return searchParams.toString();
+};
+
 const baseQueryCloud = fetchBaseQuery({
   baseUrl: CLOUD_BASE_URL,
   credentials: "include",
+  paramsSerializer,
   prepareHeaders: (headers: Headers, { getState }: { getState: () => unknown }) => {
     const state = getState() as RootState;
     const currentOrg = state.organization?.value;
@@ -48,7 +68,7 @@ const baseQueryCloud = fetchBaseQuery({
 // error?.meshkit.suggestedRemediation etc.
 const baseQueryCloudWithMeshkit = withMeshkitErrorTransform(baseQueryCloud);
 const baseQueryMesheryWithMeshkit = withMeshkitErrorTransform(
-  fetchBaseQuery({ baseUrl: MESHERY_BASE_URL, credentials: "include" }),
+  fetchBaseQuery({ baseUrl: MESHERY_BASE_URL, credentials: "include", paramsSerializer }),
 );
 
 // API 1: Cloud Provider API
