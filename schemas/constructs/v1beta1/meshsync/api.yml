@@ -208,6 +208,7 @@ paths:
           required: false
           schema:
             type: array
+            maxItems: 50
             items:
               type: string
               maxLength: 255
@@ -294,8 +295,8 @@ components:
       description: Number of results to return per page.
       required: false
       schema:
-        type: string
-        maxLength: 255
+        type: integer
+        minimum: 1
     search:
       $ref: "../core/api.yml#/components/parameters/search"
     order:
