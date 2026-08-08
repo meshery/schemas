@@ -1246,7 +1246,7 @@ components:
           type: array
           description: List of child nodes (sub-courses or modules)
           items:
-            type: object
+            $ref: '#/components/schemas/ChildNode'
             x-go-type: ChildNode
       required:
       - title
