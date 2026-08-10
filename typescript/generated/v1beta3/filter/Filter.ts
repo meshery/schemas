@@ -572,7 +572,7 @@ export interface components {
         /** @description Filter ID */
         filterId: string;
         /** @description Get responses by page */
-        page: string;
+        page: number;
         /** @description Number of items per page (canonical camelCase form). */
         pageSize: number;
         /** @description Get responses that match search param value */
@@ -592,7 +592,7 @@ export interface operations {
         parameters: {
             query?: {
                 /** @description Get responses by page */
-                page?: string;
+                page?: number;
                 /** @description Number of items per page (canonical camelCase form). */
                 pageSize?: number;
                 /** @description Get responses that match search param value */

@@ -64,10 +64,10 @@ type SchedulePayload struct {
 type Order = string
 
 // Page defines model for page.
-type Page = string
+type Page = int
 
 // PageSize defines model for pageSize.
-type PageSize = string
+type PageSize = int
 
 // ScheduleId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 type ScheduleId = core.Uuid

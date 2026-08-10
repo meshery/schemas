@@ -565,6 +565,8 @@ export interface components {
             country?: string;
             /** @description Region of the organization. */
             region?: string;
+            /** @description Custom domain assigned to the organization, when configured. */
+            domain?: string;
             /** @description Display name of the organization owner. */
             owner?: string;
             /** @description Free-form metadata associated with an organization, including preferences. */
@@ -703,6 +705,8 @@ export interface components {
                 country?: string;
                 /** @description Region of the organization. */
                 region?: string;
+                /** @description Custom domain assigned to the organization, when configured. */
+                domain?: string;
                 /** @description Display name of the organization owner. */
                 owner?: string;
                 /** @description Free-form metadata associated with an organization, including preferences. */
@@ -842,6 +846,8 @@ export interface components {
                 country?: string;
                 /** @description Region of the organization. */
                 region?: string;
+                /** @description Custom domain assigned to the organization, when configured. */
+                domain?: string;
                 /** @description Display name of the organization owner. */
                 owner?: string;
                 /** @description Free-form metadata associated with an organization, including preferences. */
@@ -1320,6 +1326,15 @@ export interface components {
                 "text/plain": string;
             };
         };
+        /** @description Forbidden */
+        403: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "text/plain": string;
+            };
+        };
         /** @description Result not found */
         404: {
             headers: {
@@ -1523,6 +1538,8 @@ export interface operations {
                             country?: string;
                             /** @description Region of the organization. */
                             region?: string;
+                            /** @description Custom domain assigned to the organization, when configured. */
+                            domain?: string;
                             /** @description Display name of the organization owner. */
                             owner?: string;
                             /** @description Free-form metadata associated with an organization, including preferences. */
@@ -1815,6 +1832,8 @@ export interface operations {
                             country?: string;
                             /** @description Region of the organization. */
                             region?: string;
+                            /** @description Custom domain assigned to the organization, when configured. */
+                            domain?: string;
                             /** @description Display name of the organization owner. */
                             owner?: string;
                             /** @description Free-form metadata associated with an organization, including preferences. */
@@ -1944,6 +1963,15 @@ export interface operations {
             };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2086,6 +2114,8 @@ export interface operations {
                             country?: string;
                             /** @description Region of the organization. */
                             region?: string;
+                            /** @description Custom domain assigned to the organization, when configured. */
+                            domain?: string;
                             /** @description Display name of the organization owner. */
                             owner?: string;
                             /** @description Free-form metadata associated with an organization, including preferences. */
@@ -2206,6 +2236,15 @@ export interface operations {
             };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2383,6 +2422,8 @@ export interface operations {
                             country?: string;
                             /** @description Region of the organization. */
                             region?: string;
+                            /** @description Custom domain assigned to the organization, when configured. */
+                            domain?: string;
                             /** @description Display name of the organization owner. */
                             owner?: string;
                             /** @description Free-form metadata associated with an organization, including preferences. */
@@ -2519,6 +2560,15 @@ export interface operations {
                     "text/plain": string;
                 };
             };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
             /** @description Result not found */
             404: {
                 headers: {
@@ -2569,6 +2619,15 @@ export interface operations {
             };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2714,6 +2773,15 @@ export interface operations {
             };
             /** @description Expired JWT token used or insufficient privilege */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description Forbidden */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2868,6 +2936,15 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
             /** @description Not found */
             404: {
                 headers: {
@@ -2961,6 +3038,15 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
             /** @description Not found */
             404: {
                 headers: {
@@ -3018,6 +3104,15 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
             /** @description Result not found */
             404: {
                 headers: {
@@ -3063,6 +3158,15 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
             };
             /** @description Result not found */
             404: {

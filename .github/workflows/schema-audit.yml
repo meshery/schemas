@@ -37,7 +37,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup Go
         uses: actions/setup-go@v5
@@ -54,7 +54,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup Go
         uses: actions/setup-go@v5
@@ -88,7 +88,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout schemas
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup Go
         uses: actions/setup-go@v5
@@ -98,7 +98,7 @@ jobs:
       - name: Checkout meshery/meshery
         id: checkout-meshery
         continue-on-error: true
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: meshery/meshery
           path: _consumer/meshery
@@ -107,7 +107,7 @@ jobs:
       - name: Checkout layer5io/meshery-cloud
         id: checkout-cloud
         continue-on-error: true
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: layer5io/meshery-cloud
           path: _consumer/meshery-cloud
@@ -116,7 +116,7 @@ jobs:
       - name: Checkout layer5labs/meshery-extensions
         id: checkout-extensions
         continue-on-error: true
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: layer5labs/meshery-extensions
           path: _consumer/meshery-extensions
@@ -173,14 +173,15 @@ jobs:
 
             // Parse the fixed-format summary block emitted by
             // cmd/consumer-audit/main.go → printAuditReport. Rows look like:
-            //   Category                       Schema  Meshery  Cloud
-            //   Total Endpoints                179     217      282
-            //   Schema Backed                  -       70       178
-            //   Schema Completeness (TRUE)     179     -        -
-            //   Schema Only                    16      -        -
-            //   Unimplemented With Schema      -       29       17
-            //   Consumer Only                  -       172      120
-            // Columns are separated by two-or-more spaces.
+            //   Metric                              Schema  Meshery  Cloud
+            //   Total endpoints                     179     217      282
+            //   Spec applies to consumer            -       70       178
+            //   Spec passes validation              179     -        -
+            //   Spec only (no handlers)             16      -        -
+            //   Spec without consumer handler       -       29       17
+            //   Handler only (no spec)              -       172      120
+            // Columns are separated by two-or-more spaces. Labels must stay
+            // in lockstep with printAuditReport.
             const parseRow = (label) => {
               const escapedLabel = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
               const re = new RegExp(`^${escapedLabel}\\s{2,}(\\S+)\\s+(\\S+)\\s+(\\S+)\\s*$`, 'm');
@@ -188,12 +189,12 @@ jobs:
               return m ? [m[1], m[2], m[3]] : ['?', '?', '?'];
             };
 
-            const totals = parseRow('Total Endpoints');
-            const schemaBacked = parseRow('Schema Backed');
-            const schemaCompleteness = parseRow('Schema Completeness (TRUE)');
-            const schemaOnly = parseRow('Schema Only');
-            const unimplemented = parseRow('Unimplemented With Schema');
-            const consumerOnly = parseRow('Consumer Only');
+            const totals = parseRow('Total endpoints');
+            const specApplies = parseRow('Spec applies to consumer');
+            const specValid = parseRow('Spec passes validation');
+            const specOnly = parseRow('Spec only (no handlers)');
+            const missingHandler = parseRow('Spec without consumer handler');
+            const handlerOnly = parseRow('Handler only (no spec)');
 
             // Count TS findings by kind across all repos. The output section
             // is rendered by printTSFindings; per-finding lines look like:
@@ -230,14 +231,18 @@ jobs:
             const lines = [];
             lines.push('## Consumer audit report');
             lines.push('');
-            lines.push('| Category       | schemas | meshery | cloud |');
+            lines.push('| Metric | schemas | meshery | cloud |');
             lines.push('|---|---|---|---|');
-            lines.push(`| Total Endpoints| ${totals[0]}     | ${totals[1]}     | ${totals[2]}   |`);
-            lines.push(`| Schema Backed | ${schemaBacked[0]} | ${schemaBacked[1]} | ${schemaBacked[2]} |`);
-            lines.push(`| Schema Completeness (TRUE) | ${schemaCompleteness[0]} | ${schemaCompleteness[1]} | ${schemaCompleteness[2]} |`);
-            lines.push(`| Schema Only | ${schemaOnly[0]} | ${schemaOnly[1]} | ${schemaOnly[2]} |`);
-            lines.push(`| Unimplemented With Schema | ${unimplemented[0]} | ${unimplemented[1]} | ${unimplemented[2]} |`);
-            lines.push(`| Consumer Only  | ${consumerOnly[0]}       | ${consumerOnly[1]}     | ${consumerOnly[2]}   |`);
+            lines.push(`| Total endpoints | ${totals[0]} | ${totals[1]} | ${totals[2]} |`);
+            lines.push(`| Spec applies to consumer | ${specApplies[0]} | ${specApplies[1]} | ${specApplies[2]} |`);
+            lines.push(`| Spec passes validation | ${specValid[0]} | ${specValid[1]} | ${specValid[2]} |`);
+            lines.push(`| Spec only (no handlers) | ${specOnly[0]} | ${specOnly[1]} | ${specOnly[2]} |`);
+            lines.push(`| Spec without consumer handler | ${missingHandler[0]} | ${missingHandler[1]} | ${missingHandler[2]} |`);
+            lines.push(`| Handler only (no spec) | ${handlerOnly[0]} | ${handlerOnly[1]} | ${handlerOnly[2]} |`);
+            lines.push('');
+            lines.push('**Note:**');
+            lines.push('Spec only (no handlers) --> no matching handler in any audited consumer.');
+            lines.push('Spec without consumer handler --> this consumer is missing it (may exist elsewhere).');
             lines.push('');
 
             if (totalTs > 0) {

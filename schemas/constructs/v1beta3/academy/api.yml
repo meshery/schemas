@@ -612,7 +612,9 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                # Mirrors the deployed handler's InstructorConsoleSummary
+                # (meshery-cloud handlers/academy/instructor-console.go).
+                $ref: '#/components/schemas/InstructorConsoleSummary'
         '400':
           description: Invalid request parameters
         '401':
@@ -967,6 +969,81 @@ components:
       required:
       - total
       - data
+    InstructorConsoleSummary:
+      type: object
+      description: >
+        Aggregate metrics for the instructor console, mirroring the deployed
+        handler's InstructorConsoleSummary struct.
+      properties:
+        orgConfig:
+          type: object
+          description: Academy module configuration for the organization.
+          properties:
+            module:
+              type: string
+              description: Academy module assigned to the organization.
+            version:
+              type: string
+              description: Version of the assigned academy module.
+        totalLearners:
+          type: integer
+          description: Total distinct learners registered for the organization.
+        totalActiveLearners:
+          type: integer
+          description: Learners with at least one active registration.
+        curricula:
+          type: array
+          description: Per-content-type registration counts.
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                description: Academy content type.
+              totalCount:
+                type: integer
+                description: Registrations for this content type.
+        registrationsSummary:
+          type: array
+          description: Per-status registration counts.
+          items:
+            type: object
+            properties:
+              status:
+                type: string
+                description: Registration status.
+              totalCount:
+                type: integer
+                description: Registrations in this status.
+        testsSummary:
+          type: object
+          description: Aggregate test outcomes across the organization.
+          properties:
+            totalPassed:
+              type: integer
+            totalFailed:
+              type: integer
+            totalAttempts:
+              type: integer
+        tests:
+          type: array
+          description: Per-test outcome counts.
+          items:
+            type: object
+            properties:
+              test:
+                $ref: '#/components/schemas/Quiz'
+                description: The test the counts refer to.
+              passed:
+                type: integer
+              failed:
+                type: integer
+              attempts:
+                type: integer
+        curriculaList:
+          $ref: '#/components/schemas/AcademyCurriculaWithMetricsListResponse'
+          description: Curricula with metrics for the organization.
+
     AcademyCurriculaWithMetricsListResponse:
       type: object
       properties:
@@ -1296,9 +1373,12 @@ components:
       properties:
         id:
           type: string
-          description: CurriculaCurrentItemData ID.
+          description: CurriculaCurrentItemData ID. Identifies the Hugo content page the learner
+            currently has open, not a database row, so it is an opaque content-scoped string. Not a
+            UUID - production values include slugs, full permalink URLs and the empty string.
+          example: kubernetes-quickstart
           maxLength: 500
-          format: uuid
+          x-id-format: external
         lastOpened:
           type: string
           format: date-time
@@ -1413,13 +1493,15 @@ components:
           x-go-name: ID
           x-oapi-codegen-extra-tags:
             json: id
-          description: Quiz ID.
+          description: Quiz ID. Identifies a Hugo content page, not a database row, so it is an opaque
+            content-scoped string. Not a UUID - stored records carry authored slugs.
+          example: corporate-sustainability
           maxLength: 500
-          format: uuid
+          x-id-format: external
         orgId:
           type: string
           description: Organization ID that owns this quiz
-          example: meshery
+          example: d011fd20-a3f5-4480-883b-dfb34321d168
           x-oapi-codegen-extra-tags:
             db: org_id
             json: orgId
@@ -1484,8 +1566,16 @@ components:
           minimum: 0
         timeLimit:
           description: Time limit for the quiz in minutes. A value of 0 indicates no time limit.
-          type: integer
-          minimum: 0
+            Accepts a number or a string because both forms are real production data - the Hugo
+            theme emits a JSON number, while payloads persisted by earlier revisions hold a string
+            such as "25" or the non-numeric sentinel "infinite". A string that does not parse to a
+            positive number means "no time limit" and normalizes to 0.
+          oneOf:
+          - type: integer
+            minimum: 0
+          - type: string
+          x-go-type: QuizTimeLimit
+          x-go-type-skip-optional-pointer: true
         maxAttempts:
           description: Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.
           type: integer
@@ -1534,9 +1624,11 @@ components:
       properties:
         id:
           type: string
-          description: Parent ID.
+          description: Parent ID. Identifies a Hugo content page, not a database row, so it is an opaque
+            content-scoped string. Not a UUID. See `Quiz.id`.
+          example: introduction-to-devops-and-sre
           maxLength: 500
-          format: uuid
+          x-id-format: external
         title:
           type: string
           description: The title of the parent.
@@ -1573,9 +1665,11 @@ components:
       properties:
         id:
           type: string
-          description: Question ID.
+          description: Question ID. Authored in the quiz's Hugo front matter, not a database row, so it
+            is an opaque content-scoped string. Not a UUID.
+          example: q1
           maxLength: 500
-          format: uuid
+          x-id-format: external
         text:
           type: string
           description: The text of the question.
@@ -1609,9 +1703,11 @@ components:
       properties:
         id:
           type: string
-          description: QuestionOption ID.
+          description: QuestionOption ID. Authored in the quiz's Hugo front matter, not a database row,
+            so it is an opaque content-scoped string. Not a UUID.
+          example: a
           maxLength: 500
-          format: uuid
+          x-id-format: external
         text:
           type: string
           description: The text of the questionoption.
@@ -1636,11 +1732,13 @@ components:
           format: uuid
     QuizSubmission:
       type: object
+      description: A learner's answers to a quiz. Submitted as the `submitQuiz` request body and persisted verbatim as
+        `TestSubmission.submissionData`. `registrationId` and `userId` are a convenience echo of the authoritative values
+        on the enclosing `TestSubmission` (`registrationId` / `userId`, backed by the `registration_id` and `owner`
+        `uuid NOT NULL` columns); read them from the enclosing submission, not from here.
       required:
       - quizAbsPath
-      - registrationId
       - testSessionId
-      - userId
       - answers
       properties:
         testSessionId:
@@ -1651,14 +1749,24 @@ components:
           maxLength: 500
         registrationId:
           type: string
-          description: ID of the associated registration.
+          description: ID of the associated registration. Optional, because a submission may not carry this echo; when it
+            is absent the authoritative value is `TestSubmission.registrationId`. Absence MUST be expressed as `null` or
+            an omitted property - the empty string is not a valid identifier.
           maxLength: 500
           format: uuid
+          nullable: true
+          x-oapi-codegen-extra-tags:
+            json: registrationId,omitempty
         userId:
           type: string
-          description: ID of the user who owns or created this resource.
+          description: ID of the user who owns or created this resource. Optional, because a submission may not carry this
+            echo; when it is absent the authoritative value is `TestSubmission.userId`. Absence MUST be expressed as
+            `null` or an omitted property - the empty string is not a valid identifier.
           maxLength: 500
           format: uuid
+          nullable: true
+          x-oapi-codegen-extra-tags:
+            json: userId,omitempty
         answers:
           type: array
           items:
@@ -1674,9 +1782,11 @@ components:
       properties:
         questionId:
           type: string
-          description: ID of the associated question.
+          description: ID of the associated question. Mirrors `Question.id`, a content-authored string
+            rather than a database row identifier, so it is not a UUID.
+          example: q1
           maxLength: 500
-          format: uuid
+          x-id-format: external
         selectedOptionId:
           type: object
           additionalProperties:

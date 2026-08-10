@@ -933,13 +933,13 @@ type Order = string
 type Os = string
 
 // Page defines model for page.
-type Page = string
+type Page = int
 
 // PageSize defines model for pageSize.
 type PageSize = int
 
 // Pagesize defines model for pagesize.
-type Pagesize = string
+type Pagesize = int
 
 // Playground defines model for playground.
 type Playground = string

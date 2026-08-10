@@ -3,6 +3,7 @@
     "construct": "academy",
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/academy/academy.yaml",
+    "docs_href": "https://docs.meshery.io/extensions/academies",
     "core": false,
     "extension": true
   },
@@ -49,6 +50,13 @@
     "docs_href": "https://docs.meshery.io/concepts/logical/connections",
     "core": true,
     "extension": true
+  },
+  {
+    "construct": "console",
+    "version": "v1beta1",
+    "href": "/schemas/constructs/v1beta1/console/api.yml",
+    "core": true,
+    "extension": false
   },
   {
     "construct": "controllers_config",
@@ -142,7 +150,7 @@
     "version": "v1beta2",
     "href": "/schemas/constructs/v1beta2/model/model.yaml",
     "docs_href": "https://docs.meshery.io/concepts/logical/models",
-    "core": true,
+    "core": false,
     "extension": true
   },
   {
@@ -173,6 +181,13 @@
     "href": "/schemas/constructs/v1beta3/plan/plan.yaml",
     "core": false,
     "extension": true
+  },
+  {
+    "construct": "registry",
+    "version": "v1beta1",
+    "href": "/schemas/constructs/v1beta1/registry/api.yml",
+    "core": true,
+    "extension": false
   },
   {
     "construct": "relationship",
@@ -242,8 +257,8 @@
     "construct": "user",
     "version": "v1beta3",
     "href": "/schemas/constructs/v1beta3/user/api.yml",
-    "core": false,
-    "extension": false
+    "core": true,
+    "extension": true
   },
   {
     "construct": "view",

@@ -19,7 +19,7 @@ tags:
     description: Operations related to design evaluation
 
 paths:
-  /api/meshmodels/relationships/evaluate:
+  /api/registry/relationships/evaluate:
     post:
       operationId: evaluateRelationships
       x-internal: ["meshery"]
