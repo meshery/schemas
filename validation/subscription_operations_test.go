@@ -127,8 +127,10 @@ func TestSubscriptionPathsAreDeclaredUnderTheApiPrefix(t *testing.T) {
 
 // assertSubscriptionOperationShape checks the parts every subscription operation
 // must carry: cloud-only scoping, JWT security, a tag for the published docs, a
-// 200 anchored to SubscriptionPage, and the full error set - including the 404
-// that doubles as the authorization denial.
+// 200 anchored to SubscriptionPage, and the standard error set - including the
+// 404 that doubles as the handler's authorization denial. It is the sole owner
+// of those four status codes; the 403 that only some routes can produce belongs
+// to TestSubscriptionDenialCodesMatchTheRouteRegistration.
 //
 // The already-resolved operation node is passed for the flat lookups; the nested
 // ones walk from the document root, because lookupPath starts at a mapping the
@@ -172,29 +174,27 @@ func assertSubscriptionOperationShape(t *testing.T, doc map[string]any, path, me
 	}
 }
 
-// TestSubscriptionDenialCodesMatchTheRouteRegistration is the security-relevant
-// half of the contract above, stated on its own so it reads as intent rather
-// than as one entry in a list of status codes.
+// TestSubscriptionDenialCodesMatchTheRouteRegistration owns the one denial that
+// differs between the two operations. That the standard error set - 400, 401,
+// 404 and 500 - is declared on both is asserted once, by
+// assertSubscriptionOperationShape; this test asserts only the 403 asymmetry,
+// which is the security-relevant half of the contract.
 //
 // Two distinct gates are in play. The handler gate, `authorizeSubscriptionByID`,
 // answers 404 - never 403 - to a caller who is not an Organization Admin or
 // Owner of the subscription's *own* organization, matching the answer an absent
-// subscription gives so the route cannot be used to enumerate subscription ids;
-// that uniform 404 is required on both operations. The route gate is the
-// `AuthorizationMiddlewareForOrgAdminAndOrgOwner` the router wraps the POST in,
-// which answers 403 against the organization the caller currently has selected
-// before any subscription is looked up; it leaks nothing about which ids exist,
-// and only the operations whose routes carry it may declare 403.
+// subscription gives so the route cannot be used to enumerate subscription ids.
+// The route gate is the `AuthorizationMiddlewareForOrgAdminAndOrgOwner` the
+// router wraps the POST in, which answers 403 against the organization the
+// caller currently has selected before any subscription is looked up; it leaks
+// nothing about which ids exist, and only the operations whose routes carry it
+// may declare 403.
 func TestSubscriptionDenialCodesMatchTheRouteRegistration(t *testing.T) {
 	doc := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), subscriptionSpec))
 
 	for _, op := range subscriptionOperations {
 		op := op
 		t.Run(op.method+" "+op.path, func(t *testing.T) {
-			if _, err := lookupPath(doc, "paths", op.path, op.method, "responses", "404"); err != nil {
-				t.Errorf("404 is not declared: %v", err)
-			}
-
 			_, err := lookupPath(doc, "paths", op.path, op.method, "responses", "403")
 			switch {
 			case op.middlewareForbids && err != nil:
@@ -263,6 +263,20 @@ func TestSubscriptionUpdatePayloadExposesOnlyTheWritableSurface(t *testing.T) {
 		}
 	}
 
+	// `id` is mandatory at runtime - a body without it is refused 400 - yet it
+	// is deliberately absent from `required`, because Rule 2 blocks a
+	// server-generated field there even on an update-only route where `id` is
+	// the row selector rather than a value the client invents. The exact-match
+	// below pins that accepted asymmetry; the 400 that carries the
+	// mandatory-ness is declared on the operation and owned by
+	// assertSubscriptionOperationShape.
+	//
+	// The property's own `description` states it too, but nothing asserts on
+	// that text: a `description` written beside a `$ref` loses to the `$ref`
+	// target's own description, so it never reaches a generated Go or
+	// TypeScript consumer. That is specific to `description` - sibling
+	// `x-go-name` and `x-oapi-codegen-extra-tags` beside a `$ref` are honoured,
+	// which is why `planId` keeps `x-go-name: PlanID` here to match the entity.
 	required, err := lookupPath(doc, "components", "schemas", subscriptionUpdatePayload, "required")
 	if err != nil {
 		t.Fatalf("locating %s required: %v", subscriptionUpdatePayload, err)
@@ -272,19 +286,6 @@ func TestSubscriptionUpdatePayloadExposesOnlyTheWritableSurface(t *testing.T) {
 	sort.Strings(got)
 	if len(got) != 2 || got[0] != "planId" || got[1] != "quantity" {
 		t.Errorf("%s required = %v, want [planId quantity]", subscriptionUpdatePayload, got)
-	}
-
-	// `id` is mandatory at runtime - a body without it is refused 400 - but it
-	// cannot be listed under `required`, because Rule 2 blocks server-generated
-	// fields there. The assertion on `required` above pins the accepted half of
-	// that asymmetry; this pins the other half, the declared 400 that is the
-	// only machine-readable statement a client gets that omitting `id` fails.
-	// A prose assertion would add nothing: `id` is a `$ref`, and the generator
-	// drops keys that sit beside a `$ref`, so the property description never
-	// reaches a generated Go or TypeScript consumer.
-	if _, err := lookupPath(doc, "paths", subscriptionsPath, "post", "responses", "400"); err != nil {
-		t.Errorf("the upsert operation does not declare 400, which is how a client learns "+
-			"that a body without `id` is refused: %v", err)
 	}
 }
 
