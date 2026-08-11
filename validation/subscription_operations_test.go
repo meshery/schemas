@@ -183,8 +183,17 @@ func assertSubscriptionOperationShape(t *testing.T, doc map[string]any, path, me
 		t.Error("tags is missing; every operation needs at least one for the published docs")
 	}
 
-	if _, present := mappingValue(operation, "security"); !present {
+	// Presence alone is not the contract: `security: []` is *present* and means
+	// the opposite - anonymous access, which is what the webhook route declares.
+	// Both of these routes sit behind the authenticated `/api` group, so the
+	// requirement must actually name the jwt scheme.
+	security, present := mappingValue(operation, "security")
+	if !present {
 		t.Error("security is missing; both routes sit behind the authenticated /api group")
+	} else if !securityRequires(security, "jwt") {
+		t.Errorf("security = %v, want a requirement naming the jwt scheme; an empty or "+
+			"unrelated requirement would drop the documented authentication while still "+
+			"parsing as a valid security section", security)
 	}
 
 	// The handlers respond with a SubscriptionPage carrying the single
@@ -281,6 +290,17 @@ func TestUpsertSubscriptionUsesUpdatePayload(t *testing.T) {
 	if _, err := lookupPath(doc, "components", "schemas", subscriptionUpdatePayload); err != nil {
 		t.Fatalf("%s is referenced by the request body but not defined: %v", subscriptionUpdatePayload, err)
 	}
+
+	// Without this flag a generated client treats a bodyless update as valid,
+	// which the server does not: it decodes an empty body to a zero-value
+	// subscription, finds no `id`, and refuses with 400.
+	required, err := lookupPath(doc, "paths", subscriptionsPath, "post", "requestBody", "required")
+	if err != nil {
+		t.Fatalf("locating the upsert requestBody required flag: %v", err)
+	}
+	if required != true {
+		t.Errorf("upsert requestBody required = %v, want true", required)
+	}
 }
 
 // TestSubscriptionUpdatePayloadExposesOnlyTheWritableSurface pins the payload to
@@ -338,6 +358,23 @@ func TestSubscriptionUpdatePayloadExposesOnlyTheWritableSurface(t *testing.T) {
 	if strings.Join(gotRequired, ",") != strings.Join(wantRequired, ",") {
 		t.Errorf("%s required = %v, want exactly %v", subscriptionUpdatePayload, gotRequired, wantRequired)
 	}
+}
+
+// securityRequires reports whether an OpenAPI `security` section names the given
+// scheme. The section decodes as a sequence of single-key mappings, so an empty
+// sequence - which declares anonymous access - correctly answers false.
+func securityRequires(section any, scheme string) bool {
+	requirements, ok := section.([]any)
+	if !ok {
+		return false
+	}
+
+	for _, requirement := range requirements {
+		if _, present := mappingValue(requirement, scheme); present {
+			return true
+		}
+	}
+	return false
 }
 
 // mappingKeys renders the keys of a decoded YAML mapping as a []string, in
