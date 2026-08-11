@@ -67,6 +67,8 @@ paths:
           $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
         '500':
           $ref: '#/components/responses/500'
     post:
@@ -85,13 +87,18 @@ paths:
         webhook, and neither of those reaches this route.
 
 
-        Authorization is evaluated against the *stored* subscription's own
-        organization, not against whichever organization the caller currently
-        has selected. The caller must be a provider admin, or an Organization
-        Admin or Organization Owner of that organization. A caller who is not
-        receives 404 - the same answer an absent subscription gives, and
-        deliberately indistinguishable from it, so that the route cannot be used
-        to discover which subscription IDs exist.
+        Two independent authorization gates guard this route and they answer
+        differently. The route's own middleware runs first, against whichever
+        organization the caller currently has *selected*: a caller who is
+        neither an Organization Admin nor an Organization Owner of that
+        organization is refused with 403 before the body is read at all. The
+        handler then re-checks against the *stored* subscription's own
+        organization, which need not be the selected one: the caller must be a
+        provider admin, or an Organization Admin or Organization Owner of that
+        organization, and a caller who is not receives 404 - the same answer an
+        absent subscription gives, and deliberately indistinguishable from it,
+        so that the route cannot be used to discover which subscription IDs
+        exist.
 
 
         The fields the payment processor and the webhook own are pinned to the
@@ -125,6 +132,8 @@ paths:
           $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
         '500':
@@ -148,6 +157,11 @@ paths:
         of that organization. A caller who is not receives 404, deliberately
         indistinguishable from an absent subscription, so that the route cannot
         be used to enumerate subscription IDs.
+
+
+        Unlike the update route, this one is registered without any
+        organization-scoped middleware, so it never answers 403: every denial,
+        whatever its cause, is that same 404.
 
 
         A `subscriptionId` that is not a UUID is refused with 400, and an
@@ -200,6 +214,8 @@ paths:
           $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
         '500':
@@ -231,6 +247,8 @@ paths:
           $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
         '500':
           $ref: '#/components/responses/500'
   /api/entitlement/subscriptions/{subscriptionId}/upgrade:
@@ -263,6 +281,8 @@ paths:
           $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
         '500':
@@ -297,6 +317,8 @@ paths:
           $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
         '404':
           $ref: '#/components/responses/404'
         '500':
@@ -331,6 +353,8 @@ components:
       $ref: ../../v1beta2/core/api.yml#/components/responses/400
     401:
       $ref: ../../v1beta2/core/api.yml#/components/responses/401
+    403:
+      $ref: ../../v1beta2/core/api.yml#/components/responses/403
     404:
       $ref: ../../v1beta2/core/api.yml#/components/responses/404
     500:
@@ -423,20 +447,14 @@ components:
           description: >-
             ID of the subscription to update. Mandatory: a body without it is
             refused with 400, because this route cannot create a subscription.
-          x-oapi-codegen-extra-tags:
-            json: id
         planId:
           $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
           description: ID of the plan the subscription is for.
           x-go-name: PlanID
-          x-oapi-codegen-extra-tags:
-            json: planId
         quantity:
           type: integer
           description: Number of units subscribed (eg number of users).
           minimum: 0
-          x-oapi-codegen-extra-tags:
-            json: quantity
     UpgradeSubscriptionRequest:
       type: object
       description: Payload for upgrading or downgrading a subscription by changing

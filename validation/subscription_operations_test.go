@@ -28,10 +28,16 @@ import (
 //     that does not exist and for one the caller does not administer, on purpose:
 //     a 403/404 split would turn the route into an oracle for which subscription
 //     ids are real.
+//   - That handler gate is not the only one. `server/router/router.go` registers
+//     the POST - and not the GET - with `AuthorizationMiddlewareForOrgAdminAndOrgOwner`,
+//     which answers 403 against the organization the caller currently has
+//     *selected*, before the handler and its 404 gate run at all. The two
+//     denials check different things and both are reachable, so the POST
+//     declares both and the GET declares only the 404.
 //
 // These tests pin that contract so it cannot silently drift back to an
 // entity-shaped request body, to a payload that re-advertises the pinned fields
-// as writable, or to an undeclared denial code.
+// as writable, or to a denial set that does not match the route registration.
 
 const (
 	subscriptionSpec           = "schemas/constructs/v1beta3/subscription/api.yml"
@@ -47,16 +53,35 @@ var subscriptionOperations = []struct {
 	path        string
 	method      string
 	operationID string
+	// middlewareForbids records whether meshery-cloud registers the route with
+	// `AuthorizationMiddlewareForOrgAdminAndOrgOwner`, which rejects with 403
+	// before the handler runs. The POST carries it; the GET is registered on
+	// the same authenticated group with no authorization middleware at all, so
+	// 403 is unreachable there and declaring it would describe a response the
+	// server never writes.
+	middlewareForbids bool
 }{
-	{subscriptionsPath, "post", "upsertSubscription"},
-	{subscriptionByIDPath, "get", "getSubscriptionById"},
+	{subscriptionsPath, "post", "upsertSubscription", true},
+	{subscriptionByIDPath, "get", "getSubscriptionById", false},
 }
 
-// serverPinnedSubscriptionFields are the columns
-// `pinServerOwnedSubscriptionFields` takes from the stored row. A client-supplied
-// value for any of them is discarded, so declaring one in the write payload would
-// advertise a write that does not happen.
-var serverPinnedSubscriptionFields = []string{
+// subscriptionFieldsExcludedFromTheUpdatePayload are the entity fields that must
+// not appear on the write payload - for three different reasons, only the first
+// of which is "the server pins it":
+//
+//   - `orgId`, `billingId`, `status`, `startDate` and `endDate` are exactly the
+//     five columns `pinServerOwnedSubscriptionFields` copies from the stored row
+//     over whatever the body carried, so a client-supplied value for one of them
+//     really is discarded.
+//   - `createdAt` and `updatedAt` are the ORM's, not the payload's: pop's
+//     `Update` removes `id` and `created_at` from the column set, and `updatedAt`
+//     is stamped on every write.
+//   - `deletedAt` is neither pinned by the handler nor excluded by pop, so a body
+//     carrying it *is* written and an update can soft-delete the row. That is a
+//     defect in meshery-cloud, reported as a follow-up rather than encoded into
+//     this contract. Keeping `deletedAt` off the payload is this repository's
+//     half of the fix, not a claim that the server already neutralizes it.
+var subscriptionFieldsExcludedFromTheUpdatePayload = []string{
 	"orgId", "billingId", "status", "startDate", "endDate",
 	"createdAt", "updatedAt", "deletedAt",
 }
@@ -76,17 +101,27 @@ func TestSubscriptionIDAddressedOperationsAreDeclared(t *testing.T) {
 				t.Errorf("operationId = %v, want %q", got, op.operationID)
 			}
 
-			// The declared path is the complete served path - nothing prepends
-			// `/api` at build time - and meshery-cloud registers both routes on
-			// `s.e.Group("/api")`. A bare `/entitlement/...` here would generate
-			// a client that 404s at runtime without failing any build step.
-			if _, err := lookupPath(doc, "paths", "/entitlement/subscriptions"); err == nil {
-				t.Errorf("an unprefixed /entitlement/subscriptions path is declared; " +
-					"the served routes are under the /api Echo group")
-			}
-
 			assertSubscriptionOperationShape(t, doc, op.path, op.method, operation)
 		})
+	}
+}
+
+// TestSubscriptionPathsAreDeclaredUnderTheApiPrefix guards the declared path
+// itself. The declared path is the complete served path - nothing prepends
+// `/api` at build time - and meshery-cloud registers both routes on
+// `s.e.Group("/api")`. A bare `/entitlement/...` declaration would generate a
+// client that 404s at runtime without failing any build step (meshery/schemas#1126),
+// so neither served route may appear without the prefix.
+func TestSubscriptionPathsAreDeclaredUnderTheApiPrefix(t *testing.T) {
+	doc := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), subscriptionSpec))
+
+	for _, declared := range []string{subscriptionsPath, subscriptionByIDPath} {
+		unprefixed := strings.TrimPrefix(declared, "/api")
+		if _, err := lookupPath(doc, "paths", unprefixed); err == nil {
+			t.Errorf("%q is declared without the /api prefix; the served routes are "+
+				"registered on the /api Echo group, so the declared path must be %q",
+				unprefixed, declared)
+		}
 	}
 }
 
@@ -137,14 +172,20 @@ func assertSubscriptionOperationShape(t *testing.T, doc map[string]any, path, me
 	}
 }
 
-// TestSubscriptionDenialIsDeclaredAs404 is the security-relevant half of the
-// contract above, stated on its own so it reads as intent rather than as one
-// entry in a list of status codes. `authorizeSubscriptionByID` answers 404 - not
-// 403 - to a caller who is not an Organization Admin or Owner of the
-// subscription's own organization, matching the answer an absent subscription
-// gives so the route cannot be used to enumerate subscription ids. A spec that
-// declared 403 would invite integrators to distinguish the two.
-func TestSubscriptionDenialIsDeclaredAs404NotForbidden(t *testing.T) {
+// TestSubscriptionDenialCodesMatchTheRouteRegistration is the security-relevant
+// half of the contract above, stated on its own so it reads as intent rather
+// than as one entry in a list of status codes.
+//
+// Two distinct gates are in play. The handler gate, `authorizeSubscriptionByID`,
+// answers 404 - never 403 - to a caller who is not an Organization Admin or
+// Owner of the subscription's *own* organization, matching the answer an absent
+// subscription gives so the route cannot be used to enumerate subscription ids;
+// that uniform 404 is required on both operations. The route gate is the
+// `AuthorizationMiddlewareForOrgAdminAndOrgOwner` the router wraps the POST in,
+// which answers 403 against the organization the caller currently has selected
+// before any subscription is looked up; it leaks nothing about which ids exist,
+// and only the operations whose routes carry it may declare 403.
+func TestSubscriptionDenialCodesMatchTheRouteRegistration(t *testing.T) {
 	doc := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), subscriptionSpec))
 
 	for _, op := range subscriptionOperations {
@@ -153,9 +194,18 @@ func TestSubscriptionDenialIsDeclaredAs404NotForbidden(t *testing.T) {
 			if _, err := lookupPath(doc, "paths", op.path, op.method, "responses", "404"); err != nil {
 				t.Errorf("404 is not declared: %v", err)
 			}
-			if _, err := lookupPath(doc, "paths", op.path, op.method, "responses", "403"); err == nil {
-				t.Errorf("403 is declared; the handler answers a uniform 404 for both " +
-					"\"not yours\" and \"not there\" so the route is not an existence oracle")
+
+			_, err := lookupPath(doc, "paths", op.path, op.method, "responses", "403")
+			switch {
+			case op.middlewareForbids && err != nil:
+				t.Errorf("403 is not declared, but the route is registered with "+
+					"AuthorizationMiddlewareForOrgAdminAndOrgOwner, which rejects a caller who "+
+					"does not administer their currently selected organization before the "+
+					"handler runs: %v", err)
+			case !op.middlewareForbids && err == nil:
+				t.Errorf("403 is declared, but the route carries no authorization middleware; " +
+					"its only denial is the handler's uniform 404 for both \"not yours\" and " +
+					"\"not there\", which keeps the route from being an existence oracle")
 			}
 		})
 	}
@@ -198,10 +248,10 @@ func TestSubscriptionUpdatePayloadExposesOnlyTheWritableSurface(t *testing.T) {
 		t.Fatalf("locating %s properties: %v", subscriptionUpdatePayload, err)
 	}
 
-	for _, field := range serverPinnedSubscriptionFields {
+	for _, field := range subscriptionFieldsExcludedFromTheUpdatePayload {
 		if _, present := mappingValue(properties, field); present {
-			t.Errorf("%s declares %q; the server pins that field to the stored row and "+
-				"ignores any client-supplied value, so declaring it advertises a write that never happens",
+			t.Errorf("%s declares %q; a write payload carries only the fields the handler "+
+				"reads off the body, and this one is not among them",
 				subscriptionUpdatePayload, field)
 		}
 	}
@@ -226,16 +276,15 @@ func TestSubscriptionUpdatePayloadExposesOnlyTheWritableSurface(t *testing.T) {
 
 	// `id` is mandatory at runtime - a body without it is refused 400 - but it
 	// cannot be listed under `required`, because Rule 2 blocks server-generated
-	// fields there. Its mandatory-ness therefore lives in the description, and
-	// this asserts that the description carries it rather than leaving the only
-	// statement of it in a commit message.
-	description, err := lookupPath(doc, "components", "schemas", subscriptionUpdatePayload, "properties", "id", "description")
-	if err != nil {
-		t.Fatalf("locating the %s.id description: %v", subscriptionUpdatePayload, err)
-	}
-	if !strings.Contains(strings.ToLower(fmt.Sprint(description)), "mandatory") {
-		t.Errorf("%s.id description does not state that the field is mandatory: %q",
-			subscriptionUpdatePayload, description)
+	// fields there. The assertion on `required` above pins the accepted half of
+	// that asymmetry; this pins the other half, the declared 400 that is the
+	// only machine-readable statement a client gets that omitting `id` fails.
+	// A prose assertion would add nothing: `id` is a `$ref`, and the generator
+	// drops keys that sit beside a `$ref`, so the property description never
+	// reaches a generated Go or TypeScript consumer.
+	if _, err := lookupPath(doc, "paths", subscriptionsPath, "post", "responses", "400"); err != nil {
+		t.Errorf("the upsert operation does not declare 400, which is how a client learns "+
+			"that a body without `id` is refused: %v", err)
 	}
 }
 
