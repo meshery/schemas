@@ -102,7 +102,7 @@ The schema validator enforces that default template values in `templates/` match
 - **Nested object traversal**: The validator recursively verifies each key of a nested object property against the corresponding nested property schema.
 - **Array item traversal**: The validator iterates through array template items and verifies each element against the `items` property schema definition.
 - **`$ref` skipping**: Properties referencing external schemas (via `$ref`) are skipped during this template validation, as the referenced structure is maintained externally.
-- **Type mismatch**: If a nested object or array schema property receives an incompatible scalar value (e.g. `metadata: ""` for `type: object`), the validator will emit a type mismatch violation.
+- **Type mismatch**: If a nested object or array schema property receives an incompatible scalar value (e.g. `metadata: ""` for `type: object`), the validator will emit a type mismatch violation. This also applies to primitive properties receiving invalid types (e.g. an `integer` schema receiving a string value, or a `string` schema receiving an object).
 
 ## Per-Property Validation Constraints
 
