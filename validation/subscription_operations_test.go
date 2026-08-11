@@ -78,9 +78,12 @@ var subscriptionOperations = []struct {
 //     is stamped on every write.
 //   - `deletedAt` is neither pinned by the handler nor excluded by pop, so a body
 //     carrying it *is* written and an update can soft-delete the row. That is a
-//     defect in meshery-cloud, reported as a follow-up rather than encoded into
-//     this contract. Keeping `deletedAt` off the payload is this repository's
-//     half of the fix, not a claim that the server already neutralizes it.
+//     live defect in meshery-cloud, not something this contract encodes: a
+//     schema cannot make the server ignore a column, and declaring `deletedAt`
+//     writable would advertise the defect as a feature. Keeping it off the
+//     payload is this repository's half of the fix, not a claim that the server
+//     already neutralizes it. This PR's description enumerates that defect and
+//     the other adjacent findings left unfixed here.
 var subscriptionFieldsExcludedFromTheUpdatePayload = []string{
 	"orgId", "billingId", "status", "startDate", "endDate",
 	"createdAt", "updatedAt", "deletedAt",

@@ -89,8 +89,8 @@ paths:
 
         Two independent authorization gates guard this route and they answer
         differently. The route's own middleware runs first, against whichever
-        organization the caller currently has *selected*: a caller who is
-        neither an Organization Admin nor an Organization Owner of that
+        organization the caller currently has *selected*: a caller who is not a
+        provider admin, an Organization Admin or an Organization Owner of that
         organization is refused with 403 before the body is read at all. The
         handler then re-checks against the *stored* subscription's own
         organization, which need not be the selected one: the caller must be a
