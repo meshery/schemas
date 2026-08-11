@@ -69,6 +69,113 @@ paths:
           $ref: '#/components/responses/401'
         '500':
           $ref: '#/components/responses/500'
+    post:
+      x-internal:
+      - cloud
+      tags:
+      - Subscriptions
+      operationId: upsertSubscription
+      summary: Update an existing subscription
+      description: >-
+        Updates the subscription named by `id` in the request body. Despite the
+        historical "upsert" name, this route does not create: a body carrying no
+        `id` is refused with 400. Subscriptions are minted from the payment
+        processor's own response, either by the checkout flow (`POST
+        /api/entitlement/subscriptions/create`) or by the payment-processor
+        webhook, and neither of those reaches this route.
+
+
+        Authorization is evaluated against the *stored* subscription's own
+        organization, not against whichever organization the caller currently
+        has selected. The caller must be a provider admin, or an Organization
+        Admin or Organization Owner of that organization. A caller who is not
+        receives 404 - the same answer an absent subscription gives, and
+        deliberately indistinguishable from it, so that the route cannot be used
+        to discover which subscription IDs exist.
+
+
+        The fields the payment processor and the webhook own are pinned to the
+        stored row before the write, and any client-supplied value for them is
+        ignored rather than honoured: `orgId`, `billingId`, `status`,
+        `startDate` and `endDate`. The writable surface is `planId` and
+        `quantity`, and the write replaces both - a body that omits one stores
+        that field's zero value rather than preserving the stored one, so send
+        both on every call.
+
+
+        The 200 body is a `SubscriptionPage` carrying the single updated
+        subscription (`page` 0, `pageSize` 1, `totalCount` 1), not a bare
+        subscription object.
+      security:
+      - jwt: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionUpdatePayload'
+      responses:
+        '200':
+          description: Subscription updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionPage'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+  /api/entitlement/subscriptions/{subscriptionId}:
+    get:
+      x-internal:
+      - cloud
+      tags:
+      - Subscriptions
+      operationId: getSubscriptionById
+      summary: Read a single subscription
+      description: >-
+        Returns the subscription named by `subscriptionId`.
+
+
+        Authorization is evaluated against the subscription's own organization,
+        the same bar the org-scoped list route (`GET
+        /api/entitlement/subscriptions`) enforces over the same data: the caller
+        must be a provider admin, or an Organization Admin or Organization Owner
+        of that organization. A caller who is not receives 404, deliberately
+        indistinguishable from an absent subscription, so that the route cannot
+        be used to enumerate subscription IDs.
+
+
+        A `subscriptionId` that is not a UUID is refused with 400, and an
+        unauthenticated caller with 401.
+
+
+        The 200 body is a `SubscriptionPage` carrying the single subscription
+        (`page` 0, `pageSize` 1, `totalCount` 1), not a bare subscription
+        object.
+      security:
+      - jwt: []
+      parameters:
+      - $ref: '#/components/parameters/subscriptionId'
+      responses:
+        '200':
+          description: Subscription response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionPage'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
   /api/entitlement/subscriptions/{subscriptionId}/cancel:
     post:
       x-internal:
@@ -289,6 +396,47 @@ components:
         paymentProcessor:
           $ref: '#/components/schemas/PaymentProcessor'
           description: Payment processor used to complete the subscription checkout.
+    SubscriptionUpdatePayload:
+      type: object
+      description: >-
+        Body of an update to an existing subscription (`POST
+        /api/entitlement/subscriptions`).
+
+
+        This is an update payload, never a create payload: `id` names the
+        subscription to update and the server refuses a body without one. It is
+        also a full replacement of the writable surface rather than a partial
+        merge, which is why `planId` and `quantity` are both required - omitting
+        either stores its zero value.
+
+
+        The fields the payment processor and the webhook own - `orgId`,
+        `billingId`, `status`, `startDate` and `endDate` - are deliberately
+        absent: the server pins each of them to the stored row and ignores any
+        value supplied for them.
+      required:
+      - planId
+      - quantity
+      properties:
+        id:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+          description: >-
+            ID of the subscription to update. Mandatory: a body without it is
+            refused with 400, because this route cannot create a subscription.
+          x-oapi-codegen-extra-tags:
+            json: id
+        planId:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+          description: ID of the plan the subscription is for.
+          x-go-name: PlanID
+          x-oapi-codegen-extra-tags:
+            json: planId
+        quantity:
+          type: integer
+          description: Number of units subscribed (eg number of users).
+          minimum: 0
+          x-oapi-codegen-extra-tags:
+            json: quantity
     UpgradeSubscriptionRequest:
       type: object
       description: Payload for upgrading or downgrading a subscription by changing
