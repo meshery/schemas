@@ -30,8 +30,11 @@ import (
 //     ids are real.
 //   - That handler gate is not the only one. `server/router/router.go` registers
 //     the POST - and not the GET - with `AuthorizationMiddlewareForOrgAdminAndOrgOwner`,
-//     which answers 403 against the organization the caller currently has
-//     *selected*, before the handler and its 404 gate run at all. The two
+//     which answers 403 before the handler and its 404 gate run at all. That
+//     middleware authorizes against the organization named by the route's
+//     `:orgId` path param when the route has one, and otherwise against the
+//     organization the caller currently has selected; no subscription route
+//     carries `:orgId`, so on these routes it is the selected one. The two
 //     denials check different things and both are reachable, so the POST
 //     declares both and the GET declares only the 404.
 //
@@ -53,16 +56,44 @@ var subscriptionOperations = []struct {
 	path        string
 	method      string
 	operationID string
-	// middlewareForbids records whether meshery-cloud registers the route with
-	// `AuthorizationMiddlewareForOrgAdminAndOrgOwner`, which rejects with 403
-	// before the handler runs. The POST carries it; the GET is registered on
-	// the same authenticated group with no authorization middleware at all, so
-	// 403 is unreachable there and declaring it would describe a response the
-	// server never writes.
-	middlewareForbids bool
 }{
-	{subscriptionsPath, "post", "upsertSubscription", true},
-	{subscriptionByIDPath, "get", "getSubscriptionById", false},
+	{subscriptionsPath, "post", "upsertSubscription"},
+	{subscriptionByIDPath, "get", "getSubscriptionById"},
+}
+
+// subscriptionRouteAuthorization is every operation this construct declares,
+// paired with whether meshery-cloud registers its route with
+// `AuthorizationMiddlewareForOrgAdminAndOrgOwner` - the middleware that answers
+// 403 before the handler runs.
+//
+// The whole file is listed, not just the two operations this change added,
+// because this change also added the missing 403 to five pre-existing
+// operations whose routes carry that middleware. Nothing else pins those, so
+// without this table a later edit could drop one and no test would notice. The
+// `routerLine` is the registration this was read off, so a reviewer can check
+// the claim instead of trusting it.
+var subscriptionRouteAuthorization = []struct {
+	path              string
+	method            string
+	operationID       string
+	middlewareForbids bool
+	routerLine        string
+}{
+	{subscriptionsPath, "get", "getSubscriptions", true, "router.go:1315"},
+	{subscriptionsPath, "post", "upsertSubscription", true, "router.go:1317"},
+	{"/api/entitlement/subscriptions/create", "post", "createSubscription", true, "router.go:1711"},
+	{"/api/entitlement/subscriptions/{subscriptionId}/upgrade", "post", "upgradeSubscription", true, "router.go:1712"},
+	{"/api/entitlement/subscriptions/{subscriptionId}/upgrade-preview", "post", "previewSubscriptionUpgrade", true, "router.go:1713"},
+	{"/api/entitlement/subscriptions/{subscriptionId}/cancel", "post", "cancelSubscription", true, "router.go:1714"},
+
+	// Registered on the same authenticated `/api` group but with NO
+	// authorization middleware, so 403 is unreachable and declaring it would
+	// describe a response the server never writes.
+	{subscriptionByIDPath, "get", "getSubscriptionById", false, "router.go:1318"},
+
+	// Registered on the bare router, not the `/api` group, and declares
+	// `security: []` - the payment processor calls it, not a Meshery user.
+	{"/api/entitlement/subscriptions/webhooks", "post", "handleSubscriptionWebhook", false, "router.go:1715"},
 }
 
 // subscriptionFieldsExcludedFromTheUpdatePayload are the entity fields that must
@@ -188,27 +219,42 @@ func assertSubscriptionOperationShape(t *testing.T, doc map[string]any, path, me
 // Owner of the subscription's *own* organization, matching the answer an absent
 // subscription gives so the route cannot be used to enumerate subscription ids.
 // The route gate is the `AuthorizationMiddlewareForOrgAdminAndOrgOwner` the
-// router wraps the POST in, which answers 403 against the organization the
-// caller currently has selected before any subscription is looked up; it leaks
-// nothing about which ids exist, and only the operations whose routes carry it
-// may declare 403.
+// router wraps some of these routes in. It answers 403 against the organization
+// named by the route's `:orgId` path param, or - as on every subscription route,
+// none of which has one - against the organization the caller currently has
+// selected, before any subscription is looked up. It leaks nothing about which
+// ids exist, and only the operations whose routes carry it may declare 403.
+//
+// The table is the whole construct, so the 403s this change added to the five
+// pre-existing middleware-guarded operations are pinned too.
 func TestSubscriptionDenialCodesMatchTheRouteRegistration(t *testing.T) {
 	doc := loadOpenAPIDocument(t, filepath.Join(repoRootDir(t), subscriptionSpec))
 
-	for _, op := range subscriptionOperations {
+	for _, op := range subscriptionRouteAuthorization {
 		op := op
-		t.Run(op.method+" "+op.path, func(t *testing.T) {
-			_, err := lookupPath(doc, "paths", op.path, op.method, "responses", "403")
+		t.Run(op.operationID, func(t *testing.T) {
+			// Guards against the table drifting from the spec: a renamed path
+			// or operationId would otherwise make every assertion below vacuous.
+			declared, err := lookupPath(doc, "paths", op.path, op.method)
+			if err != nil {
+				t.Fatalf("%s %s is not declared: %v", op.method, op.path, err)
+			}
+			if got, _ := mappingValue(declared, "operationId"); got != op.operationID {
+				t.Fatalf("%s %s has operationId %v, want %q", op.method, op.path, got, op.operationID)
+			}
+
+			_, err = lookupPath(doc, "paths", op.path, op.method, "responses", "403")
 			switch {
 			case op.middlewareForbids && err != nil:
-				t.Errorf("403 is not declared, but the route is registered with "+
+				t.Errorf("403 is not declared, but %s registers this route with "+
 					"AuthorizationMiddlewareForOrgAdminAndOrgOwner, which rejects a caller who "+
-					"does not administer their currently selected organization before the "+
-					"handler runs: %v", err)
+					"does not administer the authorizing organization before the handler runs: %v",
+					op.routerLine, err)
 			case !op.middlewareForbids && err == nil:
-				t.Errorf("403 is declared, but the route carries no authorization middleware; " +
-					"its only denial is the handler's uniform 404 for both \"not yours\" and " +
-					"\"not there\", which keeps the route from being an existence oracle")
+				t.Errorf("403 is declared, but %s registers this route with no authorization "+
+					"middleware; declaring a status the server never writes misleads consumers, "+
+					"and on the id-addressed read the only denial is the handler's uniform 404 "+
+					"for both \"not yours\" and \"not there\"", op.routerLine)
 			}
 		})
 	}
@@ -251,19 +297,19 @@ func TestSubscriptionUpdatePayloadExposesOnlyTheWritableSurface(t *testing.T) {
 		t.Fatalf("locating %s properties: %v", subscriptionUpdatePayload, err)
 	}
 
-	for _, field := range subscriptionFieldsExcludedFromTheUpdatePayload {
-		if _, present := mappingValue(properties, field); present {
-			t.Errorf("%s declares %q; a write payload carries only the fields the handler "+
-				"reads off the body, and this one is not among them",
-				subscriptionUpdatePayload, field)
-		}
-	}
+	// Exact equality, not "contains these / excludes those": an extra property
+	// is the failure mode a containment check misses, and it is the likely one -
+	// an eager-loaded association such as `plan`, or a column added to the entity
+	// later and copied here out of symmetry. Anything the handler does not read
+	// off the body advertises a write that never happens.
+	got := mappingKeys(properties)
+	want := []string{"id", "planId", "quantity"}
+	sort.Strings(got)
 
-	for _, field := range []string{"id", "planId", "quantity"} {
-		if _, present := mappingValue(properties, field); !present {
-			t.Errorf("%s is missing %q, which the handler does read off the body",
-				subscriptionUpdatePayload, field)
-		}
+	if strings.Join(got, ",") != strings.Join(want, ",") {
+		t.Errorf("%s properties = %v, want exactly %v. The payload is the set of fields "+
+			"UpsertSubscription reads off the body, nothing wider.%s",
+			subscriptionUpdatePayload, got, want, explainExcludedSubscriptionFields(got))
 	}
 
 	// `id` is mandatory at runtime - a body without it is refused 400 - yet it
@@ -285,11 +331,57 @@ func TestSubscriptionUpdatePayloadExposesOnlyTheWritableSurface(t *testing.T) {
 		t.Fatalf("locating %s required: %v", subscriptionUpdatePayload, err)
 	}
 
-	got := stringSliceOf(required)
-	sort.Strings(got)
-	if len(got) != 2 || got[0] != "planId" || got[1] != "quantity" {
-		t.Errorf("%s required = %v, want [planId quantity]", subscriptionUpdatePayload, got)
+	gotRequired := stringSliceOf(required)
+	wantRequired := []string{"planId", "quantity"}
+	sort.Strings(gotRequired)
+
+	if strings.Join(gotRequired, ",") != strings.Join(wantRequired, ",") {
+		t.Errorf("%s required = %v, want exactly %v", subscriptionUpdatePayload, gotRequired, wantRequired)
 	}
+}
+
+// mappingKeys renders the keys of a decoded YAML mapping as a []string, in
+// whatever order the decoder produced; callers that compare sort first.
+func mappingKeys(node any) []string {
+	switch typed := node.(type) {
+	case map[string]any:
+		out := make([]string, 0, len(typed))
+		for k := range typed {
+			out = append(out, k)
+		}
+		return out
+	case map[any]any:
+		out := make([]string, 0, len(typed))
+		for k := range typed {
+			out = append(out, fmt.Sprint(k))
+		}
+		return out
+	}
+	return nil
+}
+
+// explainExcludedSubscriptionFields turns a property-set mismatch into a
+// diagnosis when the offending extra is one of the entity fields that is kept
+// off the payload deliberately, so the failure says WHY rather than only WHAT.
+func explainExcludedSubscriptionFields(properties []string) string {
+	present := make(map[string]bool, len(properties))
+	for _, p := range properties {
+		present[p] = true
+	}
+
+	var offenders []string
+	for _, field := range subscriptionFieldsExcludedFromTheUpdatePayload {
+		if present[field] {
+			offenders = append(offenders, field)
+		}
+	}
+	if len(offenders) == 0 {
+		return ""
+	}
+
+	return fmt.Sprintf(" %v is excluded on purpose - see "+
+		"subscriptionFieldsExcludedFromTheUpdatePayload for which of the three reasons applies.",
+		offenders)
 }
 
 // stringSliceOf renders a decoded YAML sequence as a []string.

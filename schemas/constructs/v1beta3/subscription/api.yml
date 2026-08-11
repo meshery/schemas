@@ -88,8 +88,11 @@ paths:
 
 
         Two independent authorization gates guard this route and they answer
-        differently. The route's own middleware runs first, against whichever
-        organization the caller currently has *selected*: a caller who is not a
+        differently. The route's own middleware runs first. It authorizes
+        against the organization named by the route's `orgId` path parameter
+        when the route has one, and otherwise against whichever organization the
+        caller currently has *selected* - and this route has no `orgId`
+        parameter, so here it is the selected one. A caller who is not a
         provider admin, an Organization Admin or an Organization Owner of that
         organization is refused with 403 before the body is read at all. The
         handler then re-checks against the *stored* subscription's own
@@ -160,8 +163,10 @@ paths:
 
 
         Unlike the update route, this one is registered without any
-        organization-scoped middleware, so it never answers 403: every denial,
-        whatever its cause, is that same 404.
+        organization-scoped middleware, so it never answers 403: every
+        authorization denial, whether "not yours" or "not there", is that same
+        404. A malformed request still answers 400 and an unauthenticated one
+        401, as below.
 
 
         A `subscriptionId` that is not a UUID is refused with 400, and an
