@@ -1418,6 +1418,14 @@ const injectedRtkApi = api
         }),
         providesTags: ["Subscription_Subscriptions"],
       }),
+      upsertSubscription: build.mutation<UpsertSubscriptionApiResponse, UpsertSubscriptionApiArg>({
+        query: (queryArg) => ({ url: `/api/entitlement/subscriptions`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Subscription_Subscriptions"],
+      }),
+      getSubscriptionById: build.query<GetSubscriptionByIdApiResponse, GetSubscriptionByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/entitlement/subscriptions/${queryArg.subscriptionId}` }),
+        providesTags: ["Subscription_Subscriptions"],
+      }),
       cancelSubscription: build.mutation<CancelSubscriptionApiResponse, CancelSubscriptionApiArg>({
         query: (queryArg) => ({
           url: `/api/entitlement/subscriptions/${queryArg.subscriptionId}/cancel`,
@@ -13428,6 +13436,120 @@ export type GetSubscriptionsApiArg = {
   /** Filter subscriptions by plan UUID. Repeat for multiple values. */
   planId?: string[];
 };
+export type UpsertSubscriptionApiResponse = /** status 200 Subscription updated */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Subscriptions returned on the current page. */
+  subscriptions: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    orgId: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    planId: string;
+    /** Eager-loaded plan associated with this subscription. */
+    plan?: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** Display name of the plan. */
+      name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+      /** Billing cadence for the plan (monthly, annually, or none). */
+      cadence: "none" | "monthly" | "annually";
+      /** Unit of consumption this plan charges against (e.g. user). */
+      unit: "user" | "free";
+      /** Minimum number of units required for the plan. */
+      minimumUnits: number;
+      /** Price per unit of the plan. */
+      pricePerUnit: number;
+      /** Currency in which the plan is priced. */
+      currency: "usd";
+    };
+    /** Number of units subscribed (eg number of users). */
+    quantity: number;
+    /** Timestamp when the subscription period started. */
+    startDate?: string;
+    /** Timestamp when the current subscription period ends. */
+    endDate?: string;
+    /** Current status of the subscription (e.g. active, past_due, canceled). */
+    status: "incomplete" | "incomplete_expired" | "trialing" | "active" | "past_due" | "canceled" | "unpaid";
+    /** Timestamp when the subscription was created. */
+    createdAt?: string;
+    /** Timestamp when the subscription was last updated. */
+    updatedAt?: string;
+    /** Timestamp when the subscription was soft-deleted, if applicable. */
+    deletedAt?: string;
+    /** Billing ID of the subscription. The ID of the subscription in the external billing system (for example, Stripe). */
+    billingId: string;
+  }[];
+};
+export type UpsertSubscriptionApiArg = {
+  body: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    planId: string;
+    /** Number of units subscribed (eg number of users). */
+    quantity: number;
+  };
+};
+export type GetSubscriptionByIdApiResponse = /** status 200 Subscription response */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Subscriptions returned on the current page. */
+  subscriptions: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    orgId: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    planId: string;
+    /** Eager-loaded plan associated with this subscription. */
+    plan?: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** Display name of the plan. */
+      name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+      /** Billing cadence for the plan (monthly, annually, or none). */
+      cadence: "none" | "monthly" | "annually";
+      /** Unit of consumption this plan charges against (e.g. user). */
+      unit: "user" | "free";
+      /** Minimum number of units required for the plan. */
+      minimumUnits: number;
+      /** Price per unit of the plan. */
+      pricePerUnit: number;
+      /** Currency in which the plan is priced. */
+      currency: "usd";
+    };
+    /** Number of units subscribed (eg number of users). */
+    quantity: number;
+    /** Timestamp when the subscription period started. */
+    startDate?: string;
+    /** Timestamp when the current subscription period ends. */
+    endDate?: string;
+    /** Current status of the subscription (e.g. active, past_due, canceled). */
+    status: "incomplete" | "incomplete_expired" | "trialing" | "active" | "past_due" | "canceled" | "unpaid";
+    /** Timestamp when the subscription was created. */
+    createdAt?: string;
+    /** Timestamp when the subscription was last updated. */
+    updatedAt?: string;
+    /** Timestamp when the subscription was soft-deleted, if applicable. */
+    deletedAt?: string;
+    /** Billing ID of the subscription. The ID of the subscription in the external billing system (for example, Stripe). */
+    billingId: string;
+  }[];
+};
+export type GetSubscriptionByIdApiArg = {
+  /** Subscription ID */
+  subscriptionId: string;
+};
 export type CancelSubscriptionApiResponse = /** status 200 Subscription cancellation scheduled */ {
   /** Current page number of the result set. */
   page: number;
@@ -15578,6 +15700,9 @@ export const {
   useLazyGetPlansQuery,
   useGetSubscriptionsQuery,
   useLazyGetSubscriptionsQuery,
+  useUpsertSubscriptionMutation,
+  useGetSubscriptionByIdQuery,
+  useLazyGetSubscriptionByIdQuery,
   useCancelSubscriptionMutation,
   useCreateSubscriptionMutation,
   useUpgradeSubscriptionMutation,
