@@ -180,25 +180,33 @@ func validate(
 	// -------------------------
 	// Object
 	// -------------------------
-	if schemaProp.Type == "object" && schemaProp.Properties != nil {
+	if schemaProp.Type == "object" {
 		obj, ok := templateValue.(map[string]any)
 		if !ok {
+			*out = append(*out, Violation{
+				File:       relTmpl,
+				Message:    fmt.Sprintf(`Template property %q is not an object but schema declares type: object. Use an empty object {} as the default.`, propName),
+				Severity:   SeverityBlocking,
+				RuleNumber: 34,
+			})
 			return
 		}
 
-		for childName, childValue := range obj {
-			childSchema, ok := schemaProp.Properties[childName]
-			if !ok {
-				continue
-			}
+		if schemaProp.Properties != nil {
+			for childName, childValue := range obj {
+				childSchema, ok := schemaProp.Properties[childName]
+				if !ok {
+					continue
+				}
 
-			validate(
-				childSchema,
-				childValue,
-				relTmpl,
-				childName,
-				out,
-			)
+				validate(
+					childSchema,
+					childValue,
+					relTmpl,
+					childName,
+					out,
+				)
+			}
 		}
 
 		return
@@ -209,20 +217,27 @@ func validate(
 	// -------------------------
 	if schemaProp.Type == "array" {
 		arr, ok := templateValue.([]any)
-
-		if ok {
-			for _, element := range arr {
-				validate(
-					schemaProp.Items,
-					element,
-					relTmpl,
-					propName,
-					out,
-				)
-			}
-
+		if !ok {
+			*out = append(*out, Violation{
+				File:       relTmpl,
+				Message:    fmt.Sprintf(`Template property %q is not an array but schema declares type: array. Use an empty array [] as the default.`, propName),
+				Severity:   SeverityBlocking,
+				RuleNumber: 34,
+			})
 			return
 		}
+
+		for _, element := range arr {
+			validate(
+				schemaProp.Items,
+				element,
+				relTmpl,
+				propName,
+				out,
+			)
+		}
+
+		return
 	}
 
 	// -------------------------
@@ -249,15 +264,6 @@ func validate(
 		*out = append(*out, Violation{
 			File:       relTmpl,
 			Message:    fmt.Sprintf(`Template property %q is an object but schema declares type: string. Use an empty string "" as the default.`, propName),
-			Severity:   SeverityBlocking,
-			RuleNumber: 34,
-		})
-	}
-
-	if schemaProp.Type == "array" && jsType == "object" && !isArray {
-		*out = append(*out, Violation{
-			File:       relTmpl,
-			Message:    fmt.Sprintf(`Template property %q is an object {} but schema declares type: array. Use an empty array [] as the default.`, propName),
 			Severity:   SeverityBlocking,
 			RuleNumber: 34,
 		})

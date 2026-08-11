@@ -199,3 +199,63 @@ func TestValidateRule34_ArrayObjectMismatch(t *testing.T) {
 		t.Errorf("expected Rule 34, got %d", violations[0].RuleNumber)
 	}
 }
+
+func TestValidateRule34_ObjectScalarMismatch(t *testing.T) {
+	schema := &propertyDef{
+		Type: "object",
+		Properties: map[string]*propertyDef{
+			"app": {
+				Type: "string",
+			},
+		},
+	}
+
+	template := "invalid-scalar-string"
+
+	var violations []Violation
+
+	validate(
+		schema,
+		template,
+		"template.yaml",
+		"metadata",
+		&violations,
+	)
+
+	if len(violations) != 1 {
+		t.Errorf("expected 1 violation, got %d", len(violations))
+	}
+
+	if len(violations) > 0 && violations[0].RuleNumber != 34 {
+		t.Errorf("expected Rule 34, got %d", violations[0].RuleNumber)
+	}
+}
+
+func TestValidateRule34_ArrayScalarMismatch(t *testing.T) {
+	schema := &propertyDef{
+		Type: "array",
+		Items: &propertyDef{
+			Type: "string",
+		},
+	}
+
+	template := 12345 // integer scalar instead of array
+
+	var violations []Violation
+
+	validate(
+		schema,
+		template,
+		"template.yaml",
+		"ports",
+		&violations,
+	)
+
+	if len(violations) != 1 {
+		t.Errorf("expected 1 violation, got %d", len(violations))
+	}
+
+	if len(violations) > 0 && violations[0].RuleNumber != 34 {
+		t.Errorf("expected Rule 34, got %d", violations[0].RuleNumber)
+	}
+}

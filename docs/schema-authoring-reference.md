@@ -95,6 +95,15 @@ post:
           $ref: "#/components/schemas/KeychainPayload"
 ```
 
+## Template Validation (Rule 34)
+
+The schema validator enforces that default template values in `templates/` match the property types declared in their corresponding entity schema (Rule 34). This verification supports deep traversal:
+
+- **Nested object traversal**: The validator recursively verifies each key of a nested object property against the corresponding nested property schema.
+- **Array item traversal**: The validator iterates through array template items and verifies each element against the `items` property schema definition.
+- **`$ref` skipping**: Properties referencing external schemas (via `$ref`) are skipped during this template validation, as the referenced structure is maintained externally.
+- **Type mismatch**: If a nested object or array schema property receives an incompatible scalar value (e.g. `metadata: ""` for `type: object`), the validator will emit a type mismatch violation.
+
 ## Per-Property Validation Constraints
 
 The schema validator (`validation/` Go package, invoked via `go run ./cmd/validate-schemas`) enforces per-property constraints as advisory rules (Rules 37–42). These do not block CI but are reported on `--warn` runs and should be resolved in new schemas.
