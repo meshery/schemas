@@ -1,6 +1,7 @@
 import { mesheryBaseApi as api } from "./api";
 export const addTagTypes = [
   "Meshery_Controllers_Configuration_controllers",
+  "Console_API_Console",
   "Evaluation_Evaluation",
   "Registry_Registry",
   "System_API_System",
@@ -55,6 +56,48 @@ const injectedRtkApi = api
           body: queryArg.body,
         }),
         invalidatesTags: ["Meshery_Controllers_Configuration_controllers"],
+      }),
+      getConsoleCapabilities: build.query<GetConsoleCapabilitiesApiResponse, GetConsoleCapabilitiesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/connections/${queryArg.connectionId}/console/capabilities`,
+          params: {
+            resource: queryArg?.resource,
+            name: queryArg?.name,
+            namespace: queryArg?.["namespace"],
+            container: queryArg?.container,
+          },
+        }),
+        providesTags: ["Console_API_Console"],
+      }),
+      openTerminalConsole: build.query<OpenTerminalConsoleApiResponse, OpenTerminalConsoleApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/connections/${queryArg.connectionId}/console/terminal`,
+          params: {
+            resource: queryArg?.resource,
+            name: queryArg?.name,
+            namespace: queryArg?.["namespace"],
+            container: queryArg?.container,
+            command: queryArg?.command,
+          },
+        }),
+        providesTags: ["Console_API_Console"],
+      }),
+      openLogConsole: build.query<OpenLogConsoleApiResponse, OpenLogConsoleApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/connections/${queryArg.connectionId}/console/logs`,
+          params: {
+            resource: queryArg?.resource,
+            name: queryArg?.name,
+            namespace: queryArg?.["namespace"],
+            container: queryArg?.container,
+            follow: queryArg?.follow,
+            previous: queryArg?.previous,
+            timestamps: queryArg?.timestamps,
+            tailLines: queryArg?.tailLines,
+            sinceSeconds: queryArg?.sinceSeconds,
+          },
+        }),
+        providesTags: ["Console_API_Console"],
       }),
       evaluateRelationships: build.mutation<EvaluateRelationshipsApiResponse, EvaluateRelationshipsApiArg>({
         query: (queryArg) => ({ url: `/api/registry/relationships/evaluate`, method: "POST", body: queryArg.body }),
@@ -901,23 +944,23 @@ const injectedRtkApi = api
         providesTags: ["Environment_environments"],
       }),
       deleteEvent: build.mutation<DeleteEventApiResponse, DeleteEventApiArg>({
-        query: (queryArg) => ({ url: `/events/${queryArg.eventId}`, method: "DELETE" }),
-        invalidatesTags: ["Events_events"],
-      }),
-      createEvent: build.mutation<CreateEventApiResponse, CreateEventApiArg>({
-        query: (queryArg) => ({ url: `/events`, method: "POST", body: queryArg.body }),
+        query: (queryArg) => ({ url: `/api/events/${queryArg.eventId}`, method: "DELETE" }),
         invalidatesTags: ["Events_events"],
       }),
       bulkDeleteEvents: build.mutation<BulkDeleteEventsApiResponse, BulkDeleteEventsApiArg>({
-        query: (queryArg) => ({ url: `/events/delete`, method: "POST", body: queryArg.body }),
+        query: (queryArg) => ({ url: `/api/events/delete`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Events_events"],
       }),
       bulkUpdateEventStatus: build.mutation<BulkUpdateEventStatusApiResponse, BulkUpdateEventStatusApiArg>({
-        query: (queryArg) => ({ url: `/events/status`, method: "PUT", body: queryArg.body }),
+        query: (queryArg) => ({ url: `/api/events/status`, method: "PUT", body: queryArg.body }),
         invalidatesTags: ["Events_events"],
       }),
       updateEventStatus: build.mutation<UpdateEventStatusApiResponse, UpdateEventStatusApiArg>({
-        query: (queryArg) => ({ url: `/events/${queryArg.eventId}/status`, method: "PUT", body: queryArg.body }),
+        query: (queryArg) => ({ url: `/api/events/${queryArg.eventId}/status`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["Events_events"],
+      }),
+      createEvent: build.mutation<CreateEventApiResponse, CreateEventApiArg>({
+        query: (queryArg) => ({ url: `/api/events`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Events_events"],
       }),
       getPerformanceProfiles: build.query<GetPerformanceProfilesApiResponse, GetPerformanceProfilesApiArg>({
@@ -1803,6 +1846,68 @@ export type UpdateConnectionControllersConfigApiArg = {
       };
     };
   };
+};
+export type GetConsoleCapabilitiesApiResponse = /** status 200 The console kinds the target admits. */ {
+  /** Whether an interactive terminal can be opened. */
+  terminal: boolean;
+  /** Whether a log stream can be opened. */
+  logs: boolean;
+  /** The addressable sub-targets, if the resource has any. */
+  containers?: string[];
+  /** The sub-target used when ConsoleTarget.container is empty. */
+  defaultContainer?: string;
+  /** Explains, for a human, why an unsupported console kind is unsupported — e.g. that the pod is not running. */
+  reason?: string;
+};
+export type GetConsoleCapabilitiesApiArg = {
+  /** The connection whose resources the console addresses. */
+  connectionId: string;
+  /** The driver-specific resource type, e.g. `pod` for a kubernetes connection. */
+  resource: string;
+  /** The resource's name within its scope. */
+  name: string;
+  /** The resource's parent scope, where it has one. Required for namespaced Kubernetes resources. */
+  namespace?: string;
+  /** A sub-target within the resource, e.g. a container within a pod. The driver's default sub-target is used when omitted. */
+  container?: string;
+};
+export type OpenTerminalConsoleApiResponse = unknown;
+export type OpenTerminalConsoleApiArg = {
+  /** The connection whose resources the console addresses. */
+  connectionId: string;
+  /** The driver-specific resource type, e.g. `pod` for a kubernetes connection. */
+  resource: string;
+  /** The resource's name within its scope. */
+  name: string;
+  /** The resource's parent scope, where it has one. Required for namespaced Kubernetes resources. */
+  namespace?: string;
+  /** A sub-target within the resource, e.g. a container within a pod. The driver's default sub-target is used when omitted. */
+  container?: string;
+  /** The argv to execute, one query parameter per element. When omitted the driver picks a sensible interactive shell for the target. */
+  command?: string[];
+};
+export type OpenLogConsoleApiResponse = unknown;
+export type OpenLogConsoleApiArg = {
+  /** The connection whose resources the console addresses. */
+  connectionId: string;
+  /** The driver-specific resource type, e.g. `pod` for a kubernetes connection. */
+  resource: string;
+  /** The resource's name within its scope. */
+  name: string;
+  /** The resource's parent scope, where it has one. Required for namespaced Kubernetes resources. */
+  namespace?: string;
+  /** A sub-target within the resource, e.g. a container within a pod. The driver's default sub-target is used when omitted. */
+  container?: string;
+  /** Keep the stream open and append new output as it is produced. */
+  follow?: boolean;
+  /** Return the logs of the target's prior instance, if any. */
+  previous?: boolean;
+  /** Prefix each line with an RFC 3339 timestamp. */
+  timestamps?: boolean;
+  /** Cap how many lines of history are replayed before following. Omit for no limit. */
+  tailLines?: number;
+  /** Bound history to output produced within the last N seconds. Omit for no bound; a value of 0 is treated as omitted. */
+  sinceSeconds?: number;
 };
 export type EvaluateRelationshipsApiResponse = /** status 200 Successful evaluation */ {
   /** Specifies the version of the schema to which the evaluation response conforms. */
@@ -15176,9 +15281,249 @@ export type DeleteConnectionDefinitionApiArg = {
   /** Connection definition ID */
   connectionDefinitionId: string;
 };
-export type ImportDesignApiResponse = /** status 200 Successful Import */ {
-  message?: string;
-};
+export type ImportDesignApiResponse =
+  /** status 200 Successful import. The response body is a JSON array of the saved designs, not a message envelope. The import path saves exactly one design, so the array carries a single element and consumers read the imported design as the first element. */ {
+    /** Server-generated design ID. */
+    id?: string;
+    /** Human-readable design name. */
+    name?: string;
+    /** Catalog metadata attached to the design when published. */
+    catalogData?: {
+      /** Tracks the specific content version that has been made available in the Catalog. */
+      publishedVersion?: string;
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+      class?: "official" | "verified" | "reference architecture";
+      /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
+      compatibility: "kubernetes"[];
+      /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
+      patternCaveats: string;
+      /** Purpose of the design along with its intended and unintended uses. */
+      patternInfo: string;
+      /** Categorization of the type of design or operational flow depicted in this design. */
+      type:
+        | "Deployment"
+        | "Observability"
+        | "Resiliency"
+        | "Scaling"
+        | "Security"
+        | "Traffic-management"
+        | "Troubleshooting"
+        | "Workloads";
+      /** Contains reference to the dark and light mode snapshots of the design. */
+      snapshotURL?: string[];
+    };
+    /** Owning user ID. */
+    userId?: string;
+    /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
+     */
+    user?: {
+      /** Unique identifier for the user */
+      id: string;
+      /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
+      userId: string;
+      /** Authentication provider (e.g., Google, Github) */
+      provider: string;
+      /** User's email address */
+      email: string;
+      /** User's first name */
+      firstName: string;
+      /** User's last name */
+      lastName: string;
+      /** URL to user's avatar image */
+      avatarUrl?: string;
+      /** User account status */
+      status: "active" | "inactive" | "pending" | "anonymous";
+      /** User's biography or description */
+      bio?: string;
+      /** User's country information stored as JSONB */
+      country?: {
+        [key: string]: any;
+      };
+      /** User's region information stored as JSONB */
+      region?: {
+        [key: string]: any;
+      };
+      /** User preferences stored as JSONB */
+      preferences?: {
+        /** The mesh adapters of the preference. */
+        meshAdapters?: object[];
+        grafana?: {
+          /** Grafana URL for the user configuration. */
+          grafanaUrl?: string;
+          /** Grafana API key for the user configuration. */
+          grafanaApiKey?: string;
+          /** Selected Grafana board configurations for the user. */
+          selectedBoardsConfigs?: {
+            /** Placeholder for GrafanaBoard definition (define fields as needed) */
+            board?: object;
+            /** Panels selected for the Grafana board configuration. */
+            panels?: object[];
+            /** Template variables applied to the selected Grafana board configuration. */
+            templateVars?: string[];
+          }[];
+        };
+        prometheus?: {
+          /** The prometheus URL of the prometheus. */
+          prometheusUrl?: string;
+          /** The selected prometheus boards configs of the prometheus. */
+          selectedPrometheusBoardsConfigs?: {
+            /** Placeholder for GrafanaBoard definition (define fields as needed) */
+            board?: object;
+            /** Panels selected for the Grafana board configuration. */
+            panels?: object[];
+            /** Template variables applied to the selected Grafana board configuration. */
+            templateVars?: string[];
+          }[];
+        };
+        loadTestPrefs?: {
+          /** Concurrent requests */
+          c?: number;
+          /** Queries per second */
+          qps?: number;
+          /** Duration */
+          t?: string;
+          /** Load generator */
+          gen?: string;
+        };
+        /** The anonymous usage stats of the preference. */
+        anonymousUsageStats: boolean;
+        /** The anonymous perf results of the preference. */
+        anonymousPerfResults: boolean;
+        /** Timestamp of when the resource was last updated. */
+        updatedAt: string;
+        /** The dashboard preferences of the preference. */
+        dashboardPreferences: {
+          [key: string]: any;
+        };
+        /** ID of the associated selectedOrganization. */
+        selectedOrganizationId: string;
+        /** The selected workspace for organizations of the preference. */
+        selectedWorkspaceForOrganizations: {
+          [key: string]: string;
+        };
+        /** The users extension preferences of the preference. */
+        usersExtensionPreferences: {
+          [key: string]: any;
+        };
+        /** The remote provider preferences of the preference. */
+        remoteProviderPreferences: {
+          [key: string]: any;
+        };
+      };
+      /** Timestamp when user accepted terms and conditions */
+      acceptedTermsAt?: string;
+      /** Timestamp of user's first login */
+      firstLoginTime?: string;
+      /** Timestamp of user's most recent login */
+      lastLoginTime: string;
+      /** Timestamp when the user record was created */
+      createdAt: string;
+      /** Timestamp when the user record was last updated */
+      updatedAt: string;
+      /** Various online profiles associated with the user account */
+      socials?: {
+        /** The site of the social. */
+        site: string;
+        /** The link of the social. */
+        link: string;
+      }[];
+      /** Timestamp when the user record was soft-deleted (null if not deleted) */
+      deletedAt: string | null;
+      /** Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set. */
+      roleNames?: string[];
+      /** Teams the user belongs to with role information */
+      teams?: {
+        /** Team memberships for the user with their assigned roles. */
+        teamsWithRoles?: {
+          /** Unique identifier of the team. */
+          id: string;
+          /** Name of the team. */
+          name: string;
+          /** Human readable description of the team. */
+          description?: string;
+          /** Identifier of the team owner. */
+          owner?: string;
+          /** Free-form metadata associated with the team. */
+          metadata?: {
+            [key: string]: any;
+          };
+          /** Timestamp when the team was created. */
+          createdAt?: string;
+          /** Timestamp when the team was last updated. */
+          updatedAt?: string;
+          /** Timestamp when the team was soft-deleted (null if not deleted). */
+          deletedAt?: string | null;
+          /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+          roleNames: string[];
+        }[];
+        /** Total number of team memberships returned for the user. */
+        totalCount?: number;
+      };
+      /** Organizations the user belongs to with role information */
+      organizations?: {
+        /** Organization memberships for the user with their assigned roles. */
+        organizationsWithRoles?: {
+          /** Unique identifier of the organization. */
+          id: string;
+          /** Name of the organization. */
+          name: string;
+          /** Human readable description of the organization. */
+          description?: string;
+          /** Country associated with the organization. */
+          country?: string;
+          /** Region associated with the organization. */
+          region?: string;
+          /** Identifier of the organization owner. */
+          owner?: string;
+          /** Timestamp when the organization was created. */
+          createdAt?: string;
+          /** Timestamp when the organization was last updated. */
+          updatedAt?: string;
+          /** Timestamp when the organization was soft-deleted (null if not deleted). */
+          deletedAt?: string | null;
+          /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+          roleNames: string[];
+        }[];
+        /** Total number of organization memberships returned for the user. */
+        totalCount?: number;
+      };
+    } | null;
+    /** Optional structured location metadata (branch, host, path, ...). */
+    location?: {
+      [key: string]: string;
+    };
+    /** Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied.
+     */
+    patternFile?: string;
+    /** Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
+     */
+    visibility?: "private" | "public" | "published";
+    /** Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+     */
+    designType?: ("Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest") | null;
+    /** Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.
+     */
+    sourceContent?: string | null;
+    /** Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+     */
+    viewCount?: number;
+    /** Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+     */
+    downloadCount?: number;
+    /** Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+     */
+    cloneCount?: number;
+    /** Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+     */
+    deploymentCount?: number;
+    /** Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+     */
+    shareCount?: number;
+    /** Timestamp of design creation. */
+    createdAt?: string;
+    /** Timestamp of last design modification. */
+    updatedAt?: string;
+  }[];
 export type ImportDesignApiArg = {
   body:
     | {
@@ -15393,20 +15738,6 @@ export type DeleteEventApiArg = {
   /** ID of the event. */
   eventId: string;
 };
-export type CreateEventApiResponse = unknown;
-export type CreateEventApiArg = {
-  body: {
-    /** UUID of the user associated with the event. */
-    owner?: string;
-    /** The category of the event. */
-    category?: string;
-    /** The action of the event. */
-    action?: string;
-    /** Description of the event. */
-    description?: string;
-    [key: string]: any;
-  };
-};
 export type BulkDeleteEventsApiResponse = /** status 200 Events deleted */ {
   /** UUIDs of events that were deleted. */
   deleted?: string[];
@@ -15443,6 +15774,20 @@ export type UpdateEventStatusApiArg = {
   body: {
     /** Current status of the event. */
     status: string;
+  };
+};
+export type CreateEventApiResponse = unknown;
+export type CreateEventApiArg = {
+  body: {
+    /** UUID of the user associated with the event. */
+    owner?: string;
+    /** The category of the event. */
+    category?: string;
+    /** The action of the event. */
+    action?: string;
+    /** Description of the event. */
+    description?: string;
+    [key: string]: any;
   };
 };
 export type GetPerformanceProfilesApiResponse = /** status 200 Performance profiles */ {
@@ -17357,6 +17702,12 @@ export const {
   useGetConnectionControllersConfigQuery,
   useLazyGetConnectionControllersConfigQuery,
   useUpdateConnectionControllersConfigMutation,
+  useGetConsoleCapabilitiesQuery,
+  useLazyGetConsoleCapabilitiesQuery,
+  useOpenTerminalConsoleQuery,
+  useLazyOpenTerminalConsoleQuery,
+  useOpenLogConsoleQuery,
+  useLazyOpenLogConsoleQuery,
   useEvaluateRelationshipsMutation,
   useGetRegistryModelsQuery,
   useLazyGetRegistryModelsQuery,
@@ -17493,10 +17844,10 @@ export const {
   useGetEnvironmentConnectionsQuery,
   useLazyGetEnvironmentConnectionsQuery,
   useDeleteEventMutation,
-  useCreateEventMutation,
   useBulkDeleteEventsMutation,
   useBulkUpdateEventStatusMutation,
   useUpdateEventStatusMutation,
+  useCreateEventMutation,
   useGetPerformanceProfilesQuery,
   useLazyGetPerformanceProfilesQuery,
   useUpsertPerformanceProfileMutation,
