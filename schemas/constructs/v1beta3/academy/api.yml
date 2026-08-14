@@ -522,7 +522,7 @@ paths:
         '403':
           $ref: '#/components/responses/403'
         '404':
-          description: Quiz not found
+          description: Quiz or registration not found
         '500':
           description: Server error
   /api/academy/registrations/{id}/test-sessions:
