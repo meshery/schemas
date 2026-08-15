@@ -1257,18 +1257,15 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "properties": {
                     "page": {
                       "type": "integer",
-                      "description": "Current page number of the result set.",
-                      "minimum": 0
+                      "x-go-type-skip-optional-pointer": true
                     },
-                    "pageSize": {
+                    "page_size": {
                       "type": "integer",
-                      "description": "Number of items per page.",
-                      "minimum": 1
+                      "x-go-type-skip-optional-pointer": true
                     },
-                    "totalCount": {
+                    "total_count": {
                       "type": "integer",
-                      "description": "Total number of items available.",
-                      "minimum": 0
+                      "x-go-type-skip-optional-pointer": true
                     },
                     "teams": {
                       "type": "array",
@@ -1282,9 +1279,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                         "type": "object",
                         "required": [
                           "id",
-                          "name",
-                          "createdAt",
-                          "updatedAt"
+                          "name"
                         ],
                         "properties": {
                           "id": {
@@ -1292,7 +1287,8 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "x-order": 1,
                             "x-go-name": "ID",
                             "x-oapi-codegen-extra-tags": {
-                              "db": "id"
+                              "db": "id",
+                              "yaml": "id"
                             },
                             "type": "string",
                             "format": "uuid",
@@ -1303,7 +1299,8 @@ const WorkspaceSchema: Record<string, unknown> = {
                           },
                           "name": {
                             "x-oapi-codegen-extra-tags": {
-                              "db": "name"
+                              "db": "name",
+                              "yaml": "name"
                             },
                             "x-order": 2,
                             "type": "string",
@@ -1313,7 +1310,8 @@ const WorkspaceSchema: Record<string, unknown> = {
                           },
                           "description": {
                             "x-oapi-codegen-extra-tags": {
-                              "db": "description"
+                              "db": "description",
+                              "yaml": "description"
                             },
                             "x-order": 3,
                             "type": "string",
@@ -1322,7 +1320,8 @@ const WorkspaceSchema: Record<string, unknown> = {
                           },
                           "owner": {
                             "x-oapi-codegen-extra-tags": {
-                              "db": "owner"
+                              "db": "owner",
+                              "yaml": "owner"
                             },
                             "x-order": 4,
                             "description": "User ID of the owner of the team",
@@ -1335,7 +1334,8 @@ const WorkspaceSchema: Record<string, unknown> = {
                           },
                           "metadata": {
                             "x-oapi-codegen-extra-tags": {
-                              "db": "metadata"
+                              "db": "metadata",
+                              "yaml": "metadata"
                             },
                             "x-order": 5,
                             "x-go-type": "core.Map",
@@ -1343,36 +1343,38 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "type": "object",
                             "description": "Additional metadata for the team"
                           },
-                          "createdAt": {
-                            "description": "Timestamp when the team was created.",
+                          "created_at": {
                             "x-oapi-codegen-extra-tags": {
                               "db": "created_at",
-                              "json": "createdAt"
+                              "yaml": "created_at"
                             },
                             "x-order": 6,
                             "type": "string",
                             "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           },
-                          "updatedAt": {
-                            "description": "Timestamp when the team was last updated.",
+                          "updated_at": {
                             "x-oapi-codegen-extra-tags": {
                               "db": "updated_at",
-                              "json": "updatedAt"
+                              "yaml": "updated_at"
                             },
                             "x-order": 7,
                             "type": "string",
                             "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           },
-                          "deletedAt": {
-                            "description": "Timestamp when the team was soft-deleted, if applicable.",
+                          "deleted_at": {
                             "x-oapi-codegen-extra-tags": {
                               "db": "deleted_at",
-                              "json": "deletedAt"
+                              "yaml": "deleted_at"
                             },
                             "x-order": 8,
-                            "x-go-type": "NullTime",
+                            "description": "SQL null Timestamp to handle null values of time.",
+                            "x-go-type": "meshcore.NullTime",
+                            "x-go-type-import": {
+                              "name": "meshcore",
+                              "path": "github.com/meshery/schemas/models/core"
+                            },
                             "type": "string",
                             "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
@@ -1493,28 +1495,28 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "description": "Paginated list of workspace-team mappings.",
                   "properties": {
                     "page": {
-                      "description": "Zero-based page index returned in this response.",
-                      "minimum": 0,
                       "type": "integer",
-                      "x-go-type-skip-optional-pointer": true
+                      "x-go-type-skip-optional-pointer": true,
+                      "description": "Zero-based page index returned in this response.",
+                      "minimum": 0
                     },
                     "pageSize": {
+                      "type": "integer",
+                      "x-go-type-skip-optional-pointer": true,
                       "description": "Maximum number of items returned on each page.",
                       "minimum": 1,
                       "x-oapi-codegen-extra-tags": {
                         "json": "pageSize,omitempty"
-                      },
-                      "type": "integer",
-                      "x-go-type-skip-optional-pointer": true
+                      }
                     },
                     "totalCount": {
+                      "type": "integer",
+                      "x-go-type-skip-optional-pointer": true,
                       "description": "Total number of items across all pages.",
                       "minimum": 0,
                       "x-oapi-codegen-extra-tags": {
                         "json": "totalCount,omitempty"
-                      },
-                      "type": "integer",
-                      "x-go-type-skip-optional-pointer": true
+                      }
                     },
                     "workspacesTeamsMapping": {
                       "type": "array",
@@ -2169,28 +2171,28 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "description": "Paginated list of workspace-environment mappings.",
                   "properties": {
                     "page": {
-                      "description": "Zero-based page index returned in this response.",
-                      "minimum": 0,
                       "type": "integer",
-                      "x-go-type-skip-optional-pointer": true
+                      "x-go-type-skip-optional-pointer": true,
+                      "description": "Zero-based page index returned in this response.",
+                      "minimum": 0
                     },
                     "pageSize": {
+                      "type": "integer",
+                      "x-go-type-skip-optional-pointer": true,
                       "description": "Maximum number of items returned on each page.",
                       "minimum": 1,
                       "x-oapi-codegen-extra-tags": {
                         "json": "pageSize,omitempty"
-                      },
-                      "type": "integer",
-                      "x-go-type-skip-optional-pointer": true
+                      }
                     },
                     "totalCount": {
+                      "type": "integer",
+                      "x-go-type-skip-optional-pointer": true,
                       "description": "Total number of items across all pages.",
                       "minimum": 0,
                       "x-oapi-codegen-extra-tags": {
                         "json": "totalCount,omitempty"
-                      },
-                      "type": "integer",
-                      "x-go-type-skip-optional-pointer": true
+                      }
                     },
                     "workspacesEnvironmentsMapping": {
                       "type": "array",
@@ -2537,28 +2539,28 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "description": "Paginated list of designs.",
                   "properties": {
                     "page": {
-                      "description": "Zero-based page index returned in this response.",
-                      "minimum": 0,
                       "type": "integer",
-                      "x-go-type-skip-optional-pointer": true
+                      "x-go-type-skip-optional-pointer": true,
+                      "description": "Zero-based page index returned in this response.",
+                      "minimum": 0
                     },
                     "pageSize": {
+                      "type": "integer",
+                      "x-go-type-skip-optional-pointer": true,
                       "description": "Maximum number of items returned on each page.",
                       "minimum": 1,
                       "x-oapi-codegen-extra-tags": {
                         "json": "pageSize,omitempty"
-                      },
-                      "type": "integer",
-                      "x-go-type-skip-optional-pointer": true
+                      }
                     },
                     "totalCount": {
+                      "type": "integer",
+                      "x-go-type-skip-optional-pointer": true,
                       "description": "Total number of items across all pages.",
                       "minimum": 0,
                       "x-oapi-codegen-extra-tags": {
                         "json": "totalCount,omitempty"
-                      },
-                      "type": "integer",
-                      "x-go-type-skip-optional-pointer": true
+                      }
                     },
                     "designs": {
                       "type": "array",
@@ -7442,28 +7444,28 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "description": "Paginated list of workspace-design mappings.",
                   "properties": {
                     "page": {
-                      "description": "Zero-based page index returned in this response.",
-                      "minimum": 0,
                       "type": "integer",
-                      "x-go-type-skip-optional-pointer": true
+                      "x-go-type-skip-optional-pointer": true,
+                      "description": "Zero-based page index returned in this response.",
+                      "minimum": 0
                     },
                     "pageSize": {
+                      "type": "integer",
+                      "x-go-type-skip-optional-pointer": true,
                       "description": "Maximum number of items returned on each page.",
                       "minimum": 1,
                       "x-oapi-codegen-extra-tags": {
                         "json": "pageSize,omitempty"
-                      },
-                      "type": "integer",
-                      "x-go-type-skip-optional-pointer": true
+                      }
                     },
                     "totalCount": {
+                      "type": "integer",
+                      "x-go-type-skip-optional-pointer": true,
                       "description": "Total number of items across all pages.",
                       "minimum": 0,
                       "x-oapi-codegen-extra-tags": {
                         "json": "totalCount,omitempty"
-                      },
-                      "type": "integer",
-                      "x-go-type-skip-optional-pointer": true
+                      }
                     },
                     "workspacesDesignsMapping": {
                       "type": "array",
@@ -9287,28 +9289,28 @@ const WorkspaceSchema: Record<string, unknown> = {
         "description": "Paginated list of workspace-team mappings.",
         "properties": {
           "page": {
-            "description": "Zero-based page index returned in this response.",
-            "minimum": 0,
             "type": "integer",
-            "x-go-type-skip-optional-pointer": true
+            "x-go-type-skip-optional-pointer": true,
+            "description": "Zero-based page index returned in this response.",
+            "minimum": 0
           },
           "pageSize": {
+            "type": "integer",
+            "x-go-type-skip-optional-pointer": true,
             "description": "Maximum number of items returned on each page.",
             "minimum": 1,
             "x-oapi-codegen-extra-tags": {
               "json": "pageSize,omitempty"
-            },
-            "type": "integer",
-            "x-go-type-skip-optional-pointer": true
+            }
           },
           "totalCount": {
+            "type": "integer",
+            "x-go-type-skip-optional-pointer": true,
             "description": "Total number of items across all pages.",
             "minimum": 0,
             "x-oapi-codegen-extra-tags": {
               "json": "totalCount,omitempty"
-            },
-            "type": "integer",
-            "x-go-type-skip-optional-pointer": true
+            }
           },
           "workspacesTeamsMapping": {
             "type": "array",
@@ -9513,28 +9515,28 @@ const WorkspaceSchema: Record<string, unknown> = {
         "description": "Paginated list of workspace-environment mappings.",
         "properties": {
           "page": {
-            "description": "Zero-based page index returned in this response.",
-            "minimum": 0,
             "type": "integer",
-            "x-go-type-skip-optional-pointer": true
+            "x-go-type-skip-optional-pointer": true,
+            "description": "Zero-based page index returned in this response.",
+            "minimum": 0
           },
           "pageSize": {
+            "type": "integer",
+            "x-go-type-skip-optional-pointer": true,
             "description": "Maximum number of items returned on each page.",
             "minimum": 1,
             "x-oapi-codegen-extra-tags": {
               "json": "pageSize,omitempty"
-            },
-            "type": "integer",
-            "x-go-type-skip-optional-pointer": true
+            }
           },
           "totalCount": {
+            "type": "integer",
+            "x-go-type-skip-optional-pointer": true,
             "description": "Total number of items across all pages.",
             "minimum": 0,
             "x-oapi-codegen-extra-tags": {
               "json": "totalCount,omitempty"
-            },
-            "type": "integer",
-            "x-go-type-skip-optional-pointer": true
+            }
           },
           "workspacesEnvironmentsMapping": {
             "type": "array",
@@ -9739,28 +9741,28 @@ const WorkspaceSchema: Record<string, unknown> = {
         "description": "Paginated list of workspace-design mappings.",
         "properties": {
           "page": {
-            "description": "Zero-based page index returned in this response.",
-            "minimum": 0,
             "type": "integer",
-            "x-go-type-skip-optional-pointer": true
+            "x-go-type-skip-optional-pointer": true,
+            "description": "Zero-based page index returned in this response.",
+            "minimum": 0
           },
           "pageSize": {
+            "type": "integer",
+            "x-go-type-skip-optional-pointer": true,
             "description": "Maximum number of items returned on each page.",
             "minimum": 1,
             "x-oapi-codegen-extra-tags": {
               "json": "pageSize,omitempty"
-            },
-            "type": "integer",
-            "x-go-type-skip-optional-pointer": true
+            }
           },
           "totalCount": {
+            "type": "integer",
+            "x-go-type-skip-optional-pointer": true,
             "description": "Total number of items across all pages.",
             "minimum": 0,
             "x-oapi-codegen-extra-tags": {
               "json": "totalCount,omitempty"
-            },
-            "type": "integer",
-            "x-go-type-skip-optional-pointer": true
+            }
           },
           "workspacesDesignsMapping": {
             "type": "array",
@@ -10092,28 +10094,28 @@ const WorkspaceSchema: Record<string, unknown> = {
         "description": "Paginated list of designs.",
         "properties": {
           "page": {
-            "description": "Zero-based page index returned in this response.",
-            "minimum": 0,
             "type": "integer",
-            "x-go-type-skip-optional-pointer": true
+            "x-go-type-skip-optional-pointer": true,
+            "description": "Zero-based page index returned in this response.",
+            "minimum": 0
           },
           "pageSize": {
+            "type": "integer",
+            "x-go-type-skip-optional-pointer": true,
             "description": "Maximum number of items returned on each page.",
             "minimum": 1,
             "x-oapi-codegen-extra-tags": {
               "json": "pageSize,omitempty"
-            },
-            "type": "integer",
-            "x-go-type-skip-optional-pointer": true
+            }
           },
           "totalCount": {
+            "type": "integer",
+            "x-go-type-skip-optional-pointer": true,
             "description": "Total number of items across all pages.",
             "minimum": 0,
             "x-oapi-codegen-extra-tags": {
               "json": "totalCount,omitempty"
-            },
-            "type": "integer",
-            "x-go-type-skip-optional-pointer": true
+            }
           },
           "designs": {
             "type": "array",
