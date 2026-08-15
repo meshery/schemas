@@ -141,8 +141,6 @@ type SkippedConstruct struct {
 	Reason string
 }
 
-// ConstructIndex is every construct version in schemas/constructs, with the
-// lookup tables the audit needs.
 type ConstructIndex struct {
 	// All versions, sorted by key.
 	All []ConstructVersion
