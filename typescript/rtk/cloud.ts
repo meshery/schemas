@@ -12648,8 +12648,33 @@ export type GetSignupRequestsApiResponse = /** status 200 Signup requests page *
   /** Total number of items available. */
   totalCount?: number;
   /** Signup requests returned on the current page. */
-  data?: {
-    [key: string]: any;
+  signupData?: {
+    /** Unique identifier of the signup request. */
+    id?: string;
+    /** First name of the requester. */
+    firstName?: string;
+    /** Last name of the requester. */
+    lastName?: string;
+    /** Email address of the requester. */
+    email?: string;
+    /** Occupation stated by the requester. */
+    occupation?: string;
+    /** Organization stated by the requester. */
+    organization?: string;
+    /** Role stated by the requester within their organization. */
+    role?: string;
+    /** Product form the signup request originated from. Known values include playground, meshmap, docker-extension, epsma-book, content, contact and event; the set is open-ended. */
+    formType?: string;
+    /** Moderation status of the signup request. */
+    status?: string;
+    /** Identifier of the tracking task created for this request in the external task system. */
+    taskId?: string;
+    /** Link to the tracking task created for this request. */
+    taskLink?: string;
+    /** Timestamp when the signup request was created. */
+    createdAt?: string;
+    /** Timestamp when the signup request was last updated. */
+    updatedAt?: string;
   }[];
 };
 export type GetSignupRequestsApiArg = {
@@ -12719,7 +12744,7 @@ export type DenySignupRequestApiArg = {
   taskLink?: string;
 };
 export type GetSignupRequestNotificationApiResponse = /** status 200 Signup request notification payload */ {
-  /** The signup request the notification refers to. */
+  /** A signup request record as persisted in the signup_data table. Captures the requester's identity, the product form the request originated from (for example playground, meshmap, docker-extension), the moderation status, and the tracking task created for the request. Also embedded in signup webhook and notification payloads, where only a subset of fields may be populated. */
   signupData: {
     /** Unique identifier of the signup request. */
     id?: string;

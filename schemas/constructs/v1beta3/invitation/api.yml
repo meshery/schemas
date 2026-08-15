@@ -671,11 +671,13 @@ components:
           x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
             json: totalCount
-        data:
+        signupData:
           type: array
           items:
-            $ref: '#/components/schemas/SignupRequest'
+            $ref: '#/components/schemas/SignupData'
           description: Signup requests returned on the current page.
+          x-oapi-codegen-extra-tags:
+            json: signupData
     InvitationPayload:
       type: object
       description: Payload for creating or updating an invitation.
