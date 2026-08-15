@@ -186,7 +186,7 @@ type SignupRequestsPage struct {
 	PageSize int `json:"pageSize" yaml:"pageSize"`
 
 	// SignupData Signup requests returned on the current page.
-	SignupData *[]SignupData `json:"signupData" yaml:"signupData"`
+	SignupData *[]SignupData `json:"signupData,omitempty" yaml:"signupData,omitempty"`
 
 	// TotalCount Total number of items available.
 	TotalCount int `json:"totalCount" yaml:"totalCount"`

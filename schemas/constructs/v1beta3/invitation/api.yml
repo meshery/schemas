@@ -677,7 +677,7 @@ components:
             $ref: '#/components/schemas/SignupData'
           description: Signup requests returned on the current page.
           x-oapi-codegen-extra-tags:
-            json: signupData
+            json: "signupData,omitempty"
     InvitationPayload:
       type: object
       description: Payload for creating or updating an invitation.
