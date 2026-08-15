@@ -16,6 +16,9 @@ import (
 type memTree struct {
 	ref   string
 	files map[string]string
+	// defects, when set, are returned by WalkFiltered so tests can simulate
+	// a partially unreadable consumer tree.
+	defects []ScanDefect
 }
 
 func (t *memTree) ReadFile(path string) ([]byte, error) {
@@ -45,7 +48,7 @@ func (t *memTree) Walk(dir string, fn func(path string) error) error {
 // WalkFiltered mirrors localTree.WalkFiltered for fixtures: skipDirs are
 // pruned by path segment and results are limited to the given extensions.
 // Fixture paths are repo-relative, so "." means the whole tree.
-func (t *memTree) WalkFiltered(dir string, exts []string, fn func(path string) error) error {
+func (t *memTree) WalkFiltered(dir string, exts []string, fn func(path string) error) ([]ScanDefect, error) {
 	prefix := strings.TrimRight(filepath.ToSlash(dir), "/")
 	if prefix == "." {
 		prefix = ""
@@ -74,10 +77,12 @@ func (t *memTree) WalkFiltered(dir string, exts []string, fn func(path string) e
 	sort.Strings(paths)
 	for _, p := range paths {
 		if err := fn(p); err != nil {
-			return err
+			return nil, err
 		}
 	}
-	return nil
+	// In-memory fixtures are always fully readable, so there is nothing to
+	// report as unscanned. Tests that need a defect inject it directly.
+	return t.defects, nil
 }
 
 func (t *memTree) Ref() string {

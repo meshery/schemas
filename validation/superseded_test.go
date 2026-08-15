@@ -379,6 +379,103 @@ func TestSupersededDetectsNPMImportForms(t *testing.T) {
 	}
 }
 
+// TestSupersededFlagsMissingConsumerCheckout covers the false clean raised in
+// review: a consumer path that does not exist walked as a successful empty
+// scan, so every construct reported "not used" and enforcement passed on a
+// consumer nobody had looked at.
+func TestSupersededFlagsMissingConsumerCheckout(t *testing.T) {
+	report, err := RunSupersededAudit(SupersededOptions{
+		RootDir:     repoRootForTest(t),
+		MesheryRepo: filepath.Join(t.TempDir(), "does-not-exist"),
+	})
+	if err != nil {
+		t.Fatalf("RunSupersededAudit: %v", err)
+	}
+	if report.FullyScanned() {
+		t.Fatal("a missing consumer checkout must not count as fully scanned")
+	}
+	if len(report.UnscannedRepos()) != 1 {
+		t.Fatalf("UnscannedRepos = %d, want 1", len(report.UnscannedRepos()))
+	}
+	// The distinction that matters: nothing was found, but nothing was
+	// looked at either, and those must not be the same answer.
+	if report.HasSupersededUsage() {
+		t.Error("no usage can be found in a tree that was never read")
+	}
+	// A shared failure is hit by both the Go and npm sweeps; it should be
+	// reported once.
+	if n := len(report.Repos[0].ScanDefects); n != 1 {
+		t.Errorf("ScanDefects = %d, want 1 deduplicated defect: %+v",
+			n, report.Repos[0].ScanDefects)
+	}
+}
+
+// TestSupersededFlagsEmptyConsumerTree covers a path that exists but holds no
+// source: almost always the wrong directory rather than a clean consumer.
+func TestSupersededFlagsEmptyConsumerTree(t *testing.T) {
+	report, err := RunSupersededAudit(SupersededOptions{
+		RootDir:     repoRootForTest(t),
+		MesheryRepo: t.TempDir(),
+	})
+	if err != nil {
+		t.Fatalf("RunSupersededAudit: %v", err)
+	}
+	if report.FullyScanned() {
+		t.Error("a consumer with no source files must not count as fully scanned")
+	}
+}
+
+// TestSupersededPropagatesWalkDefects checks that defects reported by the tree
+// walk reach the repo report, which is what enforcement gates on.
+func TestSupersededPropagatesWalkDefects(t *testing.T) {
+	tree := &memTree{
+		files:   map[string]string{"a.ts": `import "x";`},
+		defects: []ScanDefect{{Path: "server/secret", Reason: "permission denied"}},
+	}
+	report, err := runSupersededAudit(chainIndex(), []namedTree{{
+		repo: "meshery", goTree: tree, npmTree: tree,
+	}})
+	if err != nil {
+		t.Fatalf("runSupersededAudit: %v", err)
+	}
+	if report.FullyScanned() {
+		t.Fatal("an unreadable subtree must mark the scan incomplete")
+	}
+	if got := report.Repos[0].ScanDefects[0].Path; got != "server/secret" {
+		t.Errorf("defect path = %q, want server/secret", got)
+	}
+}
+
+// TestSupersededFullyScannedWhenTreeIsReadable is the negative control: a
+// readable consumer with real files must not be reported as unscanned, or the
+// enforcement gate would fail every run.
+func TestSupersededFullyScannedWhenTreeIsReadable(t *testing.T) {
+	report, err := runSupersededAudit(chainIndex(), []namedTree{{
+		repo: "meshery",
+		goTree: &memTree{files: map[string]string{"a.go": `package a
+
+import "github.com/meshery/schemas/models/v1beta1/pattern"
+`}},
+		npmTree: &memTree{files: map[string]string{}},
+	}})
+	if err != nil {
+		t.Fatalf("runSupersededAudit: %v", err)
+	}
+	if !report.FullyScanned() {
+		t.Errorf("readable tree reported unscanned: %+v", report.Repos[0].ScanDefects)
+	}
+}
+
+// repoRootForTest resolves the schemas checkout these tests run inside.
+func repoRootForTest(t *testing.T) string {
+	t.Helper()
+	root, err := filepath.Abs("..")
+	if err != nil {
+		t.Fatalf("resolve repo root: %v", err)
+	}
+	return root
+}
+
 // coreIndex mirrors the real core mapping: three versions publish at
 // models/core, and v1beta2/core is additionally reachable at its conventional
 // path. Only v1beta1/core is superseded.

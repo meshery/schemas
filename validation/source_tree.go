@@ -23,10 +23,29 @@ type sourceTree interface {
 	// exts (matched case-insensitively, leading dot included), with the
 	// directories in skipDirs pruned. Callers that need to sweep an entire
 	// consumer checkout must use this rather than Walk.
-	WalkFiltered(dir string, exts []string, fn func(path string) error) error
+	//
+	// It returns the parts of the tree it could not read — a missing root,
+	// an unreadable subtree — instead of silently treating them as empty.
+	// A caller that ignored these would report "nothing found" for a tree it
+	// never actually looked at.
+	WalkFiltered(dir string, exts []string, fn func(path string) error) ([]ScanDefect, error)
 
 	// Ref returns a human-readable label for log/note output.
 	Ref() string
+}
+
+// ScanDefect is a part of a consumer tree the sweep could not read: a missing
+// root, an unreadable subtree, or a file that could not be opened.
+//
+// Each one is a hole in the scan. A consumer with defects may hold references
+// the audit never saw, so "no superseded usage found" for that consumer means
+// only that — not that none exists.
+type ScanDefect struct {
+	// Path is the location that could not be read, repo-relative where
+	// possible.
+	Path string
+	// Reason is the underlying error.
+	Reason string
 }
 
 // skipDirs are directory names never worth descending into when sweeping a
@@ -120,24 +139,44 @@ func (t localTree) Walk(dir string, fn func(path string) error) error {
 	return nil
 }
 
-func (t localTree) WalkFiltered(dir string, exts []string, fn func(path string) error) error {
+func (t localTree) WalkFiltered(dir string, exts []string, fn func(path string) error) ([]ScanDefect, error) {
+	var defects []ScanDefect
+
 	abs := filepath.Join(t.root, filepath.FromSlash(dir))
 	info, err := os.Stat(abs)
 	if err != nil {
-		// Missing directory is not an error: callers gracefully handle it.
+		// A missing directory stays non-fatal — .github/workflows/schema-audit.yml
+		// passes every consumer path unconditionally and relies on absent
+		// checkouts being skipped — but it is reported, so a caller can tell
+		// "scanned and found nothing" from "never scanned".
 		if os.IsNotExist(err) {
-			return nil
+			return []ScanDefect{{
+				Path:   filepath.ToSlash(filepath.Join(t.root, dir)),
+				Reason: "directory does not exist; nothing was scanned",
+			}}, nil
 		}
-		return err
+		return []ScanDefect{{
+			Path:   filepath.ToSlash(filepath.Join(t.root, dir)),
+			Reason: err.Error(),
+		}}, nil
 	}
 	if !info.IsDir() {
-		return fmt.Errorf("source_tree: %q is not a directory", dir)
+		return nil, fmt.Errorf("source_tree: %q is not a directory", dir)
 	}
 
 	var paths []string
 	err = filepath.WalkDir(abs, func(p string, d fs.DirEntry, walkErr error) error {
 		if walkErr != nil {
-			// An unreadable subtree must not abort the whole sweep.
+			// An unreadable subtree must not abort the whole sweep, but it
+			// leaves a hole in it, so record what was missed.
+			rel, relErr := filepath.Rel(t.root, p)
+			if relErr != nil {
+				rel = p
+			}
+			defects = append(defects, ScanDefect{
+				Path:   filepath.ToSlash(rel),
+				Reason: walkErr.Error(),
+			})
 			if d != nil && d.IsDir() {
 				return filepath.SkipDir
 			}
@@ -162,16 +201,16 @@ func (t localTree) WalkFiltered(dir string, exts []string, fn func(path string) 
 		return nil
 	})
 	if err != nil {
-		return err
+		return defects, err
 	}
 
 	sort.Strings(paths)
 	for _, p := range paths {
 		if err := fn(p); err != nil {
-			return err
+			return defects, err
 		}
 	}
-	return nil
+	return defects, nil
 }
 
 func (t localTree) Ref() string {

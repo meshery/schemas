@@ -538,7 +538,18 @@ type SupersededRepoReport struct {
 	// references are invisible to this scan, so a clean result for this repo
 	// is only as complete as this list is empty.
 	UnparsedFiles []string
+	// ScanDefects lists parts of the tree that could not be read at all — a
+	// missing checkout, an unreadable subtree, an unopenable file. Unlike
+	// UnparsedFiles these are traversal failures, and they matter most for
+	// the case they make indistinguishable otherwise: a consumer that was
+	// never scanned looks exactly like a consumer with no superseded usage.
+	ScanDefects []ScanDefect
 }
+
+// FullyScanned reports whether the sweep read this consumer's whole tree.
+// When false, every "not used" row for this repo means "not seen", and a
+// clean result must not be treated as a pass.
+func (r SupersededRepoReport) FullyScanned() bool { return len(r.ScanDefects) == 0 }
 
 // SupersededCount returns how many resolutions land on a superseded version.
 func (r SupersededRepoReport) SupersededCount() int {
@@ -611,6 +622,30 @@ func (r *SupersededReport) HasUnresolvedUsage() bool {
 // SkippedConstructs returns the construct directories that could not be
 // indexed, sorted by path.
 func (r *SupersededReport) SkippedConstructs() []SkippedConstruct { return r.Index.Skipped }
+
+// FullyScanned reports whether every requested consumer tree was read in full.
+// When false, a "not used" row may mean "not seen", so a clean result is not a
+// pass — an unscanned consumer and a clean consumer are otherwise identical in
+// the output.
+func (r *SupersededReport) FullyScanned() bool {
+	for _, repo := range r.Repos {
+		if !repo.FullyScanned() {
+			return false
+		}
+	}
+	return true
+}
+
+// UnscannedRepos returns the consumers whose trees could not be read in full.
+func (r *SupersededReport) UnscannedRepos() []SupersededRepoReport {
+	var out []SupersededRepoReport
+	for _, repo := range r.Repos {
+		if !repo.FullyScanned() {
+			out = append(out, repo)
+		}
+	}
+	return out
+}
 
 // SupersededOptions configures RunSupersededAudit.
 type SupersededOptions struct {
@@ -825,10 +860,16 @@ func scanConsumerForSuperseded(nt namedTree, idx ConstructIndex) (*SupersededRep
 		if tree == nil {
 			return nil
 		}
-		return tree.WalkFiltered(".", exts, func(path string) error {
+		defects, err := tree.WalkFiltered(".", exts, func(path string) error {
 			raw, err := tree.ReadFile(path)
 			if err != nil {
-				// Unreadable file: skip rather than fail the whole audit.
+				// Unreadable file: keep going, but record it. Skipping
+				// silently would let a permission error read as an absence
+				// of superseded imports.
+				out.ScanDefects = append(out.ScanDefects, ScanDefect{
+					Path:   path,
+					Reason: err.Error(),
+				})
 				return nil
 			}
 			out.FilesScanned++
@@ -859,6 +900,8 @@ func scanConsumerForSuperseded(nt namedTree, idx ConstructIndex) (*SupersededRep
 			}
 			return nil
 		})
+		out.ScanDefects = append(out.ScanDefects, defects...)
+		return err
 	}
 
 	if err := scan(nt.goTree, goExts, SurfaceGo); err != nil {
@@ -868,6 +911,37 @@ func scanConsumerForSuperseded(nt namedTree, idx ConstructIndex) (*SupersededRep
 		return nil, fmt.Errorf("superseded: scan %s (npm): %w", nt.repo, err)
 	}
 	sort.Strings(out.UnparsedFiles)
+
+	// A requested consumer that yielded no source files at all was almost
+	// certainly not the tree the caller meant — a wrong path, or a checkout
+	// that never happened. Any real consumer has Go or TypeScript in it, so
+	// treat an empty sweep as unscanned rather than as a clean result.
+	if out.FilesScanned == 0 && len(out.ScanDefects) == 0 {
+		out.ScanDefects = append(out.ScanDefects, ScanDefect{
+			Path:   nt.path,
+			Reason: "no Go or TypeScript source files found; the path may be wrong",
+		})
+	}
+	// The Go and npm sweeps walk the same tree, so a shared failure — a
+	// missing checkout above all — is reported by both. Collapse duplicates
+	// so the count reflects distinct problems.
+	seenDefect := map[ScanDefect]bool{}
+	deduped := out.ScanDefects[:0]
+	for _, d := range out.ScanDefects {
+		if seenDefect[d] {
+			continue
+		}
+		seenDefect[d] = true
+		deduped = append(deduped, d)
+	}
+	out.ScanDefects = deduped
+
+	sort.Slice(out.ScanDefects, func(i, j int) bool {
+		if out.ScanDefects[i].Path != out.ScanDefects[j].Path {
+			return out.ScanDefects[i].Path < out.ScanDefects[j].Path
+		}
+		return out.ScanDefects[i].Reason < out.ScanDefects[j].Reason
+	})
 
 	// Ambiguous imports become their own rows. They are attributed to the
 	// family their candidates share — every current override maps versions of

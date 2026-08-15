@@ -127,6 +127,19 @@ func main() {
 					len(sup.SkippedConstructs()))
 				os.Exit(3)
 			}
+			// A consumer that was never scanned produces the same "not used"
+			// rows as a consumer that is genuinely clean. Under enforcement
+			// that distinction is the whole point, so an incomplete sweep
+			// fails with the same code as an incomplete index.
+			if !sup.FullyScanned() {
+				fmt.Fprintln(out)
+				for _, repo := range sup.UnscannedRepos() {
+					fmt.Fprintf(out,
+						"superseded-enforce: %s was not fully scanned (%d %s); its result is not conclusive.\n",
+						repo.Repo, len(repo.ScanDefects), pluralize("problem", len(repo.ScanDefects)))
+				}
+				os.Exit(3)
+			}
 			if sup.HasSupersededUsage() {
 				fmt.Fprintln(out)
 				fmt.Fprintln(out, "superseded-enforce: at least one consumer resolves a superseded construct version.")
@@ -492,6 +505,18 @@ func printSupersededReport(out io.Writer, r *validation.SupersededReport) {
 	for _, repo := range r.Repos {
 		fmt.Fprintln(out)
 		fmt.Fprintf(out, "  %s (%s) - %d files scanned\n", repo.Repo, repo.Path, repo.FilesScanned)
+
+		// Printed before the table, because it changes how every row below
+		// should be read: "not used" from an unscanned tree means "not
+		// seen".
+		if !repo.FullyScanned() {
+			fmt.Fprintf(out, "    WARNING: this consumer was not fully scanned (%d %s).\n",
+				len(repo.ScanDefects), pluralize("problem", len(repo.ScanDefects)))
+			fmt.Fprintln(out, "    Rows below say what was seen, not what exists:")
+			for _, d := range repo.ScanDefects {
+				fmt.Fprintf(out, "      %s\n        %s\n", d.Path, d.Reason)
+			}
+		}
 
 		if len(repo.Resolutions) == 0 {
 			fmt.Fprintln(out, "    no schema construct imports found")
