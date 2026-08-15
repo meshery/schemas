@@ -2,9 +2,12 @@ package validation
 
 import (
 	"fmt"
+	"go/parser"
+	"go/token"
 	"path/filepath"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
@@ -32,6 +35,46 @@ const (
 var exposedNameOverrides = map[string]string{
 	"v1beta1/design": "pattern",
 }
+
+// goImportOverrides mirrors GO_IMPORT_OVERRIDES in build/generate-golang.js.
+//
+// This is a second, independent mapping layer on top of exposedNameOverrides,
+// and it behaves differently: it replaces the whole import path rather than
+// just the trailing package name, and it can erase the version segment
+// altogether. models/core is the published path for three different construct
+// versions, so an import of it cannot be attributed to any one of them — see
+// SupersededResolution.Ambiguous.
+//
+// Kept in sync by TestSupersededMirrorsGoImportOverrides.
+var goImportOverrides = map[string]string{
+	"v1alpha1/core":   "github.com/meshery/schemas/models/core",
+	"v1beta1/core":    "github.com/meshery/schemas/models/core",
+	"v1beta2/core":    "github.com/meshery/schemas/models/core",
+	"v1beta2/catalog": "github.com/meshery/schemas/models/v1alpha2/catalog",
+}
+
+// goImportPathsFor returns every import path a construct can be reached at.
+//
+// An override does not necessarily replace the conventional path: v1beta2/core
+// is reachable both at models/core (the override, used when other packages
+// resolve its $refs) and at models/v1beta2/core, which is generated separately
+// and imported directly. Registering only one of the two would drop real
+// consumer usage, so both are registered.
+//
+// Paths for packages the build does not actually emit — models/v1beta1/core is
+// excluded from Go generation — are harmless: nothing imports a package that
+// does not exist, so they simply never match. That is preferable to stat-ing
+// models/, which would couple this index to generated output.
+func goImportPathsFor(c ConstructVersion) []string {
+	paths := []string{goModulePrefix + c.Version + "/" + c.ExposedName}
+	if override, ok := goImportOverrides[c.Key]; ok && override != paths[0] {
+		paths = append(paths, override)
+	}
+	return paths
+}
+
+// goModulePrefix is the import prefix every generated Go model package shares.
+const goModulePrefix = "github.com/meshery/schemas/models/"
 
 // constructDiscoveryExclusions mirrors excludePackages in build/lib/config.js.
 // These are skipped entirely by the build — no bundle, no generated output.
@@ -87,6 +130,17 @@ type ConstructVersion struct {
 // IsSuperseded reports whether this version carries x-superseded-by.
 func (c ConstructVersion) IsSuperseded() bool { return c.SupersededBy != "" }
 
+// SkippedConstruct is a construct directory that could not be read into the
+// index. Each one is a hole in the audit: a consumer importing that version
+// resolves to nothing in ByExposed and is therefore silently omitted from the
+// report.
+type SkippedConstruct struct {
+	// Path is the api.yml path relative to the repo root.
+	Path string
+	// Reason is the underlying load error.
+	Reason string
+}
+
 // ConstructIndex is every construct version in schemas/constructs, with the
 // lookup tables the audit needs.
 type ConstructIndex struct {
@@ -94,10 +148,25 @@ type ConstructIndex struct {
 	All []ConstructVersion
 	// ByKey is keyed by "<version>/<construct>".
 	ByKey map[string]ConstructVersion
-	// ByExposed is keyed by "<version>/<exposedName>" — the form that
-	// actually appears in consumer import paths.
+	// ByExposed is keyed by "<version>/<exposedName>".
 	ByExposed map[string]ConstructVersion
+	// ByGoImport maps a published Go import path to every construct version
+	// that resolves to it. Usually one, but the generator's overrides point
+	// three core versions at models/core, so an entry with more than one
+	// element is an import whose version cannot be recovered from consumer
+	// code.
+	ByGoImport map[string][]ConstructVersion
+	// Skipped lists construct directories that failed to load. A non-empty
+	// Skipped means the index does not cover the whole tree, so a "no
+	// superseded usage" result cannot be trusted — see IsComplete.
+	Skipped []SkippedConstruct
 }
+
+// IsComplete reports whether every construct directory was indexed. Callers
+// that turn this audit into a gate must check it: an incomplete index can
+// report a clean result purely because the construct that would have matched
+// was never loaded.
+func (idx ConstructIndex) IsComplete() bool { return len(idx.Skipped) == 0 }
 
 // SupersededFamilies returns the construct directory names that have at least
 // one superseded version, sorted.
@@ -190,12 +259,20 @@ func LoadConstructIndex(rootDir string) (ConstructIndex, error) {
 		ByExposed: map[string]ConstructVersion{},
 	}
 
+	var skipped []SkippedConstruct
+
 	err := walkAllConstructSpecs(rootDir, func(spec constructSpec) error {
-		// A spec that cannot be parsed carries no readable annotations.
-		// Skipping is safe: the schema validator reports the load failure
-		// separately, and inventing a lifecycle state from an unreadable
-		// file would be worse than omitting it.
+		// A spec that cannot be parsed carries no readable annotations, so
+		// it cannot be indexed. Record it rather than dropping it: an
+		// unreadable superseded schema is absent from ByExposed, which makes
+		// every consumer import of it stop matching, which would otherwise
+		// read as a clean result. Enforcement checks IsComplete for exactly
+		// this reason.
 		if spec.LoadErr != nil {
+			skipped = append(skipped, SkippedConstruct{
+				Path:   filepath.ToSlash(spec.RelativePath),
+				Reason: spec.LoadErr.Error(),
+			})
 			return nil
 		}
 		key := spec.Version + "/" + spec.Construct
@@ -217,7 +294,20 @@ func LoadConstructIndex(rootDir string) (ConstructIndex, error) {
 		return idx, fmt.Errorf("superseded: walk constructs: %w", err)
 	}
 
-	return buildConstructIndex(idx.All), nil
+	// An empty index is never a legitimate outcome: walkAllConstructSpecs
+	// returns nil when schemas/constructs is missing or unreadable, which
+	// would otherwise surface as "0 of 0 construct versions" and pass
+	// enforcement. Treat it as a hard error rather than a clean audit.
+	if len(idx.All) == 0 {
+		return idx, fmt.Errorf(
+			"superseded: indexed no construct versions under %s -- is this a meshery/schemas checkout?",
+			filepath.Join(rootDir, "schemas", "constructs"))
+	}
+
+	out := buildConstructIndex(idx.All)
+	out.Skipped = skipped
+	sort.Slice(out.Skipped, func(i, j int) bool { return out.Skipped[i].Path < out.Skipped[j].Path })
+	return out, nil
 }
 
 // buildConstructIndex sorts the versions, builds the lookup tables, then makes
@@ -226,17 +316,20 @@ func LoadConstructIndex(rootDir string) (ConstructIndex, error) {
 // this same path so they exercise the real resolution logic.
 func buildConstructIndex(all []ConstructVersion) ConstructIndex {
 	idx := ConstructIndex{
-		All:       all,
-		ByKey:     map[string]ConstructVersion{},
-		ByExposed: map[string]ConstructVersion{},
+		All:        all,
+		ByKey:      map[string]ConstructVersion{},
+		ByExposed:  map[string]ConstructVersion{},
+		ByGoImport: map[string][]ConstructVersion{},
 	}
 
 	sort.Slice(idx.All, func(i, j int) bool { return idx.All[i].Key < idx.All[j].Key })
+
+	// First pass: ByKey only, so successor resolution has something to walk.
 	for _, c := range idx.All {
 		idx.ByKey[c.Key] = c
-		idx.ByExposed[c.Version+"/"+c.ExposedName] = c
 	}
 
+	// Second pass: successor existence and transitive terminals.
 	for i, c := range idx.All {
 		if !c.IsSuperseded() {
 			continue
@@ -245,7 +338,15 @@ func buildConstructIndex(all []ConstructVersion) ConstructIndex {
 		idx.All[i].SuccessorExists = exists
 		idx.All[i].Terminal, idx.All[i].Hops = terminalSuccessor(c.Key, idx.ByKey)
 		idx.ByKey[c.Key] = idx.All[i]
-		idx.ByExposed[c.Version+"/"+c.ExposedName] = idx.All[i]
+	}
+
+	// Final pass: build the lookup maps from the fully resolved values, so no
+	// map holds a copy predating terminal resolution.
+	for _, c := range idx.All {
+		idx.ByExposed[c.Version+"/"+c.ExposedName] = c
+		for _, path := range goImportPathsFor(c) {
+			idx.ByGoImport[path] = append(idx.ByGoImport[path], c)
+		}
 	}
 
 	return idx
@@ -286,22 +387,89 @@ func terminalSuccessor(start string, byKey map[string]ConstructVersion) (string,
 }
 
 var (
-	// goImportPattern matches a version-qualified Go import of a schema
-	// model package.
-	goImportPattern = regexp.MustCompile(`github\.com/meshery/schemas/models/([A-Za-z0-9]+)/([A-Za-z0-9_]+)`)
 	// npmDeepPattern matches a version-qualified deep import of a generated
 	// construct. The optional "typescript/" segment covers the form used
-	// before the package exposed constructs/* directly.
-	npmDeepPattern = regexp.MustCompile(`@meshery/schemas/(?:typescript/)?constructs/([A-Za-z0-9]+)/([A-Za-z0-9_]+)`)
-	// npmBundledPattern matches an import of a bundled RTK client, which
-	// carries no version.
-	npmBundledPattern = regexp.MustCompile(`@meshery/schemas/(?:cloudApi|mesheryApi)`)
+	// before the package exposed constructs/* directly. It is applied to
+	// module specifiers only, never to raw file text.
+	npmDeepPattern = regexp.MustCompile(`^@meshery/schemas/(?:typescript/)?constructs/([A-Za-z0-9]+)/([A-Za-z0-9_]+)`)
+	// npmBundledPattern matches a bundled RTK client specifier, which carries
+	// no version.
+	npmBundledPattern = regexp.MustCompile(`^@meshery/schemas/(?:cloudApi|mesheryApi)`)
+
+	// tsModuleSpecifier extracts the quoted module specifier from the ES
+	// module and CommonJS forms: `... from "x"`, `import "x"`, `import("x")`
+	// and `require("x")`.
+	//
+	// Anchoring on the syntax rather than scanning raw text is what keeps a
+	// path mentioned in a comment or assigned to a string constant from being
+	// counted as a consumer reference — under --superseded-enforce that would
+	// be a false failure. Go is handled precisely by go/parser; TypeScript has
+	// no parser in the standard library, so this follows the regex approach
+	// already used by consumer_ts.go.
+	tsModuleSpecifier = regexp.MustCompile(
+		`from\s*['"]([^'"]+)['"]` +
+			`|\bimport\s*['"]([^'"]+)['"]` +
+			`|\bimport\s*\(\s*['"]([^'"]+)['"]` +
+			`|\brequire\s*\(\s*['"]([^'"]+)['"]`)
 )
 
 var (
 	goExts  = []string{".go"}
 	npmExts = []string{".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs"}
 )
+
+// importRef is one module specifier found in a consumer source file.
+type importRef struct {
+	Path string
+	Line int
+}
+
+// extractGoImports returns the import paths declared by a Go source file,
+// using go/parser in ImportsOnly mode.
+//
+// Parsing rather than pattern-matching is what makes a path in a comment or a
+// string constant a non-event: only genuine import declarations are returned.
+// A parse failure is reported so the caller can record it instead of treating
+// the file as import-free, which would be a silent false clean.
+func extractGoImports(filename, src string) ([]importRef, error) {
+	fset := token.NewFileSet()
+	file, err := parser.ParseFile(fset, filename, src, parser.ImportsOnly)
+	if err != nil {
+		return nil, err
+	}
+
+	refs := make([]importRef, 0, len(file.Imports))
+	for _, spec := range file.Imports {
+		path, err := strconv.Unquote(spec.Path.Value)
+		if err != nil {
+			continue
+		}
+		refs = append(refs, importRef{Path: path, Line: fset.Position(spec.Pos()).Line})
+	}
+	return refs, nil
+}
+
+// extractNPMImports returns the module specifiers imported by a JS/TS source
+// file. Only import/export/require syntax is considered, so a specifier-shaped
+// string appearing in a comment or a plain string literal is ignored.
+func extractNPMImports(src string) []importRef {
+	var refs []importRef
+	for _, m := range tsModuleSpecifier.FindAllStringSubmatchIndex(src, -1) {
+		// Exactly one alternative captures per match; take whichever did.
+		for group := 1; group <= 4; group++ {
+			start, end := m[2*group], m[2*group+1]
+			if start < 0 {
+				continue
+			}
+			refs = append(refs, importRef{
+				Path: src[start:end],
+				Line: 1 + strings.Count(src[:start], "\n"),
+			})
+			break
+		}
+	}
+	return refs
+}
 
 // SupersededUsage is one consumer reference to a superseded construct version.
 type SupersededUsage struct {
@@ -334,6 +502,21 @@ type SupersededResolution struct {
 	// emitting it is what lets every superseded construct be accounted for
 	// on screen rather than silently absent.
 	NotUsed bool
+	// Ambiguous reports that the import path this row came from is published
+	// by more than one construct version, so the version cannot be recovered
+	// from consumer code. models/core is the live example: three core
+	// versions share it. Reporting such a row as superseded would be a false
+	// positive and omitting it a false negative, so it is neither.
+	Ambiguous bool
+	// Candidates lists the construct keys an ambiguous import could mean.
+	Candidates []string
+	// AmbiguousSuperseded is the subset of Candidates that are superseded.
+	// Non-empty means the consumer may be on a superseded version and it
+	// cannot be determined either way.
+	AmbiguousSuperseded []string
+	// ImportPath is the published path this row resolved from, set for
+	// ambiguous rows so the reader can see what was matched.
+	ImportPath string
 	// SupersededVersions lists the superseded versions of this family, so a
 	// NotUsed row can still say what was checked for.
 	SupersededVersions []string
@@ -351,6 +534,10 @@ type SupersededRepoReport struct {
 	// be attributed to a construct version from consumer code.
 	BundledClientImports int
 	FilesScanned         int
+	// UnparsedFiles lists Go files whose imports could not be read. Their
+	// references are invisible to this scan, so a clean result for this repo
+	// is only as complete as this list is empty.
+	UnparsedFiles []string
 }
 
 // SupersededCount returns how many resolutions land on a superseded version.
@@ -385,7 +572,10 @@ type SupersededReport struct {
 }
 
 // HasSupersededUsage reports whether any scanned consumer resolves a
-// superseded construct version. Enforcement keys off this.
+// superseded construct version.
+//
+// A false here only means "nothing was found", which is not the same as
+// "nothing is there" — check IsComplete before treating it as a pass.
 func (r *SupersededReport) HasSupersededUsage() bool {
 	for _, repo := range r.Repos {
 		if repo.SupersededCount() > 0 {
@@ -394,6 +584,33 @@ func (r *SupersededReport) HasSupersededUsage() bool {
 	}
 	return false
 }
+
+// IsComplete reports whether the construct index covered the whole tree. When
+// false, a clean HasSupersededUsage result is unreliable: the construct that
+// would have matched may simply never have been loaded.
+func (r *SupersededReport) IsComplete() bool { return r.Index.IsComplete() }
+
+// HasUnresolvedUsage reports whether any consumer imports a version-erased
+// path whose candidates include a superseded version — meaning the consumer
+// may be on a superseded construct and it cannot be determined either way.
+//
+// This is deliberately separate from HasSupersededUsage: one is "confirmed on
+// a superseded version", the other is "cannot confirm". Enforcement fails on
+// both, but the report distinguishes them.
+func (r *SupersededReport) HasUnresolvedUsage() bool {
+	for _, repo := range r.Repos {
+		for _, res := range repo.Resolutions {
+			if res.Ambiguous && len(res.AmbiguousSuperseded) > 0 {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// SkippedConstructs returns the construct directories that could not be
+// indexed, sorted by path.
+func (r *SupersededReport) SkippedConstructs() []SkippedConstruct { return r.Index.Skipped }
 
 // SupersededOptions configures RunSupersededAudit.
 type SupersededOptions struct {
@@ -518,6 +735,23 @@ func scanConsumerForSuperseded(nt namedTree, idx ConstructIndex) (*SupersededRep
 	// files[family][surface][version] = set of files referencing it.
 	files := map[string]map[SupersededSurface]map[string]map[string]bool{}
 
+	// ambiguous[importPath] accumulates the files referencing a version-erased
+	// import, plus the construct versions it could mean.
+	type ambiguousImport struct {
+		candidates []ConstructVersion
+		files      map[string]bool
+	}
+	ambiguous := map[string]*ambiguousImport{}
+
+	recordAmbiguous := func(candidates []ConstructVersion, importPath, file string) {
+		entry, ok := ambiguous[importPath]
+		if !ok {
+			entry = &ambiguousImport{candidates: candidates, files: map[string]bool{}}
+			ambiguous[importPath] = entry
+		}
+		entry.files[file] = true
+	}
+
 	record := func(family string, surface SupersededSurface, version, file string) {
 		if !inScope[family] {
 			// Family was never superseded: no migration question to answer.
@@ -541,7 +775,53 @@ func scanConsumerForSuperseded(nt namedTree, idx ConstructIndex) (*SupersededRep
 		set[file] = true
 	}
 
-	scan := func(tree sourceTree, exts []string, surface SupersededSurface, pattern *regexp.Regexp) error {
+	// resolve maps one declared import to construct versions and records it.
+	resolve := func(surface SupersededSurface, ref importRef, file string) {
+		var candidates []ConstructVersion
+		switch surface {
+		case SurfaceGo:
+			// Exact lookup against the generator's published paths.
+			candidates = idx.ByGoImport[ref.Path]
+		case SurfaceNPMDeep:
+			m := npmDeepPattern.FindStringSubmatch(ref.Path)
+			if m == nil {
+				return
+			}
+			if c, ok := idx.ByExposed[m[1]+"/"+m[2]]; ok {
+				candidates = []ConstructVersion{c}
+			}
+		}
+		if len(candidates) == 0 {
+			// Not a path this repo publishes.
+			return
+		}
+
+		if len(candidates) > 1 {
+			// Version-erased import: the generator publishes several
+			// construct versions at this path, so consumer code cannot say
+			// which one is meant.
+			recordAmbiguous(candidates, ref.Path, file)
+			return
+		}
+
+		c := candidates[0]
+		record(c.Construct, surface, c.Version, file)
+
+		if !c.IsSuperseded() {
+			return
+		}
+		out.Usages = append(out.Usages, SupersededUsage{
+			Repo:      nt.repo,
+			Surface:   surface,
+			Construct: c.Key,
+			Terminal:  c.Terminal,
+			File:      file,
+			Line:      ref.Line,
+			Import:    ref.Path,
+		})
+	}
+
+	scan := func(tree sourceTree, exts []string, surface SupersededSurface) error {
 		if tree == nil {
 			return nil
 		}
@@ -554,43 +834,71 @@ func scanConsumerForSuperseded(nt namedTree, idx ConstructIndex) (*SupersededRep
 			out.FilesScanned++
 			src := string(raw)
 
-			if surface == SurfaceNPMDeep {
-				out.BundledClientImports += len(npmBundledPattern.FindAllString(src, -1))
+			var refs []importRef
+			if surface == SurfaceGo {
+				parsed, parseErr := extractGoImports(path, src)
+				if parseErr != nil {
+					// Record rather than drop: a file we cannot parse is a
+					// file whose imports we cannot see, and silently
+					// treating it as import-free is the same false-clean
+					// failure as an unindexed construct.
+					out.UnparsedFiles = append(out.UnparsedFiles, path)
+					return nil
+				}
+				refs = parsed
+			} else {
+				refs = extractNPMImports(src)
 			}
 
-			for _, m := range pattern.FindAllStringSubmatchIndex(src, -1) {
-				version := src[m[2]:m[3]]
-				name := src[m[4]:m[5]]
-
-				c, ok := idx.ByExposed[version+"/"+name]
-				if !ok {
-					// Not a construct this repo publishes.
+			for _, ref := range refs {
+				if surface == SurfaceNPMDeep && npmBundledPattern.MatchString(ref.Path) {
+					out.BundledClientImports++
 					continue
 				}
-				record(c.Construct, surface, version, path)
-
-				if !c.IsSuperseded() {
-					continue
-				}
-				out.Usages = append(out.Usages, SupersededUsage{
-					Repo:      nt.repo,
-					Surface:   surface,
-					Construct: c.Key,
-					Terminal:  c.Terminal,
-					File:      path,
-					Line:      1 + strings.Count(src[:m[0]], "\n"),
-					Import:    src[m[0]:m[1]],
-				})
+				resolve(surface, ref, path)
 			}
 			return nil
 		})
 	}
 
-	if err := scan(nt.goTree, goExts, SurfaceGo, goImportPattern); err != nil {
+	if err := scan(nt.goTree, goExts, SurfaceGo); err != nil {
 		return nil, fmt.Errorf("superseded: scan %s (go): %w", nt.repo, err)
 	}
-	if err := scan(nt.npmTree, npmExts, SurfaceNPMDeep, npmDeepPattern); err != nil {
+	if err := scan(nt.npmTree, npmExts, SurfaceNPMDeep); err != nil {
 		return nil, fmt.Errorf("superseded: scan %s (npm): %w", nt.repo, err)
+	}
+	sort.Strings(out.UnparsedFiles)
+
+	// Ambiguous imports become their own rows. They are attributed to the
+	// family their candidates share — every current override maps versions of
+	// a single construct — but never to a version, which is the whole point.
+	for importPath, entry := range ambiguous {
+		var candidates, supersededKeys []string
+		for _, c := range entry.candidates {
+			candidates = append(candidates, c.Key)
+			if c.IsSuperseded() {
+				supersededKeys = append(supersededKeys, c.Key)
+			}
+		}
+		sort.Strings(candidates)
+		sort.Strings(supersededKeys)
+
+		family := entry.candidates[0].Construct
+		if !inScope[family] {
+			// No version of this family was ever superseded, so there is no
+			// migration question for the ambiguity to obscure.
+			continue
+		}
+
+		out.Resolutions = append(out.Resolutions, SupersededResolution{
+			Family:              family,
+			Surface:             SurfaceGo,
+			Files:               len(entry.files),
+			Ambiguous:           true,
+			Candidates:          candidates,
+			AmbiguousSuperseded: supersededKeys,
+			ImportPath:          importPath,
+		})
 	}
 
 	for _, family := range supersededFamilies {

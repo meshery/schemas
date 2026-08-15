@@ -204,7 +204,10 @@ func TestSupersededDanglingSuccessor(t *testing.T) {
 // be invisible and a reader could not tell they had been checked.
 func TestSupersededNotUsedRows(t *testing.T) {
 	rr := runFixture(t, chainIndex(), map[string]string{
-		"models/x.go": `import "github.com/meshery/schemas/models/v1beta1/pattern"`,
+		"models/x.go": `package models
+
+import "github.com/meshery/schemas/models/v1beta1/pattern"
+`,
 	})
 
 	var notUsed []string
@@ -261,6 +264,325 @@ func TestSupersededSkipsNodeModules(t *testing.T) {
 		if !res.NotUsed {
 			t.Errorf("excluded directory produced a usage row: %+v", res)
 		}
+	}
+}
+
+// TestSupersededIgnoresGoCommentsAndStringLiterals covers the false-positive
+// vector raised in review: matching raw file text counts an import-shaped path
+// in a comment or a string constant as a consumer reference, which under
+// --superseded-enforce is a failure with no import behind it.
+func TestSupersededIgnoresGoCommentsAndStringLiterals(t *testing.T) {
+	rr := runFixture(t, chainIndex(), map[string]string{
+		"models/notes.go": `package models
+
+// TODO: migrate off github.com/meshery/schemas/models/v1beta1/pattern
+/* also github.com/meshery/schemas/models/v1beta1/pattern */
+
+const docsURL = "github.com/meshery/schemas/models/v1beta1/pattern"
+
+func note() string { return "github.com/meshery/schemas/models/v1beta1/pattern" }
+`,
+	})
+
+	for _, res := range rr.Resolutions {
+		if !res.NotUsed {
+			t.Errorf("a file with no import declarations produced a usage row: %+v", res)
+		}
+	}
+	if len(rr.Usages) != 0 {
+		t.Errorf("Usages = %+v, want none", rr.Usages)
+	}
+}
+
+// TestSupersededDetectsGroupedAndAliasedGoImports checks the parser-based
+// extraction still sees the real forms: grouped blocks, aliases and blank
+// imports.
+func TestSupersededDetectsGroupedAndAliasedGoImports(t *testing.T) {
+	rr := runFixture(t, chainIndex(), map[string]string{
+		"a.go": `package a
+
+import (
+	"fmt"
+
+	pat "github.com/meshery/schemas/models/v1beta1/pattern"
+)
+
+var _ = fmt.Sprint(pat.X)
+`,
+		"b.go": `package b
+
+import _ "github.com/meshery/schemas/models/v1beta1/pattern"
+`,
+	})
+
+	res := findResolution(rr, "design", SurfaceGo, "v1beta1")
+	if res == nil {
+		t.Fatalf("aliased/blank imports not detected; got %+v", rr.Resolutions)
+	}
+	if res.Files != 2 {
+		t.Errorf("Files = %d, want 2", res.Files)
+	}
+}
+
+// TestSupersededRecordsUnparsableGoFiles checks that a Go file whose imports
+// cannot be read is reported rather than silently treated as import-free.
+func TestSupersededRecordsUnparsableGoFiles(t *testing.T) {
+	rr := runFixture(t, chainIndex(), map[string]string{
+		"broken.go": "package !!! not go at all {{{",
+	})
+
+	if len(rr.UnparsedFiles) != 1 || rr.UnparsedFiles[0] != "broken.go" {
+		t.Errorf("UnparsedFiles = %v, want [broken.go]", rr.UnparsedFiles)
+	}
+}
+
+// TestSupersededIgnoresNPMCommentsAndStringLiterals is the TypeScript half of
+// the same concern: only import/export/require syntax counts.
+func TestSupersededIgnoresNPMCommentsAndStringLiterals(t *testing.T) {
+	rr := runFixture(t, chainIndex(), map[string]string{
+		"ui/notes.ts": `// see @meshery/schemas/constructs/v1beta1/badge/Badge for the old shape
+const path = "@meshery/schemas/constructs/v1beta1/badge/Badge";
+const alsoBundled = "@meshery/schemas/mesheryApi";
+`,
+	})
+
+	for _, res := range rr.Resolutions {
+		if !res.NotUsed {
+			t.Errorf("a file with no import syntax produced a usage row: %+v", res)
+		}
+	}
+	if rr.BundledClientImports != 0 {
+		t.Errorf("BundledClientImports = %d, want 0 -- a string literal is not an import",
+			rr.BundledClientImports)
+	}
+}
+
+// TestSupersededDetectsNPMImportForms checks the specifier extraction covers
+// the syntax actually used: multi-line named imports, side-effect imports,
+// re-exports, dynamic import() and require().
+func TestSupersededDetectsNPMImportForms(t *testing.T) {
+	cases := map[string]string{
+		"multiline.ts":  "import {\n  Badge,\n  Other,\n} from '@meshery/schemas/constructs/v1beta1/badge/Badge';",
+		"sideeffect.ts": `import "@meshery/schemas/constructs/v1beta1/badge/Badge";`,
+		"reexport.ts":   `export { Badge } from "@meshery/schemas/constructs/v1beta1/badge/Badge";`,
+		"dynamic.ts":    `const m = await import("@meshery/schemas/constructs/v1beta1/badge/Badge");`,
+		"cjs.js":        `const m = require("@meshery/schemas/constructs/v1beta1/badge/Badge");`,
+	}
+
+	for name, src := range cases {
+		t.Run(name, func(t *testing.T) {
+			rr := runFixture(t, chainIndex(), map[string]string{name: src})
+			if findResolution(rr, "badge", SurfaceNPMDeep, "v1beta1") == nil {
+				t.Errorf("import form not detected; got %+v", rr.Resolutions)
+			}
+		})
+	}
+}
+
+// coreIndex mirrors the real core mapping: three versions publish at
+// models/core, and v1beta2/core is additionally reachable at its conventional
+// path. Only v1beta1/core is superseded.
+func coreIndex() ConstructIndex {
+	return buildConstructIndex([]ConstructVersion{
+		newTestConstruct("v1alpha1", "core", "", false),
+		newTestConstruct("v1beta1", "core", "v1beta2", true),
+		newTestConstruct("v1beta2", "core", "", false),
+	})
+}
+
+// TestSupersededDetectsVersionErasedGoImport covers the gap raised in review:
+// build/generate-golang.js publishes three core versions at the unversioned
+// models/core, so a version-qualified regex never matches it. In meshery/meshery
+// that path accounts for 78 files, one of whose candidates is superseded.
+func TestSupersededDetectsVersionErasedGoImport(t *testing.T) {
+	rr := runFixture(t, coreIndex(), map[string]string{
+		"models/a.go": `package a
+
+import "github.com/meshery/schemas/models/core"
+`,
+		"models/b.go": `package b
+
+import "github.com/meshery/schemas/models/core"
+`,
+	})
+
+	var ambiguous *SupersededResolution
+	for i := range rr.Resolutions {
+		if rr.Resolutions[i].Ambiguous {
+			ambiguous = &rr.Resolutions[i]
+		}
+	}
+	if ambiguous == nil {
+		t.Fatalf("models/core produced no ambiguous row; got %+v", rr.Resolutions)
+	}
+	if ambiguous.Files != 2 {
+		t.Errorf("Files = %d, want 2", ambiguous.Files)
+	}
+	if ambiguous.ImportPath != "github.com/meshery/schemas/models/core" {
+		t.Errorf("ImportPath = %q", ambiguous.ImportPath)
+	}
+	if len(ambiguous.Candidates) != 3 {
+		t.Errorf("Candidates = %v, want all three core versions", ambiguous.Candidates)
+	}
+	// Exactly one candidate is superseded — naming a resolved version here
+	// would be a guess, but omitting the row entirely would hide the risk.
+	if len(ambiguous.AmbiguousSuperseded) != 1 || ambiguous.AmbiguousSuperseded[0] != "v1beta1/core" {
+		t.Errorf("AmbiguousSuperseded = %v, want [v1beta1/core]", ambiguous.AmbiguousSuperseded)
+	}
+	if ambiguous.Superseded {
+		t.Error("an unresolvable import must not be reported as confirmed superseded")
+	}
+}
+
+// TestSupersededOverrideDoesNotHideConventionalPath guards the correction that
+// an override adds a path rather than replacing one: models/v1beta2/core is
+// generated separately and imported directly, so it must still resolve.
+func TestSupersededOverrideDoesNotHideConventionalPath(t *testing.T) {
+	rr := runFixture(t, coreIndex(), map[string]string{
+		"models/a.go": `package a
+
+import "github.com/meshery/schemas/models/v1beta2/core"
+`,
+	})
+
+	res := findResolution(rr, "core", SurfaceGo, "v1beta2")
+	if res == nil {
+		t.Fatalf("models/v1beta2/core did not resolve; got %+v", rr.Resolutions)
+	}
+	if res.Ambiguous {
+		t.Error("the conventional path names one version and must not be ambiguous")
+	}
+	if res.Superseded {
+		t.Error("v1beta2/core is not superseded")
+	}
+}
+
+// TestUnresolvedUsageIsNotCleanForEnforcement pins the enforcement semantics:
+// "cannot determine" is a distinct result from "confirmed on a superseded
+// version", and neither counts as clean.
+func TestUnresolvedUsageIsNotCleanForEnforcement(t *testing.T) {
+	report, err := runSupersededAudit(coreIndex(), []namedTree{{
+		repo: "meshery",
+		goTree: &memTree{files: map[string]string{"a.go": `package a
+
+import "github.com/meshery/schemas/models/core"
+`}},
+		npmTree: &memTree{files: map[string]string{}},
+	}})
+	if err != nil {
+		t.Fatalf("runSupersededAudit: %v", err)
+	}
+	if report.HasSupersededUsage() {
+		t.Error("no consumer resolves a confirmed superseded version here")
+	}
+	if !report.HasUnresolvedUsage() {
+		t.Error("a version-erased import with a superseded candidate must count as unresolved")
+	}
+}
+
+// TestSupersededMirrorsGoImportOverrides is the sync guard for the generator's
+// second mapping layer. Missing an entry here silently drops an entire
+// published import path from the audit — which is exactly how models/core, and
+// the 78 files importing it, went undetected.
+func TestSupersededMirrorsGoImportOverrides(t *testing.T) {
+	root, err := filepath.Abs("..")
+	if err != nil {
+		t.Fatalf("resolve repo root: %v", err)
+	}
+	raw, err := os.ReadFile(filepath.Join(root, "build", "generate-golang.js"))
+	if err != nil {
+		t.Skipf("build/generate-golang.js not readable: %v", err)
+	}
+
+	got := parseJSObject(t, string(raw), "GO_IMPORT_OVERRIDES")
+	if len(got) != len(goImportOverrides) {
+		t.Fatalf("override count: js=%v go=%v", got, goImportOverrides)
+	}
+	for k, v := range got {
+		if goImportOverrides[k] != v {
+			t.Errorf("override %q: js=%q go=%q -- update goImportOverrides in superseded.go",
+				k, v, goImportOverrides[k])
+		}
+	}
+}
+
+// TestLoadConstructIndexRecordsUnreadableSpecs covers the false-clean vector
+// raised in review: a construct whose api.yml cannot be parsed is absent from
+// ByExposed, so every consumer import of it stops matching. The index must
+// report itself incomplete rather than let that read as "not used".
+func TestLoadConstructIndexRecordsUnreadableSpecs(t *testing.T) {
+	root := t.TempDir()
+	dir := filepath.Join(root, "schemas", "constructs", "v1beta1", "broken")
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		t.Fatalf("mkdir: %v", err)
+	}
+	// Valid YAML, but not a loadable OpenAPI document.
+	if err := os.WriteFile(filepath.Join(dir, "api.yml"), []byte(":\n\t- not openapi\n"), 0o644); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+
+	good := filepath.Join(root, "schemas", "constructs", "v1beta1", "ok")
+	if err := os.MkdirAll(good, 0o755); err != nil {
+		t.Fatalf("mkdir: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(good, "api.yml"), []byte(
+		"openapi: 3.0.0\ninfo:\n  title: Ok\n  version: v1beta1\npaths: {}\n"), 0o644); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+
+	idx, err := LoadConstructIndex(root)
+	if err != nil {
+		t.Fatalf("LoadConstructIndex: %v", err)
+	}
+	if idx.IsComplete() {
+		t.Fatalf("index reported complete despite an unreadable api.yml; Skipped=%v", idx.Skipped)
+	}
+	if len(idx.Skipped) != 1 {
+		t.Fatalf("Skipped = %v, want exactly the broken construct", idx.Skipped)
+	}
+	if !strings.Contains(idx.Skipped[0].Path, "broken") {
+		t.Errorf("Skipped path = %q, want the broken construct", idx.Skipped[0].Path)
+	}
+	if idx.Skipped[0].Reason == "" {
+		t.Error("Skipped reason is empty; the load error should be retained")
+	}
+	// The readable construct must still be indexed: report mode keeps working.
+	if _, ok := idx.ByKey["v1beta1/ok"]; !ok {
+		t.Error("readable construct missing from the index")
+	}
+}
+
+// TestLoadConstructIndexRejectsEmptyTree covers the worst silent case: with no
+// schemas/constructs the walker returns nil, which would otherwise yield an
+// empty index, a "0 of 0" report, and a passing enforcement run.
+func TestLoadConstructIndexRejectsEmptyTree(t *testing.T) {
+	if _, err := LoadConstructIndex(t.TempDir()); err == nil {
+		t.Fatal("expected an error for a tree with no constructs, got nil")
+	}
+}
+
+// TestSupersededReportCompletenessPropagates checks that the index's
+// completeness reaches the report, which is what the enforcement path gates on.
+func TestSupersededReportCompletenessPropagates(t *testing.T) {
+	idx := chainIndex()
+	report, err := runSupersededAudit(idx, nil)
+	if err != nil {
+		t.Fatalf("runSupersededAudit: %v", err)
+	}
+	if !report.IsComplete() {
+		t.Error("clean index should produce a complete report")
+	}
+
+	idx.Skipped = []SkippedConstruct{{Path: "schemas/constructs/v1beta1/design/api.yml", Reason: "boom"}}
+	report, err = runSupersededAudit(idx, nil)
+	if err != nil {
+		t.Fatalf("runSupersededAudit: %v", err)
+	}
+	if report.IsComplete() {
+		t.Error("index with skipped constructs should produce an incomplete report")
+	}
+	if len(report.SkippedConstructs()) != 1 {
+		t.Errorf("SkippedConstructs = %v, want 1", report.SkippedConstructs())
 	}
 }
 

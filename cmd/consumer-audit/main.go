@@ -22,6 +22,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 
 	"github.com/meshery/schemas/validation"
 	"github.com/rodaine/table"
@@ -113,10 +114,33 @@ func main() {
 		}
 		printSupersededReport(out, sup)
 
-		if *supersededEnforce && sup.HasSupersededUsage() {
-			fmt.Fprintln(out)
-			fmt.Fprintln(out, "superseded-enforce: at least one consumer resolves a superseded construct version.")
-			os.Exit(2)
+		if *supersededEnforce {
+			// An incomplete index is checked first and reported separately:
+			// a clean usage result drawn from a partial index is not a pass,
+			// it is an audit that could not see the whole tree. The distinct
+			// exit code lets CI tell the two failures apart.
+			if !sup.IsComplete() {
+				fmt.Fprintln(out)
+				fmt.Fprintf(out,
+					"superseded-enforce: audit incomplete -- %d construct api.yml could not be indexed; "+
+						"a clean result cannot be trusted.\n",
+					len(sup.SkippedConstructs()))
+				os.Exit(3)
+			}
+			if sup.HasSupersededUsage() {
+				fmt.Fprintln(out)
+				fmt.Fprintln(out, "superseded-enforce: at least one consumer resolves a superseded construct version.")
+				os.Exit(2)
+			}
+			// "Cannot determine" is not "clean": a version-erased import
+			// whose candidates include a superseded version leaves the
+			// question open, so enforcement does not pass it.
+			if sup.HasUnresolvedUsage() {
+				fmt.Fprintln(out)
+				fmt.Fprintln(out, "superseded-enforce: a consumer imports a version-erased path whose candidates")
+				fmt.Fprintln(out, "include a superseded construct; the version cannot be determined from consumer code.")
+				os.Exit(2)
+			}
 		}
 	}
 }
@@ -462,6 +486,7 @@ func printSupersededReport(out io.Writer, r *validation.SupersededReport) {
 	fmt.Fprintln(out, "Superseded versions stay served indefinitely (Phase 4.A non-deletion policy),")
 	fmt.Fprintln(out, "so a pinned superseded version is a migration signal, not an error.")
 
+	printSupersededIndexGaps(out, r)
 	printBundledReachability(out, r)
 
 	for _, repo := range r.Repos {
@@ -481,6 +506,17 @@ func printSupersededReport(out io.Writer, r *validation.SupersededReport) {
 				t.AddRow(res.Family, "-", "-", "-", "not used")
 				continue
 			}
+			// A version-erased import resolves to several construct
+			// versions, so it gets no "Resolves" value at all — naming one
+			// would be a guess.
+			if res.Ambiguous {
+				status := "AMBIGUOUS " + res.ImportPath
+				if len(res.AmbiguousSuperseded) > 0 {
+					status += " -- may be " + strings.Join(res.AmbiguousSuperseded, ", ")
+				}
+				t.AddRow(res.Family, string(res.Surface), "unresolved", res.Files, status)
+				continue
+			}
 			status := "current"
 			if res.Superseded {
 				status = "SUPERSEDED -> " + res.Terminal
@@ -496,10 +532,13 @@ func printSupersededReport(out io.Writer, r *validation.SupersededReport) {
 				"    %d bundled-client %s (cloudApi/mesheryApi); version not resolvable from consumer code.\n",
 				repo.BundledClientImports, pluralize("import", repo.BundledClientImports))
 		}
-		notUsed := 0
+		notUsed, unresolved := 0, 0
 		for _, res := range repo.Resolutions {
 			if res.NotUsed {
 				notUsed++
+			}
+			if res.Ambiguous && len(res.AmbiguousSuperseded) > 0 {
+				unresolved++
 			}
 		}
 		if n := repo.SupersededCount(); n > 0 {
@@ -508,9 +547,45 @@ func printSupersededReport(out io.Writer, r *validation.SupersededReport) {
 		} else {
 			fmt.Fprintf(out, "    clear of superseded construct versions; %d not used.\n", notUsed)
 		}
+		if unresolved > 0 {
+			fmt.Fprintf(out,
+				"    %d version-erased %s could not be resolved and may be on a superseded version.\n",
+				unresolved, pluralize("import", unresolved))
+		}
+		// Imports are read by parsing, so a file that will not parse is a
+		// file whose references are invisible here. Surface it rather than
+		// let it quietly narrow the scan.
+		if n := len(repo.UnparsedFiles); n > 0 {
+			fmt.Fprintf(out,
+				"    WARNING: %d Go %s could not be parsed; their imports were not scanned:\n",
+				n, pluralize("file", n))
+			for _, f := range repo.UnparsedFiles {
+				fmt.Fprintf(out, "      %s\n", f)
+			}
+		}
 	}
 
 	printSupersededAnomalies(out, r)
+}
+
+// printSupersededIndexGaps warns when the construct index does not cover the
+// whole tree. Report mode still runs — an awareness tool that refuses to say
+// anything because one api.yml is malformed is less useful than one that says
+// what it could and could not see — but the gaps must be visible, because a
+// construct missing from the index cannot be matched against any consumer and
+// would otherwise read as absent rather than unknown.
+func printSupersededIndexGaps(out io.Writer, r *validation.SupersededReport) {
+	skipped := r.SkippedConstructs()
+	if len(skipped) == 0 {
+		return
+	}
+
+	fmt.Fprintln(out)
+	fmt.Fprintf(out, "WARNING: %d construct api.yml could not be indexed. Consumers importing\n", len(skipped))
+	fmt.Fprintln(out, "these versions cannot be detected, so a clean result below is not conclusive:")
+	for _, s := range skipped {
+		fmt.Fprintf(out, "    %s\n      %s\n", s.Path, s.Reason)
+	}
 }
 
 // printBundledReachability reports surface 3, which is a property of this repo
