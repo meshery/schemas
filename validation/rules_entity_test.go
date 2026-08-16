@@ -267,7 +267,8 @@ func TestValidateRule34_NestedObjectWithRefSibling(t *testing.T) {
 		Type: "object",
 		Properties: map[string]*propertyDef{
 			"id": {
-				Ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid",
+				Type: "string",
+				Ref:  "../../v1beta2/core/api.yml#/components/schemas/Uuid",
 			},
 			"metadata": {
 				Type: "object",
@@ -314,7 +315,8 @@ func TestValidateRule34_NestedObjectWithRefSiblingValid(t *testing.T) {
 		Type: "object",
 		Properties: map[string]*propertyDef{
 			"id": {
-				Ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid",
+				Type: "string",
+				Ref:  "../../v1beta2/core/api.yml#/components/schemas/Uuid",
 			},
 			"metadata": {
 				Type: "object",
