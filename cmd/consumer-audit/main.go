@@ -134,9 +134,10 @@ func main() {
 			if !sup.FullyScanned() {
 				fmt.Fprintln(out)
 				for _, repo := range sup.UnscannedRepos() {
+					n := len(repo.ScanDefects) + len(repo.UnparsedFiles)
 					fmt.Fprintf(out,
 						"superseded-enforce: %s was not fully scanned (%d %s); its result is not conclusive.\n",
-						repo.Repo, len(repo.ScanDefects), pluralize("problem", len(repo.ScanDefects)))
+						repo.Repo, n, pluralize("problem", n))
 				}
 				os.Exit(3)
 			}
@@ -510,8 +511,9 @@ func printSupersededReport(out io.Writer, r *validation.SupersededReport) {
 		// should be read: "not used" from an unscanned tree means "not
 		// seen".
 		if !repo.FullyScanned() {
+			n := len(repo.ScanDefects) + len(repo.UnparsedFiles)
 			fmt.Fprintf(out, "    WARNING: this consumer was not fully scanned (%d %s).\n",
-				len(repo.ScanDefects), pluralize("problem", len(repo.ScanDefects)))
+				n, pluralize("problem", n))
 			fmt.Fprintln(out, "    Rows below say what was seen, not what exists:")
 			for _, d := range repo.ScanDefects {
 				fmt.Fprintf(out, "      %s\n        %s\n", d.Path, d.Reason)

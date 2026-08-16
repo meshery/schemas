@@ -547,7 +547,9 @@ type SupersededRepoReport struct {
 // FullyScanned reports whether the sweep read this consumer's whole tree.
 // When false, every "not used" row for this repo means "not seen", and a
 // clean result must not be treated as a pass.
-func (r SupersededRepoReport) FullyScanned() bool { return len(r.ScanDefects) == 0 }
+func (r SupersededRepoReport) FullyScanned() bool {
+	return len(r.ScanDefects) == 0 && len(r.UnparsedFiles) == 0
+}
 
 // SupersededCount returns how many resolutions land on a superseded version.
 func (r SupersededRepoReport) SupersededCount() int {

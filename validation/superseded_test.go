@@ -328,11 +328,15 @@ import _ "github.com/meshery/schemas/models/v1beta1/pattern"
 // cannot be read is reported rather than silently treated as import-free.
 func TestSupersededRecordsUnparsableGoFiles(t *testing.T) {
 	rr := runFixture(t, chainIndex(), map[string]string{
+		"ok.go":     "package m\n\nimport \"fmt\"\n\nvar _ = fmt.Sprint\n",
 		"broken.go": "package !!! not go at all {{{",
 	})
 
 	if len(rr.UnparsedFiles) != 1 || rr.UnparsedFiles[0] != "broken.go" {
 		t.Errorf("UnparsedFiles = %v, want [broken.go]", rr.UnparsedFiles)
+	}
+	if rr.FullyScanned() {
+		t.Error("an unparsable Go file must mark the scan incomplete")
 	}
 }
 
