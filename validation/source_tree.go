@@ -141,7 +141,7 @@ func (t localTree) Walk(dir string, fn func(path string) error) error {
 
 func (t localTree) WalkFiltered(dir string, exts []string, fn func(path string) error) ([]ScanDefect, error) {
 	var defects []ScanDefect
-
+	defectPath := filepath.ToSlash(filepath.Clean(dir))
 	abs := filepath.Join(t.root, filepath.FromSlash(dir))
 	info, err := os.Stat(abs)
 	if err != nil {
