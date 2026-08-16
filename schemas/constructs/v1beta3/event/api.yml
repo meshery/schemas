@@ -14,7 +14,7 @@ tags:
 - name: events
   description: APIs for Meshery Cloud events.
 paths:
-  /events/{eventId}:
+  /api/events/{eventId}:
     delete:
       x-internal: ["cloud", "meshery"]
       tags:
@@ -34,29 +34,7 @@ paths:
           $ref: '#/components/responses/404'
         '500':
           $ref: '#/components/responses/500'
-  /events:
-    post:
-      x-internal: ["cloud", "meshery"]
-      tags:
-      - events
-      operationId: createEvent
-      summary: Create a new event
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EventPayload'
-      responses:
-        '201':
-          description: Event created
-        '400':
-          $ref: '#/components/responses/400'
-        '401':
-          $ref: '#/components/responses/401'
-        '500':
-          $ref: '#/components/responses/500'
-  /events/delete:
+  /api/events/delete:
     post:
       x-internal: ["cloud", "meshery"]
       tags:
@@ -82,7 +60,7 @@ paths:
           $ref: '#/components/responses/401'
         '500':
           $ref: '#/components/responses/500'
-  /events/status:
+  /api/events/status:
     put:
       x-internal: ["cloud", "meshery"]
       tags:
@@ -108,7 +86,7 @@ paths:
           $ref: '#/components/responses/401'
         '500':
           $ref: '#/components/responses/500'
-  /events/{eventId}/status:
+  /api/events/{eventId}/status:
     put:
       x-internal: ["cloud", "meshery"]
       tags:
@@ -198,6 +176,27 @@ paths:
           description: Not found
         '500':
           description: Server error
+    post:
+      x-internal: ["cloud", "meshery"]
+      tags:
+      - events
+      operationId: createEvent
+      summary: Create a new event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventPayload'
+      responses:
+        '201':
+          description: Event created
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
   /api/events/list:
     get:
       x-internal:

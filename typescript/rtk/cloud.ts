@@ -1054,23 +1054,19 @@ const injectedRtkApi = api
         providesTags: ["Environment_environments"],
       }),
       deleteEvent: build.mutation<DeleteEventApiResponse, DeleteEventApiArg>({
-        query: (queryArg) => ({ url: `/events/${queryArg.eventId}`, method: "DELETE" }),
-        invalidatesTags: ["Events_events"],
-      }),
-      createEvent: build.mutation<CreateEventApiResponse, CreateEventApiArg>({
-        query: (queryArg) => ({ url: `/events`, method: "POST", body: queryArg.body }),
+        query: (queryArg) => ({ url: `/api/events/${queryArg.eventId}`, method: "DELETE" }),
         invalidatesTags: ["Events_events"],
       }),
       bulkDeleteEvents: build.mutation<BulkDeleteEventsApiResponse, BulkDeleteEventsApiArg>({
-        query: (queryArg) => ({ url: `/events/delete`, method: "POST", body: queryArg.body }),
+        query: (queryArg) => ({ url: `/api/events/delete`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Events_events"],
       }),
       bulkUpdateEventStatus: build.mutation<BulkUpdateEventStatusApiResponse, BulkUpdateEventStatusApiArg>({
-        query: (queryArg) => ({ url: `/events/status`, method: "PUT", body: queryArg.body }),
+        query: (queryArg) => ({ url: `/api/events/status`, method: "PUT", body: queryArg.body }),
         invalidatesTags: ["Events_events"],
       }),
       updateEventStatus: build.mutation<UpdateEventStatusApiResponse, UpdateEventStatusApiArg>({
-        query: (queryArg) => ({ url: `/events/${queryArg.eventId}/status`, method: "PUT", body: queryArg.body }),
+        query: (queryArg) => ({ url: `/api/events/${queryArg.eventId}/status`, method: "PUT", body: queryArg.body }),
         invalidatesTags: ["Events_events"],
       }),
       getEventsOfWorkspace: build.query<GetEventsOfWorkspaceApiResponse, GetEventsOfWorkspaceApiArg>({
@@ -1094,6 +1090,10 @@ const injectedRtkApi = api
           },
         }),
         providesTags: ["Events_events"],
+      }),
+      createEvent: build.mutation<CreateEventApiResponse, CreateEventApiArg>({
+        query: (queryArg) => ({ url: `/api/events`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Events_events"],
       }),
       getEvents: build.query<GetEventsApiResponse, GetEventsApiArg>({
         query: (queryArg) => ({
@@ -1416,6 +1416,14 @@ const injectedRtkApi = api
             planId: queryArg?.planId,
           },
         }),
+        providesTags: ["Subscription_Subscriptions"],
+      }),
+      upsertSubscription: build.mutation<UpsertSubscriptionApiResponse, UpsertSubscriptionApiArg>({
+        query: (queryArg) => ({ url: `/api/entitlement/subscriptions`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Subscription_Subscriptions"],
+      }),
+      getSubscriptionById: build.query<GetSubscriptionByIdApiResponse, GetSubscriptionByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/entitlement/subscriptions/${queryArg.subscriptionId}` }),
         providesTags: ["Subscription_Subscriptions"],
       }),
       cancelSubscription: build.mutation<CancelSubscriptionApiResponse, CancelSubscriptionApiArg>({
@@ -10214,9 +10222,249 @@ export type UpsertPatternSourceContentApiArg = {
   designId: string;
   body: Blob;
 };
-export type ImportDesignApiResponse = /** status 200 Successful Import */ {
-  message?: string;
-};
+export type ImportDesignApiResponse =
+  /** status 200 Successful import. The response body is a JSON array of the saved designs, not a message envelope. The import path saves exactly one design, so the array carries a single element and consumers read the imported design as the first element. */ {
+    /** Server-generated design ID. */
+    id?: string;
+    /** Human-readable design name. */
+    name?: string;
+    /** Catalog metadata attached to the design when published. */
+    catalogData?: {
+      /** Tracks the specific content version that has been made available in the Catalog. */
+      publishedVersion?: string;
+      /** Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+      class?: "official" | "verified" | "reference architecture";
+      /** One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential. */
+      compatibility: "kubernetes"[];
+      /** Specific stipulations to consider and known behaviors to be aware of when using this design. */
+      patternCaveats: string;
+      /** Purpose of the design along with its intended and unintended uses. */
+      patternInfo: string;
+      /** Categorization of the type of design or operational flow depicted in this design. */
+      type:
+        | "Deployment"
+        | "Observability"
+        | "Resiliency"
+        | "Scaling"
+        | "Security"
+        | "Traffic-management"
+        | "Troubleshooting"
+        | "Workloads";
+      /** Contains reference to the dark and light mode snapshots of the design. */
+      snapshotURL?: string[];
+    };
+    /** Owning user ID. */
+    userId?: string;
+    /** Owning user record, joined inline by the catalog list/get handlers when shaping responses. Server-projected from the users table via the design's userId; not a column on the meshery_patterns table itself, so the generated Go field is tagged `db:"-"` to keep it out of ORM column scans.
+     */
+    user?: {
+      /** Unique identifier for the user */
+      id: string;
+      /** Legacy IdP-derived identifier. Removed in v1beta3; resolve users by id or email. */
+      userId: string;
+      /** Authentication provider (e.g., Google, Github) */
+      provider: string;
+      /** User's email address */
+      email: string;
+      /** User's first name */
+      firstName: string;
+      /** User's last name */
+      lastName: string;
+      /** URL to user's avatar image */
+      avatarUrl?: string;
+      /** User account status */
+      status: "active" | "inactive" | "pending" | "anonymous";
+      /** User's biography or description */
+      bio?: string;
+      /** User's country information stored as JSONB */
+      country?: {
+        [key: string]: any;
+      };
+      /** User's region information stored as JSONB */
+      region?: {
+        [key: string]: any;
+      };
+      /** User preferences stored as JSONB */
+      preferences?: {
+        /** The mesh adapters of the preference. */
+        meshAdapters?: object[];
+        grafana?: {
+          /** Grafana URL for the user configuration. */
+          grafanaUrl?: string;
+          /** Grafana API key for the user configuration. */
+          grafanaApiKey?: string;
+          /** Selected Grafana board configurations for the user. */
+          selectedBoardsConfigs?: {
+            /** Placeholder for GrafanaBoard definition (define fields as needed) */
+            board?: object;
+            /** Panels selected for the Grafana board configuration. */
+            panels?: object[];
+            /** Template variables applied to the selected Grafana board configuration. */
+            templateVars?: string[];
+          }[];
+        };
+        prometheus?: {
+          /** The prometheus URL of the prometheus. */
+          prometheusUrl?: string;
+          /** The selected prometheus boards configs of the prometheus. */
+          selectedPrometheusBoardsConfigs?: {
+            /** Placeholder for GrafanaBoard definition (define fields as needed) */
+            board?: object;
+            /** Panels selected for the Grafana board configuration. */
+            panels?: object[];
+            /** Template variables applied to the selected Grafana board configuration. */
+            templateVars?: string[];
+          }[];
+        };
+        loadTestPrefs?: {
+          /** Concurrent requests */
+          c?: number;
+          /** Queries per second */
+          qps?: number;
+          /** Duration */
+          t?: string;
+          /** Load generator */
+          gen?: string;
+        };
+        /** The anonymous usage stats of the preference. */
+        anonymousUsageStats: boolean;
+        /** The anonymous perf results of the preference. */
+        anonymousPerfResults: boolean;
+        /** Timestamp of when the resource was last updated. */
+        updatedAt: string;
+        /** The dashboard preferences of the preference. */
+        dashboardPreferences: {
+          [key: string]: any;
+        };
+        /** ID of the associated selectedOrganization. */
+        selectedOrganizationId: string;
+        /** The selected workspace for organizations of the preference. */
+        selectedWorkspaceForOrganizations: {
+          [key: string]: string;
+        };
+        /** The users extension preferences of the preference. */
+        usersExtensionPreferences: {
+          [key: string]: any;
+        };
+        /** The remote provider preferences of the preference. */
+        remoteProviderPreferences: {
+          [key: string]: any;
+        };
+      };
+      /** Timestamp when user accepted terms and conditions */
+      acceptedTermsAt?: string;
+      /** Timestamp of user's first login */
+      firstLoginTime?: string;
+      /** Timestamp of user's most recent login */
+      lastLoginTime: string;
+      /** Timestamp when the user record was created */
+      createdAt: string;
+      /** Timestamp when the user record was last updated */
+      updatedAt: string;
+      /** Various online profiles associated with the user account */
+      socials?: {
+        /** The site of the social. */
+        site: string;
+        /** The link of the social. */
+        link: string;
+      }[];
+      /** Timestamp when the user record was soft-deleted (null if not deleted) */
+      deletedAt: string | null;
+      /** Names of the global roles assigned to the user. Free-form, user-generated values sourced from the roles table (role_name is a varchar, not a fixed enumeration); the seeded system roles such as "admin", "organization admin" and "user" are a subset, not the whole set. */
+      roleNames?: string[];
+      /** Teams the user belongs to with role information */
+      teams?: {
+        /** Team memberships for the user with their assigned roles. */
+        teamsWithRoles?: {
+          /** Unique identifier of the team. */
+          id: string;
+          /** Name of the team. */
+          name: string;
+          /** Human readable description of the team. */
+          description?: string;
+          /** Identifier of the team owner. */
+          owner?: string;
+          /** Free-form metadata associated with the team. */
+          metadata?: {
+            [key: string]: any;
+          };
+          /** Timestamp when the team was created. */
+          createdAt?: string;
+          /** Timestamp when the team was last updated. */
+          updatedAt?: string;
+          /** Timestamp when the team was soft-deleted (null if not deleted). */
+          deletedAt?: string | null;
+          /** Names of the roles assigned to the user within this team. Free-form, user-generated role names; not a fixed enumeration. */
+          roleNames: string[];
+        }[];
+        /** Total number of team memberships returned for the user. */
+        totalCount?: number;
+      };
+      /** Organizations the user belongs to with role information */
+      organizations?: {
+        /** Organization memberships for the user with their assigned roles. */
+        organizationsWithRoles?: {
+          /** Unique identifier of the organization. */
+          id: string;
+          /** Name of the organization. */
+          name: string;
+          /** Human readable description of the organization. */
+          description?: string;
+          /** Country associated with the organization. */
+          country?: string;
+          /** Region associated with the organization. */
+          region?: string;
+          /** Identifier of the organization owner. */
+          owner?: string;
+          /** Timestamp when the organization was created. */
+          createdAt?: string;
+          /** Timestamp when the organization was last updated. */
+          updatedAt?: string;
+          /** Timestamp when the organization was soft-deleted (null if not deleted). */
+          deletedAt?: string | null;
+          /** Names of the roles assigned to the user within this organization. Free-form, user-generated role names; not a fixed enumeration. */
+          roleNames: string[];
+        }[];
+        /** Total number of organization memberships returned for the user. */
+        totalCount?: number;
+      };
+    } | null;
+    /** Optional structured location metadata (branch, host, path, ...). */
+    location?: {
+      [key: string]: string;
+    };
+    /** Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied.
+     */
+    patternFile?: string;
+    /** Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
+     */
+    visibility?: "private" | "public" | "published";
+    /** Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+     */
+    designType?: ("Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest") | null;
+    /** Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.
+     */
+    sourceContent?: string | null;
+    /** Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+     */
+    viewCount?: number;
+    /** Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+     */
+    downloadCount?: number;
+    /** Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+     */
+    cloneCount?: number;
+    /** Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+     */
+    deploymentCount?: number;
+    /** Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+     */
+    shareCount?: number;
+    /** Timestamp of design creation. */
+    createdAt?: string;
+    /** Timestamp of last design modification. */
+    updatedAt?: string;
+  }[];
 export type ImportDesignApiArg = {
   body:
     | {
@@ -11467,20 +11715,6 @@ export type DeleteEventApiArg = {
   /** ID of the event. */
   eventId: string;
 };
-export type CreateEventApiResponse = unknown;
-export type CreateEventApiArg = {
-  body: {
-    /** UUID of the user associated with the event. */
-    owner?: string;
-    /** The category of the event. */
-    category?: string;
-    /** The action of the event. */
-    action?: string;
-    /** Description of the event. */
-    description?: string;
-    [key: string]: any;
-  };
-};
 export type BulkDeleteEventsApiResponse = /** status 200 Events deleted */ {
   /** UUIDs of events that were deleted. */
   deleted?: string[];
@@ -11572,6 +11806,20 @@ export type GetEventsAggregateApiResponse = /** status 200 Events aggregate */ {
 export type GetEventsAggregateApiArg = {
   /** When true, return cumulative aggregate counts across all time. */
   cumulative?: boolean;
+};
+export type CreateEventApiResponse = unknown;
+export type CreateEventApiArg = {
+  body: {
+    /** UUID of the user associated with the event. */
+    owner?: string;
+    /** The category of the event. */
+    category?: string;
+    /** The action of the event. */
+    action?: string;
+    /** Description of the event. */
+    description?: string;
+    [key: string]: any;
+  };
 };
 export type GetEventsApiResponse = /** status 200 Events page */ {
   /** Zero-based page index returned in this response. */
@@ -13187,6 +13435,120 @@ export type GetSubscriptionsApiArg = {
   status?: string[];
   /** Filter subscriptions by plan UUID. Repeat for multiple values. */
   planId?: string[];
+};
+export type UpsertSubscriptionApiResponse = /** status 200 Subscription updated */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Subscriptions returned on the current page. */
+  subscriptions: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    orgId: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    planId: string;
+    /** Eager-loaded plan associated with this subscription. */
+    plan?: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** Display name of the plan. */
+      name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+      /** Billing cadence for the plan (monthly, annually, or none). */
+      cadence: "none" | "monthly" | "annually";
+      /** Unit of consumption this plan charges against (e.g. user). */
+      unit: "user" | "free";
+      /** Minimum number of units required for the plan. */
+      minimumUnits: number;
+      /** Price per unit of the plan. */
+      pricePerUnit: number;
+      /** Currency in which the plan is priced. */
+      currency: "usd";
+    };
+    /** Number of units subscribed (eg number of users). */
+    quantity: number;
+    /** Timestamp when the subscription period started. */
+    startDate?: string;
+    /** Timestamp when the current subscription period ends. */
+    endDate?: string;
+    /** Current status of the subscription (e.g. active, past_due, canceled). */
+    status: "incomplete" | "incomplete_expired" | "trialing" | "active" | "past_due" | "canceled" | "unpaid";
+    /** Timestamp when the subscription was created. */
+    createdAt?: string;
+    /** Timestamp when the subscription was last updated. */
+    updatedAt?: string;
+    /** Timestamp when the subscription was soft-deleted, if applicable. */
+    deletedAt?: string;
+    /** Billing ID of the subscription. The ID of the subscription in the external billing system (for example, Stripe). */
+    billingId: string;
+  }[];
+};
+export type UpsertSubscriptionApiArg = {
+  body: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    planId: string;
+    /** Number of units subscribed (eg number of users). */
+    quantity: number;
+  };
+};
+export type GetSubscriptionByIdApiResponse = /** status 200 Subscription response */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  pageSize: number;
+  /** Total number of items available. */
+  totalCount: number;
+  /** Subscriptions returned on the current page. */
+  subscriptions: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    orgId: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    planId: string;
+    /** Eager-loaded plan associated with this subscription. */
+    plan?: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** Display name of the plan. */
+      name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+      /** Billing cadence for the plan (monthly, annually, or none). */
+      cadence: "none" | "monthly" | "annually";
+      /** Unit of consumption this plan charges against (e.g. user). */
+      unit: "user" | "free";
+      /** Minimum number of units required for the plan. */
+      minimumUnits: number;
+      /** Price per unit of the plan. */
+      pricePerUnit: number;
+      /** Currency in which the plan is priced. */
+      currency: "usd";
+    };
+    /** Number of units subscribed (eg number of users). */
+    quantity: number;
+    /** Timestamp when the subscription period started. */
+    startDate?: string;
+    /** Timestamp when the current subscription period ends. */
+    endDate?: string;
+    /** Current status of the subscription (e.g. active, past_due, canceled). */
+    status: "incomplete" | "incomplete_expired" | "trialing" | "active" | "past_due" | "canceled" | "unpaid";
+    /** Timestamp when the subscription was created. */
+    createdAt?: string;
+    /** Timestamp when the subscription was last updated. */
+    updatedAt?: string;
+    /** Timestamp when the subscription was soft-deleted, if applicable. */
+    deletedAt?: string;
+    /** Billing ID of the subscription. The ID of the subscription in the external billing system (for example, Stripe). */
+    billingId: string;
+  }[];
+};
+export type GetSubscriptionByIdApiArg = {
+  /** Subscription ID */
+  subscriptionId: string;
 };
 export type CancelSubscriptionApiResponse = /** status 200 Subscription cancellation scheduled */ {
   /** Current page number of the result set. */
@@ -15274,7 +15636,6 @@ export const {
   useGetEnvironmentConnectionsQuery,
   useLazyGetEnvironmentConnectionsQuery,
   useDeleteEventMutation,
-  useCreateEventMutation,
   useBulkDeleteEventsMutation,
   useBulkUpdateEventStatusMutation,
   useUpdateEventStatusMutation,
@@ -15282,6 +15643,7 @@ export const {
   useLazyGetEventsOfWorkspaceQuery,
   useGetEventsAggregateQuery,
   useLazyGetEventsAggregateQuery,
+  useCreateEventMutation,
   useGetEventsQuery,
   useLazyGetEventsQuery,
   useGetEventSummaryByUserQuery,
@@ -15338,6 +15700,9 @@ export const {
   useLazyGetPlansQuery,
   useGetSubscriptionsQuery,
   useLazyGetSubscriptionsQuery,
+  useUpsertSubscriptionMutation,
+  useGetSubscriptionByIdQuery,
+  useLazyGetSubscriptionByIdQuery,
   useCancelSubscriptionMutation,
   useCreateSubscriptionMutation,
   useUpgradeSubscriptionMutation,

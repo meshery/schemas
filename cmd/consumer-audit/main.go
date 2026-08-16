@@ -236,6 +236,33 @@ type consumerActionSummary struct {
 	annotationMismatch int
 }
 
+// printPrefixMismatches renders schema paths whose only difference from a live,
+// unmatched consumer route is the `/api` router-group prefix.
+//
+// This gap is silent everywhere else in the pipeline — the spec bundles, the
+// generators run, and the emitted client compiles — so it is called out ahead
+// of the per-consumer counts rather than left to be inferred from the raw
+// spec-only and handler-only totals.
+func printPrefixMismatches(out io.Writer, mismatches []validation.PrefixMismatch) {
+	if len(mismatches) == 0 {
+		return
+	}
+
+	fmt.Fprintf(
+		out,
+		"%d schema %s declared at a path no router serves, while the consumer serves the same operation one %q prefix away:\n",
+		len(mismatches),
+		pluralize("endpoint", len(mismatches)),
+		"/api",
+	)
+	for _, m := range mismatches {
+		fmt.Fprintf(out, "  %s\n", m)
+	}
+	fmt.Fprintln(out)
+	fmt.Fprintln(out, "Generated clients request the declared path verbatim, so each of these ships a client that cannot reach its handler. See docs/http-api-design.md.")
+	fmt.Fprintln(out)
+}
+
 // printActionItems renders a prose summary of the highest-signal consumer gaps.
 func printActionItems(out io.Writer, result *validation.ConsumerAuditResult, mesheryProvided, cloudProvided bool) {
 	if result == nil {
@@ -261,13 +288,21 @@ func printActionItems(out io.Writer, result *validation.ConsumerAuditResult, mes
 			result.Summary.CloudEndpoints,
 		))
 	}
-	if len(summaries) == 0 {
+	// A prefix mismatch is worth reporting even when no consumer summary
+	// could be built, so it is emitted before the summaries guard below.
+	if len(result.PrefixMismatches) == 0 && len(summaries) == 0 {
 		return
 	}
 
 	fmt.Fprintln(out)
 	fmt.Fprintln(out, "Action Needed")
 	fmt.Fprintln(out)
+
+	printPrefixMismatches(out, result.PrefixMismatches)
+
+	if len(summaries) == 0 {
+		return
+	}
 
 	for i, summary := range summaries {
 		if summary.annotationMismatch > 0 {
