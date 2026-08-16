@@ -518,6 +518,9 @@ func printSupersededReport(out io.Writer, r *validation.SupersededReport) {
 			for _, d := range repo.ScanDefects {
 				fmt.Fprintf(out, "      %s\n        %s\n", d.Path, d.Reason)
 			}
+			for _, f := range repo.UnparsedFiles {
+				fmt.Fprintf(out, "      %s\n        Go file could not be parsed; its imports were not scanned.\n", f)
+			}
 		}
 
 		if len(repo.Resolutions) == 0 {
@@ -578,17 +581,6 @@ func printSupersededReport(out io.Writer, r *validation.SupersededReport) {
 			fmt.Fprintf(out,
 				"    %d version-erased %s could not be resolved and may be on a superseded version.\n",
 				unresolved, pluralize("import", unresolved))
-		}
-		// Imports are read by parsing, so a file that will not parse is a
-		// file whose references are invisible here. Surface it rather than
-		// let it quietly narrow the scan.
-		if n := len(repo.UnparsedFiles); n > 0 {
-			fmt.Fprintf(out,
-				"    WARNING: %d Go %s could not be parsed; their imports were not scanned:\n",
-				n, pluralize("file", n))
-			for _, f := range repo.UnparsedFiles {
-				fmt.Fprintf(out, "      %s\n", f)
-			}
 		}
 	}
 
