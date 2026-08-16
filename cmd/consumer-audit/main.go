@@ -516,7 +516,11 @@ func printSupersededReport(out io.Writer, r *validation.SupersededReport) {
 				n, pluralize("problem", n))
 			fmt.Fprintln(out, "    Rows below say what was seen, not what exists:")
 			for _, d := range repo.ScanDefects {
-				fmt.Fprintf(out, "      %s\n        %s\n", d.Path, d.Reason)
+				where := d.Path
+				if where == "." {
+					where = repo.Path + " (tree root)"
+				}
+				fmt.Fprintf(out, "      %s\n        %s\n", where, d.Reason)
 			}
 			for _, f := range repo.UnparsedFiles {
 				fmt.Fprintf(out, "      %s\n        Go file could not be parsed; its imports were not scanned.\n", f)

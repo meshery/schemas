@@ -408,9 +408,12 @@ func TestSupersededFlagsMissingConsumerCheckout(t *testing.T) {
 	}
 	// A shared failure is hit by both the Go and npm sweeps; it should be
 	// reported once.
-	if n := len(report.Repos[0].ScanDefects); n != 1 {
-		t.Errorf("ScanDefects = %d, want 1 deduplicated defect: %+v",
-			n, report.Repos[0].ScanDefects)
+	defects := report.Repos[0].ScanDefects
+	if len(defects) != 1 {
+		t.Fatalf("ScanDefects = %+v, want 1 deduplicated defect", defects)
+	}
+	if defects[0].Path != "." {
+		t.Errorf("defect path = %q, want %q (repo-relative)", defects[0].Path, ".")
 	}
 }
 

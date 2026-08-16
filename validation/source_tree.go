@@ -151,12 +151,12 @@ func (t localTree) WalkFiltered(dir string, exts []string, fn func(path string) 
 		// "scanned and found nothing" from "never scanned".
 		if os.IsNotExist(err) {
 			return []ScanDefect{{
-				Path:   filepath.ToSlash(filepath.Join(t.root, dir)),
+				Path:   defectPath,
 				Reason: "directory does not exist; nothing was scanned",
 			}}, nil
 		}
 		return []ScanDefect{{
-			Path:   filepath.ToSlash(filepath.Join(t.root, dir)),
+			Path:   defectPath,
 			Reason: err.Error(),
 		}}, nil
 	}

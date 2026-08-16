@@ -918,7 +918,7 @@ func scanConsumerForSuperseded(nt namedTree, idx ConstructIndex) (*SupersededRep
 	// treat an empty sweep as unscanned rather than as a clean result.
 	if out.FilesScanned == 0 && len(out.ScanDefects) == 0 {
 		out.ScanDefects = append(out.ScanDefects, ScanDefect{
-			Path:   nt.path,
+			Path:   ".",
 			Reason: "no Go or TypeScript source files found; the path may be wrong",
 		})
 	}
