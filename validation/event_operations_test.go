@@ -278,21 +278,24 @@ func TestEventEntitySchemaIsResponseOnly(t *testing.T) {
 	// a $ref, load the referenced file directly.
 	if ref, ok := mappingValue(entityRef, "$ref"); ok {
 		refStr := fmt.Sprint(ref)
-		if refStr == "./event.yaml" {
+		// Accept any relative file reference, with or without a fragment.
+		refFile := strings.TrimPrefix(strings.SplitN(refStr, "#", 2)[0], "./")
+		if refFile != "" && !strings.HasPrefix(refFile, "/") {
 			entityPath := filepath.Join(repoRootDir(t),
-				"schemas/constructs/v1beta3/event/event.yaml")
+				"schemas/constructs/v1beta3/event", refFile)
 			entityDoc := loadOpenAPIDocument(t, entityPath)
 
 			ap, present := mappingValue(entityDoc, "additionalProperties")
 			if !present {
-				t.Fatal("event.yaml is missing additionalProperties; " +
-					"entity schemas must have additionalProperties: false")
+				t.Fatalf("%s is missing additionalProperties; "+
+					"entity schemas must have additionalProperties: false", refFile)
 			}
 			if ap != false {
-				t.Errorf("event.yaml additionalProperties = %v, want false", ap)
+				t.Errorf("%s additionalProperties = %v, want false", refFile, ap)
 			}
 			return
 		}
+		t.Fatalf("EventResult $ref = %q is not a resolvable relative file reference", refStr)
 	}
 
 	// Fallback: if the loader inlined the schema, check the node directly.
