@@ -259,3 +259,165 @@ func TestValidateRule34_ArrayScalarMismatch(t *testing.T) {
 		t.Errorf("expected Rule 34, got %d", violations[0].RuleNumber)
 	}
 }
+
+func TestValidateRule34_NestedObjectWithRefSibling(t *testing.T) {
+	// Models real schemas like component.yaml where $ref properties (e.g. id)
+	// are siblings to inline nested objects (e.g. metadata).
+	schema := &propertyDef{
+		Type: "object",
+		Properties: map[string]*propertyDef{
+			"id": {
+				Ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid",
+			},
+			"metadata": {
+				Type: "object",
+				Properties: map[string]*propertyDef{
+					"genealogy": {
+						Type: "string",
+					},
+				},
+			},
+		},
+	}
+
+	// 'id' is a $ref, so it is intentionally skipped and doesn't trigger a mismatch.
+	// 'metadata.genealogy' is an inline property, so it should be recursively validated,
+	// and providing an object instead of a string should trigger a violation.
+	template := map[string]any{
+		"id": map[string]any{},
+		"metadata": map[string]any{
+			"genealogy": map[string]any{}, // nested mismatch
+		},
+	}
+
+	var violations []Violation
+
+	validate(
+		schema,
+		template,
+		"template.yaml",
+		"component",
+		&violations,
+	)
+
+	if len(violations) != 1 {
+		t.Errorf("expected 1 violation, got %d", len(violations))
+	}
+
+	if len(violations) > 0 && violations[0].RuleNumber != 34 {
+		t.Errorf("expected Rule 34, got %d", violations[0].RuleNumber)
+	}
+}
+
+func TestValidateRule34_NestedObjectWithRefSiblingValid(t *testing.T) {
+	schema := &propertyDef{
+		Type: "object",
+		Properties: map[string]*propertyDef{
+			"id": {
+				Ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid",
+			},
+			"metadata": {
+				Type: "object",
+				Properties: map[string]*propertyDef{
+					"genealogy": {
+						Type: "string",
+					},
+				},
+			},
+		},
+	}
+
+	template := map[string]any{
+		"id": "12345",
+		"metadata": map[string]any{
+			"genealogy": "foo", // valid string value
+		},
+	}
+
+	var violations []Violation
+
+	validate(
+		schema,
+		template,
+		"template.yaml",
+		"component",
+		&violations,
+	)
+
+	if len(violations) != 0 {
+		t.Errorf("expected 0 violations, got %d", len(violations))
+	}
+}
+
+func TestValidateRule34_NestedArrayObject(t *testing.T) {
+	// Models real schemas where arrays contain inline objects.
+	schema := &propertyDef{
+		Type: "array",
+		Items: &propertyDef{
+			Type: "object",
+			Properties: map[string]*propertyDef{
+				"name": {
+					Type: "string",
+				},
+			},
+		},
+	}
+
+	template := []any{
+		map[string]any{
+			"name": map[string]any{}, // nested mismatch
+		},
+	}
+
+	var violations []Violation
+
+	validate(
+		schema,
+		template,
+		"template.yaml",
+		"items",
+		&violations,
+	)
+
+	if len(violations) != 1 {
+		t.Errorf("expected 1 violation, got %d", len(violations))
+	}
+
+	if len(violations) > 0 && violations[0].RuleNumber != 34 {
+		t.Errorf("expected Rule 34, got %d", violations[0].RuleNumber)
+	}
+}
+
+func TestValidateRule34_NestedArrayObjectValid(t *testing.T) {
+	schema := &propertyDef{
+		Type: "array",
+		Items: &propertyDef{
+			Type: "object",
+			Properties: map[string]*propertyDef{
+				"name": {
+					Type: "string",
+				},
+			},
+		},
+	}
+
+	template := []any{
+		map[string]any{
+			"name": "foo", // valid string value
+		},
+	}
+
+	var violations []Violation
+
+	validate(
+		schema,
+		template,
+		"template.yaml",
+		"items",
+		&violations,
+	)
+
+	if len(violations) != 0 {
+		t.Errorf("expected 0 violations, got %d", len(violations))
+	}
+}
