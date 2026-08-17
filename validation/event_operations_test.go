@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-// The event construct (Notification Center) carries ten operations across eight
+// The event construct (Notification Center) carries ten operations across nine
 // paths. Five are dual-client (cloud + meshery): the four mutations that modify
 // event state and the create route. Five are cloud-only: the list, workspace-
 // scoped, aggregate, summary, and types queries.
