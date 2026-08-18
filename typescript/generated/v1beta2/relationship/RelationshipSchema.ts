@@ -1154,12 +1154,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                   "json": "patchStrategy,omitempty"
                                 },
                                 "type": "string",
-                                "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
+                                "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\nreplace: Replaces the value at the target location.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
                                 "enum": [
                                   "merge",
                                   "strategic",
                                   "add",
                                   "remove",
+                                  "replace",
                                   "copy",
                                   "move",
                                   "test"
@@ -1500,12 +1501,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                   "json": "patchStrategy,omitempty"
                                 },
                                 "type": "string",
-                                "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
+                                "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\nreplace: Replaces the value at the target location.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
                                 "enum": [
                                   "merge",
                                   "strategic",
                                   "add",
                                   "remove",
+                                  "replace",
                                   "copy",
                                   "move",
                                   "test"
@@ -1860,12 +1862,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                   "json": "patchStrategy,omitempty"
                                 },
                                 "type": "string",
-                                "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
+                                "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\nreplace: Replaces the value at the target location.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
                                 "enum": [
                                   "merge",
                                   "strategic",
                                   "add",
                                   "remove",
+                                  "replace",
                                   "copy",
                                   "move",
                                   "test"
@@ -2206,12 +2209,13 @@ const RelationshipSchema: Record<string, unknown> = {
                                   "json": "patchStrategy,omitempty"
                                 },
                                 "type": "string",
-                                "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
+                                "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\nreplace: Replaces the value at the target location.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
                                 "enum": [
                                   "merge",
                                   "strategic",
                                   "add",
                                   "remove",
+                                  "replace",
                                   "copy",
                                   "move",
                                   "test"
@@ -2282,12 +2286,13 @@ const RelationshipSchema: Record<string, unknown> = {
       },
       "RelationshipDefinitionSelectorsPatchStrategy": {
         "type": "string",
-        "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
+        "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\nreplace: Replaces the value at the target location.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
         "enum": [
           "merge",
           "strategic",
           "add",
           "remove",
+          "replace",
           "copy",
           "move",
           "test"
@@ -2303,12 +2308,13 @@ const RelationshipSchema: Record<string, unknown> = {
               "json": "patchStrategy,omitempty"
             },
             "type": "string",
-            "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
+            "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\nreplace: Replaces the value at the target location.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
             "enum": [
               "merge",
               "strategic",
               "add",
               "remove",
+              "replace",
               "copy",
               "move",
               "test"
@@ -2845,12 +2851,13 @@ const RelationshipSchema: Record<string, unknown> = {
                   "json": "patchStrategy,omitempty"
                 },
                 "type": "string",
-                "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
+                "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\nreplace: Replaces the value at the target location.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
                 "enum": [
                   "merge",
                   "strategic",
                   "add",
                   "remove",
+                  "replace",
                   "copy",
                   "move",
                   "test"
@@ -3195,12 +3202,13 @@ const RelationshipSchema: Record<string, unknown> = {
                         "json": "patchStrategy,omitempty"
                       },
                       "type": "string",
-                      "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
+                      "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\nreplace: Replaces the value at the target location.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
                       "enum": [
                         "merge",
                         "strategic",
                         "add",
                         "remove",
+                        "replace",
                         "copy",
                         "move",
                         "test"
@@ -3541,12 +3549,13 @@ const RelationshipSchema: Record<string, unknown> = {
                         "json": "patchStrategy,omitempty"
                       },
                       "type": "string",
-                      "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
+                      "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\nreplace: Replaces the value at the target location.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
                       "enum": [
                         "merge",
                         "strategic",
                         "add",
                         "remove",
+                        "replace",
                         "copy",
                         "move",
                         "test"
@@ -3908,12 +3917,13 @@ const RelationshipSchema: Record<string, unknown> = {
                             "json": "patchStrategy,omitempty"
                           },
                           "type": "string",
-                          "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
+                          "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\nreplace: Replaces the value at the target location.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
                           "enum": [
                             "merge",
                             "strategic",
                             "add",
                             "remove",
+                            "replace",
                             "copy",
                             "move",
                             "test"
@@ -4254,12 +4264,13 @@ const RelationshipSchema: Record<string, unknown> = {
                             "json": "patchStrategy,omitempty"
                           },
                           "type": "string",
-                          "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
+                          "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\nreplace: Replaces the value at the target location.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
                           "enum": [
                             "merge",
                             "strategic",
                             "add",
                             "remove",
+                            "replace",
                             "copy",
                             "move",
                             "test"
@@ -4614,12 +4625,13 @@ const RelationshipSchema: Record<string, unknown> = {
                             "json": "patchStrategy,omitempty"
                           },
                           "type": "string",
-                          "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
+                          "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\nreplace: Replaces the value at the target location.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
                           "enum": [
                             "merge",
                             "strategic",
                             "add",
                             "remove",
+                            "replace",
                             "copy",
                             "move",
                             "test"
@@ -4960,12 +4972,13 @@ const RelationshipSchema: Record<string, unknown> = {
                             "json": "patchStrategy,omitempty"
                           },
                           "type": "string",
-                          "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
+                          "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\nreplace: Replaces the value at the target location.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
                           "enum": [
                             "merge",
                             "strategic",
                             "add",
                             "remove",
+                            "replace",
                             "copy",
                             "move",
                             "test"
@@ -5336,12 +5349,13 @@ const RelationshipSchema: Record<string, unknown> = {
                               "json": "patchStrategy,omitempty"
                             },
                             "type": "string",
-                            "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
+                            "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\nreplace: Replaces the value at the target location.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
                             "enum": [
                               "merge",
                               "strategic",
                               "add",
                               "remove",
+                              "replace",
                               "copy",
                               "move",
                               "test"
@@ -5682,12 +5696,13 @@ const RelationshipSchema: Record<string, unknown> = {
                               "json": "patchStrategy,omitempty"
                             },
                             "type": "string",
-                            "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
+                            "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\nreplace: Replaces the value at the target location.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
                             "enum": [
                               "merge",
                               "strategic",
                               "add",
                               "remove",
+                              "replace",
                               "copy",
                               "move",
                               "test"
@@ -6042,12 +6057,13 @@ const RelationshipSchema: Record<string, unknown> = {
                               "json": "patchStrategy,omitempty"
                             },
                             "type": "string",
-                            "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
+                            "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\nreplace: Replaces the value at the target location.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
                             "enum": [
                               "merge",
                               "strategic",
                               "add",
                               "remove",
+                              "replace",
                               "copy",
                               "move",
                               "test"
@@ -6388,12 +6404,13 @@ const RelationshipSchema: Record<string, unknown> = {
                               "json": "patchStrategy,omitempty"
                             },
                             "type": "string",
-                            "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
+                            "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).\n\nadd: Inserts a value into an array or adds a member to an object.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic: specific to Kubernetes and understands the structure of Kubernetes objects.\nremove: Removes a value.\nreplace: Replaces the value at the target location.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.\n",
                             "enum": [
                               "merge",
                               "strategic",
                               "add",
                               "remove",
+                              "replace",
                               "copy",
                               "move",
                               "test"
