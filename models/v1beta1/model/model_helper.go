@@ -103,6 +103,14 @@ func (m *ModelDefinition) Create(db *database.Handler, hostID uuid.UUID) (uuid.U
 		}
 		return m.ID, nil
 	}
+	// The model already exists: adopt the persisted identity onto the receiver.
+	// Callers (meshkit registration.register) read m.ID after Create to stamp
+	// ModelId onto every component and relationship in the package; leaving the
+	// receiver's ID untouched here made all of them register with the nil UUID,
+	// orphaning them from every model-scoped query.
+	m.ID = model.ID
+	m.CategoryId = model.CategoryId
+	m.RegistrantId = hostID
 	return model.ID, nil
 }
 
