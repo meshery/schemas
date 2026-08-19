@@ -188,6 +188,15 @@ components:
             x-go-type: SelectorItem
           x-oapi-codegen-extra-tags:
             json: "from"
+        via:
+          description: Optional. Describes the intermediary component(s) which are involved in the relationship.
+          type: array
+          x-go-type-skip-optional-pointer: true
+          items:
+            $ref: "#/components/schemas/SelectorItem"
+            x-go-type: SelectorItem
+          x-oapi-codegen-extra-tags:
+            json: "via,omitempty"
         to:
           description: Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.
           type: array
