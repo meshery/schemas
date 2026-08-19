@@ -379,6 +379,9 @@ type Selector struct {
 
 	// To Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.
 	To []SelectorItem `json:"to" yaml:"to"`
+
+	// Via Optional. Describes the intermediary component(s) which are involved in the relationship.
+	Via []SelectorItem `json:"via,omitempty" yaml:"via,omitempty"`
 }
 
 // SelectorItem Optional fields that are a part of the selector. Absence of a field has an implied * meaning.
