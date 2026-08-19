@@ -6,8 +6,8 @@ package evaluation
 import (
 	"time"
 
-	patternv1beta1 "github.com/meshery/schemas/models/v1beta1/pattern"
 	"github.com/gofrs/uuid"
+	patternv1beta1 "github.com/meshery/schemas/models/v1beta1/pattern"
 )
 
 // Defines values for ActionOp.

@@ -2,11 +2,11 @@
 // This file is generated from permissions.csv - DO NOT EDIT MANUALLY.
 // To regenerate, run: node build/generate-permission-golang.js
 package permissions
+
 import "github.com/gofrs/uuid"
 
 // Index ID used to generate this file
 const IndexID = "c8d6117885dd66432e6d991f72d2b4263041d0937b198bff4668680294ae5ebb"
-
 
 // PermissionKey represents a permission key identifier.
 type PermissionKey uuid.UUID
@@ -303,10 +303,10 @@ var (
 	// IdentityAccessManagementMesheryAsAnIdp - Own and control the user accounts of your enterprise members through your identity provider (IdP).
 	IdentityAccessManagementMesheryAsAnIdp = PermissionKey(uuid.Must(uuid.FromString("0b3313eb-5c77-4dba-9074-122cfb01bf55")))
 
-	// IdentityAccessManagementViewUserPublicProfile - See public user profile details, public activities and public resources. 
+	// IdentityAccessManagementViewUserPublicProfile - See public user profile details, public activities and public resources.
 	IdentityAccessManagementViewUserPublicProfile = PermissionKey(uuid.Must(uuid.FromString("daded1e9-ff0f-4259-86ac-e168fd5565d4")))
 
-	// IdentityAccessManagementViewUserSettings - See private user profile details, private activities and private resources. 
+	// IdentityAccessManagementViewUserSettings - See private user profile details, private activities and private resources.
 	IdentityAccessManagementViewUserSettings = PermissionKey(uuid.Must(uuid.FromString("e00cae57-6dc6-41ac-b174-f3b01b4adce0")))
 
 	// IdentityAccessManagementViewAllUsers - See all teams within an organization. See all members of all teams.
@@ -1355,5 +1355,4 @@ var (
 
 	// ChaosManagementAsDaemonsets - No description available
 	ChaosManagementAsDaemonsets = PermissionKey(uuid.Must(uuid.FromString("b73d71ec-f5b2-4d0b-83de-6e2dccff5041")))
-
 )

@@ -6,10 +6,10 @@ package connection
 import (
 	"time"
 
+	"github.com/gofrs/uuid"
 	"github.com/meshery/schemas/models/core"
 	modelv1beta1 "github.com/meshery/schemas/models/v1beta1/model"
 	environmentv1beta3 "github.com/meshery/schemas/models/v1beta3/environment"
-	"github.com/gofrs/uuid"
 )
 
 // Defines values for ConnectionStatus.
