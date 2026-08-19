@@ -24,7 +24,7 @@ export interface Key {
 /**
  * Permissions Index ID used for this generated file.
  */
-export const PERMISSIONS_INDEX_ID = "bfd819819315ab0192b6f930378760de4b79ecd8acdc4741e72b846d7e7207e2" as const;
+export const PERMISSIONS_INDEX_ID = "c8d6117885dd66432e6d991f72d2b4263041d0937b198bff4668680294ae5ebb" as const;
 
 /**
  * Creates a PermissionKey from a UUID string.
@@ -2017,6 +2017,17 @@ export const Keys = {
     subcategory: "Settings",
     function: "Reset Database",
     description: "Reset Meshery database"
+  },
+
+  /**
+   * Edit and save server-wide defaults for Meshery Operator Meshsync and Broker
+   */
+  MesherySystemEditControllersConfig: {
+    id: "4ea3ffab-dced-4358-b138-b583d90f0451" as PermissionKey,
+    category: "Meshery System",
+    subcategory: "Settings",
+    function: "Edit Controllers Config",
+    description: "Edit and save server-wide defaults for Meshery Operator Meshsync and Broker"
   },
 
   /**
@@ -5806,6 +5817,11 @@ export const PermissionKeys = {
    * Reset Meshery database
    */
   MesherySystemResetDatabase: "84fc402c-f33e-4a21-a0e3-e14f9e20b125" as PermissionKey,
+
+  /**
+   * Edit and save server-wide defaults for Meshery Operator Meshsync and Broker
+   */
+  MesherySystemEditControllersConfig: "4ea3ffab-dced-4358-b138-b583d90f0451" as PermissionKey,
 
   /**
    * No description available
