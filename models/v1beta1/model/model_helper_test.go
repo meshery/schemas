@@ -65,6 +65,12 @@ func TestCreateAssignsIDWhenModelAlreadyExists(t *testing.T) {
 	if second.ID != firstID {
 		t.Fatalf("second create left the receiver ID unassigned: got %s, want %s", second.ID, firstID)
 	}
+	if second.CategoryId != first.CategoryId {
+		t.Fatalf("second create left the receiver CategoryId unadopted: got %s, want %s", second.CategoryId, first.CategoryId)
+	}
+	if second.RegistrantId != hostID {
+		t.Fatalf("second create left the receiver RegistrantId unadopted: got %s, want %s", second.RegistrantId, hostID)
+	}
 
 	var count int64
 	if err := handler.Model(&ModelDefinition{}).Count(&count).Error; err != nil {

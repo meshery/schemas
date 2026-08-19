@@ -104,7 +104,13 @@ func (r *RelationshipDefinition) Create(db *database.Handler, hostID uuid.UUID) 
 		return existing.ID, nil
 	}
 
-	err = db.Omit(clause.Associations).Create(&r).Error
+	// The mutex above only serializes callers within one process. Concurrent
+	// registrations from separate processes sharing a database can both pass
+	// the exists check, so the insert itself must tolerate losing that race:
+	// ON CONFLICT DO NOTHING turns the loser's duplicate-key error into a
+	// no-op, and because the ID is content-addressed the existing row is the
+	// same definition, so returning the computed ID is correct either way.
+	err = db.Omit(clause.Associations).Clauses(clause.OnConflict{DoNothing: true}).Create(&r).Error
 	if err != nil {
 		return uuid.UUID{}, err
 	}

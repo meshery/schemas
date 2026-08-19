@@ -1,6 +1,7 @@
 package relationship
 
 import (
+	"path/filepath"
 	"testing"
 
 	"github.com/gofrs/uuid"
@@ -82,6 +83,57 @@ func TestCreateIsIdempotent(t *testing.T) {
 
 	var count int64
 	if err := handler.Model(&RelationshipDefinition{}).Count(&count).Error; err != nil {
+		t.Fatalf("count relationships: %v", err)
+	}
+	if count != 1 {
+		t.Fatalf("expected exactly one persisted relationship, found %d", count)
+	}
+}
+
+// Registration must be idempotent across separate database connections, the
+// multi-process shape (server replicas sharing a database) that the in-process
+// creation lock cannot serialize. The racing window itself is closed by the
+// ON CONFLICT DO NOTHING insert - a loser's duplicate insert becomes a no-op
+// and the content-addressed ID is the same either way - which this test
+// exercises end to end through two independent connections to one database.
+func TestCreateIsIdempotentAcrossConnections(t *testing.T) {
+	dbFile := filepath.Join(t.TempDir(), "registry.db")
+
+	open := func() database.Handler {
+		handler, err := database.New(database.Options{
+			Engine:   database.SQLITE,
+			Filename: dbFile,
+		})
+		if err != nil {
+			t.Fatalf("open sqlite: %v", err)
+		}
+		return handler
+	}
+
+	first := open()
+	if err := first.AutoMigrate(&RelationshipDefinition{}); err != nil {
+		t.Fatalf("automigrate: %v", err)
+	}
+	second := open()
+
+	hostID := uuid.Must(uuid.NewV4())
+	defA := testDefinition("reference")
+	defB := defA
+
+	firstID, err := defA.Create(&first, hostID)
+	if err != nil {
+		t.Fatalf("create on first connection: %v", err)
+	}
+	secondID, err := defB.Create(&second, hostID)
+	if err != nil {
+		t.Fatalf("create on second connection: %v", err)
+	}
+	if secondID != firstID {
+		t.Fatalf("connections resolved different IDs: %s vs %s", secondID, firstID)
+	}
+
+	var count int64
+	if err := second.Model(&RelationshipDefinition{}).Count(&count).Error; err != nil {
 		t.Fatalf("count relationships: %v", err)
 	}
 	if count != 1 {
