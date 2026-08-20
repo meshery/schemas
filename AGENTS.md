@@ -174,6 +174,7 @@ Long-form reference material lives in `docs/` to keep this file concise. Consult
 - **[`docs/release-procedure.md`](docs/release-procedure.md)** - full release flow, What NOT to Do, and versioning policy.
 - **[`docs/release-procedure-skill.md`](docs/release-procedure-skill.md)** - using the `meshery-schemas-release` skill, verification commands, troubleshooting.
 - **[`docs/relationship-evaluation-engine-contract.md`](docs/relationship-evaluation-engine-contract.md)** - the authoritative relationship-evaluation wire contract for downstream evaluators.
+- **[`docs/relationship-definition-taxonomy.md`](docs/relationship-definition-taxonomy.md)** - canonical kind/type/subType combinations and mutator vs mutated patch paths for relationship definitions.
 
 ## Questions?
 

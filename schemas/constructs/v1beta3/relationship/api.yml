@@ -19,20 +19,27 @@ components:
     # Reusable schema components from selector definitions
     MutatorRef:
       type: array
-      description: JSON ref to value from where patch should be applied.
+      description: |
+        Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+
+        Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
       items:
         type: array
         items:
           type: string
-        description: "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+        description: One path as an array of string segments, e.g. [configuration, metadata, name].
 
     MutatedRef:
       type: array
+      description: |
+        Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length.
+
+        mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
       items:
         type: array
         items:
           type: string
-        description: "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+        description: One path as an array of string segments, e.g. [configuration, spec, containers, _, name].
 
     RelationshipDefinitionSelectorsPatchStrategy:
       type: string
@@ -57,7 +64,8 @@ components:
 
     RelationshipDefinitionSelectorsPatch:
       type: object
-      description: Patch configuration for the selector
+      description: |
+        Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match. Omit this object when the relationship only matches.
       x-go-name: RelationshipDefinitionSelectorsPatch
       properties:
         patchStrategy:
@@ -181,7 +189,7 @@ components:
         - to
       properties:
         from:
-          description: Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.
+          description: Originator side of the selector. For kind=hierarchical, from is the child. Each from item relates to each to item in the same selector (1:many).
           type: array
           items:
             $ref: "#/components/schemas/SelectorItem"
@@ -189,7 +197,7 @@ components:
           x-oapi-codegen-extra-tags:
             json: "from"
         to:
-          description: Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.
+          description: Destination side of the selector. For kind=hierarchical, to is the parent.
           type: array
           items:
             $ref: "#/components/schemas/SelectorItem"
