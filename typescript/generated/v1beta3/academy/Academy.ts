@@ -1055,7 +1055,10 @@ export interface components {
                 }[];
             };
         } & {
-            /** @description Number of registrations associated with this curriculum. */
+            /**
+             * Format: int64
+             * @description Number of registrations associated with this curriculum.
+             */
             registrationCount: number;
             /** @description Invitation entity schema. */
             invitation?: {
@@ -1493,7 +1496,10 @@ export interface components {
                 }[];
             };
         } & {
-            /** @description Number of registrations associated with this curriculum. */
+            /**
+             * Format: int64
+             * @description Number of registrations associated with this curriculum.
+             */
             registrationCount: number;
         };
         AcademyCurriculaListResponse: {
@@ -2077,7 +2083,10 @@ export interface components {
                         }[];
                     };
                 } & {
-                    /** @description Number of registrations associated with this curriculum. */
+                    /**
+                     * Format: int64
+                     * @description Number of registrations associated with this curriculum.
+                     */
                     registrationCount: number;
                 })[];
             };
@@ -2284,7 +2293,10 @@ export interface components {
                     }[];
                 };
             } & {
-                /** @description Number of registrations associated with this curriculum. */
+                /**
+                 * Format: int64
+                 * @description Number of registrations associated with this curriculum.
+                 */
                 registrationCount: number;
             })[];
         };
@@ -5395,7 +5407,10 @@ export interface operations {
                                 }[];
                             };
                         } & {
-                            /** @description Number of registrations associated with this curriculum. */
+                            /**
+                             * Format: int64
+                             * @description Number of registrations associated with this curriculum.
+                             */
                             registrationCount: number;
                         })[];
                     };
@@ -6657,7 +6672,10 @@ export interface operations {
                             }[];
                         };
                     } & {
-                        /** @description Number of registrations associated with this curriculum. */
+                        /**
+                         * Format: int64
+                         * @description Number of registrations associated with this curriculum.
+                         */
                         registrationCount: number;
                         /** @description Invitation entity schema. */
                         invitation?: {
@@ -7150,7 +7168,10 @@ export interface operations {
                             }[];
                         };
                     } & {
-                        /** @description Number of registrations associated with this curriculum. */
+                        /**
+                         * Format: int64
+                         * @description Number of registrations associated with this curriculum.
+                         */
                         registrationCount: number;
                         /** @description Invitation entity schema. */
                         invitation?: {
@@ -8881,7 +8902,10 @@ export interface operations {
                                     }[];
                                 };
                             } & {
-                                /** @description Number of registrations associated with this curriculum. */
+                                /**
+                                 * Format: int64
+                                 * @description Number of registrations associated with this curriculum.
+                                 */
                                 registrationCount: number;
                             })[];
                         };
