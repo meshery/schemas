@@ -1,6 +1,8 @@
 type: object
 additionalProperties: false
 description: AcademyCurricula entity schema.
+example:
+  $ref: "./templates/academy_template.json"
 required:
 - id
 - type
