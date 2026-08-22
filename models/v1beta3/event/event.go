@@ -66,6 +66,9 @@ type EventResult struct {
 	// Action The action of the event.
 	Action string `json:"action" yaml:"action"`
 
+	// AvatarUrl URL to the avatar image of the user associated with the event.
+	AvatarUrl *string `json:"avatarUrl,omitempty" yaml:"avatarUrl,omitempty"`
+
 	// Category The category of the event.
 	Category string `json:"category" yaml:"category"`
 
