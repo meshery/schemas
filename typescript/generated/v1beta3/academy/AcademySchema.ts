@@ -2043,12 +2043,13 @@ const AcademySchema: Record<string, unknown> = {
                             ],
                             "properties": {
                               "registrationCount": {
-                                "type": "number",
+                                "type": "integer",
+                                "format": "int64",
                                 "description": "Number of registrations associated with this curriculum.",
                                 "minimum": 0,
                                 "x-oapi-codegen-extra-tags": {
-                                  "db": "registration_count,omitempty",
-                                  "json": "registrationCount,omitempty"
+                                  "db": "registration_count",
+                                  "json": "registrationCount"
                                 }
                               }
                             }
@@ -4050,12 +4051,13 @@ const AcademySchema: Record<string, unknown> = {
                       ],
                       "properties": {
                         "registrationCount": {
-                          "type": "number",
+                          "type": "integer",
+                          "format": "int64",
                           "description": "Number of registrations associated with this curriculum.",
                           "minimum": 0,
                           "x-oapi-codegen-extra-tags": {
-                            "db": "registration_count,omitempty",
-                            "json": "registrationCount,omitempty"
+                            "db": "registration_count",
+                            "json": "registrationCount"
                           }
                         },
                         "invitation": {
@@ -4820,12 +4822,13 @@ const AcademySchema: Record<string, unknown> = {
                       ],
                       "properties": {
                         "registrationCount": {
-                          "type": "number",
+                          "type": "integer",
+                          "format": "int64",
                           "description": "Number of registrations associated with this curriculum.",
                           "minimum": 0,
                           "x-oapi-codegen-extra-tags": {
-                            "db": "registration_count,omitempty",
-                            "json": "registrationCount,omitempty"
+                            "db": "registration_count",
+                            "json": "registrationCount"
                           }
                         },
                         "invitation": {
@@ -8969,12 +8972,13 @@ const AcademySchema: Record<string, unknown> = {
                                 ],
                                 "properties": {
                                   "registrationCount": {
-                                    "type": "number",
+                                    "type": "integer",
+                                    "format": "int64",
                                     "description": "Number of registrations associated with this curriculum.",
                                     "minimum": 0,
                                     "x-oapi-codegen-extra-tags": {
-                                      "db": "registration_count,omitempty",
-                                      "json": "registrationCount,omitempty"
+                                      "db": "registration_count",
+                                      "json": "registrationCount"
                                     }
                                   }
                                 }
@@ -10818,12 +10822,13 @@ const AcademySchema: Record<string, unknown> = {
             ],
             "properties": {
               "registrationCount": {
-                "type": "number",
+                "type": "integer",
+                "format": "int64",
                 "description": "Number of registrations associated with this curriculum.",
                 "minimum": 0,
                 "x-oapi-codegen-extra-tags": {
-                  "db": "registration_count,omitempty",
-                  "json": "registrationCount,omitempty"
+                  "db": "registration_count",
+                  "json": "registrationCount"
                 }
               },
               "invitation": {
@@ -11862,12 +11867,13 @@ const AcademySchema: Record<string, unknown> = {
             ],
             "properties": {
               "registrationCount": {
-                "type": "number",
+                "type": "integer",
+                "format": "int64",
                 "description": "Number of registrations associated with this curriculum.",
                 "minimum": 0,
                 "x-oapi-codegen-extra-tags": {
-                  "db": "registration_count,omitempty",
-                  "json": "registrationCount,omitempty"
+                  "db": "registration_count",
+                  "json": "registrationCount"
                 }
               }
             }
@@ -13255,12 +13261,13 @@ const AcademySchema: Record<string, unknown> = {
                       ],
                       "properties": {
                         "registrationCount": {
-                          "type": "number",
+                          "type": "integer",
+                          "format": "int64",
                           "description": "Number of registrations associated with this curriculum.",
                           "minimum": 0,
                           "x-oapi-codegen-extra-tags": {
-                            "db": "registration_count,omitempty",
-                            "json": "registrationCount,omitempty"
+                            "db": "registration_count",
+                            "json": "registrationCount"
                           }
                         }
                       }
@@ -13742,12 +13749,13 @@ const AcademySchema: Record<string, unknown> = {
                   ],
                   "properties": {
                     "registrationCount": {
-                      "type": "number",
+                      "type": "integer",
+                      "format": "int64",
                       "description": "Number of registrations associated with this curriculum.",
                       "minimum": 0,
                       "x-oapi-codegen-extra-tags": {
-                        "db": "registration_count,omitempty",
-                        "json": "registrationCount,omitempty"
+                        "db": "registration_count",
+                        "json": "registrationCount"
                       }
                     }
                   }

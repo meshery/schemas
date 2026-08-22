@@ -150,7 +150,7 @@ type AcademyCurriculaWithMetrics struct {
 	OrgId AcademyCurriculaOrgId `db:"org_id" json:"orgId" yaml:"orgId"`
 
 	// RegistrationCount Number of registrations associated with this curriculum.
-	RegistrationCount float32 `db:"registration_count,omitempty" json:"registrationCount,omitempty" yaml:"registrationCount,omitempty"`
+	RegistrationCount int64 `db:"registration_count" json:"registrationCount" yaml:"registrationCount"`
 
 	// Slug slug of the Curricula
 	Slug   string      `json:"slug" yaml:"slug"`
@@ -690,7 +690,7 @@ type SingleAcademyCurriculaResponse struct {
 	OrgId AcademyCurriculaOrgId `db:"org_id" json:"orgId" yaml:"orgId"`
 
 	// RegistrationCount Number of registrations associated with this curriculum.
-	RegistrationCount float32 `db:"registration_count,omitempty" json:"registrationCount,omitempty" yaml:"registrationCount,omitempty"`
+	RegistrationCount int64 `db:"registration_count" json:"registrationCount" yaml:"registrationCount"`
 
 	// Slug slug of the Curricula
 	Slug   string      `json:"slug" yaml:"slug"`
