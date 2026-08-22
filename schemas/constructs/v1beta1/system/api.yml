@@ -251,6 +251,36 @@ paths:
           description: Failed to reach the cluster or fetch its server version.
 
   /api/system/sync:
+  /api/system/adapter/status:
+    post:
+      x-internal: ["meshery"]
+      tags:
+        - System
+      summary: Change adapter deploy status
+      description: >-
+        Deploys or undeploys a Meshery adapter. Resolves the adapter's
+        default port when targetPort is omitted, then invokes the
+        adapter tracker to bring the adapter to the requested status.
+      operationId: changeAdapterStatus
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangeAdapterStatusRequest"
+      responses:
+        "200":
+          description: The adapter status change was processed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChangeAdapterStatusResponse"
+        "400":
+          description: Missing or invalid adapter name, target port, or target status.
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          description: Failed to deploy or undeploy the adapter.
     get:
       x-internal: ["meshery"]
       tags:
@@ -496,6 +526,45 @@ components:
           description: Recipient address the test email was sent to.
           format: email
           maxLength: 320
+
+    ChangeAdapterStatusRequest:
+      type: object
+      description: Request body to deploy or undeploy a Meshery adapter.
+      additionalProperties: false
+      required:
+        - adapterName
+        - targetStatus
+      properties:
+        adapterName:
+          type: string
+          description: Name of the adapter to deploy or undeploy.
+          maxLength: 256
+        targetPort:
+          type: string
+          description: >-
+            Port the adapter should target. When omitted, the adapter's
+            default port is resolved automatically.
+          maxLength: 32
+          x-oapi-codegen-extra-tags:
+            json: "targetPort,omitempty"
+        targetStatus:
+          type: string
+          description: Desired adapter status.
+          enum:
+            - enabled
+            - disabled
+
+    ChangeAdapterStatusResponse:
+      type: object
+      description: Result of an adapter deploy/undeploy request.
+      additionalProperties: false
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          description: Resulting status of the adapter after the operation.
+          maxLength: 64
 
     SystemMessageResponse:
       type: object
