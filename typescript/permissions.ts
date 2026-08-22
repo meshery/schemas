@@ -24,7 +24,7 @@ export interface Key {
 /**
  * Permissions Index ID used for this generated file.
  */
-export const PERMISSIONS_INDEX_ID = "c8d6117885dd66432e6d991f72d2b4263041d0937b198bff4668680294ae5ebb" as const;
+export const PERMISSIONS_INDEX_ID = "d057e3586c1981a401736292e1807743181fcc3adbe54c8b696d9cc927838ec5" as const;
 
 /**
  * Creates a PermissionKey from a UUID string.
@@ -2017,6 +2017,50 @@ export const Keys = {
     subcategory: "Settings",
     function: "Reset Database",
     description: "Reset Meshery database"
+  },
+
+  /**
+   * Import a model into the capabilities registry
+   */
+  MesherySystemImportModel: {
+    id: "9e412481-744f-4676-bb1c-f40ce9e6c8f8" as PermissionKey,
+    category: "Meshery System",
+    subcategory: "Settings",
+    function: "Import Model",
+    description: "Import a model into the capabilities registry"
+  },
+
+  /**
+   * Create a new model in the capabilities registry
+   */
+  MesherySystemCreateModel: {
+    id: "272a1166-a023-43e8-9e27-2cd8054115bb" as PermissionKey,
+    category: "Meshery System",
+    subcategory: "Settings",
+    function: "Create Model",
+    description: "Create a new model in the capabilities registry"
+  },
+
+  /**
+   * Create a new relationship definition in the capabilities registry
+   */
+  MesherySystemCreateRelationship: {
+    id: "60609c21-88b1-4913-8102-5d9d0fa90953" as PermissionKey,
+    category: "Meshery System",
+    subcategory: "Settings",
+    function: "Create Relationship",
+    description: "Create a new relationship definition in the capabilities registry"
+  },
+
+  /**
+   * View server-wide defaults for Meshery Operator MeshSync and Broker
+   */
+  MesherySystemViewControllersConfig: {
+    id: "278e5f2f-6eca-4e26-864b-44d4246f3c19" as PermissionKey,
+    category: "Meshery System",
+    subcategory: "Settings",
+    function: "View Controllers Config",
+    description: "View server-wide defaults for Meshery Operator MeshSync and Broker"
   },
 
   /**
@@ -5817,6 +5861,26 @@ export const PermissionKeys = {
    * Reset Meshery database
    */
   MesherySystemResetDatabase: "84fc402c-f33e-4a21-a0e3-e14f9e20b125" as PermissionKey,
+
+  /**
+   * Import a model into the capabilities registry
+   */
+  MesherySystemImportModel: "9e412481-744f-4676-bb1c-f40ce9e6c8f8" as PermissionKey,
+
+  /**
+   * Create a new model in the capabilities registry
+   */
+  MesherySystemCreateModel: "272a1166-a023-43e8-9e27-2cd8054115bb" as PermissionKey,
+
+  /**
+   * Create a new relationship definition in the capabilities registry
+   */
+  MesherySystemCreateRelationship: "60609c21-88b1-4913-8102-5d9d0fa90953" as PermissionKey,
+
+  /**
+   * View server-wide defaults for Meshery Operator MeshSync and Broker
+   */
+  MesherySystemViewControllersConfig: "278e5f2f-6eca-4e26-864b-44d4246f3c19" as PermissionKey,
 
   /**
    * Edit and save server-wide defaults for Meshery Operator Meshsync and Broker
