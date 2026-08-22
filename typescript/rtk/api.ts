@@ -30,17 +30,6 @@ export const MESHERY_PROD_URL = "https://playground.meshery.io/";
 const CLOUD_BASE_URL = process.env.RTK_CLOUD_ENDPOINT_PREFIX ?? "";
 const MESHERY_BASE_URL = process.env.RTK_MESHERY_ENDPOINT_PREFIX ?? "";
 
-// MeshSync and Registry use repeated keys for array params.
-// Other endpoints may rely on RTK Query's default comma-separated array format.
-const REPEATED_ARRAY_PARAMS = new Set([
-  "clusterId",
-  "kind",
-  "model",
-  "namespace",
-  "patternId",
-  "label",
-]);
-
 const paramsSerializer = (params: Record<string, unknown>) => {
   const searchParams = new URLSearchParams();
 
@@ -49,12 +38,10 @@ const paramsSerializer = (params: Record<string, unknown>) => {
       return;
     }
 
+    // Default to repeated keys for ALL arrays (e.g., ?kind=a&kind=b), 
+    // matching standard OpenAPI style: form, explode: true.
     if (Array.isArray(value)) {
-      if (REPEATED_ARRAY_PARAMS.has(key)) {
-        value.forEach((item) => searchParams.append(key, String(item)));
-      } else {
-        searchParams.append(key, value.join(","));
-      }
+      value.forEach((item) => searchParams.append(key, String(item)));
       return;
     }
 

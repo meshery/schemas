@@ -3940,13 +3940,13 @@ export type EvaluateRelationshipsApiArg = {
 };
 export type GetMeshSyncResourcesApiResponse = /** status 200 Paginated list of MeshSync resources. */ {
   /** Current page number (zero-indexed). */
-  page?: number;
+  page: number;
   /** Number of items in this page. */
-  pageSize?: number;
+  pageSize: number;
   /** Total number of matching resources across all pages. */
-  totalCount?: number;
+  totalCount: number;
   /** The discovered Kubernetes resources. Empty when `asDesign` is true. */
-  resources?: object[];
+  resources: object[];
   /** Present (and `resources` is empty) when `asDesign=true`. Contains the relationship-evaluated Meshery design built from the matched resources. */
   design?: {
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
@@ -4927,7 +4927,7 @@ export type GetMeshSyncResourcesApiArg = {
   /** Get responses by page */
   page?: string;
   /** Number of results to return per page. */
-  pageSize?: string;
+  pageSize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -4959,28 +4959,28 @@ export type GetMeshSyncResourcesApiArg = {
 };
 export type GetMeshSyncResourceKindsApiResponse = /** status 200 MeshSync resource kinds summary. */ {
   /** Per-kind resource counts. */
-  kinds?: {
+  kinds: {
     /** Kubernetes resource kind. */
-    kind?: string;
+    kind: string;
     /** Meshery model name that registered this kind. */
-    model?: string;
+    model: string;
     /** Number of discovered resources of this kind. */
-    count?: number;
+    count: number;
   }[];
   /** Distinct namespaces containing discovered resources. */
-  namespaces?: string[];
+  namespaces: string[];
   /** Distinct label key-value pairs found on discovered resources. */
-  labels?: {
+  labels: {
     /** MeshSync resource ID associated with this key-value pair. */
-    id?: string;
+    id: string;
     /** Internal unique identifier for this key-value pair. */
-    uniqueId?: string;
+    uniqueId: string;
     /** Key-value kind, such as `label` or `annotation`. */
-    kind?: string;
+    kind: string;
     /** The key of the key-value pair. */
-    key?: string;
+    key: string;
     /** The value of the key-value pair. */
-    value?: string;
+    value: string;
   }[];
 };
 export type GetMeshSyncResourceKindsApiArg = {
@@ -4991,7 +4991,7 @@ export type GetMeshSyncResourceKindsApiArg = {
   /** Restrict the summary to resources belonging to the given Meshery pattern IDs. Accepts multiple values (repeated query param). */
   patternId?: string[];
   /** Number of results to return per page. */
-  pageSize?: string;
+  pageSize?: number;
   /** Get ordered responses */
   order?: string;
 };
@@ -5505,7 +5505,7 @@ export type GetMeshSyncResourceByIdApiArg = {
 };
 export type DeleteMeshSyncResourceApiResponse = /** status 200 Resource deleted successfully. */ {
   /** Whether the MeshSync resource was deleted. */
-  deleted?: boolean;
+  deleted: boolean;
 };
 export type DeleteMeshSyncResourceApiArg = {
   /** Resource ID. */
