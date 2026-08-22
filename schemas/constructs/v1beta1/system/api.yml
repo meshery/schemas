@@ -251,6 +251,25 @@ paths:
           description: Failed to reach the cluster or fetch its server version.
 
   /api/system/sync:
+    get:
+      x-internal: ["meshery"]
+      tags:
+        - System
+      summary: Get initial session bootstrap data
+      description: Returns session bootstrap data for the authenticated user.
+      operationId: getSystemSync
+      responses:
+        "200":
+          description: Session sync payload
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SystemSessionSync"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          description: Marshal error while serializing the session sync payload.
+
   /api/system/adapter/status:
     post:
       x-internal: ["meshery"]
@@ -281,25 +300,6 @@ paths:
           $ref: "#/components/responses/401"
         "500":
           description: Failed to deploy or undeploy the adapter.
-    get:
-      x-internal: ["meshery"]
-      tags:
-        - System
-      summary: Get initial session bootstrap data
-      description: Returns session bootstrap data for the authenticated user.
-      operationId: getSystemSync
-      responses:
-        "200":
-          description: Session sync payload
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SystemSessionSync"
-        "401":
-          $ref: "#/components/responses/401"
-        "500":
-          description: Marshal error while serializing the session sync payload.
-
   /api/system/controllers/operator/status:
     get:
       x-internal: ["meshery"]
