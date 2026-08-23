@@ -5,7 +5,7 @@ package permissions
 import "github.com/gofrs/uuid"
 
 // Index ID used to generate this file
-const IndexID = "c8d6117885dd66432e6d991f72d2b4263041d0937b198bff4668680294ae5ebb"
+const IndexID = "d057e3586c1981a401736292e1807743181fcc3adbe54c8b696d9cc927838ec5"
 
 
 // PermissionKey represents a permission key identifier.
@@ -566,6 +566,18 @@ var (
 
 	// MesherySystemResetDatabase - Reset Meshery database
 	MesherySystemResetDatabase = PermissionKey(uuid.Must(uuid.FromString("84fc402c-f33e-4a21-a0e3-e14f9e20b125")))
+
+	// MesherySystemImportModel - Import a model into the capabilities registry
+	MesherySystemImportModel = PermissionKey(uuid.Must(uuid.FromString("9e412481-744f-4676-bb1c-f40ce9e6c8f8")))
+
+	// MesherySystemCreateModel - Create a new model in the capabilities registry
+	MesherySystemCreateModel = PermissionKey(uuid.Must(uuid.FromString("272a1166-a023-43e8-9e27-2cd8054115bb")))
+
+	// MesherySystemCreateRelationship - Create a new relationship definition in the capabilities registry
+	MesherySystemCreateRelationship = PermissionKey(uuid.Must(uuid.FromString("60609c21-88b1-4913-8102-5d9d0fa90953")))
+
+	// MesherySystemViewControllersConfig - View server-wide defaults for Meshery Operator MeshSync and Broker
+	MesherySystemViewControllersConfig = PermissionKey(uuid.Must(uuid.FromString("278e5f2f-6eca-4e26-864b-44d4246f3c19")))
 
 	// MesherySystemEditControllersConfig - Edit and save server-wide defaults for Meshery Operator Meshsync and Broker
 	MesherySystemEditControllersConfig = PermissionKey(uuid.Must(uuid.FromString("4ea3ffab-dced-4358-b138-b583d90f0451")))
