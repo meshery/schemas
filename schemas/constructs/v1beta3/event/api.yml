@@ -589,9 +589,17 @@ components:
           type: integer
           description: Number of events at this severity level.
           minimum: 0
+    LogLevel:
+      type: string
+      description: Valid server event log levels.
+      enum: [panic, fatal, error, warn, info, debug, trace]
+      maxLength: 20
     EventConfig:
       type: object
       description: Server event log level configuration.
+      required:
+      - eventLogLevel
+      - availableLevels
       properties:
         status:
           type: string
@@ -600,19 +608,17 @@ components:
           x-oapi-codegen-extra-tags:
             json: "status,omitempty"
         eventLogLevel:
-          type: string
+          $ref: '#/components/schemas/LogLevel'
           description: Current server log level.
-          enum: [panic, fatal, error, warn, info, debug, trace]
-          maxLength: 20
           x-oapi-codegen-extra-tags:
             json: "eventLogLevel"
         availableLevels:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/LogLevel'
           description: All log levels supported by this server.
           x-oapi-codegen-extra-tags:
-            json: "availableLevels,omitempty"
+            json: "availableLevels"
     EventConfigPayload:
       type: object
       description: Payload for updating the server event log level.
@@ -620,10 +626,8 @@ components:
       - eventLogLevel
       properties:
         eventLogLevel:
-          type: string
+          $ref: '#/components/schemas/LogLevel'
           description: Desired server log level.
-          enum: [panic, fatal, error, warn, info, debug, trace]
-          maxLength: 20
           x-oapi-codegen-extra-tags:
             json: "eventLogLevel"
     ErrorResponse:
