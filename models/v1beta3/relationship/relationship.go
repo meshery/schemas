@@ -149,17 +149,31 @@ type MatchSelectorItem struct {
 	ID *core.Uuid `json:"id" yaml:"id,omitempty"`
 
 	// Kind Kind of the resource.
-	Kind       string      `json:"kind" yaml:"kind"`
+	Kind string `json:"kind" yaml:"kind"`
+
+	// MutatedRef Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+	//
+	// mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
 	MutatedRef *MutatedRef `json:"mutatedRef,omitempty" yaml:"mutatedRef,omitempty"`
 
-	// MutatorRef JSON ref to value from where patch should be applied.
+	// MutatorRef Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+	//
+	// The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+	//
+	// Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
 	MutatorRef *MutatorRef `json:"mutatorRef,omitempty" yaml:"mutatorRef,omitempty"`
 }
 
-// MutatedRef defines model for MutatedRef.
+// MutatedRef Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+//
+// mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
 type MutatedRef = [][]string
 
-// MutatorRef JSON ref to value from where patch should be applied.
+// MutatorRef Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+//
+// The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+//
+// Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
 type MutatorRef = [][]string
 
 // RelationshipDefinition Relationships define the nature of interaction between interconnected components in Meshery. The combination of relationship properties kind, type, and subtype characterize various genealogical relations among and between components. Relationships have selectors, selector sets, metadata, and optional parameters. Learn more at https://docs.meshery.io/concepts/logical/relationships.
@@ -173,7 +187,13 @@ type RelationshipDefinition struct {
 	// EvaluationQuery Optional. Assigns the policy to be used for the evaluation of the relationship. Deprecation Notice: In the future, this property is either to be removed or to it is to be an array of optional policy $refs.
 	EvaluationQuery *string `json:"evaluationQuery" yaml:"evaluationQuery"`
 
-	// Kind Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.
+	// Kind Kind of the Relationship. Enum: hierarchical, edge, sibling.
+	//
+	// hierarchical: parent-child containment, nesting, or inheritance. from is the child; to is the parent.
+	// edge: a connection between peers (network, mount, permission, reference, and similar).
+	// sibling: schema-native encoding for peer grouping such as tagsets. In-tree Kubernetes models instead encode tagsets as kind=hierarchical, type=sibling, subType=matchlabels. Do not mix the two encodings in one model.
+	//
+	// Learn more at https://docs.meshery.io/concepts/logical/relationships.
 	Kind RelationshipDefinitionKind `json:"kind" yaml:"kind"`
 
 	// RelationshipMetadata Metadata contains additional information associated with the Relationship.
@@ -191,20 +211,34 @@ type RelationshipDefinition struct {
 	// Selectors Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.
 	Selectors *SelectorSet `gorm:"type:bytes;serializer:json" json:"selectors,omitempty" yaml:"selectors,omitempty"`
 
-	// SubType Most granular unit of relationship classification. The combination of Kind, Type and SubType together uniquely identify a Relationship.
+	// SubType Most granular unit of relationship classification. Open string. Combined with kind and type, uniquely identifies the visual paradigm.
+	//
+	// Canonical values: inventory, alias, wallet, matchlabels, tagsets, reference, network, firewall, permission, mount, annotation.
+	//
+	// badge is a visual-paradigm name only; there is no in-tree encoding. Do not invent subType=badge without a visualization and evaluation policy. See docs/relationship-definition-taxonomy.md.
 	SubType string `json:"subType" yaml:"subType"`
 
 	// Status Status of the relationship.
 	Status *RelationshipDefinitionStatus `json:"status" yaml:"status"`
 
-	// RelationshipType Classification of relationships. Used to group relationships similar in nature.
+	// RelationshipType Classification of relationships. Open string (not an enum). Used with kind and subType to select the visual paradigm and evaluation policy.
+	//
+	// Canonical values: parent (with kind=hierarchical); binding (assigns, mounts, or entitles); non-binding (real link that does not provision the attachment); sibling (in-tree tagsets with kind=hierarchical); matchlabels (schema-native tagsets with kind=sibling).
+	//
+	// Copy an established kind/type/subType combination rather than inventing a type. See docs/relationship-definition-taxonomy.md.
 	RelationshipType string `gorm:"column:type" json:"type" yaml:"type"`
 
 	// Version A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'.
 	Version core.SemverString `json:"version" yaml:"version"`
 }
 
-// RelationshipDefinitionKind Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.
+// RelationshipDefinitionKind Kind of the Relationship. Enum: hierarchical, edge, sibling.
+//
+// hierarchical: parent-child containment, nesting, or inheritance. from is the child; to is the parent.
+// edge: a connection between peers (network, mount, permission, reference, and similar).
+// sibling: schema-native encoding for peer grouping such as tagsets. In-tree Kubernetes models instead encode tagsets as kind=hierarchical, type=sibling, subType=matchlabels. Do not mix the two encodings in one model.
+//
+// Learn more at https://docs.meshery.io/concepts/logical/relationships.
 type RelationshipDefinitionKind string
 
 // RelationshipDefinitionStatus Status of the relationship.
@@ -330,11 +364,18 @@ type RelationshipDefinitionMetadataStylesTargetArrowShape string
 // RelationshipDefinitionMetadataStylesTextTransform A transformation to apply to the label text
 type RelationshipDefinitionMetadataStylesTextTransform string
 
-// RelationshipDefinitionSelectorsPatch Patch configuration for the selector
+// RelationshipDefinitionSelectorsPatch Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches.
 type RelationshipDefinitionSelectorsPatch struct {
+	// MutatedRef Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
+	//
+	// mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
 	MutatedRef *MutatedRef `json:"mutatedRef,omitempty" yaml:"mutatedRef,omitempty"`
 
-	// MutatorRef JSON ref to value from where patch should be applied.
+	// MutatorRef Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
+	//
+	// The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+	//
+	// Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
 	MutatorRef *MutatorRef `json:"mutatorRef,omitempty" yaml:"mutatorRef,omitempty"`
 
 	// PatchStrategy patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
@@ -377,10 +418,10 @@ type RelationshipMetadata struct {
 
 // Selector Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.
 type Selector struct {
-	// From Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.
+	// From Originator side of the selector. For kind=hierarchical, from is the child. Each from item relates to each to item in the same selector (1:many).
 	From []SelectorItem `json:"from" yaml:"from"`
 
-	// To Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.
+	// To Destination side of the selector. For kind=hierarchical, to is the parent.
 	To []SelectorItem `json:"to" yaml:"to"`
 }
 
@@ -401,7 +442,7 @@ type SelectorItem struct {
 	// Model Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
 	Model *modelv1beta1.ModelReference `json:"model,omitempty" yaml:"model,omitempty"`
 
-	// RelationshipDefinitionSelectorsPatch Patch configuration for the selector
+	// RelationshipDefinitionSelectorsPatch Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches.
 	RelationshipDefinitionSelectorsPatch *RelationshipDefinitionSelectorsPatch `json:"patch" yaml:"patch,omitempty"`
 }
 

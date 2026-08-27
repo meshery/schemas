@@ -22,6 +22,8 @@ components:
       description: |
         Source of a patch: nested JSON path segments of the value to read. Pair with mutatedRef; sequences must be the same length. Index i of mutatorRef is copied onto index i of mutatedRef.
 
+        The pairing spans the two related selector items: a mutatorRef on one side (commonly the `from` item) supplies values to the mutatedRef on the related item of the other side, entry by entry, by index. Each path resolves relative to its own selector item's component document.
+
         Example: mutatorRef [[config, url], [config, name]] patches onto mutatedRef [[configPatch, value], [name]]. Paths are relative to the Meshery component document (configuration, displayName, component.kind), not raw Kubernetes YAML. "_" may mark only the first array position in a path.
       items:
         type: array
@@ -32,7 +34,7 @@ components:
     MutatedRef:
       type: array
       description: |
-        Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length.
+        Sink of a patch: nested JSON path segments (JSONPath) of the field to write. Pair with mutatorRef; sequences must be the same length. The mutatorRef it pairs with lives on the related selector item of the other side, and each path resolves relative to its own selector item's component document.
 
         mutatedRef currently does not support patching an array value itself. Omit patch entirely when the relationship only matches (tagsets, annotation).
       items:
@@ -67,7 +69,7 @@ components:
     RelationshipDefinitionSelectorsPatch:
       type: object
       description: |
-        Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match. Omit this object when the relationship only matches.
+        Patch configuration for a matched selector. mutatorRef is the value source; mutatedRef is the value sink. Sequence lengths must match, and the two sequences pair across the related selector items - the source paths on one item feed the sink paths on the related item of the other side, index by index. Omit this object when the relationship only matches.
       x-go-name: RelationshipDefinitionSelectorsPatch
       properties:
         patchStrategy:
