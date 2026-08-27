@@ -1,6 +1,8 @@
 type: object
 additionalProperties: false
 description: Subscription entity schema.
+example:
+  $ref: "./templates/subscription_template.json"
 required:
 - id
 - orgId
